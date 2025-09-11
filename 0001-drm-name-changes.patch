@@ -1,0 +1,34 @@
+From 9b77c992f85c6c7089a6ebdaf8a93fd8bfa8b60b Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Thu, 11 Sep 2025 21:54:43 +1000
+Subject: [PATCH] drm name changes
+
+---
+ include/drm/drm_drv.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/drm/drm_drv.h b/include/drm/drm_drv.h
+index 305304965..40aaa8412 100644
+--- a/include/drm/drm_drv.h
++++ b/include/drm/drm_drv.h
+@@ -608,14 +608,17 @@ int drm_dev_init(struct drm_device *dev,
+ void drm_dev_fini(struct drm_device *dev);
+ 
+ struct drm_device *drm_dev_alloc(struct drm_driver *driver,
+ 				 struct device *parent);
+ int drm_dev_register(struct drm_device *dev, unsigned long flags);
+ void drm_dev_unregister(struct drm_device *dev);
+ 
++#define drm_dev_get drm_dev_ref
++#define drm_dev_put drm_dev_unref
++
+ void drm_dev_ref(struct drm_device *dev);
+ void drm_dev_unref(struct drm_device *dev);
+ void drm_put_dev(struct drm_device *dev);
+ void drm_dev_unplug(struct drm_device *dev);
+ 
+ /**
+  * drm_dev_is_unplugged - is a DRM device unplugged
+-- 
+2.50.1
+

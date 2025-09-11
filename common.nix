@@ -170,6 +170,9 @@ in
         # https://github.com/KernelSU-Next/KernelSU-Next/pull/743 -> -Note: legacy kernels: selfmusing/kernel_xiaomi_violet@9596554
         ./9596554cfbdab57682a430c15ca64c691d404152.patch
       ])
+      (lib.mkIf (config.lindroid && config.lindroid-drm && config.legacy) [
+        ./0001-drm-name-changes.patch
+      ])
       (lib.mkIf (config.lindroid && config.patch-daria) [
         # https://t.me/linux_on_droid/19434 -> https://t.me/linux_on_droid/9783
         ./daria.patch
@@ -182,7 +185,7 @@ in
     postPatch = ''
       ${lib.optionalString (
         config.lindroid && config.lindroid-drm
-      ) ''cp -r ${lindroid-drm} drivers/lindroid-drm''}
+      ) ''cp -r ${if config.legacy then lindroid-drm414 else lindroid-drm} drivers/lindroid-drm''}
       ${lib.optionalString config.ksu ''
         cp -r ${kernelsu}/kernel drivers/kernelsu
         chmod -R +w drivers/kernelsu
