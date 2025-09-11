@@ -11,6 +11,11 @@ let
     rev = "71fea78ad41e806d0177379b964cf6931d9baa1e";
     sha256 = "14jv9aa85521scnyn6fp683j78zbdr7884i2nf0f4q9vh9r2scbl";
   };
+  lindroid-drm414 = pkgs.fetchgit {
+    url = "https://github.com/mio-19/lindroid-drm-loopback.git";
+    rev = "540ceb89c10104d24484552b2d126c30a1b3c57e";
+    sha256 = "1sakw057aj95w5fcdcx3lfqhcrf5vasa948k8jp6ly9yxmaf2nnh";
+  };
   kernelsu = pkgs.fetchgit {
     url = "https://github.com/KernelSU-Next/KernelSU-Next.git";
     rev = "8edb892792dc4f2a8fb6bba5aa48e20006dac0c3";
