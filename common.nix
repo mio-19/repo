@@ -22,10 +22,10 @@ in
       type = lib.types.str;
       description = "Device manufacturer";
     };
-    kernel = lib.mkOption {
+    kernel-short = lib.mkOption {
       type = lib.types.str;
       default = config.device;
-      description = "Kernel name";
+      description = "Kernel short name";
     };
     defconfig = lib.mkOption {
       type = lib.types.str;
@@ -63,14 +63,14 @@ in
     };
     kernel-name = lib.mkOption {
       type = lib.types.str;
-      default = "${config.manufactor}/${config.kernel}";
+      default = "${config.manufactor}/${config.kernel-short}";
       description = "Kernel name path";
     };
   };
-  flavor = "lineageos";
-  microg.enable = true;
-  apps.fdroid.enable = true;
-  apps.fdroid.additionalRepos = {
+  config.flavor = "lineageos";
+  config.microg.enable = true;
+  config.apps.fdroid.enable = true;
+  config.apps.fdroid.additionalRepos = {
     "microG F-Droid repo" = {
       enable = true;
       url = "https://microg.org/fdroid/repo";
@@ -82,9 +82,9 @@ in
   # mkdir -p -m0770 /var/cache/ccache
   # chown root:nixbld /var/cache/ccache
   # echo max_size = 100G > /var/cache/ccache/ccache.conf
-  ccache.enable = true;
-  apps.updater.enable = false;
-  apps.seedvault.enable = true;
+  config.ccache.enable = true;
+  config.apps.updater.enable = false;
+  config.apps.seedvault.enable = true;
   #apps.chromium.enable = false;
   #webview.chromium.enable = false;
   #apps.vanadium.enable = true;
@@ -112,7 +112,7 @@ in
   #    hash = "sha256-mdQN8aaKBaXnhFKpzU8tdTQ012IrrutE6hSugjjBqco=";
   #  };
   #};
-  source.dirs."vendor/lindroid" = lib.mkIf config.lindroid {
+  config.source.dirs."vendor/lindroid" = lib.mkIf config.lindroid {
     src = pkgs.fetchgit {
       url = "https://github.com/Linux-on-droid/vendor_lindroid.git";
       # lindroid-22.1
@@ -124,7 +124,7 @@ in
       sed -i 's|android.hardware.graphics.common-V5|android.hardware.graphics.common-V6|' interfaces/composer/Android.bp
     '';
   };
-  source.dirs."external/lxc".src = lib.mkIf config.lindroid (
+  config.source.dirs."external/lxc".src = lib.mkIf config.lindroid (
     pkgs.fetchgit {
       url = "https://github.com/Linux-on-droid/external_lxc.git";
       # lindroid-21
@@ -132,7 +132,7 @@ in
       sha256 = "1c993880v9sv97paqkqxd4c9p6j1v8m6d1b2sjwhav3f3l9dh7wn";
     }
   );
-  source.dirs."libhybris".src = lib.mkIf config.lindroid (
+  config.source.dirs."libhybris".src = lib.mkIf config.lindroid (
     pkgs.fetchgit {
       url = "https://github.com/Linux-on-droid/libhybris.git";
       # lindroid-21
@@ -140,7 +140,8 @@ in
       sha256 = "1hp69929yrhql2qc4scd4fdvy5zv8g653zvx376c3nlrzckjdm47";
     }
   );
-  source.dirs."kernel/${config.kernel-name}" = {
+  # config.source.dirs."kernel/${config.kernel-name}" = {
+  config.kernel = {
     patches = lib.mkMerge [
       (lib.mkIf (config.lindroid && config.patch-overlayfs) [
         # if overlayfs can't be mounted, you can pick a HACK: https://github.com/android-kxxt/android_kernel_xiaomi_sm8450/commit/ae700d3d04a2cd8b34e1dae434b0fdc9cde535c7
@@ -224,28 +225,29 @@ in
 
         CONFIG_DRM_LINDROID_EVDI=y''}
 
-      ${lib.optionalString ksu ''
+      ${lib.optionalString config.ksu ''
         # https://github.com/KernelSU-Next/KernelSU-Next/releases/tag/v1.0.5 : (KPROBES is not really ideal of NON-GKI since some 4.x kernels have buggy KPROBES support which will render your root hooks broken)
         CONFIG_KSU_KPROBES_HOOK=n
       ''}
-      ' >> ${defconfig}
-      ${lib.optionalString lindroid ''
+      ' >> ${config.defconfig}
+      ${lib.optionalString config.lindroid ''
         echo 'source "drivers/lindroid-drm/Kconfig"' >> drivers/Kconfig
         echo 'obj-y += lindroid-drm/' >> drivers/Makefile''}
     '';
   };
   #source.dirs."kernel/${config.kernel-name}/drivers/gpu/drm/lindroid".src = lindroid-drm;
-  source.dirs."device/${config.manufactor}/${config.device-name}".postPatch = lib.mkIf lindroid ''
-    echo '
-    $(call inherit-product, vendor/lindroid/lindroid.mk)' >> device.mk
-  '';
-  source.dirs."kernel/configs".postPatch = ''
+  config.source.dirs."device/${config.manufactor}/${config.device-name}".postPatch =
+    lib.mkIf config.lindroid ''
+      echo '
+      $(call inherit-product, vendor/lindroid/lindroid.mk)' >> device.mk
+    '';
+  config.source.dirs."kernel/configs".postPatch = ''
     sed -i '/# CONFIG_SYSVIPC is not set/d'  */*/android-base.config
   '';
   # https://gerrit.libremobileos.com/c/LMODroid/platform_frameworks_native/+/12936
-  source.dirs."frameworks/native".patches = lib.mkIf lindroid [ ./51b680f.diff ];
+  config.source.dirs."frameworks/native".patches = lib.mkIf config.lindroid [ ./51b680f.diff ];
   # to fix soft reboot when starting container on A14 (temporary!!! workaround) https://t.me/linux_on_droid/10346
-  source.dirs."frameworks/base".patches = lib.mkIf lindroid [
+  config.source.dirs."frameworks/base".patches = lib.mkIf config.lindroid [
     ./0001-Ignore-uevent-s-with-null-name-for-Extcon-WiredAcces.patch
   ];
 }

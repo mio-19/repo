@@ -22,7 +22,7 @@
           {
             imports = [ ./common.nix ];
             manufactor = "samsung";
-            kernel = "gta4xl";
+            kernel-short = "gta4xl";
             defconfig = "arch/arm64/configs/exynos9611-gta4xlwifi_defconfig";
             legacy = true;
             ksu = false; # buggy
@@ -37,7 +37,7 @@
           {
             imports = [ ./common.nix ];
             manufactor = "oneplus";
-            kernel = "sdm845";
+            kernel-short = "sdm845";
             defconfig = "arch/arm64/configs/enchilada_defconfig";
             device = "enchilada";
             flavorVersion = "22.2";
