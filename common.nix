@@ -211,8 +211,8 @@ in
         ${lib.optionalString config.ksu ''
           cp -r ${kernelsu}/kernel drivers/kernelsu
           chmod -R +w drivers/kernelsu
-          sed -i 's|-DKSU_VERSION=11998|-DKSU_VERSION=${ksu-version}|' drivers/kernelsu/Makefile
-          sed -i 's|-DKSU_VERSION=16|-DKSU_VERSION=${ksu-version}|' drivers/kernelsu/Makefile
+          sed -i 's|-DKSU_VERSION=11998|-DKSU_VERSION=${toString ksu-version}|' drivers/kernelsu/Makefile
+          sed -i 's|-DKSU_VERSION=16|-DKSU_VERSION=${toString ksu-version}|' drivers/kernelsu/Makefile
           # https://kernelsu-next.github.io/webpage/pages/installation.html -> https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh
           printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> drivers/Makefile
           sed -i "/endmenu/i\source \"drivers/kernelsu/Kconfig\"" drivers/Kconfig
