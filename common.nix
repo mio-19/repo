@@ -37,7 +37,7 @@ in
       type = lib.types.str;
       description = "Defconfig path";
     };
-    legacy = lib.mkOption {
+    legacy414 = lib.mkOption {
       type = lib.types.bool;
       default = false;
       description = "Legacy kernel";
@@ -166,11 +166,11 @@ in
         # if overlayfs can't be mounted, you can pick a HACK: https://github.com/android-kxxt/android_kernel_xiaomi_sm8450/commit/ae700d3d04a2cd8b34e1dae434b0fdc9cde535c7
         ./ae700d3d04a2cd8b34e1dae434b0fdc9cde535c7.patch
       ])
-      (lib.mkIf (config.legacy && config.ksu) [
+      (lib.mkIf (config.legacy414 && config.ksu) [
         # https://github.com/KernelSU-Next/KernelSU-Next/pull/743 -> -Note: legacy kernels: selfmusing/kernel_xiaomi_violet@9596554
         ./9596554cfbdab57682a430c15ca64c691d404152.patch
       ])
-      (lib.mkIf (config.lindroid && config.lindroid-drm && config.legacy) [
+      (lib.mkIf (config.lindroid && config.lindroid-drm && config.legacy414) [
         ./0001-drm-name-changes.patch
         ./0001-DRM_MODESET_ACQUIRE_INTERRUPTIBLE.patch
         ./0001-int-drm_modeset_backoff.patch
@@ -186,7 +186,7 @@ in
     # https://github.com/KernelSU-Next/KernelSU-Next/blob/next/kernel/Kconfig
     postPatch = ''
       ${lib.optionalString (config.lindroid && config.lindroid-drm)
-        ''cp -r ${if config.legacy then lindroid-drm414 else lindroid-drm} drivers/lindroid-drm''
+        ''cp -r ${if config.legacy414 then lindroid-drm414 else lindroid-drm} drivers/lindroid-drm''
       }
       ${lib.optionalString config.ksu ''
         cp -r ${kernelsu}/kernel drivers/kernelsu

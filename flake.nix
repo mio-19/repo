@@ -28,7 +28,7 @@
               manufactor = "samsung";
               kernel-short = "gta4xl";
               defconfig = "arch/arm64/configs/exynos9611-gta4xlwifi_defconfig";
-              legacy = true;
+              legacy414 = true;
               ksu = false; # buggy
               patch-daria = true;
               patch-overlayfs = true;
@@ -48,7 +48,7 @@
               device = "enchilada";
               flavorVersion = "22.2";
               #flavorVersion = "23.0";
-              legacy = true;
+              legacy414 = true;
               lindroid-drm = false; # /build/kernel/oneplus/sdm845/drivers/lindroid-drm/evdi_modeset.c:35:10: fatal error: 'drm/drm_gem_framebuffer_helper.h' file not found
             }
           );
@@ -63,7 +63,7 @@
               kernel-name = "nvidia/kernel-4.9-nx";
               defconfig = "arch/arm64/configs/tegra_android_defconfig";
               lindroid = false;
-              legacy = true;
+              legacy414 = true;
               # ksu doesn't compile
               #In file included from ../../../../../../kernel/nvidia/kernel-4.9-nx/drivers/kernelsu/throne_tracker.c:1:
               #../../../../../../kernel/nvidia/kernel-4.9-nx/drivers/kernelsu/throne_tracker.c: In function ‘track_throne’:
