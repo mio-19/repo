@@ -146,10 +146,10 @@ in
       sha256 = "1hp69929yrhql2qc4scd4fdvy5zv8g653zvx376c3nlrzckjdm47";
     }
   );
-  # config.source.dirs."kernel/${config.kernel-name}" = {
-  config.kernel = {
-    relpath = "kernel/${config.kernel-name}";
-    enable = true;
+  config.source.dirs."kernel/${config.kernel-name}" = {
+    # config.kernel = {
+    # relpath = "kernel/${config.kernel-name}";
+    # enable = true;
     patches = lib.mkMerge [
       (lib.mkIf (config.lindroid && config.patch-overlayfs) [
         # if overlayfs can't be mounted, you can pick a HACK: https://github.com/android-kxxt/android_kernel_xiaomi_sm8450/commit/ae700d3d04a2cd8b34e1dae434b0fdc9cde535c7
