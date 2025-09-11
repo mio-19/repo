@@ -169,6 +169,9 @@ in
         # https://t.me/linux_on_droid/19434 -> https://t.me/linux_on_droid/9783
         ./daria.patch
       ])
+      (lib.mkIf (config.lindroid && config.kernel-short == "gta4xl") [
+        ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
+      ])
     ];
     # https://github.com/KernelSU-Next/KernelSU-Next/blob/next/kernel/Kconfig
     postPatch = ''

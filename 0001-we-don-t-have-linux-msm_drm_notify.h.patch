@@ -1,0 +1,57 @@
+From 0d5531cb85b000399248a7f8e0aa7a9550050c38 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Thu, 11 Sep 2025 21:29:32 +1000
+Subject: [PATCH] we don't have <linux/msm_drm_notify.h>
+
+> replace all #ifdef CONFIG_DRM with #if 0 in that driver or something
+https://t.me/linux_on_droid/21622
+---
+ drivers/input/touchscreen/himax/himax_83102E/himax_common.h | 2 +-
+ drivers/input/touchscreen/novatek/nt36672a/nt36xxx.c        | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/input/touchscreen/himax/himax_83102E/himax_common.h b/drivers/input/touchscreen/himax/himax_83102E/himax_common.h
+index aa1902bc7..8edf6dbdf 100644
+--- a/drivers/input/touchscreen/himax/himax_83102E/himax_common.h
++++ b/drivers/input/touchscreen/himax/himax_83102E/himax_common.h
+@@ -35,15 +35,15 @@
+ #include <linux/fs.h>
+ #include <linux/buffer_head.h>
+ #include <linux/pm_wakeup.h>
+ #include <linux/seq_file.h>
+ #include <linux/proc_fs.h>
+ #include <linux/kallsyms.h>
+ 
+-#if defined(CONFIG_DRM)
++#if 0
+ 	#include <linux/msm_drm_notify.h>
+ #elif defined(CONFIG_FB)
+ 	#include <linux/notifier.h>
+ 	#include <linux/fb.h>
+ #elif defined(CONFIG_HAS_EARLYSUSPEND)
+ 	#include <linux/earlysuspend.h>
+ #endif
+diff --git a/drivers/input/touchscreen/novatek/nt36672a/nt36xxx.c b/drivers/input/touchscreen/novatek/nt36672a/nt36xxx.c
+index dbb3da390..2eb71ff01 100755
+--- a/drivers/input/touchscreen/novatek/nt36672a/nt36xxx.c
++++ b/drivers/input/touchscreen/novatek/nt36672a/nt36xxx.c
+@@ -18,15 +18,15 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/delay.h>
+ #include <linux/interrupt.h>
+ #include <linux/of_gpio.h>
+ #include <linux/input/mt.h>
+ 
+-#if defined(CONFIG_DRM_MSM)
++#if 0
+ /* drm structure is not use fb */
+ #include <linux/msm_drm_notify.h>
+ #endif
+ 
+ #if defined(CONFIG_INPUT_SEC_SECURE_TOUCH)
+ #include <linux/completion.h>
+ #include <linux/atomic.h>
+-- 
+2.50.1
+
