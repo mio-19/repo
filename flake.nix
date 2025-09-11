@@ -29,7 +29,7 @@
               kernel-short = "gta4xl";
               defconfig = "arch/arm64/configs/exynos9611-gta4xlwifi_defconfig";
               legacy414 = true;
-              ksu = false; # buggy
+              ksu = false; # buggy # is it buggy because we installed magisk before?
               patch-daria = true;
               patch-overlayfs = true;
               device = "gta4xlwifi";
