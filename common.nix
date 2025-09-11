@@ -148,6 +148,7 @@ in
   );
   # config.source.dirs."kernel/${config.kernel-name}" = {
   config.kernel = {
+    relpath = "kernel/${config.kernel-name}";
     enable = true;
     patches = lib.mkMerge [
       (lib.mkIf (config.lindroid && config.patch-overlayfs) [
