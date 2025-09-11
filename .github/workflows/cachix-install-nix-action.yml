@@ -27,18 +27,19 @@ jobs:
       matrix: ${{fromJSON(needs.nix-matrix.outputs.matrix)}}
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v30
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
         with:
           root-reserve-mb: 512
           swap-size-mb: 1024
+          overprovision-lvm: 'true'
           remove-dotnet: 'true'
           remove-android: 'true'
           remove-haskell: 'true'
           remove-codeql: 'true'
           remove-docker-images: 'true'
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v30
       - run: nix build -L '.#${{ matrix.attr }}'
       - name: Upload build output
         uses: actions/upload-artifact@v4
