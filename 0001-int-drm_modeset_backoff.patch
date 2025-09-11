@@ -1,0 +1,58 @@
+From b4902f5dab0c50101845d59a655c5f649a057f8c Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Thu, 11 Sep 2025 22:05:34 +1000
+Subject: [PATCH] int drm_modeset_backoff
+
+---
+ drivers/gpu/drm/drm_modeset_lock.c | 4 ++--
+ include/drm/drm_modeset_lock.h     | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/drm_modeset_lock.c b/drivers/gpu/drm/drm_modeset_lock.c
+index 56b9f9b1c..4dc3ca064 100644
+--- a/drivers/gpu/drm/drm_modeset_lock.c
++++ b/drivers/gpu/drm/drm_modeset_lock.c
+@@ -280,17 +280,17 @@ static int modeset_backoff(struct drm_modeset_acquire_ctx *ctx,
+  * drm_modeset_backoff - deadlock avoidance backoff
+  * @ctx: the acquire context
+  *
+  * If deadlock is detected (ie. drm_modeset_lock() returns -EDEADLK),
+  * you must call this function to drop all currently held locks and
+  * block until the contended lock becomes available.
+  */
+-void drm_modeset_backoff(struct drm_modeset_acquire_ctx *ctx)
++int drm_modeset_backoff(struct drm_modeset_acquire_ctx *ctx)
+ {
+-	modeset_backoff(ctx, false);
++	return modeset_backoff(ctx, false);
+ }
+ EXPORT_SYMBOL(drm_modeset_backoff);
+ 
+ /**
+  * drm_modeset_backoff_interruptible - deadlock avoidance backoff
+  * @ctx: the acquire context
+  *
+diff --git a/include/drm/drm_modeset_lock.h b/include/drm/drm_modeset_lock.h
+index 26b14fb85..fb7eb1927 100644
+--- a/include/drm/drm_modeset_lock.h
++++ b/include/drm/drm_modeset_lock.h
+@@ -84,15 +84,15 @@ struct drm_modeset_lock {
+ 
+ #define DRM_MODESET_ACQUIRE_INTERRUPTIBLE BIT(0)
+ 
+ void drm_modeset_acquire_init(struct drm_modeset_acquire_ctx *ctx,
+ 		uint32_t flags);
+ void drm_modeset_acquire_fini(struct drm_modeset_acquire_ctx *ctx);
+ void drm_modeset_drop_locks(struct drm_modeset_acquire_ctx *ctx);
+-void drm_modeset_backoff(struct drm_modeset_acquire_ctx *ctx);
++int drm_modeset_backoff(struct drm_modeset_acquire_ctx *ctx);
+ int drm_modeset_backoff_interruptible(struct drm_modeset_acquire_ctx *ctx);
+ 
+ void drm_modeset_lock_init(struct drm_modeset_lock *lock);
+ 
+ /**
+  * drm_modeset_lock_fini - cleanup lock
+  * @lock: lock to cleanup
+-- 
+2.50.1
+
