@@ -6,7 +6,13 @@
   inputs.robotnix.url = "github:nix-community/robotnix";
 
   outputs =
-    { self, robotnix }:
+    {
+      self,
+      robotnix,
+      nix-github-actions,
+      nixpkgs,
+      ...
+    }:
     let
       common = (
         args@{
