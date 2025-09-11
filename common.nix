@@ -41,6 +41,11 @@ in
       default = true;
       description = "Enable lindroid";
     };
+    lindroid-drm = lib.mkOption {
+      type = lib.types.bool;
+      default = config.lindroid;
+      description = "Enable lindroid-drm";
+    };
     patch-daria = lib.mkOption {
       type = lib.types.bool;
       default = false;
@@ -166,7 +171,9 @@ in
     ];
     # https://github.com/KernelSU-Next/KernelSU-Next/blob/next/kernel/Kconfig
     postPatch = ''
-      ${lib.optionalString config.lindroid ''cp -r ${lindroid-drm} drivers/lindroid-drm''}
+      ${lib.optionalString (
+        config.lindroid && config.lindroid-drm
+      ) ''cp -r ${lindroid-drm} drivers/lindroid-drm''}
       ${lib.optionalString config.ksu ''
         cp -r ${kernelsu}/kernel drivers/kernelsu
         chmod -R +w drivers/kernelsu
@@ -229,16 +236,16 @@ in
         CONFIG_USER_NS=y
         CONFIG_NET_NS=y
         CONFIG_CGROUP_DEVICE=y
-        CONFIG_CGROUP_FREEZER=y
+        CONFIG_CGROUP_FREEZER=y''}
 
-        CONFIG_DRM_LINDROID_EVDI=y''}
+      ${lib.optionalString (config.lindroid && config.lindroid-drm) ''CONFIG_DRM_LINDROID_EVDI=y''}
 
       ${lib.optionalString config.ksu ''
         # https://github.com/KernelSU-Next/KernelSU-Next/releases/tag/v1.0.5 : (KPROBES is not really ideal of NON-GKI since some 4.x kernels have buggy KPROBES support which will render your root hooks broken)
         CONFIG_KSU_KPROBES_HOOK=n
       ''}
       ' >> ${config.defconfig}
-      ${lib.optionalString config.lindroid ''
+      ${lib.optionalString (config.lindroid && config.lindroid-drm) ''
         sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" drivers/Kconfig
         echo 'obj-y += lindroid-drm/' >> drivers/Makefile''}
     '';
