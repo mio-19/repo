@@ -48,6 +48,7 @@
               device = "enchilada";
               flavorVersion = "22.2";
               #flavorVersion = "23.0";
+              legacy = true;
               lindroid-drm = false; # /build/kernel/oneplus/sdm845/drivers/lindroid-drm/evdi_modeset.c:35:10: fatal error: 'drm/drm_gem_framebuffer_helper.h' file not found
             }
           );
