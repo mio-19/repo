@@ -1,5 +1,17 @@
+From a38e645ce9a2b67c25a284aa3044cfe02c58a641 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Thu, 11 Sep 2025 13:23:29 +1000
+Subject: [PATCH] gpu patch
+
+https://t.me/linux_on_droid/19434 -> https://t.me/linux_on_droid/9783
+---
+ .../gpu/arm/b_r26p0/context/mali_kbase_context.c   | 14 +-------------
+ .../gpu/arm/bv_r32p1/context/mali_kbase_context.c  | 14 +-------------
+ .../gpu/arm/bv_r38p1/context/mali_kbase_context.c  | 14 +-------------
+ 3 files changed, 3 insertions(+), 39 deletions(-)
+
 diff --git a/drivers/gpu/arm/b_r26p0/context/mali_kbase_context.c b/drivers/gpu/arm/b_r26p0/context/mali_kbase_context.c
-index df9f41d2e..5604d9236 100644
+index df9f41d2e..a1c597358 100644
 --- a/drivers/gpu/arm/b_r26p0/context/mali_kbase_context.c
 +++ b/drivers/gpu/arm/b_r26p0/context/mali_kbase_context.c
 @@ -143,41 +143,29 @@ int kbase_context_common_init(struct kbase_context *kctx)
@@ -12,11 +24,11 @@ index df9f41d2e..5604d9236 100644
  	if (likely(kctx->filp)) {
 -		struct pid *pid_struct;
 -
++			struct task_struct *task = current;
  		rcu_read_lock();
 -		pid_struct = find_get_pid(kctx->tgid);
 -		if (likely(pid_struct)) {
 -			struct task_struct *task = pid_task(pid_struct, PIDTYPE_PID);
-+			struct task_struct *task = current;
  
  			if (likely(task)) {
  				/* Take a reference on the task to avoid slow lookup
@@ -46,7 +58,7 @@ index df9f41d2e..5604d9236 100644
                  kctx->process_mm = current->mm;
  	}
 diff --git a/drivers/gpu/arm/bv_r32p1/context/mali_kbase_context.c b/drivers/gpu/arm/bv_r32p1/context/mali_kbase_context.c
-index 5c5196e89..ed2220b05 100644
+index 5c5196e89..388f443e9 100644
 --- a/drivers/gpu/arm/bv_r32p1/context/mali_kbase_context.c
 +++ b/drivers/gpu/arm/bv_r32p1/context/mali_kbase_context.c
 @@ -187,41 +187,29 @@ int kbase_context_common_init(struct kbase_context *kctx)
@@ -59,11 +71,11 @@ index 5c5196e89..ed2220b05 100644
  	if (likely(kctx->filp)) {
 -		struct pid *pid_struct;
 -
++			struct task_struct *task = current;
  		rcu_read_lock();
 -		pid_struct = find_get_pid(kctx->tgid);
 -		if (likely(pid_struct)) {
 -			struct task_struct *task = pid_task(pid_struct, PIDTYPE_PID);
-+			struct task_struct *task = current;
  
  			if (likely(task)) {
  				/* Take a reference on the task to avoid slow lookup
@@ -93,7 +105,7 @@ index 5c5196e89..ed2220b05 100644
                  kctx->process_mm = current->mm;
  	}
 diff --git a/drivers/gpu/arm/bv_r38p1/context/mali_kbase_context.c b/drivers/gpu/arm/bv_r38p1/context/mali_kbase_context.c
-index f67dddd15..4faa7c102 100644
+index f67dddd15..dede7866a 100644
 --- a/drivers/gpu/arm/bv_r38p1/context/mali_kbase_context.c
 +++ b/drivers/gpu/arm/bv_r38p1/context/mali_kbase_context.c
 @@ -187,41 +187,29 @@ int kbase_context_common_init(struct kbase_context *kctx)
@@ -106,11 +118,11 @@ index f67dddd15..4faa7c102 100644
  	if (likely(kctx->filp)) {
 -		struct pid *pid_struct;
 -
++			struct task_struct *task = current;
  		rcu_read_lock();
 -		pid_struct = find_get_pid(kctx->tgid);
 -		if (likely(pid_struct)) {
 -			struct task_struct *task = pid_task(pid_struct, PIDTYPE_PID);
-+			struct task_struct *task = current;
  
  			if (likely(task)) {
  				/* Take a reference on the task to avoid slow lookup
@@ -139,3 +151,6 @@ index f67dddd15..4faa7c102 100644
                  kbase_mem_mmgrab();
                  kctx->process_mm = current->mm;
  	}
+-- 
+2.50.1
+
