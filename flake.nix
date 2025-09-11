@@ -22,7 +22,7 @@
           gta4xlwifi = (
             args@{ config, pkgs, ... }:
             {
-              config.ccache.enable = ccache;
+              ccache.enable = ccache;
               buildDateTime = 1757560291;
               imports = [ ./common.nix ];
               manufactor = "samsung";
@@ -39,7 +39,7 @@
           enchilada = (
             args@{ config, pkgs, ... }:
             {
-              config.ccache.enable = ccache;
+              ccache.enable = ccache;
               buildDateTime = 1757560291;
               imports = [ ./common.nix ];
               manufactor = "oneplus";
@@ -53,7 +53,7 @@
           nx_tab = (
             args@{ config, pkgs, ... }:
             {
-              config.ccache.enable = ccache;
+              ccache.enable = ccache;
               buildDateTime = 1757560291;
               imports = [ ./common.nix ];
               manufactor = "nintendo";
