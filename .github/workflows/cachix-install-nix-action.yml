@@ -29,6 +29,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v30
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 512
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
+          overprovision-lvm: 'true'
       - run: nix build -L '.#${{ matrix.attr }}'
       - name: Upload build output
         uses: actions/upload-artifact@v4
