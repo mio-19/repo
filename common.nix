@@ -6,14 +6,15 @@ args@{
 }:
 let
   lindroid-drm = pkgs.fetchgit {
-    url = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git";
-    rev = "5141110c8bed09be9404e10de7440184bfcf32d4";
-    sha256 = "1yvbbkyf7m41ay54ha1d54a0aj1rkisx4gdnixx17wam5phappll";
+    #url = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git";
+    url = "https://github.com/Linux-On-LineageOS/lindroid-drm-loopback.git";
+    rev = "71fea78ad41e806d0177379b964cf6931d9baa1e";
+    sha256 = "14jv9aa85521scnyn6fp683j78zbdr7884i2nf0f4q9vh9r2scbl";
   };
   kernelsu = pkgs.fetchgit {
     url = "https://github.com/KernelSU-Next/KernelSU-Next.git";
-    rev = "5bdb938e845f2dacd37db4a3761d2b38503a708b";
-    sha256 = "12r9hgphxgdkq5ky6d8wqmb3kixs0d9nzmawiqy046ls99ryn32k";
+    rev = "8edb892792dc4f2a8fb6bba5aa48e20006dac0c3";
+    sha256 = "0skmq4cl471bph1wgj9vdw66bhk2n0qnv48d8savfabs07p6xgly";
   };
 in
 {
@@ -127,8 +128,8 @@ in
     src = pkgs.fetchgit {
       url = "https://github.com/Linux-on-droid/vendor_lindroid.git";
       # lindroid-22.1
-      rev = "2d777654939404c333e351f1493d4cf9c93250bc";
-      sha256 = "05n39bwbffig1gbp3lrlf2ghh3v4px9xy8b3262gih9ybdskdnd1";
+      rev = "04bad35b95a1694bbc1fad43758c0d9253fef321";
+      sha256 = "1zk2vidq805njw59llvsxrwrfnxxp38804n5myr0shrmd0si163s";
     };
     # https://t.me/linux_on_droid/18552
     postPatch = ''
@@ -173,7 +174,10 @@ in
     postPatch = ''
       ${lib.optionalString (
         config.lindroid && config.lindroid-drm
-      ) ''cp -r ${lindroid-drm} drivers/lindroid-drm''}
+      ) ''
+      cp -r ${lindroid-drm} drivers/lindroid-drm
+      sed -i '/depends on DRM/d' drivers/lindroid-drm/Kconfig
+      ''}
       ${lib.optionalString config.ksu ''
         cp -r ${kernelsu}/kernel drivers/kernelsu
         chmod -R +w drivers/kernelsu
