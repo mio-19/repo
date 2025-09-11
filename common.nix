@@ -173,6 +173,9 @@ in
   config.source.dirs."kernel/${config.kernel-name}" =
     let
       kernelsu = if config.ksu-variant == "next" then kernelsu-next else kernelsu-upstream;
+      # KSU_VERSION = git rev-list --count HEAD
+      # 10000 + $(KSU_GIT_VERSION) + 200
+      ksu-version = if config.ksu-variant == "next" then 1000 + 2640 + 200 else 1000 + 1923 + 200;
     in
     lib.mkIf (config.lindroid || config.ksu) {
       # config.kernel = {
@@ -208,9 +211,8 @@ in
         ${lib.optionalString config.ksu ''
           cp -r ${kernelsu}/kernel drivers/kernelsu
           chmod -R +w drivers/kernelsu
-          # KSU_VERSION = git rev-list --count HEAD
-          # 10000 + $(KSU_GIT_VERSION) + 200
-          sed -i 's|-DKSU_VERSION=11998|-DKSU_VERSION=14630|' drivers/kernelsu/Makefile
+          sed -i 's|-DKSU_VERSION=11998|-DKSU_VERSION=${ksu-version}|' drivers/kernelsu/Makefile
+          sed -i 's|-DKSU_VERSION=16|-DKSU_VERSION=${ksu-version}|' drivers/kernelsu/Makefile
           # https://kernelsu-next.github.io/webpage/pages/installation.html -> https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh
           printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> drivers/Makefile
           sed -i "/endmenu/i\source \"drivers/kernelsu/Kconfig\"" drivers/Kconfig
