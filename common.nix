@@ -239,7 +239,9 @@ in
         CONFIG_CGROUP_DEVICE=y
         CONFIG_CGROUP_FREEZER=y''}
 
-      ${lib.optionalString (config.lindroid && config.lindroid-drm) ''CONFIG_DRM_LINDROID_EVDI=y''}
+      ${lib.optionalString (config.lindroid && config.lindroid-drm) ''
+        CONFIG_DRM=y
+        CONFIG_DRM_LINDROID_EVDI=y''}
 
       ${lib.optionalString config.ksu ''
         # https://github.com/KernelSU-Next/KernelSU-Next/releases/tag/v1.0.5 : (KPROBES is not really ideal of NON-GKI since some 4.x kernels have buggy KPROBES support which will render your root hooks broken)
