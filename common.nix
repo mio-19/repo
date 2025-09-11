@@ -175,7 +175,7 @@ in
       kernelsu = if config.ksu-variant == "next" then kernelsu-next else kernelsu-upstream;
       # KSU_VERSION = git rev-list --count HEAD
       # 10000 + $(KSU_GIT_VERSION) + 200
-      ksu-version = if config.ksu-variant == "next" then 1000 + 2640 + 200 else 1000 + 1923 + 200;
+      ksu-version = if config.ksu-variant == "next" then 10000 + 2640 + 200 else 10000 + 1923 + 200;
     in
     lib.mkIf (config.lindroid || config.ksu) {
       # config.kernel = {
