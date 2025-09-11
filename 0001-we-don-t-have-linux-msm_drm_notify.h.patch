@@ -1,4 +1,4 @@
-From 0d5531cb85b000399248a7f8e0aa7a9550050c38 Mon Sep 17 00:00:00 2001
+From 1f82dc07918ae6442225d4cc77db0d5a5e41d5cb Mon Sep 17 00:00:00 2001
 From: Mio <mio@mio19.uk>
 Date: Thu, 11 Sep 2025 21:29:32 +1000
 Subject: [PATCH] we don't have <linux/msm_drm_notify.h>
@@ -6,12 +6,89 @@ Subject: [PATCH] we don't have <linux/msm_drm_notify.h>
 > replace all #ifdef CONFIG_DRM with #if 0 in that driver or something
 https://t.me/linux_on_droid/21622
 ---
- drivers/input/touchscreen/himax/himax_83102E/himax_common.h | 2 +-
- drivers/input/touchscreen/novatek/nt36672a/nt36xxx.c        | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ .../input/touchscreen/himax/himax_83102E/himax_common.c   | 8 ++++----
+ .../input/touchscreen/himax/himax_83102E/himax_common.h   | 6 +++---
+ .../input/touchscreen/himax/himax_83102E/himax_platform.c | 8 ++++----
+ .../input/touchscreen/himax/himax_83102E/himax_platform.h | 2 +-
+ .../touchscreen/himax/himax_83102E/himax_platform_SPI.c   | 8 ++++----
+ .../touchscreen/himax/himax_83102E/himax_platform_SPI.h   | 2 +-
+ drivers/input/touchscreen/novatek/nt36672a/nt36xxx.c      | 2 +-
+ 7 files changed, 18 insertions(+), 18 deletions(-)
 
+diff --git a/drivers/input/touchscreen/himax/himax_83102E/himax_common.c b/drivers/input/touchscreen/himax/himax_83102E/himax_common.c
+index bc2acba5d..3fb313655 100644
+--- a/drivers/input/touchscreen/himax/himax_83102E/himax_common.c
++++ b/drivers/input/touchscreen/himax/himax_83102E/himax_common.c
+@@ -2812,15 +2812,15 @@ static int hx_chk_flash_sts(void)
+ 	g_core_fp.fp_flash_lastdata_check(size, NULL, 0);
+ #endif
+ 
+ 	return rslt;
+ }
+ #endif
+ 
+-#if defined(CONFIG_DRM)
++#if 0
+ static void himax_fb_register(struct work_struct *work)
+ {
+ 	int ret = 0;
+ 
+ 	struct himax_ts_data *ts = container_of(work, struct himax_ts_data, work_att.work);
+ 
+ 
+@@ -3073,15 +3073,15 @@ int himax_chip_common_init(void)
+ 		E("%s: Unable to register %s input device\n",
+ 		  __func__, ts->input_dev->name);
+ 		goto err_input_register_device_failed;
+ 	}
+ 
+ 	spin_lock_init(&ts->irq_lock);
+ 	ts->initialized = true;
+-#if defined(CONFIG_FB) || defined(CONFIG_DRM)
++#if defined(CONFIG_FB) || 0
+ 	ts->himax_att_wq = create_singlethread_workqueue("HMX_ATT_reuqest");
+ 
+ 	if (!ts->himax_att_wq) {
+ 		E(" allocate himax_att_wq failed\n");
+ 		err = -ENOMEM;
+ 		goto err_get_intr_bit_failed;
+ 	}
+@@ -3148,15 +3148,15 @@ int himax_chip_common_init(void)
+ #endif
+ err_creat_proc_file_failed:
+ 	himax_report_data_deinit();
+ err_report_data_init_failed:
+ #ifdef HX_SMART_WAKEUP
+ 	wakeup_source_trash(&ts->ts_SMWP_wake_lock);
+ #endif
+-#if defined(CONFIG_FB) || defined(CONFIG_DRM)
++#if defined(CONFIG_FB) || 0
+ 	cancel_delayed_work_sync(&ts->work_att);
+ 	destroy_workqueue(ts->himax_att_wq);
+ err_get_intr_bit_failed:
+ #endif
+ err_input_register_device_failed:
+ 	input_free_device(ts->input_dev);
+ err_detect_failed:
+@@ -3224,15 +3224,15 @@ void himax_chip_common_deinit(void)
+ 	sec_touch_sysfs_remove(ts);
+ 	sec_cmd_exit(&ts->sec, SEC_CLASS_DEVT_TSP);
+ #endif
+ 
+ #ifdef HX_SMART_WAKEUP
+ 	wakeup_source_trash(&ts->ts_SMWP_wake_lock);
+ #endif
+-#if defined(CONFIG_DRM)
++#if 0
+ 	if (msm_drm_unregister_client(&ts->fb_notif))
+ 		KE("Error occurred while unregistering fb_notifier.\n");
+ 	cancel_delayed_work_sync(&ts->work_att);
+ 	destroy_workqueue(ts->himax_att_wq);
+ #elif defined(CONFIG_FB)
+ 	if (fb_unregister_client(&ts->fb_notif))
+ 		KE("Error occurred while unregistering fb_notifier.\n");
 diff --git a/drivers/input/touchscreen/himax/himax_83102E/himax_common.h b/drivers/input/touchscreen/himax/himax_83102E/himax_common.h
-index aa1902bc7..8edf6dbdf 100644
+index aa1902bc7..8e88dfbbf 100644
 --- a/drivers/input/touchscreen/himax/himax_83102E/himax_common.h
 +++ b/drivers/input/touchscreen/himax/himax_83102E/himax_common.h
 @@ -35,15 +35,15 @@
@@ -30,6 +107,216 @@ index aa1902bc7..8edf6dbdf 100644
  	#include <linux/fb.h>
  #elif defined(CONFIG_HAS_EARLYSUSPEND)
  	#include <linux/earlysuspend.h>
+ #endif
+@@ -132,15 +132,15 @@
+ /*#define HX_P_SENSOR*/
+ #endif
+ 
+ #if defined(HX_CONTAINER_SPEED_UP)
+ #define DELAY_TIME 40 /*Resume queue delay work time after LCM RST (unit:ms)*/
+ #endif
+ 
+-#if defined(CONFIG_DRM)
++#if 0
+ int drm_notifier_callback(struct notifier_block *self, unsigned long event, void *data);
+ #elif defined(CONFIG_FB)
+ int fb_notifier_callback(struct notifier_block *self,
+ 						unsigned long event, void *data);
+ #elif defined(CONFIG_HAS_EARLYSUSPEND)
+ static void himax_ts_early_suspend(struct early_suspend *h);
+ static void himax_ts_late_resume(struct early_suspend *h);
+@@ -477,15 +477,15 @@ struct himax_ts_data {
+ 	uint8_t *xfer_buff;
+ /******* SPI-end *******/
+ 
+ 	int in_self_test;
+ 	int suspend_resume_done;
+ 	int bus_speed;
+ 
+-#if defined(CONFIG_FB) || defined(CONFIG_DRM)
++#if defined(CONFIG_FB) || 0
+ 	struct notifier_block fb_notif;
+ 	struct workqueue_struct *himax_att_wq;
+ 	struct delayed_work work_att;
+ #elif defined(CONFIG_HAS_EARLYSUSPEND)
+ 	struct early_suspend early_suspend;
+ #endif
+ 
+diff --git a/drivers/input/touchscreen/himax/himax_83102E/himax_platform.c b/drivers/input/touchscreen/himax/himax_83102E/himax_platform.c
+index e69bc298d..658611294 100644
+--- a/drivers/input/touchscreen/himax/himax_83102E/himax_platform.c
++++ b/drivers/input/touchscreen/himax/himax_83102E/himax_platform.c
+@@ -826,41 +826,41 @@ int himax_ts_unregister_interrupt(void)
+ }
+ 
+ static int himax_common_suspend(struct device *dev)
+ {
+ 	struct himax_ts_data *ts = dev_get_drvdata(dev);
+ 
+ 	input_info(true, &ts->client->dev, "%s: enter\n", __func__);
+-#ifdef CONFIG_DRM
++#if 0
+ 	if (!ts->initialized)
+ 		return -ECANCELED;
+ #endif
+ 	himax_chip_common_suspend(ts);
+ 	return 0;
+ }
+ 
+ static int himax_common_resume(struct device *dev)
+ {
+ 	struct himax_ts_data *ts = dev_get_drvdata(dev);
+ 
+ 	input_info(true, &ts->client->dev, "%s: enter\n", __func__);
+-#ifdef CONFIG_DRM
++#if 0
+ 	/*
+ 	 *	wait until device resume for TDDI
+ 	 *	TDDI: Touch and display Driver IC
+ 	 */
+ 	if (!ts->initialized)
+ 		if (himax_chip_common_init())
+ 			return -ECANCELED;
+ #endif
+ 	himax_chip_common_resume(ts);
+ 	return 0;
+ }
+ 
+-#if defined(CONFIG_DRM)
++#if 0
+ int drm_notifier_callback(struct notifier_block *self,
+ 		unsigned long event, void *data)
+ {
+ 	struct msm_drm_notifier *evdata = data;
+ 	int *blank;
+ 	struct himax_ts_data *ts =
+ 		container_of(self, struct himax_ts_data, fb_notif);
+@@ -988,15 +988,15 @@ int himax_chip_common_remove(struct i2c_client *client)
+ 
+ static const struct i2c_device_id himax_common_ts_id[] = {
+ 	{HIMAX_common_NAME, 0 },
+ 	{}
+ };
+ 
+ static const struct dev_pm_ops himax_common_pm_ops = {
+-#if (!defined(CONFIG_FB)) && (!defined(CONFIG_DRM))
++#if (!defined(CONFIG_FB)) && (!0)
+ 	.suspend = himax_common_suspend,
+ 	.resume  = himax_common_resume,
+ #endif
+ };
+ 
+ #ifdef CONFIG_OF
+ static const struct of_device_id himax_match_table[] = {
+diff --git a/drivers/input/touchscreen/himax/himax_83102E/himax_platform.h b/drivers/input/touchscreen/himax/himax_83102E/himax_platform.h
+index 971cb1cb5..e1fe5aa10 100644
+--- a/drivers/input/touchscreen/himax/himax_83102E/himax_platform.h
++++ b/drivers/input/touchscreen/himax/himax_83102E/himax_platform.h
+@@ -136,15 +136,15 @@ extern int himax_bus_master_write(uint8_t *data, uint32_t length, uint8_t toRetr
+ extern void himax_int_enable(int enable);
+ extern int himax_ts_register_interrupt(void);
+ int himax_ts_unregister_interrupt(void);
+ extern uint8_t himax_int_gpio_read(int pinnum);
+ extern int himax_gpio_power_config(struct himax_i2c_platform_data *pdata);
+ void himax_gpio_power_deconfig(struct himax_i2c_platform_data *pdata);
+ 
+-#if defined(CONFIG_DRM)
++#if 0
+ 	extern int drm_notifier_callback(struct notifier_block *self, unsigned long event, void *data);
+ #elif defined(CONFIG_FB)
+ 	extern int fb_notifier_callback(struct notifier_block *self, unsigned long event, void *data);
+ #endif
+ 
+ extern void himax_ts_work(struct himax_ts_data *ts);
+ extern enum hrtimer_restart himax_ts_timer_func(struct hrtimer *timer);
+diff --git a/drivers/input/touchscreen/himax/himax_83102E/himax_platform_SPI.c b/drivers/input/touchscreen/himax/himax_83102E/himax_platform_SPI.c
+index 136b274d8..d2be3c3d5 100644
+--- a/drivers/input/touchscreen/himax/himax_83102E/himax_platform_SPI.c
++++ b/drivers/input/touchscreen/himax/himax_83102E/himax_platform_SPI.c
+@@ -843,43 +843,43 @@ int himax_ts_unregister_interrupt(void)
+ }
+ 
+ static int himax_common_suspend(struct device *dev)
+ {
+ 	struct himax_ts_data *ts = dev_get_drvdata(dev);
+ 
+ 	I("%s: enter\n", __func__);
+-#ifdef CONFIG_DRM
++#if 0
+ 	if (!ts->initialized)
+ 		return -ECANCELED;
+ #endif
+ 	himax_chip_common_suspend(ts);
+ 	return 0;
+ }
+ #ifndef HX_CONTAINER_SPEED_UP
+ static int himax_common_resume(struct device *dev)
+ {
+ 	struct himax_ts_data *ts = dev_get_drvdata(dev);
+ 
+ 	I("%s: enter\n", __func__);
+-#ifdef CONFIG_DRM
++#if 0
+ 	/*
+ 	 *	wait until device resume for TDDI
+ 	 *	TDDI: Touch and display Driver IC
+ 	 */
+ 	if (!ts->initialized) {
+ 		if (himax_chip_common_init())
+ 			return -ECANCELED;
+ 	}
+ #endif
+ 	himax_chip_common_resume(ts);
+ 	return 0;
+ }
+ #endif
+ 
+-#if defined(CONFIG_DRM)
++#if 0
+ int drm_notifier_callback(struct notifier_block *self,
+ 		unsigned long event, void *data)
+ {
+ 	struct msm_drm_notifier *evdata = data;
+ 	int *blank;
+ 	struct himax_ts_data *ts =
+ 		container_of(self, struct himax_ts_data, fb_notif);
+@@ -1147,15 +1147,15 @@ int himax_chip_common_remove(struct spi_device *spi)
+ 
+ 	KI("%s: completed.\n", __func__);
+ 
+ 	return 0;
+ }
+ 
+ static const struct dev_pm_ops himax_common_pm_ops = {
+-#if (!defined(CONFIG_FB)) && (!defined(CONFIG_DRM))
++#if (!defined(CONFIG_FB)) && (!0)
+ 	.suspend = himax_common_suspend,
+ 	.resume  = himax_common_resume,
+ #endif
+ };
+ 
+ #ifdef CONFIG_OF
+ static const struct of_device_id himax_match_table[] = {
+diff --git a/drivers/input/touchscreen/himax/himax_83102E/himax_platform_SPI.h b/drivers/input/touchscreen/himax/himax_83102E/himax_platform_SPI.h
+index badb6493b..eb9d899f3 100644
+--- a/drivers/input/touchscreen/himax/himax_83102E/himax_platform_SPI.h
++++ b/drivers/input/touchscreen/himax/himax_83102E/himax_platform_SPI.h
+@@ -148,15 +148,15 @@ extern void himax_int_enable(int enable);
+ extern int himax_ts_register_interrupt(void);
+ int himax_ts_unregister_interrupt(void);
+ extern uint8_t himax_int_gpio_read(int pinnum);
+ 
+ extern int himax_gpio_power_config(struct himax_i2c_platform_data *pdata);
+ void himax_gpio_power_deconfig(struct himax_i2c_platform_data *pdata);
+ 
+-#if defined(CONFIG_DRM)
++#if 0
+ 	extern int drm_notifier_callback(struct notifier_block *self, unsigned long event, void *data);
+ #elif defined(CONFIG_FB)
+ 	extern int fb_notifier_callback(struct notifier_block *self, unsigned long event, void *data);
+ #endif
+ extern unsigned int lcdtype;
+ 
  #endif
 diff --git a/drivers/input/touchscreen/novatek/nt36672a/nt36xxx.c b/drivers/input/touchscreen/novatek/nt36672a/nt36xxx.c
 index dbb3da390..2eb71ff01 100755
