@@ -88,7 +88,7 @@ in
   # mkdir -p -m0770 /var/cache/ccache
   # chown root:nixbld /var/cache/ccache
   # echo max_size = 100G > /var/cache/ccache/ccache.conf
-  config.ccache.enable = true;
+  config.ccache.enable = lib.mkDefault true;
   config.apps.updater.enable = false;
   config.apps.seedvault.enable = true;
   #apps.chromium.enable = false;
