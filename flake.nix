@@ -23,7 +23,7 @@
             args@{ config, pkgs, ... }:
             {
               ccache.enable = ccache;
-              buildDateTime = 1757560291;
+              buildDateTime = 1757600458;
               imports = [ ./common.nix ];
               manufactor = "samsung";
               kernel-short = "gta4xl";
@@ -40,7 +40,7 @@
             args@{ config, pkgs, ... }:
             {
               ccache.enable = ccache;
-              buildDateTime = 1757560291;
+              buildDateTime = 1757600458;
               imports = [ ./common.nix ];
               manufactor = "oneplus";
               kernel-short = "sdm845";
@@ -56,7 +56,7 @@
             args@{ config, pkgs, ... }:
             {
               ccache.enable = ccache;
-              buildDateTime = 1757560291;
+              buildDateTime = 1757600458;
               imports = [ ./common.nix ];
               manufactor = "nintendo";
               device-name = "nx";
