@@ -1,0 +1,33 @@
+From 3274129128e763dab69d4c16909e79d06ed22b01 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Thu, 11 Sep 2025 22:02:14 +1000
+Subject: [PATCH] DRM_MODESET_ACQUIRE_INTERRUPTIBLE
+
+---
+ include/drm/drm_modeset_lock.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/drm/drm_modeset_lock.h b/include/drm/drm_modeset_lock.h
+index 4b27c2bb9..26b14fb85 100644
+--- a/include/drm/drm_modeset_lock.h
++++ b/include/drm/drm_modeset_lock.h
+@@ -78,14 +78,16 @@ struct drm_modeset_lock {
+ 	/*
+ 	 * Resources that are locked as part of an atomic update are added
+ 	 * to a list (so we know what to unlock at the end).
+ 	 */
+ 	struct list_head head;
+ };
+ 
++#define DRM_MODESET_ACQUIRE_INTERRUPTIBLE BIT(0)
++
+ void drm_modeset_acquire_init(struct drm_modeset_acquire_ctx *ctx,
+ 		uint32_t flags);
+ void drm_modeset_acquire_fini(struct drm_modeset_acquire_ctx *ctx);
+ void drm_modeset_drop_locks(struct drm_modeset_acquire_ctx *ctx);
+ void drm_modeset_backoff(struct drm_modeset_acquire_ctx *ctx);
+ int drm_modeset_backoff_interruptible(struct drm_modeset_acquire_ctx *ctx);
+ 
+-- 
+2.50.1
+
