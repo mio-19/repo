@@ -16,10 +16,15 @@ let
     rev = "a2d5acc66bc3c0ffa6132df43c0db854169f4ef6";
     sha256 = "09nkr6plvbcz0lzdhh86jb7f9gp0k8jsz85zzr0ipk0hzqgr12vs";
   };
-  kernelsu = pkgs.fetchgit {
+  kernelsu-next = pkgs.fetchgit {
     url = "https://github.com/KernelSU-Next/KernelSU-Next.git";
     rev = "8edb892792dc4f2a8fb6bba5aa48e20006dac0c3";
     sha256 = "0skmq4cl471bph1wgj9vdw66bhk2n0qnv48d8savfabs07p6xgly";
+  };
+  kernelsu-upstream = pkgs.fetchgit {
+    url = "https://github.com/tiann/KernelSU.git";
+    rev = "4d3560b12bec5f238fe11f908a246f0ac97e9c27";
+    sha256 = "1ipccwnfl7sz5h9g9vg6rgv7c2llw5bmwszn58p88k487jz70j8z";
   };
 in
 {
@@ -66,6 +71,14 @@ in
       type = lib.types.bool;
       default = true;
       description = "Enable KernelSU";
+    };
+    ksu-variant = lib.mkOption {
+      type = lib.types.enum [
+        "upstream"
+        "next"
+      ];
+      default = "upstream";
+      description = "KernelSU variant";
     };
     device-name = lib.mkOption {
       type = lib.types.str;
@@ -157,117 +170,121 @@ in
       sha256 = "1hp69929yrhql2qc4scd4fdvy5zv8g653zvx376c3nlrzckjdm47";
     }
   );
-  config.source.dirs."kernel/${config.kernel-name}" = {
-    # config.kernel = {
-    # relpath = "kernel/${config.kernel-name}";
-    # enable = true;
-    patches = lib.mkMerge [
-      (lib.mkIf (config.lindroid && config.patch-overlayfs) [
-        # if overlayfs can't be mounted, you can pick a HACK: https://github.com/android-kxxt/android_kernel_xiaomi_sm8450/commit/ae700d3d04a2cd8b34e1dae434b0fdc9cde535c7
-        ./ae700d3d04a2cd8b34e1dae434b0fdc9cde535c7.patch
-      ])
-      (lib.mkIf (config.legacy414 && config.ksu) [
-        # https://github.com/KernelSU-Next/KernelSU-Next/pull/743 -> -Note: legacy kernels: selfmusing/kernel_xiaomi_violet@9596554
-        ./9596554cfbdab57682a430c15ca64c691d404152.patch
-      ])
-      (lib.mkIf (config.lindroid && config.lindroid-drm && config.legacy414) [
-        ./0001-drm-name-changes.patch
-        ./0001-DRM_MODESET_ACQUIRE_INTERRUPTIBLE.patch
-        ./0001-int-drm_modeset_backoff.patch
-      ])
-      (lib.mkIf (config.lindroid && config.patch-daria) [
-        # https://t.me/linux_on_droid/19434 -> https://t.me/linux_on_droid/9783
-        ./daria.patch
-      ])
-      (lib.mkIf (config.lindroid && config.kernel-short == "gta4xl") [
-        ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
-      ])
-    ];
-    # https://github.com/KernelSU-Next/KernelSU-Next/blob/next/kernel/Kconfig
-    postPatch = ''
-      ${lib.optionalString (config.lindroid && config.lindroid-drm)
-        ''cp -r ${if config.legacy414 then lindroid-drm414 else lindroid-drm} drivers/lindroid-drm''
-      }
-      ${lib.optionalString config.ksu ''
-        cp -r ${kernelsu}/kernel drivers/kernelsu
-        chmod -R +w drivers/kernelsu
-        # KSU_VERSION = git rev-list --count HEAD
-        # 10000 + $(KSU_GIT_VERSION) + 200
-        sed -i 's|-DKSU_VERSION=11998|-DKSU_VERSION=14630|' drivers/kernelsu/Makefile
-        # https://kernelsu-next.github.io/webpage/pages/installation.html -> https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh
-        printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> drivers/Makefile
-        sed -i "/endmenu/i\source \"drivers/kernelsu/Kconfig\"" drivers/Kconfig
+  config.source.dirs."kernel/${config.kernel-name}" =
+    let
+      kernelsu = if config.ksu-variant == "next" then kernelsu-next else kernelsu-upstream;
+    in
+    lib.mkIf (config.lindroid || config.ksu) {
+      # config.kernel = {
+      # relpath = "kernel/${config.kernel-name}";
+      # enable = true;
+      patches = lib.mkMerge [
+        (lib.mkIf (config.lindroid && config.patch-overlayfs) [
+          # if overlayfs can't be mounted, you can pick a HACK: https://github.com/android-kxxt/android_kernel_xiaomi_sm8450/commit/ae700d3d04a2cd8b34e1dae434b0fdc9cde535c7
+          ./ae700d3d04a2cd8b34e1dae434b0fdc9cde535c7.patch
+        ])
+        (lib.mkIf (config.legacy414 && config.ksu) [
+          # https://github.com/KernelSU-Next/KernelSU-Next/pull/743 -> -Note: legacy kernels: selfmusing/kernel_xiaomi_violet@9596554
+          ./9596554cfbdab57682a430c15ca64c691d404152.patch
+        ])
+        (lib.mkIf (config.lindroid && config.lindroid-drm && config.legacy414) [
+          ./0001-drm-name-changes.patch
+          ./0001-DRM_MODESET_ACQUIRE_INTERRUPTIBLE.patch
+          ./0001-int-drm_modeset_backoff.patch
+        ])
+        (lib.mkIf (config.lindroid && config.patch-daria) [
+          # https://t.me/linux_on_droid/19434 -> https://t.me/linux_on_droid/9783
+          ./daria.patch
+        ])
+        (lib.mkIf (config.lindroid && config.kernel-short == "gta4xl") [
+          ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
+        ])
+      ];
+      # https://github.com/KernelSU-Next/KernelSU-Next/blob/next/kernel/Kconfig
+      postPatch = ''
+        ${lib.optionalString (config.lindroid && config.lindroid-drm)
+          ''cp -r ${if config.legacy414 then lindroid-drm414 else lindroid-drm} drivers/lindroid-drm''
+        }
+        ${lib.optionalString config.ksu ''
+          cp -r ${kernelsu}/kernel drivers/kernelsu
+          chmod -R +w drivers/kernelsu
+          # KSU_VERSION = git rev-list --count HEAD
+          # 10000 + $(KSU_GIT_VERSION) + 200
+          sed -i 's|-DKSU_VERSION=11998|-DKSU_VERSION=14630|' drivers/kernelsu/Makefile
+          # https://kernelsu-next.github.io/webpage/pages/installation.html -> https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh
+          printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> drivers/Makefile
+          sed -i "/endmenu/i\source \"drivers/kernelsu/Kconfig\"" drivers/Kconfig
 
-        # https://github.com/KernelSU-Next/KernelSU-Next/blob/5bdb938e845f2dacd37db4a3761d2b38503a708b/kernel/Makefile#L72C1-L115C1
-        # 1) Insert can_umount() if missing
-        if ! grep -Eq "^static int can_umount" ./fs/namespace.c; then
-            echo "-- KSU_NEXT: adding function 'static int can_umount(const struct path *path, int flags);' to ./fs/namespace.c"
-            sed -i '/^static bool is_mnt_ns_file/i \
-        static int can_umount(const struct path *path, int flags)\n\
-        {\n\t\
-                struct mount *mnt = real_mount(path->mnt);\n\t\
-                if (flags & ~(MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW))\n\t\t\
-                        return -EINVAL;\n\t\
-                if (!may_mount())\n\t\t\
-                        return -EPERM;\n\t\
-                if (path->dentry != path->mnt->mnt_root)\n\t\t\
-                        return -EINVAL;\n\t\
-                if (!check_mnt(mnt))\n\t\t\
-                        return -EINVAL;\n\t\
-                if (mnt->mnt.mnt_flags & MNT_LOCKED)\n\t\t\
-                        return -EINVAL;\n\t\
-                if (flags & MNT_FORCE && !capable(CAP_SYS_ADMIN))\n\t\t\
-                        return -EPERM;\n\t\
-                return 0;\n\
-        }\n' ./fs/namespace.c
-        fi
-        # 2) Insert path_umount() if missing
-        if ! grep -Eq "^int path_umount" ./fs/namespace.c; then
-            echo "-- KSU_NEXT: adding function 'int path_umount(struct path *path, int flags);' to ./fs/namespace.c"
-            sed -i '/^static bool is_mnt_ns_file/i \
-        int path_umount(struct path *path, int flags)\n\
-        {\n\t\
-                struct mount *mnt = real_mount(path->mnt);\n\t\
-                int ret;\n\t\
-                ret = can_umount(path, flags);\n\t\
-                if (!ret)\n\t\t\
-                        ret = do_umount(mnt, flags);\n\t\
-                dput(path->dentry);\n\t\
-                mntput_no_expire(mnt);\n\t\
-                return ret;\n\
-        }\n' ./fs/namespace.c
-        fi
-        # 3) Insert prototype into fs/internal.h if missing
-        if ! grep -Eq "^int path_umount(struct path \*path, int flags);" ./fs/internal.h; then
-            sed -i '/^extern void __init mnt_init/a int path_umount(struct path *path, int flags);' ./fs/internal.h
-            echo "-- KSU_NEXT: adding 'int path_umount(struct path *path, int flags);' to ./fs/internal.h"
-        fi
-      ''}
-      echo '
-      ${lib.optionalString config.lindroid ''
-        CONFIG_SYSVIPC=y
-        CONFIG_UTS_NS=y
-        CONFIG_PID_NS=y
-        CONFIG_IPC_NS=y
-        CONFIG_USER_NS=y
-        CONFIG_NET_NS=y
-        CONFIG_CGROUP_DEVICE=y
-        CONFIG_CGROUP_FREEZER=y''}
+          # https://github.com/KernelSU-Next/KernelSU-Next/blob/5bdb938e845f2dacd37db4a3761d2b38503a708b/kernel/Makefile#L72C1-L115C1
+          # 1) Insert can_umount() if missing
+          if ! grep -Eq "^static int can_umount" ./fs/namespace.c; then
+              echo "-- KSU_NEXT: adding function 'static int can_umount(const struct path *path, int flags);' to ./fs/namespace.c"
+              sed -i '/^static bool is_mnt_ns_file/i \
+          static int can_umount(const struct path *path, int flags)\n\
+          {\n\t\
+                  struct mount *mnt = real_mount(path->mnt);\n\t\
+                  if (flags & ~(MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW))\n\t\t\
+                          return -EINVAL;\n\t\
+                  if (!may_mount())\n\t\t\
+                          return -EPERM;\n\t\
+                  if (path->dentry != path->mnt->mnt_root)\n\t\t\
+                          return -EINVAL;\n\t\
+                  if (!check_mnt(mnt))\n\t\t\
+                          return -EINVAL;\n\t\
+                  if (mnt->mnt.mnt_flags & MNT_LOCKED)\n\t\t\
+                          return -EINVAL;\n\t\
+                  if (flags & MNT_FORCE && !capable(CAP_SYS_ADMIN))\n\t\t\
+                          return -EPERM;\n\t\
+                  return 0;\n\
+          }\n' ./fs/namespace.c
+          fi
+          # 2) Insert path_umount() if missing
+          if ! grep -Eq "^int path_umount" ./fs/namespace.c; then
+              echo "-- KSU_NEXT: adding function 'int path_umount(struct path *path, int flags);' to ./fs/namespace.c"
+              sed -i '/^static bool is_mnt_ns_file/i \
+          int path_umount(struct path *path, int flags)\n\
+          {\n\t\
+                  struct mount *mnt = real_mount(path->mnt);\n\t\
+                  int ret;\n\t\
+                  ret = can_umount(path, flags);\n\t\
+                  if (!ret)\n\t\t\
+                          ret = do_umount(mnt, flags);\n\t\
+                  dput(path->dentry);\n\t\
+                  mntput_no_expire(mnt);\n\t\
+                  return ret;\n\
+          }\n' ./fs/namespace.c
+          fi
+          # 3) Insert prototype into fs/internal.h if missing
+          if ! grep -Eq "^int path_umount(struct path \*path, int flags);" ./fs/internal.h; then
+              sed -i '/^extern void __init mnt_init/a int path_umount(struct path *path, int flags);' ./fs/internal.h
+              echo "-- KSU_NEXT: adding 'int path_umount(struct path *path, int flags);' to ./fs/internal.h"
+          fi
+        ''}
+        echo '
+        ${lib.optionalString config.lindroid ''
+          CONFIG_SYSVIPC=y
+          CONFIG_UTS_NS=y
+          CONFIG_PID_NS=y
+          CONFIG_IPC_NS=y
+          CONFIG_USER_NS=y
+          CONFIG_NET_NS=y
+          CONFIG_CGROUP_DEVICE=y
+          CONFIG_CGROUP_FREEZER=y''}
 
-      ${lib.optionalString (config.lindroid && config.lindroid-drm) ''
-        CONFIG_DRM=y
-        CONFIG_DRM_LINDROID_EVDI=y''}
+        ${lib.optionalString (config.lindroid && config.lindroid-drm) ''
+          CONFIG_DRM=y
+          CONFIG_DRM_LINDROID_EVDI=y''}
 
-      ${lib.optionalString config.ksu ''
-        # https://github.com/KernelSU-Next/KernelSU-Next/releases/tag/v1.0.5 : (KPROBES is not really ideal of NON-GKI since some 4.x kernels have buggy KPROBES support which will render your root hooks broken)
-        CONFIG_KSU_KPROBES_HOOK=n
-      ''}
-      ' >> ${config.defconfig}
-      ${lib.optionalString (config.lindroid && config.lindroid-drm) ''
-        sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" drivers/Kconfig
-        echo 'obj-y += lindroid-drm/' >> drivers/Makefile''}
-    '';
-  };
+        ${lib.optionalString config.ksu ''
+          # https://github.com/KernelSU-Next/KernelSU-Next/releases/tag/v1.0.5 : (KPROBES is not really ideal of NON-GKI since some 4.x kernels have buggy KPROBES support which will render your root hooks broken)
+          CONFIG_KSU_KPROBES_HOOK=n
+        ''}
+        ' >> ${config.defconfig}
+        ${lib.optionalString (config.lindroid && config.lindroid-drm) ''
+          sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" drivers/Kconfig
+          echo 'obj-y += lindroid-drm/' >> drivers/Makefile''}
+      '';
+    };
   #source.dirs."kernel/${config.kernel-name}/drivers/gpu/drm/lindroid".src = lindroid-drm;
   config.source.dirs."device/${config.manufactor}/${config.device-name}".postPatch =
     lib.mkIf config.lindroid ''
