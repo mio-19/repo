@@ -20,6 +20,7 @@
         gta4xlwifi = (
           args@{ config, pkgs, ... }:
           {
+            buildDateTime = builtins.currentTime;
             imports = [ ./common.nix ];
             manufactor = "samsung";
             kernel-short = "gta4xl";
@@ -35,6 +36,7 @@
         enchilada = (
           args@{ config, pkgs, ... }:
           {
+            buildDateTime = builtins.currentTime;
             imports = [ ./common.nix ];
             manufactor = "oneplus";
             kernel-short = "sdm845";
@@ -47,6 +49,7 @@
         nx_tab = (
           args@{ config, pkgs, ... }:
           {
+            buildDateTime = builtins.currentTime;
             imports = [ ./common.nix ];
             manufactor = "nintendo";
             device-name = "nx";
