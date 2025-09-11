@@ -1,0 +1,141 @@
+diff --git a/drivers/gpu/arm/b_r26p0/context/mali_kbase_context.c b/drivers/gpu/arm/b_r26p0/context/mali_kbase_context.c
+index df9f41d2e..5604d9236 100644
+--- a/drivers/gpu/arm/b_r26p0/context/mali_kbase_context.c
++++ b/drivers/gpu/arm/b_r26p0/context/mali_kbase_context.c
+@@ -143,41 +143,29 @@ int kbase_context_common_init(struct kbase_context *kctx)
+ 	atomic_set(&kctx->nonmapped_pages, 0);
+ 	atomic_set(&kctx->permanent_mapped_pages, 0);
+ 	kctx->tgid = current->tgid;
+ 	kctx->pid = current->pid;
+ 
+ 	/* Check if this is a Userspace created context */
+ 	if (likely(kctx->filp)) {
+-		struct pid *pid_struct;
+-
+ 		rcu_read_lock();
+-		pid_struct = find_get_pid(kctx->tgid);
+-		if (likely(pid_struct)) {
+-			struct task_struct *task = pid_task(pid_struct, PIDTYPE_PID);
++			struct task_struct *task = current;
+ 
+ 			if (likely(task)) {
+ 				/* Take a reference on the task to avoid slow lookup
+ 				 * later on from the page allocation loop.
+ 				 */
+ 				get_task_struct(task);
+ 				kctx->task = task;
+ 			} else {
+ 				dev_err(kctx->kbdev->dev,
+ 					"Failed to get task pointer for %s/%d",
+ 					current->comm, current->pid);
+ 				err = -ESRCH;
+ 			}
+-
+-			put_pid(pid_struct);
+-		} else {
+-			dev_err(kctx->kbdev->dev,
+-				"Failed to get pid pointer for %s/%d",
+-				current->comm, current->pid);
+-			err = -ESRCH;
+-		}
+ 		rcu_read_unlock();
+ 
+ 		if (unlikely(err))
+ 			return err;
+                 kbase_mem_mmgrab();
+                 kctx->process_mm = current->mm;
+ 	}
+diff --git a/drivers/gpu/arm/bv_r32p1/context/mali_kbase_context.c b/drivers/gpu/arm/bv_r32p1/context/mali_kbase_context.c
+index 5c5196e89..ed2220b05 100644
+--- a/drivers/gpu/arm/bv_r32p1/context/mali_kbase_context.c
++++ b/drivers/gpu/arm/bv_r32p1/context/mali_kbase_context.c
+@@ -187,41 +187,29 @@ int kbase_context_common_init(struct kbase_context *kctx)
+ 	atomic_set(&kctx->nonmapped_pages, 0);
+ 	atomic_set(&kctx->permanent_mapped_pages, 0);
+ 	kctx->tgid = current->tgid;
+ 	kctx->pid = current->pid;
+ 
+ 	/* Check if this is a Userspace created context */
+ 	if (likely(kctx->filp)) {
+-		struct pid *pid_struct;
+-
+ 		rcu_read_lock();
+-		pid_struct = find_get_pid(kctx->tgid);
+-		if (likely(pid_struct)) {
+-			struct task_struct *task = pid_task(pid_struct, PIDTYPE_PID);
++			struct task_struct *task = current;
+ 
+ 			if (likely(task)) {
+ 				/* Take a reference on the task to avoid slow lookup
+ 				 * later on from the page allocation loop.
+ 				 */
+ 				get_task_struct(task);
+ 				kctx->task = task;
+ 			} else {
+ 				dev_err(kctx->kbdev->dev,
+ 					"Failed to get task pointer for %s/%d",
+ 					current->comm, current->pid);
+ 				err = -ESRCH;
+ 			}
+-
+-			put_pid(pid_struct);
+-		} else {
+-			dev_err(kctx->kbdev->dev,
+-				"Failed to get pid pointer for %s/%d",
+-				current->comm, current->pid);
+-			err = -ESRCH;
+-		}
+ 		rcu_read_unlock();
+ 
+ 		if (unlikely(err))
+ 			return err;
+                 kbase_mem_mmgrab();
+                 kctx->process_mm = current->mm;
+ 	}
+diff --git a/drivers/gpu/arm/bv_r38p1/context/mali_kbase_context.c b/drivers/gpu/arm/bv_r38p1/context/mali_kbase_context.c
+index f67dddd15..4faa7c102 100644
+--- a/drivers/gpu/arm/bv_r38p1/context/mali_kbase_context.c
++++ b/drivers/gpu/arm/bv_r38p1/context/mali_kbase_context.c
+@@ -187,41 +187,29 @@ int kbase_context_common_init(struct kbase_context *kctx)
+ 	atomic_set(&kctx->nonmapped_pages, 0);
+ 	atomic_set(&kctx->permanent_mapped_pages, 0);
+ 	kctx->tgid = current->tgid;
+ 	kctx->pid = current->pid;
+ 
+ 	/* Check if this is a Userspace created context */
+ 	if (likely(kctx->filp)) {
+-		struct pid *pid_struct;
+-
+ 		rcu_read_lock();
+-		pid_struct = find_get_pid(kctx->tgid);
+-		if (likely(pid_struct)) {
+-			struct task_struct *task = pid_task(pid_struct, PIDTYPE_PID);
++			struct task_struct *task = current;
+ 
+ 			if (likely(task)) {
+ 				/* Take a reference on the task to avoid slow lookup
+ 				 * later on from the page allocation loop.
+ 				 */
+ 				get_task_struct(task);
+ 				kctx->task = task;
+ 			} else {
+ 				dev_err(kctx->kbdev->dev,
+ 					"Failed to get task pointer for %s/%d",
+ 					current->comm, current->pid);
+ 				err = -ESRCH;
+ 			}
+-
+-			put_pid(pid_struct);
+-		} else {
+-			dev_err(kctx->kbdev->dev,
+-				"Failed to get pid pointer for %s/%d",
+-				current->comm, current->pid);
+-			err = -ESRCH;
+-		}
+ 		rcu_read_unlock();
+ 
+ 		if (unlikely(err))
+ 			return err;
+                 kbase_mem_mmgrab();
+                 kctx->process_mm = current->mm;
+ 	}

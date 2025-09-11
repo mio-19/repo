@@ -1,0 +1,43 @@
+From d49f71809cd57e8e4ac1715adc8d4c18d92e576c Mon Sep 17 00:00:00 2001
+From: Luka Panio <lukapanio@gmail.com>
+Date: Thu, 10 Oct 2024 08:46:34 +0200
+Subject: [PATCH] Ignore uevent's with null name for
+ Extcon/WiredAccessoryManager
+
+Change-Id: I8df2645a3054ee72ce4e20d07e3aa59535c34737
+---
+ services/core/java/com/android/server/ExtconStateObserver.java | 3 +++
+ .../core/java/com/android/server/WiredAccessoryManager.java    | 3 +++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/services/core/java/com/android/server/ExtconStateObserver.java b/services/core/java/com/android/server/ExtconStateObserver.java
+index 92f30ff50112..9e99f3b9415f 100644
+--- a/services/core/java/com/android/server/ExtconStateObserver.java
++++ b/services/core/java/com/android/server/ExtconStateObserver.java
+@@ -53,6 +53,9 @@ public abstract class ExtconStateObserver<S> extends ExtconUEventObserver {
+     public void onUEvent(ExtconInfo extconInfo, UEvent event) {
+         if (LOG) Slog.d(TAG, extconInfo.getName() + " UEVENT: " + event);
+         String name = event.get("NAME");
++        if(name == null) {
++            return;
++        }
+         S state = parseState(extconInfo, event.get("STATE"));
+         if (state != null) {
+             updateState(extconInfo, name, state);
+diff --git a/services/core/java/com/android/server/WiredAccessoryManager.java b/services/core/java/com/android/server/WiredAccessoryManager.java
+index c94fc4f8475d..a714d060f5a3 100644
+--- a/services/core/java/com/android/server/WiredAccessoryManager.java
++++ b/services/core/java/com/android/server/WiredAccessoryManager.java
+@@ -510,6 +510,9 @@ final class WiredAccessoryManager implements WiredAccessoryCallbacks {
+ 
+             if (name == null) {
+                 name = event.get("SWITCH_NAME");
++                if(name == null) {
++                    return;
++                }
+             }
+ 
+             try {
+-- 
+2.46.0
+

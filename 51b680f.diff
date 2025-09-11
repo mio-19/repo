@@ -1,0 +1,29 @@
+From 51b680f33b66e06b18725fdf9a54fa923c14a10b Mon Sep 17 00:00:00 2001
+From: Billy Laws <blaws05@gmail.com>
+Date: Fri, 04 Feb 2022 14:39:03 +0000
+Subject: [PATCH] inputflinger: allow disabling input devices via idc
+
+On some devices an external Daemon consumes input events and these
+shouldn't be reported to apps
+
+Change-Id: Iffedb3061361ee120563c1f5e39a14faf5a2f83c
+---
+
+diff --git a/services/inputflinger/reader/EventHub.cpp b/services/inputflinger/reader/EventHub.cpp
+index 5085ad6..00d41f8 100644
+--- a/services/inputflinger/reader/EventHub.cpp
++++ b/services/inputflinger/reader/EventHub.cpp
+@@ -2341,6 +2341,13 @@
+     // Load the configuration file for the device.
+     device->loadConfigurationLocked();
+ 
++    // Disable device if device config property set
++    if (device->configuration &&
++        device->configuration->getBool("device.disabled")) {
++        device->disable();
++        ALOGV("Disabling device with id %d\n", device->id);
++    }
++
+     // Figure out the kinds of events the device reports.
+     device->readDeviceBitMask(EVIOCGBIT(EV_KEY, 0), device->keyBitmask);
+     device->readDeviceBitMask(EVIOCGBIT(EV_ABS, 0), device->absBitmask);
