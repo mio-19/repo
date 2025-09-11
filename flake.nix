@@ -15,7 +15,7 @@
     }:
     {
       githubActions = nix-github-actions.lib.mkGithubMatrix {
-        checks.x86_64-linux = builtins.mapAttrs (_: cfg: cfg.ota) self.robotnixConfigurations;
+        checks.x86_64-linux = builtins.mapAttrs (name: cfg: { "${name}-ota" = cfg.ota; }) self.robotnixConfigurations;
       };
       # https://github.com/MatthewCroughan/nixcfg/blob/afab322e6da20cc038d8577dd4a365673702d183/flake.nix#L57
       robotnixConfigurations = nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
