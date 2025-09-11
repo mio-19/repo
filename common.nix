@@ -239,7 +239,7 @@ in
       ''}
       ' >> ${config.defconfig}
       ${lib.optionalString config.lindroid ''
-        echo 'source "drivers/lindroid-drm/Kconfig"' >> drivers/Kconfig
+        sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" drivers/Kconfig
         echo 'obj-y += lindroid-drm/' >> drivers/Makefile''}
     '';
   };
