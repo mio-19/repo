@@ -49,11 +49,21 @@
           robotnixConfigurations = mkRobotnixConfigurations true;
           robotnixConfigurationsNoCcache = mkRobotnixConfigurations false;
         };
-      systems = [ "x86_64-linux" ];
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
       perSystem =
         { pkgs, ... }:
         let
-          sources = (import ./_sources/generated.nix) { inherit (pkgs) fetchurl fetchgit fetchFromGitHub dockerTools; };
+          sources = (import ./_sources/generated.nix) {
+            inherit (pkgs)
+              fetchurl
+              fetchgit
+              fetchFromGitHub
+              dockerTools
+              ;
+          };
         in
         {
           kernelsu = {
