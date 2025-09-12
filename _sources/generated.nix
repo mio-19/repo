@@ -6,6 +6,20 @@
   dockerTools,
 }:
 {
+  enchilada-kernel = {
+    pname = "enchilada-kernel";
+    version = "eabce74f5a9cb3111570c2e3c3a99ae0046ae580";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_kernel_oneplus_sdm845.git";
+      rev = "eabce74f5a9cb3111570c2e3c3a99ae0046ae580";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-EF7aFU1DVkQ+Y2zXwbC+vizLN2tehcYV7vSBMLV7RfI=";
+    };
+    date = "2025-07-11";
+  };
   oriole-kernel = {
     pname = "oriole-kernel";
     version = "3c76c2d71bb32039037c6f5dc38b172fe4142bdb";
@@ -16,7 +30,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-QXHmdl7kdLspqLuVAcAw50AJ0rYKiLNyaRPqSpTnoWM=";
+      sha256 = "sha256-jbeoLFk3Dd9jBYIxzOcT3fHd6Q8Y0ec3GCoBf0oO0JI=";
     };
     date = "2025-03-12";
   };

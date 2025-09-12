@@ -1,4 +1,24 @@
 {
+    "enchilada-kernel": {
+        "cargoLocks": null,
+        "date": "2025-07-11",
+        "extract": null,
+        "name": "enchilada-kernel",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "eabce74f5a9cb3111570c2e3c3a99ae0046ae580",
+            "sha256": "sha256-EF7aFU1DVkQ+Y2zXwbC+vizLN2tehcYV7vSBMLV7RfI=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/LineageOS/android_kernel_oneplus_sdm845.git"
+        },
+        "version": "eabce74f5a9cb3111570c2e3c3a99ae0046ae580"
+    },
     "oriole-kernel": {
         "cargoLocks": null,
         "date": "2025-03-12",
@@ -12,7 +32,7 @@
             "leaveDotGit": false,
             "name": null,
             "rev": "3c76c2d71bb32039037c6f5dc38b172fe4142bdb",
-            "sha256": "sha256-QXHmdl7kdLspqLuVAcAw50AJ0rYKiLNyaRPqSpTnoWM=",
+            "sha256": "sha256-jbeoLFk3Dd9jBYIxzOcT3fHd6Q8Y0ec3GCoBf0oO0JI=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://android.googlesource.com/kernel/common"

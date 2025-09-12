@@ -70,7 +70,6 @@
             oriole = {
               anyKernelVariant = "kernelsu";
               clangVersion = "latest";
-
               kernelDefconfigs = [
                 "gki_defconfig"
               ];
@@ -80,6 +79,21 @@
               oemBootImg = pkgs.fetchurl {
                 url = "https://mirrorbits.lineageos.org/full/oriole/20250908/boot.img";
                 sha256 = "1bivg0sn1zs8plcsncv1jpcp81n15xw1hyhq07pfz11wnp8y50hg";
+              };
+            };
+            enchilada = {
+              anyKernelVariant = "kernelsu";
+              clangVersion = "latest";
+              kernelDefconfigs = [
+                "enchilada_defconfig"
+              ];
+              kernelSU.variant = "next";
+              kernelImageName = "Image";
+              kernelSrc = sources.enchilada-kernel.src;
+              kernelPatches = [ ./9596554cfbdab57682a430c15ca64c691d404152.patch ];
+              oemBootImg = pkgs.fetchurl {
+                url = "https://mirrorbits.lineageos.org/full/enchilada/20250910/boot.img";
+                sha256 = "0d2cxz3jhi54qvlqmfghga621851njjxsldr9w8n1ni4g6g2nslp";
               };
             };
           };
