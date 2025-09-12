@@ -53,7 +53,7 @@
       perSystem =
         { pkgs, ... }:
         let
-          sources = (import ./_sources/generated.nix) { inherit (pkgs) fetchurl fetchgit fetchFromGitHub; };
+          sources = (import ./_sources/generated.nix) { inherit (pkgs) fetchurl fetchgit fetchFromGitHub dockerTools; };
         in
         {
           kernelsu = {
