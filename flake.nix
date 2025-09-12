@@ -51,6 +51,9 @@
       systems = [ "x86_64-linux" ];
       perSystem =
         { pkgs, ... }:
+        let
+          sources = (import ./_sources/generated.nix) { inherit (pkgs) fetchurl fetchgit fetchFromGitHub; };
+        in
         {
           kernelsu = {
             oriole = {
@@ -59,13 +62,7 @@
 
               kernelSU.variant = "next";
               kernelImageName = "Image";
-              kernelSrc = pkgs.fetchgit {
-                url = "https://android.googlesource.com/kernel/common";
-                rev = "8b4d6dfa520d2a494ed95bd70f9f0ad06b83fc27";
-                ref = "android-gs-raviole-6.1-android15-qpr2";
-                sha256 = "1a7wic2f4r9y40pia3z86rgixszcags06pmld8anic4i8k9nc40y";
-              };
-
+              kernelSrc = sources.oriole-kernel;
             };
           };
         };
