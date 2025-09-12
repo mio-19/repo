@@ -67,7 +67,7 @@ in
     };
     lindroid = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      #default = true;
       description = "Enable lindroid";
     };
     lindroid-drm = lib.mkOption {
@@ -87,7 +87,7 @@ in
     };
     ksu = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      #default = true;
       description = "Enable KernelSU";
     };
     ksu-variant = lib.mkOption {

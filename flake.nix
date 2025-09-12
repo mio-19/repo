@@ -27,6 +27,7 @@
               imports = [ ./common.nix ];
               manufactor = "samsung";
               kernel-short = "gta4xl";
+              lindroid = true;
               defconfig = "arch/arm64/configs/exynos9611-gta4xlwifi_defconfig";
               legacy414 = true;
               ksu = false; # buggy # is it buggy because we installed magisk before?
@@ -49,6 +50,7 @@
               flavorVersion = "22.2";
               #flavorVersion = "23.0";
               legacy414 = true;
+              ksu = true;
               lindroid = false; # lindroid doesn't support 4.9?
               lindroid-drm = false; # /build/kernel/oneplus/sdm845/drivers/lindroid-drm/evdi_modeset.c:35:10: fatal error: 'drm/drm_gem_framebuffer_helper.h' file not found
             }
@@ -90,6 +92,8 @@
               imports = [ ./common.nix ];
               manufactor = "google";
               enable-kernel = false;
+              lindroid = true;
+              ksu = true;
               device = "oriole";
               flavorVersion = "22.2";
             }
