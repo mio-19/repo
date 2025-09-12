@@ -210,6 +210,10 @@ in
         }
         ${lib.optionalString config.ksu ''
           cp -r ${kernelsu}/kernel drivers/kernelsu
+          ${lib.optionalString config.legacy414 ''
+            # original kernelsu only
+            sed -i 's/MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);/d' drivers/kernelsu/ksu.c
+          ''}
           chmod -R +w drivers/kernelsu
           sed -i 's|-DKSU_VERSION=11998|-DKSU_VERSION=${toString ksu-version}|' drivers/kernelsu/Makefile
           sed -i 's|-DKSU_VERSION=16|-DKSU_VERSION=${toString ksu-version}|' drivers/kernelsu/Makefile
