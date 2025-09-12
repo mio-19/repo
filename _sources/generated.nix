@@ -29,4 +29,18 @@
     };
     date = "2025-03-12";
   };
+  oriole-kernel14 = {
+    pname = "oriole-kernel14";
+    version = "12f3388846c3a8887a607afe1481ccc283455d89";
+    src = fetchgit {
+      url = "https://android.googlesource.com/kernel/common";
+      rev = "12f3388846c3a8887a607afe1481ccc283455d89";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-idHLtkOcHlE6XGlKHjaUpwQ3g1Ih+IGsVFuBkOkadSs=";
+    };
+    date = "2024-06-03";
+  };
 }
