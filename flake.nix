@@ -75,6 +75,16 @@
         in
         {
           kernelsu = {
+            oriole14 = {
+              anyKernelVariant = "kernelsu";
+              clangVersion = "latest";
+              kernelDefconfigs = [
+                "gki_defconfig"
+              ];
+              kernelSU.variant = "next";
+              kernelImageName = "Image";
+              kernelSrc = sources.oriole-kernel14.src;
+            };
             oriole = {
               anyKernelVariant = "kernelsu";
               clangVersion = "latest";
