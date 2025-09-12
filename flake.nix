@@ -26,11 +26,16 @@
           # https://github.com/MatthewCroughan/nixcfg/blob/afab322e6da20cc038d8577dd4a365673702d183/flake.nix#L57
           mkRobotnixConfigurations =
             ccache:
+            let
+              common = {
+                ccache.enable = ccache;
+              };
+            in
             nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
-              gta4xlwifi = import ./gta4xlwifi.nix;
-              enchilada = import ./enchilada.nix;
-              nx_tab = import ./nx_tab.nix;
-              oriole = import ./oriole.nix;
+              gta4xlwifi = args@{ config, pkgs, ... }: common // ((import ./gta4xlwifi.nix) args);
+              enchilada = args@{ config, pkgs, ... }: common // ((import ./enchilada.nix) args);
+              nx_tab = args@{ config, pkgs, ... }: common // ((import ./nx_tab.nix) args);
+              oriole = args@{ config, pkgs, ... }: common // ((import ./oriole.nix) args);
             };
         in
         {

@@ -1,6 +1,5 @@
 args@{ config, pkgs, ... }:
 {
-  ccache.enable = ccache;
   buildDateTime = 1757600458;
   imports = [ ./common.nix ];
   manufactor = "google";
