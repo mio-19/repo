@@ -1,16 +1,21 @@
 # see log: adb logcat | grep lindroid
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-  inputs.nix-github-actions.url = "github:nix-community/nix-github-actions";
-  inputs.nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
-  #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
-  inputs.robotnix.url = "github:nix-community/robotnix";
-  inputs.robotnix.inputs.nixpkgs.follows = "nixpkgs";
-  inputs.flake-parts.url = "github:hercules-ci/flake-parts";
-  # https://github.com/xddxdd/nix-kernelsu-builder
-  inputs.nix-kernelsu-builder.url = "github:xddxdd/nix-kernelsu-builder";
-  inputs.nix-kernelsu-builder.inputs.flake-parts.follows = "flake-parts";
-  inputs.nix-kernelsu-builder.inputs.nixpkgs.follows = "nixpkgs";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nix-github-actions.url = "github:nix-community/nix-github-actions";
+    nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
+    android-nixpkgs.url = "github:tadfisher/android-nixpkgs";
+    android-nixpkgs.inputs.nixpkgs.follows = "nixpkgs";
+    #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
+    robotnix.url = "github:nix-community/robotnix";
+    robotnix.inputs.nixpkgs.follows = "nixpkgs";
+    robotnix.inputs.androidPkgs.follows = "android-nixpkgs";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    # https://github.com/xddxdd/nix-kernelsu-builder
+    nix-kernelsu-builder.url = "github:xddxdd/nix-kernelsu-builder";
+    nix-kernelsu-builder.inputs.flake-parts.follows = "flake-parts";
+    nix-kernelsu-builder.inputs.nixpkgs.follows = "nixpkgs";
+  };
 
   outputs =
     {
