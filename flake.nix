@@ -90,9 +90,8 @@
               };
             };
             enchilada = {
-              clangVersion = null;
               anyKernelVariant = "kernelsu";
-              clangVersion = "latest";
+              clangVersion = null;
               kernelDefconfigs = [
                 "enchilada_defconfig"
               ];
