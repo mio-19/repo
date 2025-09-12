@@ -108,6 +108,11 @@ in
       default = "${config.manufactor}/${config.kernel-short}";
       description = "Kernel name path";
     };
+    enable-kernel = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable kernel patches";
+    };
   };
   config.flavor = "lineageos";
   config.microg.enable = true;
@@ -193,7 +198,7 @@ in
       kernelsu = ksu-variants."${config.ksu-variant}".src;
       ksu-version = ksu-variants."${config.ksu-variant}".version;
     in
-    lib.mkIf (config.lindroid || config.ksu) {
+    lib.mkIf (config.enable-kernel && (config.lindroid || config.ksu)) {
       # config.kernel = {
       # relpath = "kernel/${config.kernel-name}";
       # enable = true;
