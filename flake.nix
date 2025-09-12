@@ -43,11 +43,11 @@
           githubActions = nix-github-actions.lib.mkGithubMatrix {
             checks.x86_64-linux =
               with nixpkgs.lib;
-              (mapAttrs' (name: cfg: nameValuePair "${name}-ota" cfg.ota) self.robotnixConfigurationsNoCcache)
-              // (mapAttrs' (name: cfg: nameValuePair "${name}-img" cfg.img) self.robotnixConfigurationsNoCcache);
+              (mapAttrs' (name: cfg: nameValuePair "${name}-ota" cfg.ota) self.androidNoCcache)
+              // (mapAttrs' (name: cfg: nameValuePair "${name}-img" cfg.img) self.androidNoCcache);
           };
-          robotnixConfigurations = mkRobotnixConfigurations true;
-          robotnixConfigurationsNoCcache = mkRobotnixConfigurations false;
+          android = mkRobotnixConfigurations true;
+          androidNoCcache = mkRobotnixConfigurations false;
         };
       systems = [
         "x86_64-linux"
