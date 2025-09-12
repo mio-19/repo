@@ -13,18 +13,36 @@ let
   };
   lindroid-drm414 = pkgs.fetchgit {
     url = "https://github.com/mio-19/lindroid-drm-loopback.git";
-    rev = "c4a48c40f69f7a58dad6dcfd60a00c204bcd0650";
+    rev = "25ceb92b0ce8b74e8447ca8caafa6d50963818b2";
     sha256 = "09nkr6plvbcz0lzdhh86jb7f9gp0k8jsz85zzr0ipk0hzqgr12vs";
   };
-  kernelsu-next = pkgs.fetchgit {
-    url = "https://github.com/KernelSU-Next/KernelSU-Next.git";
-    rev = "8edb892792dc4f2a8fb6bba5aa48e20006dac0c3";
-    sha256 = "0skmq4cl471bph1wgj9vdw66bhk2n0qnv48d8savfabs07p6xgly";
-  };
-  kernelsu-upstream = pkgs.fetchgit {
-    url = "https://github.com/tiann/KernelSU.git";
-    rev = "4d3560b12bec5f238fe11f908a246f0ac97e9c27";
-    sha256 = "1ipccwnfl7sz5h9g9vg6rgv7c2llw5bmwszn58p88k487jz70j8z";
+  # KSU_VERSION = git rev-list --count HEAD
+  # 10000 + $(KSU_GIT_VERSION) + 200
+  ksu-variants = {
+    next = {
+      src = pkgs.fetchgit {
+        url = "https://github.com/KernelSU-Next/KernelSU-Next.git";
+        rev = "8edb892792dc4f2a8fb6bba5aa48e20006dac0c3";
+        sha256 = "0skmq4cl471bph1wgj9vdw66bhk2n0qnv48d8savfabs07p6xgly";
+      };
+      version = 10000 + 2640 + 200;
+    };
+    upstream = {
+      src = pkgs.fetchgit {
+        url = "https://github.com/tiann/KernelSU.git";
+        rev = "4d3560b12bec5f238fe11f908a246f0ac97e9c27";
+        sha256 = "1ipccwnfl7sz5h9g9vg6rgv7c2llw5bmwszn58p88k487jz70j8z";
+      };
+      version = 10000 + 1923 + 200;
+    };
+    sukisu = {
+      src = pkgs.fetchgit {
+        url = "https://github.com/SukiSU-Ultra/SukiSU-Ultra.git";
+        rev = "cac4efe0d1718cadb5e5c92cc47103d258e40219";
+        sha256 = "16c42mzn18nkzjz71klsm3h3bp2x7bc8wl530b461xhlk1lbvkxx";
+      };
+      version = 10000 + 2641 + 200;
+    };
   };
 in
 {
@@ -172,10 +190,8 @@ in
   );
   config.source.dirs."kernel/${config.kernel-name}" =
     let
-      kernelsu = if config.ksu-variant == "next" then kernelsu-next else kernelsu-upstream;
-      # KSU_VERSION = git rev-list --count HEAD
-      # 10000 + $(KSU_GIT_VERSION) + 200
-      ksu-version = if config.ksu-variant == "next" then 10000 + 2640 + 200 else 10000 + 1923 + 200;
+      kernelsu = ksu-variants."${config.ksu-variant}".src;
+      ksu-version = ksu-variants."${config.ksu-variant}".version;
     in
     lib.mkIf (config.lindroid || config.ksu) {
       # config.kernel = {
@@ -215,8 +231,9 @@ in
             # original kernelsu only
             sed -i '/MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);/d' drivers/kernelsu/ksu.c
           ''}
-          sed -i 's|-DKSU_VERSION=11998|-DKSU_VERSION=${toString ksu-version}|' drivers/kernelsu/Makefile
-          sed -i 's|-DKSU_VERSION=16|-DKSU_VERSION=${toString ksu-version}|' drivers/kernelsu/Makefile
+          sed -i 's|-DKSU_VERSION=11998|-DKSU_VERSION=${toString ksu-version}|' drivers/kernelsu/Makefile # next
+          sed -i 's|-DKSU_VERSION=16|-DKSU_VERSION=${toString ksu-version}|' drivers/kernelsu/Makefile # upstream
+          sed -i 's|KSU_VERSION := 13000|KSU_VERSION := ${toString ksu-version}|' drivers/kernelsu/Makefile # sukisu
           # https://kernelsu-next.github.io/webpage/pages/installation.html -> https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh
           printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> drivers/Makefile
           sed -i "/endmenu/i\source \"drivers/kernelsu/Kconfig\"" drivers/Kconfig
