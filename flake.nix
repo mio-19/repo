@@ -62,7 +62,7 @@
               clangVersion = "latest";
 
               kernelDefconfigs = [
-                "arch/arm64/configs/gki_defconfig"
+                "gki_defconfig"
               ];
               kernelSU.variant = "next";
               kernelImageName = "Image";
