@@ -82,6 +82,18 @@
               flavorVersion = "22.2";
             }
           );
+          oriole =  (
+            args@{ config, pkgs, ... }:
+            {
+              ccache.enable = ccache;
+              buildDateTime = 1757600458;
+              imports = [ ./common.nix ];
+              manufactor = "google";
+              enable-kernel = false;
+              device = "oriole";
+              flavorVersion = "22.2";
+            }
+          );
         };
     in
     {
