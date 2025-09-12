@@ -91,7 +91,7 @@
             };
             enchilada = {
               anyKernelVariant = "kernelsu";
-              clangVersion = null;
+              clangVersion = 12;
               kernelDefconfigs = [
                 "enchilada_defconfig"
               ];
