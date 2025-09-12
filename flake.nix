@@ -90,6 +90,7 @@
               };
             };
             enchilada = {
+              clangVersion = null;
               anyKernelVariant = "kernelsu";
               clangVersion = "latest";
               kernelDefconfigs = [
