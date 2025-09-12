@@ -67,6 +67,10 @@
               kernelSU.variant = "next";
               kernelImageName = "Image";
               kernelSrc = sources.oriole-kernel;
+              oemBootImg = pkgs.fetchurl {
+                url = "https://mirrorbits.lineageos.org/full/oriole/20250908/boot.img";
+                sha256 = "1bivg0sn1zs8plcsncv1jpcp81n15xw1hyhq07pfz11wnp8y50hg";
+              };
             };
           };
         };
