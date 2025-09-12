@@ -89,6 +89,7 @@
                 sha256 = "1bivg0sn1zs8plcsncv1jpcp81n15xw1hyhq07pfz11wnp8y50hg";
               };
             };
+            # DOESN"T COMPILE WITH EITHER GCC OR CLANG FROM NIXPKGS
             enchilada = {
               anyKernelVariant = "kernelsu";
               clangVersion = 12;
