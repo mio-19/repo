@@ -6,6 +6,7 @@
   #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
   inputs.robotnix.url = "github:nix-community/robotnix";
   inputs.flake-parts.url = "github:hercules-ci/flake-parts";
+  # https://github.com/xddxdd/nix-kernelsu-builder
   inputs.nix-kernelsu-builder.url = "github:xddxdd/nix-kernelsu-builder";
 
   outputs =
