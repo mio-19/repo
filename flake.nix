@@ -144,9 +144,9 @@
                     CONFIG_CGROUP_FREEZER=y
                     CONFIG_DRM=y
                     CONFIG_DRM_LINDROID_EVDI=y
-                    ' >> exynos9611-gta4xlwifi_defconfig
-                    sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" drivers/Kconfig
-                    echo 'obj-y += lindroid-drm/' >> drivers/Makefile
+                    ' >> $out/arch/arm64/configs/exynos9611-gta4xlwifi_defconfig
+                    sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" $out/drivers/Kconfig
+                    echo 'obj-y += lindroid-drm/' >> $out/drivers/Makefile
                   ''
                 );
                 kernelPatches = [
