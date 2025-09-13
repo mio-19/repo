@@ -159,7 +159,7 @@
                 ];
                 oemBootImg = pkgs.fetchurl {
                   url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20250906/boot.img";
-                  sha256 = "1bivg0sn1zs8plcsncv1jpcp81n15xw1hyhq07pfz11wnp8y50hg";
+                  sha256 = "0yzzli36inmbpa5x5rb35qmphi3k0mfnra7v7f7vs9k57dskzfmw";
                 };
               };
           };
