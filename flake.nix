@@ -134,6 +134,7 @@
                     chmod -R +w $out
                     cp -r ${s.lindroid-drm414} $out/drivers/lindroid-drm
 
+                    # https://kernelsu.org/guide/how-to-integrate-for-non-gki.html
                     echo '
                     CONFIG_SYSVIPC=y
                     CONFIG_UTS_NS=y
@@ -145,6 +146,9 @@
                     CONFIG_CGROUP_FREEZER=y
                     CONFIG_DRM=y
                     CONFIG_DRM_LINDROID_EVDI=y
+
+                    CONFIG_KSU_KPROBES_HOOK=n
+                    CONFIG_KPROBES=n
                     ' >> $out/arch/arm64/configs/exynos9611-gta4xlwifi_defconfig
                     sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" $out/drivers/Kconfig
                     echo 'obj-y += lindroid-drm/' >> $out/drivers/Makefile
@@ -158,6 +162,7 @@
                   ./0001-int-drm_modeset_backoff.patch
                   ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
                   ./daria.patch
+                  ./0001-KSUManual4.14.patch
                 ];
                 oemBootImg = pkgs.fetchurl {
                   url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20250906/boot.img";
