@@ -206,6 +206,7 @@ with sources;
         (lib.mkIf (config.legacy414 && config.ksu) [
           # https://github.com/KernelSU-Next/KernelSU-Next/pull/743 -> -Note: legacy kernels: selfmusing/kernel_xiaomi_violet@9596554
           ./filter_count.patch
+          ./0001-KSUManual4.14.patch
         ])
         (lib.mkIf (config.lindroid && config.lindroid-drm && config.legacy414) [
           ./0001-drm-name-changes.patch
@@ -299,9 +300,10 @@ with sources;
           CONFIG_DRM=y
           CONFIG_DRM_LINDROID_EVDI=y''}
 
-        ${lib.optionalString config.ksu ''
+        ${lib.optionalString (config.legacy414 && config.ksu) ''
           # https://github.com/KernelSU-Next/KernelSU-Next/releases/tag/v1.0.5 : (KPROBES is not really ideal of NON-GKI since some 4.x kernels have buggy KPROBES support which will render your root hooks broken)
           CONFIG_KSU_KPROBES_HOOK=n
+          CONFIG_KPROBES=n
         ''}
         ' >> ${config.defconfig}
         ${lib.optionalString (config.lindroid && config.lindroid-drm) ''
