@@ -262,7 +262,7 @@ with sources0;
       # https://github.com/KernelSU-Next/KernelSU-Next/blob/next/kernel/Kconfig
       postPatch = ''
         ${lib.optionalString (config.lindroid && config.lindroid-drm)
-          ''cp -r ${if config.legacy414 then lindroid-drm414 else lindroid-drm} drivers/lindroid-drm''
+          ''cp -r ${lindroid-drm} drivers/lindroid-drm''
         }
         ${lib.optionalString config.ksu ''
           cp -r ${kernelsu}/kernel drivers/kernelsu

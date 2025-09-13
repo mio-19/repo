@@ -139,7 +139,7 @@
                   pkgs.runCommand "gta4xlwifi-patched-kernel" { } ''
                     cp -r ${sources.gta4xlwifi-kernel.src} $out
                     chmod -R +w $out
-                    cp -r ${s.lindroid-drm414} $out/drivers/lindroid-drm
+                    cp -r ${s.lindroid-drm} $out/drivers/lindroid-drm
 
                     # https://kernelsu.org/guide/how-to-integrate-for-non-gki.html
                     echo '
