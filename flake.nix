@@ -135,7 +135,7 @@
                 ];
                 kernelSU.variant = "next";
                 kernelImageName = "Image";
-                susfs.enable = true;
+                #susfs.enable = true; # TODO
                 susfs.src = sources.susfs414.src;
                 kernelSrc = (
                   pkgs.runCommand "gta4xlwifi-patched-kernel" { } ''
