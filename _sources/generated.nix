@@ -57,6 +57,20 @@
     };
     date = "2024-06-03";
   };
+  susfs414 = {
+    pname = "susfs414";
+    version = "77905b5a071e6f3669e3b1814cea30147c0801da";
+    src = fetchgit {
+      url = "https://gitlab.com/simonpunk/susfs4ksu.git";
+      rev = "77905b5a071e6f3669e3b1814cea30147c0801da";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-cbQNeNp+sbm/6PH1KWCH5ggGy9KbGbzX7qUkhmc+Tdc=";
+    };
+    date = "2025-02-23";
+  };
   vendor_gapps15 = {
     pname = "vendor_gapps15";
     version = "af160b7fba89b2ea23aad432c7d0716e1639f0f9";
