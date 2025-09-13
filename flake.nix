@@ -37,17 +37,21 @@
           mkRobotnixConfigurations =
             ccache:
             let
-              common = {
-                ccache.enable = ccache;
-              };
+              common =
+                f:
+                args@{ config, ... }:
+                {
+                  imports = [ f ];
+                  ccache.enable = ccache;
+                };
             in
             nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
-              gta4xlwifi = args@{ config, pkgs, ... }: common // ((import ./gta4xlwifi.nix) args);
-              gta4xlwifi23 = args@{ config, pkgs, ... }: common // ((import ./gta4xlwifi23.nix) args);
-              enchilada = args@{ config, pkgs, ... }: common // ((import ./enchilada.nix) args);
-              enchilada23 = args@{ config, pkgs, ... }: common // ((import ./enchilada23.nix) args);
-              nx_tab = args@{ config, pkgs, ... }: common // ((import ./nx_tab.nix) args);
-              oriole = args@{ config, pkgs, ... }: common // ((import ./oriole.nix) args);
+              gta4xlwifi = common ./gta4xlwifi.nix;
+              gta4xlwifi23 = common ./gta4xlwifi23.nix;
+              enchilada = common ./enchilada.nix;
+              enchilada23 = common ./enchilada23.nix;
+              nx_tab = common ./nx_tab.nix;
+              oriole = common ./oriole.nix;
             };
         in
         {
