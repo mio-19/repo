@@ -188,7 +188,7 @@ with sources0;
   config.source.dirs."vendor/gapps" = lib.mkIf config.gapps (
     assert !config.microg.enable;
     {
-      src = gapps."${config.androidVersion}";
+      src = gapps."${toString config.androidVersion}";
     }
   );
   config.source.dirs."vendor/lindroid" = lib.mkIf config.lindroid {
