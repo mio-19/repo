@@ -2,6 +2,7 @@ args@{
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }:
 let
@@ -12,11 +13,11 @@ let
     next = {
       src = pkgs.fetchgit {
         url = "https://github.com/KernelSU-Next/KernelSU-Next.git";
-        rev = "2c02db6323f14fba2f3a34e5a002c15fef59451b";
-        ref = "v1.0.9";
-        sha256 = "0440paxarxizkxz84dj5ql6a2rw4zs3jmqxhvp2fc6x48i6p9qpf";
+        # v1.0.9
+        rev = "2241696498ce9dd742ce80b52c3ed6cca26e03ea"; # pin
+        sha256 = "1k9pm95wx0qghf6r0j8hvfnlb3pm00m2i67pzvk098i90xjqvm5l";
       };
-      version = "unstable-2025-09-12";
+      version = "unstable-2025-07-15";
       ver = 12797;
     };
     upstream = {
