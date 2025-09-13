@@ -15,5 +15,6 @@ src.git = "https://github.com/LineageOS/android_kernel_samsung_gta4xl.git"
 fetch.git = "https://github.com/LineageOS/android_kernel_samsung_gta4xl.git"
 [vendor_gapps15]
 src.git = "https://gitlab.com/MindTheGapps/vendor_gapps.git"
-fetch.git = "https://gitlab.com/MindTheGapps/vendor_gapps.git"
 src.branch = "vic"
+# needed for blobs. fetchgit doesn't provide an option for git-lfs.
+fetch.url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/$ver/vendor_gapps-$ver.tar.gz"

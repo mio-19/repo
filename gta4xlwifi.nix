@@ -8,7 +8,7 @@ args@{ config, pkgs, ... }:
   defconfig = "arch/arm64/configs/exynos9611-gta4xlwifi_defconfig";
   legacy414 = true;
   microg.enable = false;
-  #gapps = true; # manually install later
+  gapps = true;
   ksu = true;
   patch-daria = true;
   patch-overlayfs = true;

@@ -123,7 +123,7 @@ with sources0;
     gapps = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Enable Proprietary GApps (WIP - needs git-lfs?)";
+      description = "Enable Proprietary GApps";
     };
     ARCH = lib.mkOption {
       type = lib.types.enum [
@@ -188,7 +188,14 @@ with sources0;
   config.source.dirs."vendor/gapps" = lib.mkIf config.gapps (
     assert !config.microg.enable;
     {
-      src = gapps."${toString config.androidVersion}";
+      src = pkgs.runCommand "gapps${toString config.androidVersion}" { } ''
+        mkdir -p $out
+        tar -xzvf ${gapps."${toString config.androidVersion}"} -C $out --strip-components=1
+      '';
+      # make sure that the file exists. otherwise make the build fail.
+      postPatch = ''
+        [ -f ${config.ARCH}/${config.ARCH}-vendor.mk ]
+      '';
     }
   );
   config.source.dirs."vendor/lindroid" = lib.mkIf config.lindroid {

@@ -65,14 +65,9 @@
   vendor_gapps15 = {
     pname = "vendor_gapps15";
     version = "af160b7fba89b2ea23aad432c7d0716e1639f0f9";
-    src = fetchgit {
-      url = "https://gitlab.com/MindTheGapps/vendor_gapps.git";
-      rev = "af160b7fba89b2ea23aad432c7d0716e1639f0f9";
-      fetchSubmodules = false;
-      deepClone = false;
-      leaveDotGit = false;
-      sparseCheckout = [ ];
-      sha256 = "sha256-WNqQVtI10q9qNodpEiwyByDCsdapd3MxuwSlPpVUm7Y=";
+    src = fetchurl {
+      url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/af160b7fba89b2ea23aad432c7d0716e1639f0f9/vendor_gapps-af160b7fba89b2ea23aad432c7d0716e1639f0f9.tar.gz";
+      sha256 = "sha256-ZDPPagAlC/ECM4AdbYQOQX85sZq+JXzsDNLS3JCAud0=";
     };
     date = "2025-08-12";
   };
