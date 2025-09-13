@@ -78,5 +78,25 @@
             "url": "https://android.googlesource.com/kernel/common"
         },
         "version": "12f3388846c3a8887a607afe1481ccc283455d89"
+    },
+    "vendor_gapps15": {
+        "cargoLocks": null,
+        "date": "2025-08-12",
+        "extract": null,
+        "name": "vendor_gapps15",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "af160b7fba89b2ea23aad432c7d0716e1639f0f9",
+            "sha256": "sha256-WNqQVtI10q9qNodpEiwyByDCsdapd3MxuwSlPpVUm7Y=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://gitlab.com/MindTheGapps/vendor_gapps.git"
+        },
+        "version": "af160b7fba89b2ea23aad432c7d0716e1639f0f9"
     }
 }

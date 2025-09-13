@@ -62,4 +62,18 @@
     };
     date = "2024-06-03";
   };
+  vendor_gapps15 = {
+    pname = "vendor_gapps15";
+    version = "af160b7fba89b2ea23aad432c7d0716e1639f0f9";
+    src = fetchgit {
+      url = "https://gitlab.com/MindTheGapps/vendor_gapps.git";
+      rev = "af160b7fba89b2ea23aad432c7d0716e1639f0f9";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-WNqQVtI10q9qNodpEiwyByDCsdapd3MxuwSlPpVUm7Y=";
+    };
+    date = "2025-08-12";
+  };
 }

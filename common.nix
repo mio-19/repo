@@ -6,7 +6,18 @@ args@{
   ...
 }:
 let
-  sources = import ./sources.nix args;
+  sources0 = import ./sources.nix args;
+  sources = (import ./_sources/generated.nix) {
+    inherit (pkgs)
+      fetchurl
+      fetchgit
+      fetchFromGitHub
+      dockerTools
+      ;
+  };
+  gapps = {
+    "22.2" = sources.vendor_gapps15;
+  };
   # KSU_VERSION = git rev-list --count HEAD
   # 10000 + $(KSU_GIT_VERSION) + 200
   ksu-variants = {
@@ -40,7 +51,7 @@ let
     };
   };
 in
-with sources;
+with sources0;
 {
   options = {
     manufactor = lib.mkOption {
@@ -109,6 +120,19 @@ with sources;
       default = true;
       description = "Enable kernel patches";
     };
+    gapps = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable Proprietary GApps";
+    };
+    ARCH = lib.mkOption {
+      type = lib.types.enum [
+        "arm64"
+        "x86_64"
+      ];
+      default = "arm64";
+      description = "Architecture";
+    };
   };
   config.flavor = "lineageos";
   config.microg.enable = lib.mkDefault true;
@@ -161,6 +185,12 @@ with sources;
   #    hash = "sha256-mdQN8aaKBaXnhFKpzU8tdTQ012IrrutE6hSugjjBqco=";
   #  };
   #};
+  config.source.dirs."vendor/gapps" = lib.mkIf config.gapps (
+    assert !config.microg.enable;
+    {
+      src = gapps."${flavorVersion}";
+    }
+  );
   config.source.dirs."vendor/lindroid" = lib.mkIf config.lindroid {
     src = pkgs.fetchgit {
       url = "https://github.com/Linux-on-droid/vendor_lindroid.git";
@@ -313,9 +343,13 @@ with sources;
     };
   #source.dirs."kernel/${config.kernel-name}/drivers/gpu/drm/lindroid".src = lindroid-drm;
   config.source.dirs."device/${config.manufactor}/${config.device-name}".postPatch =
-    lib.mkIf config.lindroid ''
+    lib.optionalString config.lindroid ''
       echo '
       $(call inherit-product, vendor/lindroid/lindroid.mk)' >> device.mk
+    ''
+    ++ lib.optionalString config.gapps ''
+      echo '
+        $(call inherit-product, vendor/gapps/${config.ARCH}/${config.ARCH}-vendor.mk)' >> device.mk
     '';
   config.source.dirs."kernel/configs".postPatch = ''
     sed -i '/# CONFIG_SYSVIPC is not set/d'  */*/android-base.config
