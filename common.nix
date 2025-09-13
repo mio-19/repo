@@ -111,7 +111,7 @@ with sources;
     };
   };
   config.flavor = "lineageos";
-  config.microg.enable = true;
+  config.microg.enable = lib.mkDefault true;
   config.apps.fdroid.enable = true;
   config.apps.fdroid.additionalRepos = {
     "microG F-Droid repo" = {

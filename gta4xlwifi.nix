@@ -1,12 +1,13 @@
 args@{ config, pkgs, ... }:
 {
-  buildDateTime = 1757742736;
+  buildDateTime = 1757746157;
   imports = [ ./common.nix ];
   manufactor = "samsung";
   kernel-short = "gta4xl";
   lindroid = true;
   defconfig = "arch/arm64/configs/exynos9611-gta4xlwifi_defconfig";
   legacy414 = true;
+  config.microg.enable = false; # use gapps
   ksu = true;
   patch-daria = true;
   patch-overlayfs = true;
