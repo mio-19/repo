@@ -14,7 +14,7 @@ args@{
   };
   lindroid-drm414 = pkgs.fetchgit {
     url = "https://github.com/mio-19/lindroid-drm-loopback.git";
-    rev = "6f4352fd79733f905ae0156a484b8ca293160a3a";
-    sha256 = "1cfxbm2c4dbzzjmbfcay1jigz8lshcq67bflp8lnr4030fgyirnl";
+    rev = "0f2b426ac4787489aab900595bc7ea03165ee012";
+    sha256 = "1bxm9rsxmz70p0xcjp6xacb7ihfsrf9w2dfii0vcpk2l9bwjc35z";
   };
 }
