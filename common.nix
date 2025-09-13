@@ -17,6 +17,7 @@ let
   };
   gapps = {
     "15" = sources.vendor_gapps15.src;
+    "16" = sources.vendor_gapps16.src;
   };
   # KSU_VERSION = git rev-list --count HEAD
   # 10000 + $(KSU_GIT_VERSION) + 200
