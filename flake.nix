@@ -157,9 +157,9 @@
                 kernelPatches = [
                   ./filter_count.patch
                   ./overlayfs.patch
-                  ./0001-DRM_MODESET_ACQUIRE_INTERRUPTIBLE.patch
-                  ./0001-drm-name-changes.patch
-                  ./0001-int-drm_modeset_backoff.patch
+                  #./0001-DRM_MODESET_ACQUIRE_INTERRUPTIBLE.patch
+                  #./0001-drm-name-changes.patch
+                  #./0001-int-drm_modeset_backoff.patch
                   ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
                   ./daria.patch
                   ./0001-KSUManual4.14.patch

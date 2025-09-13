@@ -209,9 +209,9 @@ with sources;
           ./0001-KSUManual4.14.patch
         ])
         (lib.mkIf (config.lindroid && config.lindroid-drm && config.legacy414) [
-          ./0001-drm-name-changes.patch
-          ./0001-DRM_MODESET_ACQUIRE_INTERRUPTIBLE.patch
-          ./0001-int-drm_modeset_backoff.patch
+          #./0001-drm-name-changes.patch
+          #./0001-DRM_MODESET_ACQUIRE_INTERRUPTIBLE.patch
+          #./0001-int-drm_modeset_backoff.patch
         ])
         (lib.mkIf (config.lindroid && config.patch-daria) [
           # https://t.me/linux_on_droid/19434 -> https://t.me/linux_on_droid/9783
