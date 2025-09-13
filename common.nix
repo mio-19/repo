@@ -314,7 +314,7 @@ with sources;
     sed -i '/# CONFIG_SYSVIPC is not set/d'  */*/android-base.config
   '';
   # https://gerrit.libremobileos.com/c/LMODroid/platform_frameworks_native/+/12936
-  config.source.dirs."frameworks/native".patches = lib.mkIf config.lindroid [ ./inputfinger.patch ];
+  config.source.dirs."frameworks/native".patches = lib.mkIf config.lindroid [ ./inputflinger.patch ];
   # to fix soft reboot when starting container on A14 (temporary!!! workaround) https://t.me/linux_on_droid/10346
   config.source.dirs."frameworks/base".patches = lib.mkIf config.lindroid [
     ./0001-Ignore-uevent-s-with-null-name-for-Extcon-WiredAcces.patch
