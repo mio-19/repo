@@ -43,6 +43,7 @@
             nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
               gta4xlwifi = args@{ config, pkgs, ... }: common // ((import ./gta4xlwifi.nix) args);
               enchilada = args@{ config, pkgs, ... }: common // ((import ./enchilada.nix) args);
+              enchilada23 = args@{ config, pkgs, ... }: common // ((import ./enchilada23.nix) args);
               nx_tab = args@{ config, pkgs, ... }: common // ((import ./nx_tab.nix) args);
               oriole = args@{ config, pkgs, ... }: common // ((import ./oriole.nix) args);
             };
