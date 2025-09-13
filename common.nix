@@ -123,7 +123,7 @@ with sources0;
     gapps = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = "Enable Proprietary GApps (WIP - needs to fetch blobs too)";
+      description = "Enable Proprietary GApps (WIP - needs git-lfs?)";
     };
     ARCH = lib.mkOption {
       type = lib.types.enum [
