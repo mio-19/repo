@@ -7,7 +7,7 @@ args@{ config, pkgs, ... }:
   lindroid = true;
   defconfig = "arch/arm64/configs/exynos9611-gta4xlwifi_defconfig";
   legacy414 = true;
-  config.microg.enable = false; # use gapps
+  microg.enable = false; # use gapps
   ksu = true;
   patch-daria = true;
   patch-overlayfs = true;
