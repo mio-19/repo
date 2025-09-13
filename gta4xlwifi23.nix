@@ -1,5 +1,5 @@
 args@{ config, pkgs, ... }:
 {
-  imports = [ ./enchilada.nix ];
+  imports = [ ./gta4xlwifi.nix ];
   flavorVersion = lib.mkForce "23.0";
 }
