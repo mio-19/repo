@@ -62,7 +62,7 @@
         "aarch64-linux"
       ];
       perSystem =
-        { pkgs, ... }:
+        args@{ pkgs, ... }:
         let
           sources = (import ./_sources/generated.nix) {
             inherit (pkgs)
@@ -109,12 +109,59 @@
               kernelSU.variant = "next";
               kernelImageName = "Image";
               kernelSrc = sources.enchilada-kernel.src;
-              kernelPatches = [ ./9596554cfbdab57682a430c15ca64c691d404152.patch ];
+              kernelPatches = [ ./filter_count.patch ];
               oemBootImg = pkgs.fetchurl {
                 url = "https://mirrorbits.lineageos.org/full/enchilada/20250910/boot.img";
                 sha256 = "0d2cxz3jhi54qvlqmfghga621851njjxsldr9w8n1ni4g6g2nslp";
               };
             };
+            gta4xlwifi =
+              let
+                s = import ./sources.nix args;
+              in
+              {
+                anyKernelVariant = "kernelsu";
+                clangVersion = "latest";
+                kernelDefconfigs = [
+                  "exynos9611-gta4xlwifi_defconfig"
+                ];
+                kernelSU.variant = "next";
+                kernelImageName = "Image";
+                kernelSrc = (
+                  pkgs.runCommand "gta4xlwifi-patched-kernel" { } ''
+                    cp -r ${sources.gta4xlwifi-kernel.src} $out
+                    chmod -R +w $out
+                    cp -r ${s.lindroid-drm414} $out/drivers/lindroid-drm
+
+                    echo '
+                      CONFIG_SYSVIPC=y
+                      CONFIG_UTS_NS=y
+                      CONFIG_PID_NS=y
+                      CONFIG_IPC_NS=y
+                      CONFIG_USER_NS=y
+                      CONFIG_NET_NS=y
+                      CONFIG_CGROUP_DEVICE=y
+                      CONFIG_CGROUP_FREEZER=y
+                      CONFIG_DRM=y
+                      CONFIG_DRM_LINDROID_EVDI=y
+                    ' >> exynos9611-gta4xlwifi_defconfig
+                    sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" drivers/Kconfig
+                    echo 'obj-y += lindroid-drm/' >> drivers/Makefile
+                  ''
+                );
+                kernelPatches = [
+                  ./filter_count.patch
+                  ./overlayfs.patch
+                  ./0001-DRM_MODESET_ACQUIRE_INTERRUPTIBLE.patch
+                  ./0001-drm-name-changes.patch
+                  ./0001-int-drm_modeset_backoff.patch
+                  ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
+                ];
+                oemBootImg = pkgs.fetchurl {
+                  url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20250906/boot.img";
+                  sha256 = "1bivg0sn1zs8plcsncv1jpcp81n15xw1hyhq07pfz11wnp8y50hg";
+                };
+              };
           };
         };
     };

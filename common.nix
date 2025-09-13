@@ -5,17 +5,7 @@ args@{
   ...
 }:
 let
-  lindroid-drm = pkgs.fetchgit {
-    #url = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git";
-    url = "https://github.com/Linux-On-LineageOS/lindroid-drm-loopback.git";
-    rev = "71fea78ad41e806d0177379b964cf6931d9baa1e";
-    sha256 = "14jv9aa85521scnyn6fp683j78zbdr7884i2nf0f4q9vh9r2scbl";
-  };
-  lindroid-drm414 = pkgs.fetchgit {
-    url = "https://github.com/mio-19/lindroid-drm-loopback.git";
-    rev = "25ceb92b0ce8b74e8447ca8caafa6d50963818b2";
-    sha256 = "09nkr6plvbcz0lzdhh86jb7f9gp0k8jsz85zzr0ipk0hzqgr12vs";
-  };
+  sources = import ./sources.nix args;
   # KSU_VERSION = git rev-list --count HEAD
   # 10000 + $(KSU_GIT_VERSION) + 200
   ksu-variants = {
@@ -45,6 +35,7 @@ let
     };
   };
 in
+with sources;
 {
   options = {
     manufactor = lib.mkOption {
@@ -205,11 +196,11 @@ in
       patches = lib.mkMerge [
         (lib.mkIf (config.lindroid && config.patch-overlayfs) [
           # if overlayfs can't be mounted, you can pick a HACK: https://github.com/android-kxxt/android_kernel_xiaomi_sm8450/commit/ae700d3d04a2cd8b34e1dae434b0fdc9cde535c7
-          ./ae700d3d04a2cd8b34e1dae434b0fdc9cde535c7.patch
+          ./overlayfs.patch
         ])
         (lib.mkIf (config.legacy414 && config.ksu) [
           # https://github.com/KernelSU-Next/KernelSU-Next/pull/743 -> -Note: legacy kernels: selfmusing/kernel_xiaomi_violet@9596554
-          ./9596554cfbdab57682a430c15ca64c691d404152.patch
+          ./filter_count.patch
         ])
         (lib.mkIf (config.lindroid && config.lindroid-drm && config.legacy414) [
           ./0001-drm-name-changes.patch
@@ -323,7 +314,7 @@ in
     sed -i '/# CONFIG_SYSVIPC is not set/d'  */*/android-base.config
   '';
   # https://gerrit.libremobileos.com/c/LMODroid/platform_frameworks_native/+/12936
-  config.source.dirs."frameworks/native".patches = lib.mkIf config.lindroid [ ./51b680f.diff ];
+  config.source.dirs."frameworks/native".patches = lib.mkIf config.lindroid [ ./inputfinger.patch ];
   # to fix soft reboot when starting container on A14 (temporary!!! workaround) https://t.me/linux_on_droid/10346
   config.source.dirs."frameworks/base".patches = lib.mkIf config.lindroid [
     ./0001-Ignore-uevent-s-with-null-name-for-Extcon-WiredAcces.patch
