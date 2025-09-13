@@ -12,10 +12,12 @@ let
     next = {
       src = pkgs.fetchgit {
         url = "https://github.com/KernelSU-Next/KernelSU-Next.git";
-        rev = "8edb892792dc4f2a8fb6bba5aa48e20006dac0c3";
-        sha256 = "0skmq4cl471bph1wgj9vdw66bhk2n0qnv48d8savfabs07p6xgly";
+        rev = "2c02db6323f14fba2f3a34e5a002c15fef59451b";
+        ref = "v1.0.9";
+        sha256 = "0440paxarxizkxz84dj5ql6a2rw4zs3jmqxhvp2fc6x48i6p9qpf";
       };
-      version = 10000 + 2640 + 200;
+      version = "unstable-2025-09-12";
+      ver = 12797;
     };
     upstream = {
       src = pkgs.fetchgit {
@@ -23,15 +25,17 @@ let
         rev = "4d3560b12bec5f238fe11f908a246f0ac97e9c27";
         sha256 = "1ipccwnfl7sz5h9g9vg6rgv7c2llw5bmwszn58p88k487jz70j8z";
       };
-      version = 10000 + 1923 + 200;
+      version = "unstable-2025-09-07";
+      ver = 10000 + 1923 + 200;
     };
     sukisu = {
       src = pkgs.fetchgit {
         url = "https://github.com/SukiSU-Ultra/SukiSU-Ultra.git";
-        rev = "cac4efe0d1718cadb5e5c92cc47103d258e40219";
-        sha256 = "16c42mzn18nkzjz71klsm3h3bp2x7bc8wl530b461xhlk1lbvkxx";
+        rev = "023a867246adfe9896c88dc6be0ce8aad3dc1a70";
+        sha256 = "08mk9jlw28zqsp5fhg56k9p44wwp56zdxqgbafj7444s9qkw2r48";
       };
-      version = 10000 + 2641 + 200;
+      version = "unstable-2025-09-12";
+      ver = 10000 + 2643 + 200;
     };
   };
 in
@@ -86,7 +90,7 @@ with sources;
         "upstream"
         "next"
       ];
-      default = "upstream";
+      default = "next";
       description = "KernelSU variant";
     };
     device-name = lib.mkOption {
@@ -160,8 +164,8 @@ with sources;
     src = pkgs.fetchgit {
       url = "https://github.com/Linux-on-droid/vendor_lindroid.git";
       # lindroid-22.1
-      rev = "04bad35b95a1694bbc1fad43758c0d9253fef321";
-      sha256 = "1zk2vidq805njw59llvsxrwrfnxxp38804n5myr0shrmd0si163s";
+      rev = "d0500f93189e328a25cca73db75fbd371517fbde";
+      sha256 = "0jn3cdrwqmvm0p8w32p7880k9pxcyzcif8d72mxr93dnl8fgwwnx";
     };
     # https://t.me/linux_on_droid/18552
     postPatch = ''
@@ -187,7 +191,7 @@ with sources;
   config.source.dirs."kernel/${config.kernel-name}" =
     let
       kernelsu = ksu-variants."${config.ksu-variant}".src;
-      ksu-version = ksu-variants."${config.ksu-variant}".version;
+      ksu-version = ksu-variants."${config.ksu-variant}".ver;
     in
     lib.mkIf (config.enable-kernel && (config.lindroid || config.ksu)) {
       # config.kernel = {
