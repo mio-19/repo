@@ -156,6 +156,7 @@
                   ./0001-drm-name-changes.patch
                   ./0001-int-drm_modeset_backoff.patch
                   ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
+                  ./daria.patch
                 ];
                 oemBootImg = pkgs.fetchurl {
                   url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20250906/boot.img";
