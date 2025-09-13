@@ -101,7 +101,7 @@
             };
             # DOESN"T COMPILE WITH EITHER GCC OR CLANG FROM NIXPKGS
             enchilada = {
-              anyKernelVariant = "kernelsu";
+              anyKernelVariant = "osm0sis";
               clangVersion = 12;
               kernelDefconfigs = [
                 "enchilada_defconfig"
@@ -121,7 +121,7 @@
                 s = import ./sources.nix args;
               in
               {
-                anyKernelVariant = "kernelsu";
+                anyKernelVariant = "osm0sis";
                 clangVersion = "latest";
                 kernelDefconfigs = [
                   "exynos9611-gta4xlwifi_defconfig"
