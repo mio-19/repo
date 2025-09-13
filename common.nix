@@ -16,7 +16,7 @@ let
       ;
   };
   gapps = {
-    "22.2" = sources.vendor_gapps15;
+    "15" = sources.vendor_gapps15.src;
   };
   # KSU_VERSION = git rev-list --count HEAD
   # 10000 + $(KSU_GIT_VERSION) + 200
@@ -188,7 +188,7 @@ with sources0;
   config.source.dirs."vendor/gapps" = lib.mkIf config.gapps (
     assert !config.microg.enable;
     {
-      src = gapps."${flavorVersion}";
+      src = gapps."${config.androidVersion}";
     }
   );
   config.source.dirs."vendor/lindroid" = lib.mkIf config.lindroid {
@@ -347,7 +347,7 @@ with sources0;
       echo '
       $(call inherit-product, vendor/lindroid/lindroid.mk)' >> device.mk
     ''
-    ++ lib.optionalString config.gapps ''
+    + lib.optionalString config.gapps ''
       echo '
         $(call inherit-product, vendor/gapps/${config.ARCH}/${config.ARCH}-vendor.mk)' >> device.mk
     '';
