@@ -134,16 +134,16 @@
                     cp -r ${s.lindroid-drm414} $out/drivers/lindroid-drm
 
                     echo '
-                      CONFIG_SYSVIPC=y
-                      CONFIG_UTS_NS=y
-                      CONFIG_PID_NS=y
-                      CONFIG_IPC_NS=y
-                      CONFIG_USER_NS=y
-                      CONFIG_NET_NS=y
-                      CONFIG_CGROUP_DEVICE=y
-                      CONFIG_CGROUP_FREEZER=y
-                      CONFIG_DRM=y
-                      CONFIG_DRM_LINDROID_EVDI=y
+                    CONFIG_SYSVIPC=y
+                    CONFIG_UTS_NS=y
+                    CONFIG_PID_NS=y
+                    CONFIG_IPC_NS=y
+                    CONFIG_USER_NS=y
+                    CONFIG_NET_NS=y
+                    CONFIG_CGROUP_DEVICE=y
+                    CONFIG_CGROUP_FREEZER=y
+                    CONFIG_DRM=y
+                    CONFIG_DRM_LINDROID_EVDI=y
                     ' >> exynos9611-gta4xlwifi_defconfig
                     sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" drivers/Kconfig
                     echo 'obj-y += lindroid-drm/' >> drivers/Makefile
