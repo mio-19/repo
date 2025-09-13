@@ -115,6 +115,7 @@
                 sha256 = "0d2cxz3jhi54qvlqmfghga621851njjxsldr9w8n1ni4g6g2nslp";
               };
             };
+            # compiles, but ksu next is not working properly probably because of the old kernel
             gta4xlwifi =
               let
                 s = import ./sources.nix args;
