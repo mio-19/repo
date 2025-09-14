@@ -261,9 +261,9 @@ with sources0;
       ];
       # https://github.com/KernelSU-Next/KernelSU-Next/blob/next/kernel/Kconfig
       postPatch = ''
-        ${lib.optionalString (config.lindroid && config.lindroid-drm)
-          ''cp -r ${lindroid-drm} drivers/lindroid-drm''
-        }
+        ${lib.optionalString (
+          config.lindroid && config.lindroid-drm
+        ) ''cp -r ${lindroid-drm} drivers/lindroid-drm''}
         ${lib.optionalString config.ksu ''
           cp -r ${kernelsu}/kernel drivers/kernelsu
           chmod -R +w drivers/kernelsu

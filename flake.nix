@@ -81,103 +81,115 @@
           };
         in
         {
-          kernelsu = {
-            oriole14 = {
-              anyKernelVariant = "kernelsu";
-              clangVersion = "latest";
-              kernelDefconfigs = [
-                "gki_defconfig"
-              ];
-              kernelSU.variant = "next";
-              kernelImageName = "Image";
-              kernelSrc = sources.oriole-kernel14.src;
-            };
-            oriole = {
-              anyKernelVariant = "kernelsu";
-              clangVersion = "latest";
-              kernelDefconfigs = [
-                "gki_defconfig"
-              ];
-              kernelSU.variant = "next";
-              kernelImageName = "Image";
-              kernelSrc = sources.oriole-kernel.src;
-              oemBootImg = pkgs.fetchurl {
-                url = "https://mirrorbits.lineageos.org/full/oriole/20250908/boot.img";
-                sha256 = "1bivg0sn1zs8plcsncv1jpcp81n15xw1hyhq07pfz11wnp8y50hg";
-              };
-            };
-            # DOESN"T COMPILE WITH EITHER GCC OR CLANG FROM NIXPKGS
-            enchilada = {
-              anyKernelVariant = "osm0sis";
-              clangVersion = 12;
-              kernelDefconfigs = [
-                "enchilada_defconfig"
-              ];
-              kernelSU.variant = "next";
-              kernelImageName = "Image";
-              kernelSrc = sources.enchilada-kernel.src;
-              kernelPatches = [ ./filter_count.patch ];
-              oemBootImg = pkgs.fetchurl {
-                url = "https://mirrorbits.lineageos.org/full/enchilada/20250910/boot.img";
-                sha256 = "0d2cxz3jhi54qvlqmfghga621851njjxsldr9w8n1ni4g6g2nslp";
-              };
-            };
-            gta4xlwifi =
-              let
-                s = import ./sources.nix args;
-              in
-              {
-                anyKernelVariant = "osm0sis";
+          kernelsu =
+            let
+              oriole14 = {
+                anyKernelVariant = "kernelsu";
                 clangVersion = "latest";
                 kernelDefconfigs = [
-                  "exynos9611-gta4xlwifi_defconfig"
+                  "gki_defconfig"
                 ];
                 kernelSU.variant = "next";
                 kernelImageName = "Image";
-                #susfs.enable = true; # TODO
-                susfs.src = sources.susfs414.src;
-                kernelSrc = (
-                  pkgs.runCommand "gta4xlwifi-patched-kernel" { } ''
-                    cp -r ${sources.gta4xlwifi-kernel.src} $out
-                    chmod -R +w $out
-                    cp -r ${s.lindroid-drm} $out/drivers/lindroid-drm
-
-                    # https://kernelsu.org/guide/how-to-integrate-for-non-gki.html
-                    echo '
-                    CONFIG_SYSVIPC=y
-                    CONFIG_UTS_NS=y
-                    CONFIG_PID_NS=y
-                    CONFIG_IPC_NS=y
-                    CONFIG_USER_NS=y
-                    CONFIG_NET_NS=y
-                    CONFIG_CGROUP_DEVICE=y
-                    CONFIG_CGROUP_FREEZER=y
-                    CONFIG_DRM=y
-                    CONFIG_DRM_LINDROID_EVDI=y
-
-                    CONFIG_KSU_KPROBES_HOOK=n
-                    CONFIG_KPROBES=n
-                    ' >> $out/arch/arm64/configs/exynos9611-gta4xlwifi_defconfig
-                    sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" $out/drivers/Kconfig
-                    echo 'obj-y += lindroid-drm/' >> $out/drivers/Makefile
-                  ''
-                );
-                kernelPatches = [
-                  ./filter_count.patch
-                  ./overlayfs.patch
-                  #./0001-DRM_MODESET_ACQUIRE_INTERRUPTIBLE.patch
-                  #./0001-drm-name-changes.patch
-                  #./0001-int-drm_modeset_backoff.patch
-                  ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
-                  ./daria.patch
-                  ./0001-KSUManual4.14.patch
+                kernelSrc = sources.oriole-kernel14.src;
+              };
+              oriole = {
+                anyKernelVariant = "kernelsu";
+                clangVersion = "latest";
+                kernelDefconfigs = [
+                  "gki_defconfig"
                 ];
+                kernelSU.variant = "next";
+                kernelImageName = "Image";
+                kernelSrc = sources.oriole-kernel.src;
+                oemBootImg = pkgs.fetchurl {
+                  url = "https://mirrorbits.lineageos.org/full/oriole/20250908/boot.img";
+                  sha256 = "1bivg0sn1zs8plcsncv1jpcp81n15xw1hyhq07pfz11wnp8y50hg";
+                };
+              };
+              # DOESN"T COMPILE WITH EITHER GCC OR CLANG FROM NIXPKGS
+              enchilada = {
+                anyKernelVariant = "osm0sis";
+                clangVersion = 12;
+                kernelDefconfigs = [
+                  "enchilada_defconfig"
+                ];
+                kernelSU.variant = "next";
+                kernelImageName = "Image";
+                kernelSrc = sources.enchilada-kernel.src;
+                kernelPatches = [ ./filter_count.patch ];
+                oemBootImg = pkgs.fetchurl {
+                  url = "https://mirrorbits.lineageos.org/full/enchilada/20250910/boot.img";
+                  sha256 = "0d2cxz3jhi54qvlqmfghga621851njjxsldr9w8n1ni4g6g2nslp";
+                };
+              };
+              gta4xlwifi_evobka = mk_gta4xlwifi sources.gta4xlwifi-evobka-kernel.src;
+              gta4xlwifi = mk_gta4xlwifi sources.gta4xlwifi-kernel.src // {
                 oemBootImg = pkgs.fetchurl {
                   url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20250906/boot.img";
                   sha256 = "0yzzli36inmbpa5x5rb35qmphi3k0mfnra7v7f7vs9k57dskzfmw";
                 };
               };
-          };
+              mk_gta4xlwifi =
+                kernel:
+                let
+                  s = import ./sources.nix args;
+                in
+                {
+                  anyKernelVariant = "osm0sis";
+                  clangVersion = "latest";
+                  kernelDefconfigs = [
+                    "exynos9611-gta4xlwifi_defconfig"
+                  ];
+                  kernelSU.variant = "next";
+                  kernelImageName = "Image";
+                  #susfs.enable = true; # TODO
+                  susfs.src = sources.susfs414.src;
+                  kernelSrc = (
+                    pkgs.runCommand "gta4xlwifi-patched-kernel" { } ''
+                      cp -r ${kernel} $out
+                      chmod -R +w $out
+                      cp -r ${s.lindroid-drm} $out/drivers/lindroid-drm
+
+                      # https://kernelsu.org/guide/how-to-integrate-for-non-gki.html
+                      echo '
+                      CONFIG_SYSVIPC=y
+                      CONFIG_UTS_NS=y
+                      CONFIG_PID_NS=y
+                      CONFIG_IPC_NS=y
+                      CONFIG_USER_NS=y
+                      CONFIG_NET_NS=y
+                      CONFIG_CGROUP_DEVICE=y
+                      CONFIG_CGROUP_FREEZER=y
+                      CONFIG_DRM=y
+                      CONFIG_DRM_LINDROID_EVDI=y
+
+                      CONFIG_KSU_KPROBES_HOOK=n
+                      CONFIG_KPROBES=n
+                      ' >> $out/arch/arm64/configs/exynos9611-gta4xlwifi_defconfig
+                      sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" $out/drivers/Kconfig
+                      echo 'obj-y += lindroid-drm/' >> $out/drivers/Makefile
+                    ''
+                  );
+                  kernelPatches = [
+                    ./filter_count.patch
+                    ./overlayfs.patch
+                    #./0001-DRM_MODESET_ACQUIRE_INTERRUPTIBLE.patch
+                    #./0001-drm-name-changes.patch
+                    #./0001-int-drm_modeset_backoff.patch
+                    ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
+                    ./daria.patch
+                    ./0001-KSUManual4.14.patch
+                  ];
+                };
+            in
+            {
+              oriole14 = oriole14;
+              oriole = oriole;
+              enchilada = enchilada;
+              gta4xlwifi = gta4xlwifi;
+              gta4xlwifi_evobka = gta4xlwifi_evobka;
+            };
         };
     };
 }

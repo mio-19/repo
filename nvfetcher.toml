@@ -12,7 +12,12 @@ src.git = "https://github.com/LineageOS/android_kernel_oneplus_sdm845.git"
 fetch.git = "https://github.com/LineageOS/android_kernel_oneplus_sdm845.git"
 [gta4xlwifi-kernel]
 src.git = "https://github.com/LineageOS/android_kernel_samsung_gta4xl.git"
+src.branch = "lineage-22.2"
 fetch.git = "https://github.com/LineageOS/android_kernel_samsung_gta4xl.git"
+[gta4xlwifi-evobka-kernel]
+src.git = "https://github.com/Evolution-X-Devices/kernel_samsung_gta4xl.git"
+src.branch = "bka"
+fetch.git = "https://github.com/Evolution-X-Devices/kernel_samsung_gta4xl.git"
 [susfs414]
 src.git = "https://gitlab.com/simonpunk/susfs4ksu.git"
 src.branch = "kernel-4.14"
