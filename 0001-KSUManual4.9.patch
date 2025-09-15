@@ -1,0 +1,204 @@
+From 50aedd36903ac6491c0ad7208985f4d932e35a65 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Mon, 15 Sep 2025 21:49:24 +1000
+Subject: [PATCH] KSUManual4.9
+
+---
+ drivers/input/input.c |  9 +++++++++
+ fs/exec.c             | 13 +++++++++++++
+ fs/open.c             |  7 +++++++
+ fs/read_write.c       |  9 +++++++++
+ fs/stat.c             |  6 ++++++
+ 5 files changed, 44 insertions(+)
+
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index 378717d1b..cae072d31 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -373,18 +373,27 @@ static int input_get_disposition(struct input_dev *dev,
+ 		break;
+ 	}
+ 
+ 	*pval = value;
+ 	return disposition;
+ }
+ 
++
++#ifdef CONFIG_KSU
++extern bool ksu_input_hook __read_mostly;
++extern int ksu_handle_input_handle_event(unsigned int *type, unsigned int *code, int *value);
++#endif
+ static void input_handle_event(struct input_dev *dev,
+ 			       unsigned int type, unsigned int code, int value)
+ {
+ 	int disposition = input_get_disposition(dev, type, code, &value);
++   #ifdef CONFIG_KSU
++	if (unlikely(ksu_input_hook))
++		ksu_handle_input_handle_event(&type, &code, &value);
++   #endif
+ 
+ 	if (disposition != INPUT_IGNORE_EVENT && type != EV_SYN)
+ 		add_input_randomness(type, code, value);
+ 
+ 	if ((disposition & INPUT_PASS_TO_DEVICE) && dev->event)
+ 		dev->event(dev, type, code, value);
+ 
+diff --git a/fs/exec.c b/fs/exec.c
+index 5addf3b00..38b488c83 100644
+--- a/fs/exec.c
++++ b/fs/exec.c
+@@ -1669,27 +1669,40 @@ static int exec_binprm(struct linux_binprm *bprm)
+ 		ptrace_event(PTRACE_EVENT_EXEC, old_vpid);
+ 		proc_exec_connector(current);
+ 	}
+ 
+ 	return ret;
+ }
+ 
++#ifdef CONFIG_KSU
++extern bool ksu_execveat_hook __read_mostly;
++extern int ksu_handle_execveat(int *fd, struct filename **filename_ptr, void *argv,
++			void *envp, int *flags);
++extern int ksu_handle_execveat_sucompat(int *fd, struct filename **filename_ptr,
++				 void *argv, void *envp, int *flags);
++#endif
+ /*
+  * sys_execve() executes a new program.
+  */
+ static int do_execveat_common(int fd, struct filename *filename,
+ 			      struct user_arg_ptr argv,
+ 			      struct user_arg_ptr envp,
+ 			      int flags)
+ {
+ 	char *pathbuf = NULL;
+ 	struct linux_binprm *bprm;
+ 	struct file *file;
+ 	struct files_struct *displaced;
+ 	int retval;
++   #ifdef CONFIG_KSU
++	if (unlikely(ksu_execveat_hook))
++		ksu_handle_execveat(&fd, &filename, &argv, &envp, &flags);
++	else
++		ksu_handle_execveat_sucompat(&fd, &filename, &argv, &envp, &flags);
++   #endif
+ 
+ 	if (IS_ERR(filename))
+ 		return PTR_ERR(filename);
+ 
+ 	/*
+ 	 * We move the actual failure in case of RLIMIT_NPROC excess from
+ 	 * set*uid() to execve() because too many poorly written programs
+diff --git a/fs/open.c b/fs/open.c
+index f2b82c462..7a9efa513 100644
+--- a/fs/open.c
++++ b/fs/open.c
+@@ -351,28 +351,35 @@ SYSCALL_DEFINE4(fallocate, int, fd, int, mode, loff_t, offset, loff_t, len)
+ 	if (f.file) {
+ 		error = vfs_fallocate(f.file, mode, offset, len);
+ 		fdput(f);
+ 	}
+ 	return error;
+ }
+ 
++#ifdef CONFIG_KSU
++extern int ksu_handle_faccessat(int *dfd, const char __user **filename_user, int *mode,
++			        int *flags);
++#endif
+ /*
+  * access() needs to use the real uid/gid, not the effective uid/gid.
+  * We do this by temporarily clearing all FS-related capabilities and
+  * switching the fsuid/fsgid around to the real ones.
+  */
+ SYSCALL_DEFINE3(faccessat, int, dfd, const char __user *, filename, int, mode)
+ {
+ 	const struct cred *old_cred;
+ 	struct cred *override_cred;
+ 	struct path path;
+ 	struct inode *inode;
+ 	struct vfsmount *mnt;
+ 	int res;
+ 	unsigned int lookup_flags = LOOKUP_FOLLOW;
++   #ifdef CONFIG_KSU
++	ksu_handle_faccessat(&dfd, &filename, &mode, NULL);
++   #endif
+ 
+ 	if (mode & ~S_IRWXO)	/* where's F_OK, X_OK, W_OK, R_OK? */
+ 		return -EINVAL;
+ 
+ 	override_cred = prepare_creds();
+ 	if (!override_cred)
+ 		return -ENOMEM;
+diff --git a/fs/read_write.c b/fs/read_write.c
+index 901231269..96d695f48 100644
+--- a/fs/read_write.c
++++ b/fs/read_write.c
+@@ -452,17 +452,26 @@ ssize_t __vfs_read(struct file *file, char __user *buf, size_t count,
+ 	else if (file->f_op->read_iter)
+ 		return new_sync_read(file, buf, count, pos);
+ 	else
+ 		return -EINVAL;
+ }
+ EXPORT_SYMBOL(__vfs_read);
+ 
++#ifdef CONFIG_KSU
++extern bool ksu_vfs_read_hook __read_mostly;
++extern int ksu_handle_vfs_read(struct file **file_ptr, char __user **buf_ptr,
++			size_t *count_ptr, loff_t **pos);
++#endif
+ ssize_t vfs_read(struct file *file, char __user *buf, size_t count, loff_t *pos)
+ {
+ 	ssize_t ret;
++   #ifdef CONFIG_KSU 
++	if (unlikely(ksu_vfs_read_hook))
++		ksu_handle_vfs_read(&file, &buf, &count, &pos);
++   #endif
+ 
+ 	if (!(file->f_mode & FMODE_READ))
+ 		return -EBADF;
+ 	if (!(file->f_mode & FMODE_CAN_READ))
+ 		return -EINVAL;
+ 	if (unlikely(!access_ok(VERIFY_WRITE, buf, count)))
+ 		return -EFAULT;
+diff --git a/fs/stat.c b/fs/stat.c
+index 82b61b66e..b768ca03e 100644
+--- a/fs/stat.c
++++ b/fs/stat.c
+@@ -137,14 +137,17 @@ int vfs_statx_fd(unsigned int fd, struct kstat *stat,
+ 				    request_mask, query_flags);
+ 		fdput(f);
+ 	}
+ 	return error;
+ }
+ EXPORT_SYMBOL(vfs_statx_fd);
+ 
++#ifdef CONFIG_KSU
++extern int ksu_handle_stat(int *dfd, const char __user **filename_user, int *flags);
++#endif
+ /**
+  * vfs_statx - Get basic and extra attributes by filename
+  * @dfd: A file descriptor representing the base dir for a relative filename
+  * @filename: The name of the file of interest
+  * @flags: Flags to control the query
+  * @stat: The result structure to fill in.
+  * @request_mask: STATX_xxx flags indicating what the caller wants
+@@ -162,14 +165,17 @@ EXPORT_SYMBOL(vfs_statx_fd);
+ int vfs_statx(int dfd, const char __user *filename, int flags,
+ 	      struct kstat *stat, u32 request_mask)
+ {
+ 	struct path path;
+ 	int error = -EINVAL;
+ 	unsigned int lookup_flags = LOOKUP_FOLLOW | LOOKUP_AUTOMOUNT;
+ 
++   #ifdef CONFIG_KSU
++	ksu_handle_stat(&dfd, &filename, &flags);
++   #endif
+ 	if ((flags & ~(AT_SYMLINK_NOFOLLOW | AT_NO_AUTOMOUNT |
+ 		       AT_EMPTY_PATH | KSTAT_QUERY_FLAGS)) != 0)
+ 		return -EINVAL;
+ 
+ 	if (flags & AT_SYMLINK_NOFOLLOW)
+ 		lookup_flags &= ~LOOKUP_FOLLOW;
+ 	if (flags & AT_NO_AUTOMOUNT)
+-- 
+2.51.0
+
