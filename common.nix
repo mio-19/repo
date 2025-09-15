@@ -76,7 +76,7 @@ with sources0;
     legacy414 = lib.mkOption {
       type = lib.types.bool;
       default = config.legacy49;
-      description = "Legacy kernel";
+      description = "Legacy kernel, 4.14 or 4.9";
     };
     lindroid = lib.mkOption {
       type = lib.types.bool;
@@ -253,9 +253,12 @@ with sources0;
         (lib.mkIf (config.legacy414 && !config.legacy49 && config.ksu) [
           ./0001-KSUManual4.14.patch
         ])
-        (lib.mkIf (config.legacy49 && config.ksu) [
-          ./0001-KSUManual4.9.patch
-        ])
+        (lib.mkIf (config.legacy49 && config.ksu) (
+          assert config.legacy414;
+          [
+            ./0001-KSUManual4.9.patch
+          ]
+        ))
         (lib.mkIf (config.lindroid && config.lindroid-drm && config.legacy414) [
           #./0001-drm-name-changes.patch
           #./0001-DRM_MODESET_ACQUIRE_INTERRUPTIBLE.patch
