@@ -35,20 +35,20 @@ let
     upstream = {
       src = pkgs.fetchgit {
         url = "https://github.com/tiann/KernelSU.git";
-        rev = "4d3560b12bec5f238fe11f908a246f0ac97e9c27";
-        sha256 = "1ipccwnfl7sz5h9g9vg6rgv7c2llw5bmwszn58p88k487jz70j8z";
+        rev = "78e3ec18748acdc5427c4b981342b8296860b895";
+        sha256 = "12ilavj1yiaibdwggx5frcmpz8fji078drdp7ba0zcb479ayhhbx";
       };
-      version = "unstable-2025-09-07";
+      version = "unstable-2025-09-13"; # TODO: update ver
       ver = 10000 + 1923 + 200;
     };
     sukisu = {
       src = pkgs.fetchgit {
         url = "https://github.com/SukiSU-Ultra/SukiSU-Ultra.git";
-        rev = "023a867246adfe9896c88dc6be0ce8aad3dc1a70";
-        sha256 = "08mk9jlw28zqsp5fhg56k9p44wwp56zdxqgbafj7444s9qkw2r48";
+        rev = "2ba8f84b6d1ade439dac4c14c8c80487845d8666";
+        sha256 = "0v4sdadqp5bcp186rdc3vx016vn0dcvrd9vbm4gs9qrahgrz1a7z";
       };
-      version = "unstable-2025-09-12";
-      ver = 10000 + 2643 + 200;
+      version = "unstable-2025-09-17";
+      ver = 10000 + 2643 + 200; # TODO: update ver
     };
   };
 in
@@ -208,8 +208,8 @@ with sources0;
     src = pkgs.fetchgit {
       url = "https://github.com/Linux-on-droid/vendor_lindroid.git";
       # lindroid-22.1
-      rev = "d0500f93189e328a25cca73db75fbd371517fbde";
-      sha256 = "0jn3cdrwqmvm0p8w32p7880k9pxcyzcif8d72mxr93dnl8fgwwnx";
+      rev = "68a5b1ca68fe1a41021cf435dd15f43c44389cd5";
+      sha256 = "10lvzqmzz7r73fx9spyr8cin8dmfl4g2aiirm2qks8ml83ww37y9";
     };
     # https://t.me/linux_on_droid/18552
     postPatch = ''
