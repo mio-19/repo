@@ -7,6 +7,8 @@ args@{ config, pkgs, ... }:
   defconfig = "arch/arm64/configs/enchilada_defconfig";
   device = "enchilada";
   flavorVersion = "22.2";
+  gapps = true;
+  microg.enable = false;
   #flavorVersion = "23.0";
   legacy49 = true;
   ksu = true; # DIFFICULT TO COMPILE KSU FOR 4.9 kernel
