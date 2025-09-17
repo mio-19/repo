@@ -137,6 +137,11 @@
                   s = import ./sources.nix args;
                 in
                 {
+                  # https://github.com/Linux-On-LineageOS/lindroid-drm-loopback/commit/73e732316409ad5b75a5715684d3c2d940d8670b
+                  kernelMakeFlags = [
+                    "KCFLAGS=\"-Wno-error\""
+                    "KCPPFLAGS=\"-Wno-error\""
+                  ];
                   anyKernelVariant = "osm0sis";
                   clangVersion = "latest";
                   kernelDefconfigs = [
