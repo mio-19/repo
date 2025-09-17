@@ -206,10 +206,11 @@ with sources0;
   );
   config.source.dirs."vendor/lindroid" = lib.mkIf config.lindroid {
     src = pkgs.fetchgit {
-      url = "https://github.com/Linux-on-droid/vendor_lindroid.git";
       # lindroid-22.1
-      rev = "68a5b1ca68fe1a41021cf435dd15f43c44389cd5";
-      sha256 = "10lvzqmzz7r73fx9spyr8cin8dmfl4g2aiirm2qks8ml83ww37y9";
+      #url = "https://github.com/Linux-on-droid/vendor_lindroid.git";
+      url = "https://github.com/mio-19/vendor_lindroid.git";
+      rev = "985f43889d79cedf5a2bbad1e8e9653c8398ea56";
+      sha256 = "0dvv1b4qlal21bxr2md0xxp7sb323myd1bpalba50cz45893g8p6";
     };
     # https://t.me/linux_on_droid/18552
     postPatch = ''
