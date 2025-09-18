@@ -110,10 +110,10 @@
               };
               # DOESN"T COMPILE WITH EITHER GCC OR CLANG FROM NIXPKGS
               enchilada = {
-                  kernelMakeFlags = [
-                    "KCFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
-                    "KCPPFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
-                  ];
+                kernelMakeFlags = [
+                  "KCFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
+                  "KCPPFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
+                ];
                 anyKernelVariant = "osm0sis";
                 clangVersion = "latest";
                 kernelDefconfigs = [
@@ -159,32 +159,28 @@
                   kernelImageName = "Image";
                   #susfs.enable = true; # TODO
                   susfs.src = sources.susfs414.src;
-                  kernelSrc = (
-                    pkgs.runCommand "gta4xlwifi-patched-kernel" { } ''
-                      cp -r ${kernel} $out
-                      chmod -R +w $out
-                      cp -r ${s.lindroid-drm} $out/drivers/lindroid-drm
+                  kernelConfig = ''
+                    CONFIG_SYSVIPC=y
+                    CONFIG_UTS_NS=y
+                    CONFIG_PID_NS=y
+                    CONFIG_IPC_NS=y
+                    CONFIG_USER_NS=y
+                    CONFIG_NET_NS=y
+                    CONFIG_CGROUP_DEVICE=y
+                    CONFIG_CGROUP_FREEZER=y
+                    CONFIG_DRM=y
+                    CONFIG_DRM_LINDROID_EVDI=y
 
-                      # https://kernelsu.org/guide/how-to-integrate-for-non-gki.html
-                      echo '
-                      CONFIG_SYSVIPC=y
-                      CONFIG_UTS_NS=y
-                      CONFIG_PID_NS=y
-                      CONFIG_IPC_NS=y
-                      CONFIG_USER_NS=y
-                      CONFIG_NET_NS=y
-                      CONFIG_CGROUP_DEVICE=y
-                      CONFIG_CGROUP_FREEZER=y
-                      CONFIG_DRM=y
-                      CONFIG_DRM_LINDROID_EVDI=y
+                    CONFIG_KSU_KPROBES_HOOK=n
+                    CONFIG_KPROBES=n
+                  '';
+                  kernelSrc = kernel;
+                  postPatch = ''
+                    cp -r ${s.lindroid-drm} ./drivers/lindroid-drm
 
-                      CONFIG_KSU_KPROBES_HOOK=n
-                      CONFIG_KPROBES=n
-                      ' >> $out/arch/arm64/configs/exynos9611-gta4xlwifi_defconfig
-                      sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" $out/drivers/Kconfig
-                      echo 'obj-y += lindroid-drm/' >> $out/drivers/Makefile
-                    ''
-                  );
+                    sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" ./drivers/Kconfig
+                    echo 'obj-y += lindroid-drm/' >> ./drivers/Makefile
+                  '';
                   kernelPatches = [
                     ./filter_count.patch
                     ./overlayfs.patch
