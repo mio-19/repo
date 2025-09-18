@@ -108,12 +108,12 @@
                   sha256 = "1bivg0sn1zs8plcsncv1jpcp81n15xw1hyhq07pfz11wnp8y50hg";
                 };
               };
-              # DOESN"T COMPILE WITH EITHER GCC OR CLANG FROM NIXPKGS
+              # currently only compiles on aarch64-linux
               enchilada = {
-                  kernelMakeFlags = [
-                    "KCFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
-                    "KCPPFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
-                  ];
+                kernelMakeFlags = [
+                  "KCFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
+                  "KCPPFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
+                ];
                 anyKernelVariant = "osm0sis";
                 clangVersion = "latest";
                 kernelDefconfigs = [
