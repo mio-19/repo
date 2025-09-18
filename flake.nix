@@ -110,6 +110,10 @@
               };
               # DOESN"T COMPILE WITH EITHER GCC OR CLANG FROM NIXPKGS
               enchilada = {
+                  kernelMakeFlags = [
+                    "KCFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
+                    "KCPPFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
+                  ];
                 anyKernelVariant = "osm0sis";
                 clangVersion = "latest";
                 kernelDefconfigs = [
@@ -120,8 +124,8 @@
                 kernelSrc = sources.enchilada-kernel.src;
                 kernelPatches = [
                   ./filter_count.patch
-                  ./0001-CROSS_COMPILE-aarch64-linux-gnu.patch
-                  ./0001-CLANG_TARGET_FLAGS-ported-from-android_kernel_samsun.patch
+                  #./0001-CROSS_COMPILE-aarch64-linux-gnu.patch
+                  #./0001-CLANG_TARGET_FLAGS-ported-from-android_kernel_samsun.patch
                 ];
                 oemBootImg = pkgs.fetchurl {
                   url = "https://mirrorbits.lineageos.org/full/enchilada/20250910/boot.img";
