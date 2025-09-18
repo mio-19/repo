@@ -14,4 +14,8 @@ args@{ config, pkgs, ... }:
   patch-overlayfs = true;
   device = "gta4xlwifi";
   flavorVersion = "22.2";
+  kernel-patches = [
+    ./daria.patch
+    ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
+  ];
 }

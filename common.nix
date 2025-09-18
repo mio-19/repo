@@ -88,10 +88,10 @@ with sources0;
       default = config.lindroid;
       description = "Enable lindroid-drm";
     };
-    patch-daria = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Enable daria patch";
+    kernel-patches = lib.mkOption {
+      type = with lib.types; listOf path;
+      default = [ ];
+      description = "Kernel patches";
     };
     patch-overlayfs = lib.mkOption {
       type = lib.types.bool;
@@ -260,18 +260,7 @@ with sources0;
             ./0001-KSUManual4.9.patch
           ]
         ))
-        (lib.mkIf (config.lindroid && config.lindroid-drm && config.legacy414) [
-          #./0001-drm-name-changes.patch
-          #./0001-DRM_MODESET_ACQUIRE_INTERRUPTIBLE.patch
-          #./0001-int-drm_modeset_backoff.patch
-        ])
-        (lib.mkIf (config.lindroid && config.patch-daria) [
-          # https://t.me/linux_on_droid/19434 -> https://t.me/linux_on_droid/9783
-          ./daria.patch
-        ])
-        (lib.mkIf (config.lindroid && config.kernel-short == "gta4xl") [
-          ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
-        ])
+        config.kernel-patches
       ];
       # https://github.com/KernelSU-Next/KernelSU-Next/blob/next/kernel/Kconfig
       postPatch = ''
