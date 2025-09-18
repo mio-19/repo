@@ -8,7 +8,7 @@ args@{
   lindroid-drm = pkgs.fetchgit {
     url = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git";
     #url = "https://github.com/Linux-On-LineageOS/lindroid-drm-loopback.git";
-    rev = "f3eb5f8ca3e2555c5a642ea8e2eb8268f35d30a3";
-    sha256 = "1cmyfw6k0y8my1b4pwhrwyqfg4fri5cjxz352r48yshj4zxsf6dw";
+    rev = "bfcfb9d5609894b0fd122f6c3e2cf5a48d3ebcaf";
+    sha256 = "021wwvf4db47cpl8gbkgn4xkm36rvyybzhmr8jijkrp2zjyl372s";
   };
 }
