@@ -1,0 +1,25 @@
+From 3382c432e1c303d5fd63fa599bee9fecf88bc7a7 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Thu, 18 Sep 2025 23:16:54 +1000
+Subject: [PATCH] CROSS_COMPILE=aarch64-linux-gnu-
+
+---
+ build.config.aarch64 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/build.config.aarch64 b/build.config.aarch64
+index 357db0220..3497eba74 100644
+--- a/build.config.aarch64
++++ b/build.config.aarch64
+@@ -1,7 +1,7 @@
+ ARCH=arm64
+ 
+ CLANG_TRIPLE=aarch64-linux-gnu-
+-CROSS_COMPILE=aarch64-linux-androidkernel-
++CROSS_COMPILE=aarch64-linux-gnu-
+ LINUX_GCC_CROSS_COMPILE_PREBUILTS_BIN=prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin
+ 
+ FILES="
+-- 
+2.51.0
+
