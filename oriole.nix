@@ -1,6 +1,6 @@
 args@{ config, pkgs, ... }:
 {
-  buildDateTime = 1758104406;
+  buildDateTime = 1758188204;
   imports = [ ./common.nix ];
   manufactor = "google";
   enable-kernel = false;
