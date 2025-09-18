@@ -121,6 +121,8 @@
                 kernelPatches = [
                   ./filter_count.patch
                   ./0001-CROSS_COMPILE-aarch64-linux-gnu.patch
+                  ./0001-fix-issues-with-new-clang-backport-ptep_set_wrprotec.patch
+                  ./0001-CLANG_TARGET_FLAGS-ported-from-android_kernel_samsun.patch
                 ];
                 oemBootImg = pkgs.fetchurl {
                   url = "https://mirrorbits.lineageos.org/full/enchilada/20250910/boot.img";

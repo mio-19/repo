@@ -1,0 +1,41 @@
+From a2cc7255116c9b4be13d32c57cff81e4566766b1 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Thu, 18 Sep 2025 23:26:52 +1000
+Subject: [PATCH] CLANG_TARGET_FLAGS ported from android_kernel_samsung_gta4xl
+
+---
+ Makefile | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index a21f236e8..082b8b768 100644
+--- a/Makefile
++++ b/Makefile
+@@ -527,9 +527,23 @@ ifneq ($(filter install,$(MAKECMDGOALS)),)
+ endif
+ 
+ ifeq ($(cc-name),clang)
++# Individual arch/{arch}/Makefiles should use -EL/-EB to set intended
++# endianness and -m32/-m64 to set word size based on Kconfigs instead of
++# relying on the target triple.
++CLANG_TARGET_FLAGS_arm		:= arm-linux-gnueabi
++CLANG_TARGET_FLAGS_arm64	:= aarch64-linux-gnu
++CLANG_TARGET_FLAGS_hexagon	:= hexagon-linux-musl
++CLANG_TARGET_FLAGS_m68k		:= m68k-linux-gnu
++CLANG_TARGET_FLAGS_mips		:= mipsel-linux-gnu
++CLANG_TARGET_FLAGS_powerpc	:= powerpc64le-linux-gnu
++CLANG_TARGET_FLAGS_riscv	:= riscv64-linux-gnu
++CLANG_TARGET_FLAGS_s390		:= s390x-linux-gnu
++CLANG_TARGET_FLAGS_x86		:= x86_64-linux-gnu
++CLANG_TARGET_FLAGS		:= $(CLANG_TARGET_FLAGS_$(SRCARCH))
++
+ ifneq ($(CROSS_COMPILE),)
+ CLANG_TRIPLE	?= $(CROSS_COMPILE)
+-CLANG_FLAGS	+= --target=$(notdir $(CLANG_TRIPLE:%-=%))
++CLANG_FLAGS	+= --target=$(CLANG_TARGET_FLAGS)
+ ifeq ($(shell $(srctree)/scripts/clang-android.sh $(CC) $(CLANG_FLAGS)), y)
+ $(error "Clang with Android --target detected. Did you specify CLANG_TRIPLE?")
+ endif
+-- 
+2.51.0
+
