@@ -1,0 +1,48 @@
+From f99681fd7fd4764461b0dfd1d84daa0ff443d46c Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Thu, 18 Sep 2025 23:04:25 +1000
+Subject: [PATCH] fix issues with new clang: backport ptep_set_wrprotect from
+ 4.14
+
+---
+ arch/arm64/include/asm/pgtable.h | 24 +++++++++---------------
+ 1 file changed, 9 insertions(+), 15 deletions(-)
+
+diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
+index 46e95557b..d5792b86e 100644
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -691,21 +691,15 @@ static inline pmd_t pmdp_huge_get_and_clear(struct mm_struct *mm,
+ #define __HAVE_ARCH_PTEP_SET_WRPROTECT
+ static inline void ptep_set_wrprotect(struct mm_struct *mm, unsigned long address, pte_t *ptep)
+ {
+-	pteval_t pteval;
+-	unsigned long tmp;
+-
+-	asm volatile("//	ptep_set_wrprotect\n"
+-	"	prfm	pstl1strm, %2\n"
+-	"1:	ldxr	%0, %2\n"
+-	"	tst	%0, %4			// check for hw dirty (!PTE_RDONLY)\n"
+-	"	csel	%1, %3, xzr, eq		// set PTE_DIRTY|PTE_RDONLY if dirty\n"
+-	"	orr	%0, %0, %1		// if !dirty, PTE_RDONLY is already set\n"
+-	"	and	%0, %0, %5		// clear PTE_WRITE/PTE_DBM\n"
+-	"	stxr	%w1, %0, %2\n"
+-	"	cbnz	%w1, 1b\n"
+-	: "=&r" (pteval), "=&r" (tmp), "+Q" (pte_val(*ptep))
+-	: "r" (PTE_DIRTY|PTE_RDONLY), "L" (PTE_RDONLY), "L" (~PTE_WRITE)
+-	: "cc");
++	pte_t old_pte, pte;
++
++	pte = READ_ONCE(*ptep);
++	do {
++		old_pte = pte;
++		pte = pte_wrprotect(pte);
++		pte_val(pte) = cmpxchg_relaxed(&pte_val(*ptep),
++					       pte_val(old_pte), pte_val(pte));
++	} while (pte_val(pte) != pte_val(old_pte));
+ }
+ 
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+-- 
+2.51.0
+

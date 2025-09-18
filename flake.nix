@@ -111,14 +111,17 @@
               # DOESN"T COMPILE WITH EITHER GCC OR CLANG FROM NIXPKGS
               enchilada = {
                 anyKernelVariant = "osm0sis";
-                clangVersion = 12;
+                clangVersion = "latest";
                 kernelDefconfigs = [
                   "enchilada_defconfig"
                 ];
                 kernelSU.variant = "next";
                 kernelImageName = "Image";
                 kernelSrc = sources.enchilada-kernel.src;
-                kernelPatches = [ ./filter_count.patch ];
+                kernelPatches = [
+                  ./filter_count.patch
+                  ./0001-fix-issues-with-new-clang-backport-ptep_set_wrprotec.patch
+                ];
                 oemBootImg = pkgs.fetchurl {
                   url = "https://mirrorbits.lineageos.org/full/enchilada/20250910/boot.img";
                   sha256 = "0d2cxz3jhi54qvlqmfghga621851njjxsldr9w8n1ni4g6g2nslp";
