@@ -1,6 +1,6 @@
 args@{ config, pkgs, ... }:
 {
-  buildDateTime = 1758188204;
+  buildDateTime = 1758721012;
   imports = [ ./common.nix ];
   manufactor = "samsung";
   kernel-short = "gta4xl";
