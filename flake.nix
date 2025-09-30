@@ -187,6 +187,7 @@
                     ./0001-KSUManual4.14.patch
                     ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
                     ./daria.patch
+                    ./0001-drop-master-lindroid-patch.patch
                   ];
                 };
             in

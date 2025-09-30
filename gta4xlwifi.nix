@@ -17,5 +17,6 @@ args@{ config, pkgs, ... }:
   kernel-patches = [
     ./daria.patch
     ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
+    ./0001-drop-master-lindroid-patch.patch
   ];
 }
