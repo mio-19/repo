@@ -84,6 +84,7 @@
         {
           kernelsu =
             let
+              # not compiling - when linking - FAILED unresolved symbol vfs_getattr
               oriole14 = {
                 anyKernelVariant = "kernelsu";
                 clangVersion = "latest";
