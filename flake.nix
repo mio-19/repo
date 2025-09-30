@@ -84,6 +84,7 @@
         {
           kernelsu =
             let
+              # not compiling - FAILED unresolved symbol vfs_getattr
               oriole14 = {
                 anyKernelVariant = "kernelsu";
                 clangVersion = "latest";
@@ -162,7 +163,7 @@
                   kernelConfig = ''
                     CONFIG_SYSVIPC=y
                     CONFIG_UTS_NS=y
-                    CONFIG_PID_NS=y
+                    CONFIG_PID_NS=y```
                     CONFIG_IPC_NS=y
                     CONFIG_USER_NS=y
                     CONFIG_NET_NS=y
