@@ -9,11 +9,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1759350123,
-        "narHash": "sha256-Gnc3OPy939F5U456wwSecjJ+QzVYy7D6q2JGlyvkBXE=",
+        "lastModified": 1759522854,
+        "narHash": "sha256-KeNM/8q78ZUxNXfEJ95kLdlSbU7MFlLjerfVELINVVI=",
         "owner": "tadfisher",
         "repo": "android-nixpkgs",
-        "rev": "31847b870e0166c9a037d84005f6d15a520ed2c0",
+        "rev": "4a8672ef4334aaf0a80c01d966f15cff1dc2e032",
         "type": "github"
       },
       "original": {
@@ -243,11 +243,11 @@
         "nvfetcher": "nvfetcher"
       },
       "locked": {
-        "lastModified": 1759386201,
-        "narHash": "sha256-pJz7pnwzK4qF7IY9qqxhtwjbV+A9DsnRWehuJdXTz8I=",
+        "lastModified": 1759558855,
+        "narHash": "sha256-WR6lKZp8pUhqcW8BPzrSuNitNgT5b/gHdx9+X3XP+RI=",
         "owner": "xddxdd",
         "repo": "nix-kernelsu-builder",
-        "rev": "1ea827941762b44beac3096af79b7811c0db7d33",
+        "rev": "8823c370b783466f6d947bec2b1ad73d822ad415",
         "type": "github"
       },
       "original": {
@@ -258,32 +258,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1759036355,
-        "narHash": "sha256-0m27AKv6ka+q270dw48KflE0LwQYrO7Fm4/2//KCVWg=",
+        "lastModified": 1759381078,
+        "narHash": "sha256-gTrEEp5gEspIcCOx9PD8kMaF1iEmfBcTbO0Jag2QhQs=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+        "rev": "7df7ff7d8e00218376575f0acdcc5d66741351ee",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs-24_05": {
-      "locked": {
-        "lastModified": 1735563628,
-        "narHash": "sha256-OnSAY7XDSx7CtDoqNh8jwVwh4xNL/2HaJxGjryLWzX8=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "b134951a4c9f3c995fd7be05f3243f8ecd65d798",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-24.05",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -315,7 +299,6 @@
           "nix-kernelsu-builder",
           "nixpkgs"
         ],
-        "nixpkgs-24_05": "nixpkgs-24_05",
         "nvfetcher": [
           "nix-kernelsu-builder",
           "nvfetcher"
@@ -324,11 +307,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1759316474,
-        "narHash": "sha256-IMWwiyhh5ATTm58ThXFMUjUOzBS2RqJPRVr4W79r8Bo=",
+        "lastModified": 1759489140,
+        "narHash": "sha256-Ifk8xbCvlJaZdJ41VNMuo9GKUvGI06uzkgvGNnFURuw=",
         "owner": "xddxdd",
         "repo": "nur-packages",
-        "rev": "b170deaaf1457338699242546011c741775ee2af",
+        "rev": "707c90e34e8ec03771474112f4501e292fffa132",
         "type": "github"
       },
       "original": {
