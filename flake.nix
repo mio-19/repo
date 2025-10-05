@@ -105,8 +105,9 @@
                 kernelImageName = "Image";
                 kernelSrc = sources.oriole-kernel.src;
                 oemBootImg = pkgs.fetchurl {
-                  url = "https://mirrorbits.lineageos.org/full/oriole/20250908/boot.img";
-                  sha256 = "1bivg0sn1zs8plcsncv1jpcp81n15xw1hyhq07pfz11wnp8y50hg";
+                  # https://download.lineageos.org/devices/oriole/builds
+                  url = "https://mirrorbits.lineageos.org/full/oriole/20250929/boot.img";
+                  sha256 = "1fwn1b6bl443mb86j3ilzg1mrjyiz0hdj25rsjxp9mc1w5xag82z";
                 };
               };
               # currently only compiles on aarch64-linux
@@ -129,15 +130,17 @@
                   #./0001-CLANG_TARGET_FLAGS-ported-from-android_kernel_samsun.patch
                 ];
                 oemBootImg = pkgs.fetchurl {
-                  url = "https://mirrorbits.lineageos.org/full/enchilada/20250910/boot.img";
-                  sha256 = "0d2cxz3jhi54qvlqmfghga621851njjxsldr9w8n1ni4g6g2nslp";
+                  # https://download.lineageos.org/devices/enchilada/builds
+                  url = "https://mirrorbits.lineageos.org/full/enchilada/20251001/boot.img";
+                  sha256 = "1450v8sx3fzgl4v4qfdq164c7k2dd8pam4p3ly7zfzqs2s93his7";
                 };
               };
               gta4xlwifi_evobka = mk_gta4xlwifi sources.gta4xlwifi-evobka-kernel.src;
               gta4xlwifi = mk_gta4xlwifi sources.gta4xlwifi-kernel.src // {
                 oemBootImg = pkgs.fetchurl {
-                  url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20250906/boot.img";
-                  sha256 = "0yzzli36inmbpa5x5rb35qmphi3k0mfnra7v7f7vs9k57dskzfmw";
+                  # https://download.lineageos.org/devices/gta4xlwifi/builds
+                  url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20251004/boot.img";
+                  sha256 = "0pagd9492lgwn5h6pa2j99pcq9qvakfym651ra98pikf29jd94hb";
                 };
               };
               mk_gta4xlwifi =
