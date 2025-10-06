@@ -121,16 +121,17 @@
                 kernelDefconfigs = [
                   "enchilada_defconfig"
                 ];
+                kernelSU.enable = false; # can compile but not working
                 kernelSU.variant = "next";
                 kernelImageName = "Image";
                 kernelSrc = sources.enchilada-kernel.src;
-                kernelConfig = ''
-                  CONFIG_KSU_KPROBES_HOOK=n
-                  CONFIG_KPROBES=n
-                '';
+                #kernelConfig = ''
+                #  CONFIG_KSU_KPROBES_HOOK=n
+                #  CONFIG_KPROBES=n
+                #'';
                 kernelPatches = [
                   ./filter_count.patch
-                  ./0001-KSUManual4.9.patch
+                  #./0001-KSUManual4.9.patch
                   #./0001-CROSS_COMPILE-aarch64-linux-gnu.patch
                   #./0001-CLANG_TARGET_FLAGS-ported-from-android_kernel_samsun.patch
                 ];
