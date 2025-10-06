@@ -29,7 +29,7 @@ let
         sha256 = "09y064pc557fw327j94kkixwah5v9ay04yf609xx9y8hpjic8fz4";
       };
       version = "unstable-2025-10-05";
-      ver = 10000 + 2665 + 200; # TODO: update ver
+      ver = 10000 + 2677 + 200;
     };
     upstream = {
       src = pkgs.fetchgit {
