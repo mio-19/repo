@@ -126,6 +126,7 @@
                 kernelSrc = sources.enchilada-kernel.src;
                 kernelPatches = [
                   ./filter_count.patch
+                  ./0001-KSUManual4.9.patch
                   #./0001-CROSS_COMPILE-aarch64-linux-gnu.patch
                   #./0001-CLANG_TARGET_FLAGS-ported-from-android_kernel_samsun.patch
                 ];
