@@ -124,6 +124,10 @@
                 kernelSU.variant = "next";
                 kernelImageName = "Image";
                 kernelSrc = sources.enchilada-kernel.src;
+                  kernelConfig = ''
+                    CONFIG_KSU_KPROBES_HOOK=n
+                    CONFIG_KPROBES=n
+                  '';
                 kernelPatches = [
                   ./filter_count.patch
                   ./0001-KSUManual4.9.patch
