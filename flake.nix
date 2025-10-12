@@ -84,17 +84,6 @@
         {
           kernelsu =
             let
-              # not compiling - when linking - FAILED unresolved symbol vfs_getattr
-              oriole14 = {
-                anyKernelVariant = "kernelsu";
-                clangVersion = "latest";
-                kernelDefconfigs = [
-                  "gki_defconfig"
-                ];
-                kernelSU.variant = "next";
-                kernelImageName = "Image";
-                kernelSrc = sources.oriole-kernel14.src;
-              };
               oriole = {
                 anyKernelVariant = "kernelsu";
                 clangVersion = "latest";
@@ -202,7 +191,6 @@
                 };
             in
             {
-              oriole14 = oriole14;
               oriole = oriole;
               enchilada = enchilada;
               gta4xlwifi = gta4xlwifi;
