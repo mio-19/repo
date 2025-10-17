@@ -6,9 +6,12 @@ fetch.git = "https://android.googlesource.com/kernel/common"
 [enchilada-kernel]
 src.git = "https://github.com/LineageOS/android_kernel_oneplus_sdm845.git"
 fetch.git = "https://github.com/LineageOS/android_kernel_oneplus_sdm845.git"
-[gta4xlwifi-kernel]
+[gta4xlwifi22-kernel]
 src.git = "https://github.com/LineageOS/android_kernel_samsung_gta4xl.git"
 src.branch = "lineage-22.2"
+[gta4xlwifi23-kernel]
+src.git = "https://github.com/LineageOS/android_kernel_samsung_gta4xl.git"
+src.branch = "lineage-23.0"
 fetch.git = "https://github.com/LineageOS/android_kernel_samsung_gta4xl.git"
 [gta4xlwifi-evobka-kernel]
 src.git = "https://github.com/Evolution-X-Devices/kernel_samsung_gta4xl.git"

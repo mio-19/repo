@@ -10,7 +10,6 @@ args@{ config, pkgs, ... }:
   microg.enable = false;
   gapps = true;
   ksu = true;
-  patch-daria = true;
   patch-overlayfs = true;
   device = "gta4xlwifi";
   flavorVersion = "22.2";

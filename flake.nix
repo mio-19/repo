@@ -131,11 +131,18 @@
                 };
               };
               gta4xlwifi_evobka = mk_gta4xlwifi sources.gta4xlwifi-evobka-kernel.src;
-              gta4xlwifi = mk_gta4xlwifi sources.gta4xlwifi-kernel.src // {
+              gta4xlwifi22 = mk_gta4xlwifi sources.gta4xlwifi22-kernel.src // {
                 oemBootImg = pkgs.fetchurl {
                   # https://download.lineageos.org/devices/gta4xlwifi/builds
                   url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20251004/boot.img";
                   sha256 = "0pagd9492lgwn5h6pa2j99pcq9qvakfym651ra98pikf29jd94hb";
+                };
+              };
+              gta4xlwifi23 = mk_gta4xlwifi sources.gta4xlwifi23-kernel.src // {
+                oemBootImg = pkgs.fetchurl {
+                  # https://download.lineageos.org/devices/gta4xlwifi/builds
+                  url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20251012/boot.img";
+                  sha256 = "15vnfwa665m7svbi4nhi85il203pf0f7ccq6lpb8mmb242h1fyfm";
                 };
               };
               mk_gta4xlwifi =
