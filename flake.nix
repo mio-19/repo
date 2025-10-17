@@ -7,8 +7,8 @@
     android-nixpkgs.url = "github:tadfisher/android-nixpkgs";
     android-nixpkgs.inputs.nixpkgs.follows = "nixpkgs";
     #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
-    robotnix.url = "github:nix-community/robotnix";
-    #robotnix.url = "github:mio-19/robotnix";
+    #robotnix.url = "github:nix-community/robotnix";
+    robotnix.url = "github:mio-19/robotnix";
     robotnix.inputs.nixpkgs.follows = "nixpkgs";
     robotnix.inputs.androidPkgs.follows = "android-nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -48,7 +48,7 @@
             nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
               gta4xlwifi = common ./gta4xlwifi.nix;
               gta4xlwifi23 = common ./gta4xlwifi23.nix;
-              enchilada = common ./enchilada.nix;
+              enchilada22 = common ./enchilada22.nix;
               enchilada23 = common ./enchilada23.nix;
               nx_tab = common ./nx_tab.nix;
               oriole = common ./oriole.nix;
