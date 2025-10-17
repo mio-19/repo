@@ -5,6 +5,6 @@ args@{
   ...
 }:
 {
-  imports = [ ./gta4xlwifi.nix ];
+  imports = [ ./gta4xlwifi22.nix ];
   flavorVersion = lib.mkForce "23.0";
 }
