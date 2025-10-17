@@ -200,7 +200,8 @@
             {
               oriole = oriole;
               enchilada = enchilada;
-              gta4xlwifi = gta4xlwifi;
+              gta4xlwifi22 = gta4xlwifi22;
+              gta4xlwifi23 = gta4xlwifi23;
               gta4xlwifi_evobka = gta4xlwifi_evobka;
             };
         };
