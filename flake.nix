@@ -5,7 +5,7 @@
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
     # newer android-nixpkgs is having crashing jvm when building lineageos
-    android-nixpkgs.url = "github:tadfisher/android-nixpkgs/9887be882ff66cbcc76bb418a246ce1027999514";
+    android-nixpkgs.url = "github:tadfisher/android-nixpkgs/df8e7399130a8d15ca681154d4ce64a007997839";
     android-nixpkgs.inputs.nixpkgs.follows = "nixpkgs";
     #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
     #robotnix.url = "github:nix-community/robotnix";
