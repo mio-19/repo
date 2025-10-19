@@ -48,7 +48,6 @@
                 };
             in
             nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
-              gta4xlwifi22 = common ./gta4xlwifi22.nix;
               gta4xlwifi23 = common ./gta4xlwifi23.nix;
               enchilada22 = common ./enchilada22.nix;
               enchilada23 = common ./enchilada23.nix;
@@ -133,13 +132,6 @@
                 };
               };
               gta4xlwifi_evobka = mk_gta4xlwifi sources.gta4xlwifi-evobka-kernel.src;
-              gta4xlwifi22 = mk_gta4xlwifi sources.gta4xlwifi22-kernel.src // {
-                oemBootImg = pkgs.fetchurl {
-                  # https://download.lineageos.org/devices/gta4xlwifi/builds
-                  url = "https://web.archive.org/web/20251017150825if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gta4xlwifi/20251011/boot.img"; # url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20251011/boot.img";
-                  sha256 = "0iswvvkl5lj35d64rhgjj43cyk41xwkc7ashnl1bpmp8bbknyrfy";
-                };
-              };
               gta4xlwifi23 = mk_gta4xlwifi sources.gta4xlwifi23-kernel.src // {
                 oemBootImg = pkgs.fetchurl {
                   # https://download.lineageos.org/devices/gta4xlwifi/builds
@@ -202,7 +194,6 @@
             {
               oriole = oriole;
               enchilada = enchilada;
-              gta4xlwifi22 = gta4xlwifi22;
               gta4xlwifi23 = gta4xlwifi23;
               gta4xlwifi_evobka = gta4xlwifi_evobka;
             };
