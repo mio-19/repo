@@ -4,8 +4,9 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
+    android-nixpkgs.url = "github:tadfisher/android-nixpkgs";
     # newer android-nixpkgs is having crashing jvm when building lineageos? or is it an intel issue?
-    android-nixpkgs.url = "github:tadfisher/android-nixpkgs/8d23c77cb03da971fdb4f3d63a4216b336ca2b12";
+    #android-nixpkgs.url = "github:tadfisher/android-nixpkgs/8d23c77cb03da971fdb4f3d63a4216b336ca2b12";
     android-nixpkgs.inputs.nixpkgs.follows = "nixpkgs";
     #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
     #robotnix.url = "github:nix-community/robotnix";
