@@ -101,7 +101,7 @@
                 };
               };
               # currently only compiles on aarch64-linux
-              enchilada = {
+              enchilada22 = {
                 kernelMakeFlags = [
                   "KCFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
                   "KCPPFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
@@ -193,7 +193,7 @@
             in
             {
               oriole = oriole;
-              enchilada = enchilada;
+              enchilada22 = enchilada22;
               gta4xlwifi23 = gta4xlwifi23;
               gta4xlwifi_evobka = gta4xlwifi_evobka;
             };
