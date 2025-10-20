@@ -139,6 +139,7 @@ with sources0;
       description = "Architecture";
     };
   };
+  config.signing.enable = true;
   config.flavor = "lineageos";
   config.microg.enable = lib.mkDefault true;
   config.apps.fdroid.enable = true;
