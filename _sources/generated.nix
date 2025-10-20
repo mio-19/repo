@@ -29,20 +29,6 @@
     };
     date = "2025-03-22";
   };
-  gta4xlwifi22-kernel = {
-    pname = "gta4xlwifi22-kernel";
-    version = "df7598e4aabe7efc26c0a37871b8ee4d72dc8acb";
-    src = fetchgit {
-      url = "https://github.com/LineageOS/android_kernel_samsung_gta4xl.git";
-      rev = "df7598e4aabe7efc26c0a37871b8ee4d72dc8acb";
-      fetchSubmodules = false;
-      deepClone = false;
-      leaveDotGit = false;
-      sparseCheckout = [ ];
-      sha256 = "sha256-P41831dfS5dJqB595/bzpjXgHcn3lX7QY1CoRFt+oLw=";
-    };
-    date = "2025-03-22";
-  };
   gta4xlwifi23-kernel = {
     pname = "gta4xlwifi23-kernel";
     version = "2c276961bbd7e6b8cad97219431182049bfc5e1c";

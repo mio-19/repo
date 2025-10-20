@@ -34,7 +34,7 @@
         let
           # https://github.com/MatthewCroughan/nixcfg/blob/afab322e6da20cc038d8577dd4a365673702d183/flake.nix#L57
           mkRobotnixConfigurations =
-            ccache:
+            { ccache, sign }:
             let
               common =
                 f:
@@ -42,6 +42,7 @@
                 {
                   imports = [ f ];
                   ccache.enable = ccache;
+                  signing.enable = sign;
                 };
             in
             nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
@@ -58,8 +59,18 @@
               (mapAttrs' (name: cfg: nameValuePair "${name}-ota" cfg.ota) self.androidNoCcache)
               // (mapAttrs' (name: cfg: nameValuePair "${name}-img" cfg.img) self.androidNoCcache);
           };
-          android = mkRobotnixConfigurations true;
-          androidNoCcache = mkRobotnixConfigurations false;
+          android = mkRobotnixConfigurations {
+            ccache = true;
+            sign = false;
+          };
+          androidNoCcache = mkRobotnixConfigurations {
+            ccache = true;
+            sign = false;
+          };
+          androidSign = mkRobotnixConfigurations {
+            ccache = true;
+            sign = true;
+          };
         };
       systems = [
         "x86_64-linux"
