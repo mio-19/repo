@@ -41,8 +41,7 @@ jobs:
           build-mount-path: /nix
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v31
-      - run: |
-        sudo sysctl -w kernel.unprivileged_userns_clone=1
+      - run: sudo sysctl kernel.apparmor_restrict_unprivileged_userns=0
       - run: nix build -L '.#${{ matrix.attr }}' --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0= --option extra-substituters https://nix-community.cachix.org/ --option extra-trusted-public-keys nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
       - name: Upload build output
         uses: actions/upload-artifact@v4
