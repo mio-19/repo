@@ -41,7 +41,7 @@ jobs:
           build-mount-path: /nix
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v31
-      - run: sudo nix build -L '.#${{ matrix.attr }}' --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0= --option extra-substituters https://nix-community.cachix.org/ --option extra-trusted-public-keys nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
+      - run: sudo $(which nix) build -L '.#${{ matrix.attr }}' --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0= --option extra-substituters https://nix-community.cachix.org/ --option extra-trusted-public-keys nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
       - name: Upload build output
         uses: actions/upload-artifact@v4
         with:
