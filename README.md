@@ -7,7 +7,8 @@ nix build .#android.gta4xlwifi23.ota
 
 
 
-nix build .#androidSign.gta4xlwifi23.releaseScript
+nix build .#androidSign.gta4xlwifi23.releaseScript -o release
+./release ./keys
 ```
 
 generate keys/updating keys:
