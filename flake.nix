@@ -167,9 +167,6 @@
                   #susfs.enable = true; # TODO
                   susfs.src = sources.susfs414.src;
                   kernelConfig = ''
-                    CONFIG_LTO_NONE=n
-                    CONFIG_LTO_CLANG=y
-
                     CONFIG_SYSVIPC=y
                     CONFIG_UTS_NS=y
                     CONFIG_PID_NS=y
