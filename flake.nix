@@ -47,7 +47,6 @@
             nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
               gta4xlwifi23 = common ./gta4xlwifi23.nix;
               enchilada22 = common ./enchilada22.nix;
-              enchilada23 = common ./enchilada23.nix;
               nx_tab = common ./nx_tab.nix;
               oriole = common ./oriole.nix;
             };
