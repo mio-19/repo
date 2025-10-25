@@ -167,8 +167,8 @@
               gta4xlwifi23 = mk_gta4xlwifi sources.gta4xlwifi23-kernel.src // {
                 oemBootImg = pkgs.fetchurl {
                   # https://download.lineageos.org/devices/gta4xlwifi/builds
-                  url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20251012/boot.img";
-                  sha256 = "15vnfwa665m7svbi4nhi85il203pf0f7ccq6lpb8mmb242h1fyfm";
+                  url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20251025/boot.img";
+                  sha256 = "1wgna0xxz216hr7zdj19sg2dvx3xfw3279rv4x881j7hgday97iq";
                 };
               };
               mk_gta4xlwifi =
