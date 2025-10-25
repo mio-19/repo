@@ -50,6 +50,7 @@
               enchilada22 = common ./enchilada22.nix;
               nx_tab = common ./nx_tab.nix;
               oriole = common ./oriole.nix;
+              akita = common ./akita.nix;
             };
         in
         {
