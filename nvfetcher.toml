@@ -1,4 +1,8 @@
 # https://source.android.com/docs/setup/build/building-pixel-kernels
+[akita-kernel]
+src.git = "https://android.googlesource.com/kernel/common"
+fetch.git = "https://android.googlesource.com/kernel/common"
+src.branch = "android-gs-akita-6.1-android15-qpr2"
 [oriole-kernel]
 src.git = "https://android.googlesource.com/kernel/common"
 src.branch = "android-gs-raviole-6.1-android15-qpr2"
