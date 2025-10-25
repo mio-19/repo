@@ -3,19 +3,19 @@ android devices rom configurations
 
 command examples:
 ```zsh
-nix build .#android.gta4xlwifi23.ota
+nix build .#los.gta4xlwifi23.ota
 
-nix build .#android.akita_grapheneos.ota
+nix build .#gos.akita.ota
 
 
 
-nix build .#androidSign.gta4xlwifi23.releaseScript -o release
+nix build .#losSign.gta4xlwifi23.releaseScript -o release
 ./release ./keys
 ```
 
 generate keys/updating keys:
 ```zsh
-nix build .#android.gta4xlwifi23.generateKeysScript
+nix build .#los.gta4xlwifi23.generateKeysScript
 ./generate-keys ./keys
 ```
 

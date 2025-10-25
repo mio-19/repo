@@ -32,8 +32,7 @@
       ];
       flake =
         let
-          # https://github.com/MatthewCroughan/nixcfg/blob/afab322e6da20cc038d8577dd4a365673702d183/flake.nix#L57
-          mkRobotnixConfigurations =
+          mkGos =
             { ccache, sign }:
             let
               common =
@@ -45,31 +44,55 @@
                   signing.enable = sign;
                 };
             in
+            # https://github.com/MatthewCroughan/nixcfg/blob/afab322e6da20cc038d8577dd4a365673702d183/flake.nix#L57
+            nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
+              akita = common ./akita_grapheneos.nix;
+            };
+          mkLos =
+            { ccache, sign }:
+            let
+              common =
+                f:
+                args@{ config, ... }:
+                {
+                  imports = [ f ];
+                  ccache.enable = ccache;
+                  signing.enable = sign;
+                };
+            in
+            # https://github.com/MatthewCroughan/nixcfg/blob/afab322e6da20cc038d8577dd4a365673702d183/flake.nix#L57
             nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
               gta4xlwifi23 = common ./gta4xlwifi23.nix;
               enchilada22 = common ./enchilada22.nix;
               nx_tab = common ./nx_tab.nix;
               oriole = common ./oriole.nix;
               akita = common ./akita.nix;
-              akita_grapheneos = common ./akita_grapheneos.nix;
             };
         in
         {
           githubActions = nix-github-actions.lib.mkGithubMatrix {
             checks.x86_64-linux =
               with nixpkgs.lib;
-              (mapAttrs' (name: cfg: nameValuePair "${name}-ota" cfg.ota) self.androidNoCcache)
-              // (mapAttrs' (name: cfg: nameValuePair "${name}-img" cfg.img) self.androidNoCcache);
+              (mapAttrs' (name: cfg: nameValuePair "${name}-ota" cfg.ota) self.losNoCcache)
+              // (mapAttrs' (name: cfg: nameValuePair "${name}-img" cfg.img) self.losNoCcache);
           };
-          android = mkRobotnixConfigurations {
+          los = mkLos {
             ccache = true;
             sign = false;
           };
-          androidNoCcache = mkRobotnixConfigurations {
+          gos = mkGos {
             ccache = true;
             sign = false;
           };
-          androidSign = mkRobotnixConfigurations {
+          losNoCcache = mkLos {
+            ccache = true;
+            sign = false;
+          };
+          losSign = mkLos {
+            ccache = true;
+            sign = true;
+          };
+          gosSign = mkGos {
             ccache = true;
             sign = true;
           };
