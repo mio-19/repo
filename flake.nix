@@ -51,6 +51,7 @@
               nx_tab = common ./nx_tab.nix;
               oriole = common ./oriole.nix;
               akita = common ./akita.nix;
+              akita_grapheneos = common ./akita_grapheneos.nix;
             };
         in
         {
