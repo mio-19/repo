@@ -31,7 +31,7 @@ jobs:
         uses: mio-19/maximize-build-space@patch-1
         with:
           root-reserve-mb: 512
-          swap-size-mb: 31000
+          swap-size-mb: 40000
           overprovision-lvm: 'true'
           remove-dotnet: 'true'
           remove-android: 'true'
