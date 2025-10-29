@@ -5,7 +5,7 @@ args@{
   ...
 }:
 {
-  buildDateTime = 1761403889;
+  buildDateTime = 1761702899;
   imports = [ ./common.nix ];
   manufactor = "samsung";
   kernel-short = "gta4xl";
