@@ -62,8 +62,8 @@
             in
             # https://github.com/MatthewCroughan/nixcfg/blob/afab322e6da20cc038d8577dd4a365673702d183/flake.nix#L57
             nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
-              gta4xlwifi23 = common ./gta4xlwifi23.nix;
-              enchilada22 = common ./enchilada22.nix;
+              gta4xlwifi = common ./gta4xlwifi.nix;
+              enchilada = common ./enchilada.nix;
               nx_tab = common ./nx_tab.nix;
               oriole = common ./oriole.nix;
               akita = common ./akita.nix;
@@ -133,7 +133,7 @@
                 #};
               };
               # currently only compiles on aarch64-linux
-              enchilada22 = {
+              enchilada = {
                 kernelMakeFlags = [
                   "KCFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
                   "KCPPFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
@@ -164,7 +164,7 @@
                 };
               };
               gta4xlwifi_evobka = mk_gta4xlwifi sources.gta4xlwifi-evobka-kernel.src;
-              gta4xlwifi23 = mk_gta4xlwifi sources.gta4xlwifi23-kernel.src // {
+              gta4xlwifi = mk_gta4xlwifi sources.gta4xlwifi23-kernel.src // {
                 oemBootImg = pkgs.fetchurl {
                   # https://download.lineageos.org/devices/gta4xlwifi/builds
                   url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20251025/boot.img";
@@ -225,8 +225,8 @@
             in
             {
               oriole = oriole;
-              enchilada22 = enchilada22;
-              gta4xlwifi23 = gta4xlwifi23;
+              enchilada = enchilada;
+              gta4xlwifi = gta4xlwifi;
               gta4xlwifi_evobka = gta4xlwifi_evobka;
             };
         };
