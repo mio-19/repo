@@ -126,11 +126,11 @@
                 kernelSU.variant = "next";
                 kernelImageName = "Image";
                 kernelSrc = sources.oriole-kernel.src;
-                oemBootImg = pkgs.fetchurl {
-                  # https://download.lineageos.org/devices/oriole/builds
-                  url = "https://mirrorbits.lineageos.org/full/oriole/20250929/boot.img";
-                  sha256 = "1fwn1b6bl443mb86j3ilzg1mrjyiz0hdj25rsjxp9mc1w5xag82z";
-                };
+                #oemBootImg = pkgs.fetchurl {
+                #  # https://download.lineageos.org/devices/oriole/builds
+                #  url = "https://mirrorbits.lineageos.org/full/oriole/20250929/boot.img";
+                #  sha256 = "1fwn1b6bl443mb86j3ilzg1mrjyiz0hdj25rsjxp9mc1w5xag82z";
+                #};
               };
               # currently only compiles on aarch64-linux
               enchilada22 = {
