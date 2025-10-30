@@ -157,11 +157,11 @@
                   #./0001-CROSS_COMPILE-aarch64-linux-gnu.patch
                   #./0001-CLANG_TARGET_FLAGS-ported-from-android_kernel_samsun.patch
                 ];
-                #oemBootImg = pkgs.fetchurl {
-                #  # https://download.lineageos.org/devices/enchilada/builds
-                #  url = "https://mirrorbits.lineageos.org/full/enchilada/20251001/boot.img";
-                #  sha256 = "1450v8sx3fzgl4v4qfdq164c7k2dd8pam4p3ly7zfzqs2s93his7";
-                #};
+                oemBootImg = pkgs.fetchurl {
+                  # https://download.lineageos.org/devices/enchilada/builds
+                  url = "https://mirrorbits.lineageos.org/full/enchilada/20251001/boot.img";
+                  sha256 = "1450v8sx3fzgl4v4qfdq164c7k2dd8pam4p3ly7zfzqs2s93his7";
+                };
               };
               gta4xlwifi_evobka = mk_gta4xlwifi sources.gta4xlwifi-evobka-kernel.src;
               gta4xlwifi = mk_gta4xlwifi sources.gta4xlwifi23-kernel.src // {

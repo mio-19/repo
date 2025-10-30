@@ -25,10 +25,10 @@ let
     next = {
       src = pkgs.fetchgit {
         url = "https://github.com/KernelSU-Next/KernelSU-Next.git";
-        rev = "0fc4b726ac35ca88a07e3e2be08f94ff63db58f7";
-        sha256 = "004jp131k4rcj1xq9xvcngph2scc5yicx56k9wg790mm1hv0p4f9";
+        rev = "e11cab38f15031a39a802a388560da07ce102dd5";
+        sha256 = "0gcsrms456cjpf7n1cr1mjvclpgg2bkc8flch1pzvvksji7885my";
       };
-      version = "unstable-2025-10-30";
+      version = "unstable-2025-10-17";
       ver = 10000 + 2677 + 200; # TODO: update ver
     };
     upstream = {
