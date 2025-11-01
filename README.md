@@ -15,7 +15,7 @@ nix build .#losSign.gta4xlwifi23.releaseScript -o release
 
 generate keys/updating keys:
 ```zsh
-nix build .#los.gta4xlwifi23.generateKeysScript
+nix build .#gos.akita.generateKeysScript -o generate-keys
 ./generate-keys ./keys
 ```
 
