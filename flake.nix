@@ -7,7 +7,8 @@
     android-nixpkgs.inputs.nixpkgs.follows = "nixpkgs";
     #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
     #robotnix.url = "github:nix-community/robotnix";
-    robotnix.url = "github:mio-19/robotnix";
+    robotnix.url = "git+https://github.com/nix-community/robotnix.git";
+    #robotnix.url = "github:mio-19/robotnix";
     robotnix.inputs.nixpkgs.follows = "nixpkgs";
     robotnix.inputs.androidPkgs.follows = "android-nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -159,11 +160,13 @@
                   #./0001-CROSS_COMPILE-aarch64-linux-gnu.patch
                   #./0001-CLANG_TARGET_FLAGS-ported-from-android_kernel_samsun.patch
                 ];
-                oemBootImg = pkgs.fetchurl {
-                  # https://download.lineageos.org/devices/enchilada/builds
-                  url = "https://mirrorbits.lineageos.org/full/enchilada/20251001/boot.img";
-                  sha256 = "1450v8sx3fzgl4v4qfdq164c7k2dd8pam4p3ly7zfzqs2s93his7";
-                };
+                /*
+                  oemBootImg = pkgs.fetchurl {
+                    # https://download.lineageos.org/devices/enchilada/builds
+                    url = "https://mirrorbits.lineageos.org/full/enchilada/20251001/boot.img";
+                    sha256 = "1450v8sx3fzgl4v4qfdq164c7k2dd8pam4p3ly7zfzqs2s93his7";
+                  };
+                */
               };
               gta4xlwifi_evobka = mk_gta4xlwifi sources.gta4xlwifi-evobka-kernel.src;
               gta4xlwifi = mk_gta4xlwifi sources.gta4xlwifi23-kernel.src // {
