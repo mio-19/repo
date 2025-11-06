@@ -25,17 +25,17 @@ let
     next = {
       src = pkgs.fetchgit {
         url = "https://github.com/KernelSU-Next/KernelSU-Next.git";
-        rev = "cc10d0429e29a6128a40b86fb69edbc0b70ae643";
-        sha256 = "15i6y68ra30bfdph3kk5p0hag80gy3ccgq6gxkch0x3wlnh22iaa";
+        rev = "0d6bdc6364cbfc73517dcfdf7ab23b0ba8045553"; # pin
+        sha256 = "1gjw88sk6655l0l2h1km7ga7w0yqcv0wq2g00aw390mf4np5ipw7";
       };
-      version = "unstable-2025-11-04";
-      ver = 10000 + 2677 + 200; # TODO: update ver
+      version = "unstable-2025-09-22";
+      ver = 10000 + 2651 + 200;
     };
     upstream = {
       src = pkgs.fetchgit {
         url = "https://github.com/tiann/KernelSU.git";
-        rev = "bfb767bbffc649f76985654250b7209a03b7d2c0";
-        sha256 = "1z481xdd85f95b295ppq6fbmvnfb3n9h2ckl17rjvyn2vgfmyfmf";
+        rev = "4bb2dae3f5d9981da7b3690dfc5677b2d68f9a51";
+        sha256 = "0xqj8dmdk6g2fxs1pa3akzk4ywjkidzr7389n30nv5ilfcxpi2gv";
       };
       version = "unstable-2025-11-06";
       ver = 10000 + 1923 + 200; # TODO: update ver
