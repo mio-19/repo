@@ -29,3 +29,7 @@ build kernels:
 ```zsh
 nix build .#gta4xlwifi23
 ```
+
+## update
+
+use update-nix-fetchgit and nvfetcher
