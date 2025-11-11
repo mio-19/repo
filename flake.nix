@@ -9,8 +9,8 @@
     #robotnix.url = "github:nix-community/robotnix";
     robotnix.url = "git+https://github.com/nix-community/robotnix.git";
     #robotnix.url = "github:mio-19/robotnix";
-    robotnix.inputs.nixpkgs.follows = "nixpkgs";
-    robotnix.inputs.androidPkgs.follows = "android-nixpkgs";
+    #robotnix.inputs.nixpkgs.follows = "nixpkgs";
+    #robotnix.inputs.androidPkgs.follows = "android-nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
     # https://github.com/xddxdd/nix-kernelsu-builder
     nix-kernelsu-builder.url = "github:xddxdd/nix-kernelsu-builder";
