@@ -1,8 +1,8 @@
 args@{ config, pkgs, ... }:
 {
-  buildDateTime = 1762391716;
+  buildDateTime = 1762868247;
   flavor = "grapheneos";
   device = "akita";
-  grapheneos.channel = "stable";
+  grapheneos.channel = "alpha";
   apps.fdroid.enable = true;
 }
