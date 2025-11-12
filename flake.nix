@@ -1,6 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.05";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
     android-nixpkgs.url = "github:tadfisher/android-nixpkgs";
@@ -9,7 +10,7 @@
     robotnix.url = "github:nix-community/robotnix/signing-unfuck";
     #robotnix.url = "git+https://github.com/nix-community/robotnix.git";
     #robotnix.url = "github:mio-19/robotnix";
-    #robotnix.inputs.nixpkgs.follows = "nixpkgs";
+    robotnix.inputs.nixpkgs.follows = "nixpkgs-stable";
     robotnix.inputs.androidPkgs.follows = "android-nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
     # https://github.com/xddxdd/nix-kernelsu-builder
