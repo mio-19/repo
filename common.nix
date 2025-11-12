@@ -67,14 +67,9 @@ with sources0;
       type = lib.types.str;
       description = "Defconfig path";
     };
-    legacy49 = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Legacy 4.9 kernel";
-    };
     legacy414 = lib.mkOption {
       type = lib.types.bool;
-      default = config.legacy49;
+      default = false;
       description = "Legacy kernel, 4.14 or 4.9";
     };
     lindroid = lib.mkOption {
@@ -246,19 +241,6 @@ with sources0;
           # if overlayfs can't be mounted, you can pick a HACK: https://github.com/android-kxxt/android_kernel_xiaomi_sm8450/commit/ae700d3d04a2cd8b34e1dae434b0fdc9cde535c7
           ./overlayfs.patch
         ])
-        (lib.mkIf (config.legacy414 && config.ksu) [
-          # https://github.com/KernelSU-Next/KernelSU-Next/pull/743 -> -Note: legacy kernels: selfmusing/kernel_xiaomi_violet@9596554
-          ./filter_count.patch
-        ])
-        (lib.mkIf (config.legacy414 && !config.legacy49 && config.ksu) [
-          ./0001-KSUManual4.14.patch
-        ])
-        (lib.mkIf (config.legacy49 && config.ksu) (
-          assert config.legacy414;
-          [
-            ./0001-KSUManual4.9.patch
-          ]
-        ))
         config.kernel-patches
       ];
       # https://github.com/KernelSU-Next/KernelSU-Next/blob/next/kernel/Kconfig

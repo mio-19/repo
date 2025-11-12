@@ -10,7 +10,7 @@ args@{ config, pkgs, ... }:
   gapps = false;
   microg.enable = true;
   #flavorVersion = "23.0";
-  legacy49 = true;
+  legacy414 = true;
   ksu = false; # compiled but not working
   lindroid = false; # lindroid doesn't support 4.9?
   lindroid-drm = false; # /build/kernel/oneplus/sdm845/drivers/lindroid-drm/evdi_modeset.c:35:10: fatal error: 'drm/drm_gem_framebuffer_helper.h' file not found

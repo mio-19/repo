@@ -19,6 +19,9 @@ args@{
   device = "gta4xlwifi";
   flavorVersion = "23.0";
   kernel-patches = [
+    # https://github.com/KernelSU-Next/KernelSU-Next/pull/743 -> -Note: legacy kernels: selfmusing/kernel_xiaomi_violet@9596554
+    ./filter_count.patch
+    ./0001-KSUManual4.14.patch
     ./daria.patch
     ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
     ./0001-drop-master-lindroid-patch.patch
