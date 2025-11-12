@@ -1,7 +1,25 @@
 diff --git a/core/java/android/window/ScreenCapture.java b/core/java/android/window/ScreenCapture.java
-index fc41307c4d1f..43227a59b21f 100644
+index fc41307c4d1f..42ac481e1075 100644
 --- a/core/java/android/window/ScreenCapture.java
 +++ b/core/java/android/window/ScreenCapture.java
+@@ -204,7 +204,7 @@ public class ScreenCapture {
+                 float hdrSdrRatio) {
+             mHardwareBuffer = hardwareBuffer;
+             mColorSpace = colorSpace;
+-            mContainsSecureLayers = containsSecureLayers;
++            mContainsSecureLayers = false; // containsSecureLayers;
+             mContainsHdrLayers = containsHdrLayers;
+             mGainmap = gainmap;
+             mHdrSdrRatio = hdrSdrRatio;
+@@ -242,7 +242,7 @@ public class ScreenCapture {
+          * Whether this screenshot contains secure layers
+          */
+         public boolean containsSecureLayers() {
+-            return mContainsSecureLayers;
++            return false; // mContainsSecureLayers;
+         }
+ 
+         /**
 @@ -313,7 +313,7 @@ public class ScreenCapture {
              mSourceCrop.set(builder.mSourceCrop);
              mFrameScaleX = builder.mFrameScaleX;
