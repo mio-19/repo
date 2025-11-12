@@ -5,6 +5,8 @@ command examples:
 ```zsh
 nix build --max-jobs 4 .#los.gta4xlwifi23.ota
 
+nix build --max-jobs 4 .#los.enchilada.ota
+
 nix build --max-jobs 4 .#gos.akita.ota
 
 
