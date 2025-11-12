@@ -69,7 +69,6 @@
               gta4xlwifi = common ./gta4xlwifi.nix;
               enchilada = common ./enchilada.nix;
               nx_tab = common ./nx_tab.nix;
-              oriole = common ./oriole.nix;
               akita = common ./akita.nix;
             };
         in
@@ -121,21 +120,6 @@
         {
           kernelsu =
             let
-              oriole = {
-                anyKernelVariant = "kernelsu";
-                clangVersion = "latest";
-                kernelDefconfigs = [
-                  "gki_defconfig"
-                ];
-                kernelSU.variant = "next";
-                kernelImageName = "Image";
-                kernelSrc = sources.oriole-kernel.src;
-                #oemBootImg = pkgs.fetchurl {
-                #  # https://download.lineageos.org/devices/oriole/builds
-                #  url = "https://mirrorbits.lineageos.org/full/oriole/20250929/boot.img";
-                #  sha256 = "1fwn1b6bl443mb86j3ilzg1mrjyiz0hdj25rsjxp9mc1w5xag82z";
-                #};
-              };
               # currently only compiles on aarch64-linux
               enchilada = {
                 kernelMakeFlags = [
@@ -230,7 +214,6 @@
                 };
             in
             {
-              oriole = oriole;
               enchilada = enchilada;
               gta4xlwifi = gta4xlwifi;
               gta4xlwifi_evobka = gta4xlwifi_evobka;
