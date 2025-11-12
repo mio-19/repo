@@ -7,8 +7,8 @@ args@{ config, pkgs, ... }:
   defconfig = "arch/arm64/configs/enchilada_defconfig";
   device = "enchilada";
   flavorVersion = "22.2";
-  gapps = true;
-  microg.enable = false;
+  gapps = false;
+  microg.enable = true;
   #flavorVersion = "23.0";
   legacy49 = true;
   ksu = false; # compiled but not working
