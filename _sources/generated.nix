@@ -57,20 +57,6 @@
     };
     date = "2025-09-05";
   };
-  oriole-kernel = {
-    pname = "oriole-kernel";
-    version = "3c76c2d71bb32039037c6f5dc38b172fe4142bdb";
-    src = fetchgit {
-      url = "https://android.googlesource.com/kernel/common";
-      rev = "3c76c2d71bb32039037c6f5dc38b172fe4142bdb";
-      fetchSubmodules = false;
-      deepClone = false;
-      leaveDotGit = false;
-      sparseCheckout = [ ];
-      sha256 = "sha256-QXHmdl7kdLspqLuVAcAw50AJ0rYKiLNyaRPqSpTnoWM=";
-    };
-    date = "2025-03-12";
-  };
   susfs414 = {
     pname = "susfs414";
     version = "77905b5a071e6f3669e3b1814cea30147c0801da";
