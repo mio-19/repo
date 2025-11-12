@@ -47,6 +47,41 @@ index fc41307c4d1f..42ac481e1075 100644
                  return getThis();
              }
  
+diff --git a/services/core/java/com/android/server/display/DisplayControl.java b/services/core/java/com/android/server/display/DisplayControl.java
+index 1d70953de6c0..484f320b27ab 100644
+--- a/services/core/java/com/android/server/display/DisplayControl.java
++++ b/services/core/java/com/android/server/display/DisplayControl.java
+@@ -49,7 +49,7 @@ public class DisplayControl {
+      */
+     public static IBinder createVirtualDisplay(String name, boolean secure) {
+         Objects.requireNonNull(name, "name must not be null");
+-        return nativeCreateVirtualDisplay(name, secure, true, "", 0.0f);
++        return nativeCreateVirtualDisplay(name, true, true, "", 0.0f);
+     }
+ 
+     /**
+@@ -73,7 +73,7 @@ public class DisplayControl {
+             boolean optimizeForPower, String uniqueId, float requestedRefreshRate) {
+         Objects.requireNonNull(name, "name must not be null");
+         Objects.requireNonNull(uniqueId, "uniqueId must not be null");
+-        return nativeCreateVirtualDisplay(name, secure, optimizeForPower, uniqueId,
++        return nativeCreateVirtualDisplay(name, true, optimizeForPower, uniqueId,
+                 requestedRefreshRate);
+     }
+ 
+diff --git a/services/core/java/com/android/server/display/VirtualDisplayAdapter.java b/services/core/java/com/android/server/display/VirtualDisplayAdapter.java
+index c2eac8605851..56ffd28ecaa6 100644
+--- a/services/core/java/com/android/server/display/VirtualDisplayAdapter.java
++++ b/services/core/java/com/android/server/display/VirtualDisplayAdapter.java
+@@ -181,7 +181,7 @@ public class VirtualDisplayAdapter extends DisplayAdapter {
+         }
+ 
+         String name = virtualDisplayConfig.getName();
+-        boolean secure = (flags & VIRTUAL_DISPLAY_FLAG_SECURE) != 0;
++        boolean secure = ((flags & VIRTUAL_DISPLAY_FLAG_SECURE) != 0) || (projection != null || ownerUid < 10000);
+         boolean neverBlank = isNeverBlank(flags);
+ 
+         // Never-blank displays are considered to be dependent on another display to be rendered.
 diff --git a/services/core/java/com/android/server/wm/ActivityTaskManagerService.java b/services/core/java/com/android/server/wm/ActivityTaskManagerService.java
 index c830f439cc9a..eee806a7e556 100644
 --- a/services/core/java/com/android/server/wm/ActivityTaskManagerService.java
