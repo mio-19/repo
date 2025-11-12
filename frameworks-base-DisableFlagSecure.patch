@@ -1,0 +1,44 @@
+diff --git a/core/java/android/window/ScreenCapture.java b/core/java/android/window/ScreenCapture.java
+index fc41307c4d1f..43227a59b21f 100644
+--- a/core/java/android/window/ScreenCapture.java
++++ b/core/java/android/window/ScreenCapture.java
+@@ -313,7 +313,7 @@ public class ScreenCapture {
+             mSourceCrop.set(builder.mSourceCrop);
+             mFrameScaleX = builder.mFrameScaleX;
+             mFrameScaleY = builder.mFrameScaleY;
+-            mCaptureSecureLayers = builder.mCaptureSecureLayers;
++            mCaptureSecureLayers = true; // builder.mCaptureSecureLayers;
+             mAllowProtected = builder.mAllowProtected;
+             mUid = builder.mUid;
+             mGrayscale = builder.mGrayscale;
+@@ -326,7 +326,7 @@ public class ScreenCapture {
+             mSourceCrop.readFromParcel(in);
+             mFrameScaleX = in.readFloat();
+             mFrameScaleY = in.readFloat();
+-            mCaptureSecureLayers = in.readBoolean();
++            mCaptureSecureLayers = true; // in.readBoolean();
+             mAllowProtected = in.readBoolean();
+             mUid = in.readLong();
+             mGrayscale = in.readBoolean();
+@@ -445,7 +445,7 @@ public class ScreenCapture {
+              * @see ScreenshotHardwareBuffer#containsSecureLayers()
+              */
+             public T setCaptureSecureLayers(boolean captureSecureLayers) {
+-                mCaptureSecureLayers = captureSecureLayers;
++                mCaptureSecureLayers = true; // captureSecureLayers;
+                 return getThis();
+             }
+ 
+diff --git a/services/core/java/com/android/server/wm/WindowState.java b/services/core/java/com/android/server/wm/WindowState.java
+index d5c1721183fe..47bdad317aea 100644
+--- a/services/core/java/com/android/server/wm/WindowState.java
++++ b/services/core/java/com/android/server/wm/WindowState.java
+@@ -1804,7 +1804,7 @@ class WindowState extends WindowContainer<WindowState> implements WindowManagerP
+     }
+ 
+     boolean isSecureLocked() {
+-        if (mWmService.getDisableSecureWindows()) {
++        if (true || mWmService.getDisableSecureWindows()) {
+             return false;
+         }
+ 
