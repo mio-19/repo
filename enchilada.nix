@@ -1,7 +1,7 @@
 args@{ config, pkgs, ... }:
 {
   buildDateTime = 1762868247;
-  imports = [ ./common.nix ];
+  imports = [ ./los.nix ];
   manufactor = "oneplus";
   kernel-short = "sdm845";
   defconfig = "arch/arm64/configs/enchilada_defconfig";

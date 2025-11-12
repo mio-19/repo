@@ -1,7 +1,7 @@
 args@{ config, pkgs, ... }:
 {
   buildDateTime = 1762868247;
-  imports = [ ./common.nix ];
+  imports = [ ./los.nix ];
   manufactor = "nintendo";
   device-name = "nx";
   kernel-name = "nvidia/kernel-4.9-nx";
