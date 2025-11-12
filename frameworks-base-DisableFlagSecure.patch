@@ -47,6 +47,49 @@ index fc41307c4d1f..42ac481e1075 100644
                  return getThis();
              }
  
+diff --git a/services/core/java/com/android/server/wm/ActivityTaskManagerService.java b/services/core/java/com/android/server/wm/ActivityTaskManagerService.java
+index c830f439cc9a..eee806a7e556 100644
+--- a/services/core/java/com/android/server/wm/ActivityTaskManagerService.java
++++ b/services/core/java/com/android/server/wm/ActivityTaskManagerService.java
+@@ -5857,7 +5857,7 @@ public class ActivityTaskManagerService extends IActivityTaskManager.Stub {
+                 "registerScreenCaptureObserver");
+         synchronized (mGlobalLock) {
+             ActivityRecord activityRecord = ActivityRecord.forTokenLocked(activityToken);
+-            if (activityRecord != null) {
++            if (false && activityRecord != null) {
+                 activityRecord.registerCaptureObserver(observer);
+             }
+         }
+@@ -5870,7 +5870,7 @@ public class ActivityTaskManagerService extends IActivityTaskManager.Stub {
+                 "unregisterScreenCaptureObserver");
+         synchronized (mGlobalLock) {
+             ActivityRecord activityRecord = ActivityRecord.forTokenLocked(activityToken);
+-            if (activityRecord != null) {
++            if (false && activityRecord != null) {
+                 activityRecord.unregisterCaptureObserver(observer);
+             }
+         }
+diff --git a/services/core/java/com/android/server/wm/WindowManagerService.java b/services/core/java/com/android/server/wm/WindowManagerService.java
+index d25987028199..2918ddb84cbe 100644
+--- a/services/core/java/com/android/server/wm/WindowManagerService.java
++++ b/services/core/java/com/android/server/wm/WindowManagerService.java
+@@ -10345,14 +10345,14 @@ public class WindowManagerService extends IWindowManager.Stub
+     @Override
+     public boolean registerScreenRecordingCallback(IScreenRecordingCallback callback) {
+         registerScreenRecordingCallback_enforcePermission();
+-        return mScreenRecordingCallbackController.register(callback);
++        return false; // mScreenRecordingCallbackController.register(callback);
+     }
+ 
+     @EnforcePermission(android.Manifest.permission.DETECT_SCREEN_RECORDING)
+     @Override
+     public void unregisterScreenRecordingCallback(IScreenRecordingCallback callback) {
+         unregisterScreenRecordingCallback_enforcePermission();
+-        mScreenRecordingCallbackController.unregister(callback);
++        // mScreenRecordingCallbackController.unregister(callback);
+     }
+ 
+     void onProcessActivityVisibilityChanged(int uid, boolean visible) {
 diff --git a/services/core/java/com/android/server/wm/WindowState.java b/services/core/java/com/android/server/wm/WindowState.java
 index d5c1721183fe..47bdad317aea 100644
 --- a/services/core/java/com/android/server/wm/WindowState.java
