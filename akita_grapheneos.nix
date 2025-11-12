@@ -5,4 +5,7 @@ args@{ config, pkgs, ... }:
   device = "akita";
   grapheneos.channel = "alpha";
   apps.fdroid.enable = true;
+  source.dirs."frameworks/base".patches = [
+    ./services-core-isSecureLocked.patch
+  ];
 }
