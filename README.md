@@ -3,7 +3,7 @@ android devices rom configurations
 
 command examples:
 ```zsh
-nix build --max-jobs 4 .#los.gta4xlwifi23.ota
+nix build --max-jobs 4 .#los.gta4xlwifi.ota
 
 nix build --max-jobs 4 .#los.enchilada.ota
 
@@ -11,7 +11,7 @@ nix build --max-jobs 4 .#gos.akita.ota
 
 
 
-nix build --max-jobs 4 .#losSign.gta4xlwifi23.releaseScript --impure -o release
+nix build --max-jobs 4 .#losSign.gta4xlwifi.releaseScript --impure -o release
 ./release ./keys
 
 

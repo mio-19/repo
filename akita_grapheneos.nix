@@ -5,7 +5,7 @@ args@{ config, pkgs, ... }:
   device = "akita";
   grapheneos.channel = "alpha";
   apps.fdroid.enable = true;
-  config.apps.fdroid.additionalRepos = {
+  apps.fdroid.additionalRepos = {
     "My First F-Droid Repo Demo" = {
       enable = true;
       url = "https://fdroid-repo-8b3497.gitlab.io/fdroid/repo";
