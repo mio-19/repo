@@ -1,3 +1,9 @@
+https://github.com/VarunS2002/Xposed-Disable-FLAG_SECURE/blob/f35b4c31f7bc593c4d8142d86885b8a35ef5708b/app/src/main/java/com/varuns2002/disable_flag_secure/DisableFlagSecure.kt
+on Android 16 do not have:
+
+WindowManagerGlobal.addView(View, LayoutParams, Display, Window) (4-arg), and
+
+WindowManagerService.isSecureLocked(WindowState),
 diff --git a/core/java/android/view/SurfaceView.java b/core/java/android/view/SurfaceView.java
 index 29008d31990d..ece7831a8e3e 100644
 --- a/core/java/android/view/SurfaceView.java
