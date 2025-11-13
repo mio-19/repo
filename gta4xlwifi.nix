@@ -12,8 +12,8 @@ args@{
   lindroid = true;
   defconfig = "arch/arm64/configs/exynos9611-gta4xlwifi_defconfig";
   legacy414 = true;
-  microg.enable = false;
-  gapps = true;
+  microg.enable = true;
+  gapps = false;
   ksu = true;
   patch-overlayfs = true;
   device = "gta4xlwifi";
