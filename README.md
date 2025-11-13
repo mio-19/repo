@@ -24,6 +24,10 @@ generate keys/updating keys:
 ```zsh
 nix build .#gos.akita.generateKeysScript -o generate-keys
 ./generate-keys ./keys
+
+
+nix build .#losSign.gta4xlwifi.generateKeysScript -o generate-keys
+./generate-keys ./keys
 ```
 
 
