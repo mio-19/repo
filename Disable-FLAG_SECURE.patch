@@ -1,9 +1,21 @@
+From 971be9a47119d24711e9de60c3066d41e4254108 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Thu, 13 Nov 2025 18:43:10 +1100
+Subject: [PATCH] Disable-FLAG_SECURE
+
 https://github.com/VarunS2002/Xposed-Disable-FLAG_SECURE/blob/f35b4c31f7bc593c4d8142d86885b8a35ef5708b/app/src/main/java/com/varuns2002/disable_flag_secure/DisableFlagSecure.kt
 on Android 16 do not have:
 
 WindowManagerGlobal.addView(View, LayoutParams, Display, Window) (4-arg), and
 
 WindowManagerService.isSecureLocked(WindowState),
+---
+ core/java/android/view/SurfaceView.java                   | 2 +-
+ core/java/android/view/Window.java                        | 2 +-
+ core/java/android/view/WindowManagerGlobal.java           | 8 ++++----
+ services/core/java/com/android/server/wm/WindowState.java | 2 +-
+ 4 files changed, 7 insertions(+), 7 deletions(-)
+
 diff --git a/core/java/android/view/SurfaceView.java b/core/java/android/view/SurfaceView.java
 index 29008d31990d..ece7831a8e3e 100644
 --- a/core/java/android/view/SurfaceView.java
@@ -83,3 +95,6 @@ index d5c1721183fe..0a8058a84cfc 100644
          if (mWmService.getDisableSecureWindows()) {
              return false;
          }
+-- 
+2.51.0
+
