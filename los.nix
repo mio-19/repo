@@ -43,10 +43,10 @@ let
     sukisu = {
       src = pkgs.fetchgit {
         url = "https://github.com/SukiSU-Ultra/SukiSU-Ultra.git";
-        rev = "54dad4ceb25885fb1d4cddc77beeab705cdd5e14";
-        sha256 = "01qh2fhdkp3v1yvbfccin0kfnfsd5808a433z7yrlx1wrn11jnhr";
+        rev = "7be8c15b854332e3f1749c9aef47e6f2bfabf0e7";
+        sha256 = "1w9isivhbrx2izmz31n504ckm10gk611a7w8q2yfxbyjfy6p7kn6";
       };
-      version = "unstable-2025-11-12";
+      version = "unstable-2025-11-13";
       ver = 10000 + 2643 + 200; # TODO: update ver
     };
   };
