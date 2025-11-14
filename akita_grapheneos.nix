@@ -6,6 +6,6 @@ args@{ config, pkgs, ... }:
   grapheneos.channel = "alpha";
   source.dirs."frameworks/base".patches = [
     ./Disable-FLAG_SECURE.patch
-    ./No-gestural-navigation-hint-bar.patch
+    #./No-gestural-navigation-hint-bar.patch
   ];
 }
