@@ -1,0 +1,26 @@
+From 4192dc210e24cb493a148cbb52895768bfe1cbe4 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Fri, 14 Nov 2025 22:25:43 +1100
+Subject: [PATCH] No gestural navigation hint bar
+
+https://github.com/PixelOS-AOSP/frameworks_base/commit/a4b124dc45aebda6c89cc08766df81ccde0ec80c
+---
+ .../systemui/navigationbar/views/NavigationBarInflaterView.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/navigationbar/views/NavigationBarInflaterView.java b/packages/SystemUI/src/com/android/systemui/navigationbar/views/NavigationBarInflaterView.java
+index 2c5a9c84645b..01f2c2f9c77b 100644
+--- a/packages/SystemUI/src/com/android/systemui/navigationbar/views/NavigationBarInflaterView.java
++++ b/packages/SystemUI/src/com/android/systemui/navigationbar/views/NavigationBarInflaterView.java
+@@ -162,7 +162,7 @@ public class NavigationBarInflaterView extends FrameLayout {
+                 : mLauncherProxyService.shouldShowSwipeUpUI()
+                         ? R.string.config_navBarLayoutQuickstep
+                         : R.string.config_navBarLayout;
+-        return getContext().getString(defaultResource);
++        if (defaultResource == R.string.config_navBarLayoutHandle) { return getContext().getString(defaultResource).replace(HOME_HANDLE, ""); } return getContext().getString(defaultResource);
+     }
+ 
+     private void onNavigationModeChanged(int mode) {
+-- 
+2.51.2
+
