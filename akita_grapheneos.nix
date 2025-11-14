@@ -1,6 +1,6 @@
 args@{ config, pkgs, ... }:
 {
-  buildDateTime = 1763119706;
+  buildDateTime = 1763130112;
   flavor = "grapheneos";
   device = "akita";
   grapheneos.channel = "alpha";
