@@ -1,7 +1,9 @@
 # repo
+
 android devices rom configurations
 
 command examples:
+
 ```zsh
 nix build --max-jobs 4 .#los.gta4xlwifi.ota
 
@@ -21,6 +23,7 @@ nix build --max-jobs 4 .#gosSign.akita.releaseScript --impure -o release
 ```
 
 generate keys/updating keys:
+
 ```zsh
 nix build .#gos.akita.generateKeysScript -o generate-keys
 ./generate-keys ./keys
@@ -30,8 +33,8 @@ nix build .#losSign.gta4xlwifi.generateKeysScript -o generate-keys
 ./generate-keys ./keys
 ```
 
-
 build kernels:
+
 ```zsh
 nix build .#gta4xlwifi23
 ```
