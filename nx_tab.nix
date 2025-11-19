@@ -1,6 +1,6 @@
 args@{ config, pkgs, ... }:
 {
-  buildDateTime = 1763130112;
+  buildDateTime = 1763555248;
   imports = [ ./los.nix ];
   manufactor = "nintendo";
   device-name = "nx";
