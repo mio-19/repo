@@ -36,7 +36,7 @@ nix build .#losSign.gta4xlwifi.generateKeysScript -o generate-keys
 build kernels:
 
 ```zsh
-nix build .#gta4xlwifi23
+nix build .#gta4xlwifi
 ```
 
 ## update
