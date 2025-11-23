@@ -8,8 +8,8 @@
     android-nixpkgs.inputs.nixpkgs.follows = "nixpkgs";
     #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
     #robotnix.url = "github:nix-community/robotnix/signing-unfuck";
-    #robotnix.url = "git+https://github.com/nix-community/robotnix.git";
-    robotnix.url = "github:nix-community/robotnix/grapheneos_2025-11-18";
+    robotnix.url = "git+https://github.com/nix-community/robotnix.git";
+    #robotnix.url = "github:nix-community/robotnix/grapheneos_2025-11-18";
     #robotnix.url = "github:mio-19/robotnix";
     robotnix.inputs.nixpkgs.follows = "nixpkgs-stable";
     robotnix.inputs.androidPkgs.follows = "android-nixpkgs";
@@ -156,11 +156,11 @@
               };
               gta4xlwifi_evobka = mk_gta4xlwifi sources.gta4xlwifi-evobka-kernel.src;
               gta4xlwifi = mk_gta4xlwifi sources.gta4xlwifi23-kernel.src // {
-                oemBootImg = pkgs.fetchurl {
-                  # https://download.lineageos.org/devices/gta4xlwifi/builds
-                  url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20251025/boot.img";
-                  sha256 = "1wgna0xxz216hr7zdj19sg2dvx3xfw3279rv4x881j7hgday97iq";
-                };
+                #oemBootImg = pkgs.fetchurl {
+                #  # https://download.lineageos.org/devices/gta4xlwifi/builds
+                #  url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20251025/boot.img";
+                #  sha256 = "1wgna0xxz216hr7zdj19sg2dvx3xfw3279rv4x881j7hgday97iq";
+                #};
               };
               mk_gta4xlwifi =
                 kernel:
