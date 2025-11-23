@@ -18,8 +18,7 @@ nix build --max-jobs 4 .#losSign.gta4xlwifi.releaseScript --impure -o release
 
 
 
-nix build --max-jobs 4 .#gosSign.akita.releaseScript --impure -o release
-./release ./keys
+nix build --max-jobs 4 .#gosSign.akita.releaseScript --impure -o release && ./release ./keys
 ```
 
 generate keys/updating keys:
