@@ -9,11 +9,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1763842906,
-        "narHash": "sha256-JzGI/s6Ht4clihVvC3LSEHy1euMXz7xYR1yFNIwDxO8=",
+        "lastModified": 1764102167,
+        "narHash": "sha256-Q8kckPRi08e4t1XSqx4Y9FsGzkLcHzDNIO29SU0IM1o=",
         "owner": "tadfisher",
         "repo": "android-nixpkgs",
-        "rev": "63ef57e71a42203d58cb238441cda048c87a8548",
+        "rev": "74aab9393ac8a94ab869c9741b4eb3a31cb23e6f",
         "type": "github"
       },
       "original": {
@@ -30,11 +30,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1762521437,
-        "narHash": "sha256-RXN+lcx4DEn3ZS+LqEJSUu/HH+dwGvy0syN7hTo/Chg=",
+        "lastModified": 1764011051,
+        "narHash": "sha256-M7SZyPZiqZUR/EiiBJnmyUbOi5oE/03tCeFrTiUZchI=",
         "owner": "numtide",
         "repo": "devshell",
-        "rev": "07bacc9531f5f4df6657c0a02a806443685f384a",
+        "rev": "17ed8d9744ebe70424659b0ef74ad6d41fc87071",
         "type": "github"
       },
       "original": {
@@ -98,6 +98,21 @@
       }
     },
     "flake-compat_3": {
+      "locked": {
+        "lastModified": 1746162366,
+        "narHash": "sha256-5SSSZ/oQkwfcAz/o/6TlejlVGqeK08wyREBQ5qFFPhM=",
+        "owner": "nix-community",
+        "repo": "flake-compat",
+        "rev": "0f158086a2ecdbb138cd0429410e44994f1b7e4b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
+    "flake-compat_4": {
       "locked": {
         "lastModified": 1746162366,
         "narHash": "sha256-5SSSZ/oQkwfcAz/o/6TlejlVGqeK08wyREBQ5qFFPhM=",
@@ -243,11 +258,11 @@
         "nvfetcher": "nvfetcher"
       },
       "locked": {
-        "lastModified": 1763792577,
-        "narHash": "sha256-F26X02+Ab2ota3xqKu28cm7iYbuEIn0i1QLggHyIXzk=",
+        "lastModified": 1763879033,
+        "narHash": "sha256-gy8USOnz4yVntAE7gjh3yXJAhcdwOakgadoCTiW5adw=",
         "owner": "xddxdd",
         "repo": "nix-kernelsu-builder",
-        "rev": "7353c55f07b04406a11b128eefd86ad3ce55d82e",
+        "rev": "4e7759b893f94202b953a8617b35e7b1b9dff97b",
         "type": "github"
       },
       "original": {
@@ -256,18 +271,37 @@
         "type": "github"
       }
     },
+    "nixos-apple-silicon": {
+      "inputs": {
+        "flake-compat": "flake-compat_3",
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1764150882,
+        "narHash": "sha256-BzaXGDXF7ReIhOYhzXmh1b83CsAqveLv+Ws86qRC5UU=",
+        "owner": "mio-19",
+        "repo": "nixos-apple-silicon",
+        "rev": "3a3cfff5ed84ee71b8b047717fb1f583bc55ac8c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mio-19",
+        "repo": "nixos-apple-silicon",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1763618868,
-        "narHash": "sha256-v5afmLjn/uyD9EQuPBn7nZuaZVV9r+JerayK/4wvdWA=",
+        "lastModified": 1762977756,
+        "narHash": "sha256-4PqRErxfe+2toFJFgcRKZ0UI9NSIOJa+7RXVtBhy4KE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "a8d610af3f1a5fb71e23e08434d8d61a466fc942",
+        "rev": "c5ae371f1a6a7fd27823bc500d9390b38c05fa55",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixpkgs-unstable",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -289,16 +323,32 @@
     },
     "nixpkgs-stable": {
       "locked": {
-        "lastModified": 1763622513,
-        "narHash": "sha256-1jQnuyu82FpiSxowrF/iFK6Toh9BYprfDqfs4BB+19M=",
+        "lastModified": 1763948260,
+        "narHash": "sha256-dY9qLD0H0zOUgU3vWacPY6Qc421BeQAfm8kBuBtPVE0=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "c58bc7f5459328e4afac201c5c4feb7c818d604b",
+        "rev": "1c8ba8d3f7634acac4a2094eef7c32ad9106532c",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "ref": "nixos-25.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1763934636,
+        "narHash": "sha256-9glbI7f1uU+yzQCq5LwLgdZqx6svOhZWkd4JRY265fc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "ee09932cedcef15aaf476f9343d1dea2cb77e261",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -319,11 +369,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1763783029,
-        "narHash": "sha256-XdevY/GBSr6Uk+8cBlaTrnuBnFeXtnjCWGwLSpm2RjY=",
+        "lastModified": 1763807317,
+        "narHash": "sha256-iHu6eVQFPvNkdfULHWiYoXtDvTq4Vald43TMWmDfWSo=",
         "owner": "xddxdd",
         "repo": "nur-packages",
-        "rev": "39c30061bb874980c51065267a3ca3d98cfe9371",
+        "rev": "6727f0325b4ce251d3a705dab390a9e06fd39a99",
         "type": "github"
       },
       "original": {
@@ -366,11 +416,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1763319842,
-        "narHash": "sha256-YG19IyrTdnVn0l3DvcUYm85u3PaqBt6tI6VvolcuHnA=",
+        "lastModified": 1763741496,
+        "narHash": "sha256-uIRqs/H18YEtMOn1OkbnPH+aNTwXKx+iU3qnxEkVUd0=",
         "owner": "cachix",
         "repo": "pre-commit-hooks.nix",
-        "rev": "7275fa67fbbb75891c16d9dee7d88e58aea2d761",
+        "rev": "20e71a403c5de9ce5bd799031440da9728c1cda1",
         "type": "github"
       },
       "original": {
@@ -384,17 +434,17 @@
         "androidPkgs": [
           "android-nixpkgs"
         ],
-        "flake-compat": "flake-compat_3",
+        "flake-compat": "flake-compat_4",
         "nixpkgs": [
           "nixpkgs-stable"
         ]
       },
       "locked": {
-        "lastModified": 1763826476,
-        "narHash": "sha256-Sv2tyz4GQLVtW7Jju49EjLlG6cvD57uL+kUfmZ1z/FM=",
+        "lastModified": 1763899889,
+        "narHash": "sha256-X6PfWsnukTa4CQZ34u/Jw+Iz5NlptkooAx81wrHVE3M=",
         "ref": "refs/heads/master",
-        "rev": "010557d09e1dbe3d554a7a506238d345f0a005da",
-        "revCount": 2057,
+        "rev": "0b67d10e140555a319d0d91d3369a5e6c73dae58",
+        "revCount": 2059,
         "type": "git",
         "url": "https://github.com/nix-community/robotnix.git"
       },
@@ -409,7 +459,8 @@
         "flake-parts": "flake-parts",
         "nix-github-actions": "nix-github-actions",
         "nix-kernelsu-builder": "nix-kernelsu-builder",
-        "nixpkgs": "nixpkgs",
+        "nixos-apple-silicon": "nixos-apple-silicon",
+        "nixpkgs": "nixpkgs_2",
         "nixpkgs-stable": "nixpkgs-stable",
         "robotnix": "robotnix"
       }

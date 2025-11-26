@@ -18,6 +18,13 @@
     nix-kernelsu-builder.url = "github:xddxdd/nix-kernelsu-builder";
     nix-kernelsu-builder.inputs.flake-parts.follows = "flake-parts";
     nix-kernelsu-builder.inputs.nixpkgs.follows = "nixpkgs";
+    # --option extra-substituters https://nixos-apple-silicon.cachix.org --option extra-trusted-public-keys nixos-apple-silicon.cachix.org-1:8psDu5SA5dAD7qA0zMy5UT292TxeEPzIz8VVEr2Js20=
+    nixos-apple-silicon = {
+      #url = "github:nix-community/nixos-apple-silicon";
+      # merged with https://github.com/nix-community/nixos-apple-silicon/pull/353
+      url = "github:mio-19/nixos-apple-silicon";
+      #inputs.nixpkgs.follows = "nixpkgs"; # needs to comment out this to use binary cache
+    };
   };
 
   outputs =
@@ -107,7 +114,7 @@
         "aarch64-darwin"
       ];
       perSystem =
-        args@{ pkgs, ... }:
+        args@{ pkgs, system, ... }:
         let
           sources = (import ./_sources/generated.nix) {
             inherit (pkgs)
@@ -119,6 +126,35 @@
           };
         in
         {
+          # https://github.com/nix-community/nixos-apple-silicon/pull/353
+          packages.zfs-installer =
+            (nixpkgs.lib.nixosSystem {
+              inherit system;
+              pkgs = import nixpkgs {
+                crossSystem.system = "aarch64-linux";
+                localSystem.system = system;
+                overlays = [ inputs.nixos-apple-silicon.overlays.default ];
+              };
+              modules = [
+                inputs.nixos-apple-silicon.outputs.nixosModules.apple-silicon-installer
+                {
+                  hardware.asahi.pkgsSystem = system;
+                  nixpkgs.hostPlatform.system = "aarch64-linux";
+                  nixpkgs.buildPlatform.system = system;
+                }
+                (
+                  { pkgs, ... }:
+                  {
+                    boot.supportedFilesystems.zfs = true;
+                    networking.hostId = "AAAAAAAA";
+                    environment.systemPackages = with pkgs; [
+                      git
+                      rsync
+                    ];
+                  }
+                )
+              ];
+            }).config.system.build.isoImage;
           kernelsu =
             let
               # currently only compiles on aarch64-linux
