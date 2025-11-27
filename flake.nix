@@ -22,7 +22,9 @@
     nixos-apple-silicon = {
       #url = "github:nix-community/nixos-apple-silicon";
       # merged with https://github.com/nix-community/nixos-apple-silicon/pull/353
-      url = "github:mio-19/nixos-apple-silicon";
+      #url = "github:mio-19/nixos-apple-silicon";
+      # https://github.com/nix-community/nixos-apple-silicon/issues/384
+      url = "github:mio-19/nixos-apple-silicon/mio-release-2025-08-23";
       #inputs.nixpkgs.follows = "nixpkgs"; # needs to comment out this to use binary cache
     };
   };
