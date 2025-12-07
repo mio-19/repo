@@ -5,9 +5,9 @@ android devices rom configurations
 command examples:
 
 ```zsh
-nix build --max-jobs 4 .#los.gta4xlwifi.ota
+nix build --max-jobs 4 .#los.gta4xlwifi.ota -o gta4xlwifi.zip
 
-nix build --max-jobs 4 .#los.enchilada.ota
+nix build --max-jobs 4 .#los.enchilada.ota -o enchilada.zip
 
 nix build --max-jobs 4 .#gos.akita.ota
 
