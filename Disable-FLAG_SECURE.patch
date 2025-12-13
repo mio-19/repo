@@ -1,6 +1,6 @@
-From 971be9a47119d24711e9de60c3066d41e4254108 Mon Sep 17 00:00:00 2001
+From 9059e604bbe0fc26c70cc04b110c2736f1816034 Mon Sep 17 00:00:00 2001
 From: Mio <mio@mio19.uk>
-Date: Thu, 13 Nov 2025 18:43:10 +1100
+Date: Sat, 13 Dec 2025 13:07:02 +0000
 Subject: [PATCH] Disable-FLAG_SECURE
 
 https://github.com/VarunS2002/Xposed-Disable-FLAG_SECURE/blob/f35b4c31f7bc593c4d8142d86885b8a35ef5708b/app/src/main/java/com/varuns2002/disable_flag_secure/DisableFlagSecure.kt
@@ -17,10 +17,10 @@ WindowManagerService.isSecureLocked(WindowState),
  4 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/core/java/android/view/SurfaceView.java b/core/java/android/view/SurfaceView.java
-index 29008d31990d..ece7831a8e3e 100644
+index 49a7da2d88ed..ee36189ab06e 100644
 --- a/core/java/android/view/SurfaceView.java
 +++ b/core/java/android/view/SurfaceView.java
-@@ -923,7 +923,7 @@ public class SurfaceView extends View implements ViewRootImpl.SurfaceChangedCall
+@@ -953,7 +953,7 @@ public class SurfaceView extends View implements ViewRootImpl.SurfaceChangedCall
       * @param isSecure True if the surface view is secure.
       */
      public void setSecure(boolean isSecure) {
@@ -30,10 +30,10 @@ index 29008d31990d..ece7831a8e3e 100644
          } else {
              mSurfaceFlags &= ~SurfaceControl.SECURE;
 diff --git a/core/java/android/view/Window.java b/core/java/android/view/Window.java
-index df23556a2672..6a25ffbe4d2a 100644
+index a2ad6c45cd7f..d1cbeb0e588d 100644
 --- a/core/java/android/view/Window.java
 +++ b/core/java/android/view/Window.java
-@@ -1305,7 +1305,7 @@ public abstract class Window {
+@@ -1366,7 +1366,7 @@ public abstract class Window {
       * @see #clearFlags
       */
      public void setFlags(int flags, int mask) {
@@ -43,10 +43,10 @@ index df23556a2672..6a25ffbe4d2a 100644
          mForcedWindowFlags |= mask;
          dispatchWindowAttributesChanged(attrs);
 diff --git a/core/java/android/view/WindowManagerGlobal.java b/core/java/android/view/WindowManagerGlobal.java
-index 5fdb387c0f73..02b9cd01add2 100644
+index a64e9fa56993..93c3e81f45ed 100644
 --- a/core/java/android/view/WindowManagerGlobal.java
 +++ b/core/java/android/view/WindowManagerGlobal.java
-@@ -383,7 +383,7 @@ public final class WindowManagerGlobal {
+@@ -385,7 +385,7 @@ public final class WindowManagerGlobal {
      }
  
      public void addView(View view, ViewGroup.LayoutParams params,
@@ -55,16 +55,16 @@ index 5fdb387c0f73..02b9cd01add2 100644
          if (view == null) {
              throw new IllegalArgumentException("view must not be null");
          }
-@@ -394,7 +394,7 @@ public final class WindowManagerGlobal {
+@@ -395,7 +395,7 @@ public final class WindowManagerGlobal {
+         if (!(params instanceof WindowManager.LayoutParams wparams)) {
              throw new IllegalArgumentException("Params must be WindowManager.LayoutParams");
          }
- 
--        final WindowManager.LayoutParams wparams = (WindowManager.LayoutParams) params;
-+        final WindowManager.LayoutParams wparams = (WindowManager.LayoutParams) params; wparams.flags &= ~WindowManager.LayoutParams.FLAG_SECURE;
+-
++        wparams.flags &= ~WindowManager.LayoutParams.FLAG_SECURE;
          final Context context = view.getContext();
          if (parentWindow != null) {
              parentWindow.adjustLayoutParamsForSubWindow(wparams);
-@@ -501,7 +501,7 @@ public final class WindowManagerGlobal {
+@@ -502,14 +502,14 @@ public final class WindowManagerGlobal {
          }
      }
  
@@ -73,20 +73,19 @@ index 5fdb387c0f73..02b9cd01add2 100644
          if (view == null) {
              throw new IllegalArgumentException("view must not be null");
          }
-@@ -509,7 +509,7 @@ public final class WindowManagerGlobal {
+         if (!(params instanceof WindowManager.LayoutParams wparams)) {
              throw new IllegalArgumentException("Params must be WindowManager.LayoutParams");
          }
- 
--        final WindowManager.LayoutParams wparams = (WindowManager.LayoutParams)params;
-+        final WindowManager.LayoutParams wparams = (WindowManager.LayoutParams)params; wparams.flags &= ~WindowManager.LayoutParams.FLAG_SECURE;
- 
+-
++        wparams.flags &= ~WindowManager.LayoutParams.FLAG_SECURE;
          view.setLayoutParams(wparams);
  
+         synchronized (mLock) {
 diff --git a/services/core/java/com/android/server/wm/WindowState.java b/services/core/java/com/android/server/wm/WindowState.java
-index d5c1721183fe..0a8058a84cfc 100644
+index 2f25587ee91f..1149be28f7ad 100644
 --- a/services/core/java/com/android/server/wm/WindowState.java
 +++ b/services/core/java/com/android/server/wm/WindowState.java
-@@ -1803,7 +1803,7 @@ class WindowState extends WindowContainer<WindowState> implements WindowManagerP
+@@ -1871,7 +1871,7 @@ class WindowState extends WindowContainer<WindowState> implements WindowManagerP
                 && mActivityRecord.getActivityType() == ACTIVITY_TYPE_DREAM;
      }
  
@@ -96,5 +95,5 @@ index d5c1721183fe..0a8058a84cfc 100644
              return false;
          }
 -- 
-2.51.0
+2.51.2
 
