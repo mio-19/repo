@@ -8,9 +8,9 @@
     android-nixpkgs.inputs.nixpkgs.follows = "nixpkgs";
     #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
     #robotnix.url = "github:nix-community/robotnix/signing-unfuck";
-    robotnix.url = "git+https://github.com/nix-community/robotnix.git";
+    #robotnix.url = "git+https://github.com/nix-community/robotnix.git";
     #robotnix.url = "github:nix-community/robotnix/grapheneos_2025-12-11";
-    #robotnix.url = "github:mio-19/robotnix";
+    robotnix.url = "github:mio-19/robotnix";
     robotnix.inputs.nixpkgs.follows = "nixpkgs-stable";
     robotnix.inputs.androidPkgs.follows = "android-nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
