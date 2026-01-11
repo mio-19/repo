@@ -17,31 +17,31 @@
   };
   enchilada-kernel = {
     pname = "enchilada-kernel";
-    version = "eabce74f5a9cb3111570c2e3c3a99ae0046ae580";
+    version = "b7798cdd4eb82e201b54dbb9b85662ee44e3b7cc";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_kernel_oneplus_sdm845.git";
-      rev = "eabce74f5a9cb3111570c2e3c3a99ae0046ae580";
+      rev = "b7798cdd4eb82e201b54dbb9b85662ee44e3b7cc";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-jeb1Fpfm0uGncpYPLdI/w/8pj8wjFJMOZn885DfnKqA=";
+      sha256 = "sha256-FNeZqqIZRc9zpbPE7OXYG+UhofIr83S3ycRm/2nwEXc=";
     };
-    date = "2025-07-11";
+    date = "2026-01-06";
   };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
-    version = "df7598e4aabe7efc26c0a37871b8ee4d72dc8acb";
+    version = "2c276961bbd7e6b8cad97219431182049bfc5e1c";
     src = fetchgit {
       url = "https://github.com/Evolution-X-Devices/kernel_samsung_gta4xl.git";
-      rev = "df7598e4aabe7efc26c0a37871b8ee4d72dc8acb";
+      rev = "2c276961bbd7e6b8cad97219431182049bfc5e1c";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-P41831dfS5dJqB595/bzpjXgHcn3lX7QY1CoRFt+oLw=";
+      sha256 = "sha256-GSBGZEQM7kVS7Xr5A8yjDs822wbqZ3VXpD7+bNDIXUw=";
     };
-    date = "2025-03-22";
+    date = "2025-09-05";
   };
   gta4xlwifi23-kernel = {
     pname = "gta4xlwifi23-kernel";
