@@ -17,17 +17,17 @@
   };
   enchilada-kernel = {
     pname = "enchilada-kernel";
-    version = "eabce74f5a9cb3111570c2e3c3a99ae0046ae580";
+    version = "b7798cdd4eb82e201b54dbb9b85662ee44e3b7cc";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_kernel_oneplus_sdm845.git";
-      rev = "eabce74f5a9cb3111570c2e3c3a99ae0046ae580";
+      rev = "b7798cdd4eb82e201b54dbb9b85662ee44e3b7cc";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-jeb1Fpfm0uGncpYPLdI/w/8pj8wjFJMOZn885DfnKqA=";
+      sha256 = "sha256-FNeZqqIZRc9zpbPE7OXYG+UhofIr83S3ycRm/2nwEXc=";
     };
-    date = "2025-07-11";
+    date = "2026-01-06";
   };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
