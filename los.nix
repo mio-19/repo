@@ -34,19 +34,19 @@ let
     upstream = {
       src = pkgs.fetchgit {
         url = "https://github.com/tiann/KernelSU.git";
-        rev = "139b8139c9634b324f7956bbb309b14b6e35a107";
-        sha256 = "1k7gkg2f95kpxl1048x3cfd580w41lqmpfymqld1s1z135ylq06i";
+        rev = "7d293d5ed220eb810734a871e2729fb46935eafa";
+        sha256 = "0bf8bj0432nv0gd6ll2ws97sya0bf0z12w3akvxfk0xy8v430yrs";
       };
-      version = "unstable-2026-01-14";
+      version = "unstable-2026-01-22";
       ver = 10000 + 1923 + 200; # TODO: update ver
     };
     sukisu = {
       src = pkgs.fetchgit {
         url = "https://github.com/SukiSU-Ultra/SukiSU-Ultra.git";
-        rev = "23c8a145fab138a1f1a58198d4f8f9d0dad0e499";
-        sha256 = "1laqxf45dh59n5kfblvym9r80px9dzhs4rjvd3bk9cfyq1zrjynv";
+        rev = "fce93170887c55f65beff7785a6f244586edfb4e";
+        sha256 = "1xbs6r9mir2nzyzkdg44fxvib6cdhk8r76mimyzj4bq915d14ih4";
       };
-      version = "unstable-2026-01-12";
+      version = "unstable-2026-01-16";
       ver = 10000 + 2643 + 200; # TODO: update ver
     };
   };
