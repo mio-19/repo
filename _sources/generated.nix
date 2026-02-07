@@ -16,7 +16,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-QXHmdl7kdLspqLuVAcAw50AJ0rYKiLNyaRPqSpTnoWM=";
+      sha256 = "sha256-jbeoLFk3Dd9jBYIxzOcT3fHd6Q8Y0ec3GCoBf0oO0JI=";
     };
     date = "2025-03-12";
   };
@@ -30,7 +30,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-FNeZqqIZRc9zpbPE7OXYG+UhofIr83S3ycRm/2nwEXc=";
+      sha256 = "sha256-G754H3J8ByuSlrJ+ZKF8HiNWd3DwfMsO4Yw5LMOS6CI=";
     };
     date = "2026-01-06";
   };
@@ -44,7 +44,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-GSBGZEQM7kVS7Xr5A8yjDs822wbqZ3VXpD7+bNDIXUw=";
+      sha256 = "sha256-07k13X2QjGcOoqWJdlZf3iSSYHPNfu1r+vmcHj0AJt8=";
     };
     date = "2025-09-05";
   };
@@ -58,7 +58,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-mLQ2JitKF8ytdbY9L570g6tuK8Y7G8OUf3F0f5wKyGo=";
+      sha256 = "sha256-A3EnpcKcT3AtXlmlzj1A3Tl+6kCQhKwl6Qe0mXw2+jI=";
     };
     date = "2026-01-24";
   };
