@@ -55,6 +55,7 @@
                   ccache.enable = ccache;
                   signing.enable = sign;
                   signing.keyStorePath = "/home/user/Documents/repo/keys";
+                  signing.avb.size = 2048;
                 };
             in
             # https://github.com/MatthewCroughan/nixcfg/blob/afab322e6da20cc038d8577dd4a365673702d183/flake.nix#L57
