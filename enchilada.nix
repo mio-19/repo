@@ -7,8 +7,8 @@ args@{ config, pkgs, ... }:
   defconfig = "arch/arm64/configs/enchilada_defconfig";
   device = "enchilada";
   flavorVersion = "22.2";
-  gapps = false;
-  microg.enable = true;
+  gapps = true; # unfortunaly microg still cannot receive 2FA
+  microg.enable = false;
   #flavorVersion = "23.0";
   legacy414 = true;
   ksu = false; # compiled but not working
