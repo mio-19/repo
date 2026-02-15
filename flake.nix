@@ -1,15 +1,15 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/release-25.05";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
     android-nixpkgs.url = "github:tadfisher/android-nixpkgs";
     android-nixpkgs.inputs.nixpkgs.follows = "nixpkgs";
     #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
     #robotnix.url = "github:nix-community/robotnix/signing-unfuck";
-    robotnix.url = "git+https://github.com/nix-community/robotnix.git";
-    #robotnix.url = "github:nix-community/robotnix/grapheneos_2026-02-05";
+    #robotnix.url = "git+https://github.com/nix-community/robotnix.git";
+    robotnix.url = "github:nix-community/robotnix/grapheneos_2026-02-14";
     #robotnix.url = "github:mio-19/robotnix";
     robotnix.inputs.nixpkgs.follows = "nixpkgs-stable";
     robotnix.inputs.androidPkgs.follows = "android-nixpkgs";
