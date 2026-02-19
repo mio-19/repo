@@ -59,3 +59,9 @@ git fetch https://github.com/updateing/android_kernel_google_zuma.git 14.0.0-sul
 ```
 
 adjusted patch: pixel8pro.patch
+
+
+```
+KLEAF_REPO_MANIFEST=aosp_manifest.xml ./build_shusky.sh --lto=full
+
+```
