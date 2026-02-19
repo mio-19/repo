@@ -1,12 +1,52 @@
+From 193e4a2fed05256c7e0cbff933f57dc8b4b372bb Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Thu, 19 Feb 2026 17:11:27 +1100
+Subject: [PATCH] pixel8propatch
+
+---
+ .../devices/google/shusky/display/BUILD.bazel |   1 +
+ private/devices/google/shusky/display/Kbuild  |   8 +
+ .../devices/google/shusky/display/Makefile    |   2 +
+ .../google/shusky/display/exposure-adj.c      | 146 +++++++++++++++
+ .../google/shusky/display/exposure-adj.h      |  35 ++++
+ .../google/shusky/display/panel-google-hk3.c  | 166 ++++++++++++++++--
+ .../display/samsung/BUILD.bazel               |   9 +-
+ .../display/samsung/exynos_drm_crtc.c         | 102 ++++++++++-
+ .../display/samsung/exynos_drm_decon.c        |   1 +
+ .../display/samsung/exynos_drm_drv.h          |   6 +
+ 10 files changed, 454 insertions(+), 22 deletions(-)
+ create mode 100644 private/devices/google/shusky/display/exposure-adj.c
+ create mode 100644 private/devices/google/shusky/display/exposure-adj.h
+
+diff --git a/private/devices/google/shusky/display/BUILD.bazel b/private/devices/google/shusky/display/BUILD.bazel
+index 95531e706..ba8071d76 100644
+--- a/private/devices/google/shusky/display/BUILD.bazel
++++ b/private/devices/google/shusky/display/BUILD.bazel
+@@ -9,6 +9,7 @@ kernel_module(
+         "**/*.h",
+     ]) + [
+         "Kbuild",
++        "//private/google-modules/bms/misc:headers",
+         "//private/google-modules/display/common:headers",
+         "//private/google-modules/display/samsung:headers",
+         "//private/google-modules/display/samsung/include:headers",
 diff --git a/private/devices/google/shusky/display/Kbuild b/private/devices/google/shusky/display/Kbuild
-index 5b27e4d41..83fd35395 100644
+index 5b27e4d41..2451f9132 100644
 --- a/private/devices/google/shusky/display/Kbuild
 +++ b/private/devices/google/shusky/display/Kbuild
-@@ -2,5 +2,6 @@
+@@ -1,6 +1,14 @@
+ # SPDX-License-Identifier: GPL-2.0
  
++subdir-ccflags-y += -I$(src)/../../../google-modules/display/samsung
++subdir-ccflags-y += -I$(src)/../../../google-modules/display/samsung/cal_common
++subdir-ccflags-y += -I$(src)/../../../google-modules/bms/misc
++
++# Symbol exports from samsung display module (built by Kleaf under bazel-out)
++KBUILD_EXTRA_SYMBOLS += $(srctree)/../bazel-out/k8-fastbuild/bin/private/google-modules/display/samsung/display.samsung/Module.symvers
++
  obj-$(CONFIG_DRM_PANEL_GOOGLE_BIGSURF)		+= panel-google-bigsurf.o
  obj-$(CONFIG_DRM_PANEL_GOOGLE_HK3)		+= panel-google-hk3.o
-+obj-$(CONFIG_DRM_PANEL_GOOGLE_HK3)		+= exposure-adj.o
++panel-google-hk3-y				:= exposure-adj.o
  obj-$(CONFIG_DRM_PANEL_GOOGLE_SHORELINE)	+= panel-google-shoreline.o
  obj-$(CONFIG_DRM_PANEL_GS_HK3)			+= panel-gs-hk3.o
 diff --git a/private/devices/google/shusky/display/Makefile b/private/devices/google/shusky/display/Makefile
@@ -26,10 +66,10 @@ index 26790adfd..0282db72b 100644
  
 diff --git a/private/devices/google/shusky/display/exposure-adj.c b/private/devices/google/shusky/display/exposure-adj.c
 new file mode 100644
-index 000000000..e90ac56c9
+index 000000000..f6c271644
 --- /dev/null
 +++ b/private/devices/google/shusky/display/exposure-adj.c
-@@ -0,0 +1,144 @@
+@@ -0,0 +1,146 @@
 +/*
 + * An exposure adjustment driver based on Exynos DPP for OLED devices
 + *
@@ -57,6 +97,8 @@ index 000000000..e90ac56c9
 +
 +#include "exposure-adj.h"
 +
++MODULE_LICENSE("GPL v2");
++
 +int linear_matrix_application_threshold = LINEAR_MATRIX_APPLY_THRESHOLD_DEFAULT;
 +module_param(linear_matrix_application_threshold, int, 0644);
 +
@@ -69,7 +111,7 @@ index 000000000..e90ac56c9
 +	struct exynos_drm_crtc_state fake_crtc_state;
 +	uint32_t blob_id;
 +	__u16 ofs, coef;
-+	int rc;
++	int rc = 0;
 +
 +	if (crtc == NULL) {
 +		pr_err("crtc has not been initialized\n");
@@ -480,6 +522,26 @@ index 7428bb550..573e9334f 100644
  }
  
  static void hk3_set_local_hbm_mode_post(struct exynos_panel *ctx)
+diff --git a/private/google-modules/display/samsung/BUILD.bazel b/private/google-modules/display/samsung/BUILD.bazel
+index ebe87cbee..973cdba62 100644
+--- a/private/google-modules/display/samsung/BUILD.bazel
++++ b/private/google-modules/display/samsung/BUILD.bazel
+@@ -4,12 +4,9 @@ load("//build/kernel/kleaf:kernel.bzl", "ddk_uapi_headers", "kernel_module")
+ 
+ filegroup(
+     name = "headers",
+-    srcs = [
+-        "dp_audio/dp_audio.h",
+-        "exynos_drm_connector.h",
+-        "exynos_drm_format.h",
+-        "panel/panel-common.h",
+-        "panel/panel-samsung-drv.h",
++    srcs = glob([
++        "**/*.h",
++    ]) + [
+         "//private/google-modules/display/common:headers",
+         "//private/google-modules/display/samsung/include:headers",
+     ],
 diff --git a/private/google-modules/display/samsung/exynos_drm_crtc.c b/private/google-modules/display/samsung/exynos_drm_crtc.c
 index aa7567409..c749ada64 100644
 --- a/private/google-modules/display/samsung/exynos_drm_crtc.c
@@ -635,6 +697,18 @@ index aa7567409..c749ada64 100644
  		ret = exynos_drm_crtc_create_blob(crtc, "gamma_matrix",
  				&exynos_crtc->props.gamma_matrix);
  		if (ret)
+diff --git a/private/google-modules/display/samsung/exynos_drm_decon.c b/private/google-modules/display/samsung/exynos_drm_decon.c
+index 9819ffd1e..2bd8b5f91 100644
+--- a/private/google-modules/display/samsung/exynos_drm_decon.c
++++ b/private/google-modules/display/samsung/exynos_drm_decon.c
+@@ -58,6 +58,7 @@
+ #endif
+ 
+ struct decon_device *decon_drvdata[MAX_DECON_CNT];
++EXPORT_SYMBOL(decon_drvdata);
+ 
+ #define decon_info(decon, fmt, ...)	\
+ pr_info("%s[%u]: "fmt, decon->dev->driver->name, decon->id, ##__VA_ARGS__)
 diff --git a/private/google-modules/display/samsung/exynos_drm_drv.h b/private/google-modules/display/samsung/exynos_drm_drv.h
 index cffa900a2..003f3601b 100644
 --- a/private/google-modules/display/samsung/exynos_drm_drv.h
@@ -673,3 +747,6 @@ index cffa900a2..003f3601b 100644
  		struct drm_property *gamma_matrix;
  		struct drm_property *dqe_enabled;
  		struct drm_property *partial;
+-- 
+2.52.0
+
