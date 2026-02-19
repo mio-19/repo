@@ -61,7 +61,9 @@ git fetch https://github.com/updateing/android_kernel_google_zuma.git 14.0.0-sul
 adjusted patch: pixel8pro.patch
 
 
-```
+```zsh
+rm -f private/devices/google/shusky/display/exynos_drm_decon.h
+cp private/google-modules/display/samsung/exynos_drm_decon.h private/devices/google/shusky/display/
 KLEAF_REPO_MANIFEST=aosp_manifest.xml ./build_shusky.sh --lto=full
 
 ```
