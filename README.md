@@ -62,9 +62,9 @@ adjusted patch: pixel8pro.patch
 
 
 ```zsh
-rm -f private/devices/google/shusky/display/exynos_drm_decon.h private/devices/google/shusky/display/decon_cal.h
+rm -f private/devices/google/shusky/display/exynos_drm_decon.h private/devices/google/shusky/display/decon_cal.h private/devices/google/shusky/display/cal_config.h 
 cp private/google-modules/display/samsung/exynos_drm_decon.h private/devices/google/shusky/display/
-cp private/google-modules/display/samsung/cal_common/decon_cal.h private/devices/google/shusky/display/
+cp private/google-modules/display/samsung/cal_common/decon_cal.h private/google-modules/display/samsung/cal_common/cal_config.h private/devices/google/shusky/display/
 KLEAF_REPO_MANIFEST=aosp_manifest.xml ./build_shusky.sh --lto=full
 
 ```
