@@ -21,6 +21,7 @@ nix build --max-jobs 4 .#losSign.gta4xlwifi.releaseScript --impure -o release
 
 
 nix build --max-jobs 4 .#gosSign.akita.releaseScript --impure -o release && ./release ./keys
+nix build --max-jobs 4 .#gosSign.husky.releaseScript --impure -o release && ./release ./keys
 ```
 
 generate keys/updating keys:
@@ -43,3 +44,24 @@ nix build .#gta4xlwifi -o gta4xlwifi
 ## update
 
 use update-nix-fetchgit and nvfetcher
+
+## husky kernel
+
+<https://grapheneos.org/build#prebuilt-code>
+
+<https://github.com/updateing/android_kernel_google_zuma/commits/14.0.0-sultan-pwm/>
+
+FROM 98034a90a743131b9542b5d580fe46c8be69296a
+TO   60d772c2e51304d1454be922afd4eba02b5c50ca
+
+```
+git fetch https://github.com/updateing/android_kernel_google_zuma.git 14.0.0-sultan-pwm
+```
+
+adjusted patch: pixel8pro.patch
+
+
+```zsh
+KLEAF_REPO_MANIFEST=aosp_manifest.xml ./build_shusky.sh --lto=full
+
+```
