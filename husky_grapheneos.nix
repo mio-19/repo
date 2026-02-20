@@ -12,8 +12,8 @@ args@{
     src = pkgs.fetchgit {
       url = "https://github.com/mio-19/device_google_shusky-kernels_6.1.git";
       # pixel8pro-stock-fix-3840Hz.patch with pixel8pro-lindroid.patch
-      rev = "ab7ed686e522ae661937f84431107bd2387992e5";
-      hash = "sha256-w+vHyw+h07ruzKFFucr/YKSRF9+7ypmVQkgHx9lno1o=";
+      rev = "594b4b970ec1a165c8840495fb796cf6ba8e7d19";
+      hash = "sha256-O3AA2y48uHHwyCzqlqhPXrgTQ3d3vBYyc2if3lwiZeI=";
       fetchLFS = true;
     };
   };
