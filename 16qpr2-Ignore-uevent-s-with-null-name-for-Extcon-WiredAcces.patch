@@ -1,0 +1,28 @@
+diff --git a/services/core/java/com/android/server/ExtconStateObserver.java b/services/core/java/com/android/server/ExtconStateObserver.java
+index 92f30ff50112..9e99f3b9415f 100644
+--- a/services/core/java/com/android/server/ExtconStateObserver.java
++++ b/services/core/java/com/android/server/ExtconStateObserver.java
+@@ -53,6 +53,9 @@ public abstract class ExtconStateObserver<S> extends ExtconUEventObserver {
+     public void onUEvent(ExtconInfo extconInfo, UEvent event) {
+         if (LOG) Slog.d(TAG, extconInfo.getName() + " UEVENT: " + event);
+         String name = event.get("NAME");
++        if(name == null) {
++            return;
++        }
+         S state = parseState(extconInfo, event.get("STATE"));
+         if (state != null) {
+             updateState(extconInfo, name, state);
+diff --git a/services/core/java/com/android/server/WiredAccessoryManager.java b/services/core/java/com/android/server/WiredAccessoryManager.java
+index 7b7822e3f20a..5f359fea809c 100644
+--- a/services/core/java/com/android/server/WiredAccessoryManager.java
++++ b/services/core/java/com/android/server/WiredAccessoryManager.java
+@@ -470,6 +470,9 @@ final class WiredAccessoryManager implements WiredAccessoryCallbacks {
+             try {
+                 String devPath = event.get("DEVPATH");
+                 String name = event.get("SWITCH_NAME");
++                if(name == null) {
++                    return;
++                }
+                 int state = Integer.parseInt(event.get("SWITCH_STATE"));
+                 synchronized (mLock) {
+                     updateStateLocked(devPath, name, state);

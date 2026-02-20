@@ -29,7 +29,7 @@ args@{
   source.dirs."frameworks/native".patches = [ ./inputflinger.patch ];
   # to fix soft reboot when starting container on A14 (temporary!!! workaround) https://t.me/linux_on_droid/10346
   source.dirs."frameworks/base".patches = [
-    ./0001-Ignore-uevent-s-with-null-name-for-Extcon-WiredAcces.patch
+    ./16qpr2-Ignore-uevent-s-with-null-name-for-Extcon-WiredAcces.patch
   ];
   source.dirs."vendor/lindroid" = {
     src = pkgs.fetchgit {
