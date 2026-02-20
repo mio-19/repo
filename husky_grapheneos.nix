@@ -2,7 +2,6 @@ args@{ config, pkgs, lib, ... }:
 {
   imports = [ ./gos.nix ];
   device = "husky";
-  grapheneos.channel = "stable";
   # check in nix repl (import ./.).gosSign.husky.config.source.dirs."device/google/shusky-kernels/6.1"
   source.dirs."device/google/shusky-kernels/6.1" = lib.mkForce {
     src = pkgs.fetchgit {
