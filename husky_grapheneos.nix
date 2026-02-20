@@ -39,9 +39,9 @@ args@{
       hash = "sha256-mZowr9x1wKeJC956bl095HtAK/2t7NHMuC0+QXCQRpM=";
     };
     # https://t.me/linux_on_droid/18552
-    postPatch = ''
-      sed -i 's|android.hardware.graphics.common-V5|android.hardware.graphics.common-V6|' interfaces/composer/Android.bp
-    '';
+    #postPatch = ''
+    #  sed -i 's|android.hardware.graphics.common-V5|android.hardware.graphics.common-V6|' interfaces/composer/Android.bp
+    #'';
   };
   source.dirs."external/lxc".src = pkgs.fetchgit {
     url = "https://github.com/Linux-on-droid/external_lxc.git";
