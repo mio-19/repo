@@ -62,6 +62,7 @@ adjusted patch: pixel8pro.patch
 
 
 ```zsh
+sudo apt install libssl-dev
 KLEAF_REPO_MANIFEST=aosp_manifest.xml ./build_shusky.sh --lto=full
 
 ```
