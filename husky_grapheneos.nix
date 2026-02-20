@@ -12,8 +12,9 @@ args@{
     src = pkgs.fetchgit {
       url = "https://github.com/mio-19/device_google_shusky-kernels_6.1.git";
       # pixel8pro-stock-fix-3840Hz.patch with pixel8pro-lindroid.patch
-      rev = "594b4b970ec1a165c8840495fb796cf6ba8e7d19";
-      hash = "sha256-O3AA2y48uHHwyCzqlqhPXrgTQ3d3vBYyc2if3lwiZeI=";
+      # pixel8pro-stock-fix-3840Hz.patch
+      rev = "814852a811e336fd0dabb8fcf05fbe78bedd36f0";
+      hash = "sha256-AQFFQ4s2EGTYciYNoGBKDMVCrbKRaYdd6onphkdoXog=";
       fetchLFS = true;
     };
   };
@@ -23,8 +24,8 @@ args@{
   source.dirs."vendor/adevtool".postPatch = ''
     echo '
     PRODUCT_SYSTEM_PROPERTIES += ro.adb.secure=1' >> config/mk/google_devices/device/husky/device.mk
+    sed -i '/vendor\/adevtool\/config\/mk\/google_devices\/platform\/zuma\/product-common\.mk/a $(call inherit-product, vendor/lindroid/lindroid.mk)' config/mk/google_devices/device/husky/device.mk
   '';
-  # sed -i '/vendor\/adevtool\/config\/mk\/google_devices\/platform\/zuma\/product-common\.mk/a $(call inherit-product, vendor/lindroid/lindroid.mk)' vendor/adevtool/config/mk/google_devices/device/husky/device.mk
   # lindroid:
   # TODO - failed with building adevtool dependencies:     system_ext/usr/share/lindroid/lxc/default.conf
   /*
