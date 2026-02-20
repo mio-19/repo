@@ -16,23 +16,25 @@ nix build --max-jobs 4 .#gos.akita.ota
 
 
 nix build --max-jobs 4 .#losSign.gta4xlwifi.releaseScript --impure -o release
-./release ./keys
+./release ./keys-akita
 
 
 
-nix build --max-jobs 4 .#gosSign.akita.releaseScript --impure -o release && ./release ./keys
-nix build --max-jobs 4 .#gosSign.husky.releaseScript --impure -o release && ./release ./keys
+nix build --max-jobs 4 .#gosSign.akita.releaseScript --impure -o release && ./release ./keys-akita
+nix build --max-jobs 4 .#gosSign.husky.releaseScript --impure -o release && ./release ./keys-husky
 ```
 
 generate keys/updating keys:
 
 ```zsh
 nix build .#gos.akita.generateKeysScript -o generate-keys
-./generate-keys ./keys
+./generate-keys ./keys-akita
 
+nix build .#gos.husky.generateKeysScript -o generate-keys
+./generate-keys ./keys-husky
 
 nix build .#losSign.gta4xlwifi.generateKeysScript -o generate-keys
-./generate-keys ./keys
+./generate-keys ./keys-akita
 ```
 
 build kernels:

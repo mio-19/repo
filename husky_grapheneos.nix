@@ -17,4 +17,5 @@ args@{ config, pkgs, lib, ... }:
       fetchLFS = true;
     };
   };
+  signing.avb.size = 4096;
 }

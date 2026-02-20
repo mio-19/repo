@@ -8,4 +8,5 @@ args@{ config, pkgs, ... }:
     ./Disable-FLAG_SECURE.patch
     #./No-gestural-navigation-hint-bar.patch
   ];
+  signing.avb.size = 2048;
 }
