@@ -747,6 +747,15 @@ index cffa900a2..003f3601b 100644
  		struct drm_property *gamma_matrix;
  		struct drm_property *dqe_enabled;
  		struct drm_property *partial;
+diff --git a/private/devices/google/shusky/vendor_ramdisk.modules.shusky b/private/devices/google/shusky/vendor_ramdisk.modules.shusky
+index 04cf5fa62..b8fd13e2c 100644
+--- a/private/devices/google/shusky/vendor_ramdisk.modules.shusky
++++ b/private/devices/google/shusky/vendor_ramdisk.modules.shusky
+@@ -1,3 +1,4 @@
++extra/private/devices/google/shusky/display/exposure-adj.ko
+ extra/private/devices/google/shusky/display/panel-google-bigsurf.ko
+ extra/private/devices/google/shusky/display/panel-google-hk3.ko
+ extra/private/devices/google/shusky/display/panel-google-shoreline.ko
 -- 
 2.52.0
 
