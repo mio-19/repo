@@ -66,7 +66,7 @@ adjusted patch from sultan branch: pixel8pro-14.0.0-sultan-pwm.patch
 
 adjusted patch with  Stock-based variant: pixel8pro-stock.patch
 
-adjusted patch from <https://github.com/elephant-43> pixel8pro-elephant-43.patch
+adjusted patch from <https://github.com/elephant-43/kernel_google-modules_display_samsung> <https://github.com/elephant-43/kernel_devices_google_shusky> pixel8pro-elephant-43.patch
 
 ```zsh
 sudo apt install libssl-dev
