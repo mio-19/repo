@@ -25,12 +25,12 @@ args@{
     PRODUCT_SYSTEM_PROPERTIES += ro.adb.secure=1' >> config/mk/google_devices/device/husky/device.mk
   '';
   # lindroid:
-  # TODO:
+  # TODO - failed with building adevtool dependencies:     system_ext/usr/share/lindroid/lxc/default.conf
   /*
-  source.dirs."build/make".postPatch = ''
-    echo '
-    $(call inherit-product, vendor/lindroid/lindroid.mk)' >> target/product/generic_system.mk
-  '';
+    source.dirs."build/make".postPatch = ''
+      echo '
+      $(call inherit-product, vendor/lindroid/lindroid.mk)' >> target/product/generic_system.mk
+    '';
   */
   source.dirs."frameworks/native".patches = [ ./inputflinger.patch ];
   # to fix soft reboot when starting container on A14 (temporary!!! workaround) https://t.me/linux_on_droid/10346
@@ -46,7 +46,7 @@ args@{
     };
     # https://t.me/linux_on_droid/18552
     postPatch = ''
-      sed -i 's|android.hardware.graphics.common-V5|android.hardware.graphics.common-V6|' interfaces/composer/Android.bp
+      sed -i 's|android.hardware.graphics.common-V5|android.hardware.graphics.common-V7|' interfaces/composer/Android.bp
     '';
   };
   source.dirs."external/lxc".src = pkgs.fetchgit {
