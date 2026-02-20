@@ -25,10 +25,13 @@ args@{
     PRODUCT_SYSTEM_PROPERTIES += ro.adb.secure=1' >> config/mk/google_devices/device/husky/device.mk
   '';
   # lindroid:
+  # TODO:
+  /*
   source.dirs."build/make".postPatch = ''
     echo '
     $(call inherit-product, vendor/lindroid/lindroid.mk)' >> target/product/generic_system.mk
   '';
+  */
   source.dirs."frameworks/native".patches = [ ./inputflinger.patch ];
   # to fix soft reboot when starting container on A14 (temporary!!! workaround) https://t.me/linux_on_droid/10346
   source.dirs."frameworks/base".patches = [
