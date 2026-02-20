@@ -1,4 +1,9 @@
-args@{ config, pkgs, lib, ... }:
+args@{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   buildDateTime = 1771555006;
   flavor = "grapheneos";

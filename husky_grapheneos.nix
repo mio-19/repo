@@ -1,4 +1,9 @@
-args@{ config, pkgs, lib, ... }:
+args@{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   imports = [ ./gos.nix ];
   device = "husky";
@@ -14,9 +19,8 @@ args@{ config, pkgs, lib, ... }:
   };
   signing.avb.size = 4096;
   variant = "userdebug";
-  config.source.dirs."vendor/adevtool".postPatch =
-     ''
-      echo '
-      PRODUCT_SYSTEM_PROPERTIES += ro.adb.secure=1' >> config/mk/google_devices/device/husky/device.mk
-    '';
+  config.source.dirs."vendor/adevtool".postPatch = ''
+    echo '
+    PRODUCT_SYSTEM_PROPERTIES += ro.adb.secure=1' >> config/mk/google_devices/device/husky/device.mk
+  '';
 }
