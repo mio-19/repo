@@ -49,6 +49,10 @@ sed -i 's/^# CONFIG_PID_NS is not set$/CONFIG_PID_NS=y/' aosp/arch/arm64/configs
 
 # 3) Add USER_NS once, right after PID_NS
 sed -i '/^CONFIG_PID_NS=y$/a CONFIG_USER_NS=y' aosp/arch/arm64/configs/gki_defconfig
+# reset namespace lines in gki_defconfig to what savedefconfig wants
+sed -i '/^CONFIG_USER_NS=y$/d' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_PID_NS=y$/d' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_NAMESPACES=y$/a CONFIG_USER_NS=y' aosp/arch/arm64/configs/gki_defconfig
 
 ```
 
