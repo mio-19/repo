@@ -1,12 +1,13 @@
-From 6236b344694880c39efa679ff6de3fc332bc892a Mon Sep 17 00:00:00 2001
+From da68d659183945e059d83ac3c860b10db3ca752e Mon Sep 17 00:00:00 2001
 From: Mio <mio@mio19.uk>
 Date: Fri, 20 Feb 2026 16:45:41 +1100
 Subject: [PATCH] https://github.com/elephant-43
 
 ---
- private/devices/google/shusky/display/Kbuild  |   1 +
+ .../devices/google/shusky/display/BUILD.bazel |   3 +-
+ private/devices/google/shusky/display/Kbuild  |   3 +-
  .../devices/google/shusky/display/Makefile    |   2 +
- .../google/shusky/display/exposure-adj.c      | 144 +++++++++++++++
+ .../google/shusky/display/exposure-adj.c      | 149 ++++++++++++++++
  .../google/shusky/display/exposure-adj.h      |  35 ++++
  ...el-google-hk3.c => panel-google-hk3-drv.c} | 164 ++++++++++++++++--
  .../shusky/vendor_ramdisk.modules.shusky      |   3 +-
@@ -14,19 +15,35 @@ Subject: [PATCH] https://github.com/elephant-43
  .../display/samsung/exynos_drm_crtc.c         | 102 ++++++++++-
  .../display/samsung/exynos_drm_decon.c        |   1 +
  .../display/samsung/exynos_drm_drv.h          |   6 +
- 10 files changed, 460 insertions(+), 17 deletions(-)
+ 11 files changed, 468 insertions(+), 19 deletions(-)
  create mode 100644 private/devices/google/shusky/display/exposure-adj.c
  create mode 100644 private/devices/google/shusky/display/exposure-adj.h
  rename private/devices/google/shusky/display/{panel-google-hk3.c => panel-google-hk3-drv.c} (94%)
 
+diff --git a/private/devices/google/shusky/display/BUILD.bazel b/private/devices/google/shusky/display/BUILD.bazel
+index 95531e706..a5c1c9fac 100644
+--- a/private/devices/google/shusky/display/BUILD.bazel
++++ b/private/devices/google/shusky/display/BUILD.bazel
+@@ -17,7 +17,8 @@ kernel_module(
+     outs = [
+         # keep sorted
+         "panel-google-bigsurf.ko",
+-        "panel-google-hk3.ko",
++        "panel-google-hk3-drv.ko",
++        "exposure-adj.ko",
+         "panel-google-shoreline.ko",
+     ],
+     kernel_build = "//private/devices/google/common:kernel",
 diff --git a/private/devices/google/shusky/display/Kbuild b/private/devices/google/shusky/display/Kbuild
-index 5b27e4d41..8cb1b9d2c 100644
+index 5b27e4d41..ea6066da5 100644
 --- a/private/devices/google/shusky/display/Kbuild
 +++ b/private/devices/google/shusky/display/Kbuild
-@@ -2,5 +2,6 @@
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
  
  obj-$(CONFIG_DRM_PANEL_GOOGLE_BIGSURF)		+= panel-google-bigsurf.o
- obj-$(CONFIG_DRM_PANEL_GOOGLE_HK3)		+= panel-google-hk3.o
+-obj-$(CONFIG_DRM_PANEL_GOOGLE_HK3)		+= panel-google-hk3.o
++obj-$(CONFIG_DRM_PANEL_GOOGLE_HK3)		+= exposure-adj.o panel-google-hk3-drv.o
 +panel-google-hk3-objs				+= exposure-adj.o panel-google-hk3-drv.o
  obj-$(CONFIG_DRM_PANEL_GOOGLE_SHORELINE)	+= panel-google-shoreline.o
  obj-$(CONFIG_DRM_PANEL_GS_HK3)			+= panel-gs-hk3.o
@@ -47,10 +64,10 @@ index 26790adfd..0282db72b 100644
  
 diff --git a/private/devices/google/shusky/display/exposure-adj.c b/private/devices/google/shusky/display/exposure-adj.c
 new file mode 100644
-index 000000000..0e228a101
+index 000000000..79a69a073
 --- /dev/null
 +++ b/private/devices/google/shusky/display/exposure-adj.c
-@@ -0,0 +1,144 @@
+@@ -0,0 +1,149 @@
 +/*
 + * An exposure adjustment driver based on Exynos DPP for OLED devices
 + *
@@ -195,6 +212,12 @@ index 000000000..0e228a101
 +		return bl_lvl;
 +	}
 +}
++EXPORT_SYMBOL(ea_panel_calc_backlight);
++
++MODULE_AUTHOR("Hamster Tian <haotia@gmail.com>");
++MODULE_DESCRIPTION("Exposure adjustment logic for Google HK3 panel");
++MODULE_LICENSE("GPL");
+\ No newline at end of file
 diff --git a/private/devices/google/shusky/display/exposure-adj.h b/private/devices/google/shusky/display/exposure-adj.h
 new file mode 100644
 index 000000000..46fe92c64
