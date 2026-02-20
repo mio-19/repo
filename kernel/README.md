@@ -41,7 +41,15 @@ CONFIG_USER_NS=y
 EOF
 grep -q '^CONFIG_PID_NS=y' aosp/arch/arm64/configs/gki_defconfig || \
   sed -i 's/^# CONFIG_PID_NS is not set/CONFIG_PID_NS=y/' aosp/arch/arm64/configs/gki_defconfig
+# 1) Remove all USER_NS entries first (clean slate)
+sed -i '/^CONFIG_USER_NS=y$/d' aosp/arch/arm64/configs/gki_defconfig
+
+# 2) Ensure PID_NS is enabled (restore what got replaced)
+sed -i 's/^# CONFIG_PID_NS is not set$/CONFIG_PID_NS=y/' aosp/arch/arm64/configs/gki_defconfig
+
+# 3) Add USER_NS once, right after PID_NS
+sed -i '/^CONFIG_PID_NS=y$/a CONFIG_USER_NS=y' aosp/arch/arm64/configs/gki_defconfig
 
 ```
 
-with lindroid use `KLEAF_REPO_MANIFEST=aosp_manifest.xml ./build_shusky.sh --lto=full --nokmi_symbol_list_strict_mode`
+with lindroid use `KLEAF_REPO_MANIFEST=aosp_manifest.xml ./build_shusky.sh --lto=full --nokmi_symbol_list_strict_mode --sandbox_debug --verbose_failures`
