@@ -29,9 +29,13 @@ lindroid extra steps - pixel8pro-lindroid.patch
 git clone https://github.com/Linux-on-droid/lindroid-drm-loopback.git aosp/drivers/lindroid-drm
 echo 'obj-y += lindroid-drm/' >> aosp/drivers/Makefile
 sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" aosp/drivers/Kconfig
+NOT_HERE(){
 tee -a aosp/android/abi_gki_aarch64_pixel << 'EOF'
   make_kuid
   from_kuid
   from_kuid_munged
 EOF
+}
 ```
+
+with lindroid use `KLEAF_REPO_MANIFEST=aosp_manifest.xml ./build_shusky.sh --lto=full --nokmi_symbol_list_strict_mode`
