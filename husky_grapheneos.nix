@@ -24,6 +24,7 @@ args@{
     echo '
     PRODUCT_SYSTEM_PROPERTIES += ro.adb.secure=1' >> config/mk/google_devices/device/husky/device.mk
   '';
+  # sed -i '/vendor\/adevtool\/config\/mk\/google_devices\/platform\/zuma\/product-common\.mk/a $(call inherit-product, vendor/lindroid/lindroid.mk)' vendor/adevtool/config/mk/google_devices/device/husky/device.mk
   # lindroid:
   # TODO - failed with building adevtool dependencies:     system_ext/usr/share/lindroid/lxc/default.conf
   /*
