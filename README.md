@@ -62,7 +62,9 @@ TO   60d772c2e51304d1454be922afd4eba02b5c50ca
 git fetch https://github.com/updateing/android_kernel_google_zuma.git 14.0.0-sultan-pwm
 ```
 
-adjusted patch: pixel8pro-14.0.0-sultan-pwm.patch
+adjusted patch from sultan branch: pixel8pro-14.0.0-sultan-pwm.patch
+
+adjusted patch with  Stock-based variant: pixel8pro-stock.patch
 
 
 ```zsh
