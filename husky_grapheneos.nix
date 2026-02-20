@@ -13,5 +13,5 @@ args@{ config, pkgs, lib, ... }:
     };
   };
   signing.avb.size = 4096;
-  variant = "userdebug";
+  #variant = "userdebug";
 }
