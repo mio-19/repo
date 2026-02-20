@@ -49,11 +49,10 @@ use update-nix-fetchgit and nvfetcher
 
 ## husky kernel
 
-<https://grapheneos.org/build#prebuilt-code>
-
-<https://github.com/updateing/android_kernel_google_zuma/commits/14.0.0-sultan-pwm/>
-
-<https://xdaforums.com/t/a-mod-on-pwm-frequency-v3-20241027.4683727/>
++ <https://grapheneos.org/build#prebuilt-code>
++ <https://github.com/updateing/android_kernel_google_zuma/commits/14.0.0-sultan-pwm/>
++ <https://xdaforums.com/t/a-mod-on-pwm-frequency-v3-20241027.4683727/>
++ <https://xdaforums.com/t/a-mod-on-pwm-frequency-v3-20241027.4683727/page-8#post-89915781>
 
 FROM 98034a90a743131b9542b5d580fe46c8be69296a
 TO   60d772c2e51304d1454be922afd4eba02b5c50ca
