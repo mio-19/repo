@@ -65,7 +65,7 @@ adjusted patch from sultan branch: pixel8pro-14.0.0-sultan-pwm.patch
 
 adjusted patch with  Stock-based variant: pixel8pro-stock.patch
 
-adjusted patch from <https://github.com/elephant-43/kernel_google-modules_display_samsung> <https://github.com/elephant-43/kernel_devices_google_shusky> pixel8pro-elephant-43.patch
+adjusted patch from <https://github.com/elephant-43/kernel_google-modules_display_samsung> <https://github.com/elephant-43/kernel_devices_google_shusky> pixel8pro-elephant-43.patch with kernel crash fix: pixel8pro-elephant-43-fix.patch
 
 adjusted patch from <https://github.com/elephant-43/kernel_google-modules_display> <https://github.com/elephant-43/kernel_devices_google_shusky> pixel8pro-elephant-43-b.patch (not that different from pixel8pro-elephant-43.patch) TODO: correct this patch
 
