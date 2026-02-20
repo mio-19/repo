@@ -1,13 +1,7 @@
 args@{ config, pkgs, lib, ... }:
 {
-  buildDateTime = 1771157080;
-  flavor = "grapheneos";
+  imports = [ ./gos.nix ];
   device = "husky";
-  grapheneos.channel = "alpha";
-  source.dirs."frameworks/base".patches = [
-    ./Disable-FLAG_SECURE.patch
-    #./No-gestural-navigation-hint-bar.patch
-  ];
   # check in nix repl (import ./.).gosSign.husky.config.source.dirs."device/google/shusky-kernels/6.1"
   source.dirs."device/google/shusky-kernels/6.1" = lib.mkForce {
     src = pkgs.fetchgit {
