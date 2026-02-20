@@ -27,6 +27,10 @@
       url = "github:mio-19/nixos-apple-silicon/mio-release-2025-08-23";
       #inputs.nixpkgs.follows = "nixpkgs"; # needs to comment out this to use binary cache
     };
+    flake-compat = {
+      url = "github:NixOS/flake-compat";
+      flake = false;
+    };
   };
 
   outputs =
