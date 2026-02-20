@@ -29,7 +29,7 @@ args@{
   /*
     source.dirs."build/make".postPatch = ''
       echo '
-      $(call inherit-product, vendor/lindroid/lindroid.mk)' >> target/product/generic_system.mk
+      $(call inherit-product, vendor/lindroid/lindroid.mk)' >> target/product/aosp_product.mk
     '';
   */
   source.dirs."frameworks/native".patches = [ ./inputflinger.patch ];
