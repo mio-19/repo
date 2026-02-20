@@ -1,4 +1,4 @@
-From 0a61bff02eb6f0e693d29a14b1330c80babc6ccc Mon Sep 17 00:00:00 2001
+From 72e24349f56529bf1115b66c293c4c0c929fd188 Mon Sep 17 00:00:00 2001
 From: Mio <mio@mio19.uk>
 Date: Fri, 20 Feb 2026 20:40:01 +1100
 Subject: [PATCH] pixel8pro-stock-fix.patch
@@ -12,10 +12,10 @@ Subject: [PATCH] pixel8pro-stock-fix.patch
  .../google/shusky/display/panel-google-hk3.c  | 166 ++++++++++++++++--
  .../shusky/vendor_ramdisk.modules.shusky      |   1 +
  .../display/samsung/BUILD.bazel               |   9 +-
- .../display/samsung/exynos_drm_crtc.c         | 105 ++++++++++-
+ .../display/samsung/exynos_drm_crtc.c         | 104 ++++++++++-
  .../display/samsung/exynos_drm_decon.c        |   1 +
  .../display/samsung/exynos_drm_drv.h          |   6 +
- 11 files changed, 455 insertions(+), 22 deletions(-)
+ 11 files changed, 454 insertions(+), 22 deletions(-)
  create mode 100644 private/devices/google/shusky/display/exposure-adj.c
  create mode 100644 private/devices/google/shusky/display/exposure-adj.h
 
@@ -556,10 +556,10 @@ index ebe87cbee..973cdba62 100644
          "//private/google-modules/display/samsung/include:headers",
      ],
 diff --git a/private/google-modules/display/samsung/exynos_drm_crtc.c b/private/google-modules/display/samsung/exynos_drm_crtc.c
-index aa7567409..0db77f1ec 100644
+index aa7567409..13fa9a7cd 100644
 --- a/private/google-modules/display/samsung/exynos_drm_crtc.c
 +++ b/private/google-modules/display/samsung/exynos_drm_crtc.c
-@@ -39,6 +39,75 @@ enum crtc_active_state {
+@@ -39,6 +39,74 @@ enum crtc_active_state {
  	CRTC_STATE_SELF_REFRESH,
  };
  
@@ -628,14 +628,13 @@ index aa7567409..0db77f1ec 100644
 +
 +	exynos_drm_crtc_apply_linear_matrix_override(original, override, output);
 +
-+exit:
 +	return output;
 +}
 +
  static void exynos_drm_crtc_atomic_enable(struct drm_crtc *crtc,
  					  struct drm_atomic_state *state)
  {
-@@ -126,10 +195,7 @@ static void exynos_crtc_update_lut(struct drm_crtc *crtc,
+@@ -126,10 +194,7 @@ static void exynos_crtc_update_lut(struct drm_crtc *crtc,
  			dqe_state->hist_chan[i].config = NULL;
  	}
  
@@ -647,7 +646,7 @@ index aa7567409..0db77f1ec 100644
  
  	if (exynos_state->gamma_matrix)
  		dqe_state->gamma_matrix = exynos_state->gamma_matrix->data;
-@@ -390,6 +456,7 @@ static void exynos_drm_crtc_destroy_state(struct drm_crtc *crtc,
+@@ -390,6 +455,7 @@ static void exynos_drm_crtc_destroy_state(struct drm_crtc *crtc,
  	drm_property_blob_put(exynos_crtc_state->disp_dither);
  	drm_property_blob_put(exynos_crtc_state->cgc_dither);
  	drm_property_blob_put(exynos_crtc_state->linear_matrix);
@@ -655,7 +654,7 @@ index aa7567409..0db77f1ec 100644
  	drm_property_blob_put(exynos_crtc_state->gamma_matrix);
  	drm_property_blob_put(exynos_crtc_state->histogram_roi);
  	drm_property_blob_put(exynos_crtc_state->histogram_weights);
-@@ -447,6 +514,9 @@ exynos_drm_crtc_duplicate_state(struct drm_crtc *crtc)
+@@ -447,6 +513,9 @@ exynos_drm_crtc_duplicate_state(struct drm_crtc *crtc)
  	if (copy->linear_matrix)
  		drm_property_blob_get(copy->linear_matrix);
  
@@ -665,7 +664,7 @@ index aa7567409..0db77f1ec 100644
  	if (copy->gamma_matrix)
  		drm_property_blob_get(copy->gamma_matrix);
  
-@@ -690,6 +760,25 @@ static int exynos_drm_crtc_set_property(struct drm_crtc *crtc,
+@@ -690,6 +759,25 @@ static int exynos_drm_crtc_set_property(struct drm_crtc *crtc,
  		ret = exynos_drm_replace_property_blob_from_id(state->crtc->dev,
  				&exynos_crtc_state->linear_matrix, val,
  				sizeof(struct exynos_matrix), -1, &replaced);
@@ -691,7 +690,7 @@ index aa7567409..0db77f1ec 100644
  	} else if (property == exynos_crtc->props.gamma_matrix) {
  		ret = exynos_drm_replace_property_blob_from_id(state->crtc->dev,
  				&exynos_crtc_state->gamma_matrix, val,
-@@ -783,6 +872,9 @@ static int exynos_drm_crtc_get_property(struct drm_crtc *crtc,
+@@ -783,6 +871,9 @@ static int exynos_drm_crtc_get_property(struct drm_crtc *crtc,
  	} else if (property == exynos_crtc->props.linear_matrix) {
  		*val = (exynos_crtc_state->linear_matrix) ?
  			exynos_crtc_state->linear_matrix->base.id : 0;
@@ -701,7 +700,7 @@ index aa7567409..0db77f1ec 100644
  	} else if (property == exynos_crtc->props.gamma_matrix) {
  		*val = (exynos_crtc_state->gamma_matrix) ?
  			exynos_crtc_state->gamma_matrix->base.id : 0;
-@@ -1204,6 +1296,11 @@ struct exynos_drm_crtc *exynos_drm_crtc_create(struct drm_device *drm_dev,
+@@ -1204,6 +1295,11 @@ struct exynos_drm_crtc *exynos_drm_crtc_create(struct drm_device *drm_dev,
  		if (ret)
  			goto err_crtc;
  
