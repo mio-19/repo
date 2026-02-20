@@ -1,0 +1,20 @@
+diff --git a/private/devices/google/shusky/shusky_defconfig b/private/devices/google/shusky/shusky_defconfig
+index c9bff9f53..f4544f9c9 100644
+--- a/private/devices/google/shusky/shusky_defconfig
++++ b/private/devices/google/shusky/shusky_defconfig
+@@ -23,3 +23,15 @@ CONFIG_TOUCHSCREEN_FTS=m
+ 
+ # private/google-modules/touch/sec/Kconfig
+ CONFIG_TOUCHSCREEN_SEC_TS=m
++
++# lindroid
++CONFIG_SYSVIPC=y
++CONFIG_UTS_NS=y
++CONFIG_PID_NS=y
++CONFIG_IPC_NS=y
++CONFIG_USER_NS=y
++CONFIG_NET_NS=y
++CONFIG_CGROUP_DEVICE=y
++CONFIG_CGROUP_FREEZER=y
++CONFIG_DRM_LINDROID_EVDI=y
++CONFIG_TMPFS_POSIX_ACL=y
