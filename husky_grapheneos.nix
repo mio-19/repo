@@ -6,8 +6,8 @@ args@{ config, pkgs, lib, ... }:
   source.dirs."device/google/shusky-kernels/6.1" = lib.mkForce {
     src = pkgs.fetchgit {
       url = "https://github.com/mio-19/device_google_shusky-kernels_6.1.git";
-      rev = "468e9c62688aa0770e0f338b9eadcfaa563a2e25";
-      hash = "sha256-qQGIG/yzGMRrTfX6VlJPFyyPYs/mjNFE5ORpjU0ltZ0=";
+      rev = "a7d924e1071ae88caf1511e34f5f03a0b76c3ef5";
+      hash = "sha256-2qrMqOas7FoV3f4kGdE130zKGINeIaim+JNBHxAdq3Q=";
       fetchLFS = true;
     };
   };
