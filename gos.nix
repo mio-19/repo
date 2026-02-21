@@ -91,8 +91,8 @@ args@{
   ];
   source.dirs."packages/apps/ExactCalculator" = lib.mkForce {
     src = pkgs.fetchFromGitHub {
-      owner = "VoltageOS";
-      repo = "packages_apps_ExactCalculator";
+      owner = "LineageOS";
+      repo = "android_packages_apps_ExactCalculator";
       rev = "f80bf9cd59dff2a7f628157482cdb54a9509613a";
       hash = "sha256-3Y+3g4IcURRirzdvGpG9o78wInTqTAd1zHGKK2sgUv4=";
     };
