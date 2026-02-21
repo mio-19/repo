@@ -49,7 +49,7 @@ sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
 sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
 
 cd aosp
-for patch in 0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch ; do
+for patch in 0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch  3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch; do
 patch -p1 --no-backup-if-mismatch < ~/Documents/repo/kernel/$patch
 done
 ```
