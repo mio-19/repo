@@ -15,7 +15,7 @@ args@{
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
     (fetchpatch {
       url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/313.patch";
-      hash = "sha256-PhOtWmysEnLIF3zPYKJT7tbzPva1UYHuxKvUFGWfDJE=";
+      hash = "sha256-lC8YVoxb7ATdPhY/JPlNRgay0yOkJxUFnVNIN/6AiE4=";
     })
 
     (fetchpatch {
@@ -28,7 +28,7 @@ args@{
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
     (fetchpatch {
       url = "https://github.com/GrapheneOS/platform_packages_apps_Settings/pull/411.patch";
-      hash = "sha256-ascs+B2SxXrCC6Vj9zGsjtuuyC7xD3YrqaHCy9MXyuY=";
+      hash = "sha256-hcztYEyhfDlfkx04lKmsEOKr2puoM6GUb3bhRIgiCaM=";
     })
   ];
   source.dirs."packages/modules/Permission".patches = with pkgs; [
