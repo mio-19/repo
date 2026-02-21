@@ -5,7 +5,7 @@ args@{
   ...
 }:
 {
-  buildDateTime = 1771586071;
+  buildDateTime = 1771647233;
   imports = [ ./los.nix ];
   manufactor = "google";
   kernel-short = "akita";

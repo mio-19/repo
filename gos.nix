@@ -5,7 +5,7 @@ args@{
   ...
 }:
 {
-  buildDateTime = 1771586071;
+  buildDateTime = 1771647233;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   source.dirs."frameworks/base".patches = with pkgs; [
