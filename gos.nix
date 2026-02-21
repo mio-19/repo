@@ -113,4 +113,12 @@ args@{
       hash = "sha256-QylzofyyciaoK2xHbSLZH7QdJOHVjzeH3vi35u3RD7g=";
     };
   };
+  source.dirs."packages/inputmethods/LatinIME" = lib.mkForce {
+    src = pkgs.fetchFromGitHub {
+      owner = "LineageOS";
+      repo = "android_packages_inputmethods_LatinIME";
+      rev = "7ef9404d0e9122e11329ac7f49536c0e2f6ca6fc";
+      hash = "sha256-JS/mANnyqel98o4F5/ECa6555lEGr8Y6+OOr5n2xB/s=";
+    };
+  };
 }
