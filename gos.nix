@@ -39,10 +39,11 @@ args@{
     })
   ];
   source.dirs."packages/apps/Dialer".patches = with pkgs; [
+    # https://github.com/GrapheneOS/platform_packages_apps_Dialer/pull/48
     (fetchpatch {
       name = "Add automatic call recording.patch";
-      url = "https://github.com/GrapheneOS/platform_packages_apps_Dialer/pull/48.patch";
-      hash = "sha256-Dt16/bVgAXqidIlfmtRqDSnpI6DxCQgogE6T4dLrCoo=";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_Dialer/commit/4b2b28c36e3f0a29e2f7d171e9ae1128d54eb27c.patch";
+      hash = "sha256-ceo+c99iyYeaweks1Hk/VYXl8pa3PMGtcbHcxOLRM4k=";
     })
   ];
 }
