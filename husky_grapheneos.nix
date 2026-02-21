@@ -53,13 +53,13 @@ args@{
     repo = "external_lxc";
     # lindroid-21
     rev = "4e3a3630fff3dc04e0d4a761309f87f248e40b17";
-    sha256 = "1c993880v9sv97paqkqxd4c9p6j1v8m6d1b2sjwhav3f3l9dh7wn";
+    hash = "sha256-lh/YEh1ubAW51GKFZiraQZqbGGkdT6zuSVunDRAaKbE=";
   };
   source.dirs."libhybris".src = pkgs.fetchFromGitHub {
     owner = "Linux-on-droid";
     repo = "libhybris";
     # lindroid-21
     rev = "419f3ff6736e01cb0e579f65a34c85cfa7de578b";
-    sha256 = "1hp69929yrhql2qc4scd4fdvy5zv8g653zvx376c3nlrzckjdm47";
+    hash = "sha256-h9QmJ/uZ2sHMGX3/UcxD+xe/myONacKwoBhmn0RK5sI=";
   };
 }
