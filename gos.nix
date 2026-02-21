@@ -38,4 +38,11 @@ args@{
       hash = "sha256-zyZS6vHgp2hHTGn7BUcaJcqkAo7SbbJmZmcPQN0kGOM=";
     })
   ];
+  source.dirs."packages/apps/Dialer".patches = with pkgs; [
+    (fetchpatch {
+      name = "Add automatic call recording.patch";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_Dialer/pull/48.patch";
+      hash = "sha256-Dt16/bVgAXqidIlfmtRqDSnpI6DxCQgogE6T4dLrCoo=";
+    })
+  ];
 }
