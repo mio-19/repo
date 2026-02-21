@@ -1,3 +1,13 @@
+From f3802ccb0c26de2c7beefbe30606c94f9b0c2281 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Sat, 21 Feb 2026 22:11:50 +1100
+Subject: [PATCH] attempt3
+
+---
+ .../google/shusky/display/exposure-adj.c      | 29 +++++++++++++++----
+ .../google/shusky/display/panel-google-hk3.c  |  6 ++--
+ .../display/samsung/exynos_drm_crtc.c         |  7 +++++
+ 3 files changed, 33 insertions(+), 9 deletions(-)
 
 diff --git a/private/devices/google/shusky/display/exposure-adj.c b/private/devices/google/shusky/display/exposure-adj.c
 index a5e99ede9..79a34b3e8 100644
@@ -15,94 +25,94 @@ index a5e99ede9..79a34b3e8 100644
  
  static int ea_set_matrix(struct drm_crtc *crtc, unsigned int bl_lvl)
  {
--       struct exynos_drm_crtc *exynos_crtc = to_exynos_crtc(crtc);
-+       struct exynos_drm_crtc *exynos_crtc;
-        struct exynos_matrix matrix;
-        struct drm_property *prop_linear_matrix_override;
-        struct drm_property_blob *pblob = NULL;
+-	struct exynos_drm_crtc *exynos_crtc = to_exynos_crtc(crtc);
++	struct exynos_drm_crtc *exynos_crtc;
+ 	struct exynos_matrix matrix;
+ 	struct drm_property *prop_linear_matrix_override;
+ 	struct drm_property_blob *pblob = NULL;
 @@ -39,14 +40,22 @@ static int ea_set_matrix(struct drm_crtc *crtc, unsigned int bl_lvl)
-        __u16 ofs, coef;
-        int rc = 0;
+ 	__u16 ofs, coef;
+ 	int rc = 0;
  
--       if (crtc == NULL) {
-+       if (!crtc) {
-                pr_err("crtc has not been initialized\n");
-                rc = -EIO;
-                goto exit;
-        }
+-	if (crtc == NULL) {
++	if (!crtc) {
+ 		pr_err("crtc has not been initialized\n");
+ 		rc = -EIO;
+ 		goto exit;
+ 	}
  
-+       exynos_crtc = to_exynos_crtc(crtc);
++	exynos_crtc = to_exynos_crtc(crtc);
 +
-+       if (!crtc->funcs || !crtc->funcs->atomic_set_property) {
-+               pr_err("crtc property hook is unavailable\n");
-+               rc = -EOPNOTSUPP;
-+               goto exit;
-+       }
++	if (!crtc->funcs || !crtc->funcs->atomic_set_property) {
++		pr_err("crtc property hook is unavailable\n");
++		rc = -EOPNOTSUPP;
++		goto exit;
++	}
 +
-        prop_linear_matrix_override = exynos_crtc->props.linear_matrix_override;
--       if (prop_linear_matrix_override == NULL) {
-+       if (!prop_linear_matrix_override) {
-                pr_err("linear matrix overriding is not supported by crtc\n");
-                rc = -EIO;
-                goto exit;
+ 	prop_linear_matrix_override = exynos_crtc->props.linear_matrix_override;
+-	if (prop_linear_matrix_override == NULL) {
++	if (!prop_linear_matrix_override) {
+ 		pr_err("linear matrix overriding is not supported by crtc\n");
+ 		rc = -EIO;
+ 		goto exit;
 @@ -91,7 +100,7 @@ static int ea_set_matrix(struct drm_crtc *crtc, unsigned int bl_lvl)
-                                         sizeof(struct exynos_matrix), &matrix);
-        if (IS_ERR_OR_NULL(pblob)) {
-                pr_err("failed to create blob\n");
--               rc = -ENOMEM;
-+               rc = pblob ? PTR_ERR(pblob) : -ENOMEM;
-                goto exit;
-        }
+ 					 sizeof(struct exynos_matrix), &matrix);
+ 	if (IS_ERR_OR_NULL(pblob)) {
+ 		pr_err("failed to create blob\n");
+-		rc = -ENOMEM;
++		rc = pblob ? PTR_ERR(pblob) : -ENOMEM;
+ 		goto exit;
+ 	}
  
 @@ -117,9 +126,12 @@ setup:
-        else
-                blob_id = pblob->base.id;
+ 	else
+ 		blob_id = pblob->base.id;
  
--       crtc->funcs->atomic_set_property(crtc, &fake_crtc_state.base,
--                                        prop_linear_matrix_override, blob_id);
-+       rc = crtc->funcs->atomic_set_property(crtc, &fake_crtc_state.base,
-+                                             prop_linear_matrix_override, blob_id);
-+       if (rc)
-+               pr_err("failed to set linear_matrix_override (%d)\n", rc);
+-	crtc->funcs->atomic_set_property(crtc, &fake_crtc_state.base,
+-					 prop_linear_matrix_override, blob_id);
++	rc = crtc->funcs->atomic_set_property(crtc, &fake_crtc_state.base,
++					      prop_linear_matrix_override, blob_id);
++	if (rc)
++		pr_err("failed to set linear_matrix_override (%d)\n", rc);
  
-+       drm_property_blob_put(fake_crtc_state.linear_matrix_override);
-        drm_property_blob_put(pblob);
++	drm_property_blob_put(fake_crtc_state.linear_matrix_override);
+ 	drm_property_blob_put(pblob);
  
  exit:
 @@ -130,6 +142,11 @@ unsigned int ea_panel_calc_backlight(unsigned int bl_lvl)
  {
-        struct decon_device *decon = get_decon_drvdata(0);
+ 	struct decon_device *decon = get_decon_drvdata(0);
  
-+       if (!decon || !decon->crtc) {
-+               pr_err("decon/crtc is not ready\n");
-+               return bl_lvl;
-+       }
++	if (!decon || !decon->crtc) {
++		pr_err("decon/crtc is not ready\n");
++		return bl_lvl;
++	}
 +
-        if (linear_matrix_application_threshold == 0) {
-                linear_matrix_application_threshold = 1; // avoid dividing by 0
-        }
+ 	if (linear_matrix_application_threshold == 0) {
+ 		linear_matrix_application_threshold = 1; // avoid dividing by 0
+ 	}
 diff --git a/private/devices/google/shusky/display/panel-google-hk3.c b/private/devices/google/shusky/display/panel-google-hk3.c
-index 906b2abc2..973e30f7e 100644
+index 2d4c749cc..3a4afb8de 100644
 --- a/private/devices/google/shusky/display/panel-google-hk3.c
 +++ b/private/devices/google/shusky/display/panel-google-hk3.c
 @@ -478,7 +478,7 @@ static void hk3_set_override_dimming(struct exynos_panel *ctx, const unsigned lo
-        bool is_ns_mode = test_bit(FEAT_OP_NS, feat);
-        bool is_sub120 = spanel->hw_vrefresh < 120;
-        struct hk3_freq_cmdset *cmdset;
--       u8 *cmd;
-+       const u8 *cmd;
-        u8 target_cmd[4];
+ 	bool is_ns_mode = test_bit(FEAT_OP_NS, feat);
+ 	bool is_sub120 = spanel->hw_vrefresh < 120;
+ 	struct hk3_freq_cmdset *cmdset;
+-	u8 *cmd;
++	const u8 *cmd;
+ 	u8 target_cmd[4];
  
-        if (is_hbm)
+ 	if (is_hbm)
 @@ -494,9 +494,9 @@ static void hk3_set_override_dimming(struct exynos_panel *ctx, const unsigned lo
-        memcpy(target_cmd, cmd, 4);
+ 	memcpy(target_cmd, cmd, 4);
  
-        if (!test_bit(FEAT_EARLY_EXIT, feat))
--               cmd[0] |= 0x80;
-+               target_cmd[0] |= 0x80;
+ 	if (!test_bit(FEAT_EARLY_EXIT, feat))
+-		cmd[0] |= 0x80;
++		target_cmd[0] |= 0x80;
  
--       hk3_send_dimming_freq_cmd(ctx, need_unlock, cmd);
-+       hk3_send_dimming_freq_cmd(ctx, need_unlock, target_cmd);
+-	hk3_send_dimming_freq_cmd(ctx, need_unlock, cmd);
++	hk3_send_dimming_freq_cmd(ctx, need_unlock, target_cmd);
  }
  
  static inline bool is_in_comp_range(int temp)
@@ -111,16 +121,19 @@ index 194267bb8..9a00d9715 100644
 --- a/private/google-modules/display/samsung/exynos_drm_crtc.c
 +++ b/private/google-modules/display/samsung/exynos_drm_crtc.c
 @@ -347,6 +347,13 @@ static void exynos_crtc_atomic_flush(struct drm_crtc *crtc,
-        struct drm_crtc_state *old_crtc_state = drm_atomic_get_old_crtc_state(state, crtc);
-        struct exynos_drm_crtc *exynos_crtc = to_exynos_crtc(crtc);
+ 	struct drm_crtc_state *old_crtc_state = drm_atomic_get_old_crtc_state(state, crtc);
+ 	struct exynos_drm_crtc *exynos_crtc = to_exynos_crtc(crtc);
  
-+       /*
-+        * duplicate_state() copies exynos_crtc_state wholesale, including DQE
-+        * pointer fields. Rebuild these pointers from this commit's CRTC state
-+        * right before programming hardware.
-+        */
-+       exynos_crtc_update_lut(crtc, crtc->state);
++	/*
++	 * duplicate_state() copies exynos_crtc_state wholesale, including DQE
++	 * pointer fields. Rebuild these pointers from this commit's CRTC state
++	 * right before programming hardware.
++	 */
++	exynos_crtc_update_lut(crtc, crtc->state);
 +
-        if (exynos_crtc->ops->atomic_flush)
-                exynos_crtc->ops->atomic_flush(exynos_crtc, old_crtc_state);
+ 	if (exynos_crtc->ops->atomic_flush)
+ 		exynos_crtc->ops->atomic_flush(exynos_crtc, old_crtc_state);
  }
+-- 
+2.52.0
+
