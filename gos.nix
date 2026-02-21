@@ -78,5 +78,10 @@ args@{
       url = "https://github.com/VoltageOS/packages_apps_Launcher3/commit/bdd98e87d1438e13f95ad4992071ef44fd931695.patch";
       hash = "sha256-Ke0NsftuKxJrDTyAZdj4tOrInNDf2aA2gRd1rs84dsk=";
     })
+    (fetchpatch {
+      name = "Launcher3: Do not wrap icons from icon pack";
+      url = "https://github.com/VoltageOS/packages_apps_Launcher3/commit/f64b5c694b1b5feee9e77f3dd87c221fccd8eab1.patch";
+      hash = "sha256-B75RY2QPeU0vtAWC2+DH9udi4n5lHhpFtfROyE6PqRg=";
+    })
   ];
 }
