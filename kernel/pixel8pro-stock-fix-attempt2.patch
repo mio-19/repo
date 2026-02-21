@@ -1,0 +1,75 @@
+
+diff --git a/private/google-modules/display/samsung/exynos_drm_dqe.c b/private/google-modules/display/samsung/exynos_drm_dqe.c
+index 92cedf3c8..74285e1b3 100644
+--- a/private/google-modules/display/samsung/exynos_drm_dqe.c
++++ b/private/google-modules/display/samsung/exynos_drm_dqe.c
+@@ -13,6 +13,7 @@
+ 
+ #include <linux/of_address.h>
+ #include <linux/device.h>
++#include <linux/string.h>
+ #include <drm/drm_drv.h>
+ #include <drm/drm_modeset_lock.h>
+ #include <drm/drm_atomic_helper.h>
+@@ -828,17 +829,33 @@ static void exynos_linear_matrix_update(struct exynos_dqe *dqe,
+        struct matrix_debug_override *linear = &dqe->linear;
+        struct exynos_debug_info *info = &linear->info;
+        struct decon_device *decon = dqe->decon;
++       const struct exynos_matrix *linear_matrix = state->linear_matrix;
+        struct drm_printer p = drm_info_printer(decon->dev);
++       bool changed;
+        u32 id = decon->id;
+ 
+        pr_debug("en(%d) dirty(%d)\n", info->force_en, info->dirty);
+ 
+        if (info->force_en)
+-               state->linear_matrix = &linear->force_matrix;
+-
+-       if (dqe->state.linear_matrix != state->linear_matrix || info->dirty) {
+-               dqe_reg_set_linear_matrix(id, state->linear_matrix);
+-               dqe->state.linear_matrix = state->linear_matrix;
++               linear_matrix = &linear->force_matrix;
++
++       if (linear_matrix)
++               changed = !dqe->linear_matrix_valid ||
++                         memcmp(&dqe->linear_matrix_cache, linear_matrix, sizeof(*linear_matrix));
++       else
++               changed = dqe->linear_matrix_valid;
++
++       if (changed || info->dirty) {
++               if (!linear_matrix) {
++                       dqe->linear_matrix_valid = false;
++                       dqe->state.linear_matrix = NULL;
++                       dqe_reg_set_linear_matrix(id, NULL);
++               } else {
++                       memcpy(&dqe->linear_matrix_cache, linear_matrix, sizeof(*linear_matrix));
++                       dqe->linear_matrix_valid = true;
++                       dqe->state.linear_matrix = &dqe->linear_matrix_cache;
++                       dqe_reg_set_linear_matrix(id, dqe->state.linear_matrix);
++               }
+                info->dirty = false;
+        }
+ 
+@@ -1172,6 +1189,7 @@ void exynos_dqe_reset(struct exynos_dqe *dqe)
+        unsigned long flags;
+ 
+        dqe->initialized = false;
++       dqe->linear_matrix_valid = false;
+        dqe->state.gamma_matrix = NULL;
+        dqe->state.degamma_lut = NULL;
+        dqe->state.linear_matrix = NULL;
+diff --git a/private/google-modules/display/samsung/exynos_drm_dqe.h b/private/google-modules/display/samsung/exynos_drm_dqe.h
+index b22e47abe..00e6e3c74 100644
+--- a/private/google-modules/display/samsung/exynos_drm_dqe.h
++++ b/private/google-modules/display/samsung/exynos_drm_dqe.h
+@@ -167,8 +167,10 @@ struct exynos_dqe {
+        void __iomem *regs;
+        void __iomem *cgc_regs;
+        bool initialized;
++       bool linear_matrix_valid;
+        const struct exynos_dqe_funcs *funcs;
+        struct exynos_dqe_state state;
++       struct exynos_matrix linear_matrix_cache;
+        struct decon_device *decon;
+        struct class *dqe_class;
+        struct device *dev;
