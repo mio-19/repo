@@ -29,14 +29,15 @@ lindroid extra steps - pixel8pro-lindroid.patch
 git clone https://github.com/Linux-on-droid/lindroid-drm-loopback.git aosp/drivers/lindroid-drm
 echo 'obj-y += lindroid-drm/' >> aosp/drivers/Makefile
 sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" aosp/drivers/Kconfig
-tee -a aosp/android/abi_gki_aarch64_pixel << 'EOF'
-  make_kuid
-  from_kuid
-  from_kuid_munged
-EOF
+
 sed -i '/^# CONFIG_PID_NS is not set$/d' aosp/arch/arm64/configs/gki_defconfig
 sed -i '/^CONFIG_NAMESPACES=y$/a CONFIG_USER_NS=y' aosp/arch/arm64/configs/gki_defconfig
 
+sed -i '/^  __fsnotify_parent$/a\  from_kuid' aosp/android/abi_gki_aarch64_pixel
+sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
+sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
+
+
 ```
 
-with lindroid use `KLEAF_REPO_MANIFEST=aosp_manifest.xml ./build_shusky.sh --lto=full --nokmi_symbol_list_strict_mode` for debug ` --sandbox_debug --verbose_failures`
+for debug ` --sandbox_debug --verbose_failures`
