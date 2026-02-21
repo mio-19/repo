@@ -29,6 +29,7 @@ apply c360d6f7b22ab710a27193f62669f5a257cd259d.patch on aosp. from <https://gitl
 
 apply them:
 ```zsh
+wget https://github.com/mmeimm/GKI-Custom/raw/refs/heads/main/patchs/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch
 wget https://github.com/mmeimm/GKI-Custom/raw/refs/heads/main/patchs/3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch
 wget https://github.com/mmeimm/GKI-Custom/raw/refs/heads/main/patchs/750b43051d2e4317121c7250544ae38fdf28d4c7.patch
 wget https://github.com/mmeimm/GKI-Custom/raw/refs/heads/main/patchs/a0aa446ca326b5d26ac1dec057efd8c07d2bcbff.patch
@@ -48,7 +49,7 @@ sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
 sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
 
 cd aosp
-for patch in c360d6f7b22ab710a27193f62669f5a257cd259d.patch 3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch 750b43051d2e4317121c7250544ae38fdf28d4c7.patch a0aa446ca326b5d26ac1dec057efd8c07d2bcbff.patch a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch ; do
+for patch in 0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch ; do
 patch -p1 --no-backup-if-mismatch < ~/Documents/repo/kernel/$patch
 done
 ```
