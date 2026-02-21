@@ -27,6 +27,14 @@ lindroid extra steps - pixel8pro-lindroid.patch
 
 apply c360d6f7b22ab710a27193f62669f5a257cd259d.patch on aosp. from <https://gitlab.com/ubports/porting/reference-device-ports/halium12/volla-x23/kernel-volla-mt6789/-/commit/c360d6f7b22ab710a27193f62669f5a257cd259d> <https://t.me/linux_on_droid/7889>
 
+apply them:
+```zsh
+wget https://github.com/mmeimm/GKI-Custom/raw/refs/heads/main/patchs/3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch
+wget https://github.com/mmeimm/GKI-Custom/raw/refs/heads/main/patchs/750b43051d2e4317121c7250544ae38fdf28d4c7.patch
+wget https://github.com/mmeimm/GKI-Custom/raw/refs/heads/main/patchs/a0aa446ca326b5d26ac1dec057efd8c07d2bcbff.patch
+wget https://github.com/mmeimm/GKI-Custom/raw/refs/heads/main/patchs/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
+```
+
 ```zsh
 git clone https://github.com/Linux-on-droid/lindroid-drm-loopback.git aosp/drivers/lindroid-drm
 echo 'obj-y += lindroid-drm/' >> aosp/drivers/Makefile
