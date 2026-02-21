@@ -61,28 +61,34 @@ args@{
     })
   ];
   source.dirs."packages/apps/Launcher3".patches = with pkgs; [
-    (fetchpatch {
-      # from https://github.com/VoltageOS/packages_apps_Launcher3/commit/6a474287135cb6fc147379efd0c1bfc069f49efd
-      name = "Launcher3: Implement taskbar toggle.patch";
-      url = "https://github.com/mio-19/platform_packages_apps_Launcher3/commit/381899ea085f2a8f642b7aaebf74bef50daa6d60.patch";
-      hash = "sha256-u2EpJIH0QDJuWhuKYjNSKE4GCCpd1FQwd5FnUtca6es=";
-    })
-    (fetchpatch {
-      # from https://github.com/VoltageOS/packages_apps_Launcher3/commit/f445d2b4af7408bf56a168516d2e8c3c71b37cc6
-      name = "Launcher3: Implement gesture hint toggle.patch";
-      url = "https://github.com/mio-19/platform_packages_apps_Launcher3/commit/7480f89cb0f526d8fb667bfd4972cca826aa70b5.patch";
-      hash = "sha256-wxgturb6mCY37A6QL4CAGuoFx9p1IPcAVmZlEtWC06k=";
-    })
+    # cannot find symbol ENABLE_TASKBAR/NAVIGATION_BAR_HINT
+    /*
+      (fetchpatch {
+        # from https://github.com/VoltageOS/packages_apps_Launcher3/commit/6a474287135cb6fc147379efd0c1bfc069f49efd
+        name = "Launcher3: Implement taskbar toggle.patch";
+        url = "https://github.com/mio-19/platform_packages_apps_Launcher3/commit/381899ea085f2a8f642b7aaebf74bef50daa6d60.patch";
+        hash = "sha256-u2EpJIH0QDJuWhuKYjNSKE4GCCpd1FQwd5FnUtca6es=";
+      })
+      (fetchpatch {
+        # from https://github.com/VoltageOS/packages_apps_Launcher3/commit/f445d2b4af7408bf56a168516d2e8c3c71b37cc6
+        name = "Launcher3: Implement gesture hint toggle.patch";
+        url = "https://github.com/mio-19/platform_packages_apps_Launcher3/commit/7480f89cb0f526d8fb667bfd4972cca826aa70b5.patch";
+        hash = "sha256-wxgturb6mCY37A6QL4CAGuoFx9p1IPcAVmZlEtWC06k=";
+      })
+    */
     (fetchpatch {
       name = "Launcher3: Add hasNavigationBar() check.patch";
       url = "https://github.com/VoltageOS/packages_apps_Launcher3/commit/bdd98e87d1438e13f95ad4992071ef44fd931695.patch";
       hash = "sha256-Ke0NsftuKxJrDTyAZdj4tOrInNDf2aA2gRd1rs84dsk=";
     })
-    (fetchpatch {
-      name = "Launcher3: Do not wrap icons from icon pack";
-      url = "https://github.com/VoltageOS/packages_apps_Launcher3/commit/f64b5c694b1b5feee9e77f3dd87c221fccd8eab1.patch";
-      hash = "sha256-B75RY2QPeU0vtAWC2+DH9udi4n5lHhpFtfROyE6PqRg=";
-    })
+    # cannot find symbol CONFIG_HINT_NO_WRAP
+    /*
+      (fetchpatch {
+        name = "Launcher3: Do not wrap icons from icon pack";
+        url = "https://github.com/VoltageOS/packages_apps_Launcher3/commit/f64b5c694b1b5feee9e77f3dd87c221fccd8eab1.patch";
+        hash = "sha256-B75RY2QPeU0vtAWC2+DH9udi4n5lHhpFtfROyE6PqRg=";
+      })
+    */
     (fetchpatch {
       name = "Launcher3: Hide scrollbar when searching All Apps";
       url = "https://github.com/VoltageOS/packages_apps_Launcher3/commit/8f2bb1a5685bc043e4b52d7a79291994f8a32078.patch";
