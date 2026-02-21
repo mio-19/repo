@@ -53,4 +53,11 @@ args@{
       hash = "sha256-QoabShVmthSA817+FrJ7GTc/VK2N6JSXu9KaVoDg4Sg=";
     })
   ];
+  source.dirs."packages/modules/Virtualization".patches = with pkgs; [
+    (fetchpatch {
+      name = "ImageArchive: allow sdcard images even when os is not debuggable.patch";
+      url = "https://github.com/GrapheneOS/platform_packages_modules_Virtualization/pull/5.patch";
+      hash = "sha256-hru78WppRuNKWIbqrRQdm86Y8fuuZcPmM6MYXfS6Lmw=";
+    })
+  ];
 }
