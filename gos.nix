@@ -60,4 +60,11 @@ args@{
       hash = "sha256-hru78WppRuNKWIbqrRQdm86Y8fuuZcPmM6MYXfS6Lmw=";
     })
   ];
+  source.dirs."packages/apps/Launcher3".patches = with pkgs; [
+    (fetchpatch {
+      name = "Launcher3: Implement gesture hint toggle.patch";
+      url = "https://github.com/VoltageOS/packages_apps_Launcher3/commit/f445d2b4af7408bf56a168516d2e8c3c71b37cc6.patch";
+      hash = "sha256-wxgturb6mCY37A6QL4CAGuoFx9p1IPcAVmZlEtWC06k=";
+    })
+  ];
 }
