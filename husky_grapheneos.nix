@@ -11,9 +11,9 @@ args@{
   source.dirs."device/google/shusky-kernels/6.1" = lib.mkForce {
     src = pkgs.fetchgit {
       url = "https://github.com/mio-19/device_google_shusky-kernels_6.1.git";
-      # pixel8pro-stock.patch;pixel8pro-stock-fix-attempt3.patch
-      rev = "ec4f5cfd31f0f61309ba2bebcd02ae8b9420c0aa";
-      hash = "sha256-GUtJ5HTn1fW7ijzIg64/EojqiXo3KFgemHsQ2nSZUns=";
+      # pixel8pro-stock-3840Hz.patch;pixel8pro-stock-fix-attempt3.patch;pixel8pro-lindroid.patch
+      rev = "86a6dd1fb698984abfbb4ec8834f789b2bdc3167";
+      hash = "sha256-gfVnX/x45ZmeEBxKZPu1hJvxtEJyzOGI1VnNMzdF5r0=";
       fetchLFS = true;
     };
   };
