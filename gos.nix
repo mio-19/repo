@@ -17,12 +17,25 @@ args@{
       url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/313.patch";
       hash = "sha256-PhOtWmysEnLIF3zPYKJT7tbzPva1UYHuxKvUFGWfDJE=";
     })
+
+    (fetchpatch {
+      name = "Add toggle to hide location access indicator on a per-app basis.patch";
+      url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/305.patch";
+      hash = "sha256-oJnWjITM4pycHQRbLORQTmr9315LXtGk8Upzi2IRONU=";
+    })
   ];
   source.dirs."packages/apps/Settings".patches = with pkgs; [
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
     (fetchpatch {
       url = "https://github.com/GrapheneOS/platform_packages_apps_Settings/pull/411.patch";
       hash = "sha256-ascs+B2SxXrCC6Vj9zGsjtuuyC7xD3YrqaHCy9MXyuY=";
+    })
+  ];
+  source.dirs."packages/modules/Permission".patches = with pkgs; [
+    (fetchpatch {
+      name = "Add toggle to hide location access indicator on a per-app basis.patch";
+      url = "https://github.com/GrapheneOS/platform_packages_modules_Permission/pull/83.patch";
+      hash = "sha256-zyZS6vHgp2hHTGn7BUcaJcqkAo7SbbJmZmcPQN0kGOM=";
     })
   ];
 }
