@@ -9,8 +9,9 @@ args@{
   device = "husky";
   # check in nix repl (import ./.).gosSign.husky.config.source.dirs."device/google/shusky-kernels/6.1"
   source.dirs."device/google/shusky-kernels/6.1" = lib.mkForce {
-    src = pkgs.fetchgit {
-      url = "https://github.com/mio-19/device_google_shusky-kernels_6.1.git";
+    src = pkgs.fetchFromGitHub {
+      owner = "mio-19";
+      repo = "device_google_shusky-kernels_6.1";
       # pixel8pro-stock-3840Hz.patch;pixel8pro-stock-fix-attempt3.patch;pixel8pro-lindroid.patch
       rev = "86a6dd1fb698984abfbb4ec8834f789b2bdc3167";
       hash = "sha256-gfVnX/x45ZmeEBxKZPu1hJvxtEJyzOGI1VnNMzdF5r0=";
@@ -35,9 +36,10 @@ args@{
     ./16qpr2-Ignore-uevent-s-with-null-name-for-Extcon-WiredAcces.patch
   ];
   source.dirs."vendor/lindroid" = {
-    src = pkgs.fetchgit {
+    src = pkgs.fetchFromGitHub {
       # lindroid-22.1
-      url = "https://github.com/Linux-on-droid/vendor_lindroid.git";
+      owner = "Linux-on-droid";
+      repo = "vendor_lindroid";
       rev = "279f7f4dca7fdae757be74febd5bf7630f416737";
       hash = "sha256-mZowr9x1wKeJC956bl095HtAK/2t7NHMuC0+QXCQRpM=";
     };
@@ -46,14 +48,16 @@ args@{
       sed -i 's|android.hardware.graphics.common-V5|android.hardware.graphics.common-V7|' interfaces/composer/Android.bp
     '';
   };
-  source.dirs."external/lxc".src = pkgs.fetchgit {
-    url = "https://github.com/Linux-on-droid/external_lxc.git";
+  source.dirs."external/lxc".src = pkgs.fetchFromGitHub {
+    owner = "Linux-on-droid";
+    repo = "external_lxc";
     # lindroid-21
     rev = "4e3a3630fff3dc04e0d4a761309f87f248e40b17";
     sha256 = "1c993880v9sv97paqkqxd4c9p6j1v8m6d1b2sjwhav3f3l9dh7wn";
   };
-  source.dirs."libhybris".src = pkgs.fetchgit {
-    url = "https://github.com/Linux-on-droid/libhybris.git";
+  source.dirs."libhybris".src = pkgs.fetchFromGitHub {
+    owner = "Linux-on-droid";
+    repo = "libhybris";
     # lindroid-21
     rev = "419f3ff6736e01cb0e579f65a34c85cfa7de578b";
     sha256 = "1hp69929yrhql2qc4scd4fdvy5zv8g653zvx376c3nlrzckjdm47";
