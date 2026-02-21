@@ -111,14 +111,17 @@ args@{
       hash = "sha256-Fh0zfXctO1Rj/BaE+jI4bvlYcrEtuXEkKmhHYaTwfl8=";
     };
   };
-  source.dirs."packages/apps/Gallery2" = lib.mkForce {
-    src = pkgs.fetchFromGitHub {
-      owner = "LineageOS";
-      repo = "android_packages_apps_Gallery2";
-      rev = "cce97b43244c7089839d710aa45dd2e64a94586e";
-      hash = "sha256-QylzofyyciaoK2xHbSLZH7QdJOHVjzeH3vi35u3RD7g=";
+  # cannot see Gallery from home screen with this:
+  /*
+    source.dirs."packages/apps/Gallery2" = lib.mkForce {
+      src = pkgs.fetchFromGitHub {
+        owner = "LineageOS";
+        repo = "android_packages_apps_Gallery2";
+        rev = "cce97b43244c7089839d710aa45dd2e64a94586e";
+        hash = "sha256-QylzofyyciaoK2xHbSLZH7QdJOHVjzeH3vi35u3RD7g=";
+      };
     };
-  };
+  */
   source.dirs."packages/inputmethods/LatinIME" = lib.mkForce {
     src = pkgs.fetchFromGitHub {
       owner = "LineageOS";
