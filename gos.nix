@@ -97,4 +97,12 @@ args@{
       hash = "sha256-3Y+3g4IcURRirzdvGpG9o78wInTqTAd1zHGKK2sgUv4=";
     };
   };
+  source.dirs."packages/apps/DeskClock" = lib.mkForce {
+    src = pkgs.fetchFromGitHub {
+      owner = "LineageOS";
+      repo = "android_packages_apps_DeskClock";
+      rev = "c482027bbad71cd48a8caf73b776a3d6d310206b";
+      hash = "sha256-Fh0zfXctO1Rj/BaE+jI4bvlYcrEtuXEkKmhHYaTwfl8=";
+    };
+  };
 }
