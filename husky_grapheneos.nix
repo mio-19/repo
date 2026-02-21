@@ -12,11 +12,19 @@ args@{
     src = pkgs.fetchFromGitHub {
       owner = "mio-19";
       repo = "device_google_shusky-kernels_6.1";
-      # pixel8pro-stock-3840Hz.patch;pixel8pro-stock-fix-attempt3.patch;pixel8pro-lindroid.patch
-      rev = "86a6dd1fb698984abfbb4ec8834f789b2bdc3167";
-      hash = "sha256-VLtT63ZzTkujVlOo31KkdXyFLrK/FAVleEtBwhUG8UY=";
-      #fetchLFS = true; # no need for fetchFromGitHub, right?
+      # pixel8pro-stock.patch;pixel8pro-stock-fix-attempt3.patch
+      rev = "ec4f5cfd31f0f61309ba2bebcd02ae8b9420c0aa";
+      hash = "sha256-t+0OIx9l+/HwTMN3yxCd2LyYdJREPhGu+RbAYM8mCXE";
     };
+    /*
+      src = pkgs.fetchFromGitHub {
+        owner = "mio-19";
+        repo = "device_google_shusky-kernels_6.1";
+        # pixel8pro-stock-3840Hz.patch;pixel8pro-stock-fix-attempt3.patch;pixel8pro-lindroid.patch
+        rev = "86a6dd1fb698984abfbb4ec8834f789b2bdc3167";
+        hash = "sha256-VLtT63ZzTkujVlOo31KkdXyFLrK/FAVleEtBwhUG8UY=";
+      };
+    */
   };
   signing.avb.size = 4096;
   variant = "userdebug";
