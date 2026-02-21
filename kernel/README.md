@@ -55,3 +55,5 @@ done
 ```
 
 for debug `--sandbox_debug --verbose_failures`
+
+TODO: consider CONFIG_POSIX_MQUEUE
