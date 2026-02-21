@@ -15,7 +15,7 @@ args@{
       # pixel8pro-stock-3840Hz.patch;pixel8pro-stock-fix-attempt3.patch;pixel8pro-lindroid.patch
       rev = "86a6dd1fb698984abfbb4ec8834f789b2bdc3167";
       hash = "sha256-gfVnX/x45ZmeEBxKZPu1hJvxtEJyzOGI1VnNMzdF5r0=";
-      fetchLFS = true;
+      #fetchLFS = true; # no need for fetchFromGitHub, right?
     };
   };
   signing.avb.size = 4096;
