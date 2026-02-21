@@ -62,8 +62,15 @@ args@{
   ];
   source.dirs."packages/apps/Launcher3".patches = with pkgs; [
     (fetchpatch {
+      # from https://github.com/VoltageOS/packages_apps_Launcher3/commit/6a474287135cb6fc147379efd0c1bfc069f49efd
+      name = "Launcher3: Implement taskbar toggle.patch";
+      url = "https://github.com/mio-19/platform_packages_apps_Launcher3/commit/381899ea085f2a8f642b7aaebf74bef50daa6d60.patch";
+      hash = "sha256-u2EpJIH0QDJuWhuKYjNSKE4GCCpd1FQwd5FnUtca6es=";
+    })
+    (fetchpatch {
+      # from https://github.com/VoltageOS/packages_apps_Launcher3/commit/f445d2b4af7408bf56a168516d2e8c3c71b37cc6
       name = "Launcher3: Implement gesture hint toggle.patch";
-      url = "https://github.com/VoltageOS/packages_apps_Launcher3/commit/f445d2b4af7408bf56a168516d2e8c3c71b37cc6.patch";
+      url = "https://github.com/mio-19/platform_packages_apps_Launcher3/commit/7480f89cb0f526d8fb667bfd4972cca826aa70b5.patch";
       hash = "sha256-wxgturb6mCY37A6QL4CAGuoFx9p1IPcAVmZlEtWC06k=";
     })
   ];
