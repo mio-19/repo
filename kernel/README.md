@@ -25,6 +25,8 @@ KLEAF_REPO_MANIFEST=aosp_manifest.xml ./build_shusky.sh --lto=full
 
 lindroid extra steps - pixel8pro-lindroid.patch
 
+apply c360d6f7b22ab710a27193f62669f5a257cd259d.patch on aosp. from <https://gitlab.com/ubports/porting/reference-device-ports/halium12/volla-x23/kernel-volla-mt6789/-/commit/c360d6f7b22ab710a27193f62669f5a257cd259d> <https://t.me/linux_on_droid/7889>
+
 ```zsh
 git clone https://github.com/Linux-on-droid/lindroid-drm-loopback.git aosp/drivers/lindroid-drm
 echo 'obj-y += lindroid-drm/' >> aosp/drivers/Makefile
@@ -40,4 +42,4 @@ sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
 
 ```
 
-for debug ` --sandbox_debug --verbose_failures`
+for debug `--sandbox_debug --verbose_failures`
