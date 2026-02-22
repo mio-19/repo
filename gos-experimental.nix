@@ -70,44 +70,61 @@ args@{
       url = "https://github.com/LineageOS/android_bootable_recovery/commit/0b541577bdf9530401dfd7cf69324add6a090a56.patch";
       hash = "sha256-9hZebY0J2vFO26X26bB9OjykRfgs2OZrEwvytfd3P4s=";
     })
-    # git format-patch -3 --full-index --binary 009525d9969a8c63c7574a87d7b87c45f2dd9c2c
-    # https://github.com/LineageOS/android_bootable_recovery/commit/009525d9969a8c63c7574a87d7b87c45f2dd9c2c.patch
-    # https://stackoverflow.com/questions/50677861/git-binary-diffs-are-not-supported-error-using-yocto
-    ./0003-recovery-New-install-progress-animation.patch
-    (fetchpatch {
-      name = "recovery: calibrate touchscreen";
-      url = "https://github.com/LineageOS/android_bootable_recovery/commit/0a608171e55afc39e1e73ca3ce07cea1d8aa60df.patch";
-      hash = "sha256-Bi7CFTgk0X3ri9+/xKPPy6x0cNFiWgki6WR982W07w8=";
-    })
-    (fetchpatch {
-      name = "recovery: Dejank the menus ";
-      url = "https://github.com/LineageOS/android_bootable_recovery/commit/c61625a3e89eaa31914ba206db3680ed63a2f4dc.patch";
-      hash = "sha256-ZvkOC/UFyz5+8ZutVZe1VAK20+fFYJiODV12SNvjF+k=";
-    })
-    (fetchpatch {
-      name = "recovery: compute displayable item count while drawing";
-      url = "https://github.com/LineageOS/android_bootable_recovery/commit/60c1298e8d7a28105b98ab5accf02d9b47e7f653.patch";
-      hash = "sha256-j7n2MV3iSjAG/yf3Rx3h4UJK8mlWgfUDGVvtrACxwXU=";
-    })
-    (fetchpatch {
-      name = "recovery: add new recovery and fastbootd logos";
-      url = "https://github.com/LineageOS/android_bootable_recovery/commit/e3c138ed10c8f796bdb498ee94e2a6089aa6da8a.patch";
-      hash = "sha256-atPLdO5zKa/jDNK2eeJ1YdI55X7Hj0HXX054bPLvtB8=";
-    })
-    (fetchpatch {
-      name = "recovery: Stop showing fastbootd logo for devices without it";
-      url = "https://github.com/LineageOS/android_bootable_recovery/commit/a9c5d70adea0ffdded623b58444e90bfa4e53476.patch";
-      hash = "sha256-ko+oMHRx6h/hdmlwq0k/qtqJSpdnv9LklmPDCRNIdW0=";
-    })
-    (fetchpatch {
-      name = "recovery: apply new design to menu padding, color and arrow";
-      url = "https://github.com/LineageOS/android_bootable_recovery/commit/d9f009193bc6967cc8379ebef73352ed2376edcc.patch";
-      hash = "sha256-tS16H7AL8LuPpkjmgZPTKg6nQfqBJClgH1w71WbfAGI=";
-    })
-    (fetchpatch {
-      name = "recovery: Fix scrolling when touch is rotated";
-      url = "https://github.com/LineageOS/android_bootable_recovery/commit/833e2948bfe4bbfbf73796391a9336850108e7bd.patch";
-      hash = "sha256-riyeyBW9hyRmdQO2SmiXSizJWGmgbLnhzw0/l1/ZePg=";
-    })
   ];
+  source.dirs."bootable/recovery".postPatch =
+    let
+      patches0 = with pkgs; [
+        # git format-patch -3 --full-index --binary 009525d9969a8c63c7574a87d7b87c45f2dd9c2c
+        # https://github.com/LineageOS/android_bootable_recovery/commit/009525d9969a8c63c7574a87d7b87c45f2dd9c2c.patch
+        # https://stackoverflow.com/questions/50677861/git-binary-diffs-are-not-supported-error-using-yocto
+        ./0003-recovery-New-install-progress-animation.patch
+        (fetchpatch {
+          name = "recovery: calibrate touchscreen";
+          url = "https://github.com/LineageOS/android_bootable_recovery/commit/0a608171e55afc39e1e73ca3ce07cea1d8aa60df.patch";
+          hash = "sha256-Bi7CFTgk0X3ri9+/xKPPy6x0cNFiWgki6WR982W07w8=";
+        })
+        (fetchpatch {
+          name = "recovery: Dejank the menus ";
+          url = "https://github.com/LineageOS/android_bootable_recovery/commit/c61625a3e89eaa31914ba206db3680ed63a2f4dc.patch";
+          hash = "sha256-ZvkOC/UFyz5+8ZutVZe1VAK20+fFYJiODV12SNvjF+k=";
+        })
+        (fetchpatch {
+          name = "recovery: compute displayable item count while drawing";
+          url = "https://github.com/LineageOS/android_bootable_recovery/commit/60c1298e8d7a28105b98ab5accf02d9b47e7f653.patch";
+          hash = "sha256-j7n2MV3iSjAG/yf3Rx3h4UJK8mlWgfUDGVvtrACxwXU=";
+        })
+        (fetchpatch {
+          name = "recovery: add new recovery and fastbootd logos";
+          url = "https://github.com/LineageOS/android_bootable_recovery/commit/e3c138ed10c8f796bdb498ee94e2a6089aa6da8a.patch";
+          hash = "sha256-atPLdO5zKa/jDNK2eeJ1YdI55X7Hj0HXX054bPLvtB8=";
+        })
+        (fetchpatch {
+          name = "recovery: Stop showing fastbootd logo for devices without it";
+          url = "https://github.com/LineageOS/android_bootable_recovery/commit/a9c5d70adea0ffdded623b58444e90bfa4e53476.patch";
+          hash = "sha256-ko+oMHRx6h/hdmlwq0k/qtqJSpdnv9LklmPDCRNIdW0=";
+        })
+        (fetchpatch {
+          name = "recovery: apply new design to menu padding, color and arrow";
+          url = "https://github.com/LineageOS/android_bootable_recovery/commit/d9f009193bc6967cc8379ebef73352ed2376edcc.patch";
+          hash = "sha256-tS16H7AL8LuPpkjmgZPTKg6nQfqBJClgH1w71WbfAGI=";
+        })
+        (fetchpatch {
+          name = "recovery: Correct touch position with overscan";
+          url = "https://github.com/LineageOS/android_bootable_recovery/commit/d6333decabd460d739095d18435fb430ca005b23.patch";
+          hash = "sha256-ARugR80idrQgGLJHzxLKZ36v+SqBpfjiJJ7uukhiM7k=";
+        })
+        (fetchpatch {
+          name = "recovery: Fix scrolling when touch is rotated";
+          url = "https://github.com/LineageOS/android_bootable_recovery/commit/833e2948bfe4bbfbf73796391a9336850108e7bd.patch";
+          hash = "sha256-riyeyBW9hyRmdQO2SmiXSizJWGmgbLnhzw0/l1/ZePg=";
+        })
+      ];
+      git = lib.getExe pkgs.git;
+    in
+    ''
+      for p in ${lib.concatStringsSep " " patches0}; do
+        echo "Applying patch $p"
+        ${git} apply < $p
+      done
+    '';
 }
