@@ -9,22 +9,22 @@ args@{
   device = "husky";
   # check in nix repl (import ./.).gosSign.husky.config.source.dirs."device/google/shusky-kernels/6.1"
   source.dirs."device/google/shusky-kernels/6.1" = lib.mkForce {
-    src = pkgs.fetchFromGitHub {
-      owner = "mio-19";
-      repo = "device_google_shusky-kernels_6.1";
-      # pixel8pro-stock.patch;pixel8pro-stock-fix-attempt3.patch
-      rev = "ec4f5cfd31f0f61309ba2bebcd02ae8b9420c0aa";
-      hash = "sha256-t+0OIx9l+/HwTMN3yxCd2LyYdJREPhGu+RbAYM8mCXE";
-    };
     /*
       src = pkgs.fetchFromGitHub {
         owner = "mio-19";
         repo = "device_google_shusky-kernels_6.1";
-        # pixel8pro-stock-3840Hz.patch;pixel8pro-stock-fix-attempt3.patch;pixel8pro-lindroid.patch
-        rev = "86a6dd1fb698984abfbb4ec8834f789b2bdc3167";
-        hash = "sha256-VLtT63ZzTkujVlOo31KkdXyFLrK/FAVleEtBwhUG8UY=";
+        # pixel8pro-stock.patch;pixel8pro-stock-fix-attempt3.patch
+        rev = "ec4f5cfd31f0f61309ba2bebcd02ae8b9420c0aa";
+        hash = "sha256-t+0OIx9l+/HwTMN3yxCd2LyYdJREPhGu+RbAYM8mCXE";
       };
     */
+    src = pkgs.fetchFromGitHub {
+      owner = "mio-19";
+      repo = "device_google_shusky-kernels_6.1";
+      # pixel8pro-stock-3840Hz.patch pixel8pro-stock-fix-attempt3.patch pixel8pro-lindroid.patch 0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch  3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
+      rev = "79acd7ff4fcd1d018a1fe3db3e9a306ab8f68991";
+      hash = "sha256-t/2djZrRxZHL3NfIz2Es/6Q/lyuiFVKjVQ3Dicu0mqw=";
+    };
   };
   signing.avb.size = 4096;
   variant = "userdebug";
