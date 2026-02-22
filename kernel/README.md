@@ -9,6 +9,7 @@ prefer pixel8pro-stock-fix-3840Hz.patch with pixel8pro-lindroid.patch
 + <https://xdaforums.com/t/a-mod-on-pwm-frequency-v3-20241027.4683727/>
 + <https://xdaforums.com/t/a-mod-on-pwm-frequency-v3-20241027.4683727/post-89634948>
 + <https://xdaforums.com/t/a-mod-on-pwm-frequency-v3-20241027.4683727/page-8#post-89915781>
++ <https://www.androidcentral.com/phones/google-pixel-8-pro-display-upgrade>
 
 adjusted patch from sultan branch <https://github.com/updateing/android_kernel_google_zuma.git> 14.0.0-sultan-pwm: pixel8pro-14.0.0-sultan-pwm.patch
 
