@@ -62,6 +62,11 @@ TODO: consider CONFIG_POSIX_MQUEUE
 
 
 ```zsh
+tee -a private/devices/google/shusky/shusky_defconfig << 'EOF'
+# lindroid
+CONFIG_DRM_LINDROID_EVDI=y
+EOF
+
 git clone https://github.com/Linux-on-droid/lindroid-drm-loopback.git aosp/drivers/lindroid-drm
 echo 'obj-y += lindroid-drm/' >> aosp/drivers/Makefile
 sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" aosp/drivers/Kconfig

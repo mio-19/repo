@@ -5,6 +5,7 @@ args@{
   ...
 }:
 {
+  # WIP: ERROR: building adevtool dependencies: Or did you mean ["libdisk"]
   source.dirs."bootable/recovery" = lib.mkForce {
     src = pkgs.fetchFromGitHub {
       owner = "LineageOS";
