@@ -11,6 +11,8 @@ args@{
   ];
   source.dirs."vendor/google_devices/${config.device}".postPatch = ''
     set -e
+    [ ! -f proprietary/vendor/etc/fstab.zram.100p ]
+    [ -f proprietary/vendor/etc/fstab.zram.50p ]
     cp proprietary/vendor/etc/fstab.zram.50p proprietary/vendor/etc/fstab.zram.100p
     substituteInPlace proprietary/vendor/etc/fstab.zram.100p --replace-fail "zramsize=50%" "size=100%"
     substituteInPlace proprietary/vendor/etc/fstab.zram.100p --replace-fail "zram_backingdev_size=1G" "zram_backingdev_size=4G"
