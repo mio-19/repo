@@ -28,11 +28,14 @@ args@{
       url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/305.patch";
       hash = "sha256-oJnWjITM4pycHQRbLORQTmr9315LXtGk8Upzi2IRONU=";
     })
-    (fetchpatch {
-      name = "Possibly fix NPE";
-      url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/258.patch";
-      hash = "sha256-/2yXOeHQmuJDngLypCz512F5jWdT3oZ9MGjthC5/Tp0=";
-    })
+    /*
+      # cannot apply
+      (fetchpatch {
+        name = "Possibly fix NPE";
+        url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/258.patch";
+        hash = "sha256-/2yXOeHQmuJDngLypCz512F5jWdT3oZ9MGjthC5/Tp0=";
+      })
+    */
   ];
   source.dirs."packages/apps/Settings".patches = with pkgs; [
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
