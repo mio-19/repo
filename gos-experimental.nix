@@ -114,6 +114,16 @@ args@{
           hash = "sha256-ARugR80idrQgGLJHzxLKZ36v+SqBpfjiJJ7uukhiM7k=";
         })
         (fetchpatch {
+          name = "recovery: Add support for touch rotation";
+          url = "https://github.com/LineageOS/android_bootable_recovery/commit/e4997a23380d2fcb4f3f26fbd4fceb6bd1c1c34c.patch";
+          hash = "sha256-N/f+drbgmINUdn7Ebmk4oLqsFa+tog0s9vVR4TCjOrg=";
+        })
+        (fetchpatch {
+          name = "recovery_ui: Remove unused variable";
+          url = "https://github.com/LineageOS/android_bootable_recovery/commit/34c158d5045c304815a54a85e5d9fab3fba697be.patch";
+          hash = "sha256-1mgZoHdTD7NyuiTVrfmSKzh0+4dY5rOFGTYeyFbdh7o=";
+        })
+        (fetchpatch {
           name = "recovery: Fix scrolling when touch is rotated";
           url = "https://github.com/LineageOS/android_bootable_recovery/commit/833e2948bfe4bbfbf73796391a9336850108e7bd.patch";
           hash = "sha256-riyeyBW9hyRmdQO2SmiXSizJWGmgbLnhzw0/l1/ZePg=";
