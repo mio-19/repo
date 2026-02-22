@@ -59,12 +59,14 @@ for debug `--sandbox_debug --verbose_failures`
 
 TODO: consider CONFIG_POSIX_MQUEUE
 
-### lindroid-partial - testing only some parts to figure out why bootloop
+### lindroid-partial2 - testing only some parts to figure out why bootloop
 
 
 ```zsh
 tee -a private/devices/google/shusky/shusky_defconfig << 'EOF'
+
 # lindroid
+CONFIG_SYSVIPC=y
 CONFIG_DRM_LINDROID_EVDI=y
 EOF
 
