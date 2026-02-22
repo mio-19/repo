@@ -152,4 +152,11 @@ args@{
       hash = "sha256-JhoxbfraTcQcVsDFX5Fdk8C0mpzQhqaB6Rx0w5gYeSs=";
     };
   };
+  source.dir."packages/modules/Connectivity".patches = with pkgs; [
+    (fetchpatch {
+      name = "Connectivity: Add capability to allow tethering to use VPN upstreams";
+      url = "https://github.com/LineageOS/android_packages_modules_Connectivity/commit/a365cfb8b6919aaa5ca99dafbc79ad95098ae218.patch";
+      hash = "sha256-TrvrKyFWSBdZaYATDLffoQKI6EOYUGcPGeFxM654p7s=";
+    })
+  ];
 }
