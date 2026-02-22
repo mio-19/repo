@@ -44,7 +44,7 @@ index 00000000..8a3460ee
 --- /dev/null
 +++ b/config/mk/google_devices/platform/zuma/fstab.zram.100p
 @@ -0,0 +1 @@
-+/dev/block/zram0	none	swap	defaults	zramsize=100%,zram_backingdev_size=1G
++/dev/block/zram0	none	swap	defaults	zramsize=100%,zram_backingdev_size=4G
 -- 
 2.52.0
 
