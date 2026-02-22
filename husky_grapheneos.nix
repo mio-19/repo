@@ -38,7 +38,8 @@ args@{
     sed -i '/vendor\/adevtool\/config\/mk\/google_devices\/platform\/zuma\/product-common\.mk/a $(call inherit-product, vendor/lindroid/lindroid.mk)' config/mk/google_devices/device/husky/device.mk
   '';
   source.dirs."vendor/adevtool".patches = [
-    ./0001-husky-increase-default-zram-and-writeback-sizes.patch
+    #./0001-husky-increase-default-zram-and-writeback-sizes.patch
+    ./vendor-adevtool-12G-8G-100.patch
   ];
   # lindroid:
   source.dirs."frameworks/native".patches = [ ./inputflinger.patch ];
