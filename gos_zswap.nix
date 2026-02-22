@@ -11,6 +11,7 @@ args@{
   ];
   source.dirs."vendor/google_devices/${config.device}".postPatch = ''
     set -e
+    pwd
     [ ! -f proprietary/vendor/etc/fstab.zram.100p ]
     [ -f proprietary/vendor/etc/fstab.zram.50p ]
     cp proprietary/vendor/etc/fstab.zram.50p proprietary/vendor/etc/fstab.zram.100p
