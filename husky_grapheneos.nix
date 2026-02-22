@@ -8,7 +8,6 @@ args@{
   imports = [
     ./gos.nix
     ./gos-experimental.nix
-    ./gos_zswap.nix
     ./gos_lindroid.nix
   ];
   device = "husky";
