@@ -1,0 +1,56 @@
+From def8fe04683b7efd296f5594cc7921f681e532e2 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Mon, 23 Feb 2026 10:45:57 +1100
+Subject: [PATCH] platform_system_sepolicy: remove check of permissive domains
+ not allowed in user builds
+
+---
+ build/soong/policy.go | 32 --------------------------------
+ 1 file changed, 32 deletions(-)
+
+diff --git a/build/soong/policy.go b/build/soong/policy.go
+index 78f99921f..1388803b0 100644
+--- a/build/soong/policy.go
++++ b/build/soong/policy.go
+@@ -537,38 +537,6 @@ func (c *policyBinary) GenerateAndroidBuildActions(ctx android.ModuleContext) {
+ 	}
+ 	rule.Temporary(bin)
+ 
+-	// permissive check is performed only in user build (not debuggable).
+-	if !ctx.Config().Debuggable() {
+-		permissiveDomains := pathForModuleOut(ctx, c.stem()+"_permissive")
+-		cmd := rule.Command().BuiltTool("sepolicy-analyze").
+-			Input(bin).
+-			Text("permissive")
+-		// Filter-out domains listed in permissive_domains_on_user_builds
+-		allowedDomains := c.properties.Permissive_domains_on_user_builds
+-		if len(allowedDomains) != 0 {
+-			cmd.Text("| { grep -Fxv")
+-			for _, d := range allowedDomains {
+-				cmd.FlagWithArg("-e ", proptools.ShellEscape(d))
+-			}
+-			cmd.Text(" || true; }") // no match doesn't fail the cmd
+-		}
+-		cmd.Text(" > ").Output(permissiveDomains)
+-		rule.Temporary(permissiveDomains)
+-
+-		msg := `==========\n` +
+-			`ERROR: permissive domains not allowed in user builds\n` +
+-			`List of invalid domains:`
+-
+-		rule.Command().Text("if test").
+-			FlagWithInput("-s ", permissiveDomains).
+-			Text("; then echo").
+-			Flag("-e").
+-			Text(`"` + msg + `"`).
+-			Text("&& cat ").
+-			Input(permissiveDomains).
+-			Text("; exit 1; fi")
+-	}
+-
+ 	out := pathForModuleOut(ctx, c.stem())
+ 	rule.Command().Text("cp").
+ 		Flag("-f").
+-- 
+2.52.0
+

@@ -1,0 +1,233 @@
+From eebefda986b55a02cd73400e83ba40ad8a2cffe5 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Mon, 23 Feb 2026 10:50:39 +1100
+Subject: [PATCH] adevtool: call vendor lindroid
+
+---
+ config/mk/google_devices/device/akita/device.mk     | 1 +
+ config/mk/google_devices/device/blazer/device.mk    | 1 +
+ config/mk/google_devices/device/bluejay/device.mk   | 1 +
+ config/mk/google_devices/device/caiman/device.mk    | 1 +
+ config/mk/google_devices/device/cheetah/device.mk   | 1 +
+ config/mk/google_devices/device/comet/device.mk     | 1 +
+ config/mk/google_devices/device/felix/device.mk     | 1 +
+ config/mk/google_devices/device/frankel/device.mk   | 1 +
+ config/mk/google_devices/device/husky/device.mk     | 1 +
+ config/mk/google_devices/device/komodo/device.mk    | 1 +
+ config/mk/google_devices/device/lynx/device.mk      | 1 +
+ config/mk/google_devices/device/mustang/device.mk   | 1 +
+ config/mk/google_devices/device/oriole/device.mk    | 1 +
+ config/mk/google_devices/device/panther/device.mk   | 1 +
+ config/mk/google_devices/device/rango/device.mk     | 1 +
+ config/mk/google_devices/device/raven/device.mk     | 1 +
+ config/mk/google_devices/device/shiba/device.mk     | 1 +
+ config/mk/google_devices/device/tangorpro/device.mk | 1 +
+ config/mk/google_devices/device/tegu/device.mk      | 1 +
+ config/mk/google_devices/device/tokay/device.mk     | 1 +
+ 20 files changed, 20 insertions(+)
+
+diff --git a/config/mk/google_devices/device/akita/device.mk b/config/mk/google_devices/device/akita/device.mk
+index 1217f310..a0107050 100644
+--- a/config/mk/google_devices/device/akita/device.mk
++++ b/config/mk/google_devices/device/akita/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/zuma/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_AKITA_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_AKITA_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/blazer/device.mk b/config/mk/google_devices/device/blazer/device.mk
+index f01660c0..7aadfc29 100644
+--- a/config/mk/google_devices/device/blazer/device.mk
++++ b/config/mk/google_devices/device/blazer/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/laguna/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR := device/google/laguna-kernels/6.6/grapheneos/muzel
+ 
+diff --git a/config/mk/google_devices/device/bluejay/device.mk b/config/mk/google_devices/device/bluejay/device.mk
+index fd008670..a27559ae 100644
+--- a/config/mk/google_devices/device/bluejay/device.mk
++++ b/config/mk/google_devices/device/bluejay/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/gs101/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_BLUEJAY_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_BLUEJAY_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/caiman/device.mk b/config/mk/google_devices/device/caiman/device.mk
+index de307de4..e62a42cf 100644
+--- a/config/mk/google_devices/device/caiman/device.mk
++++ b/config/mk/google_devices/device/caiman/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/zumapro/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_CAIMAN_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_CAIMAN_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/cheetah/device.mk b/config/mk/google_devices/device/cheetah/device.mk
+index cda59490..947af250 100644
+--- a/config/mk/google_devices/device/cheetah/device.mk
++++ b/config/mk/google_devices/device/cheetah/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/gs201/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_CHEETAH_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_CHEETAH_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/comet/device.mk b/config/mk/google_devices/device/comet/device.mk
+index d3692608..47ef1be7 100644
+--- a/config/mk/google_devices/device/comet/device.mk
++++ b/config/mk/google_devices/device/comet/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/zumapro/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_COMET_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_COMET_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/felix/device.mk b/config/mk/google_devices/device/felix/device.mk
+index 3f6742c9..e424aee0 100644
+--- a/config/mk/google_devices/device/felix/device.mk
++++ b/config/mk/google_devices/device/felix/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/gs201/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_FELIX_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_FELIX_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/frankel/device.mk b/config/mk/google_devices/device/frankel/device.mk
+index f01660c0..7aadfc29 100644
+--- a/config/mk/google_devices/device/frankel/device.mk
++++ b/config/mk/google_devices/device/frankel/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/laguna/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR := device/google/laguna-kernels/6.6/grapheneos/muzel
+ 
+diff --git a/config/mk/google_devices/device/husky/device.mk b/config/mk/google_devices/device/husky/device.mk
+index c9353035..cfcc3042 100644
+--- a/config/mk/google_devices/device/husky/device.mk
++++ b/config/mk/google_devices/device/husky/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/zuma/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_HUSKY_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_HUSKY_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/komodo/device.mk b/config/mk/google_devices/device/komodo/device.mk
+index f01bae80..bbaf85a3 100644
+--- a/config/mk/google_devices/device/komodo/device.mk
++++ b/config/mk/google_devices/device/komodo/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/zumapro/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_KOMODO_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_KOMODO_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/lynx/device.mk b/config/mk/google_devices/device/lynx/device.mk
+index a2c74f94..754cf714 100644
+--- a/config/mk/google_devices/device/lynx/device.mk
++++ b/config/mk/google_devices/device/lynx/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/gs201/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_LYNX_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_LYNX_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/mustang/device.mk b/config/mk/google_devices/device/mustang/device.mk
+index f01660c0..7aadfc29 100644
+--- a/config/mk/google_devices/device/mustang/device.mk
++++ b/config/mk/google_devices/device/mustang/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/laguna/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR := device/google/laguna-kernels/6.6/grapheneos/muzel
+ 
+diff --git a/config/mk/google_devices/device/oriole/device.mk b/config/mk/google_devices/device/oriole/device.mk
+index e88c8093..3cf45b81 100644
+--- a/config/mk/google_devices/device/oriole/device.mk
++++ b/config/mk/google_devices/device/oriole/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/gs101/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_ORIOLE_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_ORIOLE_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/panther/device.mk b/config/mk/google_devices/device/panther/device.mk
+index f0f90a13..0a256cdf 100644
+--- a/config/mk/google_devices/device/panther/device.mk
++++ b/config/mk/google_devices/device/panther/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/gs201/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_PANTHER_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_PANTHER_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/rango/device.mk b/config/mk/google_devices/device/rango/device.mk
+index b6376551..fbc1094b 100644
+--- a/config/mk/google_devices/device/rango/device.mk
++++ b/config/mk/google_devices/device/rango/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/laguna/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR := device/google/laguna-kernels/6.6/grapheneos/rango
+ 
+diff --git a/config/mk/google_devices/device/raven/device.mk b/config/mk/google_devices/device/raven/device.mk
+index d34f5a64..c129d857 100644
+--- a/config/mk/google_devices/device/raven/device.mk
++++ b/config/mk/google_devices/device/raven/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/gs101/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_RAVEN_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_RAVEN_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/shiba/device.mk b/config/mk/google_devices/device/shiba/device.mk
+index bb5a555c..e1690b42 100644
+--- a/config/mk/google_devices/device/shiba/device.mk
++++ b/config/mk/google_devices/device/shiba/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/zuma/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_SHIBA_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_SHIBA_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/tangorpro/device.mk b/config/mk/google_devices/device/tangorpro/device.mk
+index fdcb1d77..2b5e25be 100644
+--- a/config/mk/google_devices/device/tangorpro/device.mk
++++ b/config/mk/google_devices/device/tangorpro/device.mk
+@@ -1,6 +1,7 @@
+ BOARD_WITHOUT_RADIO := true
+ 
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/gs201/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_TANGORPRO_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_TANGORPRO_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/tegu/device.mk b/config/mk/google_devices/device/tegu/device.mk
+index 149e7014..0225ca81 100644
+--- a/config/mk/google_devices/device/tegu/device.mk
++++ b/config/mk/google_devices/device/tegu/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/zumapro/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_TEGU_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_TEGU_DIR)/kernel-headers
+diff --git a/config/mk/google_devices/device/tokay/device.mk b/config/mk/google_devices/device/tokay/device.mk
+index e69c96c2..39d69fa5 100644
+--- a/config/mk/google_devices/device/tokay/device.mk
++++ b/config/mk/google_devices/device/tokay/device.mk
+@@ -1,4 +1,5 @@
+ $(call inherit-product, vendor/adevtool/config/mk/google_devices/platform/zumapro/product-common.mk)
++$(call inherit-product, vendor/lindroid/lindroid.mk)
+ 
+ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_TOKAY_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_TOKAY_DIR)/kernel-headers
+-- 
+2.52.0
+
