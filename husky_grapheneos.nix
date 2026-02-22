@@ -24,9 +24,9 @@ args@{
     src = pkgs.fetchFromGitHub {
       owner = "mio-19";
       repo = "device_google_shusky-kernels_6.1";
-      # pixel8pro-stock-3840Hz.patch pixel8pro-stock-fix-attempt3.patch lindroid-partial 0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch  3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
-      rev = "b5e5225b0c2337a75836aed20c4056ae6056e405";
-      hash = "sha256-ZytLgp+Ca2ThWiwB2mpXrNsfCHxTXeel4h4EWKtjLBk=";
+      # pixel8pro-stock-3840Hz.patch pixel8pro-stock-fix-attempt3.patch lindroid-partial2 0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch  3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
+      rev = "81d6c9acae62622049fa4bcb67e0ac318bc8c25c";
+      hash = "sha256-Ea7w3VNsVe1VTeP/tJYiab3ysyw9kcFdcjGsivyAdxs=";
     };
   };
   signing.avb.size = 4096;
@@ -38,7 +38,7 @@ args@{
     sed -i '/vendor\/adevtool\/config\/mk\/google_devices\/platform\/zuma\/product-common\.mk/a $(call inherit-product, vendor/lindroid/lindroid.mk)' config/mk/google_devices/device/husky/device.mk
   '';
   source.dirs."vendor/adevtool".patches = [
-    #./0001-husky-increase-default-zram-and-writeback-sizes.patch
+    ./0001-husky-increase-default-zram-and-writeback-sizes.patch
     ./vendor-adevtool-12G-8G-100.patch
   ];
   # lindroid:
