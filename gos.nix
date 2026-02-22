@@ -8,9 +8,6 @@ args@{
   buildDateTime = 1771719068;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
-  source.dirs."vendor/adevtool".patches = [
-    ./adevtool-bigger-zram.patch
-  ];
   source.dirs."frameworks/base".patches = with pkgs; [
     #./No-gestural-navigation-hint-bar.patch
 
