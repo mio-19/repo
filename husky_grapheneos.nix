@@ -37,10 +37,6 @@ args@{
     PRODUCT_SYSTEM_PROPERTIES += ro.adb.secure=1' >> config/mk/google_devices/device/husky/device.mk
     sed -i '/vendor\/adevtool\/config\/mk\/google_devices\/platform\/zuma\/product-common\.mk/a $(call inherit-product, vendor/lindroid/lindroid.mk)' config/mk/google_devices/device/husky/device.mk
   '';
-  source.dirs."vendor/adevtool".patches = [
-    ./0001-husky-increase-default-zram-and-writeback-sizes.patch
-    ./vendor-adevtool-12G-8G-100.patch
-  ];
   # lindroid:
   source.dirs."frameworks/native".patches = [ ./inputflinger.patch ];
   # to fix soft reboot when starting container on A14 (temporary!!! workaround) https://t.me/linux_on_droid/10346

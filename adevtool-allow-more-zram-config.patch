@@ -1,26 +1,28 @@
-From c44205af94a6599ece650026a94abfd2e3d3001f Mon Sep 17 00:00:00 2001
+From f13f1d26c18557c7bd96ae5212331271988eda91 Mon Sep 17 00:00:00 2001
 From: Mio <mio@mio19.uk>
-Date: Sun, 22 Feb 2026 14:21:39 +1100
-Subject: [PATCH] vendor-adevtool-8G-4G-100
+Date: Sun, 22 Feb 2026 19:01:10 +1100
+Subject: [PATCH] adevtool-allow-more-zram-config
 
 ---
- config/device/common/sysprop-inclusion.yml | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ config/device/common/sysprop-inclusion.yml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/config/device/common/sysprop-inclusion.yml b/config/device/common/sysprop-inclusion.yml
-index 958f25db..e588339f 100644
+index 958f25db..8d6517fe 100644
 --- a/config/device/common/sysprop-inclusion.yml
 +++ b/config/device/common/sysprop-inclusion.yml
-@@ -115,9 +115,9 @@ sysprop_inclusions:
-   - mm.zram.maintenance.periodic_delay_seconds = 86400
+@@ -116,8 +116,14 @@ sysprop_inclusions:
    - mmd.zram.comp_algorithm = lz77eh
    - mmd.zram.enabled = true
--  - mmd.zram.size = 3221225472
--  - mmd.zram.size = 50%
--  - mmd.zram.writeback.device_size = 1073741824
+   - mmd.zram.size = 3221225472
 +  - mmd.zram.size = 8589934592
++  - mmd.zram.size = 12884901888
+   - mmd.zram.size = 50%
++  - mmd.zram.size = 75%
 +  - mmd.zram.size = 100%
+   - mmd.zram.writeback.device_size = 1073741824
 +  - mmd.zram.writeback.device_size = 4294967296
++  - mmd.zram.writeback.device_size = 8589934592
    - mmd.zram.writeback.enabled = true
    - mmd.zram.writeback.huge_idle.enabled = false
    - mmd.zram.writeback.idle.enabled = true

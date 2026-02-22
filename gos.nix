@@ -8,6 +8,11 @@ args@{
   buildDateTime = 1771719068;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
+  source.dirs."vendor/adevtool".patches = [
+    ./0001-akita-increase-default-zram-and-set-writeback-to-4G.patch
+    ./0001-husky-increase-default-zram-and-writeback-sizes.patch
+    ./adevtool-allow-more-zram-config.patch
+  ];
   source.dirs."frameworks/base".patches = with pkgs; [
     #./No-gestural-navigation-hint-bar.patch
 
