@@ -171,7 +171,7 @@ index 9cde85f6..50a73bf3 100644
 -mmd.zram.size=50%
 -mmd.zram.writeback.device_size=1073741824
 +mmd.zram.size=100%
-+mmd.zram.writeback.device_size=8589934592
++mmd.zram.writeback.device_size=4294967296
  mmd.zram.writeback.enabled=true
  mmd.zram.writeback.huge_idle.enabled=false
  mmd.zram.writeback.idle.enabled=true

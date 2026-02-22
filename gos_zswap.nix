@@ -5,10 +5,10 @@ args@{
   ...
 }:
 {
-  # changing here is wrong
-  #source.dirs."vendor/adevtool".patches = [
-  #  ./adevtool-bigger-zram.patch
-  #];
+  # changing here is no effect but mightbe needed somewhere??
+  source.dirs."vendor/adevtool".patches = [
+    ./adevtool-bigger-zram.patch
+  ];
   source.dirs."vendor/google_devices/${config.device}".postPatch = ''
     set -e
     cp proprietary/vendor/etc/fstab.zram.50p proprietary/vendor/etc/fstab.zram.100p
