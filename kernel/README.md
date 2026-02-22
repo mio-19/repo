@@ -63,6 +63,8 @@ TODO: consider CONFIG_POSIX_MQUEUE
 
 seem like CONFIG_SYSVIPC=y and CONFIG_DRM_LINDROID_EVDI=y cause problem.
 
+seem like CONFIG_UTS_NS=y and CONFIG_PID_NS=y and CONFIG_DRM_LINDROID_EVDI=y cause problem. or is it just because we only build kernel not whole system?
+
 ```zsh
 tee -a private/devices/google/shusky/shusky_defconfig << 'EOF'
 
