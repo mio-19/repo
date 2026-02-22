@@ -1,0 +1,50 @@
+From aa5c9f725bfbe4a73cd1cef212a910215ce5752c Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Mon, 23 Feb 2026 00:23:09 +1100
+Subject: [PATCH] adevtool-100p
+
+---
+ config/mk/google_devices/device/akita/device.mk        | 6 ++++++
+ config/mk/google_devices/device/husky/device.mk        | 6 ++++++
+ config/mk/google_devices/platform/zuma/fstab.zram.100p | 1 +
+ 3 files changed, 13 insertions(+)
+ create mode 100644 config/mk/google_devices/platform/zuma/fstab.zram.100p
+
+diff --git a/config/mk/google_devices/device/akita/device.mk b/config/mk/google_devices/device/akita/device.mk
+index 1217f310..c429ea5d 100644
+--- a/config/mk/google_devices/device/akita/device.mk
++++ b/config/mk/google_devices/device/akita/device.mk
+@@ -6,3 +6,9 @@ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_AKITA_DIR)/kernel-headers
+ PRODUCT_PACKAGES += GosAkitaOverlay
+ 
+ include vendor/adevtool/config/mk/google_devices/platform/zuma/device.mk
++
++PRODUCT_COPY_FILES += \
++    vendor/adevtool/config/mk/google_devices/platform/zuma/fstab.zram.100p:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.zram.100p
++
++PRODUCT_VENDOR_PROPERTIES += \
++    persist.vendor.boot.zram.size=100p
+diff --git a/config/mk/google_devices/device/husky/device.mk b/config/mk/google_devices/device/husky/device.mk
+index c9353035..eaab5015 100644
+--- a/config/mk/google_devices/device/husky/device.mk
++++ b/config/mk/google_devices/device/husky/device.mk
+@@ -4,3 +4,9 @@ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_HUSKY_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_HUSKY_DIR)/kernel-headers
+ 
+ include vendor/adevtool/config/mk/google_devices/platform/zuma/device.mk
++
++PRODUCT_COPY_FILES += \
++    vendor/adevtool/config/mk/google_devices/platform/zuma/fstab.zram.100p:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.zram.100p
++
++PRODUCT_VENDOR_PROPERTIES += \
++    persist.vendor.boot.zram.size=100p
+diff --git a/config/mk/google_devices/platform/zuma/fstab.zram.100p b/config/mk/google_devices/platform/zuma/fstab.zram.100p
+new file mode 100644
+index 00000000..8a3460ee
+--- /dev/null
++++ b/config/mk/google_devices/platform/zuma/fstab.zram.100p
+@@ -0,0 +1 @@
++/dev/block/zram0	none	swap	defaults	zramsize=100%,zram_backingdev_size=1G
+-- 
+2.52.0
+
