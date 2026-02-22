@@ -65,6 +65,7 @@ seem like CONFIG_SYSVIPC=y and CONFIG_DRM_LINDROID_EVDI=y cause problem.
 
 seem like CONFIG_UTS_NS=y and CONFIG_PID_NS=y and CONFIG_DRM_LINDROID_EVDI=y cause problem. or is it just because we only build kernel not whole system?
 
+lindroid-partial3
 ```zsh
 tee -a private/devices/google/shusky/shusky_defconfig << 'EOF'
 
@@ -73,6 +74,18 @@ CONFIG_UTS_NS=y
 CONFIG_PID_NS=y
 CONFIG_DRM_LINDROID_EVDI=y
 EOF
+```
+
+lindroid-partial 
+```zsh
+tee -a private/devices/google/shusky/shusky_defconfig << 'EOF'
+
+# lindroid
+CONFIG_DRM_LINDROID_EVDI=y
+EOF
+```
+
+```zsh
 
 git clone https://github.com/Linux-on-droid/lindroid-drm-loopback.git aosp/drivers/lindroid-drm
 echo 'obj-y += lindroid-drm/' >> aosp/drivers/Makefile
