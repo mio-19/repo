@@ -158,7 +158,6 @@ args@{
     ];
   */
 
-
   source.dirs."vendor/adevtool".patches = [
     ./adevtool-bigger-zram.patch # changing here is no effect but mightbe needed somewhere??
     ./adevtool-100p-4G.patch

@@ -40,4 +40,8 @@ args@{
       PRODUCT_SYSTEM_PROPERTIES += ro.adb.secure=1' >> config/mk/google_devices/device/husky/device.mk
     '';
   */
+
+  source.dirs."vendor/adevtool".patches = [
+    ./port-su-to-user-builds.patch
+  ];
 }
