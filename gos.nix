@@ -177,4 +177,12 @@ args@{
       cd -
     '';
   */
+
+  source.dirs."bootable/recovery".patches = with pkgs; [
+    (fetchpatch {
+      name = "recovery: Enable the menu for User builds";
+      url = "https://github.com/LineageOS/android_bootable_recovery/commit/0e5fd009ce1f8bcb681f6bfb2590ebc70734ea6a.patch";
+      hash = "sha256-BZuXJ9xhp70TUbS5/bt6ihvLfmezc6tazDM9uM9Ahe0=";
+    })
+  ];
 }
