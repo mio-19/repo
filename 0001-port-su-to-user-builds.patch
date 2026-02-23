@@ -1,0 +1,966 @@
+From e01b1bf606c01a71afcbf198a5df14802b490f06 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Mon, 23 Feb 2026 13:56:02 +1100
+Subject: [PATCH] port su to user builds
+ https://github.com/droidng/android_system_sepolicy/commit/b491a953db739aa2daffabc13c9b153d329013ee#diff-8deaa280f19f4b12d4b40087ade42bfad8757925049e86985da97a1c7d7f2946
+
+---
+ prebuilts/api/202504/private/adbd.te     |  6 ++----
+ prebuilts/api/32.0/private/adbd.te       | 14 +++++---------
+ prebuilts/api/32.0/private/app.te        |  4 ++--
+ prebuilts/api/32.0/private/app_zygote.te |  4 ++--
+ prebuilts/api/32.0/private/domain.te     |  6 +++---
+ prebuilts/api/32.0/private/logd.te       |  2 +-
+ prebuilts/api/32.0/private/property.te   |  2 +-
+ prebuilts/api/32.0/private/su.te         | 20 ++++++++++----------
+ prebuilts/api/32.0/public/domain.te      | 10 +++++-----
+ prebuilts/api/32.0/public/installd.te    |  2 +-
+ prebuilts/api/33.0/private/adbd.te       | 14 +++++---------
+ prebuilts/api/33.0/private/app.te        |  4 ++--
+ prebuilts/api/33.0/private/app_zygote.te |  4 ++--
+ prebuilts/api/33.0/private/domain.te     |  6 +++---
+ prebuilts/api/33.0/private/logd.te       |  2 +-
+ prebuilts/api/33.0/private/property.te   |  2 +-
+ prebuilts/api/33.0/private/su.te         | 19 ++++++++++---------
+ prebuilts/api/33.0/public/domain.te      |  8 ++++----
+ prebuilts/api/34.0/private/adbd.te       | 14 +++++---------
+ prebuilts/api/34.0/private/app.te        |  4 ++--
+ prebuilts/api/34.0/private/app_zygote.te |  4 ++--
+ prebuilts/api/34.0/private/domain.te     |  6 +++---
+ prebuilts/api/34.0/private/logd.te       |  2 +-
+ prebuilts/api/34.0/private/property.te   |  2 +-
+ prebuilts/api/34.0/private/su.te         | 23 ++++++++++++-----------
+ prebuilts/api/34.0/public/domain.te      |  8 ++++----
+ private/adbd.te                          |  8 +++-----
+ private/app.te                           |  4 ++--
+ private/app_zygote.te                    |  4 ++--
+ private/domain.te                        | 16 ++++++++--------
+ private/installd.te                      |  2 +-
+ private/logd.te                          |  2 +-
+ private/netd.te                          |  2 +-
+ private/property.te                      | 10 +++++-----
+ private/su.te                            | 23 ++++++++++++-----------
+ 35 files changed, 125 insertions(+), 138 deletions(-)
+
+diff --git a/prebuilts/api/202504/private/adbd.te b/prebuilts/api/202504/private/adbd.te
+index 138c8f51a..6db2a8a73 100644
+--- a/prebuilts/api/202504/private/adbd.te
++++ b/prebuilts/api/202504/private/adbd.te
+@@ -88,10 +88,8 @@ set_prop(adbd, adbd_tradeinmode_prop)
+ set_prop(adbd, ctl_mdnsd_prop)
+ 
+ # Read device's overlayfs related properties and files
+-userdebug_or_eng(`
+-  get_prop(adbd, persistent_properties_ready_prop)
+-  r_dir_file(adbd, sysfs_dt_firmware_android)
+-')
++get_prop(adbd, persistent_properties_ready_prop)
++r_dir_file(adbd, sysfs_dt_firmware_android)
+ 
+ # Run /system/bin/bu
+ allow adbd system_file:file rx_file_perms;
+diff --git a/prebuilts/api/32.0/private/adbd.te b/prebuilts/api/32.0/private/adbd.te
+index 42739957e..20e552a43 100644
+--- a/prebuilts/api/32.0/private/adbd.te
++++ b/prebuilts/api/32.0/private/adbd.te
+@@ -7,10 +7,8 @@ init_daemon_domain(adbd)
+ 
+ domain_auto_trans(adbd, shell_exec, shell)
+ 
+-userdebug_or_eng(`
+-  allow adbd self:process setcurrent;
+-  allow adbd su:process dyntransition;
+-')
++allow adbd self:process setcurrent;
++allow adbd su:process dyntransition;
+ 
+ # When 'adb shell' is executed in recovery mode, adbd explicitly
+ # switches into shell domain using setcon() because the shell executable
+@@ -114,10 +112,8 @@ get_prop(adbd, test_harness_prop)
+ get_prop(adbd, system_adbd_prop)
+ 
+ # Read device's overlayfs related properties and files
+-userdebug_or_eng(`
+-  get_prop(adbd, persistent_properties_ready_prop)
+-  r_dir_file(adbd, sysfs_dt_firmware_android)
+-')
++get_prop(adbd, persistent_properties_ready_prop)
++r_dir_file(adbd, sysfs_dt_firmware_android)
+ 
+ # Run /system/bin/bu
+ allow adbd system_file:file rx_file_perms;
+@@ -231,4 +227,4 @@ allow adbd apex_info_file:file r_file_perms;
+ # transitions to the shell domain (except when it crashes). In particular, we
+ # never want to see a transition from adbd to su (aka "adb root")
+ neverallow adbd { domain -crash_dump -shell }:process transition;
+-neverallow adbd { domain userdebug_or_eng(`-su') recovery_only(`-shell') }:process dyntransition;
++neverallow adbd { domain -su recovery_only(`-shell') }:process dyntransition;
+diff --git a/prebuilts/api/32.0/private/app.te b/prebuilts/api/32.0/private/app.te
+index 30c76d330..22fffee44 100644
+--- a/prebuilts/api/32.0/private/app.te
++++ b/prebuilts/api/32.0/private/app.te
+@@ -52,9 +52,9 @@ neverallow appdomain system_server:udp_socket {
+ # Exception for crash_dump to allow for app crash reporting.
+ # Exception for renderscript binaries (/system/bin/bcc, /system/bin/ld.mc)
+ # to allow renderscript to create privileged executable files.
+-neverallow { appdomain -shell userdebug_or_eng(`-su') }
++neverallow { appdomain -shell -su }
+     { domain -appdomain -crash_dump -rs }:process { transition };
+-neverallow { appdomain -shell userdebug_or_eng(`-su') }
++neverallow { appdomain -shell -su }
+     { domain -appdomain }:process { dyntransition };
+ 
+ # Don't allow regular apps access to storage configuration properties.
+diff --git a/prebuilts/api/32.0/private/app_zygote.te b/prebuilts/api/32.0/private/app_zygote.te
+index 004c10844..0f65b9474 100644
+--- a/prebuilts/api/32.0/private/app_zygote.te
++++ b/prebuilts/api/32.0/private/app_zygote.te
+@@ -148,7 +148,7 @@ neverallow app_zygote {
+   -app_zygote
+   -logd
+   -system_server
+-  userdebug_or_eng(`-su')
++  -su
+   userdebug_or_eng(`-heapprofd')
+   userdebug_or_eng(`-traced_perf')
+ }:unix_dgram_socket *;
+@@ -156,7 +156,7 @@ neverallow app_zygote {
+ neverallow app_zygote {
+   domain
+   -app_zygote
+-  userdebug_or_eng(`-su')
++  -su
+   userdebug_or_eng(`-heapprofd')
+   userdebug_or_eng(`-traced_perf')
+ }:unix_stream_socket *;
+diff --git a/prebuilts/api/32.0/private/domain.te b/prebuilts/api/32.0/private/domain.te
+index b91d36d85..254d5f69c 100644
+--- a/prebuilts/api/32.0/private/domain.te
++++ b/prebuilts/api/32.0/private/domain.te
+@@ -2,7 +2,7 @@
+ # This occurs when the process crashes.
+ # We do not apply this to the su domain to avoid interfering with
+ # tests (b/114136122)
+-domain_auto_trans({ domain userdebug_or_eng(`-su') }, crash_dump_exec, crash_dump);
++domain_auto_trans({ domain -su }, crash_dump_exec, crash_dump);
+ allow domain crash_dump:process sigchld;
+ 
+ # Allow every process to check the heapprofd.enable properties to determine
+@@ -231,7 +231,7 @@ neverallow {
+     with_asan(`-asan_extract')
+     -iorap_prefetcherd
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+     -system_server_startup # for memfd backed executable regions
+     -app_zygote
+     -webview_zygote
+@@ -446,7 +446,7 @@ full_treble_only(`
+     -logd # Logging by writing to logd Unix domain socket is public API
+     -netd # netdomain needs this
+     -mdnsd # netdomain needs this
+-    userdebug_or_eng(`-su') # communications with su are permitted only on userdebug or eng builds
++    -su # communications with su are permitted only on userdebug or eng builds
+     -init
+     -tombstoned # linker to tombstoned
+     userdebug_or_eng(`-heapprofd')
+diff --git a/prebuilts/api/32.0/private/logd.te b/prebuilts/api/32.0/private/logd.te
+index 7112c4f83..9b9294578 100644
+--- a/prebuilts/api/32.0/private/logd.te
++++ b/prebuilts/api/32.0/private/logd.te
+@@ -36,6 +36,6 @@ neverallow {
+   -priv_app
+   -radio
+   -shell
+-  userdebug_or_eng(`-su')
++  -su
+   -system_app
+ } runtime_event_log_tags_file:file no_rw_file_perms;
+diff --git a/prebuilts/api/32.0/private/property.te b/prebuilts/api/32.0/private/property.te
+index 77e1a7d26..34d79451c 100644
+--- a/prebuilts/api/32.0/private/property.te
++++ b/prebuilts/api/32.0/private/property.te
+@@ -145,7 +145,7 @@ neverallow {
+   domain
+   -init
+   -dumpstate
+-  userdebug_or_eng(`-su')
++  -su
+ } init_svc_debug_prop:file no_rw_file_perms;
+ 
+ compatible_property_only(`
+diff --git a/prebuilts/api/32.0/private/su.te b/prebuilts/api/32.0/private/su.te
+index 587f449fb..efa10e14b 100644
+--- a/prebuilts/api/32.0/private/su.te
++++ b/prebuilts/api/32.0/private/su.te
+@@ -1,7 +1,8 @@
+-userdebug_or_eng(`
+-  typeattribute su coredomain;
++typeattribute su coredomain;
++
++domain_auto_trans(shell, su_exec, su)
+ 
+-  domain_auto_trans(shell, su_exec, su)
++userdebug_or_eng(`
+   # Allow dumpstate to call su on userdebug / eng builds to collect
+   # additional information.
+   domain_auto_trans(dumpstate, su_exec, su)
+@@ -18,13 +19,12 @@ userdebug_or_eng(`
+ 
+   # Put the perfetto command into its domain so it is the same on user, userdebug and eng.
+   domain_auto_trans(su, perfetto_exec, perfetto)
++')
+ 
+-  # su is also permissive to permit setenforce.
+-  permissive su;
+-
+-  app_domain(su)
++# su is also permissive to permit setenforce.
++permissive su;
+ 
+-  # Do not audit accesses to keystore2 namespace for the su domain.
+-  dontaudit su keystore2_key_type:{ keystore2 keystore2_key } *;
++app_domain(su)
+ 
+-')
++# Do not audit accesses to keystore2 namespace for the su domain.
++dontaudit su keystore2_key_type:{ keystore2 keystore2_key } *;
+diff --git a/prebuilts/api/32.0/public/domain.te b/prebuilts/api/32.0/public/domain.te
+index 799a2f1c5..e1d22e55f 100644
+--- a/prebuilts/api/32.0/public/domain.te
++++ b/prebuilts/api/32.0/public/domain.te
+@@ -696,7 +696,7 @@ full_treble_only(`
+   neverallow {
+     coredomain
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+     -ueventd # uevent is granted create for this device, but we still neverallow I/O below
+   } vndbinder_device:chr_file rw_file_perms;
+ ')
+@@ -707,14 +707,14 @@ full_treble_only(`
+   neverallow {
+     coredomain
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+   } vndservice_manager_type:service_manager *;
+ ')
+ full_treble_only(`
+   neverallow {
+     coredomain
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+   } vndservicemanager:binder *;
+ ')
+ 
+@@ -1092,7 +1092,7 @@ neverallow * { file_type fs_type dev_type }:{ lnk_file fifo_file sock_file } mou
+ # Nobody should be able to execute su on user builds.
+ # On userdebug/eng builds, only dumpstate, shell, and
+ # su itself execute su.
+-neverallow { domain userdebug_or_eng(`-dumpstate -shell -su') } su_exec:file no_x_file_perms;
++neverallow { domain userdebug_or_eng(`-dumpstate') -shell -su } su_exec:file no_x_file_perms;
+ 
+ # Do not allow the introduction of new execmod rules. Text relocations
+ # and modification of executable pages are unsafe.
+@@ -1182,7 +1182,7 @@ neverallow {
+ # the appdomain attribute. simpleperf is excluded as a domain transitioned to
+ # when running an app-scoped profiling session.
+ neverallow { domain -simpleperf_app_runner -runas -app_zygote -webview_zygote -zygote } {
+-  appdomain -shell -simpleperf userdebug_or_eng(`-su')
++  appdomain -shell -simpleperf -su
+ }:process { transition dyntransition };
+ 
+ # Minimize read access to shell- or app-writable symlinks.
+diff --git a/prebuilts/api/32.0/public/installd.te b/prebuilts/api/32.0/public/installd.te
+index 08060e30d..6bf9636d7 100644
+--- a/prebuilts/api/32.0/public/installd.te
++++ b/prebuilts/api/32.0/public/installd.te
+@@ -175,5 +175,5 @@ neverallow installd {
+     domain
+     -system_server
+     -servicemanager
+-    userdebug_or_eng(`-su')
++    -su
+ }:binder call;
+diff --git a/prebuilts/api/33.0/private/adbd.te b/prebuilts/api/33.0/private/adbd.te
+index 48fa849cd..7a126da71 100644
+--- a/prebuilts/api/33.0/private/adbd.te
++++ b/prebuilts/api/33.0/private/adbd.te
+@@ -7,10 +7,8 @@ init_daemon_domain(adbd)
+ 
+ domain_auto_trans(adbd, shell_exec, shell)
+ 
+-userdebug_or_eng(`
+-  allow adbd self:process setcurrent;
+-  allow adbd su:process dyntransition;
+-')
++allow adbd self:process setcurrent;
++allow adbd su:process dyntransition;
+ 
+ # When 'adb shell' is executed in recovery mode, adbd explicitly
+ # switches into shell domain using setcon() because the shell executable
+@@ -114,10 +112,8 @@ get_prop(adbd, test_harness_prop)
+ get_prop(adbd, system_adbd_prop)
+ 
+ # Read device's overlayfs related properties and files
+-userdebug_or_eng(`
+-  get_prop(adbd, persistent_properties_ready_prop)
+-  r_dir_file(adbd, sysfs_dt_firmware_android)
+-')
++get_prop(adbd, persistent_properties_ready_prop)
++r_dir_file(adbd, sysfs_dt_firmware_android)
+ 
+ # Run /system/bin/bu
+ allow adbd system_file:file rx_file_perms;
+@@ -232,4 +228,4 @@ allow adbd apex_info_file:file r_file_perms;
+ # transitions to the shell domain (except when it crashes). In particular, we
+ # never want to see a transition from adbd to su (aka "adb root")
+ neverallow adbd { domain -crash_dump -shell }:process transition;
+-neverallow adbd { domain userdebug_or_eng(`-su') recovery_only(`-shell') }:process dyntransition;
++neverallow adbd { domain -su recovery_only(`-shell') }:process dyntransition;
+diff --git a/prebuilts/api/33.0/private/app.te b/prebuilts/api/33.0/private/app.te
+index 9a2e02a94..65185eaa3 100644
+--- a/prebuilts/api/33.0/private/app.te
++++ b/prebuilts/api/33.0/private/app.te
+@@ -92,9 +92,9 @@ neverallow appdomain system_server:udp_socket {
+ # Exception for crash_dump to allow for app crash reporting.
+ # Exception for renderscript binaries (/system/bin/bcc, /system/bin/ld.mc)
+ # to allow renderscript to create privileged executable files.
+-neverallow { appdomain -shell userdebug_or_eng(`-su') }
++neverallow { appdomain -shell -su }
+     { domain -appdomain -crash_dump -rs }:process { transition };
+-neverallow { appdomain -shell userdebug_or_eng(`-su') }
++neverallow { appdomain -shell -su }
+     { domain -appdomain }:process { dyntransition };
+ 
+ # Don't allow regular apps access to storage configuration properties.
+diff --git a/prebuilts/api/33.0/private/app_zygote.te b/prebuilts/api/33.0/private/app_zygote.te
+index 8aa288e4d..f187eaa90 100644
+--- a/prebuilts/api/33.0/private/app_zygote.te
++++ b/prebuilts/api/33.0/private/app_zygote.te
+@@ -151,7 +151,7 @@ neverallow app_zygote {
+   -app_zygote
+   -logd
+   -system_server
+-  userdebug_or_eng(`-su')
++  -su
+   userdebug_or_eng(`-heapprofd')
+   userdebug_or_eng(`-traced_perf')
+ }:unix_dgram_socket *;
+@@ -160,7 +160,7 @@ neverallow app_zygote {
+   domain
+   -app_zygote
+   -prng_seeder
+-  userdebug_or_eng(`-su')
++  -su
+   userdebug_or_eng(`-heapprofd')
+   userdebug_or_eng(`-traced_perf')
+ }:unix_stream_socket *;
+diff --git a/prebuilts/api/33.0/private/domain.te b/prebuilts/api/33.0/private/domain.te
+index bcb9d52e3..755350f30 100644
+--- a/prebuilts/api/33.0/private/domain.te
++++ b/prebuilts/api/33.0/private/domain.te
+@@ -2,7 +2,7 @@
+ # This occurs when the process crashes.
+ # We do not apply this to the su domain to avoid interfering with
+ # tests (b/114136122)
+-domain_auto_trans({ domain userdebug_or_eng(`-su') }, crash_dump_exec, crash_dump);
++domain_auto_trans({ domain -su }, crash_dump_exec, crash_dump);
+ allow domain crash_dump:process sigchld;
+ 
+ # Allow every process to check the heapprofd.enable properties to determine
+@@ -278,7 +278,7 @@ neverallow {
+     with_asan(`-asan_extract')
+     -iorap_prefetcherd
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+     -system_server_startup # for memfd backed executable regions
+     -app_zygote
+     -webview_zygote
+@@ -500,7 +500,7 @@ full_treble_only(`
+     -netd # netdomain needs this
+     -mdnsd # netdomain needs this
+     -prng_seeder # Any process using libcrypto needs this
+-    userdebug_or_eng(`-su') # communications with su are permitted only on userdebug or eng builds
++    -su # communications with su are permitted only on userdebug or eng builds
+     -init
+     -tombstoned # linker to tombstoned
+     userdebug_or_eng(`-heapprofd')
+diff --git a/prebuilts/api/33.0/private/logd.te b/prebuilts/api/33.0/private/logd.te
+index 62d41969f..2aca83dc4 100644
+--- a/prebuilts/api/33.0/private/logd.te
++++ b/prebuilts/api/33.0/private/logd.te
+@@ -38,7 +38,7 @@ neverallow {
+   -priv_app
+   -radio
+   -shell
+-  userdebug_or_eng(`-su')
++  -su
+   -system_app
+ } runtime_event_log_tags_file:file no_rw_file_perms;
+ 
+diff --git a/prebuilts/api/33.0/private/property.te b/prebuilts/api/33.0/private/property.te
+index 41a4c2ff3..60754b2de 100644
+--- a/prebuilts/api/33.0/private/property.te
++++ b/prebuilts/api/33.0/private/property.te
+@@ -156,7 +156,7 @@ neverallow {
+   domain
+   -init
+   -dumpstate
+-  userdebug_or_eng(`-su')
++  -su
+ } init_svc_debug_prop:file no_rw_file_perms;
+ 
+ compatible_property_only(`
+diff --git a/prebuilts/api/33.0/private/su.te b/prebuilts/api/33.0/private/su.te
+index 587f449fb..8bb9d357c 100644
+--- a/prebuilts/api/33.0/private/su.te
++++ b/prebuilts/api/33.0/private/su.te
+@@ -1,7 +1,8 @@
+-userdebug_or_eng(`
+-  typeattribute su coredomain;
++typeattribute su coredomain;
++
++domain_auto_trans(shell, su_exec, su)
+ 
+-  domain_auto_trans(shell, su_exec, su)
++userdebug_or_eng(`
+   # Allow dumpstate to call su on userdebug / eng builds to collect
+   # additional information.
+   domain_auto_trans(dumpstate, su_exec, su)
+@@ -19,12 +20,12 @@ userdebug_or_eng(`
+   # Put the perfetto command into its domain so it is the same on user, userdebug and eng.
+   domain_auto_trans(su, perfetto_exec, perfetto)
+ 
+-  # su is also permissive to permit setenforce.
+-  permissive su;
++')
+ 
+-  app_domain(su)
++# su is also permissive to permit setenforce.
++permissive su;
+ 
+-  # Do not audit accesses to keystore2 namespace for the su domain.
+-  dontaudit su keystore2_key_type:{ keystore2 keystore2_key } *;
++app_domain(su)
+ 
+-')
++# Do not audit accesses to keystore2 namespace for the su domain.
++dontaudit su keystore2_key_type:{ keystore2 keystore2_key } *;
+diff --git a/prebuilts/api/33.0/public/domain.te b/prebuilts/api/33.0/public/domain.te
+index de529f5d8..11ba2b6ee 100644
+--- a/prebuilts/api/33.0/public/domain.te
++++ b/prebuilts/api/33.0/public/domain.te
+@@ -683,7 +683,7 @@ full_treble_only(`
+   neverallow {
+     coredomain
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+     -ueventd # uevent is granted create for this device, but we still neverallow I/O below
+   } vndbinder_device:chr_file rw_file_perms;
+ ')
+@@ -694,14 +694,14 @@ full_treble_only(`
+   neverallow {
+     coredomain
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+   } vndservice_manager_type:service_manager *;
+ ')
+ full_treble_only(`
+   neverallow {
+     coredomain
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+   } vndservicemanager:binder *;
+ ')
+ 
+@@ -1139,7 +1139,7 @@ neverallow {
+ # the appdomain attribute. simpleperf is excluded as a domain transitioned to
+ # when running an app-scoped profiling session.
+ neverallow { domain -simpleperf_app_runner -runas -app_zygote -webview_zygote -zygote } {
+-  appdomain -shell -simpleperf userdebug_or_eng(`-su')
++  appdomain -shell -simpleperf -su
+ }:process { transition dyntransition };
+ 
+ # Minimize read access to shell- or app-writable symlinks.
+diff --git a/prebuilts/api/34.0/private/adbd.te b/prebuilts/api/34.0/private/adbd.te
+index d72d5b118..699a14059 100644
+--- a/prebuilts/api/34.0/private/adbd.te
++++ b/prebuilts/api/34.0/private/adbd.te
+@@ -7,10 +7,8 @@ init_daemon_domain(adbd)
+ 
+ domain_auto_trans(adbd, shell_exec, shell)
+ 
+-userdebug_or_eng(`
+-  allow adbd self:process setcurrent;
+-  allow adbd su:process dyntransition;
+-')
++allow adbd self:process setcurrent;
++allow adbd su:process dyntransition;
+ 
+ # When 'adb shell' is executed in recovery mode, adbd explicitly
+ # switches into shell domain using setcon() because the shell executable
+@@ -116,10 +114,8 @@ get_prop(adbd, test_harness_prop)
+ get_prop(adbd, system_adbd_prop)
+ 
+ # Read device's overlayfs related properties and files
+-userdebug_or_eng(`
+-  get_prop(adbd, persistent_properties_ready_prop)
+-  r_dir_file(adbd, sysfs_dt_firmware_android)
+-')
++get_prop(adbd, persistent_properties_ready_prop)
++r_dir_file(adbd, sysfs_dt_firmware_android)
+ 
+ # Run /system/bin/bu
+ allow adbd system_file:file rx_file_perms;
+@@ -234,4 +230,4 @@ allow adbd apex_info_file:file r_file_perms;
+ # transitions to the shell domain (except when it crashes). In particular, we
+ # never want to see a transition from adbd to su (aka "adb root")
+ neverallow adbd { domain -crash_dump -shell }:process transition;
+-neverallow adbd { domain userdebug_or_eng(`-su') recovery_only(`-shell') }:process dyntransition;
++neverallow adbd { domain -su recovery_only(`-shell') }:process dyntransition;
+diff --git a/prebuilts/api/34.0/private/app.te b/prebuilts/api/34.0/private/app.te
+index 6914fd3ea..d25862154 100644
+--- a/prebuilts/api/34.0/private/app.te
++++ b/prebuilts/api/34.0/private/app.te
+@@ -93,9 +93,9 @@ neverallow appdomain system_server:udp_socket {
+ # Exception for renderscript binaries (/system/bin/bcc, /system/bin/ld.mc)
+ # to allow renderscript to create privileged executable files.
+ # Exception for virtualizationmanager to allow running VMs as child processes.
+-neverallow { appdomain -shell userdebug_or_eng(`-su') }
++neverallow { appdomain -shell -su }
+     { domain -appdomain -crash_dump -rs -virtualizationmanager }:process { transition };
+-neverallow { appdomain -shell userdebug_or_eng(`-su') }
++neverallow { appdomain -shell -su }
+     { domain -appdomain }:process { dyntransition };
+ 
+ # Don't allow regular apps access to storage configuration properties.
+diff --git a/prebuilts/api/34.0/private/app_zygote.te b/prebuilts/api/34.0/private/app_zygote.te
+index 6552d6309..b64324533 100644
+--- a/prebuilts/api/34.0/private/app_zygote.te
++++ b/prebuilts/api/34.0/private/app_zygote.te
+@@ -150,14 +150,14 @@ neverallow app_zygote {
+   -app_zygote
+   -logd
+   -system_server
+-  userdebug_or_eng(`-su')
++  -su
+ }:unix_dgram_socket *;
+ 
+ neverallow app_zygote {
+   domain
+   -app_zygote
+   -prng_seeder
+-  userdebug_or_eng(`-su')
++  -su
+ }:unix_stream_socket *;
+ 
+ # Never allow ptrace
+diff --git a/prebuilts/api/34.0/private/domain.te b/prebuilts/api/34.0/private/domain.te
+index f98a285cb..25e6d2037 100644
+--- a/prebuilts/api/34.0/private/domain.te
++++ b/prebuilts/api/34.0/private/domain.te
+@@ -2,7 +2,7 @@
+ # This occurs when the process crashes.
+ # We do not apply this to the su domain to avoid interfering with
+ # tests (b/114136122)
+-domain_auto_trans({ domain userdebug_or_eng(`-su') }, crash_dump_exec, crash_dump);
++domain_auto_trans({ domain -su }, crash_dump_exec, crash_dump);
+ allow domain crash_dump:process sigchld;
+ 
+ # Allow every process to check the heapprofd.enable properties to determine
+@@ -352,7 +352,7 @@ neverallow {
+     -appdomain
+     with_asan(`-asan_extract')
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+     -system_server_startup # for memfd backed executable regions
+     -app_zygote
+     -webview_zygote
+@@ -577,7 +577,7 @@ full_treble_only(`
+     -netd # netdomain needs this
+     -mdnsd # netdomain needs this
+     -prng_seeder # Any process using libcrypto needs this
+-    userdebug_or_eng(`-su') # communications with su are permitted only on userdebug or eng builds
++    -su # communications with su are permitted only on userdebug or eng builds
+     -init
+     -tombstoned # linker to tombstoned
+     -heapprofd
+diff --git a/prebuilts/api/34.0/private/logd.te b/prebuilts/api/34.0/private/logd.te
+index 62d41969f..2aca83dc4 100644
+--- a/prebuilts/api/34.0/private/logd.te
++++ b/prebuilts/api/34.0/private/logd.te
+@@ -38,7 +38,7 @@ neverallow {
+   -priv_app
+   -radio
+   -shell
+-  userdebug_or_eng(`-su')
++  -su
+   -system_app
+ } runtime_event_log_tags_file:file no_rw_file_perms;
+ 
+diff --git a/prebuilts/api/34.0/private/property.te b/prebuilts/api/34.0/private/property.te
+index 5889e5741..0ff2360a9 100644
+--- a/prebuilts/api/34.0/private/property.te
++++ b/prebuilts/api/34.0/private/property.te
+@@ -168,7 +168,7 @@ neverallow {
+   domain
+   -init
+   -dumpstate
+-  userdebug_or_eng(`-su')
++  -su
+ } init_svc_debug_prop:file no_rw_file_perms;
+ 
+ compatible_property_only(`
+diff --git a/prebuilts/api/34.0/private/su.te b/prebuilts/api/34.0/private/su.te
+index cc00e103b..f8c217c38 100644
+--- a/prebuilts/api/34.0/private/su.te
++++ b/prebuilts/api/34.0/private/su.te
+@@ -1,7 +1,8 @@
+-userdebug_or_eng(`
+-  typeattribute su coredomain;
++typeattribute su coredomain;
++
++domain_auto_trans(shell, su_exec, su)
+ 
+-  domain_auto_trans(shell, su_exec, su)
++userdebug_or_eng(`
+   # Allow dumpstate to call su on userdebug / eng builds to collect
+   # additional information.
+   domain_auto_trans(dumpstate, su_exec, su)
+@@ -22,14 +23,14 @@ userdebug_or_eng(`
+   # Put the virtmgr command into its domain.
+   domain_auto_trans(su, virtualizationmanager_exec, virtualizationmanager)
+ 
+-  # su is also permissive to permit setenforce.
+-  permissive su;
+-
+-  app_domain(su)
+-
+-  # Do not audit accesses to keystore2 namespace for the su domain.
+-  dontaudit su keystore2_key_type:{ keystore2 keystore2_key } *;
+-
+   # Allow root to set MTE permissive mode.
+   set_prop(su, permissive_mte_prop);
+ ')
++
++# su is also permissive to permit setenforce.
++permissive su;
++
++app_domain(su)
++
++# Do not audit accesses to keystore2 namespace for the su domain.
++dontaudit su keystore2_key_type:{ keystore2 keystore2_key } *;
+diff --git a/prebuilts/api/34.0/public/domain.te b/prebuilts/api/34.0/public/domain.te
+index d4be2056f..df211d3a5 100644
+--- a/prebuilts/api/34.0/public/domain.te
++++ b/prebuilts/api/34.0/public/domain.te
+@@ -654,7 +654,7 @@ full_treble_only(`
+   neverallow {
+     coredomain
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+     -ueventd # uevent is granted create for this device, but we still neverallow I/O below
+   } vndbinder_device:chr_file rw_file_perms;
+ ')
+@@ -665,14 +665,14 @@ full_treble_only(`
+   neverallow {
+     coredomain
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+   } vndservice_manager_type:service_manager *;
+ ')
+ full_treble_only(`
+   neverallow {
+     coredomain
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+   } vndservicemanager:binder *;
+ ')
+ 
+@@ -1107,7 +1107,7 @@ neverallow {
+ # the appdomain attribute. simpleperf is excluded as a domain transitioned to
+ # when running an app-scoped profiling session.
+ neverallow { domain -simpleperf_app_runner -runas -app_zygote -webview_zygote -zygote } {
+-  appdomain -shell -simpleperf userdebug_or_eng(`-su')
++  appdomain -shell -simpleperf -su
+ }:process { transition dyntransition };
+ 
+ # Minimize read access to shell- or app-writable symlinks.
+diff --git a/private/adbd.te b/private/adbd.te
+index 6bef6f8bf..80914683c 100644
+--- a/private/adbd.te
++++ b/private/adbd.te
+@@ -91,10 +91,8 @@ set_prop(adbd, adbd_tradeinmode_prop)
+ set_prop(adbd, ctl_mdnsd_prop)
+ 
+ # Read device's overlayfs related properties and files
+-userdebug_or_eng(`
+-  get_prop(adbd, persistent_properties_ready_prop)
+-  r_dir_file(adbd, sysfs_dt_firmware_android)
+-')
++get_prop(adbd, persistent_properties_ready_prop)
++r_dir_file(adbd, sysfs_dt_firmware_android)
+ 
+ # Run /system/bin/bu
+ allow adbd system_file:file rx_file_perms;
+@@ -230,7 +228,7 @@ allow adbd shell_test_data_file:lnk_file create_file_perms;
+ neverallow adbd { domain -crash_dump -shell -adbd_tradeinmode }:process transition;
+ neverallow adbd {
+     domain
+-    userdebug_or_eng(`-su')
++    -su
+     recovery_only(`-shell')
+     -adbd_tradeinmode
+ }:process dyntransition;
+diff --git a/private/app.te b/private/app.te
+index b5c53655b..e929c3088 100644
+--- a/private/app.te
++++ b/private/app.te
+@@ -813,9 +813,9 @@ neverallow appdomain system_server:udp_socket {
+ # Exception for renderscript binaries (/system/bin/bcc, /system/bin/ld.mc)
+ # to allow renderscript to create privileged executable files.
+ # Exception for virtualizationmanager to allow running VMs as child processes.
+-neverallow { appdomain -shell userdebug_or_eng(`-su') }
++neverallow { appdomain -shell -su }
+     { domain -appdomain -crash_dump -rs -virtualizationmanager }:process { transition };
+-neverallow { appdomain -shell userdebug_or_eng(`-su') }
++neverallow { appdomain -shell -su }
+     { domain -appdomain }:process { dyntransition };
+ 
+ # Don't allow regular apps access to storage configuration properties.
+diff --git a/private/app_zygote.te b/private/app_zygote.te
+index d2ea43288..d4df4ae17 100644
+--- a/private/app_zygote.te
++++ b/private/app_zygote.te
+@@ -156,14 +156,14 @@ neverallow app_zygote {
+   -app_zygote
+   -logd
+   -system_server
+-  userdebug_or_eng(`-su')
++  -su
+ }:unix_dgram_socket *;
+ 
+ neverallow app_zygote {
+   domain
+   -app_zygote
+   -prng_seeder
+-  userdebug_or_eng(`-su')
++  -su
+ }:unix_stream_socket *;
+ 
+ # Never allow ptrace
+diff --git a/private/domain.te b/private/domain.te
+index 77097d26b..68d4af119 100644
+--- a/private/domain.te
++++ b/private/domain.te
+@@ -395,7 +395,7 @@ get_prop(domain, device_config_media_native_prop)
+ # This occurs when the process crashes.
+ # We do not apply this to the su domain to avoid interfering with
+ # tests (b/114136122)
+-domain_auto_trans({ domain userdebug_or_eng(`-su') }, crash_dump_exec, crash_dump);
++domain_auto_trans({ domain -su }, crash_dump_exec, crash_dump);
+ allow domain crash_dump:process sigchld;
+ 
+ # Allow every process to check the heapprofd.enable properties to determine
+@@ -967,7 +967,7 @@ full_treble_only(`
+   neverallow {
+     coredomain
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+     -ueventd # uevent is granted create for this device, but we still neverallow I/O below
+   } vndbinder_device:chr_file rw_file_perms;
+ ')
+@@ -978,14 +978,14 @@ full_treble_only(`
+   neverallow {
+     coredomain
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+   } vndservice_manager_type:service_manager *;
+ ')
+ full_treble_only(`
+   neverallow {
+     coredomain
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+   } vndservicemanager:binder *;
+ ')
+ 
+@@ -1368,7 +1368,7 @@ neverallow {
+ # Nobody should be able to execute su on user builds.
+ # On userdebug/eng builds, only dumpstate, shell, and
+ # su itself execute su.
+-neverallow { domain userdebug_or_eng(`-dumpstate -shell -su -overlay_remounter') } su_exec:file no_x_file_perms;
++neverallow { domain userdebug_or_eng(`-dumpstate -overlay_remounter') -shell -su } su_exec:file no_x_file_perms;
+ 
+ # Do not allow the introduction of new execmod rules. Text relocations
+ # and modification of executable pages are unsafe.
+@@ -1462,7 +1462,7 @@ neverallow {
+   -webview_zygote
+   -zygote
+ } {
+-  appdomain -shell -simpleperf userdebug_or_eng(`-su') -tradeinmode -isolated_app
++  appdomain -shell -simpleperf -su -tradeinmode -isolated_app
+ }:process { transition dyntransition };
+ 
+ # Only domains spawned from zygote, runas, simpleperf_app_runner, and zygote_next may have
+@@ -1914,7 +1914,7 @@ neverallow {
+     -appdomain
+     with_asan(`-asan_extract')
+     -shell
+-    userdebug_or_eng(`-su')
++    -su
+     -app_zygote
+     -webview_zygote
+     -zygote
+@@ -2141,7 +2141,7 @@ full_treble_only(`
+     -netd # netdomain needs this
+     -mdnsd # netdomain needs this
+     -prng_seeder # Any process using libcrypto needs this
+-    userdebug_or_eng(`-su') # communications with su are permitted only on userdebug or eng builds
++    -su # communications with su are permitted only on userdebug or eng builds
+     -init
+     -tombstoned # linker to tombstoned
+     -heapprofd
+diff --git a/private/installd.te b/private/installd.te
+index 0149ebc04..03330ed3e 100644
+--- a/private/installd.te
++++ b/private/installd.te
+@@ -241,5 +241,5 @@ neverallow installd {
+     domain
+     -system_server
+     -servicemanager
+-    userdebug_or_eng(`-su')
++    -su
+ }:binder call;
+diff --git a/private/logd.te b/private/logd.te
+index 41d968cc7..d39b40346 100644
+--- a/private/logd.te
++++ b/private/logd.te
+@@ -39,7 +39,7 @@ neverallow {
+   -priv_app
+   -radio
+   -shell
+-  userdebug_or_eng(`-su')
++  -su
+   -system_app
+ } runtime_event_log_tags_file:file no_rw_file_perms;
+ 
+diff --git a/private/netd.te b/private/netd.te
+index 38e373068..eb9ec6772 100644
+--- a/private/netd.te
++++ b/private/netd.te
+@@ -203,7 +203,7 @@ neverallow {
+ 
+ # apps may not interact with netd over binder.
+ neverallow { appdomain -network_stack } netd:binder call;
+-neverallow netd { appdomain -network_stack userdebug_or_eng(`-su') }:binder call;
++neverallow netd { appdomain -network_stack -su }:binder call;
+ 
+ # If an already existing file is opened with O_CREATE, the kernel might generate
+ # a false report of a create denial. Silence these denials and make sure that
+diff --git a/private/property.te b/private/property.te
+index 042754527..efd3a466b 100644
+--- a/private/property.te
++++ b/private/property.te
+@@ -271,7 +271,7 @@ neverallow {
+   domain
+   -init
+   -dumpstate
+-  userdebug_or_eng(`-su')
++  -su
+ } init_svc_debug_prop:file no_rw_file_perms;
+ 
+ # DO NOT ADD: compat risk
+@@ -282,13 +282,13 @@ neverallow {
+   -dumpstate
+   -misctrl
+   -statsd
+-  userdebug_or_eng(`-su')
++  -su
+ } misctrl_prop:file no_rw_file_perms;
+ neverallow {
+   domain
+   -init
+   -misctrl
+-  userdebug_or_eng(`-su')
++  -su
+ } misctrl_prop:property_service set;
+ 
+ compatible_property_only(`
+@@ -893,14 +893,14 @@ neverallow {
+   domain
+   -init
+   -shell
+-  userdebug_or_eng(`-su')
++  -su
+ } bionic_linker_16kb_app_compat_prop:property_service set;
+ 
+ neverallow {
+   domain
+   -init
+   -shell
+-  userdebug_or_eng(`-su')
++  -su
+ } pm_16kb_app_compat_prop:property_service set;
+ 
+ neverallow {
+diff --git a/private/su.te b/private/su.te
+index fae9b987e..d2ebbd3fd 100644
+--- a/private/su.te
++++ b/private/su.te
+@@ -1,7 +1,8 @@
+-userdebug_or_eng(`
+-  typeattribute su coredomain;
++typeattribute su coredomain;
++
++domain_auto_trans(shell, su_exec, su)
+ 
+-  domain_auto_trans(shell, su_exec, su)
++userdebug_or_eng(`
+   # Allow dumpstate to call su on userdebug / eng builds to collect
+   # additional information.
+   domain_auto_trans(dumpstate, su_exec, su)
+@@ -23,14 +24,6 @@ userdebug_or_eng(`
+   # own domain.
+   virtualizationservice_use(su)
+ 
+-  # su is also permissive to permit setenforce.
+-  permissive su;
+-
+-  app_domain(su)
+-
+-  # Do not audit accesses to keystore2 namespace for the su domain.
+-  dontaudit su keystore2_key_type:{ keystore2 keystore2_key } *;
+-
+   typeattribute su mlstrustedsubject;
+ 
+   # Add su to various domains
+@@ -135,3 +128,11 @@ userdebug_or_eng(`
+   typeattribute su hal_wifi_hostapd_client;
+   typeattribute su hal_wifi_supplicant_client;
+ ')
++
++# su is also permissive to permit setenforce.
++permissive su;
++
++app_domain(su)
++
++# Do not audit accesses to keystore2 namespace for the su domain.
++dontaudit su keystore2_key_type:{ keystore2 keystore2_key } *;
+-- 
+2.52.0
+
