@@ -74,6 +74,20 @@ CONFIG_DRM_LINDROID_EVDI=y
 EOF
 ```
 
+lindroid-partial4
+```zsh
+tee -a private/devices/google/shusky/shusky_defconfig << 'EOF'
+
+# lindroid
+CONFIG_UTS_NS=y
+CONFIG_PID_NS=y
+CONFIG_NET_NS=y
+CONFIG_CGROUP_DEVICE=y
+CONFIG_CGROUP_FREEZER=y
+CONFIG_DRM_LINDROID_EVDI=y
+EOF
+```
+
 ```zsh
 
 git clone https://github.com/Linux-on-droid/lindroid-drm-loopback.git aosp/drivers/lindroid-drm

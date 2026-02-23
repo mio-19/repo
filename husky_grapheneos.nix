@@ -22,11 +22,11 @@ args@{
       };
     */
     src = pkgs.fetchFromGitHub {
-      # pixel8pro-stock-3840Hz.patch pixel8pro-stock-fix-attempt3.patch lindroid-partial3 0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch  3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
+      # pixel8pro-stock-3840Hz.patch pixel8pro-stock-fix-attempt3.patch lindroid-partial4 0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch  3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
       owner = "forked-by-mio";
       repo = "device_google_shusky-kernels_6.1";
-      rev = "2fea5c630148686ee585c1e41c4e2c2ea46af0d1";
-      hash = "sha256-N60VSy8Y01kCJYMCVO87kPpjDTtYEUchnX1cqWY2mBQ=";
+      rev = "8a1a7f3ee928747d0bf681ab75de4904287eeaa4";
+      hash = "sha256-lUMlnOgRtktpCmRxKJhMSPJv1cY3UOYtp843u/XUmQk=";
     };
   };
   signing.avb.size = 4096;
@@ -43,5 +43,7 @@ args@{
 
   source.dirs."system/sepolicy".patches = [
     ./port-su-to-user-builds.patch
+    # ERROR: permissive domains not allowed in user builds https://t.me/linux_on_droid/5984 - You could just vandalize the check if you really want user builds: https://t.me/linux_on_droid/13590 - https://github.com/droidng/android_system_sepolicy/commit/b491a953db739aa2daffabc13c9b153d329013ee#diff-8d88eb632967032ab70dc52ece6ec958fb13d818e22d3513130ae177993b2fd7
+    ./platform_system_sepolicy-remove-check-of-permissive-.patch
   ];
 }
