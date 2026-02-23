@@ -41,7 +41,7 @@ args@{
     '';
   */
 
-  source.dirs."vendor/adevtool".patches = [
+  source.dirs."system/sepolicy".patches = [
     ./port-su-to-user-builds.patch
   ];
 }
