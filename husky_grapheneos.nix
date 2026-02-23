@@ -22,11 +22,11 @@ args@{
       };
     */
     src = pkgs.fetchFromGitHub {
+      # pixel8pro-stock-3840Hz.patch pixel8pro-stock-fix-attempt3.patch lindroid-partial3 0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch  3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
       owner = "forked-by-mio";
       repo = "device_google_shusky-kernels_6.1";
-      # pixel8pro-stock-3840Hz.patch pixel8pro-stock-fix-attempt3.patch lindroid-partial 0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch  3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
-      rev = "b5e5225b0c2337a75836aed20c4056ae6056e405";
-      hash = "sha256-ZytLgp+Ca2ThWiwB2mpXrNsfCHxTXeel4h4EWKtjLBk=";
+      rev = "2fea5c630148686ee585c1e41c4e2c2ea46af0d1";
+      hash = "sha256-N60VSy8Y01kCJYMCVO87kPpjDTtYEUchnX1cqWY2mBQ=";
     };
   };
   signing.avb.size = 4096;
