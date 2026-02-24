@@ -42,6 +42,6 @@ args@{
   */
 
   source.dirs."system/sepolicy".patches = [
-    ./port-su-to-user-builds.patch
+    #./port-su-to-user-builds.patch # not working, needs more work
   ];
 }
