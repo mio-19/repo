@@ -53,16 +53,16 @@ args@{
       url = "https://github.com/yaap/system_sepolicy/commit/d48ff481d9651cedb435a9974648e5c9a81fe211.patch";
       hash = "sha256-bDUOj+NwErgqjM+abpF6ITaz3+GHag+qMoZXsfCv+KI=";
     })
-    /*
-      # TODO: maybe not supported by grapheneos build tool
-      (fetchpatch {
-        # https://t.me/linux_on_droid/28140
-        name = "Allow perspectived as a permissive domain";
-        url = "https://github.com/yaap/system_sepolicy/commit/cb883371539af5d127e4a16b05a5ecb425a3c3c3.patch";
-        hash = "sha256-9uTl/63Ua1LkFMXRkB6jJcegZTvlmb0L6cq7+W+VgVU=";
-      })
-    */
-    # ERROR: permissive domains not allowed in user builds https://t.me/linux_on_droid/5984 - You could just vandalize the check if you really want user builds: https://t.me/linux_on_droid/13590 - https://github.com/droidng/android_system_sepolicy/commit/b491a953db739aa2daffabc13c9b153d329013ee#diff-8d88eb632967032ab70dc52ece6ec958fb13d818e22d3513130ae177993b2fd7
-    ./platform_system_sepolicy-remove-check-of-permissive-.patch
+    (fetchpatch {
+      name = "Add permissive_domains_on_user_builds to se_policy_binary";
+      url = "https://github.com/LineageOS/android_system_sepolicy/commit/ef567215557e70ef6f68f6d615c43fb8dfdfd4ef.patch";
+      hash = "sha256-7yHRf6OWjqqlRcegBtxR0HsxdQREudg4qBRS46TCuXI=";
+    })
+    (fetchpatch {
+      # https://t.me/linux_on_droid/28140
+      name = "Allow perspectived as a permissive domain";
+      url = "https://github.com/yaap/system_sepolicy/commit/cb883371539af5d127e4a16b05a5ecb425a3c3c3.patch";
+      hash = "sha256-9uTl/63Ua1LkFMXRkB6jJcegZTvlmb0L6cq7+W+VgVU=";
+    })
   ];
 }

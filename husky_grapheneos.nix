@@ -8,7 +8,7 @@ args@{
   imports = [
     ./gos.nix
     ./gos_lindroid.nix
-    ./gos_userdebug.nix
+    #./gos_userdebug.nix
   ];
   device = "husky";
   # check in nix repl (import ./.).gosSign.husky.config.source.dirs."device/google/shusky-kernels/6.1"
@@ -22,8 +22,4 @@ args@{
     };
   };
   signing.avb.size = 4096;
-
-  source.dirs."system/sepolicy".patches = [
-    #./port-su-to-user-builds.patch # not working, needs more work
-  ];
 }
