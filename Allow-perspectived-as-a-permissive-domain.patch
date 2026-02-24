@@ -1,0 +1,57 @@
+From ea68ab493a89ae5edffebbf7b1ccf2d5e055ddb6 Mon Sep 17 00:00:00 2001
+From: John Galt <johngaltfirstrun@gmail.com>
+Date: Thu, 7 Aug 2025 16:23:23 -0400
+Subject: [PATCH] Allow perspectived as a permissive domain
+
+For lindroid to run on user enforcing
+---
+ Android.bp | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/Android.bp b/Android.bp
+index 1dd9813d4..78bb4f6fb 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -730,6 +730,9 @@ precompiled_se_policy_binary {
+     required: [
+         "sepolicy_neverallows",
+     ],
++    permissive_domains_on_user_builds: [
++        "perspectived",
++    ],
+ }
+ 
+ 
+@@ -773,6 +776,9 @@ se_policy_binary {
+     srcs: [":recovery_sepolicy.cil"],
+     stem: "sepolicy",
+     recovery: true,
++    permissive_domains_on_user_builds: [
++        "perspectived",
++    ],
+ }
+ 
+ //////////////////////////////////
+@@ -827,6 +833,9 @@ se_policy_binary {
+     dist: {
+         targets: ["sepolicy_finalize"],
+     },
++    permissive_domains_on_user_builds: [
++        "perspectived",
++    ],
+ }
+ 
+ se_policy_conf {
+@@ -877,6 +886,9 @@ se_policy_cil {
+     dist: {
+         targets: ["sepolicy_finalize"],
+     },
++    permissive_domains_on_user_builds: [
++        "perspectived",
++    ],
+ }
+ 
+ se_versioned_policy {
+-- 
+2.52.0
+

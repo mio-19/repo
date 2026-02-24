@@ -53,11 +53,8 @@ args@{
       url = "https://github.com/yaap/system_sepolicy/commit/d48ff481d9651cedb435a9974648e5c9a81fe211.patch";
       hash = "sha256-bDUOj+NwErgqjM+abpF6ITaz3+GHag+qMoZXsfCv+KI=";
     })
-    (fetchpatch {
-      # https://t.me/linux_on_droid/28140
-      name = "Allow perspectived as a permissive domain";
-      url = "https://github.com/yaap/system_sepolicy/commit/cb883371539af5d127e4a16b05a5ecb425a3c3c3.patch";
-      hash = "sha256-9uTl/63Ua1LkFMXRkB6jJcegZTvlmb0L6cq7+W+VgVU=";
-    })
+    # https://t.me/linux_on_droid/28140
+    # https://github.com/yaap/system_sepolicy/commit/cb883371539af5d127e4a16b05a5ecb425a3c3c3
+    ./Allow-perspectived-as-a-permissive-domain.patch
   ];
 }
