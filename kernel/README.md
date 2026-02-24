@@ -63,20 +63,6 @@ TODO: consider CONFIG_POSIX_MQUEUE
 
 seem like CONFIG_SYSVIPC=y and CONFIG_DRM_LINDROID_EVDI=y cause problem.
 
-lindroid-partial4
-```zsh
-tee -a private/devices/google/shusky/shusky_defconfig << 'EOF'
-
-# lindroid
-CONFIG_UTS_NS=y
-CONFIG_PID_NS=y
-CONFIG_NET_NS=y
-CONFIG_CGROUP_DEVICE=y
-CONFIG_CGROUP_FREEZER=y
-CONFIG_DRM_LINDROID_EVDI=y
-EOF
-```
-
 lindroid-partial5
 ```zsh
 tee -a private/devices/google/shusky/shusky_defconfig << 'EOF'
