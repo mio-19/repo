@@ -54,11 +54,6 @@ args@{
       hash = "sha256-bDUOj+NwErgqjM+abpF6ITaz3+GHag+qMoZXsfCv+KI=";
     })
     (fetchpatch {
-      name = "Add permissive_domains_on_user_builds to se_policy_binary";
-      url = "https://github.com/LineageOS/android_system_sepolicy/commit/ef567215557e70ef6f68f6d615c43fb8dfdfd4ef.patch";
-      hash = "sha256-7yHRf6OWjqqlRcegBtxR0HsxdQREudg4qBRS46TCuXI=";
-    })
-    (fetchpatch {
       # https://t.me/linux_on_droid/28140
       name = "Allow perspectived as a permissive domain";
       url = "https://github.com/yaap/system_sepolicy/commit/cb883371539af5d127e4a16b05a5ecb425a3c3c3.patch";
