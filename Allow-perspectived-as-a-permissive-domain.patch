@@ -42,16 +42,6 @@ index 1dd9813d4..78bb4f6fb 100644
  }
  
  se_policy_conf {
-@@ -877,6 +886,9 @@ se_policy_cil {
-     dist: {
-         targets: ["sepolicy_finalize"],
-     },
-+    permissive_domains_on_user_builds: [
-+        "perspectived",
-+    ],
- }
- 
- se_versioned_policy {
 -- 
 2.52.0
 
