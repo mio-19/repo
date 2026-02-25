@@ -1,6 +1,6 @@
 args@{ config, pkgs, ... }:
 {
-  buildDateTime = 1771719068;
+  buildDateTime = 1772004451;
   imports = [ ./los.nix ];
   manufactor = "oneplus";
   kernel-short = "sdm845";
