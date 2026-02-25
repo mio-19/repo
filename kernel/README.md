@@ -128,4 +128,5 @@ ksu
 cd aosp
 # https://kernelsu-next.github.io/webpage/pages/installation.html
 curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -
+cd ..
 ```
