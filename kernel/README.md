@@ -59,7 +59,7 @@ for debug `--sandbox_debug --verbose_failures`
 
 TODO: consider CONFIG_POSIX_MQUEUE
 
-### lindroid-partial3 - testing only some parts to figure out why bootloop
+### lindroid - testing only some parts to figure out why bootloop
 
 lindroid-partial6
 ```zsh
