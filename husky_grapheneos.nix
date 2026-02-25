@@ -8,7 +8,7 @@ args@{
   imports = [
     ./gos.nix
     ./gos_lindroid.nix
-    #./gos_userdebug.nix
+    ./gos_userdebug.nix
   ];
   device = "husky";
   # check in nix repl (import ./.).gosSign.husky.config.source.dirs."device/google/shusky-kernels/6.1"
