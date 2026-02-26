@@ -24,6 +24,8 @@ sudo apt install libssl-dev
 KLEAF_REPO_MANIFEST=aosp_manifest.xml ./build_shusky.sh --lto=full
 ```
 
+problem with 3840hz mode: brightness changes between maybe 60hz or 1hz and 120hz refresh rate. need to force highest refresh rate in developer settings if 1~120hz mode is on.
+
 ### lindroid extra steps 
 
 patch c360d6f7b22ab710a27193f62669f5a257cd259d.patch on aosp. from <https://gitlab.com/ubports/porting/reference-device-ports/halium12/volla-x23/kernel-volla-mt6789/-/commit/c360d6f7b22ab710a27193f62669f5a257cd259d> <https://t.me/linux_on_droid/7889>
