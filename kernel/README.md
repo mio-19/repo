@@ -26,11 +26,12 @@ KLEAF_REPO_MANIFEST=aosp_manifest.xml ./build_shusky.sh --lto=full
 
 problem with 3840hz mode: brightness changes between maybe 60hz or 1hz and 120hz refresh rate. need to force highest refresh rate in developer settings if 1~120hz mode is on.
 
-### lindroid extra steps 
+### lindroid extra steps
 
 patch c360d6f7b22ab710a27193f62669f5a257cd259d.patch on aosp. from <https://gitlab.com/ubports/porting/reference-device-ports/halium12/volla-x23/kernel-volla-mt6789/-/commit/c360d6f7b22ab710a27193f62669f5a257cd259d> <https://t.me/linux_on_droid/7889>
 
 them:
+
 ```zsh
 wget https://github.com/mmeimm/GKI-Custom/raw/refs/heads/main/patchs/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch
 wget https://github.com/mmeimm/GKI-Custom/raw/refs/heads/main/patchs/3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch
@@ -44,6 +45,7 @@ for debug `--sandbox_debug --verbose_failures`
 TODO: consider CONFIG_POSIX_MQUEUE
 
 lindroid-partial6
+
 ```zsh
 tee -a private/devices/google/shusky/shusky_defconfig << 'EOF'
 
@@ -130,4 +132,21 @@ curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/ke
 cd ..
 sed -i 's|^KSU_VERSION_FALLBACK := 1$|KSU_VERSION_FALLBACK := 32967|' aosp/KernelSU-Next/kernel/Kbuild
 sed -i 's|^KSU_VERSION_TAG_FALLBACK := v0.0.1$|KSU_VERSION_TAG_FALLBACK := v3.0.1|' aosp/KernelSU-Next/kernel/Kbuild
+```
+
+### ksu105
+
+<https://github.com/tiann/KernelSU/issues/2942#issuecomment-3969773467>
+
+```zsh
+cd aosp
+AOSP_BASE="$PWD"
+curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s -- v1.0.5
+cd ./KernelSU/kernel
+cp Makefile Makefile.orig
+cat <<EOF - Makefile.orig > Makefile
+srctree := ${AOSP_BASE}
+src := KernelSU/kernel
+EOF
+cd ..
 ```
