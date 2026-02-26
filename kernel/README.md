@@ -83,7 +83,7 @@ lindroid-partial-b2 - maybe private/devices/google/shusky/shusky_defconfig is no
 ```zsh
 sed -i '/^# CONFIG_PID_NS is not set$/d' aosp/arch/arm64/configs/gki_defconfig
 sed -i '/^CONFIG_NAMESPACES=y$/a CONFIG_USER_NS=y' aosp/arch/arm64/configs/gki_defconfig
-sed -i '/^CONFIG_NAMESPACES=y$/a CONFIG_DRM_LINDROID_EVDI=y' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_INTERCONNECT=y$/a CONFIG_DRM_LINDROID_EVDI=y' aosp/arch/arm64/configs/gki_defconfig
 
 sed -i '/^  __fsnotify_parent$/a\  from_kuid' aosp/android/abi_gki_aarch64_pixel
 sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
