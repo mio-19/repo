@@ -65,23 +65,9 @@ sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
 sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
 ```
 
-lindroid-partial7
+lindroid-partial-b1 - maybe private/devices/google/shusky/shusky_defconfig is not the right one
+
 ```zsh
-tee -a private/devices/google/shusky/shusky_defconfig << 'EOF'
-
-# lindroid
-CONFIG_SYSVIPC=y
-CONFIG_UTS_NS=y
-CONFIG_PID_NS=y
-CONFIG_IPC_NS=y
-CONFIG_USER_NS=y
-CONFIG_NET_NS=y
-CONFIG_CGROUP_DEVICE=y
-CONFIG_CGROUP_FREEZER=y
-CONFIG_DRM_LINDROID_EVDI=y
-CONFIG_TMPFS_POSIX_ACL=y
-EOF
-
 sed -i '/^# CONFIG_PID_NS is not set$/d' aosp/arch/arm64/configs/gki_defconfig
 sed -i '/^CONFIG_NAMESPACES=y$/a CONFIG_USER_NS=y' aosp/arch/arm64/configs/gki_defconfig
 
@@ -89,6 +75,20 @@ sed -i '/^  __fsnotify_parent$/a\  from_kuid' aosp/android/abi_gki_aarch64_pixel
 sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
 sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
 ```
+
+lindroid-partial-b2 - maybe private/devices/google/shusky/shusky_defconfig is not the right one
+
+```zsh
+sed -i '/^# CONFIG_PID_NS is not set$/d' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_NAMESPACES=y$/a CONFIG_USER_NS=y' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_NAMESPACES=y$/a CONFIG_DRM_LINDROID_EVDI=y' aosp/arch/arm64/configs/gki_defconfig
+
+sed -i '/^  __fsnotify_parent$/a\  from_kuid' aosp/android/abi_gki_aarch64_pixel
+sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
+sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
+```
+
+lindroid common
 
 ```zsh
 
@@ -103,7 +103,8 @@ done
 cd ..
 ```
 
-ksu
+### ksu
+
 ```zsh
 cd aosp
 # https://kernelsu-next.github.io/webpage/pages/installation.html
