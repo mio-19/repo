@@ -57,6 +57,7 @@
                 {
                   imports = [ f ];
                   ccache.enable = ccache;
+                  signing.avb.enable = sign;
                 };
             in
             # https://github.com/MatthewCroughan/nixcfg/blob/afab322e6da20cc038d8577dd4a365673702d183/flake.nix#L57
