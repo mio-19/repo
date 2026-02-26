@@ -24,6 +24,8 @@ sudo apt install libssl-dev
 KLEAF_REPO_MANIFEST=aosp_manifest.xml ./build_shusky.sh --lto=full
 ```
 
+problem with 3840hz mode: brightness changes between maybe 60hz or 1hz and 120hz refresh rate. need to force highest refresh rate in developer settings if 1~120hz mode is on.
+
 ### lindroid extra steps 
 
 patch c360d6f7b22ab710a27193f62669f5a257cd259d.patch on aosp. from <https://gitlab.com/ubports/porting/reference-device-ports/halium12/volla-x23/kernel-volla-mt6789/-/commit/c360d6f7b22ab710a27193f62669f5a257cd259d> <https://t.me/linux_on_droid/7889>
@@ -65,30 +67,46 @@ sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
 sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
 ```
 
-lindroid-partial-b1 - maybe private/devices/google/shusky/shusky_defconfig is not the right one
-
-```zsh
-sed -i '/^# CONFIG_PID_NS is not set$/d' aosp/arch/arm64/configs/gki_defconfig
-sed -i '/^CONFIG_NAMESPACES=y$/a CONFIG_USER_NS=y' aosp/arch/arm64/configs/gki_defconfig
-
-sed -i '/^  __fsnotify_parent$/a\  from_kuid' aosp/android/abi_gki_aarch64_pixel
-sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
-sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
-```
-
 lindroid-partial-b2 - maybe private/devices/google/shusky/shusky_defconfig is not the right one
 
 ```zsh
 sed -i '/^# CONFIG_PID_NS is not set$/d' aosp/arch/arm64/configs/gki_defconfig
 sed -i '/^CONFIG_NAMESPACES=y$/a CONFIG_USER_NS=y' aosp/arch/arm64/configs/gki_defconfig
-sed -i '/^CONFIG_NAMESPACES=y$/a CONFIG_DRM_LINDROID_EVDI=y' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_INTERCONNECT=y$/a CONFIG_DRM_LINDROID_EVDI=y' aosp/arch/arm64/configs/gki_defconfig
 
 sed -i '/^  __fsnotify_parent$/a\  from_kuid' aosp/android/abi_gki_aarch64_pixel
 sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
 sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
 ```
 
-lindroid common
+lindroid-partial-b3 - private/devices/google/shusky/shusky_defconfig is not the right one
+
+```zsh
+sed -i '/^# CONFIG_PID_NS is not set$/d' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_NAMESPACES=y$/a CONFIG_USER_NS=y' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_INTERCONNECT=y$/a CONFIG_DRM_LINDROID_EVDI=y' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_TMPFS=y$/a CONFIG_TMPFS_POSIX_ACL=y' aosp/arch/arm64/configs/gki_defconfig
+
+sed -i '/^  __fsnotify_parent$/a\  from_kuid' aosp/android/abi_gki_aarch64_pixel
+sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
+sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
+```
+
+lindroid-partial-b4 - private/devices/google/shusky/shusky_defconfig is not the right one
+
+```zsh
+sed -i '/^# CONFIG_PID_NS is not set$/d' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_NAMESPACES=y$/a CONFIG_USER_NS=y' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_INTERCONNECT=y$/a CONFIG_DRM_LINDROID_EVDI=y' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_TMPFS=y$/a CONFIG_TMPFS_POSIX_ACL=y' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_CPUSETS=y$/a CONFIG_CGROUP_DEVICE=y' aosp/arch/arm64/configs/gki_defconfig
+
+sed -i '/^  __fsnotify_parent$/a\  from_kuid' aosp/android/abi_gki_aarch64_pixel
+sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
+sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
+```
+
+lindroid-common
 
 ```zsh
 
