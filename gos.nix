@@ -184,5 +184,4 @@ args@{
       hash = "sha256-BZuXJ9xhp70TUbS5/bt6ihvLfmezc6tazDM9uM9Ahe0=";
     })
   ];
-  stateVersion = "2";
 }

@@ -22,4 +22,5 @@ args@{
     };
   };
   signing.avb.size = 4096;
+  stateVersion = "3";
 }
