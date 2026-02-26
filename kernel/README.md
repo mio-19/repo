@@ -92,7 +92,21 @@ sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
 sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
 ```
 
-lindroid common
+lindroid-partial-b4 - private/devices/google/shusky/shusky_defconfig is not the right one
+
+```zsh
+sed -i '/^# CONFIG_PID_NS is not set$/d' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_NAMESPACES=y$/a CONFIG_USER_NS=y' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_INTERCONNECT=y$/a CONFIG_DRM_LINDROID_EVDI=y' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_TMPFS=y$/a CONFIG_TMPFS_POSIX_ACL=y' aosp/arch/arm64/configs/gki_defconfig
+sed -i '/^CONFIG_CPUSETS=y$/a CONFIG_CGROUP_DEVICE=y' aosp/arch/arm64/configs/gki_defconfig
+
+sed -i '/^  __fsnotify_parent$/a\  from_kuid' aosp/android/abi_gki_aarch64_pixel
+sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
+sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
+```
+
+lindroid-common
 
 ```zsh
 
