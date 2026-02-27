@@ -7,8 +7,8 @@
     android-nixpkgs.url = "github:tadfisher/android-nixpkgs";
     android-nixpkgs.inputs.nixpkgs.follows = "nixpkgs";
     #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
-    #robotnix.url = "github:nix-community/robotnix/signing-unfuck";
-    robotnix.url = "git+https://github.com/nix-community/robotnix.git";
+    #robotnix.url = "git+https://github.com/nix-community/robotnix.git";
+    robotnix.url = "github:nix-community/robotnix/fix-ota-keys";
     #robotnix.url = "github:nix-community/robotnix/grapheneos_2026-02-14";
     #robotnix.url = "github:mio-19/robotnix";
     robotnix.inputs.nixpkgs.follows = "nixpkgs-stable";
@@ -57,8 +57,6 @@
                 {
                   imports = [ f ];
                   ccache.enable = ccache;
-                  signing.enable = sign;
-                  signing.keyStorePath = "/home/user/Documents/repo/keys";
                 };
             in
             # https://github.com/MatthewCroughan/nixcfg/blob/afab322e6da20cc038d8577dd4a365673702d183/flake.nix#L57
@@ -75,8 +73,6 @@
                 {
                   imports = [ f ];
                   ccache.enable = ccache;
-                  signing.enable = sign;
-                  signing.keyStorePath = "/home/user/Documents/repo/keys";
                 };
             in
             # https://github.com/MatthewCroughan/nixcfg/blob/afab322e6da20cc038d8577dd4a365673702d183/flake.nix#L57

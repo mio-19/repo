@@ -5,4 +5,5 @@ args@{ config, pkgs, ... }:
   ];
   device = "akita";
   signing.avb.size = 2048;
+  stateVersion = "2";
 }
