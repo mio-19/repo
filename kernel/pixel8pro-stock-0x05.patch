@@ -1,0 +1,766 @@
+From c61f5d9193ec38e86aa550e455fdbb12ab1fd911 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Fri, 20 Feb 2026 14:30:33 +1100
+Subject: [PATCH] 
+ https://xdaforums.com/t/a-mod-on-pwm-frequency-v3-20241027.4683727/
+
+---
+ .../devices/google/shusky/display/BUILD.bazel |   2 +
+ private/devices/google/shusky/display/Kbuild  |   1 +
+ .../devices/google/shusky/display/Makefile    |   2 +
+ .../google/shusky/display/exposure-adj.c      | 149 ++++++++++++++++
+ .../google/shusky/display/exposure-adj.h      |  35 ++++
+ .../google/shusky/display/panel-google-hk3.c  | 166 ++++++++++++++++--
+ .../shusky/vendor_ramdisk.modules.shusky      |   1 +
+ .../display/samsung/BUILD.bazel               |   9 +-
+ .../display/samsung/exynos_drm_crtc.c         | 102 ++++++++++-
+ .../display/samsung/exynos_drm_decon.c        |   1 +
+ .../display/samsung/exynos_drm_drv.h          |   6 +
+ 11 files changed, 452 insertions(+), 22 deletions(-)
+ create mode 100644 private/devices/google/shusky/display/exposure-adj.c
+ create mode 100644 private/devices/google/shusky/display/exposure-adj.h
+
+diff --git a/private/devices/google/shusky/display/BUILD.bazel b/private/devices/google/shusky/display/BUILD.bazel
+index 95531e706..c6f74e6ad 100644
+--- a/private/devices/google/shusky/display/BUILD.bazel
++++ b/private/devices/google/shusky/display/BUILD.bazel
+@@ -9,6 +9,7 @@ kernel_module(
+         "**/*.h",
+     ]) + [
+         "Kbuild",
++        "//private/google-modules/bms/misc:headers",
+         "//private/google-modules/display/common:headers",
+         "//private/google-modules/display/samsung:headers",
+         "//private/google-modules/display/samsung/include:headers",
+@@ -16,6 +17,7 @@ kernel_module(
+     ],
+     outs = [
+         # keep sorted
++        "exposure-adj.ko",
+         "panel-google-bigsurf.ko",
+         "panel-google-hk3.ko",
+         "panel-google-shoreline.ko",
+diff --git a/private/devices/google/shusky/display/Kbuild b/private/devices/google/shusky/display/Kbuild
+index 5b27e4d41..83fd35395 100644
+--- a/private/devices/google/shusky/display/Kbuild
++++ b/private/devices/google/shusky/display/Kbuild
+@@ -2,5 +2,6 @@
+ 
+ obj-$(CONFIG_DRM_PANEL_GOOGLE_BIGSURF)		+= panel-google-bigsurf.o
+ obj-$(CONFIG_DRM_PANEL_GOOGLE_HK3)		+= panel-google-hk3.o
++obj-$(CONFIG_DRM_PANEL_GOOGLE_HK3)		+= exposure-adj.o
+ obj-$(CONFIG_DRM_PANEL_GOOGLE_SHORELINE)	+= panel-google-shoreline.o
+ obj-$(CONFIG_DRM_PANEL_GS_HK3)			+= panel-gs-hk3.o
+diff --git a/private/devices/google/shusky/display/Makefile b/private/devices/google/shusky/display/Makefile
+index 26790adfd..0282db72b 100644
+--- a/private/devices/google/shusky/display/Makefile
++++ b/private/devices/google/shusky/display/Makefile
+@@ -7,8 +7,10 @@ KBUILD_OPTIONS += CONFIG_DRM_PANEL_GOOGLE_HK3=m
+ KBUILD_OPTIONS += CONFIG_DRM_PANEL_GOOGLE_SHORELINE=m
+ 
+ EXTRA_CFLAGS += -DDYNAMIC_DEBUG_MODULE=1
++EXTRA_CFLAGS += -I$(KERNEL_SRC)/../private/google-modules/bms
+ EXTRA_CFLAGS += -I$(KERNEL_SRC)/../private/google-modules/display/common/include
+ EXTRA_CFLAGS += -I$(KERNEL_SRC)/../private/google-modules/display/samsung
++EXTRA_CFLAGS += -I$(KERNEL_SRC)/../private/google-modules/display/samsung/cal_common
+ EXTRA_CFLAGS += -I$(KERNEL_SRC)/../private/google-modules/display/samsung/include/uapi
+ EXTRA_CFLAGS += -Werror
+ 
+diff --git a/private/devices/google/shusky/display/exposure-adj.c b/private/devices/google/shusky/display/exposure-adj.c
+new file mode 100644
+index 000000000..a5e99ede9
+--- /dev/null
++++ b/private/devices/google/shusky/display/exposure-adj.c
+@@ -0,0 +1,149 @@
++/*
++ * An exposure adjustment driver based on Exynos DPP for OLED devices
++ *
++ * Copyright (C) 2012-2014, The Linux Foundation. All rights reserved.
++ * Copyright (C) Sony Mobile Communications Inc. All rights reserved.
++ * Copyright (C) 2014-2018, AngeloGioacchino Del Regno <kholk11@gmail.com>
++ * Copyright (C) 2018, Devries <therkduan@gmail.com>
++ * Copyright (C) 2024, Hamster Tian <haotia@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 and
++ * only version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ */
++
++#include <linux/module.h>
++
++#include "exynos_drm_decon.h"
++#include "exynos_drm_drv.h"
++
++#include "exposure-adj.h"
++
++int linear_matrix_application_threshold = LINEAR_MATRIX_APPLY_THRESHOLD_DEFAULT;
++module_param(linear_matrix_application_threshold, int, 0644);
++
++static int ea_set_matrix(struct drm_crtc *crtc, unsigned int bl_lvl)
++{
++	struct exynos_drm_crtc *exynos_crtc = to_exynos_crtc(crtc);
++	struct exynos_matrix matrix;
++	struct drm_property *prop_linear_matrix_override;
++	struct drm_property_blob *pblob = NULL;
++	struct exynos_drm_crtc_state fake_crtc_state;
++	uint32_t blob_id;
++	__u16 ofs, coef;
++	int rc = 0;
++
++	if (crtc == NULL) {
++		pr_err("crtc has not been initialized\n");
++		rc = -EIO;
++		goto exit;
++	}
++
++	prop_linear_matrix_override = exynos_crtc->props.linear_matrix_override;
++	if (prop_linear_matrix_override == NULL) {
++		pr_err("linear matrix overriding is not supported by crtc\n");
++		rc = -EIO;
++		goto exit;
++	}
++
++	/* Will this ever happen? */
++	if (strcmp(prop_linear_matrix_override->name,
++		   "linear_matrix_override") != 0) {
++		pr_err("property name verification failed: %s\n",
++		       prop_linear_matrix_override->name);
++		rc = -EIO;
++		goto exit;
++	}
++
++	if (bl_lvl == 0) {
++		goto setup;
++	}
++
++	/*
++	 * Beware: the override itself does not form the final matrix.
++	 * It's ratio that would be applied to linear matrix requested by
++	 * userspace, and we need to set all elements in this matrix.
++	 */
++	ofs = LINEAR_MATRIX_OVERRIDE_SCALE_FACTOR; // = 100% (no scale)
++	matrix.offsets[0] = ofs;
++	matrix.offsets[1] = ofs;
++	matrix.offsets[2] = ofs;
++
++	coef = bl_lvl * LINEAR_MATRIX_OVERRIDE_SCALE_FACTOR /
++	       linear_matrix_application_threshold;
++	matrix.coeffs[0] = coef;
++	matrix.coeffs[1] = coef;
++	matrix.coeffs[2] = coef;
++	matrix.coeffs[3] = coef;
++	matrix.coeffs[4] = coef;
++	matrix.coeffs[5] = coef;
++	matrix.coeffs[6] = coef;
++	matrix.coeffs[7] = coef;
++	matrix.coeffs[8] = coef;
++
++	pblob = drm_property_create_blob(crtc->dev,
++					 sizeof(struct exynos_matrix), &matrix);
++	if (IS_ERR_OR_NULL(pblob)) {
++		pr_err("failed to create blob\n");
++		rc = -ENOMEM;
++		goto exit;
++	}
++
++setup:
++	/* This is not a complete DRM call, and never designed to be so.
++	 *
++	 * When exiting from LP mode (AOD), this function will be called during
++	 * userspace commit with crtc->mutex held by ourself, and we can not
++	 * use drm_crtc_get_state() here. Even if breaking AOD is acceptable,
++	 * we could not commit the change from here. I can't think of anything to
++	 * make this code less hacky.
++	 *
++	 * The crtc state here is one time use and thrown away after this call.
++	 * The crtc driver code saves the matrix into a global variable instead
++	 * upon receiving the atomic_set_property call. We need to free the
++	 * resources related to the state ourselves.
++	 */
++	memset(&fake_crtc_state, 0, sizeof(fake_crtc_state));
++	fake_crtc_state.base.crtc = crtc;
++
++	if (bl_lvl == 0)
++		blob_id = 0; // erase matrix
++	else
++		blob_id = pblob->base.id;
++
++	crtc->funcs->atomic_set_property(crtc, &fake_crtc_state.base,
++					 prop_linear_matrix_override, blob_id);
++
++	drm_property_blob_put(pblob);
++
++exit:
++	return rc;
++}
++
++unsigned int ea_panel_calc_backlight(unsigned int bl_lvl)
++{
++	struct decon_device *decon = get_decon_drvdata(0);
++
++	if (linear_matrix_application_threshold == 0) {
++		linear_matrix_application_threshold = 1; // avoid dividing by 0
++	}
++
++	if (bl_lvl != 0 && bl_lvl < linear_matrix_application_threshold) {
++		ea_set_matrix(&decon->crtc->base, bl_lvl);
++		return linear_matrix_application_threshold;
++	} else {
++		ea_set_matrix(&decon->crtc->base, 0);
++		return bl_lvl;
++	}
++}
++EXPORT_SYMBOL(ea_panel_calc_backlight);
++
++MODULE_AUTHOR("Hamster Tian <haotia@gmail.com>");
++MODULE_DESCRIPTION("Exposure adjustment logic for Google HK3 panel");
++MODULE_LICENSE("GPL");
+diff --git a/private/devices/google/shusky/display/exposure-adj.h b/private/devices/google/shusky/display/exposure-adj.h
+new file mode 100644
+index 000000000..8dd11c808
+--- /dev/null
++++ b/private/devices/google/shusky/display/exposure-adj.h
+@@ -0,0 +1,35 @@
++/*
++ * An exposure adjustment driver based on Exynos DPP for OLED devices
++ *
++ * Copyright (C) 2012-2014, The Linux Foundation. All rights reserved.
++ * Copyright (C) Sony Mobile Communications Inc. All rights reserved.
++ * Copyright (C) 2014-2018, AngeloGioacchino Del Regno <kholk11@gmail.com>
++ * Copyright (C) 2018, Devries <therkduan@gmail.com>
++ * Copyright (C) 2024, Hamster Tian <haotia@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 and
++ * only version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ */
++
++#ifndef EXPOSURE_ADJUSTMENT_H
++#define EXPOSURE_ADJUSTMENT_H
++
++/**
++ * When linear matrix is enabled, brightness lower than this will not be sent
++ * to panel. The panel driver IC gets this value instead, and DPP is engaged to
++ * apply a mask with matrix:
++ * (RR = BB = GG = requested brightness / this value * 100%)
++ * on the image to bring the actual brightness down.
++ */
++#define LINEAR_MATRIX_APPLY_THRESHOLD_DEFAULT        1400
++
++u32 ea_panel_calc_backlight(unsigned int bl_lvl);
++
++#endif /* EXPOSURE_ADJUSTMENT_H */
+diff --git a/private/devices/google/shusky/display/panel-google-hk3.c b/private/devices/google/shusky/display/panel-google-hk3.c
+index 7428bb550..906b2abc2 100644
+--- a/private/devices/google/shusky/display/panel-google-hk3.c
++++ b/private/devices/google/shusky/display/panel-google-hk3.c
+@@ -19,6 +19,7 @@
+ 
+ #include "trace/dpu_trace.h"
+ #include "panel/panel-samsung-drv.h"
++#include "exposure-adj.h"
+ 
+ /**
+  * enum hk3_panel_feature - features supported by this panel
+@@ -151,6 +152,8 @@ struct hk3_panel {
+ 	bool hw_za_enabled;
+ 	/** @force_za_off: force to turn off zonal attenuation */
+ 	bool force_za_off;
++	/** @requested_brightness: requested brightness before exposure adjustment */
++	u16 requested_brightness;
+ 	/** @lhbm_ctl: lhbm brightness control */
+ 	struct hk3_lhbm_ctl lhbm_ctl;
+ 	/** @material: the material version used in panel */
+@@ -329,6 +332,15 @@ static const struct drm_dsc_config fhd_pps_config = {
+ #define MIPI_DSI_FREQ_MBPS_DEFAULT 1368
+ #define MIPI_DSI_FREQ_MBPS_ALTERNATIVE 1346
+ 
++/*
++ * When segmented dimming is enabled, brightness higher than this is treated as
++ * high brightness and uses freq_cmd_high_brightness for backlight control.
++ * Otherwise freq_cmd is used.
++ *
++ * This feature is not turned on by default, and the default value is not tuned.
++ */
++#define HK3_DIMMING_SWITCH_THRESHOLD_DEFAULT   600
++
+ #define PROJECT "HK3"
+ 
+ static const u8 unlock_cmd_f0[] = { 0xF0, 0x5A, 0x5A };
+@@ -368,6 +380,125 @@ static const struct exynos_binned_lp hk3_binned_lp[] = {
+ 			      HK3_TE2_RISING_EDGE_OFFSET, HK3_TE2_FALLING_EDGE_OFFSET)
+ };
+ 
++int use_linear_matrix = 1;
++module_param(use_linear_matrix, int, 0644);
++
++int use_segmented_dimming = 0;
++module_param(use_segmented_dimming, int, 0644);
++
++int segmented_dimming_switch_threshold = HK3_DIMMING_SWITCH_THRESHOLD_DEFAULT;
++module_param(segmented_dimming_switch_threshold, int, 0644);
++
++u8 freq_cmd[4] = {0x05, 0x43, 0x43, 0x03};
++module_param_array(freq_cmd, byte, NULL, 0644);
++
++u8 freq_cmd_ns[4] = {0x00, 0x43, 0x43, 0x03};
++module_param_array(freq_cmd_ns, byte, NULL, 0644);
++
++u8 freq_cmd_high_brightness[4] = {0x00, 0x43, 0x43, 0x03};
++module_param_array(freq_cmd_high_brightness, byte, NULL, 0644);
++
++u8 freq_cmd_high_brightness_ns[4] = {0x00, 0x43, 0x43, 0x03};
++module_param_array(freq_cmd_high_brightness_ns, byte, NULL, 0644);
++
++u8 freq_cmd_hbm[4] = {0x00, 0x43, 0x43, 0x03};
++module_param_array(freq_cmd_hbm, byte, NULL, 0644);
++
++u8 freq_cmd_hbm_ns[4] = {0x00, 0x43, 0x43, 0x03};
++module_param_array(freq_cmd_hbm_ns, byte, NULL, 0644);
++
++u8 freq_cmd_hbm_high_brightness[4] = {0x00, 0x43, 0x43, 0x03};
++module_param_array(freq_cmd_hbm_high_brightness, byte, NULL, 0644);
++
++u8 freq_cmd_hbm_high_brightness_ns[4] = {0x00, 0x43, 0x43, 0x03};
++module_param_array(freq_cmd_hbm_high_brightness_ns, byte, NULL, 0644);
++
++struct hk3_freq_cmdset {
++	u8 *cmd;
++	u8 *cmd_ns;
++	u8 *cmd_high_brightness;
++	u8 *cmd_high_brightness_ns;
++};
++
++enum hk3_freq_cmdset_type {
++	HK3_FREQ_CMDSET_NORMAL,
++	HK3_FREQ_CMDSET_HBM,
++	HK3_FREQ_CMDSET_TYPE_MAX
++};
++
++struct hk3_freq_cmdset hk3_freq_cmdsets[HK3_FREQ_CMDSET_TYPE_MAX] = {
++	[HK3_FREQ_CMDSET_NORMAL] = {
++		.cmd = freq_cmd,
++		.cmd_ns = freq_cmd_ns,
++		.cmd_high_brightness = freq_cmd_high_brightness,
++		.cmd_high_brightness_ns = freq_cmd_high_brightness_ns,
++	},
++	[HK3_FREQ_CMDSET_HBM] = {
++		.cmd = freq_cmd_hbm,
++		.cmd_ns = freq_cmd_hbm_ns,
++		.cmd_high_brightness = freq_cmd_hbm_high_brightness,
++		.cmd_high_brightness_ns = freq_cmd_hbm_high_brightness_ns,
++	},
++};
++
++static void hk3_send_dimming_freq_cmd(struct exynos_panel *ctx, int need_unlock, const u8 *cmd)
++{
++	if (need_unlock)
++		EXYNOS_DCS_BUF_ADD_SET(ctx, unlock_cmd_f0);
++
++	EXYNOS_DCS_BUF_ADD(ctx, 0xBD, 0x21, cmd[0], cmd[1], cmd[2], cmd[3]);
++
++	if (need_unlock) {
++		EXYNOS_DCS_BUF_ADD_SET(ctx, freq_update);
++		EXYNOS_DCS_BUF_ADD_SET_AND_FLUSH(ctx, lock_cmd_f0);
++	}
++}
++
++static void hk3_set_default_dimming(struct exynos_panel *ctx, const unsigned long *feat, int need_unlock)
++{
++	static const u8 cmd[4] = {0x01, 0x83, 0x03, 0x03};
++	static const u8 hbm_cmd[4] = {0x00, 0x83, 0x03, 0x01};
++	u8 target_cmd[4];
++
++	if (test_bit(FEAT_HBM, feat))
++		memcpy(target_cmd, hbm_cmd, 4);
++	else
++		memcpy(target_cmd, cmd, 4);
++
++	if (!test_bit(FEAT_EARLY_EXIT, feat))
++		target_cmd[0] |= 0x80;
++
++	hk3_send_dimming_freq_cmd(ctx, need_unlock, target_cmd);
++}
++
++static void hk3_set_override_dimming(struct exynos_panel *ctx, const unsigned long *feat, int need_unlock)
++{
++	struct hk3_panel *spanel = to_spanel(ctx);
++	bool is_hbm = test_bit(FEAT_HBM, feat);
++	bool is_ns_mode = test_bit(FEAT_OP_NS, feat);
++	bool is_sub120 = spanel->hw_vrefresh < 120;
++	struct hk3_freq_cmdset *cmdset;
++	u8 *cmd;
++	u8 target_cmd[4];
++
++	if (is_hbm)
++		cmdset = &hk3_freq_cmdsets[HK3_FREQ_CMDSET_HBM];
++	else
++		cmdset = &hk3_freq_cmdsets[HK3_FREQ_CMDSET_NORMAL];
++
++	if (use_segmented_dimming && spanel->requested_brightness > segmented_dimming_switch_threshold)
++		cmd = (is_ns_mode || is_sub120) ? cmdset->cmd_high_brightness_ns : cmdset->cmd_high_brightness;
++	else
++		cmd = (is_ns_mode || is_sub120) ? cmdset->cmd_ns : cmdset->cmd;
++
++	memcpy(target_cmd, cmd, 4);
++
++	if (!test_bit(FEAT_EARLY_EXIT, feat))
++		cmd[0] |= 0x80;
++
++	hk3_send_dimming_freq_cmd(ctx, need_unlock, cmd);
++}
++
+ static inline bool is_in_comp_range(int temp)
+ {
+ 	return (temp >= 10 && temp <= 49);
+@@ -677,17 +808,10 @@ static void hk3_set_panel_feat(struct exynos_panel *ctx, const u32 vrefresh,
+ 	 *
+ 	 * Description: early-exit sequence overrides some configs HBM set.
+ 	 */
+-	if (test_bit(FEAT_EARLY_EXIT, feat)) {
+-		if (test_bit(FEAT_HBM, feat))
+-			EXYNOS_DCS_BUF_ADD(ctx, 0xBD, 0x21, 0x00, 0x83, 0x03, 0x01);
+-		else
+-			EXYNOS_DCS_BUF_ADD(ctx, 0xBD, 0x21, 0x01, 0x83, 0x03, 0x03);
+-	} else {
+-		if (test_bit(FEAT_HBM, feat))
+-			EXYNOS_DCS_BUF_ADD(ctx, 0xBD, 0x21, 0x80, 0x83, 0x03, 0x01);
+-		else
+-			EXYNOS_DCS_BUF_ADD(ctx, 0xBD, 0x21, 0x81, 0x83, 0x03, 0x03);
+-	}
++	if (is_panel_enabled(ctx) && !ctx->current_mode->exynos_mode.is_lp_mode)
++		hk3_set_override_dimming(ctx, feat, false);
++	else
++		hk3_set_default_dimming(ctx, feat, false);
+ 	EXYNOS_DCS_BUF_ADD(ctx, 0xB0, 0x00, 0x10, 0xBD);
+ 	val = test_bit(FEAT_EARLY_EXIT, feat) ? 0x22 : 0x00;
+ 	EXYNOS_DCS_BUF_ADD(ctx, 0xBD, val);
+@@ -1354,7 +1478,7 @@ static void hk3_set_acl_mode(struct exynos_panel *ctx, enum exynos_acl_mode mode
+ static int hk3_set_brightness(struct exynos_panel *ctx, u16 br)
+ {
+ 	int ret;
+-	u16 brightness;
++	u16 brightness, orig_br;
+ 	struct hk3_panel *spanel = to_spanel(ctx);
+ 
+ 	if (ctx->current_mode->exynos_mode.is_lp_mode) {
+@@ -1384,10 +1508,14 @@ static int hk3_set_brightness(struct exynos_panel *ctx, u16 br)
+ 		spanel->is_pixel_off = false;
+ 	}
+ 
++	orig_br = br;
++	if (use_linear_matrix)
++		br = ea_panel_calc_backlight(br);
+ 	brightness = (br & 0xff) << 8 | br >> 8;
+ 	ret = exynos_dcs_set_brightness(ctx, brightness);
+ 	if (!ret) {
+ 		spanel->hw_dbv = br;
++		spanel->requested_brightness = orig_br;
+ 		hk3_set_acl_mode(ctx, ctx->acl_mode);
+ 	}
+ 
+@@ -1521,6 +1649,9 @@ static void hk3_set_lp_mode(struct exynos_panel *ctx, const struct exynos_panel_
+ 
+ 	DPU_ATRACE_BEGIN(__func__);
+ 
++	if (use_linear_matrix)
++		ea_panel_calc_backlight(0); /* turn off matrix */
++
+ 	hk3_disable_panel_feat(ctx, pmode, vrefresh);
+ 	if (panel_enabled) {
+ 		/* init sequence has sent display-off command already */
+@@ -1528,6 +1659,7 @@ static void hk3_set_lp_mode(struct exynos_panel *ctx, const struct exynos_panel_
+ 			hk3_wait_for_vsync_done_changeable(ctx, vrefresh, is_ns);
+ 		else
+ 			hk3_wait_for_vsync_done(ctx, vrefresh, is_ns);
++		hk3_set_default_dimming(ctx, spanel->feat, true);
+ 		exynos_panel_send_cmd_set(ctx, &hk3_display_off_cmd_set);
+ 	}
+ 	/* display should be off here, set dbv before entering lp mode */
+@@ -1610,6 +1742,7 @@ static void hk3_set_nolp_mode(struct exynos_panel *ctx,
+ 	hk3_set_panel_feat(ctx, drm_mode_vrefresh(&pmode->mode),
+ 		spanel->auto_mode_vrefresh, spanel->feat, is_vrr_mode(pmode), true);
+ 	/* backlight control and dimming */
++	hk3_set_override_dimming(ctx, spanel->feat, true);
+ 	hk3_write_display_mode(ctx, &pmode->mode);
+ 	hk3_change_frequency(ctx, pmode);
+ 	exynos_panel_send_cmd_set(ctx, &hk3_display_on_cmd_set);
+@@ -1817,6 +1950,8 @@ static int hk3_enable(struct drm_panel *panel)
+ 			exynos_panel_send_cmd_set(ctx, &hk3_display_on_cmd_set);
+ 			spanel->read_vreg = true;
+ 		}
++
++		hk3_set_override_dimming(ctx, spanel->feat, true);
+ 	}
+ 
+ 	spanel->lhbm_ctl.hist_roi_configured = false;
+@@ -2063,6 +2198,10 @@ static void hk3_set_local_hbm_mode(struct exynos_panel *ctx,
+ 				 bool local_hbm_en)
+ {
+ 	const struct exynos_panel_mode *pmode = ctx->current_mode;
++	struct hk3_panel *spanel = to_spanel(ctx);
++
++	if (local_hbm_en)
++		hk3_set_default_dimming(ctx, spanel->feat, true);
+ 
+ 	/* TODO: LHBM Position & Size */
+ 	hk3_write_display_mode(ctx, &pmode->mode);
+@@ -2070,6 +2209,9 @@ static void hk3_set_local_hbm_mode(struct exynos_panel *ctx,
+ 	if (local_hbm_en)
+ 		hk3_set_local_hbm_brightness(ctx, true);
+ 
++	if (!local_hbm_en) {
++		hk3_set_override_dimming(ctx, spanel->feat, true);
++	}
+ }
+ 
+ static void hk3_set_local_hbm_mode_post(struct exynos_panel *ctx)
+diff --git a/private/devices/google/shusky/vendor_ramdisk.modules.shusky b/private/devices/google/shusky/vendor_ramdisk.modules.shusky
+index 04cf5fa62..b8fd13e2c 100644
+--- a/private/devices/google/shusky/vendor_ramdisk.modules.shusky
++++ b/private/devices/google/shusky/vendor_ramdisk.modules.shusky
+@@ -1,3 +1,4 @@
++extra/private/devices/google/shusky/display/exposure-adj.ko
+ extra/private/devices/google/shusky/display/panel-google-bigsurf.ko
+ extra/private/devices/google/shusky/display/panel-google-hk3.ko
+ extra/private/devices/google/shusky/display/panel-google-shoreline.ko
+diff --git a/private/google-modules/display/samsung/BUILD.bazel b/private/google-modules/display/samsung/BUILD.bazel
+index ebe87cbee..973cdba62 100644
+--- a/private/google-modules/display/samsung/BUILD.bazel
++++ b/private/google-modules/display/samsung/BUILD.bazel
+@@ -4,12 +4,9 @@ load("//build/kernel/kleaf:kernel.bzl", "ddk_uapi_headers", "kernel_module")
+ 
+ filegroup(
+     name = "headers",
+-    srcs = [
+-        "dp_audio/dp_audio.h",
+-        "exynos_drm_connector.h",
+-        "exynos_drm_format.h",
+-        "panel/panel-common.h",
+-        "panel/panel-samsung-drv.h",
++    srcs = glob([
++        "**/*.h",
++    ]) + [
+         "//private/google-modules/display/common:headers",
+         "//private/google-modules/display/samsung/include:headers",
+     ],
+diff --git a/private/google-modules/display/samsung/exynos_drm_crtc.c b/private/google-modules/display/samsung/exynos_drm_crtc.c
+index aa7567409..194267bb8 100644
+--- a/private/google-modules/display/samsung/exynos_drm_crtc.c
++++ b/private/google-modules/display/samsung/exynos_drm_crtc.c
+@@ -39,6 +39,72 @@ enum crtc_active_state {
+ 	CRTC_STATE_SELF_REFRESH,
+ };
+ 
++/* We cannot commit changes from from panel driver so we have to keep the
++ * matrices as global variab/s.
++ */
++static struct exynos_matrix linear_matrix_override;
++static int linear_matrix_override_enabled;
++
++static void exynos_drm_crtc_apply_linear_matrix_override(const struct exynos_matrix *original,
++							 const struct exynos_matrix *override,
++							 struct exynos_matrix *output)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(output->coeffs); i++)
++		output->coeffs[i] = (uint32_t)original->coeffs[i] * override->coeffs[i] /
++				    LINEAR_MATRIX_OVERRIDE_SCALE_FACTOR;
++
++	for (i = 0; i < ARRAY_SIZE(output->offsets); i++)
++		output->offsets[i] = (uint32_t)original->offsets[i] * override->offsets[i] /
++				     LINEAR_MATRIX_OVERRIDE_SCALE_FACTOR;
++}
++
++static struct exynos_matrix *exynos_drm_crtc_get_linear_matrix(struct drm_crtc_state *state)
++{
++	struct exynos_drm_crtc_state *exynos_state;
++	const struct exynos_matrix *original, *override;
++	struct exynos_matrix *output;
++	static const struct exynos_matrix default_matrix = {
++		.coeffs = {
++			0x1fff, 0, 0, // 0x1fff is 100% in DQE terms
++			0, 0x1fff, 0,
++			0, 0, 0x1fff
++		},
++		.offsets = {
++			0,
++			0,
++			0
++		}
++	};
++
++	exynos_state = to_exynos_crtc_state(state);
++
++	if (exynos_state->linear_matrix) {
++		original = exynos_state->linear_matrix->data;
++	} else {
++		original = NULL;
++	}
++
++	if (!linear_matrix_override_enabled) {
++		output = (struct exynos_matrix *) original;
++		goto exit;
++	}
++
++	override = &linear_matrix_override;
++
++	/* We need a base matrix to apply override on, load our default matrix here */
++	if (!original)
++		original = &default_matrix;
++
++	output = &exynos_state->linear_matrix_cache;
++
++	exynos_drm_crtc_apply_linear_matrix_override(original, override, output);
++
++exit:
++	return output;
++}
++
+ static void exynos_drm_crtc_atomic_enable(struct drm_crtc *crtc,
+ 					  struct drm_atomic_state *state)
+ {
+@@ -126,10 +192,7 @@ static void exynos_crtc_update_lut(struct drm_crtc *crtc,
+ 			dqe_state->hist_chan[i].config = NULL;
+ 	}
+ 
+-	if (exynos_state->linear_matrix)
+-		dqe_state->linear_matrix = exynos_state->linear_matrix->data;
+-	else
+-		dqe_state->linear_matrix = NULL;
++	dqe_state->linear_matrix = exynos_drm_crtc_get_linear_matrix(state);
+ 
+ 	if (exynos_state->gamma_matrix)
+ 		dqe_state->gamma_matrix = exynos_state->gamma_matrix->data;
+@@ -390,6 +453,7 @@ static void exynos_drm_crtc_destroy_state(struct drm_crtc *crtc,
+ 	drm_property_blob_put(exynos_crtc_state->disp_dither);
+ 	drm_property_blob_put(exynos_crtc_state->cgc_dither);
+ 	drm_property_blob_put(exynos_crtc_state->linear_matrix);
++	drm_property_blob_put(exynos_crtc_state->linear_matrix_override);
+ 	drm_property_blob_put(exynos_crtc_state->gamma_matrix);
+ 	drm_property_blob_put(exynos_crtc_state->histogram_roi);
+ 	drm_property_blob_put(exynos_crtc_state->histogram_weights);
+@@ -447,6 +511,9 @@ exynos_drm_crtc_duplicate_state(struct drm_crtc *crtc)
+ 	if (copy->linear_matrix)
+ 		drm_property_blob_get(copy->linear_matrix);
+ 
++	if (copy->linear_matrix_override)
++		drm_property_blob_get(copy->linear_matrix_override);
++
+ 	if (copy->gamma_matrix)
+ 		drm_property_blob_get(copy->gamma_matrix);
+ 
+@@ -690,6 +757,25 @@ static int exynos_drm_crtc_set_property(struct drm_crtc *crtc,
+ 		ret = exynos_drm_replace_property_blob_from_id(state->crtc->dev,
+ 				&exynos_crtc_state->linear_matrix, val,
+ 				sizeof(struct exynos_matrix), -1, &replaced);
++	} else if (property == exynos_crtc->props.linear_matrix_override) {
++		/* This blob will never get any non-null value set as we cannot
++		 * commit changes from the panel driver. Force a change here
++		 * so tha/setting null matrix works.
++		 */
++		ret = exynos_drm_replace_property_blob_from_id(state->crtc->dev,
++				&exynos_crtc_state->linear_matrix_override, val,
++				sizeof(struct exynos_matrix), -1, &replaced);
++
++		replaced = true;
++
++		if (val == 0) {
++			linear_matrix_override_enabled = 0;
++		} else {
++			linear_matrix_override_enabled = 1;
++			memcpy(&linear_matrix_override,
++					exynos_crtc_state->linear_matrix_override->data,
++					sizeof(linear_matrix_override));
++		}
+ 	} else if (property == exynos_crtc->props.gamma_matrix) {
+ 		ret = exynos_drm_replace_property_blob_from_id(state->crtc->dev,
+ 				&exynos_crtc_state->gamma_matrix, val,
+@@ -783,6 +869,9 @@ static int exynos_drm_crtc_get_property(struct drm_crtc *crtc,
+ 	} else if (property == exynos_crtc->props.linear_matrix) {
+ 		*val = (exynos_crtc_state->linear_matrix) ?
+ 			exynos_crtc_state->linear_matrix->base.id : 0;
++	} else if (property == exynos_crtc->props.linear_matrix_override) {
++		*val = (exynos_crtc_state->linear_matrix_override) ?
++			exynos_crtc_state->linear_matrix_override->base.id : 0;
+ 	} else if (property == exynos_crtc->props.gamma_matrix) {
+ 		*val = (exynos_crtc_state->gamma_matrix) ?
+ 			exynos_crtc_state->gamma_matrix->base.id : 0;
+@@ -1204,6 +1293,11 @@ struct exynos_drm_crtc *exynos_drm_crtc_create(struct drm_device *drm_dev,
+ 		if (ret)
+ 			goto err_crtc;
+ 
++		ret = exynos_drm_crtc_create_blob(crtc, "linear_matrix_override",
++				&exynos_crtc->props.linear_matrix_override);
++		if (ret)
++			goto err_crtc;
++
+ 		ret = exynos_drm_crtc_create_blob(crtc, "gamma_matrix",
+ 				&exynos_crtc->props.gamma_matrix);
+ 		if (ret)
+diff --git a/private/google-modules/display/samsung/exynos_drm_decon.c b/private/google-modules/display/samsung/exynos_drm_decon.c
+index 9819ffd1e..2bd8b5f91 100644
+--- a/private/google-modules/display/samsung/exynos_drm_decon.c
++++ b/private/google-modules/display/samsung/exynos_drm_decon.c
+@@ -58,6 +58,7 @@
+ #endif
+ 
+ struct decon_device *decon_drvdata[MAX_DECON_CNT];
++EXPORT_SYMBOL(decon_drvdata);
+ 
+ #define decon_info(decon, fmt, ...)	\
+ pr_info("%s[%u]: "fmt, decon->dev->driver->name, decon->id, ##__VA_ARGS__)
+diff --git a/private/google-modules/display/samsung/exynos_drm_drv.h b/private/google-modules/display/samsung/exynos_drm_drv.h
+index cffa900a2..003f3601b 100644
+--- a/private/google-modules/display/samsung/exynos_drm_drv.h
++++ b/private/google-modules/display/samsung/exynos_drm_drv.h
+@@ -38,6 +38,8 @@
+ 
+ #define DEFAULT_WIN	0
+ 
++#define LINEAR_MATRIX_OVERRIDE_SCALE_FACTOR  0x1fff
++
+ 
+ #define to_exynos_crtc(x)	container_of(x, struct exynos_drm_crtc, base)
+ #define to_exynos_plane(x)	container_of(x, struct exynos_drm_plane, base)
+@@ -256,6 +258,7 @@ struct exynos_drm_crtc_state {
+ 	struct drm_property_blob *disp_dither;
+ 	struct drm_property_blob *cgc_dither;
+ 	struct drm_property_blob *linear_matrix;
++	struct drm_property_blob *linear_matrix_override;
+ 	struct drm_property_blob *gamma_matrix;
+ 	/* legacy histogram properties */
+ 	struct drm_property_blob *histogram_roi;
+@@ -297,6 +300,8 @@ struct exynos_drm_crtc_state {
+ 	struct drm_property_blob *partial;
+ 	bool needs_reconfigure;
+ 
++	struct exynos_matrix linear_matrix_cache;
++
+ 	struct kthread_work commit_work;
+ };
+ 
+@@ -329,6 +334,7 @@ struct exynos_drm_crtc {
+ 		struct drm_property *ppc;
+ 		struct drm_property *max_disp_freq;
+ 		struct drm_property *linear_matrix;
++		struct drm_property *linear_matrix_override;
+ 		struct drm_property *gamma_matrix;
+ 		struct drm_property *dqe_enabled;
+ 		struct drm_property *partial;
+-- 
+2.51.0
+
