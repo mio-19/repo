@@ -58,6 +58,7 @@ args@{
     ./Allow-perspectived-as-a-permissive-domain.patch
   ];
   source.dirs."build/make".patches = with pkgs; [
+    # VINTF check doesn't like CONFIG_SYSVIPC=y
     ./skip-VINTF-check-for-CONFIG_SYSVIPC.patch
   ];
 }
