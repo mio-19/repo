@@ -57,4 +57,7 @@ args@{
     # https://github.com/yaap/system_sepolicy/commit/cb883371539af5d127e4a16b05a5ecb425a3c3c3
     ./Allow-perspectived-as-a-permissive-domain.patch
   ];
+  source.dirs."build/make".patches = with pkgs; [
+    ./skip-VINTF-check-for-CONFIG_SYSVIPC.patch
+  ];
 }

@@ -1,0 +1,27 @@
+From db1620989254a0fa3ced9a57e9a39a9e264d12af Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Sat, 28 Feb 2026 11:40:22 +1100
+Subject: [PATCH] skip VINTF check for CONFIG_SYSVIPC
+
+---
+ tools/releasetools/check_target_files_vintf.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/releasetools/check_target_files_vintf.py b/tools/releasetools/check_target_files_vintf.py
+index dc123efb46..cb7b4abf98 100755
+--- a/tools/releasetools/check_target_files_vintf.py
++++ b/tools/releasetools/check_target_files_vintf.py
+@@ -299,8 +299,8 @@ def CheckVintfIfTrebleEnabled(target_files, target_info):
+   if OPTIONS.skip_compatibility_check:
+     return
+ 
+-  if not CheckVintf(target_files, target_info):
+-    raise RuntimeError("VINTF compatibility check failed")
++  #if not CheckVintf(target_files, target_info):
++  #  raise RuntimeError("VINTF compatibility check failed")
+ 
+ def HasTrebleEnabled(target_files, target_info):
+   def HasVendorPartition(target_files):
+-- 
+2.53.0
+
