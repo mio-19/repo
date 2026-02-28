@@ -1,0 +1,122 @@
+From ed7fcdb70e00acedec4db84708b784d085de154a Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Sat, 28 Feb 2026 14:14:08 +1100
+Subject: [PATCH] daria https://t.me/linux_on_droid/19434 ->
+ https://t.me/linux_on_droid/9783
+
+---
+ .../borr_mali_kbase/context/mali_kbase_context.c  | 15 +--------------
+ .../gpu/mali_kbase/context/mali_kbase_context.c   | 15 +--------------
+ 2 files changed, 2 insertions(+), 28 deletions(-)
+
+diff --git a/private/google-modules/gpu/borr_mali_kbase/context/mali_kbase_context.c b/private/google-modules/gpu/borr_mali_kbase/context/mali_kbase_context.c
+index f652becc6..c7b2af3fe 100644
+--- a/private/google-modules/gpu/borr_mali_kbase/context/mali_kbase_context.c
++++ b/private/google-modules/gpu/borr_mali_kbase/context/mali_kbase_context.c
+@@ -183,48 +183,35 @@ int kbase_context_common_init(struct kbase_context *kctx)
+ 	int err = 0;
+ 
+ 	/* creating a context is considered a disjoint event */
+ 	kbase_disjoint_event(kctx->kbdev);
+ 
+ 	kctx->tgid = current->tgid;
+ 	kctx->pid = current->pid;
+ 
+ 	/* Check if this is a Userspace created context */
+ 	if (likely(kctx->filp)) {
+-		struct pid *pid_struct;
+-
+ 		rcu_read_lock();
+-		pid_struct = get_pid(task_tgid(current));
+-		if (likely(pid_struct)) {
+-			struct task_struct *task = pid_task(pid_struct, PIDTYPE_PID);
+-
++			struct task_struct *task = current;
+ 			if (likely(task)) {
+ 				/* Take a reference on the task to avoid slow lookup
+ 				 * later on from the page allocation loop.
+ 				 */
+ 				get_task_struct(task);
+ 				kctx->task = task;
+-
+ 				/* PIXEL: For better visibility, save the comm from the tgid */
+ 				memcpy(kctx->comm, task->comm, sizeof(task->comm));
+ 			} else {
+ 				dev_err(kctx->kbdev->dev, "Failed to get task pointer for %s/%d",
+ 					current->comm, current->pid);
+ 				err = -ESRCH;
+ 			}
+-
+-			put_pid(pid_struct);
+-		} else {
+-			dev_err(kctx->kbdev->dev, "Failed to get pid pointer for %s/%d",
+-				current->comm, current->pid);
+-			err = -ESRCH;
+-		}
+ 		rcu_read_unlock();
+ 
+ 		if (unlikely(err))
+ 			return err;
+ 
+ 		kbase_mem_mmgrab();
+ 		kctx->process_mm = current->mm;
+ 	}
+ 
+ 	mutex_init(&kctx->reg_lock);
+diff --git a/private/google-modules/gpu/mali_kbase/context/mali_kbase_context.c b/private/google-modules/gpu/mali_kbase/context/mali_kbase_context.c
+index 13cd9f589..9a562472b 100644
+--- a/private/google-modules/gpu/mali_kbase/context/mali_kbase_context.c
++++ b/private/google-modules/gpu/mali_kbase/context/mali_kbase_context.c
+@@ -183,48 +183,35 @@ int kbase_context_common_init(struct kbase_context *kctx)
+ 	int err = 0;
+ 
+ 	/* creating a context is considered a disjoint event */
+ 	kbase_disjoint_event(kctx->kbdev);
+ 
+ 	kctx->tgid = current->tgid;
+ 	kctx->pid = current->pid;
+ 
+ 	/* Check if this is a Userspace created context */
+ 	if (likely(kctx->filp)) {
+-		struct pid *pid_struct;
+-
+ 		rcu_read_lock();
+-		pid_struct = get_pid(task_tgid(current));
+-		if (likely(pid_struct)) {
+-			struct task_struct *task = pid_task(pid_struct, PIDTYPE_PID);
+-
++			struct task_struct *task = current;
+ 			if (likely(task)) {
+ 				/* Take a reference on the task to avoid slow lookup
+ 				 * later on from the page allocation loop.
+ 				 */
+ 				get_task_struct(task);
+ 				kctx->task = task;
+-
+ 				/* PIXEL: For better visibility, save the comm from the tgid */
+ 				memcpy(kctx->comm, task->comm, sizeof(task->comm));
+ 			} else {
+ 				dev_err(kctx->kbdev->dev, "Failed to get task pointer for %s/%d",
+ 					current->comm, current->pid);
+ 				err = -ESRCH;
+ 			}
+-
+-			put_pid(pid_struct);
+-		} else {
+-			dev_err(kctx->kbdev->dev, "Failed to get pid pointer for %s/%d",
+-				current->comm, current->pid);
+-			err = -ESRCH;
+-		}
+ 		rcu_read_unlock();
+ 
+ 		if (unlikely(err))
+ 			return err;
+ 
+ 		kbase_mem_mmgrab();
+ 		kctx->process_mm = current->mm;
+ 	}
+ 
+ 	mutex_init(&kctx->reg_lock);
+-- 
+2.53.0
+

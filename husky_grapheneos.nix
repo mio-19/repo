@@ -13,12 +13,12 @@ args@{
   device = "husky";
   # check in nix repl (import ./.).gosSign.husky.config.source.dirs."device/google/shusky-kernels/6.1"
   source.dirs."device/google/shusky-kernels/6.1" = lib.mkForce {
-    # pixel8pro-stock-0x05.patch pixel8pro-stock-fix-attempt3.patch lindroid-partial-b5 lindroid-common ksu105
+    # pixel8pro-stock.patch pixel8pro-stock-fix-attempt3.patch lindroid-partial-b5 lindroid-common ksu105
     src = pkgs.fetchFromGitHub {
       owner = "forked-by-mio";
       repo = "device_google_shusky-kernels_6.1";
-      rev = "6dbfe5a0b92cd325c1b0d5cc167ea9bea50b4d75";
-      hash = "sha256-DGGkEUaOqs6pgNWdDD7dTyKsfURnwTKl+4JZSnYfz6M=";
+      rev = "0bdc60a45460da66d21a2ad2ce937049757f742d";
+      hash = "sha256-kx07d9kt0F1Kd0qs2gxHzcdS/muWBxfm1YrDuDuraq8=";
     };
     /*
       # pixel8pro-stock.patch pixel8pro-stock-fix-attempt3.patch lindroid-partial-b4 lindroid-common ksu105
