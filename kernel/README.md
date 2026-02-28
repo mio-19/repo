@@ -24,7 +24,7 @@ sudo apt install libssl-dev
 KLEAF_REPO_MANIFEST=aosp_manifest.xml ./build_shusky.sh --lto=full
 ```
 
-problem with 3840hz(0x07) (0x07~0x05) mode: brightness changes between maybe 60hz or 1hz and 120hz refresh rate. need to force highest refresh rate in developer settings if 1~120hz mode is on.
+problem with 3840hz(0x07) (0x07~0x01) mode: brightness changes between maybe 60hz or 1hz and 120hz refresh rate. need to force highest refresh rate in developer settings if 1~120hz mode is on.
 
 ### lindroid extra steps
 
