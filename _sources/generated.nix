@@ -16,7 +16,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-jbeoLFk3Dd9jBYIxzOcT3fHd6Q8Y0ec3GCoBf0oO0JI=";
+      sha256 = "sha256-QXHmdl7kdLspqLuVAcAw50AJ0rYKiLNyaRPqSpTnoWM=";
     };
     date = "2025-03-12";
   };
@@ -30,7 +30,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-G754H3J8ByuSlrJ+ZKF8HiNWd3DwfMsO4Yw5LMOS6CI=";
+      sha256 = "sha256-FNeZqqIZRc9zpbPE7OXYG+UhofIr83S3ycRm/2nwEXc=";
     };
     date = "2026-01-06";
   };
@@ -44,7 +44,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-07k13X2QjGcOoqWJdlZf3iSSYHPNfu1r+vmcHj0AJt8=";
+      sha256 = "sha256-GSBGZEQM7kVS7Xr5A8yjDs822wbqZ3VXpD7+bNDIXUw=";
     };
     date = "2025-09-05";
   };
@@ -58,7 +58,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-A3EnpcKcT3AtXlmlzj1A3Tl+6kCQhKwl6Qe0mXw2+jI=";
+      sha256 = "sha256-mLQ2JitKF8ytdbY9L570g6tuK8Y7G8OUf3F0f5wKyGo=";
     };
     date = "2026-01-24";
   };
@@ -87,11 +87,11 @@
   };
   vendor_gapps16 = {
     pname = "vendor_gapps16";
-    version = "32ba6a5cab7c2435d2553f0746f29ef399aae0e7";
+    version = "4d507e229e95d97d355e9ebaae64eb0d05236f92";
     src = fetchurl {
-      url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/32ba6a5cab7c2435d2553f0746f29ef399aae0e7/vendor_gapps-32ba6a5cab7c2435d2553f0746f29ef399aae0e7.tar.gz";
-      sha256 = "sha256-KlX5mo24nmoYVuRKBEgiUalziJu6GLt9dQELQrKX3oo=";
+      url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/4d507e229e95d97d355e9ebaae64eb0d05236f92/vendor_gapps-4d507e229e95d97d355e9ebaae64eb0d05236f92.tar.gz";
+      sha256 = "sha256-8nj3NbL/h5B2wU5wXvVNr4q6LGUogZaaQU2/hGxP4xk=";
     };
-    date = "2025-08-11";
+    date = "2026-02-08";
   };
 }
