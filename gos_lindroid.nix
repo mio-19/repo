@@ -12,12 +12,12 @@ args@{
     ./16qpr2-Ignore-uevent-s-with-null-name-for-Extcon-WiredAcces.patch
   ];
   source.dirs."vendor/lindroid" = {
+    # lindroid-22.1
     src = pkgs.fetchFromGitHub {
-      # lindroid-22.1
       owner = "Linux-on-droid";
       repo = "vendor_lindroid";
-      rev = "279f7f4dca7fdae757be74febd5bf7630f416737";
-      hash = "sha256-mZowr9x1wKeJC956bl095HtAK/2t7NHMuC0+QXCQRpM=";
+      rev = "768bc42f2e794b7b4ff4e73c0adbb64b8235957d";
+      hash = "sha256-TEDC8g8QsJdQJU9VPtMB9jV8Q6QolAD8RwPkUJTMBFc=";
     };
     # https://t.me/linux_on_droid/18552
     postPatch = ''
