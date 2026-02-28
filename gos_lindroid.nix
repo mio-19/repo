@@ -4,6 +4,16 @@ args@{
   lib,
   ...
 }:
+let
+  sources = (import ./_sources/generated.nix) {
+    inherit (pkgs)
+      fetchurl
+      fetchgit
+      fetchFromGitHub
+      dockerTools
+      ;
+  };
+in
 {
   source.dirs."vendor/adevtool".patches = [ ./adevtool-call-vendor-lindroid.patch ];
   source.dirs."frameworks/native".patches = [ ./inputflinger.patch ];
@@ -13,12 +23,7 @@ args@{
   ];
   source.dirs."vendor/lindroid" = {
     # lindroid-22.1
-    src = pkgs.fetchFromGitHub {
-      owner = "Linux-on-droid";
-      repo = "vendor_lindroid";
-      rev = "768bc42f2e794b7b4ff4e73c0adbb64b8235957d";
-      hash = "sha256-TEDC8g8QsJdQJU9VPtMB9jV8Q6QolAD8RwPkUJTMBFc=";
-    };
+    src = sources.vendor_lindroid.src;
     # https://t.me/linux_on_droid/18552
     postPatch = ''
       sed -i 's|android.hardware.graphics.common-V5|android.hardware.graphics.common-V7|' interfaces/composer/Android.bp
@@ -32,20 +37,8 @@ args@{
       })
     ];
   };
-  source.dirs."external/lxc".src = pkgs.fetchFromGitHub {
-    owner = "Linux-on-droid";
-    repo = "external_lxc";
-    # lindroid-21
-    rev = "4e3a3630fff3dc04e0d4a761309f87f248e40b17";
-    hash = "sha256-lh/YEh1ubAW51GKFZiraQZqbGGkdT6zuSVunDRAaKbE=";
-  };
-  source.dirs."libhybris".src = pkgs.fetchFromGitHub {
-    owner = "Linux-on-droid";
-    repo = "libhybris";
-    # lindroid-21
-    rev = "419f3ff6736e01cb0e579f65a34c85cfa7de578b";
-    hash = "sha256-h9QmJ/uZ2sHMGX3/UcxD+xe/myONacKwoBhmn0RK5sI=";
-  };
+  source.dirs."external/lxc".src = sources.external_lxc.src;
+  source.dirs."libhybris".src = sources.libhybris.src;
   source.dirs."system/sepolicy".patches = with pkgs; [
     (fetchpatch {
       # https://t.me/linux_on_droid/26461

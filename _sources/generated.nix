@@ -34,6 +34,20 @@
     };
     date = "2026-01-06";
   };
+  external_lxc = {
+    pname = "external_lxc";
+    version = "4e3a3630fff3dc04e0d4a761309f87f248e40b17";
+    src = fetchgit {
+      url = "https://github.com/Linux-on-droid/external_lxc.git";
+      rev = "4e3a3630fff3dc04e0d4a761309f87f248e40b17";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-lh/YEh1ubAW51GKFZiraQZqbGGkdT6zuSVunDRAaKbE=";
+    };
+    date = "2024-11-24";
+  };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
     version = "2c276961bbd7e6b8cad97219431182049bfc5e1c";
@@ -61,6 +75,20 @@
       sha256 = "sha256-mLQ2JitKF8ytdbY9L570g6tuK8Y7G8OUf3F0f5wKyGo=";
     };
     date = "2026-01-24";
+  };
+  libhybris = {
+    pname = "libhybris";
+    version = "419f3ff6736e01cb0e579f65a34c85cfa7de578b";
+    src = fetchgit {
+      url = "https://github.com/Linux-on-droid/libhybris.git";
+      rev = "419f3ff6736e01cb0e579f65a34c85cfa7de578b";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-h9QmJ/uZ2sHMGX3/UcxD+xe/myONacKwoBhmn0RK5sI=";
+    };
+    date = "2024-10-14";
   };
   susfs414 = {
     pname = "susfs414";
@@ -93,5 +121,19 @@
       sha256 = "sha256-8nj3NbL/h5B2wU5wXvVNr4q6LGUogZaaQU2/hGxP4xk=";
     };
     date = "2026-02-08";
+  };
+  vendor_lindroid = {
+    pname = "vendor_lindroid";
+    version = "768bc42f2e794b7b4ff4e73c0adbb64b8235957d";
+    src = fetchgit {
+      url = "https://github.com/Linux-on-droid/vendor_lindroid.git";
+      rev = "768bc42f2e794b7b4ff4e73c0adbb64b8235957d";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-TEDC8g8QsJdQJU9VPtMB9jV8Q6QolAD8RwPkUJTMBFc=";
+    };
+    date = "2026-02-27";
   };
 }

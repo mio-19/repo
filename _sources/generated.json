@@ -39,6 +39,26 @@
         },
         "version": "b7798cdd4eb82e201b54dbb9b85662ee44e3b7cc"
     },
+    "external_lxc": {
+        "cargoLock": null,
+        "date": "2024-11-24",
+        "extract": null,
+        "name": "external_lxc",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "4e3a3630fff3dc04e0d4a761309f87f248e40b17",
+            "sha256": "sha256-lh/YEh1ubAW51GKFZiraQZqbGGkdT6zuSVunDRAaKbE=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/Linux-on-droid/external_lxc.git"
+        },
+        "version": "4e3a3630fff3dc04e0d4a761309f87f248e40b17"
+    },
     "gta4xlwifi-evobka-kernel": {
         "cargoLock": null,
         "date": "2025-09-05",
@@ -78,6 +98,26 @@
             "url": "https://github.com/LineageOS/android_kernel_samsung_gta4xl.git"
         },
         "version": "352353d9ac0ad0617e07b624f883352eb29d570c"
+    },
+    "libhybris": {
+        "cargoLock": null,
+        "date": "2024-10-14",
+        "extract": null,
+        "name": "libhybris",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "419f3ff6736e01cb0e579f65a34c85cfa7de578b",
+            "sha256": "sha256-h9QmJ/uZ2sHMGX3/UcxD+xe/myONacKwoBhmn0RK5sI=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/Linux-on-droid/libhybris.git"
+        },
+        "version": "419f3ff6736e01cb0e579f65a34c85cfa7de578b"
     },
     "susfs414": {
         "cargoLock": null,
@@ -128,5 +168,25 @@
             "url": "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/4d507e229e95d97d355e9ebaae64eb0d05236f92/vendor_gapps-4d507e229e95d97d355e9ebaae64eb0d05236f92.tar.gz"
         },
         "version": "4d507e229e95d97d355e9ebaae64eb0d05236f92"
+    },
+    "vendor_lindroid": {
+        "cargoLock": null,
+        "date": "2026-02-27",
+        "extract": null,
+        "name": "vendor_lindroid",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "768bc42f2e794b7b4ff4e73c0adbb64b8235957d",
+            "sha256": "sha256-TEDC8g8QsJdQJU9VPtMB9jV8Q6QolAD8RwPkUJTMBFc=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/Linux-on-droid/vendor_lindroid.git"
+        },
+        "version": "768bc42f2e794b7b4ff4e73c0adbb64b8235957d"
     }
 }
