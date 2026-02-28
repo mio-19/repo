@@ -1,0 +1,62 @@
+From c01c2b35a36e7dc40775666976b06530c365cbf3 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Sat, 28 Feb 2026 18:06:57 +1100
+Subject: [PATCH] sidharth hack
+
+https://t.me/linux_on_droid/28293
+
+https://t.me/linux_on_droid/28294
+---
+ .../platform/pixel/pixel_gpu_dvfs_metrics.c               | 8 ++++++++
+ .../mali_kbase/platform/pixel/pixel_gpu_dvfs_metrics.c    | 8 ++++++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/private/google-modules/gpu/borr_mali_kbase/platform/pixel/pixel_gpu_dvfs_metrics.c b/private/google-modules/gpu/borr_mali_kbase/platform/pixel/pixel_gpu_dvfs_metrics.c
+index bfb022f71..ff84e2283 100644
+--- a/private/google-modules/gpu/borr_mali_kbase/platform/pixel/pixel_gpu_dvfs_metrics.c
++++ b/private/google-modules/gpu/borr_mali_kbase/platform/pixel/pixel_gpu_dvfs_metrics.c
+@@ -277,10 +277,18 @@ int gpu_dvfs_kctx_init(struct kbase_context *kctx)
+ 
+ 	/* Get UID from task_struct */
+ 	pid = find_get_pid(kctx->kprcs->tgid);
++	if (pid) {
+ 	task = get_pid_task(pid, PIDTYPE_TGID);
++	if (task) {
+ 	uid = task->cred->uid;
+ 	put_task_struct(task);
++	} else {
++	uid = current_uid();
++	}
+ 	put_pid(pid);
++	} else {
++	uid = current_uid();
++	}
+ 	uid_hash = gpu_dvfs_hash_uid_stats(__kuid_val(uid));
+ 
+ 	mutex_lock(&kbdev->kctx_list_lock);
+diff --git a/private/google-modules/gpu/mali_kbase/platform/pixel/pixel_gpu_dvfs_metrics.c b/private/google-modules/gpu/mali_kbase/platform/pixel/pixel_gpu_dvfs_metrics.c
+index bfb022f71..ff84e2283 100644
+--- a/private/google-modules/gpu/mali_kbase/platform/pixel/pixel_gpu_dvfs_metrics.c
++++ b/private/google-modules/gpu/mali_kbase/platform/pixel/pixel_gpu_dvfs_metrics.c
+@@ -277,10 +277,18 @@ int gpu_dvfs_kctx_init(struct kbase_context *kctx)
+ 
+ 	/* Get UID from task_struct */
+ 	pid = find_get_pid(kctx->kprcs->tgid);
++	if (pid) {
+ 	task = get_pid_task(pid, PIDTYPE_TGID);
++	if (task) {
+ 	uid = task->cred->uid;
+ 	put_task_struct(task);
++	} else {
++	uid = current_uid();
++	}
+ 	put_pid(pid);
++	} else {
++	uid = current_uid();
++	}
+ 	uid_hash = gpu_dvfs_hash_uid_stats(__kuid_val(uid));
+ 
+ 	mutex_lock(&kbdev->kctx_list_lock);
+-- 
+2.53.0
+

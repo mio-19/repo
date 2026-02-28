@@ -44,7 +44,7 @@ for debug `--sandbox_debug --verbose_failures`
 
 TODO: consider CONFIG_POSIX_MQUEUE
 
-lindroid-partial-b5 - private/devices/google/shusky/shusky_defconfig is not the right one
+lindroid - private/devices/google/shusky/shusky_defconfig is not the right one
 
 ```zsh
 sed -i '/^# CONFIG_PID_NS is not set$/d' aosp/arch/arm64/configs/gki_defconfig
@@ -57,11 +57,6 @@ sed -i '/^CONFIG_UAPI_HEADER_TEST=y$/a CONFIG_SYSVIPC=y' aosp/arch/arm64/configs
 sed -i '/^  __fsnotify_parent$/a\  from_kuid' aosp/android/abi_gki_aarch64_pixel
 sed -i '/^  from_kuid$/a\  from_kuid_munged' aosp/android/abi_gki_aarch64_pixel
 sed -i '/^  mac_pton$/a\  make_kuid' aosp/android/abi_gki_aarch64_pixel
-```
-
-lindroid-common
-
-```zsh
 
 git clone https://github.com/Linux-on-droid/lindroid-drm-loopback.git aosp/drivers/lindroid-drm
 echo 'obj-y += lindroid-drm/' >> aosp/drivers/Makefile
@@ -72,17 +67,6 @@ for patch in 0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch  3dcc884c689681dda2d
 patch -p1 --no-backup-if-mismatch < ~/Documents/repo/kernel/$patch
 done
 cd ..
-```
-
-### ksun
-
-```zsh
-cd aosp
-# https://kernelsu-next.github.io/webpage/pages/installation.html
-curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -
-cd ..
-sed -i 's|^KSU_VERSION_FALLBACK := 1$|KSU_VERSION_FALLBACK := 32967|' aosp/KernelSU-Next/kernel/Kbuild
-sed -i 's|^KSU_VERSION_TAG_FALLBACK := v0.0.1$|KSU_VERSION_TAG_FALLBACK := v3.0.1|' aosp/KernelSU-Next/kernel/Kbuild
 ```
 
 ### ksu105
@@ -100,4 +84,15 @@ srctree := ${AOSP_BASE}
 src := KernelSU/kernel
 EOF
 cd ../../..
+```
+
+### ksun - doesn't work
+
+```zsh
+cd aosp
+# https://kernelsu-next.github.io/webpage/pages/installation.html
+curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -
+cd ..
+sed -i 's|^KSU_VERSION_FALLBACK := 1$|KSU_VERSION_FALLBACK := 32967|' aosp/KernelSU-Next/kernel/Kbuild
+sed -i 's|^KSU_VERSION_TAG_FALLBACK := v0.0.1$|KSU_VERSION_TAG_FALLBACK := v3.0.1|' aosp/KernelSU-Next/kernel/Kbuild
 ```

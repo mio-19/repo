@@ -13,22 +13,13 @@ args@{
   device = "husky";
   # check in nix repl (import ./.).gosSign.husky.config.source.dirs."device/google/shusky-kernels/6.1"
   source.dirs."device/google/shusky-kernels/6.1" = lib.mkForce {
-    # pixel8pro-stock.patch pixel8pro-stock-fix-attempt3.patch lindroid-partial-b5 lindroid-common ksu105 0001-daria.patch
+    # pixel8pro-stock.patch pixel8pro-stock-fix-attempt3.patch lindroid ksu105 0001-daria.patch sidharth-hack.patch
     src = pkgs.fetchFromGitHub {
       owner = "forked-by-mio";
       repo = "device_google_shusky-kernels_6.1";
-      rev = "2230451c326e2e5d42a2fec174c627af315037f2";
-      hash = "sha256-ey2SNtQkx43esaZSbVfiq0ZuAyZs+O5BThlU+5QGq60=";
+      rev = "a076e8fb7804fcff1cb8efefe50b4aa2d8c4610c";
+      hash = "sha256-Bkoe2sgLA5MXO7ZxkqKy0C6vYnIYGL7D7qWlsKT6ZPI=";
     };
-    /*
-      # pixel8pro-stock.patch pixel8pro-stock-fix-attempt3.patch lindroid-partial-b4 lindroid-common ksu105
-      src = pkgs.fetchFromGitHub {
-        owner = "forked-by-mio";
-        repo = "device_google_shusky-kernels_6.1";
-        rev = "0f62c1d9450887936edc9e9be27fc8fcf3b59a5f";
-        hash = "sha256-KqzOxnHAEvEEPWSxEG1OMSe03Wj2MSIKhF1NEdTlOlU=";
-      };
-    */
   };
   signing.avb.size = 4096;
   stateVersion = "2";
