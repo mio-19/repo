@@ -5,7 +5,7 @@ args@{
   ...
 }:
 let
-  huskyKernel = import ./grapheneos_husky_kernel.nix { inherit pkgs; };
+  huskyKernel = pkgs.callPackage ./grapheneos_husky_kernel.nix { };
 in
 {
   imports = [
