@@ -4,6 +4,16 @@ args@{
   lib,
   ...
 }:
+let
+  sources = (import ./_sources/generated.nix) {
+    inherit (pkgs)
+      fetchurl
+      fetchgit
+      fetchFromGitHub
+      dockerTools
+      ;
+  };
+in
 {
   buildDateTime = 1772004451;
   flavor = "grapheneos";
@@ -104,20 +114,10 @@ args@{
     })
   ];
   source.dirs."packages/apps/ExactCalculator" = lib.mkForce {
-    src = pkgs.fetchFromGitHub {
-      owner = "LineageOS";
-      repo = "android_packages_apps_ExactCalculator";
-      rev = "f80bf9cd59dff2a7f628157482cdb54a9509613a";
-      hash = "sha256-3Y+3g4IcURRirzdvGpG9o78wInTqTAd1zHGKK2sgUv4=";
-    };
+    src = sources.lineage_exactcalculator.src;
   };
   source.dirs."packages/apps/DeskClock" = lib.mkForce {
-    src = pkgs.fetchFromGitHub {
-      owner = "LineageOS";
-      repo = "android_packages_apps_DeskClock";
-      rev = "c482027bbad71cd48a8caf73b776a3d6d310206b";
-      hash = "sha256-Fh0zfXctO1Rj/BaE+jI4bvlYcrEtuXEkKmhHYaTwfl8=";
-    };
+    src = sources.lineage_deskclock.src;
   };
   # cannot see Gallery from home screen with this:
   /*
@@ -131,12 +131,7 @@ args@{
     };
   */
   source.dirs."packages/inputmethods/LatinIME" = lib.mkForce {
-    src = pkgs.fetchFromGitHub {
-      owner = "LineageOS";
-      repo = "android_packages_inputmethods_LatinIME";
-      rev = "7ef9404d0e9122e11329ac7f49536c0e2f6ca6fc";
-      hash = "sha256-JS/mANnyqel98o4F5/ECa6555lEGr8Y6+OOr5n2xB/s=";
-    };
+    src = sources.lineage_latinime.src;
   };
   source.dirs."external/Info" = lib.mkForce {
     # 6cd1e4439d1cd8a3dcaa588b666c7fee7aa79792 & https://github.com/GrapheneOS/Info/pull/56 merged

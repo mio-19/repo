@@ -50,3 +50,18 @@ git.fetchSubmodules = true
 [lindroid_drm_loopback]
 src.git = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git"
 fetch.git = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git"
+
+[lineage_exactcalculator]
+src.git = "https://github.com/LineageOS/android_packages_apps_ExactCalculator.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_packages_apps_ExactCalculator.git"
+
+[lineage_deskclock]
+src.git = "https://github.com/LineageOS/android_packages_apps_DeskClock.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_packages_apps_DeskClock.git"
+
+[lineage_latinime]
+src.git = "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git"
