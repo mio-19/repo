@@ -65,3 +65,39 @@ fetch.git = "https://github.com/LineageOS/android_packages_apps_DeskClock.git"
 src.git = "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git"
 src.branch = "lineage-23.2"
 fetch.git = "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git"
+
+# samsung-sm8550-cola2261 sources for dm3q, tracking lineage-23.2
+[cola2261_device_dm3q]
+src.git = "https://github.com/samsung-sm8550-cola2261/android_device_samsung_dm3q.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/samsung-sm8550-cola2261/android_device_samsung_dm3q.git"
+
+[cola2261_device_sm8550_common]
+src.git = "https://github.com/samsung-sm8550-cola2261/android_device_samsung_sm8550-common.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/samsung-sm8550-cola2261/android_device_samsung_sm8550-common.git"
+
+[cola2261_vendor_dm3q]
+src.git = "https://github.com/samsung-sm8550-cola2261/proprietary_vendor_samsung_dm3q.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/samsung-sm8550-cola2261/proprietary_vendor_samsung_dm3q.git"
+
+[cola2261_vendor_sm8550_common]
+src.git = "https://github.com/samsung-sm8550-cola2261/proprietary_vendor_samsung_sm8550-common.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/samsung-sm8550-cola2261/proprietary_vendor_samsung_sm8550-common.git"
+
+[cola2261_kernel_sm8550]
+src.git = "https://github.com/samsung-sm8550-cola2261/android_kernel_samsung_sm8550.git"
+src.branch = "lineage"
+fetch.git = "https://github.com/samsung-sm8550-cola2261/android_kernel_samsung_sm8550.git"
+
+[cola2261_kernel_sm8550_modules]
+src.git = "https://github.com/samsung-sm8550-cola2261/android_kernel_samsung_sm8550-modules.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/samsung-sm8550-cola2261/android_kernel_samsung_sm8550-modules.git"
+
+[cola2261_hardware_samsung]
+src.git = "https://github.com/samsung-sm8550-cola2261/android_hardware_samsung.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/samsung-sm8550-cola2261/android_hardware_samsung.git"

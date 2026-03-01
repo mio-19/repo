@@ -86,7 +86,7 @@
               enchilada = common ./enchilada.nix;
               nx_tab = common ./nx_tab.nix;
               akita = common ./akita.nix;
-              dm3q = common ./dm3q.nix;
+              "dm3q-kenzie" = common ./dm3q-kenzie.nix;
               dm3q_cola2261 = common ./dm3q-cola2261.nix;
             };
         in
