@@ -10,7 +10,7 @@ nix build -L --max-jobs 4 .#los.gta4xlwifi.ota -o gta4xlwifi.zip
 nix build -L --max-jobs 4 .#los.enchilada.ota -o enchilada.zip
 nix build -L --max-jobs 4 .#los.enchilada.img -o enchilada-img.zip
 
-nix build -L --max-jobs 4 .#los.dm3q.ota -o dm3q.zip
+nix build -L --max-jobs 4 .#los.dm3q_cola2261.ota -o dm3q.zip
 
 nix build -L --max-jobs 4 .#gos.akita.ota
 
