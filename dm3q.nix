@@ -48,5 +48,11 @@ args@{
       rev = "1c76cec4fe06cbd5b43ca9543b2a1181fa06f4a5";
       sha256 = "04ag4rhfgcvq8vlq6gk38d332v6nwf0fdbjs6yay4waiaya2wqc0";
     };
+    # Needed for vendor.samsung.hardware.radio.network-V1-ndk
+    "hardware/samsung".src = pkgs.fetchgit {
+      url = "https://github.com/LineageOS/android_hardware_samsung.git";
+      rev = "8336445768bbd8437111ba5c1290290fa707e20e";
+      sha256 = "196cch7wbqdsynblqfim0vrb96zdyw0fna7c72nh0i4qgyw6843i";
+    };
   };
 }
