@@ -28,6 +28,13 @@ problem with 3840hz(0x07) (0x07~0x01) mode: brightness changes between maybe 60h
 
 ### lindroid extra steps
 
+NOTE: `c360d6f7b22ab710a27193f62669f5a257cd259d.patch` does not apply on current tree.
+Do NOT apply `c360d6f7b22ab710a27193f62669f5a257cd259d.patch`.
+Only apply (see later commands for how to apply)
+- `0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch`
+- `3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch`
+- `a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch`
+
 patch c360d6f7b22ab710a27193f62669f5a257cd259d.patch on aosp. from <https://gitlab.com/ubports/porting/reference-device-ports/halium12/volla-x23/kernel-volla-mt6789/-/commit/c360d6f7b22ab710a27193f62669f5a257cd259d> <https://t.me/linux_on_droid/7889>
 
 them:

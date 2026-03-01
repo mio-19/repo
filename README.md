@@ -41,6 +41,9 @@ build kernels:
 
 ```zsh
 nix build .#gta4xlwifi -o gta4xlwifi
+
+# GrapheneOS husky (Pixel 8 Pro) kernel dist files
+nix build .#grapheneos-husky-kernel -o husky-kernel-dist
 ```
 
 ## update
