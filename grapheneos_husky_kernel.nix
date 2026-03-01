@@ -50,7 +50,8 @@ let
     rev = "v1.0.5";
     hash = "sha256-Uu8ynkwjGrZ+FiIwYN/Fh+D2IzLbTcPBBeWgsDreXFQ=";
     leaveDotGit = true;
-    # populate values that require us to use git. By doing this in postFetch we
+    deepClone = true;
+    # populate values that require us to use git and deepClone. By doing this in postFetch we
     # can delete .git afterwards and maintain better reproducibility of the src.
     postFetch = ''
       cd "$out"
