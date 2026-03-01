@@ -5,6 +5,7 @@ args@{
   ...
 }:
 let
+  withIMS = args.withIMS or true;
   sources = (import ./_sources/generated.nix) {
     inherit (pkgs)
       fetchurl
@@ -35,5 +36,38 @@ in
     "kernel/samsung/sm8550".src = sources.cola2261_kernel_sm8550.src;
     "kernel/samsung/sm8550-modules".src = sources.cola2261_kernel_sm8550_modules.src;
     "hardware/samsung".src = sources.cola2261_hardware_samsung.src;
+  };
+
+  # FLOSS IMS integration:
+  # https://github.com/phhusson/ims/issues/22
+  resources."frameworks/base/core/res" = lib.mkIf withIMS {
+    config_wlan_data_service_package = "com.google.android.iwlan";
+    config_wlan_network_service_package = "com.google.android.iwlan";
+    config_qualified_networks_service_package = "com.android.telephony.qns";
+  };
+  resources."packages/services/Telephony" = lib.mkIf withIMS {
+    config_ims_mmtel_package = "me.phh.ims";
+  };
+
+  product.additionalProductPackages = lib.mkIf withIMS [
+    "Iwlan"
+    "QualifiedNetworksService"
+  ];
+
+  product.extraConfig = lib.mkIf withIMS ''
+    PRODUCT_PRODUCT_PROPERTIES += persist.dbg.volte_avail_ovr=1
+    PRODUCT_PRODUCT_PROPERTIES += persist.dbg.wfc_avail_ovr=1
+    PRODUCT_PRODUCT_PROPERTIES += persist.dbg.allow_ims_off=1
+  '';
+
+  apps.prebuilt.FlossIMS = lib.mkIf withIMS {
+    apk = pkgs.fetchurl {
+      url = "https://treble.phh.me/floss-ims-16.apk";
+      sha256 = "1wjld0b8miavcbyxh2gn2ck690dxw8qrycskdrgmdd8w8am6qiam";
+    };
+    packageName = "me.phh.ims";
+    certificate = "platform";
+    privileged = true;
+    partition = "system";
   };
 }
