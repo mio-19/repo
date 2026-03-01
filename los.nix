@@ -6,7 +6,6 @@ args@{
   ...
 }:
 let
-  sources0 = import ./sources.nix args;
   sources = (import ./_sources/generated.nix) {
     inherit (pkgs)
       fetchurl
@@ -51,7 +50,6 @@ let
     };
   };
 in
-with sources0;
 {
   options = {
     manufactor = lib.mkOption {
@@ -204,34 +202,14 @@ with sources0;
     }
   );
   config.source.dirs."vendor/lindroid" = lib.mkIf config.lindroid {
-    src = pkgs.fetchgit {
-      # lindroid-22.1
-      #url = "https://github.com/Linux-on-droid/vendor_lindroid.git";
-      url = "https://github.com/mio-19/vendor_lindroid.git";
-      rev = "985f43889d79cedf5a2bbad1e8e9653c8398ea56";
-      sha256 = "0dvv1b4qlal21bxr2md0xxp7sb323myd1bpalba50cz45893g8p6";
-    };
+    src = sources.vendor_lindroid.src;
     # https://t.me/linux_on_droid/18552
     postPatch = ''
       sed -i 's|android.hardware.graphics.common-V5|android.hardware.graphics.common-V6|' interfaces/composer/Android.bp
     '';
   };
-  config.source.dirs."external/lxc".src = lib.mkIf config.lindroid (
-    pkgs.fetchgit {
-      url = "https://github.com/Linux-on-droid/external_lxc.git";
-      # lindroid-21
-      rev = "4e3a3630fff3dc04e0d4a761309f87f248e40b17";
-      sha256 = "1c993880v9sv97paqkqxd4c9p6j1v8m6d1b2sjwhav3f3l9dh7wn";
-    }
-  );
-  config.source.dirs."libhybris".src = lib.mkIf config.lindroid (
-    pkgs.fetchgit {
-      url = "https://github.com/Linux-on-droid/libhybris.git";
-      # lindroid-21
-      rev = "419f3ff6736e01cb0e579f65a34c85cfa7de578b";
-      sha256 = "1hp69929yrhql2qc4scd4fdvy5zv8g653zvx376c3nlrzckjdm47";
-    }
-  );
+  config.source.dirs."external/lxc".src = lib.mkIf config.lindroid sources.external_lxc.src;
+  config.source.dirs."libhybris".src = lib.mkIf config.lindroid sources.libhybris.src;
   config.source.dirs."kernel/${config.kernel-name}" =
     let
       kernelsu = ksu-variants."${config.ksu-variant}".src;
@@ -252,7 +230,7 @@ with sources0;
       postPatch = ''
         ${lib.optionalString (
           config.lindroid && config.lindroid-drm
-        ) "cp -r ${lindroid-drm} drivers/lindroid-drm"}
+        ) "cp -r ${sources.lindroid_drm_loopback.src} drivers/lindroid-drm"}
         ${lib.optionalString config.ksu ''
           cp -r ${kernelsu}/kernel drivers/kernelsu
           chmod -R +w drivers/kernelsu
