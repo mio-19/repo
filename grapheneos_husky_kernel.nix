@@ -1,3 +1,4 @@
+# # pixel8pro-stock.patch pixel8pro-stock-fix-attempt3.patch lindroid ksu105 0001-daria.patch sidharth-hack.patch
 { pkgs }:
 let
   src = pkgs.fetchgit {
@@ -38,16 +39,16 @@ let
   };
 
   lindroidDrm = pkgs.fetchgit {
-    url = "https://github.com/mio-19/lindroid-drm-loopback.git";
+    url = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git";
     rev = "bfa24f48033660e1f470842582e4b241d9622b4d";
-    sha256 = "1h9rnd939g5sff127p4mkjks7ddxdzwsr24mzq9bzwk6wakqkbrg";
+    hash = "sha256-L6+Jp+Jm8r8S/pWIrPlvvbWjp5yV3COCc7q8NFKzOcE=";
   };
 
-  kernelSU = pkgs.fetchFromGitHub {
-    owner = "tiann";
-    repo = "KernelSU";
-    rev = "v1.0.5";
-    sha256 = "045mv0gs2f2l399f1sk6p3mkwq1kbjyglp0mgwymzv0ip2s0742i";
+  kernelSU = pkgs.fetchgit {
+    url = "https://github.com/tiann/KernelSU.git";
+    rev = "61c0f7f849aaca299fb42516bc8fc516cefe0d59"; # v1.0.5
+    sha256 = "0pacv69h270c4fypj6kbnc765p4l9r2951gzry0pi04y18sbq0pw";
+    leaveDotGit = true;
   };
 in
 pkgs.stdenvNoCC.mkDerivation {
