@@ -48,6 +48,20 @@
     };
     date = "2024-11-24";
   };
+  grapheneos_kernel_pixel = {
+    pname = "grapheneos_kernel_pixel";
+    version = "aff4e27a786c017a00179036714ae5309681c784";
+    src = fetchgit {
+      url = "https://gitlab.com/grapheneos/kernel_pixel.git";
+      rev = "aff4e27a786c017a00179036714ae5309681c784";
+      fetchSubmodules = true;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-6E/DWOGXAfNfl2fr7JSszlFOSAetyTD11GtMd15b1II=";
+    };
+    date = "2026-02-28";
+  };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
     version = "2c276961bbd7e6b8cad97219431182049bfc5e1c";
@@ -89,6 +103,20 @@
       sha256 = "sha256-h9QmJ/uZ2sHMGX3/UcxD+xe/myONacKwoBhmn0RK5sI=";
     };
     date = "2024-10-14";
+  };
+  lindroid_drm_loopback = {
+    pname = "lindroid_drm_loopback";
+    version = "9160b7c216bad31ef8d141a7d09f41d072999e8e";
+    src = fetchgit {
+      url = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git";
+      rev = "9160b7c216bad31ef8d141a7d09f41d072999e8e";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-l3ReVmQYFVceLx587qf3SmFJAG2muwpliaWzoqU8qzM=";
+    };
+    date = "2026-02-26";
   };
   susfs414 = {
     pname = "susfs414";

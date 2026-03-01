@@ -40,3 +40,13 @@ fetch.git = "https://github.com/Linux-on-droid/external_lxc.git"
 [libhybris]
 src.git = "https://github.com/Linux-on-droid/libhybris.git"
 fetch.git = "https://github.com/Linux-on-droid/libhybris.git"
+
+[grapheneos_kernel_pixel]
+src.git = "https://gitlab.com/grapheneos/kernel_pixel.git"
+src.branch = "16-qpr2"
+fetch.git = "https://gitlab.com/grapheneos/kernel_pixel.git"
+git.fetchSubmodules = true
+
+[lindroid_drm_loopback]
+src.git = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git"
+fetch.git = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git"

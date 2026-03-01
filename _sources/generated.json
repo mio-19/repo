@@ -59,6 +59,26 @@
         },
         "version": "4e3a3630fff3dc04e0d4a761309f87f248e40b17"
     },
+    "grapheneos_kernel_pixel": {
+        "cargoLock": null,
+        "date": "2026-02-28",
+        "extract": null,
+        "name": "grapheneos_kernel_pixel",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": true,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "aff4e27a786c017a00179036714ae5309681c784",
+            "sha256": "sha256-6E/DWOGXAfNfl2fr7JSszlFOSAetyTD11GtMd15b1II=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://gitlab.com/grapheneos/kernel_pixel.git"
+        },
+        "version": "aff4e27a786c017a00179036714ae5309681c784"
+    },
     "gta4xlwifi-evobka-kernel": {
         "cargoLock": null,
         "date": "2025-09-05",
@@ -118,6 +138,26 @@
             "url": "https://github.com/Linux-on-droid/libhybris.git"
         },
         "version": "419f3ff6736e01cb0e579f65a34c85cfa7de578b"
+    },
+    "lindroid_drm_loopback": {
+        "cargoLock": null,
+        "date": "2026-02-26",
+        "extract": null,
+        "name": "lindroid_drm_loopback",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "9160b7c216bad31ef8d141a7d09f41d072999e8e",
+            "sha256": "sha256-l3ReVmQYFVceLx587qf3SmFJAG2muwpliaWzoqU8qzM=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/Linux-on-droid/lindroid-drm-loopback.git"
+        },
+        "version": "9160b7c216bad31ef8d141a7d09f41d072999e8e"
     },
     "susfs414": {
         "cargoLock": null,

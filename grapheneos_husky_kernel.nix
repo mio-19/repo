@@ -1,12 +1,15 @@
 # # pixel8pro-stock.patch pixel8pro-stock-fix-attempt3.patch lindroid ksu105 0001-daria.patch sidharth-hack.patch
 { pkgs }:
 let
-  src = pkgs.fetchgit {
-    url = "https://gitlab.com/grapheneos/kernel_pixel.git";
-    rev = "aff4e27a786c017a00179036714ae5309681c784"; # 16-qpr2
-    fetchSubmodules = true;
-    hash = "sha256-6E/DWOGXAfNfl2fr7JSszlFOSAetyTD11GtMd15b1II=";
+  sources = (import ./_sources/generated.nix) {
+    inherit (pkgs)
+      fetchurl
+      fetchgit
+      fetchFromGitHub
+      dockerTools
+      ;
   };
+  src = sources.grapheneos_kernel_pixel.src;
 
   kernelBuildEnv = pkgs.buildFHSEnv {
     name = "grapheneos-kernel-build-env";
@@ -38,17 +41,30 @@ let
     runScript = "${pkgs.bashInteractive}/bin/bash";
   };
 
-  lindroidDrm = pkgs.fetchgit {
-    url = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git";
-    rev = "bfa24f48033660e1f470842582e4b241d9622b4d";
-    hash = "sha256-L6+Jp+Jm8r8S/pWIrPlvvbWjp5yV3COCc7q8NFKzOcE=";
-  };
+  lindroidDrm = sources.lindroid_drm_loopback.src;
 
   kernelSU = pkgs.fetchgit {
     url = "https://github.com/tiann/KernelSU.git";
-    rev = "61c0f7f849aaca299fb42516bc8fc516cefe0d59"; # v1.0.5
-    sha256 = "0pacv69h270c4fypj6kbnc765p4l9r2951gzry0pi04y18sbq0pw";
+    rev = "v1.0.5";
+    hash = "sha256-Uu8ynkwjGrZ+FiIwYN/Fh+D2IzLbTcPBBeWgsDreXFQ=";
     leaveDotGit = true;
+    postFetch = ''
+      cd "$out"
+
+      git rev-parse HEAD > "$out/COMMIT"
+      date -u -d "@$(git log -1 --pretty=%ct)" "+%Y-%m-%dT%H:%M:%SZ" > "$out/SOURCE_DATE_EPOCH"
+
+      KSU_GIT_VERSION="$(git rev-list --count HEAD)"
+      KSU_VERSION="$((10000 + KSU_GIT_VERSION + 200))"
+      echo "$KSU_VERSION" > "$out/KSU_VERSION"
+
+      substituteInPlace "$out/kernel/Makefile" \
+        --replace-fail \
+        "ccflags-y += -DKSU_VERSION=16" \
+        "ccflags-y += -DKSU_VERSION=$KSU_VERSION"
+
+      find "$out" -name .git -print0 | xargs -0 rm -rf
+    '';
   };
 in
 pkgs.stdenvNoCC.mkDerivation {
