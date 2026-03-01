@@ -32,6 +32,7 @@ let
         gnused
         hostname
         openssl
+        openssl.dev
         patch
         perl
         python3
@@ -78,6 +79,7 @@ pkgs.stdenvNoCC.mkDerivation {
   dontFixup = true;
 
   buildPhase = ''
+    set -euo pipefail
     runHook preBuild
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME"
