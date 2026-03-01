@@ -9,7 +9,8 @@ let
       dockerTools
       ;
   };
-  src = sources.grapheneos_kernel_pixel.src;
+  kernelPixel = sources.grapheneos_kernel_pixel;
+  src = kernelPixel.src;
 
   kernelBuildEnv = pkgs.buildFHSEnv {
     name = "grapheneos-kernel-build-env";
@@ -48,6 +49,8 @@ let
     rev = "v1.0.5";
     hash = "sha256-Uu8ynkwjGrZ+FiIwYN/Fh+D2IzLbTcPBBeWgsDreXFQ=";
     leaveDotGit = true;
+    # populate values that require us to use git. By doing this in postFetch we
+    # can delete .git afterwards and maintain better reproducibility of the src.
     postFetch = ''
       cd "$out"
 
@@ -69,7 +72,7 @@ let
 in
 pkgs.stdenvNoCC.mkDerivation {
   pname = "grapheneos-husky-kernel";
-  version = "16-qpr2-aff4e27a";
+  version = "${kernelPixel.date}-${builtins.substring 0 8 kernelPixel.version}";
   inherit src;
   dontConfigure = true;
   dontFixup = true;
