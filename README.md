@@ -24,6 +24,8 @@ nix build -L --max-jobs 4 .#gosSign.akita.releaseScript --impure -o release && .
 nix build -L --max-jobs 4 .#gosSign.husky.releaseScript --impure -o release && ./release ./keys-husky
 ```
 
+It is recommended to have OEM unlocking to be on in developer options when flashing new versions.
+
 generate keys/updating keys:
 
 ```zsh
