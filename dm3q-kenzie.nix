@@ -5,6 +5,7 @@ args@{
   ...
 }:
 {
+  variant = "userdebug";
   # Source set from kenzie (XDA):
   # https://xdaforums.com/t/rom-16-unofficial-aosp-evolutionx-for-s23-ultra-dm3q-2025-10-27.4765415/
   buildDateTime = 1772004451;
