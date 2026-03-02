@@ -16,6 +16,7 @@ let
   };
 in
 {
+  variant = "userdebug";
   buildDateTime = 1772004451;
   imports = [ ./los.nix ];
   manufactor = "samsung";
