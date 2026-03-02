@@ -26,8 +26,8 @@ in
   flavorVersion = "23.2";
   lindroid = false;
   ksu = false;
-  gapps = false;
-  microg.enable = true;
+  gapps = true;
+  microg.enable = false;
 
   source.dirs = {
     "device/samsung/dm3q".src = sources.cola2261_device_dm3q.src;
