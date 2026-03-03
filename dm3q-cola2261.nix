@@ -38,15 +38,15 @@ in
     "kernel/samsung/sm8550-modules" = {
       src = sources.cola2261_kernel_sm8550_modules.src;
       postPatch = ''
-        camera_makefile=qcom/opensource/camera-kernel/Makefile
-        sed -i '/^cam_generated_h:/,/^$/c\
-cam_generated_h:\
-\t@:' "$camera_makefile"
-        cat > qcom/opensource/camera-kernel/cam_generated_h <<'EOF'
-#define CAMERA_COMPILE_TIME "robotnix"
-#define CAMERA_COMPILE_BY "nix"
-#define CAMERA_COMPILE_HOST "nix"
-EOF
+                camera_makefile=qcom/opensource/camera-kernel/Makefile
+                sed -i '/^cam_generated_h:/,/^$/c\
+        cam_generated_h:\
+        \t@:' "$camera_makefile"
+                cat > qcom/opensource/camera-kernel/cam_generated_h <<'EOF'
+        #define CAMERA_COMPILE_TIME "robotnix"
+        #define CAMERA_COMPILE_BY "nix"
+        #define CAMERA_COMPILE_HOST "nix"
+        EOF
       '';
     };
     "hardware/samsung".src = sources.cola2261_hardware_samsung.src;

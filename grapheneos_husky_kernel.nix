@@ -1,8 +1,37 @@
 # # pixel8pro-stock.patch pixel8pro-stock-fix-attempt3.patch lindroid ksu105 0001-daria.patch sidharth-hack.patch
-{ pkgs }:
+{
+  bash,
+  bc,
+  bison,
+  cpio,
+  file,
+  findutils,
+  flex,
+  gawk,
+  glibc,
+  stdenv,
+  gnugrep,
+  gnumake,
+  gnused,
+  hostname,
+  openssl,
+  patch,
+  perl,
+  python3,
+  rsync,
+  which,
+  zlib,
+  fetchurl,
+  fetchgit,
+  fetchFromGitHub,
+  dockerTools,
+  buildFHSEnv,
+  bashInteractive,
+  stdenvNoCC,
+}:
 let
   sources = (import ./_sources/generated.nix) {
-    inherit (pkgs)
+    inherit
       fetchurl
       fetchgit
       fetchFromGitHub
@@ -12,7 +41,7 @@ let
   kernelPixel = sources.grapheneos_kernel_pixel;
   src = kernelPixel.src;
 
-  kernelBuildEnv = pkgs.buildFHSEnv {
+  kernelBuildEnv = buildFHSEnv {
     name = "grapheneos-kernel-build-env";
     targetPkgs =
       p: with p; [
@@ -40,12 +69,12 @@ let
         which
         zlib
       ];
-    runScript = "${pkgs.bashInteractive}/bin/bash";
+    runScript = "${bashInteractive}/bin/bash";
   };
 
   lindroidDrm = sources.lindroid_drm_loopback.src;
 
-  kernelSU = pkgs.fetchgit {
+  kernelSU = fetchgit {
     url = "https://github.com/tiann/KernelSU.git";
     rev = "v1.0.5";
     hash = "sha256-Te9/UkFuOhCKel3/tEvntKLJZmzfLmejy54PI4363Xc=";
@@ -74,7 +103,7 @@ let
     '';
   };
 in
-pkgs.stdenvNoCC.mkDerivation {
+stdenvNoCC.mkDerivation {
   pname = "grapheneos-husky-kernel";
   version = "${kernelPixel.date}-${builtins.substring 0 8 kernelPixel.version}";
   inherit src;
