@@ -54,7 +54,7 @@ args@{
     # Needed for vendor.samsung.hardware.radio.network-V1-ndk
     "hardware/samsung".src = pkgs.fetchgit {
       url = "https://github.com/LineageOS/android_hardware_samsung.git";
-      rev = "8336445768bbd8437111ba5c1290290fa707e20e";
+      rev = "8336445768bbd8437111ba5c1290290fa707e20e"; # pin
       sha256 = "196cch7wbqdsynblqfim0vrb96zdyw0fna7c72nh0i4qgyw6843i";
     };
   };
