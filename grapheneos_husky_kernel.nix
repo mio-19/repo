@@ -1,6 +1,7 @@
 # # pixel8pro-stock.patch pixel8pro-stock-fix-attempt3.patch lindroid ksu105 0001-daria.patch sidharth-hack.patch
 {
   bash,
+  lib,
   bc,
   bison,
   cpio,
@@ -28,6 +29,7 @@
   buildFHSEnv,
   bashInteractive,
   stdenvNoCC,
+  enableKSU ? false,
 }:
 let
   sources = (import ./_sources/generated.nix) {
@@ -151,20 +153,21 @@ stdenvNoCC.mkDerivation {
         apply_patch ${./kernel/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch}
       )
 
-      # ksu105 (KernelSU v1.0.5)
-      rm -rf aosp/KernelSU
-      cp -r ${kernelSU} aosp/KernelSU
-      chmod -R u+w aosp/KernelSU
-      ln -sfn ../KernelSU/kernel aosp/drivers/kernelsu
-      printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> aosp/drivers/Makefile
-      sed -i "/endmenu/i\\source \"drivers/kernelsu/Kconfig\"" aosp/drivers/Kconfig
+      ${lib.optionalString enableKSU ''
+        # ksu105 (KernelSU v1.0.5)
+        rm -rf aosp/KernelSU
+        cp -r ${kernelSU} aosp/KernelSU
+        chmod -R u+w aosp/KernelSU
+        ln -sfn ../KernelSU/kernel aosp/drivers/kernelsu
+        printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> aosp/drivers/Makefile
+        sed -i "/endmenu/i\\source \"drivers/kernelsu/Kconfig\"" aosp/drivers/Kconfig
 
-      cp aosp/KernelSU/kernel/Makefile aosp/KernelSU/kernel/Makefile.orig
-      {
-        echo "srctree := $(pwd)/aosp"
-        echo "src := KernelSU/kernel"
-        cat aosp/KernelSU/kernel/Makefile.orig
-      } > aosp/KernelSU/kernel/Makefile
+        cp aosp/KernelSU/kernel/Makefile aosp/KernelSU/kernel/Makefile.orig
+        {
+          echo "srctree := $(pwd)/aosp"
+          echo "src := KernelSU/kernel"
+          cat aosp/KernelSU/kernel/Makefile.orig
+        } > aosp/KernelSU/kernel/Makefile''}
 
       apply_patch ${./kernel/0001-daria.patch}
       apply_patch ${./kernel/sidharth-hack.patch}
