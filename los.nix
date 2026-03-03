@@ -132,6 +132,7 @@ in
       description = "Architecture";
     };
   };
+  config.buildDateTime = 1772004451;
   config.flavor = "lineageos";
   config.microg.enable = lib.mkDefault true;
   config.apps.fdroid.enable = true;
