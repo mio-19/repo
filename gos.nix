@@ -15,7 +15,7 @@ let
   };
 in
 {
-  buildDateTime = 1772004451;
+  buildDateTime = 1772543347;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   source.dirs."frameworks/base".patches = with pkgs; [
