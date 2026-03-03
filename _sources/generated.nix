@@ -218,17 +218,17 @@
   };
   lineage_deskclock = {
     pname = "lineage_deskclock";
-    version = "c482027bbad71cd48a8caf73b776a3d6d310206b";
+    version = "c01b9ddf8b0b77c14f766927328b46b906389800";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_DeskClock.git";
-      rev = "c482027bbad71cd48a8caf73b776a3d6d310206b";
+      rev = "c01b9ddf8b0b77c14f766927328b46b906389800";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-Fh0zfXctO1Rj/BaE+jI4bvlYcrEtuXEkKmhHYaTwfl8=";
+      sha256 = "sha256-HKFFHHWRXPkys8A0o51gv5/e9ayhKOiM/u7nOf5o/wU=";
     };
-    date = "2026-02-07";
+    date = "2026-03-01";
   };
   lineage_exactcalculator = {
     pname = "lineage_exactcalculator";
@@ -246,17 +246,17 @@
   };
   lineage_latinime = {
     pname = "lineage_latinime";
-    version = "7ef9404d0e9122e11329ac7f49536c0e2f6ca6fc";
+    version = "d6cc930e24d75a0d3b46c63d5437137a13f06f02";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git";
-      rev = "7ef9404d0e9122e11329ac7f49536c0e2f6ca6fc";
+      rev = "d6cc930e24d75a0d3b46c63d5437137a13f06f02";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-JS/mANnyqel98o4F5/ECa6555lEGr8Y6+OOr5n2xB/s=";
+      sha256 = "sha256-Ikm853Pmgc/FQKGam/05l2LvLfZZhKVbHOyxz6S0XIg=";
     };
-    date = "2026-02-01";
+    date = "2026-03-01";
   };
   susfs414 = {
     pname = "susfs414";
