@@ -54,12 +54,16 @@
       flake =
         let
           mkGos =
-            { ccache, sign }:
+            { ccache }:
             let
               common =
                 f:
-                args@{ config, ... }:
+                args@{ config, pkgs, ... }:
                 {
+                  _module.args.pkgs-unstable = import nixpkgs {
+                    system = pkgs.stdenv.hostPlatform.system;
+                    config.allowUnfree = true;
+                  };
                   imports = [ f ];
                   ccache.enable = ccache;
                 };
@@ -70,12 +74,16 @@
               husky = common ./husky_grapheneos.nix;
             };
           mkLos =
-            { ccache, sign }:
+            { ccache }:
             let
               common =
                 f:
-                args@{ config, ... }:
+                args@{ config, pkgs, ... }:
                 {
+                  _module.args.pkgs-unstable = import nixpkgs {
+                    system = pkgs.stdenv.hostPlatform.system;
+                    config.allowUnfree = true;
+                  };
                   imports = [ f ];
                   ccache.enable = ccache;
                 };
@@ -128,28 +136,17 @@
           githubActions = nix-github-actions.lib.mkGithubMatrix {
             checks.x86_64-linux =
               with nixpkgs.lib;
-              (mapAttrs' (name: cfg: nameValuePair "${name}-ota" cfg.ota) self.losNoCcache)
-              // (mapAttrs' (name: cfg: nameValuePair "${name}-img" cfg.img) self.losNoCcache);
+              (mapAttrs' (name: cfg: nameValuePair "${name}-ota" cfg.ota) losNoCcache)
+              // (mapAttrs' (name: cfg: nameValuePair "${name}-img" cfg.img) losNoCcache);
           };
           los = mkLos {
             ccache = true;
-            sign = false;
           };
           gos = mkGos {
             ccache = true;
-            sign = false;
           };
           losNoCcache = mkLos {
             ccache = true;
-            sign = false;
-          };
-          losSign = mkLos {
-            ccache = true;
-            sign = true;
-          };
-          gosSign = mkGos {
-            ccache = true;
-            sign = true;
           };
         };
       systems = [

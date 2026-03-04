@@ -1,6 +1,7 @@
 args@{
   config,
   pkgs,
+  pkgs-unstable,
   lib,
   ...
 }:
@@ -136,7 +137,7 @@ in
     src = sources.lineage_latinime.src;
   };
   source.dirs."external/Info" = lib.mkForce {
-    src = pkgs.callPackage ./grapheneos_info_app.nix { };
+    src = pkgs-unstable.callPackage ./grapheneos_info_app.nix { };
     /*
       # 6cd1e4439d1cd8a3dcaa588b666c7fee7aa79792 & https://github.com/GrapheneOS/Info/pull/56 merged
       src = pkgs.fetchFromGitHub {
