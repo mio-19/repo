@@ -4,9 +4,6 @@ args@{
   lib,
   ...
 }:
-let
-  huskyKernel = pkgs.callPackage ./grapheneos_husky_kernel.nix { };
-in
 {
   imports = [
     ./gos.nix
@@ -16,7 +13,7 @@ in
   device = "husky";
   # check in nix repl (import ./.).gosSign.husky.config.source.dirs."device/google/shusky-kernels/6.1"
   source.dirs."device/google/shusky-kernels/6.1" = lib.mkForce {
-    src = huskyKernel;
+    src = pkgs.callPackage ./grapheneos_husky_kernel.nix { };
   };
   signing.avb.size = 4096;
   stateVersion = "2";
