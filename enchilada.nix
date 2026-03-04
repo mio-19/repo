@@ -1,4 +1,10 @@
-args@{ config, pkgs, ... }:
+args@{
+  config,
+  pkgs,
+  self,
+  lib,
+  ...
+}:
 {
   imports = [ ./los.nix ];
   manufactor = "oneplus";
@@ -14,4 +20,8 @@ args@{ config, pkgs, ... }:
   lindroid = false; # lindroid doesn't support 4.9?
   lindroid-drm = false; # /build/kernel/oneplus/sdm845/drivers/lindroid-drm/evdi_modeset.c:35:10: fatal error: 'drm/drm_gem_framebuffer_helper.h' file not found
   stateVersion = "2";
+  enable-kernel = false;
+  source.dirs."kernel/oneplus/sdm845" = lib.mkForce {
+    src = self.packages.${pkgs.stdenv.hostPlatform.system}.enchilada.patchedKernelSrc;
+  };
 }

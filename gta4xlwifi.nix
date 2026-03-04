@@ -29,7 +29,7 @@ args@{
   stateVersion = "3";
   ksu-backport1 = true;
   enable-kernel = false;
-  source.dirs."kernel/samsung/sm8250" = lib.mkForce {
+  source.dirs."kernel/samsung/gta4xl" = lib.mkForce {
     src = self.packages.${pkgs.stdenv.hostPlatform.system}.gta4xlwifi.patchedKernelSrc;
   };
 }

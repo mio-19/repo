@@ -3,21 +3,10 @@
 src.git = "https://android.googlesource.com/kernel/common"
 fetch.git = "https://android.googlesource.com/kernel/common"
 src.branch = "android-gs-akita-6.1-android15-qpr2"
-[enchilada-kernel]
-src.git = "https://github.com/LineageOS/android_kernel_oneplus_sdm845.git"
-fetch.git = "https://github.com/LineageOS/android_kernel_oneplus_sdm845.git"
-[gta4xlwifi23-kernel]
-src.git = "https://github.com/LineageOS/android_kernel_samsung_gta4xl.git"
-src.branch = "lineage-23.2"
-fetch.git = "https://github.com/LineageOS/android_kernel_samsung_gta4xl.git"
 [gta4xlwifi-evobka-kernel]
 src.git = "https://github.com/Evolution-X-Devices/kernel_samsung_gta4xl.git"
 src.branch = "bka"
 fetch.git = "https://github.com/Evolution-X-Devices/kernel_samsung_gta4xl.git"
-[android_kernel_samsung_sm8250]
-src.git = "https://github.com/LineageOS/android_kernel_samsung_sm8250.git"
-src.branch = "lineage-23.2"
-fetch.git = "https://github.com/LineageOS/android_kernel_samsung_sm8250.git"
 [susfs414]
 src.git = "https://gitlab.com/simonpunk/susfs4ksu.git"
 src.branch = "kernel-4.14"

@@ -203,6 +203,30 @@
           packages.grapheneos-info = pkgs.callPackage ./grapheneos_info_app.nix { };
           kernelsu =
             let
+              gts7lwifi_robotnix = robotnix.lib.robotnixSystem {
+                inherit (self.los.gts7lwifi.config)
+                  flavor
+                  device
+                  flavorVersion
+                  stateVersion
+                  ;
+              };
+              gta4xlwifi_robotnix = robotnix.lib.robotnixSystem {
+                inherit (self.los.gta4xlwifi.config)
+                  flavor
+                  device
+                  flavorVersion
+                  stateVersion
+                  ;
+              };
+              enchilada_robotnix = robotnix.lib.robotnixSystem {
+                inherit (self.los.enchilada.config)
+                  flavor
+                  device
+                  flavorVersion
+                  stateVersion
+                  ;
+              };
               samsung_sm8250 = {
                 kernelMakeFlags = [
                   "KCFLAGS=\"-Wno-error\""
@@ -232,7 +256,9 @@
 
 
                 '';
-                kernelSrc = sources.android_kernel_samsung_sm8250.src;
+                kernelSrc =
+                  assert gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".patches == [ ];
+                  gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".src;
                 postPatch = ''
                   cp -r ${sources.lindroid_drm_loopback.src} ./drivers/lindroid-drm
 
@@ -258,7 +284,9 @@
                 kernelSU.enable = false; # can compile but not working
                 kernelSU.variant = "next";
                 kernelImageName = "Image";
-                kernelSrc = sources.enchilada-kernel.src;
+                kernelSrc =
+                  assert enchilada_robotnix.config.source.dirs."kernel/oneplus/sdm845".patches == [ ];
+                  enchilada_robotnix.config.source.dirs."kernel/oneplus/sdm845".src;
                 #kernelConfig = ''
                 #  CONFIG_KSU_KPROBES_HOOK=n
                 #  CONFIG_KPROBES=n
@@ -278,13 +306,18 @@
                 */
               };
               gta4xlwifi_evobka = mk_gta4xlwifi sources.gta4xlwifi-evobka-kernel.src;
-              gta4xlwifi = mk_gta4xlwifi sources.gta4xlwifi23-kernel.src // {
-                #oemBootImg = pkgs.fetchurl {
-                #  # https://download.lineageos.org/devices/gta4xlwifi/builds
-                #  url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20251025/boot.img";
-                #  sha256 = "1wgna0xxz216hr7zdj19sg2dvx3xfw3279rv4x881j7hgday97iq";
-                #};
-              };
+              gta4xlwifi =
+                mk_gta4xlwifi (
+                  assert gta4xlwifi_robotnix.config.source.dirs."kernel/samsung/gta4xl".patches == [ ];
+                  gta4xlwifi_robotnix.config.source.dirs."kernel/samsung/gta4xl".src
+                )
+                // {
+                  #oemBootImg = pkgs.fetchurl {
+                  #  # https://download.lineageos.org/devices/gta4xlwifi/builds
+                  #  url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20251025/boot.img";
+                  #  sha256 = "1wgna0xxz216hr7zdj19sg2dvx3xfw3279rv4x881j7hgday97iq";
+                  #};
+                };
               mk_gta4xlwifi =
                 kernel:
                 let
@@ -301,6 +334,7 @@
                   kernelDefconfigs = [
                     "exynos9611-gta4xlwifi_defconfig"
                   ];
+                  kernelSU.enable = false; # TODO: regenerate the patch ./0001-KSUManual4.14.patch
                   kernelSU.variant = "next";
                   kernelImageName = "Image";
                   #susfs.enable = true; # TODO
@@ -331,7 +365,7 @@
                   kernelPatches = [
                     ./filter_count.patch
                     ./overlayfs.patch
-                    ./0001-KSUManual4.14.patch
+                    #./0001-KSUManual4.14.patch # TODO: regenerate the patch
                     ./0001-we-don-t-have-linux-msm_drm_notify.h.patch
                     ./daria.patch
                     ./0001-drop-master-lindroid-patch.patch
