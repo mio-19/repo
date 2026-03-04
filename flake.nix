@@ -269,6 +269,11 @@
                   ./filter_count.patch
                   ./overlayfs.patch
                 ];
+                # https://download.lineageos.org/devices/gts7lwifi/builds
+                oemBootImg = pkgs.fetchurl {
+                  url = "https://web.archive.org/web/20260304113004if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gts7lwifi/20260302/boot.img";
+                  hash = "sha256-5VUj4UcqtOynGy2HwBHe7gKI3muta18vJSX9UntQKCM=";
+                };
               };
               # currently only compiles on aarch64-linux
               enchilada = {
@@ -297,13 +302,11 @@
                   #./0001-CROSS_COMPILE-aarch64-linux-gnu.patch
                   #./0001-CLANG_TARGET_FLAGS-ported-from-android_kernel_samsun.patch
                 ];
-                /*
-                  oemBootImg = pkgs.fetchurl {
-                    # https://download.lineageos.org/devices/enchilada/builds
-                    url = "https://mirrorbits.lineageos.org/full/enchilada/20251001/boot.img";
-                    sha256 = "1450v8sx3fzgl4v4qfdq164c7k2dd8pam4p3ly7zfzqs2s93his7";
-                  };
-                */
+                # https://download.lineageos.org/devices/enchilada/builds
+                oemBootImg = pkgs.fetchurl {
+                  url = "https://web.archive.org/web/20260304112850if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gta4xlwifi/20260228/boot.img";
+                  hash = "sha256-1p5R6bGVaQsuF/etyo3hF3Y67XLBiQ1x9p3W2SX/DX0=";
+                };
               };
               gta4xlwifi_evobka = mk_gta4xlwifi sources.gta4xlwifi-evobka-kernel.src;
               gta4xlwifi =
@@ -312,11 +315,11 @@
                   gta4xlwifi_robotnix.config.source.dirs."kernel/samsung/gta4xl".src
                 )
                 // {
-                  #oemBootImg = pkgs.fetchurl {
-                  #  # https://download.lineageos.org/devices/gta4xlwifi/builds
-                  #  url = "https://mirrorbits.lineageos.org/full/gta4xlwifi/20251025/boot.img";
-                  #  sha256 = "1wgna0xxz216hr7zdj19sg2dvx3xfw3279rv4x881j7hgday97iq";
-                  #};
+                  # https://download.lineageos.org/devices/gta4xlwifi/builds
+                  oemBootImg = pkgs.fetchurl {
+                    url = "https://web.archive.org/web/20260304112854if_/https://saimei.ftp.acc.umu.se/mirror/lineageos/full/enchilada/20260304/boot.img";
+                    hash = "sha256-O7fHSZltqye+pLssT1CiHwnWaWRoRcon7HKYAIp6IlQ=";
+                  };
                 };
               mk_gta4xlwifi =
                 kernel:

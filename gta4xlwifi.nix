@@ -27,6 +27,7 @@ args@{
     ./0001-drop-master-lindroid-patch.patch
   ];
   stateVersion = "3";
+  graphics_ver = "7";
   ksu-backport1 = true;
   enable-kernel = false;
   source.dirs."kernel/samsung/gta4xl" = lib.mkForce {
