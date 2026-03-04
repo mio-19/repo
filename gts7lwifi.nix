@@ -21,4 +21,5 @@ args@{
   kernel-patches = [
   ];
   stateVersion = "3";
+  graphics_ver = "7";
 }
