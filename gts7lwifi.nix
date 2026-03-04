@@ -19,7 +19,7 @@ args@{
   device = "gts7lwifi";
   flavorVersion = "23.2";
   kernel-patches = [
-    ./kernel/c360d6f7b22ab710a27193f62669f5a257cd259d.patch
+    ./kernel/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch
   ];
   stateVersion = "3";
   graphics_ver = "7";
