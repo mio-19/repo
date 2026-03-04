@@ -14,7 +14,7 @@ args@{
   legacy414 = false;
   microg.enable = false;
   gapps = true;
-  ksu = false;
+  ksu = true;
   patch-overlayfs = true;
   device = "gts7lwifi";
   flavorVersion = "23.2";

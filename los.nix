@@ -21,6 +21,7 @@ let
   # KSU_VERSION = git rev-list --count HEAD
   # 10000 + $(KSU_GIT_VERSION) + 200
   ksu-variants = {
+      # TODO: patch version
     next = {
       src = pkgs.fetchgit {
         url = "https://github.com/KernelSU-Next/KernelSU-Next.git";
@@ -28,17 +29,11 @@ let
         sha256 = "1gjw88sk6655l0l2h1km7ga7w0yqcv0wq2g00aw390mf4np5ipw7";
       };
       version = "unstable-2025-09-22";
-      ver = 10000 + 2651 + 200;
     };
-    upstream = {
-      src = pkgs.fetchgit {
-        url = "https://github.com/tiann/KernelSU.git";
-        rev = "aaa023d2929a9cbbf3f0abd760deec8ba829423f";
-        sha256 = "1zjj5p45z1y4wab0a7jpf8vql2bqq2ikzm66ffz7ivpyd5sv6vvi";
-      };
-      version = "unstable-2026-03-03";
-      ver = 10000 + 1923 + 200; # TODO: update ver
+    original = {
+      src = pkgs.callPackage ./kernelSU.nix { };
     };
+      # TODO: patch version
     sukisu = {
       src = pkgs.fetchgit {
         url = "https://github.com/SukiSU-Ultra/SukiSU-Ultra.git";
@@ -46,7 +41,6 @@ let
         sha256 = "1fkmacpywx55agvaakvph4n277w672wi818f7i0d8ar205ldfjib";
       };
       version = "unstable-2026-03-02";
-      ver = 10000 + 2643 + 200; # TODO: update ver
     };
   };
 in
@@ -97,10 +91,11 @@ in
     };
     ksu-variant = lib.mkOption {
       type = lib.types.enum [
-        "upstream"
+        "original"
         "next"
+        "sukisu"
       ];
-      default = "next";
+      default = "original";
       description = "KernelSU variant";
     };
     device-name = lib.mkOption {
@@ -223,7 +218,6 @@ in
     source.dirs."kernel/${config.kernel-name}" =
       let
         kernelsu = ksu-variants."${config.ksu-variant}".src;
-        ksu-version = ksu-variants."${config.ksu-variant}".ver;
       in
       lib.mkIf (config.enable-kernel && (config.lindroid || config.ksu)) {
         # config.kernel = {
@@ -244,13 +238,10 @@ in
           ${lib.optionalString config.ksu ''
             cp -r ${kernelsu}/kernel drivers/kernelsu
             chmod -R +w drivers/kernelsu
-            ${lib.optionalString config.legacy414 ''
+            ${lib.optionalString (config.ksu-variant == "original" && config.legacy414) ''
               # original kernelsu only
               sed -i '/MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);/d' drivers/kernelsu/ksu.c
             ''}
-            sed -i 's|-DKSU_VERSION=11998|-DKSU_VERSION=${toString ksu-version}|' drivers/kernelsu/Makefile # next
-            sed -i 's|-DKSU_VERSION=16|-DKSU_VERSION=${toString ksu-version}|' drivers/kernelsu/Makefile # upstream
-            sed -i 's|KSU_VERSION := 13000|KSU_VERSION := ${toString ksu-version}|' drivers/kernelsu/Makefile # sukisu
             # https://kernelsu-next.github.io/webpage/pages/installation.html -> https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh
             printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> drivers/Makefile
             sed -i "/endmenu/i\source \"drivers/kernelsu/Kconfig\"" drivers/Kconfig
