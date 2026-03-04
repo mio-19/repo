@@ -96,6 +96,7 @@
               akita = common ./akita.nix;
               "dm3q-kenzie" = common ./dm3q-kenzie.nix;
               dm3q_cola2261 = common ./dm3q-cola2261.nix;
+              gts7lwifi = common ./gts7lwifi.nix;
             };
         in
         {
