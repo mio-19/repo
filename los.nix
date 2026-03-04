@@ -21,7 +21,7 @@ let
   # KSU_VERSION = git rev-list --count HEAD
   # 10000 + $(KSU_GIT_VERSION) + 200
   ksu-variants = {
-      # TODO: patch version
+    # TODO: patch version
     next = {
       src = pkgs.fetchgit {
         url = "https://github.com/KernelSU-Next/KernelSU-Next.git";
@@ -33,7 +33,7 @@ let
     original = {
       src = pkgs.callPackage ./kernelSU.nix { };
     };
-      # TODO: patch version
+    # TODO: patch version
     sukisu = {
       src = pkgs.fetchgit {
         url = "https://github.com/SukiSU-Ultra/SukiSU-Ultra.git";
@@ -112,6 +112,11 @@ in
       type = lib.types.bool;
       default = true;
       description = "Enable kernel patches";
+    };
+    ksu-backport1 = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Backport: can_umount & path_umount";
     };
     gapps = lib.mkOption {
       type = lib.types.bool;
@@ -246,50 +251,51 @@ in
             printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> drivers/Makefile
             sed -i "/endmenu/i\source \"drivers/kernelsu/Kconfig\"" drivers/Kconfig
 
-            # https://github.com/KernelSU-Next/KernelSU-Next/blob/5bdb938e845f2dacd37db4a3761d2b38503a708b/kernel/Makefile#L72C1-L115C1
-            # 1) Insert can_umount() if missing
-            if ! grep -Eq "^static int can_umount" ./fs/namespace.c; then
-                echo "-- KSU_NEXT: adding function 'static int can_umount(const struct path *path, int flags);' to ./fs/namespace.c"
-                sed -i '/^static bool is_mnt_ns_file/i \
-            static int can_umount(const struct path *path, int flags)\n\
-            {\n\t\
-                    struct mount *mnt = real_mount(path->mnt);\n\t\
-                    if (flags & ~(MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW))\n\t\t\
-                            return -EINVAL;\n\t\
-                    if (!may_mount())\n\t\t\
-                            return -EPERM;\n\t\
-                    if (path->dentry != path->mnt->mnt_root)\n\t\t\
-                            return -EINVAL;\n\t\
-                    if (!check_mnt(mnt))\n\t\t\
-                            return -EINVAL;\n\t\
-                    if (mnt->mnt.mnt_flags & MNT_LOCKED)\n\t\t\
-                            return -EINVAL;\n\t\
-                    if (flags & MNT_FORCE && !capable(CAP_SYS_ADMIN))\n\t\t\
-                            return -EPERM;\n\t\
-                    return 0;\n\
-            }\n' ./fs/namespace.c
-            fi
-            # 2) Insert path_umount() if missing
-            if ! grep -Eq "^int path_umount" ./fs/namespace.c; then
-                echo "-- KSU_NEXT: adding function 'int path_umount(struct path *path, int flags);' to ./fs/namespace.c"
-                sed -i '/^static bool is_mnt_ns_file/i \
-            int path_umount(struct path *path, int flags)\n\
-            {\n\t\
-                    struct mount *mnt = real_mount(path->mnt);\n\t\
-                    int ret;\n\t\
-                    ret = can_umount(path, flags);\n\t\
-                    if (!ret)\n\t\t\
-                            ret = do_umount(mnt, flags);\n\t\
-                    dput(path->dentry);\n\t\
-                    mntput_no_expire(mnt);\n\t\
-                    return ret;\n\
-            }\n' ./fs/namespace.c
-            fi
-            # 3) Insert prototype into fs/internal.h if missing
-            if ! grep -Eq "^int path_umount(struct path \*path, int flags);" ./fs/internal.h; then
-                sed -i '/^extern void __init mnt_init/a int path_umount(struct path *path, int flags);' ./fs/internal.h
-                echo "-- KSU_NEXT: adding 'int path_umount(struct path *path, int flags);' to ./fs/internal.h"
-            fi
+            ${lib.optionalString config.ksu-backport1 ''
+              # https://github.com/KernelSU-Next/KernelSU-Next/blob/5bdb938e845f2dacd37db4a3761d2b38503a708b/kernel/Makefile#L72C1-L115C1
+              # 1) Insert can_umount() if missing
+              if ! grep -Eq "^static int can_umount" ./fs/namespace.c; then
+                  echo "-- KSU_NEXT: adding function 'static int can_umount(const struct path *path, int flags);' to ./fs/namespace.c"
+                  sed -i '/^static bool is_mnt_ns_file/i \
+              static int can_umount(const struct path *path, int flags)\n\
+              {\n\t\
+                      struct mount *mnt = real_mount(path->mnt);\n\t\
+                      if (flags & ~(MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW))\n\t\t\
+                              return -EINVAL;\n\t\
+                      if (!may_mount())\n\t\t\
+                              return -EPERM;\n\t\
+                      if (path->dentry != path->mnt->mnt_root)\n\t\t\
+                              return -EINVAL;\n\t\
+                      if (!check_mnt(mnt))\n\t\t\
+                              return -EINVAL;\n\t\
+                      if (mnt->mnt.mnt_flags & MNT_LOCKED)\n\t\t\
+                              return -EINVAL;\n\t\
+                      if (flags & MNT_FORCE && !capable(CAP_SYS_ADMIN))\n\t\t\
+                              return -EPERM;\n\t\
+                      return 0;\n\
+              }\n' ./fs/namespace.c
+              fi
+              # 2) Insert path_umount() if missing
+              if ! grep -Eq "^int path_umount" ./fs/namespace.c; then
+                  echo "-- KSU_NEXT: adding function 'int path_umount(struct path *path, int flags);' to ./fs/namespace.c"
+                  sed -i '/^static bool is_mnt_ns_file/i \
+              int path_umount(struct path *path, int flags)\n\
+              {\n\t\
+                      struct mount *mnt = real_mount(path->mnt);\n\t\
+                      int ret;\n\t\
+                      ret = can_umount(path, flags);\n\t\
+                      if (!ret)\n\t\t\
+                              ret = do_umount(mnt, flags);\n\t\
+                      dput(path->dentry);\n\t\
+                      mntput_no_expire(mnt);\n\t\
+                      return ret;\n\
+              }\n' ./fs/namespace.c
+              fi
+              # 3) Insert prototype into fs/internal.h if missing
+              if ! grep -Eq "^int path_umount(struct path \*path, int flags);" ./fs/internal.h; then
+                  sed -i '/^extern void __init mnt_init/a int path_umount(struct path *path, int flags);' ./fs/internal.h
+                  echo "-- KSU_NEXT: adding 'int path_umount(struct path *path, int flags);' to ./fs/internal.h"
+              fi''}
           ''}
           echo '
           ${lib.optionalString config.lindroid ''

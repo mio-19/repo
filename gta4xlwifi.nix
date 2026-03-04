@@ -26,4 +26,5 @@ args@{
     ./0001-drop-master-lindroid-patch.patch
   ];
   stateVersion = "3";
+  ksu-backport1 = true;
 }
