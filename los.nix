@@ -309,7 +309,8 @@ in
             CONFIG_USER_NS=y
             CONFIG_NET_NS=y
             CONFIG_CGROUP_DEVICE=y
-            CONFIG_CGROUP_FREEZER=y''}
+            CONFIG_CGROUP_FREEZER=y
+            CONFIG_TMPFS_POSIX_ACL=y''}
 
           ${lib.optionalString (config.lindroid && config.lindroid-drm) ''
             CONFIG_DRM=y
