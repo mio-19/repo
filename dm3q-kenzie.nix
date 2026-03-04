@@ -57,4 +57,5 @@ args@{
       sha256 = "196cch7wbqdsynblqfim0vrb96zdyw0fna7c72nh0i4qgyw6843i";
     };
   };
+  config.stateVersion = "3";
 }

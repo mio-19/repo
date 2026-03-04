@@ -336,5 +336,4 @@ in
   config.source.dirs."frameworks/base".patches = lib.mkIf config.lindroid [
     ./0001-Ignore-uevent-s-with-null-name-for-Extcon-WiredAcces.patch
   ];
-  config.stateVersion = "2";
 }

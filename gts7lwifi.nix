@@ -20,4 +20,5 @@ args@{
   flavorVersion = "23.2";
   kernel-patches = [
   ];
+  config.stateVersion = "3";
 }

@@ -22,4 +22,5 @@ args@{ config, pkgs, ... }:
   ksu = false;
   device = "nx_tab";
   flavorVersion = "22.2";
+  config.stateVersion = "3";
 }

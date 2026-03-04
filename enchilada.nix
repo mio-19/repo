@@ -13,4 +13,5 @@ args@{ config, pkgs, ... }:
   ksu = false; # compiled but not working
   lindroid = false; # lindroid doesn't support 4.9?
   lindroid-drm = false; # /build/kernel/oneplus/sdm845/drivers/lindroid-drm/evdi_modeset.c:35:10: fatal error: 'drm/drm_gem_framebuffer_helper.h' file not found
+  config.stateVersion = "2";
 }
