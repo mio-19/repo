@@ -1,7 +1,7 @@
 args@{
   config,
   pkgs,
-  lib,
+  lib,self,
   ...
 }:
 {
@@ -27,4 +27,8 @@ args@{
   ];
   stateVersion = "3";
   ksu-backport1 = true;
+  enable-kernel = false;
+  source.dirs."kernel/samsung/sm8250" = lib.mkForce {
+    src = self.packages.${pkgs.stdenv.hostPlatform.system}.gta4xlwifi.patchedKernelSrc;
+  };
 }
