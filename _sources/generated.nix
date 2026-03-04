@@ -118,20 +118,6 @@
     };
     date = "2026-02-16";
   };
-  enchilada-kernel = {
-    pname = "enchilada-kernel";
-    version = "b7798cdd4eb82e201b54dbb9b85662ee44e3b7cc";
-    src = fetchgit {
-      url = "https://github.com/LineageOS/android_kernel_oneplus_sdm845.git";
-      rev = "b7798cdd4eb82e201b54dbb9b85662ee44e3b7cc";
-      fetchSubmodules = false;
-      deepClone = false;
-      leaveDotGit = false;
-      sparseCheckout = [ ];
-      sha256 = "sha256-FNeZqqIZRc9zpbPE7OXYG+UhofIr83S3ycRm/2nwEXc=";
-    };
-    date = "2026-01-06";
-  };
   external_lxc = {
     pname = "external_lxc";
     version = "4e3a3630fff3dc04e0d4a761309f87f248e40b17";
