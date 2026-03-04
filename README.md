@@ -16,13 +16,13 @@ nix build -L --max-jobs 4 .#gos.akita.ota
 
 
 
-nix build -L --max-jobs 4 .#los.gta4xlwifi.releaseScript --impure -o release
+nix build -L --max-jobs 4 .#los.gta4xlwifi.releaseScript -o release
 ./release ./keys-akita
 
 
 
-nix build -L --max-jobs 4 .#gos.akita.releaseScript --impure -o release && ./release ./keys-akita
-nix build -L --max-jobs 4 .#gos.husky.releaseScript --impure -o release && ./release ./keys-husky
+nix build -L --max-jobs 4 .#gos.akita.releaseScript -o release && ./release ./keys-akita
+nix build -L --max-jobs 4 .#gos.husky.releaseScript -o release && ./release ./keys-husky
 ```
 
 It is recommended to have OEM unlocking to be on in developer options when flashing new versions.
