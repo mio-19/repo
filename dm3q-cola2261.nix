@@ -83,5 +83,5 @@ in
     privileged = true;
     partition = "system";
   };
-  config.stateVersion = "3";
+  stateVersion = "3";
 }

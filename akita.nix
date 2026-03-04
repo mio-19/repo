@@ -14,5 +14,5 @@ args@{
   gapps = true;
   device = "akita";
   flavorVersion = "22.2";
-  config.stateVersion = "2";
+  stateVersion = "2";
 }
