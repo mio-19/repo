@@ -2,11 +2,18 @@
   lib,
   stdenv,
   fetchFromGitHub,
+  fetchurl,
   gradle_9,
   jdk17_headless,
+  apksigner,
+  writableTmpDirAsHomeHook,
   androidenv,
 }:
 let
+  androidBp = fetchurl {
+    url = "https://github.com/GrapheneOS/platform_external_Info/raw/refs/heads/16-qpr2/Android.bp";
+    hash = "sha256-jPCp6n0iifKJm1vHido/11xBFYloIxBSGzFSR47uP/A=";
+  };
   androidSdk = (androidenv.override { licenseAccepted = true; }).composeAndroidPackages {
     platformVersions = [ "36" ];
     buildToolsVersions = [ "36.1.0" ];
@@ -41,6 +48,8 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [
     gradle_9
     jdk17_headless
+    apksigner
+    writableTmpDirAsHomeHook
   ];
 
   env = {
@@ -57,16 +66,31 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   preConfigure = ''
-    export HOME="$TMPDIR/home"
-    export ANDROID_USER_HOME="$TMPDIR/android-user-home"
-    mkdir -p "$HOME" "$ANDROID_USER_HOME"
+    export ANDROID_USER_HOME="$HOME/.android"
+    mkdir -p "$ANDROID_USER_HOME"
   '';
 
   installPhase = ''
     runHook preInstall
 
-    mkdir -p "$out/share/apk"
-    cp app/build/outputs/apk/release/*.apk "$out/share/apk/"
+    mkdir -p "$out/prebuilt"
+    unsigned_apk="$(echo app/build/outputs/apk/release/*-unsigned.apk)"
+    signed_apk="$out/prebuilt/Info.apk"
+
+    apksigner sign \
+      --v4-signing-enabled false \
+      --ks ${./grapheneos_info_testkey.jks} \
+      --ks-pass pass:android \
+      --key-pass pass:android \
+      --ks-key-alias androiddebugkey \
+      --out "$signed_apk" \
+      "$unsigned_apk"
+
+    rm -f "$signed_apk.idsig"
+
+    apksigner verify --verbose "$signed_apk"
+
+    cp ${androidBp} "$out/Android.bp"
 
     runHook postInstall
   '';
