@@ -16,7 +16,7 @@ args@{
   ksu = true;
   patch-overlayfs = true;
   device = "gta4xlwifi";
-  flavorVersion = "23.0";
+  flavorVersion = "23.2";
   kernel-patches = [
     # https://github.com/KernelSU-Next/KernelSU-Next/pull/743 -> -Note: legacy kernels: selfmusing/kernel_xiaomi_violet@9596554
     ./filter_count.patch

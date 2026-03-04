@@ -20,6 +20,20 @@
     };
     date = "2025-03-12";
   };
+  android_kernel_samsung_sm8250 = {
+    pname = "android_kernel_samsung_sm8250";
+    version = "1e75dd7e5380989d4a980c80a5894f2c5066f7d5";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_kernel_samsung_sm8250.git";
+      rev = "1e75dd7e5380989d4a980c80a5894f2c5066f7d5";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-4JhBWz/ZEGscwjSXP5Dxg+TthYZakECml3OGAZklsYo=";
+    };
+    date = "2026-02-06";
+  };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
     version = "26ca623ab21c2906db387eb3841d0ddddf5f079b";
@@ -176,17 +190,17 @@
   };
   gta4xlwifi23-kernel = {
     pname = "gta4xlwifi23-kernel";
-    version = "352353d9ac0ad0617e07b624f883352eb29d570c";
+    version = "1c2d9e600aea519209c9f9ca4a9cb1192b222cdc";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_kernel_samsung_gta4xl.git";
-      rev = "352353d9ac0ad0617e07b624f883352eb29d570c";
+      rev = "1c2d9e600aea519209c9f9ca4a9cb1192b222cdc";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-mLQ2JitKF8ytdbY9L570g6tuK8Y7G8OUf3F0f5wKyGo=";
+      sha256 = "sha256-mOeHvk9GyDoeMSBqdrAWNqSyhmaSWRbPSSXz/2A++48=";
     };
-    date = "2026-01-24";
+    date = "2026-01-28";
   };
   libhybris = {
     pname = "libhybris";

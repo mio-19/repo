@@ -64,6 +64,7 @@
                     system = pkgs.stdenv.hostPlatform.system;
                     config.allowUnfree = true;
                   };
+                  _module.args.self = self;
                   imports = [ f ];
                   ccache.enable = ccache;
                 };
@@ -84,6 +85,7 @@
                     system = pkgs.stdenv.hostPlatform.system;
                     config.allowUnfree = true;
                   };
+                  _module.args.self = self;
                   imports = [ f ];
                   ccache.enable = ccache;
                 };
@@ -201,6 +203,47 @@
           packages.grapheneos-info = pkgs.callPackage ./grapheneos_info_app.nix { };
           kernelsu =
             let
+              samsung_sm8250 = {
+                kernelMakeFlags = [
+                  "KCFLAGS=\"-Wno-error\""
+                  "KCPPFLAGS=\"-Wno-error\""
+                ];
+                anyKernelVariant = "kernelsu";
+                clangVersion = "latest";
+                kernelDefconfigs = [
+                  "gki_defconfig"
+                ];
+                kernelSU.variant = "next";
+                kernelImageName = "Image";
+                #susfs.enable = true; # TODO
+                susfs.src = sources.susfs414.src;
+                kernelConfig = ''
+                  CONFIG_SYSVIPC=y
+                  CONFIG_UTS_NS=y
+                  CONFIG_PID_NS=y
+                  CONFIG_IPC_NS=y
+                  CONFIG_USER_NS=y
+                  CONFIG_NET_NS=y
+                  CONFIG_CGROUP_DEVICE=y
+                  CONFIG_CGROUP_FREEZER=y
+                  CONFIG_DRM=y
+                  CONFIG_DRM_LINDROID_EVDI=y
+                  CONFIG_TMPFS_POSIX_ACL=y
+
+
+                '';
+                kernelSrc = sources.android_kernel_samsung_sm8250.src;
+                postPatch = ''
+                  cp -r ${sources.lindroid_drm_loopback.src} ./drivers/lindroid-drm
+
+                  sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" ./drivers/Kconfig
+                  echo 'obj-y += lindroid-drm/' >> ./drivers/Makefile
+                '';
+                kernelPatches = [
+                  ./filter_count.patch
+                  ./overlayfs.patch
+                ];
+              };
               # currently only compiles on aarch64-linux
               enchilada = {
                 kernelMakeFlags = [
@@ -273,6 +316,7 @@
                     CONFIG_CGROUP_FREEZER=y
                     CONFIG_DRM=y
                     CONFIG_DRM_LINDROID_EVDI=y
+                    CONFIG_TMPFS_POSIX_ACL=y
 
                     CONFIG_KSU_KPROBES_HOOK=n
                     CONFIG_KPROBES=n
@@ -298,6 +342,7 @@
               enchilada = enchilada;
               gta4xlwifi = gta4xlwifi;
               gta4xlwifi_evobka = gta4xlwifi_evobka;
+              samsung_sm8250 = samsung_sm8250;
             };
         };
     };

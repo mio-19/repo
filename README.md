@@ -46,6 +46,8 @@ build kernels:
 ```zsh
 nix build -L .#gta4xlwifi -o gta4xlwifi
 
+nix build -L .#samsung_sm8250 -o samsung_sm8250
+
 # GrapheneOS husky (Pixel 8 Pro) kernel dist files
 nix build -L .#grapheneos-husky-kernel -o husky-kernel-dist
 ```

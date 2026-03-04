@@ -2,6 +2,7 @@ args@{
   config,
   pkgs,
   lib,
+  self,
   ...
 }:
 {
@@ -18,8 +19,10 @@ args@{
   patch-overlayfs = true;
   device = "gts7lwifi";
   flavorVersion = "23.2";
-  kernel-patches = [
-  ];
   stateVersion = "3";
   graphics_ver = "7";
+  enable-kernel = false;
+  source.dirs."kernel/samsung/sm8250" = lib.mkForce {
+    src = self.packages.${pkgs.stdenv.hostPlatform.system}.samsung_sm8250.patchedKernelSrc;
+  };
 }
