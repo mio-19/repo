@@ -200,6 +200,7 @@
               ];
             }).config.system.build.isoImage;
           packages.grapheneos-husky-kernel = pkgs.callPackage ./grapheneos_husky_kernel.nix { };
+          packages.grapheneos-info = pkgs.callPackage ./grapheneos_info_app.nix { };
           kernelsu =
             let
               # currently only compiles on aarch64-linux
