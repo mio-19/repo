@@ -29,7 +29,7 @@
   buildFHSEnv,
   bashInteractive,
   stdenvNoCC,
-  enableKSU ? true,
+  enableKSU ? false,
 }:
 let
   sources = (import ./_sources/generated.nix) {
