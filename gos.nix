@@ -136,13 +136,16 @@ in
     src = sources.lineage_latinime.src;
   };
   source.dirs."external/Info" = lib.mkForce {
-    # 6cd1e4439d1cd8a3dcaa588b666c7fee7aa79792 & https://github.com/GrapheneOS/Info/pull/56 merged
-    src = pkgs.fetchFromGitHub {
-      owner = "forked-by-mio";
-      repo = "platform_external_Info";
-      rev = "fe570fa13abfbd90496047855e2abf3cec5902c5";
-      hash = "sha256-JhoxbfraTcQcVsDFX5Fdk8C0mpzQhqaB6Rx0w5gYeSs=";
-    };
+    src = pkgs.callPackage ./grapheneos_info_app.nix { };
+    /*
+      # 6cd1e4439d1cd8a3dcaa588b666c7fee7aa79792 & https://github.com/GrapheneOS/Info/pull/56 merged
+      src = pkgs.fetchFromGitHub {
+        owner = "forked-by-mio";
+        repo = "platform_external_Info";
+        rev = "fe570fa13abfbd90496047855e2abf3cec5902c5";
+        hash = "sha256-JhoxbfraTcQcVsDFX5Fdk8C0mpzQhqaB6Rx0w5gYeSs=";
+      };
+    */
   };
   source.dirs."packages/modules/Connectivity".patches = with pkgs; [
     (fetchpatch {

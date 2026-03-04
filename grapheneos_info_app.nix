@@ -8,6 +8,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidenv,
+  fetchpatch,
 }:
 let
   androidBp = fetchurl {
@@ -33,6 +34,13 @@ stdenv.mkDerivation (finalAttrs: {
     rev = finalAttrs.version;
     hash = "sha256-X4ocWYZxcyHBqA64KNV7jJ65pqnGjbKXzsLHSL65XuU=";
   };
+
+  patches = [
+    (fetchpatch {
+      url = "https://github.com/GrapheneOS/Info/pull/56.patch";
+      hash = "sha256-M0iLi1YvjiY8tKKLTVsFIKUyzkGfCSFKy1Bp0QYAEj4=";
+    })
+  ];
 
   gradleBuildTask = ":app:assembleRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
