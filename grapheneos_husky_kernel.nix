@@ -48,12 +48,12 @@ let
   verhash = "e721010f";
   src = fetchgit {
     url = "https://gitlab.com/grapheneos/kernel_pixel.git";
-    rev = "e721010ff15c0350e01af1778e2614d95b3c302a";
+    tag = "2026030200";
     fetchSubmodules = true;
     deepClone = false;
-    leaveDotGit = true; # seems like something wants .git
+    #leaveDotGit = true; # seems like something wants .git # needed after 20260305
     sparseCheckout = [ ];
-    hash = "sha256-67pfnHlEhoigBKEkHzqkSW1wdJjpHoZnwKnKr9sWRbo=";
+    hash = "sha256-6E/DWOGXAfNfl2fr7JSszlFOSAetyTD11GtMd15b1II=";
   };
 
   kernelBuildEnv = buildFHSEnv {
@@ -112,7 +112,7 @@ stdenvNoCC.mkDerivation {
         patch -p1 --batch --forward --no-backup-if-mismatch < "$patch_file"
       }
 
-      apply_patch ${./kernel/pixel8pro-stock-v2.patch}
+      apply_patch ${./kernel/pixel8pro-stock.patch}
       apply_patch ${./kernel/pixel8pro-stock-fix-attempt3.patch}
 
       # lindroid steps
