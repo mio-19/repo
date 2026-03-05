@@ -217,6 +217,14 @@ in
       postPatch = ''
         sed -i 's|android.hardware.graphics.common-V5|android.hardware.graphics.common-V${config.graphics_ver}|' interfaces/composer/Android.bp
       '';
+      patches = with pkgs; [
+        (fetchpatch {
+          # https://t.me/linux_on_droid/26461
+          name = "perspectived: exempt from init dir mutation";
+          url = "https://github.com/yaap/vendor_lindroid/commit/762067a0e9506af5127cd95d96acc3725c05b7d8.patch";
+          hash = "sha256-7LTKEWHAXG+EJC5zW1kXdMr1Nrsh0Jr3+3p6pmoSVX4=";
+        })
+      ];
     };
     source.dirs."external/lxc".src = lib.mkIf config.lindroid sources.external_lxc.src;
     source.dirs."libhybris".src = lib.mkIf config.lindroid sources.libhybris.src;
@@ -343,5 +351,22 @@ in
     source.dirs."frameworks/base".patches = lib.mkIf config.lindroid [
       ./0001-Ignore-uevent-s-with-null-name-for-Extcon-WiredAcces.patch
     ];
+    source.dirs."system/sepolicy".patches =
+      with pkgs;
+      lib.mkIf config.lindroid [
+        (fetchpatch {
+          # https://t.me/linux_on_droid/26461
+          name = "private/domain: add new attr for relaxing a dir init neverallow";
+          url = "https://github.com/yaap/system_sepolicy/commit/d48ff481d9651cedb435a9974648e5c9a81fe211.patch";
+          hash = "sha256-bDUOj+NwErgqjM+abpF6ITaz3+GHag+qMoZXsfCv+KI=";
+        })
+        # https://t.me/linux_on_droid/28140
+        # https://github.com/yaap/system_sepolicy/commit/cb883371539af5d127e4a16b05a5ecb425a3c3c3
+        (fetchpatch {
+          name = "Allow perspectived as a permissive domain";
+          url = "https://github.com/yaap/system_sepolicy/commit/cb883371539af5d127e4a16b05a5ecb425a3c3c3.patch";
+          hash = "sha256-9uTl/63Ua1LkFMXRkB6jJcegZTvlmb0L6cq7+W+VgVU=";
+        })
+      ];
   };
 }
