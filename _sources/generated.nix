@@ -134,17 +134,17 @@
   };
   grapheneos_kernel_pixel = {
     pname = "grapheneos_kernel_pixel";
-    version = "aff4e27a786c017a00179036714ae5309681c784";
+    version = "e721010ff15c0350e01af1778e2614d95b3c302a";
     src = fetchgit {
       url = "https://gitlab.com/grapheneos/kernel_pixel.git";
-      rev = "aff4e27a786c017a00179036714ae5309681c784";
+      rev = "e721010ff15c0350e01af1778e2614d95b3c302a";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-6E/DWOGXAfNfl2fr7JSszlFOSAetyTD11GtMd15b1II=";
+      sha256 = "sha256-bPoseOoyHkmeiZWcrsihu2N8UPu8z4IonBZup5x+gwg=";
     };
-    date = "2026-02-28";
+    date = "2026-02-25";
   };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
