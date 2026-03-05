@@ -45,10 +45,8 @@ let
   };
   #kernelPixel = sources.grapheneos_kernel_pixel;
   #src = kernelPixel.src;
-  #date = kernelPixel.date;
-  date = src.tag;
-  #verhash = builtins.substring 0 8 kernelPixel.version;
-  verhash = src.tag;
+  version = src.tag;
+  #version = "${kernelPixel.date}-${builtins.substring 0 8 kernelPixel.version}";
   src = fetchgit {
     url = "https://gitlab.com/grapheneos/kernel_pixel.git";
     tag = "2026030200";
@@ -96,7 +94,7 @@ let
 in
 stdenvNoCC.mkDerivation {
   pname = "grapheneos-husky-kernel";
-  version = "${date}-${verhash}";
+  inherit version;
   inherit src;
   dontConfigure = true;
   dontFixup = true;
