@@ -31,7 +31,8 @@
   stdenvNoCC,
   enableKSU ? false,
   enableDaria ? false,
-  enable3840Hz ? true,
+  enable0x01 ? true,
+  enable3840Hz ? false,
   enableLindroid ? false,
 }:
 let
@@ -114,7 +115,13 @@ stdenvNoCC.mkDerivation {
       }
 
       apply_patch ${
-        if enable3840Hz then ./kernel/pixel8pro-stock-3840Hz.patch else ./kernel/pixel8pro-stock.patch
+        assert (!(enable0x01 && enable3840Hz));
+        if enable0x01 then
+          ./kernel/pixel8pro-stock-0x01.patch
+        else if enable3840Hz then
+          ./kernel/pixel8pro-stock-3840Hz.patch
+        else
+          ./kernel/pixel8pro-stock.patch
       }
       apply_patch ${./kernel/pixel8pro-stock-fix-attempt3.patch}
 
