@@ -22,6 +22,11 @@ args@{
   stateVersion = "2";
   enable-kernel = false;
   source.dirs."kernel/oneplus/sdm845" = lib.mkForce {
-    src = self.packages.${pkgs.stdenv.hostPlatform.system}.enchilada.patchedKernelSrc;
+    src =
+      self.packages.${pkgs.stdenv.hostPlatform.system}.enchilada.patchedKernelSrc.overrideAttrs
+        (old: {
+          # when building kernel in our robotnix build env, with patchShebangs: /nix/store/2hjsch59amjs3nbgh7ahcfzm2bfwl8zi-bash-5.3p9/bin/sh: symbol lookup error: /usr/lib/libc.so.6: undefined symbol: __nptl_change_stack_perm, version GLIBC_PRIVATE
+          postPatch = builtins.replaceStrings [ "patchShebangs ." ] [ "" ] old.postPatch;
+        });
   };
 }
