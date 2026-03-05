@@ -362,11 +362,7 @@ in
         })
         # https://t.me/linux_on_droid/28140
         # https://github.com/yaap/system_sepolicy/commit/cb883371539af5d127e4a16b05a5ecb425a3c3c3
-        (fetchpatch {
-          name = "Allow perspectived as a permissive domain";
-          url = "https://github.com/yaap/system_sepolicy/commit/cb883371539af5d127e4a16b05a5ecb425a3c3c3.patch";
-          hash = "sha256-9uTl/63Ua1LkFMXRkB6jJcegZTvlmb0L6cq7+W+VgVU=";
-        })
+        ./Allow-perspectived-as-a-permissive-domain.patch
       ];
   };
 }
