@@ -40,8 +40,21 @@ let
       dockerTools
       ;
   };
-  kernelPixel = sources.grapheneos_kernel_pixel;
-  src = kernelPixel.src;
+  #kernelPixel = sources.grapheneos_kernel_pixel;
+  #src = kernelPixel.src;
+  #date = kernelPixel.date;
+  date = "2026-02-25";
+  #verhash = builtins.substring 0 8 kernelPixel.version;
+  verhash = "e721010f";
+  src = fetchgit {
+    url = "https://gitlab.com/grapheneos/kernel_pixel.git";
+    rev = "e721010ff15c0350e01af1778e2614d95b3c302a";
+    fetchSubmodules = true;
+    deepClone = false;
+    leaveDotGit = true; # seems like something wants .git
+    sparseCheckout = [ ];
+    hash = "sha256-67pfnHlEhoigBKEkHzqkSW1wdJjpHoZnwKnKr9sWRbo=";
+  };
 
   kernelBuildEnv = buildFHSEnv {
     name = "grapheneos-kernel-build-env";
@@ -80,7 +93,7 @@ let
 in
 stdenvNoCC.mkDerivation {
   pname = "grapheneos-husky-kernel";
-  version = "${kernelPixel.date}-${builtins.substring 0 8 kernelPixel.version}";
+  version = "${date}-${verhash}";
   inherit src;
   dontConfigure = true;
   dontFixup = true;
