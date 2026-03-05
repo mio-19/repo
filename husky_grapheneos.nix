@@ -13,7 +13,7 @@ in
     ./gos_lindroid.nix
     #./gos_userdebug.nix
   ];
-  enableLindroid = enableLindroid;
+  enableLindroid = enableLindroid; # basic stuff works. systemd units launched. sddm black screen.
   device = "husky";
   # check in nix repl (import ./.).gosSign.husky.config.source.dirs."device/google/shusky-kernels/6.1"
   source.dirs."device/google/shusky-kernels/6.1" = lib.mkForce {
