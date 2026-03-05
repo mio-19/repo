@@ -30,6 +30,7 @@
   bashInteractive,
   stdenvNoCC,
   enableKSU ? false,
+  enableDaria ? false,
 }:
 let
   sources = (import ./_sources/generated.nix) {
@@ -155,7 +156,9 @@ stdenvNoCC.mkDerivation {
           cat aosp/KernelSU/kernel/Makefile.orig
         } > aosp/KernelSU/kernel/Makefile''}
 
-      apply_patch ${./kernel/0001-daria.patch}
+      ${lib.optionalString enableDaria ''
+        apply_patch ${./kernel/0001-daria.patch}
+      ''}
       apply_patch ${./kernel/sidharth-hack.patch}
 
       export KLEAF_REPO_MANIFEST=aosp_manifest.xml
