@@ -60,7 +60,7 @@ in
     ];
     source.dirs."build/make".patches = with pkgs; [
       # VINTF check doesn't like CONFIG_SYSVIPC=y
-      ./skip-VINTF-check-for-CONFIG_SYSVIPC.patch
+      ./skip-VINTF-check-for-CONFIG_SYSVIPC.patch # alternatively: sed -i '/# CONFIG_SYSVIPC is not set/d'  */*/android-base.config
     ];
   };
 }
