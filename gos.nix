@@ -47,7 +47,7 @@ in
   source.dirs."packages/apps/Settings".patches = with pkgs; [
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
     (fetchpatch {
-      name = "Add a toggle to disable FLAG SECURE";
+      name = "Add a toggle to disable FLAG SECURE https://github.com/GrapheneOS/platform_packages_apps_Settings/pull/411";
       url = "https://github.com/GrapheneOS/platform_packages_apps_Settings/pull/411.patch";
       hash = "sha256-hcztYEyhfDlfkx04lKmsEOKr2puoM6GUb3bhRIgiCaM=";
     })
