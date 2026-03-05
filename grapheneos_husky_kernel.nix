@@ -31,6 +31,7 @@
   stdenvNoCC,
   enableKSU ? false,
   enableDaria ? false,
+  enable3840Hz ? true,
 }:
 let
   sources = (import ./_sources/generated.nix) {
@@ -113,7 +114,9 @@ stdenvNoCC.mkDerivation {
         patch -p1 --batch --forward --no-backup-if-mismatch < "$patch_file"
       }
 
-      apply_patch ${./kernel/pixel8pro-stock.patch}
+      apply_patch ${
+        if enable3840Hz then ./kernel/pixel8pro-stock-3840Hz.patch else ./kernel/pixel8pro-stock.patch
+      }
       apply_patch ${./kernel/pixel8pro-stock-fix-attempt3.patch}
 
       # lindroid steps
