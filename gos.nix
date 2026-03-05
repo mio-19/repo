@@ -43,6 +43,11 @@ in
         hash = "sha256-/2yXOeHQmuJDngLypCz512F5jWdT3oZ9MGjthC5/Tp0=";
       })
     */
+    (fetchpatch {
+      name = "SystemUI: Open Tethering settings from QS Hotspot tile";
+      url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/323.patch";
+      hash = "sha256-qNylnt+S2lIt30D9gwnbW7jcf+rb7zDV3c6tS877AuQ=";
+    })
   ];
   source.dirs."packages/apps/Settings".patches = with pkgs; [
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
