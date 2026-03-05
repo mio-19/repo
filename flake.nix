@@ -94,6 +94,7 @@
             nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
               gta4xlwifi = common ./gta4xlwifi.nix;
               enchilada = common ./enchilada.nix;
+              enchilada_mainline = common ./enchilada-mainline.nix;
               nx_tab = common ./nx_tab.nix;
               akita = common ./akita.nix;
               "dm3q-kenzie" = common ./dm3q-kenzie.nix;
