@@ -30,10 +30,10 @@
   bashInteractive,
   stdenvNoCC,
   enableKSU ? false,
-  enableDaria ? false,
   enable0x01 ? true,
   enable3840Hz ? false,
   enableLindroid ? false,
+  enableDaria ? enableLindroid,
 }:
 let
   sources = (import ./_sources/generated.nix) {
