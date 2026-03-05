@@ -46,9 +46,9 @@ let
   #kernelPixel = sources.grapheneos_kernel_pixel;
   #src = kernelPixel.src;
   #date = kernelPixel.date;
-  date = "2026-02-25";
+  date = src.tag;
   #verhash = builtins.substring 0 8 kernelPixel.version;
-  verhash = "e721010f";
+  verhash = src.tag;
   src = fetchgit {
     url = "https://gitlab.com/grapheneos/kernel_pixel.git";
     tag = "2026030200";
