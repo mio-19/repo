@@ -25,6 +25,7 @@ nix build -L --max-jobs 4 .#los.gta4xlwifi.releaseScript -o release
 
 nix build -L --max-jobs 4 .#gos.akita.releaseScript -o release && ./release ./keys-akita
 nix build -L --max-jobs 4 .#gos.husky.releaseScript -o release && ./release ./keys-husky
+nix build -L --max-jobs 4 .#gos.mustang.releaseScript -o release && ./release ./keys-mustang
 ```
 
 It is recommended to have OEM unlocking to be on in developer options when flashing new versions.
@@ -51,6 +52,9 @@ nix build -L .#samsung_sm8250 -o samsung_sm8250
 
 # GrapheneOS husky (Pixel 8 Pro) kernel dist files
 nix build -L .#grapheneos-husky-kernel -o husky-kernel-dist
+
+# GrapheneOS mustang (Pixel 10 Pro XL) kernel dist files
+nix build -L .#grapheneos-mustang-kernel -o mustang-kernel-dist
 ```
 
 ## update

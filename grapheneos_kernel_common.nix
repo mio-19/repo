@@ -1,0 +1,121 @@
+{
+  bash,
+  bc,
+  bison,
+  buildFHSEnv,
+  bashInteractive,
+  cpio,
+  file,
+  findutils,
+  flex,
+  gawk,
+  glibc,
+  gnugrep,
+  gnumake,
+  gnused,
+  hostname,
+  lib,
+  openssl,
+  patch,
+  perl,
+  python3,
+  rsync,
+  stdenvNoCC,
+  fetchgit,
+  which,
+  zlib,
+}:
+{
+  pname,
+  version,
+  src,
+  buildScript,
+  distDir,
+  enableKSU ? false,
+  ksuMakefilePreamble ? ''
+    echo "srctree := $(pwd)/aosp"
+    echo "src := KernelSU/kernel"
+  '',
+  extraBuildCommands ? "",
+}:
+let
+  kernelSUSrc = import ./kernelSU105.nix { inherit fetchgit; };
+  kernelBuildEnv = buildFHSEnv {
+    name = "${pname}-build-env";
+    targetPkgs =
+      p: with p; [
+        bash
+        bc
+        bison
+        cpio
+        file
+        findutils
+        flex
+        gawk
+        glibc.dev
+        stdenv.cc.cc
+        git
+        gnugrep
+        gnumake
+        gnused
+        hostname
+        openssl
+        openssl.dev
+        patch
+        perl
+        python3
+        rsync
+        which
+        zlib
+      ];
+    runScript = "${bashInteractive}/bin/bash";
+  };
+in
+stdenvNoCC.mkDerivation {
+  inherit pname version src;
+  dontConfigure = true;
+  dontFixup = true;
+
+  buildPhase = ''
+    set -euo pipefail
+    runHook preBuild
+    export HOME="$TMPDIR/home"
+    mkdir -p "$HOME"
+
+    ${kernelBuildEnv}/bin/${pname}-build-env -c '
+      set -euo pipefail
+      apply_patch() {
+        local patch_file="$1"
+        echo "Applying patch: $patch_file"
+        patch -p1 --batch --forward --no-backup-if-mismatch < "$patch_file"
+      }
+
+      ${extraBuildCommands}
+      ${lib.optionalString enableKSU ''
+        # KernelSU v1.0.5 style tree injection shared across GrapheneOS kernels.
+        rm -rf aosp/KernelSU
+        cp -r ${kernelSUSrc} aosp/KernelSU
+        chmod -R u+w aosp/KernelSU
+        ln -sfn ../KernelSU/kernel aosp/drivers/kernelsu
+        printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> aosp/drivers/Makefile
+        sed -i "/endmenu/i\\source \"drivers/kernelsu/Kconfig\"" aosp/drivers/Kconfig
+
+        cp aosp/KernelSU/kernel/Makefile aosp/KernelSU/kernel/Makefile.orig
+        {
+          ${ksuMakefilePreamble}
+          cat aosp/KernelSU/kernel/Makefile.orig
+        } > aosp/KernelSU/kernel/Makefile
+      ''}
+      export KLEAF_REPO_MANIFEST=aosp_manifest.xml
+      ./${buildScript} --lto=full
+    '
+    runHook postBuild
+  '';
+
+  installPhase = ''
+    runHook preInstall
+    mkdir -p "$out/grapheneos"
+    cp -r out/${distDir}/dist/. "$out/grapheneos/"
+    runHook postInstall
+  '';
+}

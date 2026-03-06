@@ -73,6 +73,7 @@
             nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
               akita = common ./akita_grapheneos.nix;
               husky = common ./husky_grapheneos.nix;
+              mustang = common ./mustang_grapheneos.nix;
             };
           mkLos =
             { ccache }:
@@ -201,6 +202,7 @@
               ];
             }).config.system.build.isoImage;
           packages.grapheneos-husky-kernel = pkgs.callPackage ./grapheneos_husky_kernel.nix { };
+          packages.grapheneos-mustang-kernel = pkgs.callPackage ./grapheneos_mustang_kernel.nix { };
           packages.grapheneos-info = pkgs.callPackage ./grapheneos_info_app.nix { };
           kernelsu =
             let
