@@ -11,7 +11,7 @@ let
     fetchSubmodules = true;
     deepClone = false;
     sparseCheckout = [ ];
-    hash = lib.fakeHash;
+    hash = "sha256-jEq++YK6cztn68xeFWkd+4/EhviiH2pTbsC8posT+3o=";
   };
 in
 callPackage ./grapheneos_kernel_common.nix { } {
