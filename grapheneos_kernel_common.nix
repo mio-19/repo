@@ -31,11 +31,13 @@
   src,
   buildScript,
   distDir,
+  installSubdir ? "grapheneos",
   enableKSU,
   ksuMakefilePreamble ? ''
     echo "srctree := $(pwd)/aosp"
     echo "src := KernelSU/kernel"
   '',
+  buildCommand ? null,
   extraBuildCommands ? "",
 }:
 let
@@ -106,16 +108,23 @@ stdenvNoCC.mkDerivation {
           cat aosp/KernelSU/kernel/Makefile.orig
         } > aosp/KernelSU/kernel/Makefile
       ''}
-      export KLEAF_REPO_MANIFEST=aosp_manifest.xml
-      ./${buildScript} --lto=full
+      ${
+        if buildCommand != null then
+          buildCommand
+        else
+          ''
+            export KLEAF_REPO_MANIFEST=aosp_manifest.xml
+            ./${buildScript} --lto=full
+          ''
+      }
     '
     runHook postBuild
   '';
 
   installPhase = ''
     runHook preInstall
-    mkdir -p "$out/grapheneos"
-    cp -r out/${distDir}/dist/. "$out/grapheneos/"
+    mkdir -p "$out/${installSubdir}"
+    cp -r out/${distDir}/dist/. "$out/${installSubdir}/"
     runHook postInstall
   '';
 }

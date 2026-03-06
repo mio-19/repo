@@ -20,5 +20,9 @@ callPackage ./grapheneos_kernel_common.nix { } {
   inherit src;
   buildScript = "build_muzel.sh";
   distDir = "muzel";
+  installSubdir = "grapheneos/muzel";
   inherit enableKSU;
+  buildCommand = ''
+    ./build_muzel.sh --lto=full --repo_manifest="$(realpath .)":"$(realpath aosp_manifest.xml)"
+  '';
 }
