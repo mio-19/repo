@@ -47,17 +47,17 @@ args@{
 
     # Keep the device tree but switch it to mainline kernel config/image defaults.
     "device/oneplus/sdm845-common".postPatch = ''
-      sed -i \
-        -e 's|^BOARD_KERNEL_IMAGE_NAME := .*|BOARD_KERNEL_IMAGE_NAME := Image.gz|' \
-        -e 's|^TARGET_KERNEL_CONFIG := .*|TARGET_KERNEL_CONFIG := defconfig sdm845.config|' \
-        BoardConfigCommon.mk
-      sed -i '/^DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := \\/,/^DEVICE_MATRIX_FILE := /c\
-DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := \\\
-    $(COMMON_PATH)/framework_compatibility_matrix.xml \\\
-    hardware/qcom-caf/common/vendor_framework_compatibility_matrix.xml \\\
-    hardware/qcom-caf/common/vendor_framework_compatibility_matrix_legacy.xml\
-\
-DEVICE_MATRIX_FILE := $(COMMON_PATH)/compatibility_matrix.xml' BoardConfigCommon.mk
+            sed -i \
+              -e 's|^BOARD_KERNEL_IMAGE_NAME := .*|BOARD_KERNEL_IMAGE_NAME := Image.gz|' \
+              -e 's|^TARGET_KERNEL_CONFIG := .*|TARGET_KERNEL_CONFIG := defconfig sdm845.config|' \
+              BoardConfigCommon.mk
+            sed -i '/^DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := \\/,/^DEVICE_MATRIX_FILE := /c\
+      DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := \\\
+          $(COMMON_PATH)/framework_compatibility_matrix.xml \\\
+          hardware/qcom-caf/common/vendor_framework_compatibility_matrix.xml \\\
+          hardware/qcom-caf/common/vendor_framework_compatibility_matrix_legacy.xml\
+      \
+      DEVICE_MATRIX_FILE := $(COMMON_PATH)/compatibility_matrix.xml' BoardConfigCommon.mk
     '';
 
     # Reuse LineageOS mainline components used by current mainline devices.
