@@ -8,7 +8,7 @@ args@{
 {
   imports = [
     ./los.nix
-    #./los_magisk.nix
+    ./los_magisk.nix
   ];
   manufactor = "oneplus";
   kernel-short = "sdm845";
@@ -20,7 +20,7 @@ args@{
   #flavorVersion = "23.0";
   legacy414 = true;
   ksu = false; # compiled but not working
-  #magisk.enable = true;
+  magisk.enable = true;
   lindroid = false; # lindroid doesn't support 4.9?
   lindroid-drm = false; # /build/kernel/oneplus/sdm845/drivers/lindroid-drm/evdi_modeset.c:35:10: fatal error: 'drm/drm_gem_framebuffer_helper.h' file not found
   stateVersion = "2";
