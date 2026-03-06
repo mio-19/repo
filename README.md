@@ -33,14 +33,13 @@ It is recommended to have OEM unlocking to be on in developer options when flash
 generate keys/updating keys:
 
 ```zsh
-nix build -L .#gos.akita.generateKeysScript -o generate-keys
-./generate-keys ./keys-akita
+nix build -L .#gos.akita.generateKeysScript -o generate-keys && ./generate-keys ./keys-akita
 
-nix build -L .#gos.husky.generateKeysScript -o generate-keys
-./generate-keys ./keys-husky
+nix build -L .#gos.husky.generateKeysScript -o generate-keys && ./generate-keys ./keys-husky
 
-nix build -L .#los.gta4xlwifi.generateKeysScript -o generate-keys
-./generate-keys ./keys-akita
+nix build -L .#gos.mustang.generateKeysScript -o generate-keys && ./generate-keys ./keys-mustang
+
+nix build -L .#los.gta4xlwifi.generateKeysScript -o generate-keys && ./generate-keys ./keys-akita
 ```
 
 build kernels:
