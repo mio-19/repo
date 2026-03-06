@@ -1,3 +1,4 @@
+# based on https://github.com/nix-community/robotnix/pull/266
 args@{
   config,
   lib,
@@ -8,7 +9,6 @@ let
   inherit (lib)
     mkIf
     mkOption
-    mkDefault
     mkForce
     types
     optionalString
