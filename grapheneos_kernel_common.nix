@@ -31,7 +31,7 @@
   src,
   buildScript,
   distDir,
-  enableKSU ? false,
+  enableKSU,
   ksuMakefilePreamble ? ''
     echo "srctree := $(pwd)/aosp"
     echo "src := KernelSU/kernel"
