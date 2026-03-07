@@ -16,7 +16,6 @@ let
 in
 callPackage ./grapheneos_kernel_common.nix { } {
   pname = "grapheneos-mustang-kernel";
-  version = src.tag;
   inherit src;
   buildScript = "build_muzel.sh";
   distDir = "muzel";
