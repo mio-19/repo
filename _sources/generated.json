@@ -12,7 +12,7 @@
             "leaveDotGit": false,
             "name": null,
             "rev": "3c76c2d71bb32039037c6f5dc38b172fe4142bdb",
-            "sha256": "sha256-QXHmdl7kdLspqLuVAcAw50AJ0rYKiLNyaRPqSpTnoWM=",
+            "sha256": "sha256-jbeoLFk3Dd9jBYIxzOcT3fHd6Q8Y0ec3GCoBf0oO0JI=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://android.googlesource.com/kernel/common"
@@ -21,7 +21,7 @@
     },
     "cola2261_device_dm3q": {
         "cargoLock": null,
-        "date": "2026-02-17",
+        "date": "2026-03-06",
         "extract": null,
         "name": "cola2261_device_dm3q",
         "passthru": null,
@@ -31,17 +31,17 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "26ca623ab21c2906db387eb3841d0ddddf5f079b",
-            "sha256": "sha256-9Wp4yi4O0dgdOKD7+1dicm+lPro9qBvVG+cxhgfjWBE=",
+            "rev": "e114a4751a12771a651b4502290c85e7d830726e",
+            "sha256": "sha256-IaBbMKbuFJIEgn3JvvnUxFbJCB8OPkSPHHYbYexCcBI=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/samsung-sm8550-cola2261/android_device_samsung_dm3q.git"
         },
-        "version": "26ca623ab21c2906db387eb3841d0ddddf5f079b"
+        "version": "e114a4751a12771a651b4502290c85e7d830726e"
     },
     "cola2261_device_sm8550_common": {
         "cargoLock": null,
-        "date": "2026-02-17",
+        "date": "2026-03-06",
         "extract": null,
         "name": "cola2261_device_sm8550_common",
         "passthru": null,
@@ -51,13 +51,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "af65cfede153db281cf6d63f9a2dffa272668fea",
-            "sha256": "sha256-+icdpUlczDA1lAkChG3oECG7JfBXs9hn3jLLRCophpE=",
+            "rev": "c7f060cf7b53bc15c5dd99540b86a85c464ccb91",
+            "sha256": "sha256-vhzL/VA6HcwmcgLisy8uWuCf1743OeC8Aoh+tinSjC4=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/samsung-sm8550-cola2261/android_device_samsung_sm8550-common.git"
         },
-        "version": "af65cfede153db281cf6d63f9a2dffa272668fea"
+        "version": "c7f060cf7b53bc15c5dd99540b86a85c464ccb91"
     },
     "cola2261_hardware_samsung": {
         "cargoLock": null,
@@ -92,7 +92,7 @@
             "leaveDotGit": false,
             "name": null,
             "rev": "aaa49d9a8f4e0f8d86e8a68cff0f2e21cf1a0c3a",
-            "sha256": "sha256-fzVTAPKN7c5Ov4Ri+odMX6XFIOe7o5bL420efnigNSM=",
+            "sha256": "sha256-Hs+FgDAnnzkwy8yk3oebsBHGORtrJTdzOCROAyD+/gw=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/samsung-sm8550-cola2261/android_kernel_samsung_sm8550.git"
@@ -192,7 +192,7 @@
             "leaveDotGit": false,
             "name": null,
             "rev": "2c276961bbd7e6b8cad97219431182049bfc5e1c",
-            "sha256": "sha256-GSBGZEQM7kVS7Xr5A8yjDs822wbqZ3VXpD7+bNDIXUw=",
+            "sha256": "sha256-07k13X2QjGcOoqWJdlZf3iSSYHPNfu1r+vmcHj0AJt8=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/Evolution-X-Devices/kernel_samsung_gta4xl.git"
@@ -319,6 +319,26 @@
         },
         "version": "77905b5a071e6f3669e3b1814cea30147c0801da"
     },
+    "susfs419": {
+        "cargoLock": null,
+        "date": "2025-02-23",
+        "extract": null,
+        "name": "susfs419",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "001e69919c6271f690fd00b17e4c721c9e599152",
+            "sha256": "sha256-j4OIvgOE64nm67NyGsEnSRNygVVZaF5uhMx8ju+p6fQ=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://gitlab.com/simonpunk/susfs4ksu.git"
+        },
+        "version": "001e69919c6271f690fd00b17e4c721c9e599152"
+    },
     "vendor_gapps15": {
         "cargoLock": null,
         "date": "2025-08-12",
@@ -351,7 +371,7 @@
     },
     "vendor_lindroid": {
         "cargoLock": null,
-        "date": "2026-02-27",
+        "date": "2026-03-05",
         "extract": null,
         "name": "vendor_lindroid",
         "passthru": null,
@@ -361,12 +381,12 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "768bc42f2e794b7b4ff4e73c0adbb64b8235957d",
-            "sha256": "sha256-TEDC8g8QsJdQJU9VPtMB9jV8Q6QolAD8RwPkUJTMBFc=",
+            "rev": "a54fb0cce61d7768c79c72df8d991507acba81f4",
+            "sha256": "sha256-K+DQd3aQ8M+1/JiOFt62VgFKx7hNBLMIzTs7rb4SwqQ=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/Linux-on-droid/vendor_lindroid.git"
         },
-        "version": "768bc42f2e794b7b4ff4e73c0adbb64b8235957d"
+        "version": "a54fb0cce61d7768c79c72df8d991507acba81f4"
     }
 }

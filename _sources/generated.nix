@@ -16,37 +16,37 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-QXHmdl7kdLspqLuVAcAw50AJ0rYKiLNyaRPqSpTnoWM=";
+      sha256 = "sha256-jbeoLFk3Dd9jBYIxzOcT3fHd6Q8Y0ec3GCoBf0oO0JI=";
     };
     date = "2025-03-12";
   };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
-    version = "26ca623ab21c2906db387eb3841d0ddddf5f079b";
+    version = "e114a4751a12771a651b4502290c85e7d830726e";
     src = fetchgit {
       url = "https://github.com/samsung-sm8550-cola2261/android_device_samsung_dm3q.git";
-      rev = "26ca623ab21c2906db387eb3841d0ddddf5f079b";
+      rev = "e114a4751a12771a651b4502290c85e7d830726e";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-9Wp4yi4O0dgdOKD7+1dicm+lPro9qBvVG+cxhgfjWBE=";
+      sha256 = "sha256-IaBbMKbuFJIEgn3JvvnUxFbJCB8OPkSPHHYbYexCcBI=";
     };
-    date = "2026-02-17";
+    date = "2026-03-06";
   };
   cola2261_device_sm8550_common = {
     pname = "cola2261_device_sm8550_common";
-    version = "af65cfede153db281cf6d63f9a2dffa272668fea";
+    version = "c7f060cf7b53bc15c5dd99540b86a85c464ccb91";
     src = fetchgit {
       url = "https://github.com/samsung-sm8550-cola2261/android_device_samsung_sm8550-common.git";
-      rev = "af65cfede153db281cf6d63f9a2dffa272668fea";
+      rev = "c7f060cf7b53bc15c5dd99540b86a85c464ccb91";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-+icdpUlczDA1lAkChG3oECG7JfBXs9hn3jLLRCophpE=";
+      sha256 = "sha256-vhzL/VA6HcwmcgLisy8uWuCf1743OeC8Aoh+tinSjC4=";
     };
-    date = "2026-02-17";
+    date = "2026-03-06";
   };
   cola2261_hardware_samsung = {
     pname = "cola2261_hardware_samsung";
@@ -72,7 +72,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-fzVTAPKN7c5Ov4Ri+odMX6XFIOe7o5bL420efnigNSM=";
+      sha256 = "sha256-Hs+FgDAnnzkwy8yk3oebsBHGORtrJTdzOCROAyD+/gw=";
     };
     date = "2026-02-13";
   };
@@ -142,7 +142,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-GSBGZEQM7kVS7Xr5A8yjDs822wbqZ3VXpD7+bNDIXUw=";
+      sha256 = "sha256-07k13X2QjGcOoqWJdlZf3iSSYHPNfu1r+vmcHj0AJt8=";
     };
     date = "2025-09-05";
   };
@@ -230,6 +230,20 @@
     };
     date = "2025-02-23";
   };
+  susfs419 = {
+    pname = "susfs419";
+    version = "001e69919c6271f690fd00b17e4c721c9e599152";
+    src = fetchgit {
+      url = "https://gitlab.com/simonpunk/susfs4ksu.git";
+      rev = "001e69919c6271f690fd00b17e4c721c9e599152";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-j4OIvgOE64nm67NyGsEnSRNygVVZaF5uhMx8ju+p6fQ=";
+    };
+    date = "2025-02-23";
+  };
   vendor_gapps15 = {
     pname = "vendor_gapps15";
     version = "af160b7fba89b2ea23aad432c7d0716e1639f0f9";
@@ -250,16 +264,16 @@
   };
   vendor_lindroid = {
     pname = "vendor_lindroid";
-    version = "768bc42f2e794b7b4ff4e73c0adbb64b8235957d";
+    version = "a54fb0cce61d7768c79c72df8d991507acba81f4";
     src = fetchgit {
       url = "https://github.com/Linux-on-droid/vendor_lindroid.git";
-      rev = "768bc42f2e794b7b4ff4e73c0adbb64b8235957d";
+      rev = "a54fb0cce61d7768c79c72df8d991507acba81f4";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-TEDC8g8QsJdQJU9VPtMB9jV8Q6QolAD8RwPkUJTMBFc=";
+      sha256 = "sha256-K+DQd3aQ8M+1/JiOFt62VgFKx7hNBLMIzTs7rb4SwqQ=";
     };
-    date = "2026-02-27";
+    date = "2026-03-05";
   };
 }

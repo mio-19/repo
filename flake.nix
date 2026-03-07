@@ -242,8 +242,8 @@
                 ];
                 kernelSU.variant = "next";
                 kernelImageName = "Image";
-                #susfs.enable = true; # TODO
-                susfs.src = sources.susfs414.src;
+                susfs.enable = true;
+                susfs.src = sources.susfs419.src;
                 kernelConfig = ''
                   CONFIG_SYSVIPC=y
                   CONFIG_UTS_NS=y
