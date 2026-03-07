@@ -1,6 +1,7 @@
 args@{
   pkgs-unstable,
   lib,
+  config,
   ...
 }:
 {
@@ -9,7 +10,13 @@ args@{
   ];
   device = "mustang";
   source.dirs."device/google/laguna-kernels/6.6" = lib.mkForce {
-    src = pkgs-unstable.callPackage ./grapheneos_mustang_kernel.nix { };
+    src =
+      let
+        src = pkgs-unstable.callPackage ./grapheneos_mustang_kernel.nix { };
+      in
+      assert src.src.tag == config.grapheneos.release;
+      src;
+
   };
   signing.avb.size = 4096;
   stateVersion = "3";

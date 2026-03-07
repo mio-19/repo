@@ -17,7 +17,12 @@ in
   device = "husky";
   # check in nix repl (import ./.).gosSign.husky.config.source.dirs."device/google/shusky-kernels/6.1"
   source.dirs."device/google/shusky-kernels/6.1" = lib.mkForce {
-    src = pkgs-unstable.callPackage ./grapheneos_husky_kernel.nix { inherit enableLindroid; };
+    src =
+      let
+        src = pkgs-unstable.callPackage ./grapheneos_husky_kernel.nix { inherit enableLindroid; };
+      in
+      assert src.src.tag == config.grapheneos.release;
+      src;
   };
   signing.avb.size = 4096;
   stateVersion = "2";
