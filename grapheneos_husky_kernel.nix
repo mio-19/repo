@@ -23,24 +23,12 @@ let
   };
   #kernelPixel = sources.grapheneos_kernel_pixel;
   #src = kernelPixel.src;
-  version = src.tag;
   #version = "${kernelPixel.date}-${builtins.substring 0 8 kernelPixel.version}";
-  src = fetchgit {
-    url = "https://gitlab.com/grapheneos/kernel_pixel.git";
-    tag = "2026030200";
-    fetchSubmodules = true;
-    deepClone = false;
-    #leaveDotGit = true; # seems like something wants .git # needed after 20260305
-    sparseCheckout = [ ];
-    hash = "sha256-6E/DWOGXAfNfl2fr7JSszlFOSAetyTD11GtMd15b1II=";
-  };
 
   lindroidDrm = sources.lindroid_drm_loopback.src;
 in
 callPackage ./grapheneos_kernel_common.nix { } {
   pname = "grapheneos-husky-kernel";
-  inherit version;
-  inherit src;
   buildScript = "build_shusky.sh";
   distDir = "shusky";
   inherit enableKSU;

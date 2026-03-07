@@ -27,8 +27,16 @@
 }:
 {
   pname,
-  version,
-  src,
+  version ? src.tag,
+  src ? fetchgit {
+    url = "https://gitlab.com/grapheneos/kernel_pixel.git";
+    tag = "2026030200";
+    fetchSubmodules = true;
+    deepClone = false;
+    #leaveDotGit = true; # seems like something wants .git # needed after 20260305
+    sparseCheckout = [ ];
+    hash = "sha256-6E/DWOGXAfNfl2fr7JSszlFOSAetyTD11GtMd15b1II=";
+  },
   buildScript,
   distDir,
   installSubdir ? "grapheneos",
