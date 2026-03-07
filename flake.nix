@@ -14,7 +14,7 @@
     robotnix.inputs.androidPkgs.follows = "android-nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
     # https://github.com/xddxdd/nix-kernelsu-builder
-    nix-kernelsu-builder.url = "github:xddxdd/nix-kernelsu-builder";
+    nix-kernelsu-builder.url = "github:xddxdd/nix-kernelsu-builder/d25cbcdb22d1a28bc6db28bf678ea4720873ffe1";
     nix-kernelsu-builder.inputs.flake-parts.follows = "flake-parts";
     nix-kernelsu-builder.inputs.nixpkgs.follows = "nixpkgs";
     # --option extra-substituters https://nixos-apple-silicon.cachix.org --option extra-trusted-public-keys nixos-apple-silicon.cachix.org-1:8psDu5SA5dAD7qA0zMy5UT292TxeEPzIz8VVEr2Js20=
@@ -240,8 +240,13 @@
                 kernelDefconfigs = [
                   "gki_defconfig"
                 ];
-                kernelSU.variant = "next";
+                #kernelSU.variant = "next";
                 kernelImageName = "Image";
+                # waiting for https://github.com/xddxdd/nix-kernelsu-builder/issues/29
+                kernelSU.variant = "custom";
+                kernelSU.src = pkgs.callPackage ./ksuNext310.nix { };
+                kernelSU.revision = null;
+                kernelSU.subdirectory = "KernelSU-Next";
                 #susfs.enable = true;
                 #susfs.src = sources.susfs419.src;
                 kernelConfig = ''
