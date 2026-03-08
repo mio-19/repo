@@ -1,0 +1,53 @@
+From 377cf1f441bf2f8dd740c7cf9cc1f9f5d588cfa9 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Sun, 8 Mar 2026 20:09:37 +1100
+Subject: [PATCH] spl_downgrade
+
+---
+ install/spl_check.cpp           | 2 +-
+ install/spl_check_unittests.cpp | 7 +++----
+ 2 files changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/install/spl_check.cpp b/install/spl_check.cpp
+index c26ab82f..6cc6db93 100644
+--- a/install/spl_check.cpp
++++ b/install/spl_check.cpp
+@@ -32,7 +32,7 @@ bool ViolatesSPLDowngrade(const build::tools::releasetools::OtaMetadata& metadat
+   if (post_spl < current_spl) {
+     LOG(ERROR) << "Current SPL: " << current_spl << " Target SPL: " << post_spl
+                << " this is considered a downgrade";
+-    if (metadata.spl_downgrade() || metadata.downgrade()) {
++    if (true) {
+       LOG(WARNING)
+           << "SPL downgrade detected, but OTA package explicitly permitts this(OtaMetadata has "
+              "spl_downgrade / downgrade bit set).Permitting update anyway.Installing a SPL "
+diff --git a/install/spl_check_unittests.cpp b/install/spl_check_unittests.cpp
+index 709b69c9..f2f43c49 100644
+--- a/install/spl_check_unittests.cpp
++++ b/install/spl_check_unittests.cpp
+@@ -26,19 +26,18 @@ class SplCheckUnittest : public ::testing::Test {
+ };
+ 
+ TEST_F(SplCheckUnittest, OlderSPL) {
+-  metadata.set_spl_downgrade(false);
++  metadata.set_spl_downgrade(true);
+   metadata.mutable_postcondition()->set_security_patch_level("2021-04-25");
+-  ASSERT_TRUE(ViolatesSPLDowngrade(metadata, "2021-05-01"));
++  ASSERT_FALSE(ViolatesSPLDowngrade(metadata, "2021-05-01"));
+ }
+ 
+ TEST_F(SplCheckUnittest, NewerSPL) {
+-  metadata.set_spl_downgrade(false);
++  metadata.set_spl_downgrade(true);
+   metadata.mutable_postcondition()->set_security_patch_level("2021-06-01");
+   ASSERT_FALSE(ViolatesSPLDowngrade(metadata, "2021-05-05"));
+ }
+ 
+ TEST_F(SplCheckUnittest, OlderSPLPermit) {
+-  // If spl_downgrade is set to true, OTA should be permitted
+   metadata.set_spl_downgrade(true);
+   metadata.mutable_postcondition()->set_security_patch_level("2021-04-11");
+   ASSERT_FALSE(ViolatesSPLDowngrade(metadata, "2021-05-11"));
+-- 
+2.53.0
+

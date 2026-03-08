@@ -191,5 +191,6 @@ in
       url = "https://github.com/LineageOS/android_bootable_recovery/commit/a27249584cbc29b6c2d1444ffa62f6377d9546bc.patch";
       hash = "sha256-/S3jLQ0LcXwQzuD5G9iskf9Qtmm7ICsDA+QIcUJo30M=";
     })
+    ./spl_downgrade.patch
   ];
 }
