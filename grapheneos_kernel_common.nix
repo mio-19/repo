@@ -33,9 +33,9 @@
     tag = "2026030700";
     fetchSubmodules = true;
     deepClone = false;
-    leaveDotGit = true; # seems like something wants .git # needed after 20260305
+    #leaveDotGit = true; # seems like something wants .git # needed after 20260305
     sparseCheckout = [ ];
-    hash = "sha256-AyEjbiGY9NnUVqHn1nFwv1WrXdmGUHeppAlBpPxRn3Q=";
+    hash = "sha256-WuQLB1/PzO7j8WS7L+iaLQeoExuOsP3K21ws0rgilxQ=";
   },
   buildScript,
   distDir,
