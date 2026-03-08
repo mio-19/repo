@@ -14,7 +14,7 @@
     robotnix.inputs.androidPkgs.follows = "android-nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
     # https://github.com/xddxdd/nix-kernelsu-builder
-    nix-kernelsu-builder.url = "github:xddxdd/nix-kernelsu-builder/d25cbcdb22d1a28bc6db28bf678ea4720873ffe1";
+    nix-kernelsu-builder.url = "github:xddxdd/nix-kernelsu-builder/cc0fce340e330ad07331692b7c3673d9974be377";
     nix-kernelsu-builder.inputs.flake-parts.follows = "flake-parts";
     nix-kernelsu-builder.inputs.nixpkgs.follows = "nixpkgs";
     # --option extra-substituters https://nixos-apple-silicon.cachix.org --option extra-trusted-public-keys nixos-apple-silicon.cachix.org-1:8psDu5SA5dAD7qA0zMy5UT292TxeEPzIz8VVEr2Js20=
