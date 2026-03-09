@@ -28,7 +28,13 @@ in
   microg.enable = false;
 
   source.dirs = {
-    "device/samsung/gts9wifi".src = sources.sm8550_tab_device_gts9wifi.src;
+    "device/samsung/gts9wifi" = {
+      src = sources.sm8550_tab_device_gts9wifi.src;
+      postPatch = ''
+        # The pinned hardware/samsung source no longer provides SamsungParts.
+        sed -i '/^[[:space:]]*SamsungParts[[:space:]]*\\$/d' device.mk
+      '';
+    };
     "device/samsung/sm8550-common".src = sources.sm8550_tab_device_sm8550_common.src;
     "vendor/samsung/gts9wifi".src = sources.sm8550_tab_vendor_gts9wifi.src;
     "vendor/samsung/sm8550-common".src = sources.sm8550_tab_vendor_sm8550_common.src;
