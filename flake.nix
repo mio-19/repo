@@ -153,10 +153,10 @@
             ccache = true;
           };
           gosNoCcache = mkGos {
-            ccache = true;
+            ccache = false;
           };
           losNoCcache = mkLos {
-            ccache = true;
+            ccache = false;
           };
         };
       systems = [
