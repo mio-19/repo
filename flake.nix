@@ -208,6 +208,14 @@
           packages.grapheneos-info = pkgs.callPackage ./grapheneos_info_app.nix { };
           kernelsu =
             let
+              gts7l_robotnix = robotnix.lib.robotnixSystem {
+                inherit (self.los.gts7l.config)
+                  flavor
+                  device
+                  flavorVersion
+                  stateVersion
+                  ;
+              };
               gts7lwifi_robotnix = robotnix.lib.robotnixSystem {
                 inherit (self.los.gts7lwifi.config)
                   flavor
@@ -268,6 +276,10 @@
                 '';
                 kernelSrc =
                   assert gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".patches == [ ];
+                  assert gts7l_robotnix.config.source.dirs."kernel/samsung/sm8250".patches == [ ];
+                  assert
+                    gts7l_robotnix.config.source.dirs."kernel/samsung/sm8250".src
+                    == gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".src;
                   gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".src;
                 postPatch = ''
                   cp -r ${sources.lindroid_drm_loopback.src} ./drivers/lindroid-drm
