@@ -209,6 +209,7 @@
           packages.grapheneos-husky-key-script = self.gos.husky.generateKeysScript; # for garnix
           packages.grapheneos-husky-factory-img = self.gos.husky.factoryImg; # for garnix
           packages.los-gts7lwifi-ota = self.los.gts7lwifi.ota; # for garnix
+          packages.los-gts7l-ota = self.los.gts7l.ota; # for garnix
           packages.los-enchilada-img = self.los.enchilada.img; # for garnix
           /*
             packages.grapheneos-husky-srcs = self.gos.husky.config.build.android.overrideAttrs (old: {
