@@ -152,6 +152,9 @@
           gos = mkGos {
             ccache = true;
           };
+          gosNoCcache = mkGos {
+            ccache = true;
+          };
           losNoCcache = mkLos {
             ccache = true;
           };
@@ -206,11 +209,11 @@
           packages.grapheneos-husky-kernel = pkgs.callPackage ./grapheneos_husky_kernel.nix { };
           packages.grapheneos-mustang-kernel = pkgs.callPackage ./grapheneos_mustang_kernel.nix { };
           packages.grapheneos-info = pkgs.callPackage ./grapheneos_info_app.nix { };
-          packages.grapheneos-husky-key-script = self.gos.husky.generateKeysScript; # for garnix
-          packages.grapheneos-husky-factory-img = self.gos.husky.factoryImg; # for garnix
-          packages.los-gts7lwifi-ota = self.los.gts7lwifi.ota; # for garnix
-          packages.los-gts7l-ota = self.los.gts7l.ota; # for garnix
-          packages.los-enchilada-img = self.los.enchilada.img; # for garnix
+          packages.grapheneos-husky-key-script = self.gosNoCcache.husky.generateKeysScript; # for garnix
+          packages.grapheneos-husky-factory-img = self.gosNoCcache.husky.factoryImg; # for garnix
+          packages.los-gts7lwifi-ota = self.losNoCcache.gts7lwifi.ota; # for garnix
+          packages.los-gts7l-ota = self.losNoCcache.gts7l.ota; # for garnix
+          packages.los-enchilada-img = self.losNoCcache.enchilada.img; # for garnix
           /*
             packages.grapheneos-husky-srcs = self.gos.husky.config.build.android.overrideAttrs (old: {
               buildPhase = "";
