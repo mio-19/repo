@@ -98,3 +98,40 @@ fetch.git = "https://github.com/samsung-sm8550-cola2261/android_kernel_samsung_s
 src.git = "https://github.com/samsung-sm8550-cola2261/android_hardware_samsung.git"
 src.branch = "lineage-23.2"
 fetch.git = "https://github.com/samsung-sm8550-cola2261/android_hardware_samsung.git"
+
+# samsung-sm8550-tab sources for gts9wifi, tracking lineage-23.2 where published
+[sm8550_tab_device_gts9wifi]
+src.git = "https://github.com/samsung-sm8550-tab/android_device_samsung_gts9wifi.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/samsung-sm8550-tab/android_device_samsung_gts9wifi.git"
+
+[sm8550_tab_device_sm8550_common]
+src.git = "https://github.com/samsung-sm8550-tab/android_device_samsung_sm8550-common.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/samsung-sm8550-tab/android_device_samsung_sm8550-common.git"
+
+# Vendor repos currently stop at lineage-23.0 in samsung-sm8550-tab.
+[sm8550_tab_vendor_gts9wifi]
+src.git = "https://github.com/samsung-sm8550-tab/android_vendor_samsung_gts9wifi.git"
+src.branch = "lineage-23.0"
+fetch.git = "https://github.com/samsung-sm8550-tab/android_vendor_samsung_gts9wifi.git"
+
+[sm8550_tab_vendor_sm8550_common]
+src.git = "https://github.com/samsung-sm8550-tab/android_vendor_samsung_sm8550-common.git"
+src.branch = "lineage-23.0"
+fetch.git = "https://github.com/samsung-sm8550-tab/android_vendor_samsung_sm8550-common.git"
+
+[sm8550_tab_kernel_sm8550]
+src.git = "https://github.com/samsung-sm8550-tab/android_kernel_samsung_sm8550.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/samsung-sm8550-tab/android_kernel_samsung_sm8550.git"
+
+[sm8550_tab_kernel_sm8550_modules]
+src.git = "https://github.com/samsung-sm8550-tab/android_kernel_samsung_sm8550-modules.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/samsung-sm8550-tab/android_kernel_samsung_sm8550-modules.git"
+
+[sm8550_tab_hardware_samsung]
+src.git = "https://github.com/samsung-sm8550-tab/android_hardware_samsung.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/samsung-sm8550-tab/android_hardware_samsung.git"

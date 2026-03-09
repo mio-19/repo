@@ -216,6 +216,104 @@
     };
     date = "2026-03-01";
   };
+  sm8550_tab_device_gts9wifi = {
+    pname = "sm8550_tab_device_gts9wifi";
+    version = "0013fdf8533c81adc37d37ec379a5baa1344e1a3";
+    src = fetchgit {
+      url = "https://github.com/samsung-sm8550-tab/android_device_samsung_gts9wifi.git";
+      rev = "0013fdf8533c81adc37d37ec379a5baa1344e1a3";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-jfBO+Ikw8vghwZKlx1ydmIMo3xkMREt358Yo50ctKTc=";
+    };
+    date = "2026-01-09";
+  };
+  sm8550_tab_device_sm8550_common = {
+    pname = "sm8550_tab_device_sm8550_common";
+    version = "6ea35dc07c1964d604cc8819fae9dad18674f2ac";
+    src = fetchgit {
+      url = "https://github.com/samsung-sm8550-tab/android_device_samsung_sm8550-common.git";
+      rev = "6ea35dc07c1964d604cc8819fae9dad18674f2ac";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-Xd3eOnI6/4fZJv1GgD4kZWJ8FB32vk4lKfgAed2NYbA=";
+    };
+    date = "2026-01-09";
+  };
+  sm8550_tab_hardware_samsung = {
+    pname = "sm8550_tab_hardware_samsung";
+    version = "dfc9863128d75595d228ebd60c9b90b8649d49d9";
+    src = fetchgit {
+      url = "https://github.com/samsung-sm8550-tab/android_hardware_samsung.git";
+      rev = "dfc9863128d75595d228ebd60c9b90b8649d49d9";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-7QAYccOD/WncDS+CCVuZnPaua7em+KD4+mJBBu2LE/w=";
+    };
+    date = "2026-01-10";
+  };
+  sm8550_tab_kernel_sm8550 = {
+    pname = "sm8550_tab_kernel_sm8550";
+    version = "8149f7e0731e869ac456ea1ef7dae95a08e3d1d8";
+    src = fetchgit {
+      url = "https://github.com/samsung-sm8550-tab/android_kernel_samsung_sm8550.git";
+      rev = "8149f7e0731e869ac456ea1ef7dae95a08e3d1d8";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-7h/bLVePmqNsGWm7gwuu35uCzRnasAwBEQ54by+TmCM=";
+    };
+    date = "2026-01-08";
+  };
+  sm8550_tab_kernel_sm8550_modules = {
+    pname = "sm8550_tab_kernel_sm8550_modules";
+    version = "6d4788b39ff175af4b2a5c5ffdf31712f8686e4c";
+    src = fetchgit {
+      url = "https://github.com/samsung-sm8550-tab/android_kernel_samsung_sm8550-modules.git";
+      rev = "6d4788b39ff175af4b2a5c5ffdf31712f8686e4c";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-8sCA1yosOaFldBgA1oNxu/IOwbyJQZI+ntDeJjOEHzw=";
+    };
+    date = "2026-01-10";
+  };
+  sm8550_tab_vendor_gts9wifi = {
+    pname = "sm8550_tab_vendor_gts9wifi";
+    version = "bd0882d36594e1dbd772e14d9cdeb6c655718385";
+    src = fetchgit {
+      url = "https://github.com/samsung-sm8550-tab/android_vendor_samsung_gts9wifi.git";
+      rev = "bd0882d36594e1dbd772e14d9cdeb6c655718385";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-b2pD44lvDgZkeNpzJI6GBal0GyAfHneBjVAFFWLtZ4Q=";
+    };
+    date = "2025-10-28";
+  };
+  sm8550_tab_vendor_sm8550_common = {
+    pname = "sm8550_tab_vendor_sm8550_common";
+    version = "baf2fdd19d0dae4e422da8002cf61143f1f1c325";
+    src = fetchgit {
+      url = "https://github.com/samsung-sm8550-tab/android_vendor_samsung_sm8550-common.git";
+      rev = "baf2fdd19d0dae4e422da8002cf61143f1f1c325";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-xLNO4qmP48ct7huA7xja15r5XtQNfX267WWXpXTkTVI=";
+    };
+    date = "2025-10-28";
+  };
   susfs414 = {
     pname = "susfs414";
     version = "77905b5a071e6f3669e3b1814cea30147c0801da";

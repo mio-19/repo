@@ -13,6 +13,7 @@ nix build -L --max-jobs 4 .#los.enchilada.img -o enchilada-img.zip
 nix build -L --max-jobs 4 .#los.enchilada_mainline.img -o enchilada_mainline-img.zip
 
 nix build -L --max-jobs 4 .#los.dm3q_cola2261.ota -o dm3q.zip
+nix build -L --max-jobs 4 .#los.gts9wifi.ota -o gts9wifi.zip
 
 nix build -L --max-jobs 4 .#gos.akita.ota
 
