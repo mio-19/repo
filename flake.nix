@@ -206,7 +206,8 @@
           packages.grapheneos-husky-kernel = pkgs.callPackage ./grapheneos_husky_kernel.nix { };
           packages.grapheneos-mustang-kernel = pkgs.callPackage ./grapheneos_mustang_kernel.nix { };
           packages.grapheneos-info = pkgs.callPackage ./grapheneos_info_app.nix { };
-          packages.grapheneos-husky = self.gos.husky.generateKeysScript; # for garnix
+          packages.grapheneos-husky-key-script = self.gos.husky.generateKeysScript; # for garnix
+          packages.grapheneos-husky-factory-img = self.gos.husky.factoryImg; # for garnix
           /*
             packages.grapheneos-husky-srcs = self.gos.husky.config.build.android.overrideAttrs (old: {
               buildPhase = "";
