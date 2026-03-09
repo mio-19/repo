@@ -38,8 +38,8 @@ in
       postPatch = ''
         camera_makefile=qcom/opensource/camera-kernel/Makefile
         sed -i '/^cam_generated_h:/,/^$/c\
-cam_generated_h:\
-\t@:' "$camera_makefile"
+        cam_generated_h:\
+        \t@:' "$camera_makefile"
         cat > qcom/opensource/camera-kernel/cam_generated_h <<'EOF'
         #define CAMERA_COMPILE_TIME "robotnix"
         #define CAMERA_COMPILE_BY "nix"
