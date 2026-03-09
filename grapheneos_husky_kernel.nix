@@ -7,9 +7,7 @@
   dockerTools,
   callPackage,
   enableKSU ? false,
-  enable0x01 ? false,
-  enable0x05 ? true,
-  enable3840Hz ? false,
+  pwmmode ? "0x05",
   enableLindroid ? false,
   enableDaria ? enableLindroid,
 }:
@@ -35,15 +33,16 @@ callPackage ./grapheneos_kernel_common.nix { } {
   inherit enableKSU;
   extraBuildCommands = ''
     apply_patch ${
-      assert (!(enable0x01 && enable3840Hz) && !(enable0x05 && enable3840Hz) && !(enable0x01 && enable0x05)) "enable0x01, enable0x05, and enable3840Hz are mutually exclusive";
-      if enable0x01 then
+      if pwmmode == "0x01" then
         ./kernel/pixel8pro-stock-0x01.patch
-      else if enable0x05 then
+      else if pwmmode == "0x05" then
         ./kernel/pixel8pro-stock-0x05.patch
-      else if enable3840Hz then
+      else if pwmmode == "3840Hz" then
         ./kernel/pixel8pro-stock-3840Hz.patch
-      else
+      else if pwmmode == "stock" then
         ./kernel/pixel8pro-stock.patch
+      else
+        throw "invalid pwmmode: ${pwmmode}"
     }
     apply_patch ${./kernel/pixel8pro-stock-fix-attempt3.patch}
 
