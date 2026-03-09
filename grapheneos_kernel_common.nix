@@ -35,7 +35,7 @@
     deepClone = false;
     leaveDotGit = true; # seems like something wants .git # needed with and after 20260307 # fatal: not a git repository (or any parent up to mount point /) in the log
     sparseCheckout = [ ];
-    hash = "sha256-AyEjbiGY9NnUVqHn1nFwv1WrXdmGUHeppAlBpPxRn3Q=";
+    hash = "sha256-21Db6pD6WJGttTsDUaIq5JU/15izFWvfwCsBlgs/SFo=";
   },
   buildScript,
   distDir,
