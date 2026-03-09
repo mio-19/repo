@@ -7,6 +7,7 @@ command examples:
 ```zsh
 nix build -L --max-jobs 4 .#los.gta4xlwifi.ota -o gta4xlwifi.zip
 nix build -L --max-jobs 4 .#los.gts7lwifi.ota -o gts7lwifi.zip
+nix build -L --max-jobs 4 .#los.gts7l.ota -o gts7l.zip
 nix build -L --max-jobs 4 .#los.gts9wifi.ota -o gts9wifi.zip
 
 nix build -L --max-jobs 4 .#los.enchilada.ota -o enchilada.zip
