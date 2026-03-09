@@ -31,8 +31,9 @@ in
     })
 
     (fetchpatch {
+      # https://github.com/GrapheneOS/platform_frameworks_base/pull/305
       name = "Add toggle to hide location access indicator on a per-app basis.patch";
-      url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/305.patch";
+      url = "https://github.com/GrapheneOS/platform_frameworks_base/commit/751e18efce972f7f976bcc43d8fcc21469d26653.patch";
       hash = "sha256-oJnWjITM4pycHQRbLORQTmr9315LXtGk8Upzi2IRONU=";
     })
     /*
