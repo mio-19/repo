@@ -138,6 +138,13 @@ in
       };
     };
   */
+  source.dirs."packages/apps/Gallery2".patches = with pkgs; [
+    (fetchpatch {
+      name = "Remove references to Google in some translations";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_Gallery2/pull/14.patch";
+      hash = "sha256-aO41dAmULosxYoas0ZwLTBShpfMBIKhLBKKCHkcAxNg=";
+    })
+  ];
   source.dirs."packages/inputmethods/LatinIME" = lib.mkForce {
     src = sources.lineage_latinime.src;
   };
