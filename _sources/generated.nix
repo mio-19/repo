@@ -6,20 +6,6 @@
   dockerTools,
 }:
 {
-  akita-kernel = {
-    pname = "akita-kernel";
-    version = "3c76c2d71bb32039037c6f5dc38b172fe4142bdb";
-    src = fetchgit {
-      url = "https://android.googlesource.com/kernel/common";
-      rev = "3c76c2d71bb32039037c6f5dc38b172fe4142bdb";
-      fetchSubmodules = false;
-      deepClone = false;
-      leaveDotGit = false;
-      sparseCheckout = [ ];
-      sha256 = "sha256-jbeoLFk3Dd9jBYIxzOcT3fHd6Q8Y0ec3GCoBf0oO0JI=";
-    };
-    date = "2025-03-12";
-  };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
     version = "e114a4751a12771a651b4502290c85e7d830726e";
@@ -72,7 +58,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-Hs+FgDAnnzkwy8yk3oebsBHGORtrJTdzOCROAyD+/gw=";
+      sha256 = "sha256-fzVTAPKN7c5Ov4Ri+odMX6XFIOe7o5bL420efnigNSM=";
     };
     date = "2026-02-13";
   };
@@ -142,7 +128,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-07k13X2QjGcOoqWJdlZf3iSSYHPNfu1r+vmcHj0AJt8=";
+      sha256 = "sha256-GSBGZEQM7kVS7Xr5A8yjDs822wbqZ3VXpD7+bNDIXUw=";
     };
     date = "2025-09-05";
   };
