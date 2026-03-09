@@ -7,7 +7,8 @@
   dockerTools,
   callPackage,
   enableKSU ? false,
-  enable0x01 ? true,
+  enable0x01 ? false,
+  enable0x05 ? true,
   enable3840Hz ? false,
   enableLindroid ? false,
   enableDaria ? enableLindroid,
@@ -34,9 +35,11 @@ callPackage ./grapheneos_kernel_common.nix { } {
   inherit enableKSU;
   extraBuildCommands = ''
     apply_patch ${
-      assert (!(enable0x01 && enable3840Hz));
+      assert (!(enable0x01 && enable3840Hz) && !(enable0x05 && enable3840Hz) && !(enable0x01 && enable0x05)) "enable0x01, enable0x05, and enable3840Hz are mutually exclusive";
       if enable0x01 then
         ./kernel/pixel8pro-stock-0x01.patch
+      else if enable0x05 then
+        ./kernel/pixel8pro-stock-0x05.patch
       else if enable3840Hz then
         ./kernel/pixel8pro-stock-3840Hz.patch
       else
