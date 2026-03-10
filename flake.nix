@@ -208,6 +208,7 @@
             }).config.system.build.isoImage;
           packages.grapheneos-husky-kernel = pkgs.callPackage ./grapheneos_husky_kernel.nix { };
           packages.grapheneos-mustang-kernel = pkgs.callPackage ./grapheneos_mustang_kernel.nix { };
+          packages.grapheneos-camera = pkgs.callPackage ./grapheneos_camera_app.nix { };
           packages.grapheneos-info = pkgs.callPackage ./grapheneos_info_app.nix { };
           packages.grapheneos-husky-key-script = self.gosNoCcache.husky.generateKeysScript; # for garnix
           packages.grapheneos-husky-factory-img = self.gosNoCcache.husky.factoryImg; # for garnix

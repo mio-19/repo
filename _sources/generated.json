@@ -159,6 +159,46 @@
         },
         "version": "4e3a3630fff3dc04e0d4a761309f87f248e40b17"
     },
+    "grapheneos_camera": {
+        "cargoLock": null,
+        "date": "2026-02-03",
+        "extract": null,
+        "name": "grapheneos_camera",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "23ccbc672bc70a8d3f81e02c8fa95d8850c96e0a",
+            "sha256": "sha256-zrJUlcWQjhxppjTNGZjpRgxkfWSG9nqhZBDME1tLEIQ=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/GrapheneOS/Camera.git"
+        },
+        "version": "23ccbc672bc70a8d3f81e02c8fa95d8850c96e0a"
+    },
+    "grapheneos_info": {
+        "cargoLock": null,
+        "date": "2026-02-03",
+        "extract": null,
+        "name": "grapheneos_info",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "6cd1e4439d1cd8a3dcaa588b666c7fee7aa79792",
+            "sha256": "sha256-X4ocWYZxcyHBqA64KNV7jJ65pqnGjbKXzsLHSL65XuU=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/GrapheneOS/Info.git"
+        },
+        "version": "6cd1e4439d1cd8a3dcaa588b666c7fee7aa79792"
+    },
     "gta4xlwifi-evobka-kernel": {
         "cargoLock": null,
         "date": "2025-09-05",

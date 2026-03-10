@@ -118,6 +118,34 @@
     };
     date = "2024-11-24";
   };
+  grapheneos_camera = {
+    pname = "grapheneos_camera";
+    version = "23ccbc672bc70a8d3f81e02c8fa95d8850c96e0a";
+    src = fetchgit {
+      url = "https://github.com/GrapheneOS/Camera.git";
+      rev = "23ccbc672bc70a8d3f81e02c8fa95d8850c96e0a";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-zrJUlcWQjhxppjTNGZjpRgxkfWSG9nqhZBDME1tLEIQ=";
+    };
+    date = "2026-02-03";
+  };
+  grapheneos_info = {
+    pname = "grapheneos_info";
+    version = "6cd1e4439d1cd8a3dcaa588b666c7fee7aa79792";
+    src = fetchgit {
+      url = "https://github.com/GrapheneOS/Info.git";
+      rev = "6cd1e4439d1cd8a3dcaa588b666c7fee7aa79792";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-X4ocWYZxcyHBqA64KNV7jJ65pqnGjbKXzsLHSL65XuU=";
+    };
+    date = "2026-02-03";
+  };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
     version = "2c276961bbd7e6b8cad97219431182049bfc5e1c";

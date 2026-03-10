@@ -152,6 +152,9 @@ in
   source.dirs."external/Info" = lib.mkForce {
     src = pkgs-unstable.callPackage ./grapheneos_info_app.nix { };
   };
+  source.dirs."external/Camera" = lib.mkForce {
+    src = pkgs-unstable.callPackage ./grapheneos_camera_app.nix { };
+  };
   source.dirs."packages/modules/Connectivity".patches = with pkgs; [
     (fetchpatch {
       name = "Connectivity: Add capability to allow tethering to use VPN upstreams";

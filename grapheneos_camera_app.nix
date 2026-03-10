@@ -22,8 +22,8 @@ let
       ;
   };
   androidBp = fetchurl {
-    url = "https://github.com/GrapheneOS/platform_external_Info/raw/refs/heads/16-qpr2/Android.bp";
-    hash = "sha256-jPCp6n0iifKJm1vHido/11xBFYloIxBSGzFSR47uP/A=";
+    url = "https://raw.githubusercontent.com/GrapheneOS/platform_external_Camera/80a4cbb19f5f6f6efb5c46deb7d5f4e1bde74a07/Android.bp";
+    hash = "sha256-2xXE4FZHQ28aZYdkjYQA4eqHX+W1QqsTjVgGBk1d9EY=";
   };
   androidSdk = (androidenv.override { licenseAccepted = true; }).composeAndroidPackages {
     platformVersions = [ "36" ];
@@ -35,15 +35,20 @@ let
   };
 in
 stdenv.mkDerivation (finalAttrs: {
-  pname = "grapheneos-info";
-  version = sources.grapheneos_info.version;
-  src = sources.grapheneos_info.src;
+  pname = "grapheneos-camera";
+  version = sources.grapheneos_camera.version;
+  src = sources.grapheneos_camera.src;
 
   patches = [
     (fetchpatch {
-      name = "added release state display to info app";
-      url = "https://github.com/GrapheneOS/Info/pull/56.diff";
-      hash = "sha256-qMMHV6426FHw1QCg+JfpvmjO/qUvul6T/2Le7A2YQXI=";
+      name = "Add swipe haptics";
+      url = "https://github.com/GrapheneOS/Camera/pull/351.patch";
+      hash = "sha256-H/mU1tF/GgIMwnEpF5OKbp3u1J+cFBK8cKbB3cb7nA4=";
+    })
+    (fetchpatch {
+      name = "Replace orientation API calls with sensor calculated orientation";
+      url = "https://github.com/GrapheneOS/Camera/pull/535.patch";
+      hash = "sha256-P4T5aKouSxAA0Q53vO6kJLputt3bSiPzR9EHwX8alSc=";
     })
   ];
 
@@ -53,7 +58,7 @@ stdenv.mkDerivation (finalAttrs: {
   mitmCache = gradle_9.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
-    data = "grapheneos_info_deps.json";
+    data = "grapheneos_camera_deps.json";
     silent = false;
     useBwrap = false;
   };
@@ -88,7 +93,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p "$out/prebuilt"
     unsigned_apk="$(echo app/build/outputs/apk/release/*-unsigned.apk)"
-    signed_apk="$out/prebuilt/Info.apk"
+    signed_apk="$out/prebuilt/Camera.apk"
 
     apksigner sign \
       --v4-signing-enabled false \
@@ -109,9 +114,9 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   meta = with lib; {
-    description = "GrapheneOS Info app built from source";
-    homepage = "https://github.com/GrapheneOS/Info";
-    license = licenses.asl20;
+    description = "GrapheneOS Camera app built from source";
+    homepage = "https://github.com/GrapheneOS/Camera";
+    license = licenses.mit;
     sourceProvenance = with sourceTypes; [
       fromSource
       binaryBytecode
