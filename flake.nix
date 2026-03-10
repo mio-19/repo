@@ -212,12 +212,13 @@
           packages.grapheneos-tangorpro-kernel = pkgs.callPackage ./grapheneos_tangorpro_kernel.nix { };
           packages.grapheneos-camera = pkgs.callPackage ./grapheneos_camera_app.nix { };
           packages.grapheneos-info = pkgs.callPackage ./grapheneos_info_app.nix { };
-          packages.grapheneos-husky-key-script = self.gosNoCcache.husky.generateKeysScript; # for garnix
-          packages.grapheneos-husky-factory-img = self.gosNoCcache.husky.factoryImg; # for garnix
-          packages.grapheneos-tangorpro-factory-img = self.gosNoCcache.tangorpro.factoryImg; # for garnix
-          packages.los-gts7lwifi-ota = self.losNoCcache.gts7lwifi.ota; # for garnix
-          packages.los-gts7l-ota = self.losNoCcache.gts7l.ota; # for garnix
-          packages.los-enchilada-img = self.losNoCcache.enchilada.img; # for garnix
+          # followings are for garnix:
+          packages.grapheneos-husky-key-script = self.gosNoCcache.husky.generateKeysScript;
+          packages.grapheneos-husky-factory-img = self.gosNoCcache.husky.factoryImg;
+          packages.grapheneos-tangorpro-factory-img = self.gosNoCcache.tangorpro.factoryImg;
+          packages.los-gts7lwifi-ota = self.losNoCcache.gts7lwifi.ota;
+          packages.los-gts7l-ota = self.losNoCcache.gts7l.ota;
+          packages.los-enchilada-img = self.losNoCcache.enchilada.img;
           /*
             packages.grapheneos-husky-srcs = self.gos.husky.config.build.android.overrideAttrs (old: {
               buildPhase = "";
@@ -261,113 +262,10 @@
                   stateVersion
                   ;
               };
-              samsung_sm8250 = {
-                kernelMakeFlags = [
-                  "KCFLAGS=\"-Wno-error\""
-                  "KCPPFLAGS=\"-Wno-error\""
-                ];
-                anyKernelVariant = "kernelsu";
-                clangVersion = "latest";
-                kernelDefconfigs = [
-                  "gki_defconfig"
-                ];
-                #kernelSU.variant = "next";
-                kernelImageName = "Image";
-                # waiting for https://github.com/xddxdd/nix-kernelsu-builder/commit/d25cbcdb22d1a28bc6db28bf678ea4720873ffe1#commitcomment-178938881
-                kernelSU.variant = "custom";
-                kernelSU.src = pkgs.callPackage ./ksuNext.nix { };
-                kernelSU.revision = null;
-                kernelSU.subdirectory = "KernelSU-Next";
-                #susfs.enable = true;
-                #susfs.src = sources.susfs419.src;
-                kernelConfig = ''
-                  CONFIG_SYSVIPC=y
-                  CONFIG_UTS_NS=y
-                  CONFIG_PID_NS=y
-                  CONFIG_IPC_NS=y
-                  CONFIG_USER_NS=y
-                  CONFIG_NET_NS=y
-                  CONFIG_CGROUP_DEVICE=y
-                  CONFIG_CGROUP_FREEZER=y
-                  CONFIG_DRM=y
-                  CONFIG_DRM_LINDROID_EVDI=y
-                  CONFIG_TMPFS_POSIX_ACL=y
-
-
-                '';
-                kernelSrc =
-                  assert gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".patches == [ ];
-                  assert gts7l_robotnix.config.source.dirs."kernel/samsung/sm8250".patches == [ ];
-                  assert
-                    gts7l_robotnix.config.source.dirs."kernel/samsung/sm8250".src
-                    == gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".src;
-                  gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".src;
-                postPatch = ''
-                  cp -r ${sources.lindroid_drm_loopback.src} ./drivers/lindroid-drm
-
-                  sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" ./drivers/Kconfig
-                  echo 'obj-y += lindroid-drm/' >> ./drivers/Makefile
-                '';
-                kernelPatches = [
-                  ./filter_count.patch
-                  ./overlayfs.patch
-                ];
-                # https://download.lineageos.org/devices/gts7lwifi/builds
-                oemBootImg = pkgs.fetchurl {
-                  url = "https://web.archive.org/web/20260304113004if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gts7lwifi/20260302/boot.img";
-                  hash = "sha256-5VUj4UcqtOynGy2HwBHe7gKI3muta18vJSX9UntQKCM=";
-                };
-              };
-              # currently only compiles on aarch64-linux
-              enchilada = {
-                kernelMakeFlags = [
-                  "KCFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
-                  "KCPPFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
-                ];
-                anyKernelVariant = "osm0sis";
-                clangVersion = "latest";
-                kernelDefconfigs = [
-                  "enchilada_defconfig"
-                ];
-                kernelSU.enable = false; # can compile but not working
-                kernelSU.variant = "next";
-                kernelImageName = "Image";
-                kernelSrc =
-                  assert enchilada_robotnix.config.source.dirs."kernel/oneplus/sdm845".patches == [ ];
-                  enchilada_robotnix.config.source.dirs."kernel/oneplus/sdm845".src;
-                #kernelConfig = ''
-                #  CONFIG_KSU_KPROBES_HOOK=n
-                #  CONFIG_KPROBES=n
-                #'';
-                kernelPatches = [
-                  ./filter_count.patch
-                  #./0001-KSUManual4.9.patch
-                  #./0001-CROSS_COMPILE-aarch64-linux-gnu.patch
-                  #./0001-CLANG_TARGET_FLAGS-ported-from-android_kernel_samsun.patch
-                ];
-                # https://download.lineageos.org/devices/enchilada/builds
-                oemBootImg = pkgs.fetchurl {
-                  url = "https://web.archive.org/web/20260304112850if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gta4xlwifi/20260228/boot.img";
-                  hash = "sha256-1p5R6bGVaQsuF/etyo3hF3Y67XLBiQ1x9p3W2SX/DX0=";
-                };
-              };
-              gta4xlwifi_evobka = mk_gta4xlwifi sources.gta4xlwifi-evobka-kernel.src;
-              gta4xlwifi =
-                mk_gta4xlwifi (
-                  assert gta4xlwifi_robotnix.config.source.dirs."kernel/samsung/gta4xl".patches == [ ];
-                  gta4xlwifi_robotnix.config.source.dirs."kernel/samsung/gta4xl".src
-                )
-                // {
-                  # https://download.lineageos.org/devices/gta4xlwifi/builds
-                  oemBootImg = pkgs.fetchurl {
-                    url = "https://web.archive.org/web/20260304112854if_/https://saimei.ftp.acc.umu.se/mirror/lineageos/full/enchilada/20260304/boot.img";
-                    hash = "sha256-O7fHSZltqye+pLssT1CiHwnWaWRoRcon7HKYAIp6IlQ=";
-                  };
-                };
               mk_gta4xlwifi =
                 kernel:
                 let
-                  s = import ./sources.nix args;
+                  s = import ./sources.nix args; # TODO: replace with more recent lindroid-drm
                 in
                 {
                   # https://github.com/Linux-On-LineageOS/lindroid-drm-loopback/commit/73e732316409ad5b75a5715684d3c2d940d8670b
@@ -419,10 +317,107 @@
                 };
             in
             {
-              enchilada = enchilada;
-              gta4xlwifi = gta4xlwifi;
-              gta4xlwifi_evobka = gta4xlwifi_evobka;
-              samsung_sm8250 = samsung_sm8250;
+              # currently only compiles on aarch64-linux
+              enchilada = {
+                kernelMakeFlags = [
+                  "KCFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
+                  "KCPPFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
+                ];
+                anyKernelVariant = "osm0sis";
+                clangVersion = "latest";
+                kernelDefconfigs = [
+                  "enchilada_defconfig"
+                ];
+                kernelSU.enable = false; # can compile but not working
+                kernelSU.variant = "next";
+                kernelImageName = "Image";
+                kernelSrc =
+                  assert enchilada_robotnix.config.source.dirs."kernel/oneplus/sdm845".patches == [ ];
+                  enchilada_robotnix.config.source.dirs."kernel/oneplus/sdm845".src;
+                #kernelConfig = ''
+                #  CONFIG_KSU_KPROBES_HOOK=n
+                #  CONFIG_KPROBES=n
+                #'';
+                kernelPatches = [
+                  ./filter_count.patch
+                  #./0001-KSUManual4.9.patch
+                  #./0001-CROSS_COMPILE-aarch64-linux-gnu.patch
+                  #./0001-CLANG_TARGET_FLAGS-ported-from-android_kernel_samsun.patch
+                ];
+                # https://download.lineageos.org/devices/enchilada/builds
+                oemBootImg = pkgs.fetchurl {
+                  url = "https://web.archive.org/web/20260304112850if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gta4xlwifi/20260228/boot.img";
+                  hash = "sha256-1p5R6bGVaQsuF/etyo3hF3Y67XLBiQ1x9p3W2SX/DX0=";
+                };
+              };
+              gta4xlwifi_evobka = mk_gta4xlwifi sources.gta4xlwifi-evobka-kernel.src;
+              gta4xlwifi =
+                mk_gta4xlwifi (
+                  assert gta4xlwifi_robotnix.config.source.dirs."kernel/samsung/gta4xl".patches == [ ];
+                  gta4xlwifi_robotnix.config.source.dirs."kernel/samsung/gta4xl".src
+                )
+                // {
+                  # https://download.lineageos.org/devices/gta4xlwifi/builds
+                  oemBootImg = pkgs.fetchurl {
+                    url = "https://web.archive.org/web/20260304112854if_/https://saimei.ftp.acc.umu.se/mirror/lineageos/full/enchilada/20260304/boot.img";
+                    hash = "sha256-O7fHSZltqye+pLssT1CiHwnWaWRoRcon7HKYAIp6IlQ=";
+                  };
+                };
+              samsung_sm8250 = {
+                kernelMakeFlags = [
+                  "KCFLAGS=\"-Wno-error\""
+                  "KCPPFLAGS=\"-Wno-error\""
+                ];
+                anyKernelVariant = "kernelsu";
+                clangVersion = "latest";
+                kernelDefconfigs = [
+                  "gki_defconfig"
+                ];
+                #kernelSU.variant = "next";
+                kernelImageName = "Image";
+                # waiting for https://github.com/xddxdd/nix-kernelsu-builder/commit/d25cbcdb22d1a28bc6db28bf678ea4720873ffe1#commitcomment-178938881
+                kernelSU.variant = "custom";
+                kernelSU.src = pkgs.callPackage ./ksuNext.nix { };
+                kernelSU.revision = null;
+                kernelSU.subdirectory = "KernelSU-Next";
+                #susfs.enable = true;
+                #susfs.src = sources.susfs419.src;
+                kernelConfig = ''
+                  CONFIG_SYSVIPC=y
+                  CONFIG_UTS_NS=y
+                  CONFIG_PID_NS=y
+                  CONFIG_IPC_NS=y
+                  CONFIG_USER_NS=y
+                  CONFIG_NET_NS=y
+                  CONFIG_CGROUP_DEVICE=y
+                  CONFIG_CGROUP_FREEZER=y
+                  CONFIG_DRM=y
+                  CONFIG_DRM_LINDROID_EVDI=y
+                  CONFIG_TMPFS_POSIX_ACL=y
+                '';
+                kernelSrc =
+                  assert gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".patches == [ ];
+                  assert gts7l_robotnix.config.source.dirs."kernel/samsung/sm8250".patches == [ ];
+                  assert
+                    gts7l_robotnix.config.source.dirs."kernel/samsung/sm8250".src
+                    == gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".src;
+                  gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".src;
+                postPatch = ''
+                  cp -r ${sources.lindroid_drm_loopback.src} ./drivers/lindroid-drm
+
+                  sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" ./drivers/Kconfig
+                  echo 'obj-y += lindroid-drm/' >> ./drivers/Makefile
+                '';
+                kernelPatches = [
+                  ./filter_count.patch
+                  ./overlayfs.patch
+                ];
+                # https://download.lineageos.org/devices/gts7lwifi/builds
+                oemBootImg = pkgs.fetchurl {
+                  url = "https://web.archive.org/web/20260304113004if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gts7lwifi/20260302/boot.img";
+                  hash = "sha256-5VUj4UcqtOynGy2HwBHe7gKI3muta18vJSX9UntQKCM=";
+                };
+              };
             };
         };
     };
