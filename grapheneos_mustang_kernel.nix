@@ -1,7 +1,6 @@
 {
   fetchgit,
   callPackage,
-  lib,
   enableKSU ? true,
 }:
 let

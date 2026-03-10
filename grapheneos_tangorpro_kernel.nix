@@ -1,8 +1,4 @@
 {
-  fetchurl,
-  fetchgit,
-  fetchFromGitHub,
-  dockerTools,
   callPackage,
   enableKSU ? true,
   enableLindroid ? true,
