@@ -45,7 +45,7 @@
   installSubdir ? "grapheneos",
   enableKSU,
   enableLindroid,
-  enableDaria ? false,
+  enableDaria ? enableLindroid,
   ksuMakefilePreamble ? ''
     echo "srctree := $(pwd)/aosp"
     echo "src := KernelSU/kernel"
