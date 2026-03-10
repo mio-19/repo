@@ -89,10 +89,22 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir -p "$out/prebuilt"
     unsigned_apk="$(echo app/build/outputs/apk/release/*-unsigned.apk)"
     signed_apk="$out/prebuilt/Info.apk"
+    keystore="$TMPDIR/grapheneos-info-signing-key.jks"
+
+    # We don't expect out of band upgrade so use a key generated every time.
+    keytool -genkeypair \
+      -keystore "$keystore" \
+      -storepass android \
+      -keypass android \
+      -alias androiddebugkey \
+      -keyalg RSA \
+      -keysize 4096 \
+      -validity 10000 \
+      -dname "CN=GrapheneOS Info,O=GrapheneOS,C=US"
 
     apksigner sign \
       --v4-signing-enabled false \
-      --ks ${./grapheneos_info_testkey.jks} \
+      --ks "$keystore" \
       --ks-pass pass:android \
       --key-pass pass:android \
       --ks-key-alias androiddebugkey \
