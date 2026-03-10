@@ -7,7 +7,7 @@
   dockerTools,
   callPackage,
   enableKSU ? false,
-  pwmmode ? "0x05",
+  pwmmode ? "0x02",
   enableLindroid ? false,
   enableDaria ? enableLindroid,
 }:
@@ -35,6 +35,8 @@ callPackage ./grapheneos_kernel_common.nix { } {
     apply_patch ${
       if pwmmode == "0x01" then
         ./kernel/pixel8pro-stock-0x01.patch
+      else if pwmmode == "0x02" then
+        ./kernel/pixel8pro-stock-0x02.patch
       else if pwmmode == "0x05" then
         ./kernel/pixel8pro-stock-0x05.patch
       else if pwmmode == "3840Hz" then
