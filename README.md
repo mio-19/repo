@@ -30,6 +30,7 @@ nix build -L --max-jobs 4 .#los.gta4xlwifi.releaseScript -o release
 
 nix build -L --max-jobs 4 .#gos.akita.releaseScript -o release && ./release ./keys-akita
 nix build -L --max-jobs 4 .#gos.husky.releaseScript -o release && ./release ./keys-husky
+nix build -L --max-jobs 4 .#gosNoCcache.husky.releaseScript -o release && ./release ./keys-husky
 nix build -L --max-jobs 4 .#gos.mustang.releaseScript -o release && ./release ./keys-mustang
 ```
 
