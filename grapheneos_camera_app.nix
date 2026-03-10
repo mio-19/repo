@@ -50,6 +50,11 @@ stdenv.mkDerivation (finalAttrs: {
       url = "https://github.com/GrapheneOS/Camera/pull/535.patch";
       hash = "sha256-P4T5aKouSxAA0Q53vO6kJLputt3bSiPzR9EHwX8alSc=";
     })
+    (fetchpatch {
+      name = "Support beginning a video recording with the microphone muted";
+      url = "https://github.com/GrapheneOS/Camera/pull/553.patch";
+      hash = "sha256-QU/69Ugl8BQhwoYcs1izA9reRqcUi0/6sX8YzPr9yMg=";
+    })
   ];
 
   gradleBuildTask = ":app:assembleRelease";
