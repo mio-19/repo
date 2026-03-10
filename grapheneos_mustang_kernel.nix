@@ -2,6 +2,7 @@
   fetchgit,
   callPackage,
   enableKSU ? true,
+  enableLindroid ? false,
 }:
 let
   src = fetchgit {
@@ -19,7 +20,7 @@ callPackage ./grapheneos_kernel_common.nix { } {
   buildScript = "build_muzel.sh";
   distDir = "muzel";
   installSubdir = "grapheneos/muzel";
-  inherit enableKSU;
+  inherit enableKSU enableLindroid;
   buildCommand = ''
     ./build_muzel.sh --lto=full --repo_manifest="$(realpath .)":"$(realpath aosp_manifest.xml)"
   '';
