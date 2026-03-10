@@ -21,26 +21,11 @@ let
   # KSU_VERSION = git rev-list --count HEAD
   # 10000 + $(KSU_GIT_VERSION) + 200
   ksu-variants = {
-    # TODO: patch version
     next = {
-      src = pkgs.fetchgit {
-        url = "https://github.com/KernelSU-Next/KernelSU-Next.git";
-        rev = "0d6bdc6364cbfc73517dcfdf7ab23b0ba8045553"; # pin
-        sha256 = "1gjw88sk6655l0l2h1km7ga7w0yqcv0wq2g00aw390mf4np5ipw7";
-      };
-      version = "unstable-2025-09-22";
+      src = pkgs.callPackage ./ksuNext.nix { };
     };
     original = {
       src = pkgs.callPackage ./kernelSU.nix { };
-    };
-    # TODO: patch version
-    sukisu = {
-      src = pkgs.fetchgit {
-        url = "https://github.com/SukiSU-Ultra/SukiSU-Ultra.git";
-        rev = "11db609e7b59f07a59b678f1972b9fbaacf3358d";
-        sha256 = "12wnzipdzz4fb1l19wg4yhis2lxwmi7wp9fg1srmhkygn1fsl8cc";
-      };
-      version = "unstable-2026-03-08";
     };
   };
 in
@@ -93,7 +78,6 @@ in
       type = lib.types.enum [
         "original"
         "next"
-        "sukisu"
       ];
       default = "original";
       description = "KernelSU variant";
