@@ -1,0 +1,27 @@
+args@{
+  config,
+  pkgs-unstable,
+  lib,
+  ...
+}:
+let
+  enableLindroid = false;
+in
+{
+  imports = [
+    ./gos.nix
+    ./gos_lindroid.nix
+    #./gos_userdebug.nix
+  ];
+  enableLindroid = enableLindroid;
+  device = "tangorpro";
+  source.dirs."device/google/tangorpro-kernels/6.1" = lib.mkForce {
+    src =
+      let
+        src = pkgs-unstable.callPackage ./grapheneos_tangorpro_kernel.nix { inherit enableLindroid; };
+      in
+      assert src.src.tag == config.grapheneos.release;
+      src;
+  };
+  stateVersion = "3";
+}
