@@ -73,3 +73,7 @@ nix build -L .#grapheneos-mustang-kernel -o mustang-kernel-dist
 ## update
 
 use update-nix-fetchgit and nvfetcher
+
+## todo
+
+read <https://xdaforums.com/t/improving-s-pen-sensitivity-under-lineage-roms.4752027/>
