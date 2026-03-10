@@ -46,10 +46,6 @@
   enableKSU,
   enableLindroid,
   enableDaria ? enableLindroid,
-  ksuMakefilePreamble ? ''
-    echo "srctree := $(pwd)/aosp"
-    echo "src := KernelSU/kernel"
-  '',
   buildCommand ? null,
   extraBuildCommands ? "",
 }:
@@ -130,7 +126,8 @@ stdenvNoCC.mkDerivation {
 
         cp aosp/KernelSU/kernel/Makefile aosp/KernelSU/kernel/Makefile.orig
         {
-          ${ksuMakefilePreamble}
+          echo "srctree := $(pwd)/aosp"
+          echo "src := KernelSU/kernel"
           cat aosp/KernelSU/kernel/Makefile.orig
         } > aosp/KernelSU/kernel/Makefile
       ''}
