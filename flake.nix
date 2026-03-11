@@ -98,6 +98,7 @@
               enchilada = common ./enchilada.nix;
               enchilada_mainline = common ./enchilada-mainline.nix;
               nx_tab = common ./nx_tab.nix;
+              utm = common ./utm.nix;
               akita = common ./akita.nix;
               "dm3q-kenzie" = common ./dm3q-kenzie.nix;
               dm3q_cola2261 = common ./dm3q-cola2261.nix;
@@ -220,6 +221,7 @@
           packages.los-gts7lwifi-ota = self.losNoCcache.gts7lwifi.ota;
           packages.los-gts7l-ota = self.losNoCcache.gts7l.ota;
           packages.los-enchilada-img = self.losNoCcache.enchilada.img;
+          packages.los-utm-img = self.losNoCcache.utm.img;
           /*
             packages.grapheneos-husky-srcs = self.gos.husky.config.build.android.overrideAttrs (old: {
               buildPhase = "";
