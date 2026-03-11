@@ -1,5 +1,4 @@
 args@{
-  config,
   pkgs,
   pkgs-unstable,
   lib,
@@ -16,6 +15,7 @@ let
   };
 in
 {
+  imports = [ ./gos_noleakdns.nix ];
   buildDateTime = 1772543347;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
