@@ -8,6 +8,7 @@ args@{
 {
   imports = [
     ./los.nix
+    ./los_hardened_22_2.nix
     #./los_magisk.nix
   ];
   manufactor = "oneplus";
