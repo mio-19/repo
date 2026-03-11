@@ -39,12 +39,8 @@
 
   outputs =
     {
-      self,
-      robotnix,
-      nix-github-actions,
       nixpkgs,
       flake-parts,
-      openwrt-imagebuilder,
       ...
     }@inputs:
     flake-parts.lib.mkFlake { inherit inputs; } {

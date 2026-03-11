@@ -11,7 +11,7 @@ let
     let
       common =
         f:
-        args@{ config, pkgs, ... }:
+        args@{ pkgs, ... }:
         {
           _module.args.pkgs-unstable = import nixpkgs {
             system = pkgs.stdenv.hostPlatform.system;
@@ -34,7 +34,7 @@ let
     let
       common =
         f:
-        args@{ config, pkgs, ... }:
+        args@{ pkgs, ... }:
         {
           _module.args.pkgs-unstable = import nixpkgs {
             system = pkgs.stdenv.hostPlatform.system;
@@ -82,7 +82,7 @@ in
     };
   };
   perSystem =
-    args@{ pkgs, system, ... }:
+    args@{ pkgs, ... }:
     let
       sources = (import ./_sources/generated.nix) {
         inherit (pkgs)
