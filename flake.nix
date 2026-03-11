@@ -215,6 +215,7 @@
           # followings are for garnix:
           packages.grapheneos-husky-key-script = self.gosNoCcache.husky.generateKeysScript;
           packages.grapheneos-husky-factory-img = self.gosNoCcache.husky.factoryImg;
+          packages.grapheneos-tangorpro-key-script = self.gosNoCcache.tangorpro.generateKeysScript;
           packages.grapheneos-tangorpro-factory-img = self.gosNoCcache.tangorpro.factoryImg;
           packages.los-gts7lwifi-ota = self.losNoCcache.gts7lwifi.ota;
           packages.los-gts7l-ota = self.losNoCcache.gts7l.ota;
