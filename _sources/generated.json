@@ -279,6 +279,26 @@
         },
         "version": "c01b9ddf8b0b77c14f766927328b46b906389800"
     },
+    "lineage_device_mainline_common": {
+        "cargoLock": null,
+        "date": "2026-03-10",
+        "extract": null,
+        "name": "lineage_device_mainline_common",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "de9223077104c3fb8b8e4277c56bc21007ea9662",
+            "sha256": "sha256-gJBimAWE8ZA2MjScWXCGsTc43ATmtTYrTDDT/bz+Zrc=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/LineageOS/android_device_mainline_common.git"
+        },
+        "version": "de9223077104c3fb8b8e4277c56bc21007ea9662"
+    },
     "lineage_device_virt_common": {
         "cargoLock": null,
         "date": "2026-03-09",
@@ -379,6 +399,66 @@
         },
         "version": "c9b0487d2c7b2fdfc58e01ed5c1c98f2e90246e0"
     },
+    "lineage_external_mesa": {
+        "cargoLock": null,
+        "date": "2026-02-23",
+        "extract": null,
+        "name": "lineage_external_mesa",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "b88d4eb3c491c5de880cea75d57fc92f922a75a7",
+            "sha256": "sha256-SJn6kHky3p0KfIVYdUPVID2DlyXLa+4VHf6IktgKBZw=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/LineageOS/android_external_mesa.git"
+        },
+        "version": "b88d4eb3c491c5de880cea75d57fc92f922a75a7"
+    },
+    "lineage_kernel_mainline_configs": {
+        "cargoLock": null,
+        "date": "2025-12-05",
+        "extract": null,
+        "name": "lineage_kernel_mainline_configs",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "cbd8590fed658bd598bd77f4460bb96c0f1fb0c7",
+            "sha256": "sha256-yT+Vo7GUFCIMwv8+5Vj2iM83sFsyHqI1XJc7XObtpeU=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/LineageOS/android_kernel_mainline_configs.git"
+        },
+        "version": "cbd8590fed658bd598bd77f4460bb96c0f1fb0c7"
+    },
+    "lineage_kernel_virt_virtio": {
+        "cargoLock": null,
+        "date": "2025-12-31",
+        "extract": null,
+        "name": "lineage_kernel_virt_virtio",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "f5d9986a0f480fc0887804c751b3155c0c4da06a",
+            "sha256": "sha256-ZQowVhIcNZNCoIDt3P2kvgPAIshYsUZfH2GO+McFod0=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/LineageOS/android_kernel_virt_virtio.git"
+        },
+        "version": "f5d9986a0f480fc0887804c751b3155c0c4da06a"
+    },
     "lineage_latinime": {
         "cargoLock": null,
         "date": "2026-03-01",
@@ -398,6 +478,26 @@
             "url": "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git"
         },
         "version": "d6cc930e24d75a0d3b46c63d5437137a13f06f02"
+    },
+    "lineage_prebuilts_bootmgr": {
+        "cargoLock": null,
+        "date": "2026-02-18",
+        "extract": null,
+        "name": "lineage_prebuilts_bootmgr",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "811ba971e891b1f3e7412dfcaac633af5517892f",
+            "sha256": "sha256-zXwaM3Vf9L/xm8w/kpXKJpQBp5WDU6cY3arzGXnSj2g=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/LineageOS/android_prebuilts_bootmgr.git"
+        },
+        "version": "811ba971e891b1f3e7412dfcaac633af5517892f"
     },
     "sm8550_tab_device_gts9wifi": {
         "cargoLock": null,

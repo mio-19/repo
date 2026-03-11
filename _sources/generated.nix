@@ -202,6 +202,20 @@
     };
     date = "2026-03-01";
   };
+  lineage_device_mainline_common = {
+    pname = "lineage_device_mainline_common";
+    version = "de9223077104c3fb8b8e4277c56bc21007ea9662";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_device_mainline_common.git";
+      rev = "de9223077104c3fb8b8e4277c56bc21007ea9662";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-gJBimAWE8ZA2MjScWXCGsTc43ATmtTYrTDDT/bz+Zrc=";
+    };
+    date = "2026-03-10";
+  };
   lineage_device_virt_common = {
     pname = "lineage_device_virt_common";
     version = "fdcfff953047463113451a5f8113a08e2d6a5d74";
@@ -272,6 +286,48 @@
     };
     date = "2026-02-26";
   };
+  lineage_external_mesa = {
+    pname = "lineage_external_mesa";
+    version = "b88d4eb3c491c5de880cea75d57fc92f922a75a7";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_external_mesa.git";
+      rev = "b88d4eb3c491c5de880cea75d57fc92f922a75a7";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-SJn6kHky3p0KfIVYdUPVID2DlyXLa+4VHf6IktgKBZw=";
+    };
+    date = "2026-02-23";
+  };
+  lineage_kernel_mainline_configs = {
+    pname = "lineage_kernel_mainline_configs";
+    version = "cbd8590fed658bd598bd77f4460bb96c0f1fb0c7";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_kernel_mainline_configs.git";
+      rev = "cbd8590fed658bd598bd77f4460bb96c0f1fb0c7";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-yT+Vo7GUFCIMwv8+5Vj2iM83sFsyHqI1XJc7XObtpeU=";
+    };
+    date = "2025-12-05";
+  };
+  lineage_kernel_virt_virtio = {
+    pname = "lineage_kernel_virt_virtio";
+    version = "f5d9986a0f480fc0887804c751b3155c0c4da06a";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_kernel_virt_virtio.git";
+      rev = "f5d9986a0f480fc0887804c751b3155c0c4da06a";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-ZQowVhIcNZNCoIDt3P2kvgPAIshYsUZfH2GO+McFod0=";
+    };
+    date = "2025-12-31";
+  };
   lineage_latinime = {
     pname = "lineage_latinime";
     version = "d6cc930e24d75a0d3b46c63d5437137a13f06f02";
@@ -285,6 +341,20 @@
       sha256 = "sha256-Ikm853Pmgc/FQKGam/05l2LvLfZZhKVbHOyxz6S0XIg=";
     };
     date = "2026-03-01";
+  };
+  lineage_prebuilts_bootmgr = {
+    pname = "lineage_prebuilts_bootmgr";
+    version = "811ba971e891b1f3e7412dfcaac633af5517892f";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_prebuilts_bootmgr.git";
+      rev = "811ba971e891b1f3e7412dfcaac633af5517892f";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-zXwaM3Vf9L/xm8w/kpXKJpQBp5WDU6cY3arzGXnSj2g=";
+    };
+    date = "2026-02-18";
   };
   sm8550_tab_device_gts9wifi = {
     pname = "sm8550_tab_device_gts9wifi";
