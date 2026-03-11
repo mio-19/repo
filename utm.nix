@@ -5,6 +5,16 @@ args@{
   lib,
   ...
 }:
+let
+  sources = (import ./_sources/generated.nix) {
+    inherit (pkgs)
+      fetchurl
+      fetchgit
+      fetchFromGitHub
+      dockerTools
+      ;
+  };
+in
 {
   imports = [ ./los.nix ];
 
@@ -25,4 +35,16 @@ args@{
   # TODO: enable KSU after switching this target away from TARGET_NO_KERNEL /
   # prebuilt virtual-device kernels to a source-built kernel path.
   ksu = false;
+
+  source.dirs = {
+    "device/mainline/common".src = sources.lineage_device_mainline_common.src;
+    "device/virt/virtio_arm64only".src = sources.lineage_device_virtio_arm64only.src;
+    "device/virt/virtio_arm64".src = sources.lineage_device_virtio_arm64.src;
+    "device/virt/virt-common".src = sources.lineage_device_virt_common.src;
+    "device/virt/virtio-common".src = sources.lineage_device_virtio_common.src;
+    "external/mesa".src = sources.lineage_external_mesa.src;
+    "kernel/mainline/configs".src = sources.lineage_kernel_mainline_configs.src;
+    "kernel/virt/virtio".src = sources.lineage_kernel_virt_virtio.src;
+    "prebuilts/bootmgr".src = sources.lineage_prebuilts_bootmgr.src;
+  };
 }

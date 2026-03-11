@@ -279,6 +279,86 @@
         },
         "version": "c01b9ddf8b0b77c14f766927328b46b906389800"
     },
+    "lineage_device_virt_common": {
+        "cargoLock": null,
+        "date": "2026-03-09",
+        "extract": null,
+        "name": "lineage_device_virt_common",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "fdcfff953047463113451a5f8113a08e2d6a5d74",
+            "sha256": "sha256-J3RT66iveZymw+AkezX+N/yuzWHCSh48hLLLxLlpc3E=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/LineageOS/android_device_virt_virt-common.git"
+        },
+        "version": "fdcfff953047463113451a5f8113a08e2d6a5d74"
+    },
+    "lineage_device_virtio_arm64": {
+        "cargoLock": null,
+        "date": "2025-12-11",
+        "extract": null,
+        "name": "lineage_device_virtio_arm64",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "3346a2fb77da6c8a2728cca8313530ba74de3798",
+            "sha256": "sha256-GxorbnqWIDTWbWiI3lyAv3byhR9/1PUVvgZWL1XAO3A=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/LineageOS/android_device_virt_virtio_arm64.git"
+        },
+        "version": "3346a2fb77da6c8a2728cca8313530ba74de3798"
+    },
+    "lineage_device_virtio_arm64only": {
+        "cargoLock": null,
+        "date": "2025-11-11",
+        "extract": null,
+        "name": "lineage_device_virtio_arm64only",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "05609653c67fe93de3a7f0e115a1680355c9a8e5",
+            "sha256": "sha256-fZCK7Xq5nevpzSAp+cb16wTxwGZzgF3EfkX9ARktSF8=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/LineageOS/android_device_virt_virtio_arm64only.git"
+        },
+        "version": "05609653c67fe93de3a7f0e115a1680355c9a8e5"
+    },
+    "lineage_device_virtio_common": {
+        "cargoLock": null,
+        "date": "2026-02-01",
+        "extract": null,
+        "name": "lineage_device_virtio_common",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "74ef24f0726a7f6a3a05a1527f574ba6a47daad9",
+            "sha256": "sha256-KH3u9nzofqcRVE448J4xWSOREZoOFeTAIwQTHwDsX5s=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/LineageOS/android_device_virt_virtio-common.git"
+        },
+        "version": "74ef24f0726a7f6a3a05a1527f574ba6a47daad9"
+    },
     "lineage_exactcalculator": {
         "cargoLock": null,
         "date": "2026-02-26",

@@ -58,6 +58,52 @@ src.git = "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.g
 src.branch = "lineage-23.2"
 fetch.git = "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git"
 
+[lineage_device_mainline_common]
+src.git = "https://github.com/LineageOS/android_device_mainline_common.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_device_mainline_common.git"
+
+[lineage_device_virtio_arm64only]
+src.git = "https://github.com/LineageOS/android_device_virt_virtio_arm64only.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_device_virt_virtio_arm64only.git"
+
+[lineage_device_virtio_arm64]
+src.git = "https://github.com/LineageOS/android_device_virt_virtio_arm64.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_device_virt_virtio_arm64.git"
+
+[lineage_device_virt_common]
+src.git = "https://github.com/LineageOS/android_device_virt_virt-common.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_device_virt_virt-common.git"
+
+[lineage_device_virtio_common]
+src.git = "https://github.com/LineageOS/android_device_virt_virtio-common.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_device_virt_virtio-common.git"
+
+[lineage_external_mesa]
+src.git = "https://github.com/LineageOS/android_external_mesa.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_external_mesa.git"
+
+[lineage_kernel_mainline_configs]
+src.git = "https://github.com/LineageOS/android_kernel_mainline_configs.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_kernel_mainline_configs.git"
+
+[lineage_kernel_virt_virtio]
+src.git = "https://github.com/LineageOS/android_kernel_virt_virtio.git"
+# Upstream does not currently publish a lineage-23.2 branch for this repo.
+src.branch = "lineage-23.1"
+fetch.git = "https://github.com/LineageOS/android_kernel_virt_virtio.git"
+
+[lineage_prebuilts_bootmgr]
+src.git = "https://github.com/LineageOS/android_prebuilts_bootmgr.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_prebuilts_bootmgr.git"
+
 [grapheneos_info]
 src.git = "https://github.com/GrapheneOS/Info.git"
 fetch.git = "https://github.com/GrapheneOS/Info.git"

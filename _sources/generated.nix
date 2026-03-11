@@ -202,6 +202,62 @@
     };
     date = "2026-03-01";
   };
+  lineage_device_virt_common = {
+    pname = "lineage_device_virt_common";
+    version = "fdcfff953047463113451a5f8113a08e2d6a5d74";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_device_virt_virt-common.git";
+      rev = "fdcfff953047463113451a5f8113a08e2d6a5d74";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-J3RT66iveZymw+AkezX+N/yuzWHCSh48hLLLxLlpc3E=";
+    };
+    date = "2026-03-09";
+  };
+  lineage_device_virtio_arm64 = {
+    pname = "lineage_device_virtio_arm64";
+    version = "3346a2fb77da6c8a2728cca8313530ba74de3798";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_device_virt_virtio_arm64.git";
+      rev = "3346a2fb77da6c8a2728cca8313530ba74de3798";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-GxorbnqWIDTWbWiI3lyAv3byhR9/1PUVvgZWL1XAO3A=";
+    };
+    date = "2025-12-11";
+  };
+  lineage_device_virtio_arm64only = {
+    pname = "lineage_device_virtio_arm64only";
+    version = "05609653c67fe93de3a7f0e115a1680355c9a8e5";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_device_virt_virtio_arm64only.git";
+      rev = "05609653c67fe93de3a7f0e115a1680355c9a8e5";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-fZCK7Xq5nevpzSAp+cb16wTxwGZzgF3EfkX9ARktSF8=";
+    };
+    date = "2025-11-11";
+  };
+  lineage_device_virtio_common = {
+    pname = "lineage_device_virtio_common";
+    version = "74ef24f0726a7f6a3a05a1527f574ba6a47daad9";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_device_virt_virtio-common.git";
+      rev = "74ef24f0726a7f6a3a05a1527f574ba6a47daad9";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-KH3u9nzofqcRVE448J4xWSOREZoOFeTAIwQTHwDsX5s=";
+    };
+    date = "2026-02-01";
+  };
   lineage_exactcalculator = {
     pname = "lineage_exactcalculator";
     version = "c9b0487d2c7b2fdfc58e01ed5c1c98f2e90246e0";
