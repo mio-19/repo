@@ -300,7 +300,12 @@ in
             kernelPatches = [
               ./filter_count.patch
               ./overlayfs.patch
-            ];
+              # AXP.OS backports selected from the sm8250 CVE patcher after checking
+              # them against LineageOS android_kernel_samsung_sm8250 lineage-23.2
+              # (4.19.325) and keeping only the patches that also applied in
+              # upstream order as one cumulative series.
+            ]
+            ++ pkgs.callPackage ./samsung_sm8250_axp_patches.nix { };
             # https://download.lineageos.org/devices/gts7lwifi/builds
             oemBootImg = pkgs.fetchurl {
               url = "https://web.archive.org/web/20260304113004if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gts7lwifi/20260302/boot.img";
