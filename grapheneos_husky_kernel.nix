@@ -3,7 +3,7 @@
   callPackage,
   enableKSU ? false,
   pwmmode ? "0x02",
-  enableLindroid ? false,
+  enableLindroid,
   enableDaria ? enableLindroid,
 }:
 callPackage ./grapheneos_kernel_common.nix { } {

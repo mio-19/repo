@@ -1,7 +1,7 @@
 {
   callPackage,
   enableKSU ? true,
-  enableLindroid ? true,
+  enableLindroid,
 }:
 callPackage ./grapheneos_kernel_common.nix { } {
   pname = "grapheneos-tangorpro-kernel";
