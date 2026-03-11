@@ -3,7 +3,7 @@
   callPackage,
   enableKSU ? false,
   pwmmode ? "0x02",
-  enableLindroid,
+  enableLindroid ? false,
   enableDaria ? enableLindroid,
 }:
 callPackage ./grapheneos_kernel_common.nix { } {
@@ -27,6 +27,5 @@ callPackage ./grapheneos_kernel_common.nix { } {
         throw "invalid pwmmode: ${pwmmode}"
     }
     apply_patch ${./kernel/pixel8pro-stock-fix-attempt3.patch}
-
   '';
 }
