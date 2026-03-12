@@ -6,7 +6,10 @@ args@{
   ...
 }:
 {
-  imports = [ ./los.nix ];
+  imports = [
+    ./los.nix
+    ./los_hardened_23_2.nix
+  ];
   manufactor = "samsung";
   kernel-short = "sm8250";
   lindroid = true;
