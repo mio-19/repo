@@ -120,31 +120,31 @@
   };
   grapheneos_camera = {
     pname = "grapheneos_camera";
-    version = "23ccbc672bc70a8d3f81e02c8fa95d8850c96e0a";
+    version = "aa0b075bfa136f169b2202f930d513ed51a93972";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/Camera.git";
-      rev = "23ccbc672bc70a8d3f81e02c8fa95d8850c96e0a";
+      rev = "aa0b075bfa136f169b2202f930d513ed51a93972";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-zrJUlcWQjhxppjTNGZjpRgxkfWSG9nqhZBDME1tLEIQ=";
+      sha256 = "sha256-Owmf1k8KzHK2VYumG0oE2gPwP1Tkn+EF1gN7QbRmqrI=";
     };
-    date = "2026-02-03";
+    date = "2026-03-12";
   };
   grapheneos_info = {
     pname = "grapheneos_info";
-    version = "6cd1e4439d1cd8a3dcaa588b666c7fee7aa79792";
+    version = "59f43987f8b53eccdabb3a0f59e7c6d642269cf0";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/Info.git";
-      rev = "6cd1e4439d1cd8a3dcaa588b666c7fee7aa79792";
+      rev = "59f43987f8b53eccdabb3a0f59e7c6d642269cf0";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-X4ocWYZxcyHBqA64KNV7jJ65pqnGjbKXzsLHSL65XuU=";
+      sha256 = "sha256-78sg/hegqbF8mNq4qhPrmWjUrXKLp2BRJXKSglXLIpU=";
     };
-    date = "2026-02-03";
+    date = "2026-03-12";
   };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
@@ -176,17 +176,17 @@
   };
   lindroid_drm_loopback = {
     pname = "lindroid_drm_loopback";
-    version = "9160b7c216bad31ef8d141a7d09f41d072999e8e";
+    version = "bda0d26526abcccb546f1e618e6e53de7adccfd1";
     src = fetchgit {
       url = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git";
-      rev = "9160b7c216bad31ef8d141a7d09f41d072999e8e";
+      rev = "bda0d26526abcccb546f1e618e6e53de7adccfd1";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-l3ReVmQYFVceLx587qf3SmFJAG2muwpliaWzoqU8qzM=";
+      sha256 = "sha256-R2zJ8je+GuuBs/gxIiXJQ3p5OHm0zL72NMW1I6Srjxc=";
     };
-    date = "2026-02-26";
+    date = "2026-03-11";
   };
   lineage_deskclock = {
     pname = "lineage_deskclock";
@@ -286,6 +286,34 @@
     };
     date = "2026-02-26";
   };
+  lineage_external_drm_hwcomposer_upstream = {
+    pname = "lineage_external_drm_hwcomposer_upstream";
+    version = "81379e00d94093e6c7fd11a02ee86655c816cf1b";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_external_drm_hwcomposer-upstream.git";
+      rev = "81379e00d94093e6c7fd11a02ee86655c816cf1b";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-j8QHJnS4Zg2uLDAckkXU34zaQC9QvT3J/1UOmL8mS3E=";
+    };
+    date = "2026-01-19";
+  };
+  lineage_external_linux_firmware_mainline = {
+    pname = "lineage_external_linux_firmware_mainline";
+    version = "6734582a4fba084e07bd5d80ccfc2ea4976e865f";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_external_linux-firmware-mainline.git";
+      rev = "6734582a4fba084e07bd5d80ccfc2ea4976e865f";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-C84GuV/JD+9ozj52fkmX98g6IdGCfnUui/3t80FvZsw=";
+    };
+    date = "2026-01-05";
+  };
   lineage_external_mesa = {
     pname = "lineage_external_mesa";
     version = "b88d4eb3c491c5de880cea75d57fc92f922a75a7";
@@ -299,6 +327,34 @@
       sha256 = "sha256-SJn6kHky3p0KfIVYdUPVID2DlyXLa+4VHf6IktgKBZw=";
     };
     date = "2026-02-23";
+  };
+  lineage_external_minigbm_upstream = {
+    pname = "lineage_external_minigbm_upstream";
+    version = "09ed1a081ac15acc0eef52738bf2b9cc80af0238";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_external_minigbm-upstream.git";
+      rev = "09ed1a081ac15acc0eef52738bf2b9cc80af0238";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-i3P9zAx/UeTgAaQznX40KFQvI5sM8uD1h6jtK3dsirc=";
+    };
+    date = "2026-01-19";
+  };
+  lineage_hardware_mainline_common = {
+    pname = "lineage_hardware_mainline_common";
+    version = "a041424e50ef9304092f0663a60b906925000d29";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_hardware_mainline_common.git";
+      rev = "a041424e50ef9304092f0663a60b906925000d29";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-Q6SSGrPJtuWpYEGHxh1lL/bdh/Txp/7amMRXnpV7IiY=";
+    };
+    date = "2026-03-05";
   };
   lineage_kernel_mainline_configs = {
     pname = "lineage_kernel_mainline_configs";

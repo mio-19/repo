@@ -83,10 +83,30 @@ src.git = "https://github.com/LineageOS/android_device_virt_virtio-common.git"
 src.branch = "lineage-23.2"
 fetch.git = "https://github.com/LineageOS/android_device_virt_virtio-common.git"
 
+[lineage_external_drm_hwcomposer_upstream]
+src.git = "https://github.com/LineageOS/android_external_drm_hwcomposer-upstream.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_external_drm_hwcomposer-upstream.git"
+
+[lineage_external_linux_firmware_mainline]
+src.git = "https://github.com/LineageOS/android_external_linux-firmware-mainline.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_external_linux-firmware-mainline.git"
+
 [lineage_external_mesa]
 src.git = "https://github.com/LineageOS/android_external_mesa.git"
 src.branch = "lineage-23.2"
 fetch.git = "https://github.com/LineageOS/android_external_mesa.git"
+
+[lineage_external_minigbm_upstream]
+src.git = "https://github.com/LineageOS/android_external_minigbm-upstream.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_external_minigbm-upstream.git"
+
+[lineage_hardware_mainline_common]
+src.git = "https://github.com/LineageOS/android_hardware_mainline_common.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/LineageOS/android_hardware_mainline_common.git"
 
 [lineage_kernel_mainline_configs]
 src.git = "https://github.com/LineageOS/android_kernel_mainline_configs.git"
