@@ -34,7 +34,6 @@ in
   ];
 
   source.dirs."bionic".patches = [
-    (mkAxpPatch "android_bionic/0010-add-a-real-explicit_bzero-implementation.patch")
     (mkAxpPatch "android_bionic/0013-fix-undefined-out-of-bounds-accesses-in-sched.h.patch")
     (mkAxpPatch "android_bionic/0014-replace-vla-formatting-with-dprintf-like-function.patch")
     (mkAxpPatch "android_bionic/0015-increase-default-pthread-stack-to-8mib-on-64-bit.patch")
