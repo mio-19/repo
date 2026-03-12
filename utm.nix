@@ -43,6 +43,7 @@ in
     "device/virt/virt-common".src = sources.lineage_device_virt_common.src;
     "device/virt/virtio-common".src = sources.lineage_device_virtio_common.src;
     "external/drm_hwcomposer-upstream".src = sources.lineage_external_drm_hwcomposer_upstream.src;
+    "external/libdisplay-info-upstream".src = sources.lineage_external_libdisplay_info_upstream.src;
     "external/minigbm-upstream".src = sources.lineage_external_minigbm_upstream.src;
     "external/linux-firmware-mainline".src = sources.lineage_external_linux_firmware_mainline.src;
     "external/mesa".src = sources.lineage_external_mesa.src;

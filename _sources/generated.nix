@@ -328,6 +328,20 @@
     };
     date = "2026-01-19";
   };
+  lineage_external_libdisplay_info_upstream = {
+    pname = "lineage_external_libdisplay_info_upstream";
+    version = "d24cede4ffdeb8a130d5923a04a315aa02a1de79";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_external_libdisplay-info-upstream.git";
+      rev = "d24cede4ffdeb8a130d5923a04a315aa02a1de79";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-VXikD7CkMIGjGrSJOhveWtGbyM7Z7xf7VILH1FLXshY=";
+    };
+    date = "2026-01-19";
+  };
   lineage_external_linux_firmware_mainline = {
     pname = "lineage_external_linux_firmware_mainline";
     version = "6734582a4fba084e07bd5d80ccfc2ea4976e865f";
