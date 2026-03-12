@@ -78,10 +78,6 @@ in
     (mkAxpPatch "android_libcore/0002-constify_JNINativeMethod.patch")
   ];
 
-  source.dirs."packages/apps/LineageParts".patches = [
-    (mkAxpPatch "android_packages_apps_LineageParts/0001-Remove_Analytics.patch")
-  ];
-
   source.dirs."packages/apps/Settings".patches = [
     (mkAxpPatch "android_packages_apps_Settings/0012-add-a-toggle-for-forcibly-disabling-supl.patch")
   ];

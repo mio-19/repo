@@ -14,11 +14,12 @@
   fetchpatch,
 }:
 let
-  gradle = (gradle-packages.mkGradle {
-    version = "9.4.0";
-    hash = "sha256-YOpyM1bYEmPoAC/sD8+eKw7uDAhQx6PXqwpj8szGAfM=";
-    defaultJava = jdk21;
-  }).wrapped;
+  gradle =
+    (gradle-packages.mkGradle {
+      version = "9.4.0";
+      hash = "sha256-YOpyM1bYEmPoAC/sD8+eKw7uDAhQx6PXqwpj8szGAfM=";
+      defaultJava = jdk21;
+    }).wrapped;
   sources = (import ./_sources/generated.nix) {
     inherit
       fetchurl

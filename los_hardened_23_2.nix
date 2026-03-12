@@ -56,10 +56,6 @@ in
     (mkAxpPatch "android_frameworks_base/0039-put-bare-minimum-metadata-in-screenshots.patch")
   ];
 
-  source.dirs."packages/apps/LineageParts".patches = [
-    (mkAxpPatch "android_packages_apps_LineageParts/0001-Remove_Analytics.patch")
-  ];
-
   source.dirs."packages/apps/SetupWizard".patches = [
     (mkAxpPatch "android_packages_apps_SetupWizard/0001-Remove_Analytics.patch")
   ];
