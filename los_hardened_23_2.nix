@@ -31,11 +31,14 @@ in
   */
 
   source.dirs."bionic".patches = [
+    (mkAxpPatch "android_bionic/0014-replace-vla-formatting-with-dprintf-like-function.patch")
     (mkAxpPatch "android_bionic/0015-increase-default-pthread-stack-to-8mib-on-64-bit.patch")
     (mkAxpPatch "android_bionic/0016-make-__stack_chk_guard-read-only-at-runtime.patch")
     (mkAxpPatch "android_bionic/0017-on-64-bit-zero-the-leading-stack-canary-byte.patch")
     (mkAxpPatch "android_bionic/0018-switch-pthread_atfork-handler-allocation-to-mmap.patch")
     (mkAxpPatch "android_bionic/0019-add-memory-protection-for-pthread_atfork-handlers.patch")
+    (mkAxpPatch "android_bionic/0025-bionic-sort-and-cache-hosts-file-data-for-fast-lookup.patch")
+    (mkAxpPatch "android_bionic/0027-add-a-toggle-to-disable-etchosts-lookup.patch")
   ];
 
   source.dirs."build/make".patches = [
@@ -48,8 +51,21 @@ in
     (mkAxpPatch "android_frameworks_base/0005-always-set-deprecated-build.serial-to-unknown.patch")
     (mkAxpPatch "android_frameworks_base/0006-stop-auto-granting-location-to-system-browsers.patch")
     (mkAxpPatch "android_frameworks_base/0029-replace-agnss.goog-with-the-broadcom-psds-server.patch")
+    (mkAxpPatch "android_frameworks_base/0032-add-a-setting-for-forcibly-disabling-supl.patch")
+    (mkAxpPatch "android_frameworks_base/0035-filter-select-package-queries-for-gms.patch")
     (mkAxpPatch "android_frameworks_base/0036-do-not-auto-grant-camera-permission-to-the-euicc-lpa-ui-app.patch")
+    (mkAxpPatch "android_frameworks_base/0038-systemui-require-unlocking-to-use-qs-tiles-by-default.patch")
     (mkAxpPatch "android_frameworks_base/0039-put-bare-minimum-metadata-in-screenshots.patch")
+  ];
+
+  source.dirs."frameworks/native".patches = [
+    (mkAxpPatch "android_frameworks_native/0001-require-other_sensors-permission-for-sensors.patch")
+    (mkAxpPatch "android_frameworks_native/0002-protect-step-sensors-with-other_sensors-permission-for-target-sdkLT29-apps.patch")
+    (mkAxpPatch "android_frameworks_native/0004-exempt-system-processes-from-other_sensors-permission-enforcement.patch")
+  ];
+
+  source.dirs."libcore".patches = [
+    (mkAxpPatch "android_libcore/0001-dont-throw-securityexception-when-internet-permission-is-revoked.patch")
   ];
 
   source.dirs."packages/apps/LineageParts".patches = [
@@ -58,6 +74,16 @@ in
 
   source.dirs."packages/apps/SetupWizard".patches = [
     (mkAxpPatch "android_packages_apps_SetupWizard/0001-Remove_Analytics.patch")
+  ];
+
+  source.dirs."packages/modules/Connectivity".patches = [
+    (mkAxpPatch "android_packages_modules_Connectivity/0001-skip-reportnetworkconnectivity-when-permission-is-revoked.patch")
+    (mkAxpPatch "android_packages_modules_Connectivity/0003-dont-crash-internet-unaware-apps-that-try-to-access.patch")
+  ];
+
+  source.dirs."packages/modules/Permission".patches = [
+    (mkAxpPatch "android_packages_modules_Permission/0001-add-special-handling-for-internetother_sensors.patch")
+    (mkAxpPatch "android_packages_modules_Permission/0004-fixup-add-special-handling-for-internetother_sensors.patch")
   ];
 
   source.dirs."system/sepolicy".patches = [
