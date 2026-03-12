@@ -74,14 +74,7 @@ in
     (mkAxpPatch "android_frameworks_base/0039-put-bare-minimum-metadata-in-screenshots.patch")
   ];
 
-  source.dirs."frameworks/native".patches = [
-    (mkAxpPatch "android_frameworks_native/0001-require-other_sensors-permission-for-sensors.patch")
-    (mkAxpPatch "android_frameworks_native/0002-protect-step-sensors-with-other_sensors-permission-for-target-sdkLT29-apps.patch")
-    (mkAxpPatch "android_frameworks_native/0004-exempt-system-processes-from-other_sensors-permission-enforcement.patch")
-  ];
-
   source.dirs."libcore".patches = [
-    (mkAxpPatch "android_libcore/0001-dont-throw-securityexception-when-internet-permission-is-revoked.patch")
     (mkAxpPatch "android_libcore/0002-constify_JNINativeMethod.patch")
   ];
 
@@ -98,11 +91,7 @@ in
   ];
 
   source.dirs."packages/modules/Permission".patches = [
-    (mkAxpPatch "android_packages_modules_Permission/0001-add-special-handling-for-internetother_sensors.patch")
-    (mkAxpPatch "android_packages_modules_Permission/0002-fix-usage-ui-summary-for-networksensors.patch")
     (mkAxpPatch "android_packages_modules_Permission/0003-stop-auto-granting-location-to-system-browsers.patch")
-    (mkAxpPatch "android_packages_modules_Permission/0004-fixup-add-special-handling-for-internetother_sensors.patch")
-    (mkAxpPatch "android_packages_modules_Permission/0005-fixup-fix-usage-ui-summary-for-networksensors.patch")
     (mkAxpPatch "android_packages_modules_Permission/0006-systemui-use-new-privacy-indicators-for-location.patch")
   ];
 
