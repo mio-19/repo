@@ -74,11 +74,6 @@ in
     (mkAxpPatch "android_packages_apps_SetupWizard/0001-Remove_Analytics.patch")
   ];
 
-  source.dirs."packages/modules/Connectivity".patches = [
-    (mkAxpPatch "android_packages_modules_Connectivity/0001-skip-reportnetworkconnectivity-when-permission-is-revoked.patch")
-    (mkAxpPatch "android_packages_modules_Connectivity/0003-dont-crash-internet-unaware-apps-that-try-to-access.patch")
-  ];
-
   source.dirs."packages/modules/Permission".patches = [
     (mkAxpPatch "android_packages_modules_Permission/0001-add-special-handling-for-internetother_sensors.patch")
     (mkAxpPatch "android_packages_modules_Permission/0004-fixup-add-special-handling-for-internetother_sensors.patch")
