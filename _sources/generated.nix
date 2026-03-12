@@ -6,6 +6,20 @@
   dockerTools,
 }:
 {
+  axp_build = {
+    pname = "axp_build";
+    version = "df79a0f102ea0cce4004153397f158d85b5f16d2";
+    src = fetchgit {
+      url = "https://git.disroot.org/AXP.OS/build.git";
+      rev = "df79a0f102ea0cce4004153397f158d85b5f16d2";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-fsj4EO0rTOP+bTdJDwKRec4DRzD/CsroYfpZLZ3kjJA=";
+    };
+    date = "2026-03-10";
+  };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
     version = "3aa8873aa23dcac8469b02684093c4c025500f20";
