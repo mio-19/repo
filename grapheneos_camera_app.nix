@@ -1,11 +1,12 @@
 {
   lib,
+  jdk21,
+  gradle-packages,
   stdenv,
   fetchurl,
   fetchgit,
   fetchFromGitHub,
   dockerTools,
-  gradle_9,
   jdk17_headless,
   apksigner,
   writableTmpDirAsHomeHook,
@@ -13,6 +14,12 @@
   fetchpatch,
 }:
 let
+  gradle =
+    (gradle-packages.mkGradle {
+      version = "9.4.0";
+      hash = "sha256-YOpyM1bYEmPoAC/sD8+eKw7uDAhQx6PXqwpj8szGAfM=";
+      defaultJava = jdk21;
+    }).wrapped;
   sources = (import ./_sources/generated.nix) {
     inherit
       fetchurl
@@ -60,7 +67,13 @@ stdenv.mkDerivation (finalAttrs: {
   gradleBuildTask = ":app:assembleRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 
-  mitmCache = gradle_9.fetchDeps {
+  # Lock refresh steps:
+  # 1. If upstream bumps Gradle again, update `gradle.version` and `gradle.hash` here.
+  # 2. Build the updater with:
+  #    NIXPKGS_ALLOW_UNFREE=1 nix build --impure .#grapheneos-camera.mitmCache.updateScript
+  # 3. Copy the resulting `fetch-deps.sh`, replace its `outPath=` with
+  #    `/home/dev/Documents/repo/grapheneos_camera_deps.json`, and run it from the repo root.
+  mitmCache = gradle.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
     data = "grapheneos_camera_deps.json";
@@ -69,7 +82,7 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   nativeBuildInputs = [
-    gradle_9
+    gradle
     jdk17_headless
     apksigner
     writableTmpDirAsHomeHook
