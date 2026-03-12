@@ -37,8 +37,6 @@ in
     (mkAxpPatch "android_bionic/0017-on-64-bit-zero-the-leading-stack-canary-byte.patch")
     (mkAxpPatch "android_bionic/0018-switch-pthread_atfork-handler-allocation-to-mmap.patch")
     (mkAxpPatch "android_bionic/0019-add-memory-protection-for-pthread_atfork-handlers.patch")
-    (mkAxpPatch "android_bionic/0025-bionic-sort-and-cache-hosts-file-data-for-fast-lookup.patch")
-    (mkAxpPatch "android_bionic/0027-add-a-toggle-to-disable-etchosts-lookup.patch")
   ];
 
   source.dirs."build/make".patches = [
