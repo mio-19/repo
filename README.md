@@ -54,7 +54,7 @@ nix build -L .#gos.mustang.generateKeysScript -o generate-keys && ./generate-key
 nix build -L .#los.gta4xlwifi.generateKeysScript -o generate-keys && ./generate-keys ./keys-akita
 ```
 
-build kernels:
+build kernels (for debugging and developement only):
 
 ```zsh
 nix build -L .#gta4xlwifi -o gta4xlwifi
