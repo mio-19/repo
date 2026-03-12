@@ -232,7 +232,10 @@ in
               #./0001-KSUManual4.9.patch
               #./0001-CROSS_COMPILE-aarch64-linux-gnu.patch
               #./0001-CLANG_TARGET_FLAGS-ported-from-android_kernel_samsun.patch
-            ];
+            ]
+            ++ pkgs.callPackage ./oneplus_sdm845_axp_patches.nix {
+              axp_kernel_patches = sources.axp_kernel_patches.src;
+            };
             # https://download.lineageos.org/devices/enchilada/builds
             oemBootImg = pkgs.fetchurl {
               url = "https://web.archive.org/web/20260304112850if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gta4xlwifi/20260228/boot.img";
