@@ -6,6 +6,20 @@
   dockerTools,
 }:
 {
+  axp_kernel_patches = {
+    pname = "axp_kernel_patches";
+    version = "3aa8873aa23dcac8469b02684093c4c025500f20";
+    src = fetchgit {
+      url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
+      rev = "3aa8873aa23dcac8469b02684093c4c025500f20";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-9S7v2mAeFKDrlXaBflLfTI59XnRCqcgAAQxQDODFSx0=";
+    };
+    date = "2026-03-05";
+  };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
     version = "e114a4751a12771a651b4502290c85e7d830726e";
