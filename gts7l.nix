@@ -26,6 +26,6 @@ args@{
   graphics_ver = "7";
   enable-kernel = false;
   source.dirs."kernel/samsung/sm8250" = lib.mkForce {
-    src = self.packages.${pkgs.stdenv.hostPlatform.system}.kernelSrc.${config.device};
+    src = self.packages.${pkgs.stdenv.hostPlatform.system}."kernelSrc-${config.device}";
   };
 }

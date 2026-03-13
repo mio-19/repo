@@ -31,6 +31,6 @@ args@{
   ksu-backport1 = true;
   enable-kernel = false;
   source.dirs."kernel/samsung/gta4xl" = lib.mkForce {
-    src = self.packages.${pkgs.stdenv.hostPlatform.system}.kernelSrc.${config.device};
+    src = self.packages.${pkgs.stdenv.hostPlatform.system}."kernelSrc-${config.device}";
   };
 }

@@ -27,6 +27,6 @@ args@{
   stateVersion = "2";
   enable-kernel = false;
   source.dirs."kernel/oneplus/sdm845" = lib.mkForce {
-    src = self.packages.${pkgs.stdenv.hostPlatform.system}.kernelSrc.${config.device};
+    src = self.packages.${pkgs.stdenv.hostPlatform.system}."kernelSrc-${config.device}";
   };
 }

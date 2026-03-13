@@ -27,25 +27,28 @@ in
       };
     in
     rec {
-      packages.kernelSrc =
+      packages =
         let
-          convertKernel =
-            name:
-            self.packages.${system}.${name}.overrideAttrs (old: {
+          convertKernel = name: {
+            name = "kernelSrc-${name}";
+            value = self.packages.${system}.${name}.patchedKernelSrc.overrideAttrs (old: {
               # when building kernel in our robotnix build env, with patchShebangs: /nix/store/2hjsch59amjs3nbgh7ahcfzm2bfwl8zi-bash-5.3p9/bin/sh: symbol lookup error: /usr/lib/libc.so.6: undefined symbol: __nptl_change_stack_perm, version GLIBC_PRIVATE
-              postPatch = builtins.replaceStrings [ "patchShebangs ." ] [ "" ] old.postPatch ++ ''
+              postPatch = builtins.replaceStrings [ "patchShebangs ." ] [ "" ] old.postPatch + ''
                 tee -a ${lib.lists.last kernelsu.${name}.kernelDefconfigs} << 'EOF'
                 ${kernelsu.${name}.kernelConfig}
                 EOF
               '';
             });
+          };
         in
-        map convertKernel [
-          "gts7l"
-          "gts7lwifi"
-          "gta4xlwifi"
-          "enchilada"
-        ];
+        builtins.listToAttrs (
+          map convertKernel [
+            "gts7l"
+            "gts7lwifi"
+            "gta4xlwifi"
+            "enchilada"
+          ]
+        );
       kernelsu =
         let
           gts7l_robotnix = robotnix.lib.robotnixSystem {
