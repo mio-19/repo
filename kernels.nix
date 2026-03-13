@@ -224,6 +224,21 @@ in
 
               sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" ./drivers/Kconfig
               echo 'obj-y += lindroid-drm/' >> ./drivers/Makefile
+
+              # For KernelSU-Next
+              tee -a fs/namespace.c << 'EOF'
+              int path_umount(struct path *path, int flags)
+              {
+              struct mount *mnt = real_mount(path->mnt);
+              int ret;
+              ret = can_umount(path, flags);
+              if (!ret)
+                      ret = do_umount(mnt, flags);
+              dput(path->dentry);
+              mntput_no_expire(mnt);
+              return ret;
+              }
+              EOF
             '';
             kernelPatches = [
               ./filter_count.patch
