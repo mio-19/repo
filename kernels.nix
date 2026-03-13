@@ -239,6 +239,7 @@ in
               return ret;
               }
               EOF
+              sed -i '/^extern void __init mnt_init/a int path_umount(struct path *path, int flags);' ./fs/internal.h
             '';
             kernelPatches = [
               ./filter_count.patch
