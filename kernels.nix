@@ -190,6 +190,7 @@ in
             ];
             kernelImageName = "Image";
 
+            kernelSU.enable = true;
             kernelSU.variant = "official";
             #kernelSU.src = pkgs.callPackage ./ksuNext.nix { };
             #kernelSU.revision = null;
