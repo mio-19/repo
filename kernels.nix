@@ -200,7 +200,7 @@ in
             #susfs.enable = true;
             #susfs.src = sources.susfs419.src;
             kernelConfig = ''
-              #CONFIG_SYSVIPC=y
+              CONFIG_SYSVIPC=y
               CONFIG_UTS_NS=y
               CONFIG_PID_NS=y
               CONFIG_IPC_NS=y
