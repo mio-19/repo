@@ -291,8 +291,8 @@ in
             };
             # https://download.lineageos.org/devices/enchilada/builds
             oemBootImg = pkgs.fetchurl {
-              url = "https://web.archive.org/web/20260304112850if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gta4xlwifi/20260228/boot.img";
-              hash = "sha256-1p5R6bGVaQsuF/etyo3hF3Y67XLBiQ1x9p3W2SX/DX0=";
+              url = "https://web.archive.org/web/20260304112854if_/https://saimei.ftp.acc.umu.se/mirror/lineageos/full/enchilada/20260304/boot.img";
+              hash = "sha256-O7fHSZltqye+pLssT1CiHwnWaWRoRcon7HKYAIp6IlQ=";
             };
           };
           gta4xlwifi_evobka = mk_gta4xlwifi sources.gta4xlwifi-evobka-kernel.src;
@@ -304,8 +304,8 @@ in
             // {
               # https://download.lineageos.org/devices/gta4xlwifi/builds
               oemBootImg = pkgs.fetchurl {
-                url = "https://web.archive.org/web/20260304112854if_/https://saimei.ftp.acc.umu.se/mirror/lineageos/full/enchilada/20260304/boot.img";
-                hash = "sha256-O7fHSZltqye+pLssT1CiHwnWaWRoRcon7HKYAIp6IlQ=";
+                url = "https://web.archive.org/web/20260304112850if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gta4xlwifi/20260228/boot.img";
+                hash = "sha256-1p5R6bGVaQsuF/etyo3hF3Y67XLBiQ1x9p3W2SX/DX0=";
               };
             };
           gts7l = samsung_sm8250 "gts7l" // {
