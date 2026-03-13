@@ -74,6 +74,11 @@ in
                   ''}
                   ${config.kernelConfig}
                   EOF
+                  ${lib.optionalString (config.kernelSU.enable or false) ''
+                    cd ${config.kernelSU.subdirectory}/kernel
+                    make srctree=../.. || true # adding polyfills now.
+                    cd ../..
+                  ''}
                 '';
             });
           };
@@ -224,41 +229,6 @@ in
 
               sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" ./drivers/Kconfig
               echo 'obj-y += lindroid-drm/' >> ./drivers/Makefile
-
-              # For KernelSU-Next
-              tee -a fs/namespace.c << 'EOF'
-              static int can_umount(const struct path *path, int flags)
-              {
-              struct mount *mnt = real_mount(path->mnt);
-              if (flags & ~(MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW))
-                      return -EINVAL;
-              if (!may_mount())
-                      return -EPERM;
-              if (path->dentry != path->mnt->mnt_root)
-                      return -EINVAL;
-              if (!check_mnt(mnt))
-                      return -EINVAL;
-              if (mnt->mnt.mnt_flags & MNT_LOCKED)
-                      return -EINVAL;
-              if (flags & MNT_FORCE && !capable(CAP_SYS_ADMIN))
-                      return -EPERM;
-              return 0;
-              }
-              EOF
-              tee -a fs/namespace.c << 'EOF'
-              int path_umount(struct path *path, int flags)
-              {
-              struct mount *mnt = real_mount(path->mnt);
-              int ret;
-              ret = can_umount(path, flags);
-              if (!ret)
-                      ret = do_umount(mnt, flags);
-              dput(path->dentry);
-              mntput_no_expire(mnt);
-              return ret;
-              }
-              EOF
-              sed -i '/^extern void __init mnt_init/a int path_umount(struct path *path, int flags);' ./fs/internal.h
             '';
             kernelPatches = [
               ./filter_count.patch
