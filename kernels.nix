@@ -34,7 +34,9 @@ in
             value = self.packages.${system}.${name}.patchedKernelSrc.overrideAttrs (old: {
               # when building kernel in our robotnix build env, with patchShebangs: /nix/store/2hjsch59amjs3nbgh7ahcfzm2bfwl8zi-bash-5.3p9/bin/sh: symbol lookup error: /usr/lib/libc.so.6: undefined symbol: __nptl_change_stack_perm, version GLIBC_PRIVATE
               postPatch = builtins.replaceStrings [ "patchShebangs ." ] [ "" ] old.postPatch + ''
-                tee -a arch/arm64/configs/${lib.lists.last kernelsu.${name}.kernelDefconfigs} << 'EOF'
+                tee -a arch/${kernelsu.${name}.arch}/configs/${
+                  lib.lists.last kernelsu.${name}.kernelDefconfigs
+                } << 'EOF'
                 ${kernelsu.${name}.kernelConfig}
                 EOF
               '';
@@ -89,6 +91,7 @@ in
               s = import ./sources.nix args; # TODO: replace with more recent lindroid-drm
             in
             {
+              arch = "arm64";
               # https://github.com/Linux-On-LineageOS/lindroid-drm-loopback/commit/73e732316409ad5b75a5715684d3c2d940d8670b
               kernelMakeFlags = [
                 "KCFLAGS=\"-Wno-error\""
@@ -137,6 +140,7 @@ in
               ];
             };
           samsung_sm8250 = device: {
+            arch = "arm64";
             kernelMakeFlags = [
               "KCFLAGS=\"-Wno-error\""
               "KCPPFLAGS=\"-Wno-error\""
@@ -205,6 +209,7 @@ in
         {
           # currently only compiles on aarch64-linux
           enchilada = {
+            arch = "arm64";
             kernelMakeFlags = [
               "KCFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
               "KCPPFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
