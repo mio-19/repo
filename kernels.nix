@@ -193,9 +193,9 @@ in
             kernelSU.enable = true;
             #kernelSU.variant = "official";
             kernelSU.variant = "custom";
-            kernelSU.src = pkgs.callPackage ./ksuNext.nix { };
+            kernelSU.src = pkgs.callPackage ./kernelSU105.nix { };
             kernelSU.revision = null;
-            kernelSU.subdirectory = "KernelSU-Next";
+            kernelSU.subdirectory = "KernelSU";
 
             #susfs.enable = true;
             #susfs.src = sources.susfs419.src;
