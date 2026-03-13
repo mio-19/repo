@@ -36,17 +36,16 @@ in
 
   # robotnix-lineage_enchilada> error: libc's ABI has INCOMPATIBLE CHANGES. Please check compatibility report at: out/soong/.intermediates/bionic/libc/libc/android_arm64_armv8-a_shared_apex10000/libc.so.llndk.abidiff
   # robotnix-lineage_enchilada> error: Please update ABI references with: $ANDROID_BUILD_TOP/development/vndk/tools/header-checker/utils/create_reference_dumps.py --lib libc --lib-variant LLNDK --release bp1a
-  # disable bionic patches all together for now
-  source.dirs."bionic".patches = lib.mkIf false [
-    (mkAxpPatch "android_bionic/0013-fix-undefined-out-of-bounds-accesses-in-sched.h.patch")
+  source.dirs."bionic".patches = [
+    #(mkAxpPatch "android_bionic/0013-fix-undefined-out-of-bounds-accesses-in-sched.h.patch") # could be INCOMPATIBLE CHANGES
     (mkAxpPatch "android_bionic/0014-replace-vla-formatting-with-dprintf-like-function.patch")
     (mkAxpPatch "android_bionic/0015-increase-default-pthread-stack-to-8mib-on-64-bit.patch")
     (mkAxpPatch "android_bionic/0016-make-__stack_chk_guard-read-only-at-runtime.patch")
     (mkAxpPatch "android_bionic/0017-on-64-bit-zero-the-leading-stack-canary-byte.patch")
     (mkAxpPatch "android_bionic/0018-switch-pthread_atfork-handler-allocation-to-mmap.patch")
     (mkAxpPatch "android_bionic/0019-add-memory-protection-for-pthread_atfork-handlers.patch")
-    (mkAxpPatch "android_bionic/0025-bionic-sort-and-cache-hosts-file-data-for-fast-lookup.patch")
-    (mkAxpPatch "android_bionic/0027-add-a-toggle-to-disable-etchosts-lookup.patch")
+    #(mkAxpPatch "android_bionic/0025-bionic-sort-and-cache-hosts-file-data-for-fast-lookup.patch") # could be INCOMPATIBLE CHANGES
+    #(mkAxpPatch "android_bionic/0027-add-a-toggle-to-disable-etchosts-lookup.patch") # could be INCOMPATIBLE CHANGES
   ];
 
   source.dirs."build/make".patches = [
