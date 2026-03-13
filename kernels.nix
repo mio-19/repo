@@ -180,7 +180,7 @@ in
               "KCFLAGS=\"-Wno-error\""
               "KCPPFLAGS=\"-Wno-error\""
             ];
-            anyKernelVariant = "kernelsu";
+            anyKernelVariant = "osm0sis";
             clangVersion = "latest";
             kernelDefconfigs = [
               # https://github.com/LineageOS/android_device_samsung_sm8250-common/blob/442e774de353ac00db5e602e63fb8ec6a4a4ec99/BoardConfigCommon.mk#L77 https://github.com/LineageOS/android_device_samsung_gts7lwifi/blob/78279272e6099a54bead3cc6d6af6a18cbbd6a73/BoardConfig.mk#L22
