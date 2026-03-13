@@ -14,6 +14,7 @@ in
       pkgs,
       lib,
       system,
+      config,
       ...
     }:
     let
@@ -36,12 +37,12 @@ in
               # https://github.com/xddxdd/nix-kernelsu-builder/blob/cc0fce340e330ad07331692b7c3673d9974be377/pipeline/kernel-config-cmd.nix
               postPatch =
                 let
-                  config = kernelsu.${name};
+                  cfg = config.kernelsu.${name};
                 in
                 builtins.replaceStrings [ "patchShebangs ." ] [ "" ] old.postPatch
                 + ''
-                  tee -a arch/${config.arch}/configs/${lib.lists.last config.kernelDefconfigs} << 'EOF'
-                  ${lib.optionalString (config.kernelSU.enable or false) ''
+                  tee -a arch/${cfg.arch}/configs/${lib.lists.last cfg.kernelDefconfigs} << 'EOF'
+                  ${lib.optionalString cfg.kernelSU.enable ''
                     CONFIG_MODULES=y
                     CONFIG_KPROBES=y
                     CONFIG_HAVE_KPROBES=y
@@ -49,7 +50,7 @@ in
                     CONFIG_OVERLAY_FS=y
                     CONFIG_KSU=y
                   ''}
-                  ${lib.optionalString (config.susfs.enable or false) ''
+                  ${lib.optionalString cfg.susfs.enable ''
                     CONFIG_KSU_SUSFS=y
                     CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y
                     CONFIG_KSU_SUSFS_SUS_PATH=y
@@ -69,13 +70,13 @@ in
                     CONFIG_TMPFS_XATTR=y
                     CONFIG_TMPFS_POSIX_ACL=y
                   ''}
-                  ${lib.optionalString (config.bbg.enable or false) ''
+                  ${lib.optionalString cfg.bbg.enable ''
                     CONFIG_BBG=y
                   ''}
-                  ${config.kernelConfig}
+                  ${cfg.kernelConfig}
                   EOF
-                  ${lib.optionalString (config.kernelSU.enable or false) ''
-                    cd ${config.kernelSU.subdirectory}/kernel
+                  ${lib.optionalString cfg.kernelSU.enable ''
+                    cd ${cfg.kernelSU.subdirectory}/kernel
                     make srctree=../.. || true # adding polyfills now.
                     cd ../..
                   ''}
