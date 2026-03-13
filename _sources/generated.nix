@@ -78,17 +78,17 @@
   };
   cola2261_kernel_sm8550 = {
     pname = "cola2261_kernel_sm8550";
-    version = "aaa49d9a8f4e0f8d86e8a68cff0f2e21cf1a0c3a";
+    version = "f1d70e817f643b99875f97f732b111ea84f55852";
     src = fetchgit {
       url = "https://github.com/samsung-sm8550-cola2261/android_kernel_samsung_sm8550.git";
-      rev = "aaa49d9a8f4e0f8d86e8a68cff0f2e21cf1a0c3a";
+      rev = "f1d70e817f643b99875f97f732b111ea84f55852";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-fzVTAPKN7c5Ov4Ri+odMX6XFIOe7o5bL420efnigNSM=";
+      sha256 = "sha256-GrVmlF9T1DzPQS6BUWxnaYrIj+Pk6nGGw/ncJ4t4ucw=";
     };
-    date = "2026-02-13";
+    date = "2026-03-01";
   };
   cola2261_kernel_sm8550_modules = {
     pname = "cola2261_kernel_sm8550_modules";
@@ -204,17 +204,17 @@
   };
   lindroid_drm_loopback = {
     pname = "lindroid_drm_loopback";
-    version = "bda0d26526abcccb546f1e618e6e53de7adccfd1";
+    version = "6e8cee9dd452db693fae37a6ea8c5c00c38fbcce";
     src = fetchgit {
       url = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git";
-      rev = "bda0d26526abcccb546f1e618e6e53de7adccfd1";
+      rev = "6e8cee9dd452db693fae37a6ea8c5c00c38fbcce";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-R2zJ8je+GuuBs/gxIiXJQ3p5OHm0zL72NMW1I6Srjxc=";
+      sha256 = "sha256-agqq6b3tcD2AGGj/OltYxWLV7jG2QbPictytytFICTM=";
     };
-    date = "2026-03-11";
+    date = "2026-03-12";
   };
   lineage_deskclock = {
     pname = "lineage_deskclock";
@@ -470,17 +470,17 @@
   };
   sm8550_tab_device_sm8550_common = {
     pname = "sm8550_tab_device_sm8550_common";
-    version = "6ea35dc07c1964d604cc8819fae9dad18674f2ac";
+    version = "bd511aaf1e85a3e2862999eba9c1c7c1db3fb58f";
     src = fetchgit {
       url = "https://github.com/samsung-sm8550-tab/android_device_samsung_sm8550-common.git";
-      rev = "6ea35dc07c1964d604cc8819fae9dad18674f2ac";
+      rev = "bd511aaf1e85a3e2862999eba9c1c7c1db3fb58f";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-Xd3eOnI6/4fZJv1GgD4kZWJ8FB32vk4lKfgAed2NYbA=";
+      sha256 = "sha256-5FACA8HTo9JgDlxPW5nj6W0k2JYYxgOBOiN8SDiG86o=";
     };
-    date = "2026-01-09";
+    date = "2026-03-12";
   };
   sm8550_tab_hardware_samsung = {
     pname = "sm8550_tab_hardware_samsung";
