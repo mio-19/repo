@@ -192,6 +192,7 @@ in
 
             kernelSU.enable = true;
             #kernelSU.variant = "official";
+            kernelSU.variant = "custom";
             kernelSU.src = pkgs.callPackage ./ksuNext.nix { };
             kernelSU.revision = null;
             kernelSU.subdirectory = "KernelSU-Next";
