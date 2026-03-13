@@ -77,7 +77,7 @@ in
                   EOF
                   ${lib.optionalString cfg.kernelSU.enable ''
                     cd ${cfg.kernelSU.subdirectory}/kernel
-                    make srctree=../.. || true # adding polyfills now.
+                    make srctree=../.. || true # adding polyfills now. `make: *** No targets.  Stop.` is expected.
                     cd ../..
                   ''}
                 '';
