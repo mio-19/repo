@@ -191,10 +191,10 @@ in
             kernelImageName = "Image";
 
             kernelSU.enable = true;
-            kernelSU.variant = "official";
-            #kernelSU.src = pkgs.callPackage ./ksuNext.nix { };
-            #kernelSU.revision = null;
-            #kernelSU.subdirectory = "KernelSU-Next";
+            #kernelSU.variant = "official";
+            kernelSU.src = pkgs.callPackage ./ksuNext.nix { };
+            kernelSU.revision = null;
+            kernelSU.subdirectory = "KernelSU-Next";
 
             #susfs.enable = true;
             #susfs.src = sources.susfs419.src;
