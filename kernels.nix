@@ -128,9 +128,6 @@ in
           };
           mk_gta4xlwifi =
             kernel:
-            let
-              s = import ./sources.nix args; # TODO: replace with more recent lindroid-drm
-            in
             {
               arch = "arm64";
               # https://github.com/Linux-On-LineageOS/lindroid-drm-loopback/commit/73e732316409ad5b75a5715684d3c2d940d8670b
@@ -166,7 +163,7 @@ in
               '';
               kernelSrc = kernel;
               postPatch = ''
-                cp -r ${s.lindroid-drm} ./drivers/lindroid-drm
+                cp -r ${sources.lindroid_drm_loopback.src} ./drivers/lindroid-drm
 
                 sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" ./drivers/Kconfig
                 echo 'obj-y += lindroid-drm/' >> ./drivers/Makefile
