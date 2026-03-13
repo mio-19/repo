@@ -257,6 +257,7 @@ in
             origin:
             origin
             // {
+              # make sense when building the kernel with the builder. but with robotnix it could break things
               postPatch = ''
                 ${origin.postPatch or ""}
                 if [ -f tools/dtc ]; then
