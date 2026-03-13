@@ -239,11 +239,6 @@ in
             ++ pkgs.callPackage ./samsung_sm8250_axp_patches.nix {
               axp_kernel_patches = sources.axp_kernel_patches.src;
             };
-            # https://download.lineageos.org/devices/gts7lwifi/builds
-            oemBootImg = pkgs.fetchurl {
-              url = "https://web.archive.org/web/20260304113004if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gts7lwifi/20260302/boot.img";
-              hash = "sha256-5VUj4UcqtOynGy2HwBHe7gKI3muta18vJSX9UntQKCM=";
-            };
           };
         in
         {
@@ -297,8 +292,21 @@ in
                 hash = "sha256-O7fHSZltqye+pLssT1CiHwnWaWRoRcon7HKYAIp6IlQ=";
               };
             };
-          gts7l = samsung_sm8250 "gts7l";
-          gts7lwifi = samsung_sm8250 "gts7lwifi";
+          gts7l = samsung_sm8250 "gts7l" // {
+            # https://download.lineageos.org/devices/gts7l/builds
+            # TODO: correct this
+            oemBootImg = pkgs.fetchurl {
+              url = "https://web.archive.org/web/20260304113004if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gts7lwifi/20260302/boot.img";
+              hash = "sha256-5VUj4UcqtOynGy2HwBHe7gKI3muta18vJSX9UntQKCM=";
+            };
+          };
+          gts7lwifi = samsung_sm8250 "gts7lwifi" // {
+            # https://download.lineageos.org/devices/gts7lwifi/builds
+            oemBootImg = pkgs.fetchurl {
+              url = "https://web.archive.org/web/20260304113004if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gts7lwifi/20260302/boot.img";
+              hash = "sha256-5VUj4UcqtOynGy2HwBHe7gKI3muta18vJSX9UntQKCM=";
+            };
+          };
         };
     };
 }
