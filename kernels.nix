@@ -193,9 +193,9 @@ in
             kernelSU.enable = true;
             #kernelSU.variant = "official";
             kernelSU.variant = "custom";
-            kernelSU.src = pkgs.callPackage ./kernelSU105.nix { };
+            kernelSU.src = (pkgs.callPackage ./ksuNext111.nix { });
             kernelSU.revision = null;
-            kernelSU.subdirectory = "KernelSU";
+            kernelSU.subdirectory = "KernelSU-Next";
 
             #susfs.enable = true;
             #susfs.src = sources.susfs419.src;
@@ -224,9 +224,6 @@ in
 
               sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" ./drivers/Kconfig
               echo 'obj-y += lindroid-drm/' >> ./drivers/Makefile
-
-              # original kernelsu only
-              sed -i '/MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);/d' drivers/kernelsu/ksu.c KernelSU/kernel/ksu.c
             '';
             kernelPatches = [
               ./filter_count.patch
