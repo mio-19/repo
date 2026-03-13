@@ -200,7 +200,7 @@ in
             #susfs.enable = true;
             #susfs.src = sources.susfs419.src;
             kernelConfig = ''
-              CONFIG_SYSVIPC=y
+              #CONFIG_SYSVIPC=y
               CONFIG_UTS_NS=y
               CONFIG_PID_NS=y
               CONFIG_IPC_NS=y
@@ -320,10 +320,9 @@ in
             };
           gts7l = samsung_sm8250 "gts7l" // {
             # https://download.lineageos.org/devices/gts7l/builds
-            # TODO: correct this
             oemBootImg = pkgs.fetchurl {
-              url = "https://web.archive.org/web/20260304113004if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gts7lwifi/20260302/boot.img";
-              hash = "sha256-5VUj4UcqtOynGy2HwBHe7gKI3muta18vJSX9UntQKCM=";
+              url = "https://web.archive.org/web/20260313150216if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gts7l/20260310/boot.img";
+              hash = "sha256-g1ELiTFtq0gHXMQ+vKYg8W2EfhhuhvQ2Pj7Ry5Ehl6Q=";
             };
           };
           gts7lwifi = samsung_sm8250 "gts7lwifi" // {
