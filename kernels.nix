@@ -226,7 +226,7 @@ in
               echo 'obj-y += lindroid-drm/' >> ./drivers/Makefile
 
               # original kernelsu only
-              sed -i '/MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);/d' drivers/kernelsu/ksu.c
+              sed -i '/MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);/d' drivers/kernelsu/ksu.c KernelSU/kernel/ksu.c
             '';
             kernelPatches = [
               ./filter_count.patch
