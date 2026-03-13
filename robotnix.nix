@@ -265,13 +265,13 @@ in
             kernelDefconfigs = [
               "gki_defconfig"
             ];
-            #kernelSU.variant = "next";
             kernelImageName = "Image";
-            # waiting for https://github.com/xddxdd/nix-kernelsu-builder/commit/d25cbcdb22d1a28bc6db28bf678ea4720873ffe1#commitcomment-178938881
-            kernelSU.variant = "custom";
-            kernelSU.src = pkgs.callPackage ./ksuNext.nix { };
-            kernelSU.revision = null;
-            kernelSU.subdirectory = "KernelSU-Next";
+
+            kernelSU.variant = "official";
+            #kernelSU.src = pkgs.callPackage ./ksuNext.nix { };
+            #kernelSU.revision = null;
+            #kernelSU.subdirectory = "KernelSU-Next";
+
             #susfs.enable = true;
             #susfs.src = sources.susfs419.src;
             kernelConfig = ''
