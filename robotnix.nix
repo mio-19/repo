@@ -204,6 +204,74 @@ in
                 ./0001-drop-master-lindroid-patch.patch
               ];
             };
+          samsung_sm8250 = device: rec {
+            kernelMakeFlags = [
+              "KCFLAGS=\"-Wno-error\""
+              "KCPPFLAGS=\"-Wno-error\""
+            ];
+            anyKernelVariant = "kernelsu";
+            clangVersion = "latest";
+            kernelDefconfigs = [
+              "actual_defconfig"
+            ];
+            kernelImageName = "Image";
+
+            kernelSU.variant = "official";
+            #kernelSU.src = pkgs.callPackage ./ksuNext.nix { };
+            #kernelSU.revision = null;
+            #kernelSU.subdirectory = "KernelSU-Next";
+
+            #susfs.enable = true;
+            #susfs.src = sources.susfs419.src;
+            kernelConfig = ''
+              CONFIG_SYSVIPC=y
+              CONFIG_UTS_NS=y
+              CONFIG_PID_NS=y
+              CONFIG_IPC_NS=y
+              CONFIG_USER_NS=y
+              CONFIG_NET_NS=y
+              CONFIG_CGROUP_DEVICE=y
+              CONFIG_CGROUP_FREEZER=y
+              CONFIG_DRM=y
+              CONFIG_DRM_LINDROID_EVDI=y
+              CONFIG_TMPFS_POSIX_ACL=y
+            '';
+            kernelSrc =
+              assert gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".patches == [ ];
+              assert gts7l_robotnix.config.source.dirs."kernel/samsung/sm8250".patches == [ ];
+              assert
+                gts7l_robotnix.config.source.dirs."kernel/samsung/sm8250".src
+                == gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".src;
+              gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".src;
+            postPatch = ''
+              cp -r ${sources.lindroid_drm_loopback.src} ./drivers/lindroid-drm
+
+              sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" ./drivers/Kconfig
+              echo 'obj-y += lindroid-drm/' >> ./drivers/Makefile
+
+              # https://github.com/LineageOS/android_device_samsung_sm8250-common/blob/442e774de353ac00db5e602e63fb8ec6a4a4ec99/BoardConfigCommon.mk#L77 https://github.com/LineageOS/android_device_samsung_gts7lwifi/blob/78279272e6099a54bead3cc6d6af6a18cbbd6a73/BoardConfig.mk#L22
+              cat arch/arm64/configs/vendor/kona-perf_defconfig arch/arm64/configs/vendor/samsung/kona-sec-common.config arch/arm64/configs/vendor/samsung/${device}.config > arch/arm64/configs/actual_defconfig
+              tee -a arch/arm64/configs/vendor/samsung/${device}.config << 'EOF'
+              ${kernelConfig}
+              EOF
+            '';
+            kernelPatches = [
+              ./filter_count.patch
+              ./overlayfs.patch
+              # AXP.OS backports selected from the sm8250 CVE patcher after checking
+              # them against LineageOS android_kernel_samsung_sm8250 lineage-23.2
+              # (4.19.325) and keeping only the patches that also applied in
+              # upstream order as one cumulative series.
+            ]
+            ++ pkgs.callPackage ./samsung_sm8250_axp_patches.nix {
+              axp_kernel_patches = sources.axp_kernel_patches.src;
+            };
+            # https://download.lineageos.org/devices/gts7lwifi/builds
+            oemBootImg = pkgs.fetchurl {
+              url = "https://web.archive.org/web/20260304113004if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gts7lwifi/20260302/boot.img";
+              hash = "sha256-5VUj4UcqtOynGy2HwBHe7gKI3muta18vJSX9UntQKCM=";
+            };
+          };
         in
         {
           # currently only compiles on aarch64-linux
@@ -255,68 +323,8 @@ in
                 hash = "sha256-O7fHSZltqye+pLssT1CiHwnWaWRoRcon7HKYAIp6IlQ=";
               };
             };
-          samsung_sm8250 = {
-            kernelMakeFlags = [
-              "KCFLAGS=\"-Wno-error\""
-              "KCPPFLAGS=\"-Wno-error\""
-            ];
-            anyKernelVariant = "kernelsu";
-            clangVersion = "latest";
-            kernelDefconfigs = [
-              "gki_defconfig"
-            ];
-            kernelImageName = "Image";
-
-            kernelSU.variant = "official";
-            #kernelSU.src = pkgs.callPackage ./ksuNext.nix { };
-            #kernelSU.revision = null;
-            #kernelSU.subdirectory = "KernelSU-Next";
-
-            #susfs.enable = true;
-            #susfs.src = sources.susfs419.src;
-            kernelConfig = ''
-              CONFIG_SYSVIPC=y
-              CONFIG_UTS_NS=y
-              CONFIG_PID_NS=y
-              CONFIG_IPC_NS=y
-              CONFIG_USER_NS=y
-              CONFIG_NET_NS=y
-              CONFIG_CGROUP_DEVICE=y
-              CONFIG_CGROUP_FREEZER=y
-              CONFIG_DRM=y
-              CONFIG_DRM_LINDROID_EVDI=y
-              CONFIG_TMPFS_POSIX_ACL=y
-            '';
-            kernelSrc =
-              assert gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".patches == [ ];
-              assert gts7l_robotnix.config.source.dirs."kernel/samsung/sm8250".patches == [ ];
-              assert
-                gts7l_robotnix.config.source.dirs."kernel/samsung/sm8250".src
-                == gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".src;
-              gts7lwifi_robotnix.config.source.dirs."kernel/samsung/sm8250".src;
-            postPatch = ''
-              cp -r ${sources.lindroid_drm_loopback.src} ./drivers/lindroid-drm
-
-              sed -i "/endmenu/i\source \"drivers/lindroid-drm/Kconfig\"" ./drivers/Kconfig
-              echo 'obj-y += lindroid-drm/' >> ./drivers/Makefile
-            '';
-            kernelPatches = [
-              ./filter_count.patch
-              ./overlayfs.patch
-              # AXP.OS backports selected from the sm8250 CVE patcher after checking
-              # them against LineageOS android_kernel_samsung_sm8250 lineage-23.2
-              # (4.19.325) and keeping only the patches that also applied in
-              # upstream order as one cumulative series.
-            ]
-            ++ pkgs.callPackage ./samsung_sm8250_axp_patches.nix {
-              axp_kernel_patches = sources.axp_kernel_patches.src;
-            };
-            # https://download.lineageos.org/devices/gts7lwifi/builds
-            oemBootImg = pkgs.fetchurl {
-              url = "https://web.archive.org/web/20260304113004if_/https://mirrors.ocf.berkeley.edu/lineageos/full/gts7lwifi/20260302/boot.img";
-              hash = "sha256-5VUj4UcqtOynGy2HwBHe7gKI3muta18vJSX9UntQKCM=";
-            };
-          };
+          gts7l = samsung_sm8250 "gts7l";
+          gts7lwifi = samsung_sm8250 "gts7lwifi";
         };
     };
 }

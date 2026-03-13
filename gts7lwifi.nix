@@ -7,5 +7,5 @@ args@{
 }:
 {
   imports = [ ./gts7l.nix ];
-  device = lib.mkForce "gts7lwifi";
+  device = "gts7lwifi";
 }
