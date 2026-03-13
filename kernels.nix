@@ -133,7 +133,7 @@ in
                 ./0001-drop-master-lindroid-patch.patch
               ];
             };
-          samsung_sm8250 = device: rec {
+          samsung_sm8250 = device: {
             kernelMakeFlags = [
               "KCFLAGS=\"-Wno-error\""
               "KCPPFLAGS=\"-Wno-error\""
