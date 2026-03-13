@@ -253,8 +253,20 @@ in
               axp_kernel_patches = sources.axp_kernel_patches.src;
             };
           };
+          standalone =
+            origin:
+            origin
+            // {
+              postPatch = ''
+                ${origin.postPatch or ""}
+                if [ -f tools/dtc ]; then
+                  rm tools/dtc
+                  ln -s ${lib.getExe pkgs.dtc} tools/dtc
+                fi
+              '';
+            };
         in
-        {
+        rec {
           # currently only compiles on aarch64-linux
           enchilada = {
             arch = "arm64";
@@ -320,6 +332,8 @@ in
               hash = "sha256-5VUj4UcqtOynGy2HwBHe7gKI3muta18vJSX9UntQKCM=";
             };
           };
+          gts7l_standalone = standalone gts7l;
+          gts7lwifi_standalone = standalone gts7lwifi;
         };
     };
 }
