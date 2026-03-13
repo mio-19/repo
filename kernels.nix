@@ -33,13 +33,48 @@ in
             name = "kernelSrc-${name}";
             value = self.packages.${system}.${name}.patchedKernelSrc.overrideAttrs (old: {
               # when building kernel in our robotnix build env, with patchShebangs: /nix/store/2hjsch59amjs3nbgh7ahcfzm2bfwl8zi-bash-5.3p9/bin/sh: symbol lookup error: /usr/lib/libc.so.6: undefined symbol: __nptl_change_stack_perm, version GLIBC_PRIVATE
-              postPatch = builtins.replaceStrings [ "patchShebangs ." ] [ "" ] old.postPatch + ''
-                tee -a arch/${kernelsu.${name}.arch}/configs/${
-                  lib.lists.last kernelsu.${name}.kernelDefconfigs
-                } << 'EOF'
-                ${kernelsu.${name}.kernelConfig}
-                EOF
-              '';
+              # https://github.com/xddxdd/nix-kernelsu-builder/blob/cc0fce340e330ad07331692b7c3673d9974be377/pipeline/kernel-config-cmd.nix
+              postPatch =
+                let
+                  config = kernelsu.${name};
+                in
+                builtins.replaceStrings [ "patchShebangs ." ] [ "" ] old.postPatch
+                + ''
+                  tee -a arch/${config.arch}/configs/${lib.lists.last config.kernelDefconfigs} << 'EOF'
+                  ${lib.optionalString (config.kernelSU.enable or false) ''
+                    CONFIG_MODULES=y
+                    CONFIG_KPROBES=y
+                    CONFIG_HAVE_KPROBES=y
+                    CONFIG_KPROBE_EVENTS=y
+                    CONFIG_OVERLAY_FS=y
+                    CONFIG_KSU=y
+                  ''}
+                  ${lib.optionalString (config.susfs.enable or false) ''
+                    CONFIG_KSU_SUSFS=y
+                    CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y
+                    CONFIG_KSU_SUSFS_SUS_PATH=y
+                    CONFIG_KSU_SUSFS_SUS_MOUNT=y
+                    CONFIG_KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT=y
+                    CONFIG_KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT=y
+                    CONFIG_KSU_SUSFS_SUS_KSTAT=y
+                    CONFIG_KSU_SUSFS_SUS_OVERLAYFS=y
+                    CONFIG_KSU_SUSFS_TRY_UMOUNT=y
+                    CONFIG_KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT=y
+                    CONFIG_KSU_SUSFS_SPOOF_UNAME=y
+                    CONFIG_KSU_SUSFS_ENABLE_LOG=y
+                    CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y
+                    CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y
+                    CONFIG_KSU_SUSFS_OPEN_REDIRECT=y
+                    CONFIG_KSU_SUSFS_SUS_SU=y
+                    CONFIG_TMPFS_XATTR=y
+                    CONFIG_TMPFS_POSIX_ACL=y
+                  ''}
+                  ${lib.optionalString (config.bbg.enable or false) ''
+                    CONFIG_BBG=y
+                  ''}
+                  ${config.kernelConfig}
+                  EOF
+                '';
             });
           };
         in
