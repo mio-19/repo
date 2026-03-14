@@ -64,5 +64,11 @@ in
     certificate = "PRESIGNED";
     privileged = true;
     partition = "system";
+    # Preserve APK signature block for sharedUser android.uid.system.
+    extraConfig = ''
+      LOCAL_SDK_VERSION := current
+      LOCAL_DEX_PREOPT := false
+      LOCAL_REPLACE_PREBUILT_APK_INSTALLED := $(LOCAL_PATH)/FlossIMS.apk
+    '';
   };
 }
