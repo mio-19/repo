@@ -8,7 +8,7 @@ args@{
 {
   imports = [
     ./los.nix
-    ./los_hardened_23_2.nix
+    #./los_hardened_23_2.nix # does this break lindroid?
   ];
   manufactor = "samsung";
   kernel-short = "sm8250";
