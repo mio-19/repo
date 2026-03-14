@@ -52,17 +52,16 @@ in
     PRODUCT_PRODUCT_PROPERTIES += persist.dbg.volte_avail_ovr=1
     PRODUCT_PRODUCT_PROPERTIES += persist.dbg.wfc_avail_ovr=1
     PRODUCT_PRODUCT_PROPERTIES += persist.dbg.allow_ims_off=1
-    # FlossIMS uses shared user android.uid.system; cert must match platform cert.
-    PRODUCT_CERTIFICATE_OVERRIDES += RobotnixFlossIMS:platform
   '';
 
   apps.prebuilt.FlossIMS = lib.mkIf withIMS {
     apk = pkgs.fetchurl {
-      url = "https://treble.phh.me/floss-ims-16.apk";
-      sha256 = "1wjld0b8miavcbyxh2gn2ck690dxw8qrycskdrgmdd8w8am6qiam";
+      # Use phh's platform-resigned build and keep signature intact for android.uid.system.
+      url = "https://treble.phh.me/floss-ims-25-resigned.apk";
+      sha256 = "0yimwrkyhd093hchcbdlabba8vzl33i5n0z9sscr87c192yak5yp";
     };
     packageName = "me.phh.ims";
-    certificate = "platform";
+    certificate = "PRESIGNED";
     privileged = true;
     partition = "system";
   };
