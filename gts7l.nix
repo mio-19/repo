@@ -52,6 +52,8 @@ in
     PRODUCT_PRODUCT_PROPERTIES += persist.dbg.volte_avail_ovr=1
     PRODUCT_PRODUCT_PROPERTIES += persist.dbg.wfc_avail_ovr=1
     PRODUCT_PRODUCT_PROPERTIES += persist.dbg.allow_ims_off=1
+    # FlossIMS uses shared user android.uid.system; cert must match platform cert.
+    PRODUCT_CERTIFICATE_OVERRIDES += RobotnixFlossIMS:platform
   '';
 
   apps.prebuilt.FlossIMS = lib.mkIf withIMS {
