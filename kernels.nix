@@ -258,7 +258,7 @@ in
         in
         rec {
           # currently only compiles on aarch64-linux
-          enchilada = lindroid {
+          enchilada = {
             arch = "arm64";
             kernelMakeFlags = [
               "KCFLAGS=\"-Wno-error -target aarch64-linux-gnu -march=armv8.2-a+crc -mtune=cortex-a75\""
@@ -272,19 +272,6 @@ in
             kernelSU.enable = false; # can compile but not working
             kernelSU.variant = "next";
             kernelImageName = "Image";
-            kernelConfig = ''
-              CONFIG_SYSVIPC=y
-              CONFIG_UTS_NS=y
-              CONFIG_PID_NS=y
-              CONFIG_IPC_NS=y
-              CONFIG_USER_NS=y
-              CONFIG_NET_NS=y
-              CONFIG_CGROUP_DEVICE=y
-              CONFIG_CGROUP_FREEZER=y
-              CONFIG_DRM=y
-              CONFIG_DRM_LINDROID_EVDI=y
-              CONFIG_TMPFS_POSIX_ACL=y
-            '';
             kernelSrc =
               assert enchilada_robotnix.config.source.dirs."kernel/oneplus/sdm845".patches == [ ];
               enchilada_robotnix.config.source.dirs."kernel/oneplus/sdm845".src;
