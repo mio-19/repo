@@ -33,6 +33,8 @@ gradle2nixBuilders.buildGradlePackage {
     pkgs.unzip
     pkgs.which
     pkgs.writableTmpDirAsHomeHook
+  ] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
+    pkgs.darwin.system_cmds
   ];
 
   patches = [
@@ -116,13 +118,14 @@ gradle2nixBuilders.buildGradlePackage {
     GOFLAGS = "-mod=vendor";
   };
 
-  preConfigure = pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
+  preBuild = pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
     # AGP writes SDK metadata under ~/.android; /var/empty is read-only on Darwin sandboxes.
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME"
     export ANDROID_USER_HOME="$HOME/.android"
     export GRADLE_USER_HOME="$HOME/.gradle"
     mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"
+    export GRADLE_OPTS="''${GRADLE_OPTS:+$GRADLE_OPTS }-Duser.home=$HOME"
   '';
 
   gradleBuildFlagsArray = [ ":TMessagesProj_App:assembleAfatFd_v8aRelease" ];
