@@ -38,12 +38,14 @@ in
     samsungIMSVendorSrc = lib.mkOption {
       type = lib.types.path;
       default = pkgs.runCommand "samsung-ims-vendor-src" { } ''
-        cp -r ${pkgs.fetchFromGitHub {
-          owner = "jameskdev";
-          repo = "android_samsung_imsservice";
-          rev = "a8ca989d3d066d74fc9ec3a8032f0ca4553baeb5";
-          hash = "sha256-1gpimATRINIfVjxa3AJi0AjDh0cVhvZkNfAWXrCLnbU=";
-        }}/proprietary_vendor_samsung_ims/. "$out"
+        cp -r ${
+          pkgs.fetchFromGitHub {
+            owner = "jameskdev";
+            repo = "android_samsung_imsservice";
+            rev = "a8ca989d3d066d74fc9ec3a8032f0ca4553baeb5";
+            hash = "sha256-1gpimATRINIfVjxa3AJi0AjDh0cVhvZkNfAWXrCLnbU=";
+          }
+        }/proprietary_vendor_samsung_ims/. "$out"
       '';
       example = lib.literalExpression "pkgs.fetchFromGitHub { owner = \"jameskdev\"; repo = \"android_samsung_imsservice\"; rev = \"a8ca989d3d066d74fc9ec3a8032f0ca4553baeb5\"; hash = \"sha256-1gpimATRINIfVjxa3AJi0AjDh0cVhvZkNfAWXrCLnbU=\"; }";
       description = ''
@@ -90,14 +92,18 @@ in
     # - https://xdaforums.com/t/research-wip-possible-volte-enablement-for-samsung-devices-on-aosp-based-roms.4664947/
     # Note: full Samsung IMS bring-up can also require proprietary jars/libs/rc files
     # shown in proprietary_vendor_samsung_ims/vendor-ims.mk.
-    source.dirs."vendor/samsung/ims".src = lib.mkIf (withIMS && samsungIMSUseFullStack) samsungIMSVendorSrc;
+    source.dirs."vendor/samsung/ims".src = lib.mkIf (
+      withIMS && samsungIMSUseFullStack
+    ) samsungIMSVendorSrc;
 
     # Pull in Samsung's vendor IMS makefile into the device product definition.
     source.dirs."device/${config.manufactor}/${config.device-name}".postPatch =
       lib.mkIf (withIMS && samsungIMSUseFullStack)
-        (lib.mkAfter ''
-          echo '$(call inherit-product, vendor/samsung/ims/vendor-ims.mk)' >> device.mk
-        '');
+        (
+          lib.mkAfter ''
+            echo '$(call inherit-product, vendor/samsung/ims/vendor-ims.mk)' >> device.mk
+          ''
+        );
 
     resources."frameworks/base/core/res" = lib.mkIf (withIMS && withIWLAN) {
       config_wlan_data_service_package = "com.google.android.iwlan";
