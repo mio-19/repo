@@ -38,14 +38,14 @@ in
     };
 
     product.additionalProductPackages =
-      (lib.mkIf (withIMS && withIWLAN) [
+      (lib.optionals (withIMS && withIWLAN) [
         "Iwlan"
         "QualifiedNetworksService"
       ])
       ++
         # FlossIMS uses android.telephony.imsmedia.IImsMedia on newer releases.
         # Ensure the AOSP IMS media service exists so first-call media setup does not fail.
-        (lib.mkIf withIMS [
+        (lib.optionals withIMS [
           "ImsMediaService"
           "libimsmedia"
         ]);
