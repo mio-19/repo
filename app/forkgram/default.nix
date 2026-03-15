@@ -36,6 +36,7 @@ gradle2nixBuilders.buildGradlePackage {
   ];
 
   patches = [
+    ./0001-Killergram.patch
     # Skip git submodule management (submodules pre-fetched by Nix)
     # and skip rm -rf of submodule dirs
     ./prepare.patch

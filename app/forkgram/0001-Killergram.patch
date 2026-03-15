@@ -1,0 +1,94 @@
+From c0610193fdc73e414873255a2dd88da5d92959da Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Sat, 20 Sep 2025 12:40:59 +1000
+Subject: [PATCH] Killergram
+
+---
+ .../java/org/telegram/messenger/MessagesController.java     | 6 +++---
+ .../src/main/java/org/telegram/messenger/SharedConfig.java  | 2 +-
+ .../src/main/java/org/telegram/messenger/UserConfig.java    | 4 ++--
+ .../src/main/java/org/telegram/ui/ChatActivity.java         | 2 +-
+ 4 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java b/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java
+index bad86aefb1..aac3d77347 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java
+@@ -6482,7 +6482,7 @@ public class MessagesController extends BaseController implements NotificationCe
+     }
+ 
+     public boolean isChatNoForwards(TLRPC.Chat chat) {
+-        if (chat == null) {
++        if (true) { // (chat == null) {
+             return false;
+         }
+         if (chat.migrated_to != null) {
+@@ -6495,7 +6495,7 @@ public class MessagesController extends BaseController implements NotificationCe
+     }
+ 
+     public boolean isChatNoForwards(long chatId) {
+-        return isChatNoForwards(getChat(chatId));
++        return false; // return isChatNoForwards(getChat(chatId));
+     }
+ 
+     public TLRPC.User getUser(Long id) {
+@@ -20125,7 +20125,7 @@ public class MessagesController extends BaseController implements NotificationCe
+     }
+ 
+     public SponsoredMessagesInfo getSponsoredMessages(long dialogId) {
+-        SponsoredMessagesInfo info = sponsoredMessages.get(dialogId);
++        if (true) { return null; } SponsoredMessagesInfo info = sponsoredMessages.get(dialogId);
+         if (info != null && (info.loading || Math.abs(SystemClock.elapsedRealtime() - info.loadTime) <= 5 * 60 * 1000)) {
+             return info;
+         }
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/SharedConfig.java b/TMessagesProj/src/main/java/org/telegram/messenger/SharedConfig.java
+index dbac1773c2..18056a359d 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/SharedConfig.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/SharedConfig.java
+@@ -1638,7 +1638,7 @@ public class SharedConfig {
+ 
+     @PerformanceClass
+     public static int getDevicePerformanceClass() {
+-        if (overrideDevicePerformanceClass != -1) {
++        if (true) { return PERFORMANCE_CLASS_HIGH; } if (overrideDevicePerformanceClass != -1) {
+             return overrideDevicePerformanceClass;
+         }
+         if (devicePerformanceClass == -1) {
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java b/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java
+index 29fee254c5..081e2fa747 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java
+@@ -111,7 +111,7 @@ public class UserConfig extends BaseController {
+     }
+ 
+     public static boolean hasPremiumOnAccounts() {
+-        for (int a = 0; a < MAX_ACCOUNT_COUNT; a++) {
++        if (true) { return true; } for (int a = 0; a < MAX_ACCOUNT_COUNT; a++) {
+             if (AccountInstance.getInstance(a).getUserConfig().isClientActivated() && AccountInstance.getInstance(a).getUserConfig().getUserConfig().isPremium()) {
+                 return true;
+             }
+@@ -120,7 +120,7 @@ public class UserConfig extends BaseController {
+     }
+ 
+     public static int getMaxAccountCount() {
+-        return hasPremiumOnAccounts() ? 5 : 3;
++        return 999; // return hasPremiumOnAccounts() ? 5 : 3;
+     }
+ 
+     public int getNewMessageId() {
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
+index 6a181314b9..4e0526f91d 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
+@@ -24855,7 +24855,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
+     private Pattern sponsoredUrlPattern;
+     private MessageObject botSponsoredMessage;
+     private void addSponsoredMessages(boolean animated) {
+-        if (sponsoredMessagesAdded || chatMode != 0 || !ChatObject.isChannel(currentChat) && !UserObject.isBot(currentUser) || !forwardEndReached[0] || getUserConfig().isPremium() && getMessagesController().isSponsoredDisabled() || isReport()) {
++        if (true) { // if (sponsoredMessagesAdded || chatMode != 0 || !ChatObject.isChannel(currentChat) && !UserObject.isBot(currentUser) || !forwardEndReached[0] || getUserConfig().isPremium() && getMessagesController().isSponsoredDisabled() || isReport()) {
+             return;
+         }
+         MessagesController.SponsoredMessagesInfo res = getMessagesController().getSponsoredMessages(dialog_id);
+-- 
+2.51.0
+
