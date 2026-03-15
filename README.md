@@ -73,10 +73,10 @@ nix build -L .#grapheneos-mustang-kernel -o mustang-kernel-dist
 
 ## ForkGram
 
-Build the APK:
+Build the APK (unsigned):
 
 ```zsh
-nix build .#packages.x86_64-linux.forkgram -o forkgram
+nix build .#forkgram -o forkgram
 # APK at forkgram/forkgram.apk
 ```
 
@@ -96,7 +96,7 @@ keytool -genkeypair -v \
 ### Re-sign the APK with your key
 
 ```zsh
-nix build .#packages.x86_64-linux.forkgram.signScript -o sign-forkgram
+nix build .#forkgram.signScript -o sign-forkgram
 ./sign-forkgram/bin/sign-forkgram my-release-key.jks \
   --ks-pass password \
   --out forkgram-signed.apk
@@ -105,7 +105,7 @@ nix build .#packages.x86_64-linux.forkgram.signScript -o sign-forkgram
 Or with `nix run`:
 
 ```zsh
-nix run .#packages.x86_64-linux.forkgram.signScript -- \
+nix run .#forkgram.signScript -- \
   my-release-key.jks \
   --ks-pass password \
   --out forkgram-signed.apk
