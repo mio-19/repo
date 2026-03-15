@@ -38,23 +38,23 @@ gradle2nixBuilders.buildGradlePackage {
   patches = [
     # Skip git submodule management (submodules pre-fetched by Nix)
     # and skip rm -rf of submodule dirs
-    ./patches/prepare.patch
+    ./prepare.patch
     # Fix $(ANDROID_SDK) command-substitution bug (should be ${ANDROID_SDK})
-    ./patches/build_boringssl.patch
+    ./build_boringssl.patch
     # Remove PATH prepend for non-existent SDK cmake 3.22.1;
     # add CMAKE_MAKE_PROGRAM=ninja and BOTH find-root-path modes for OpenSSL/ZLIB
-    ./patches/build-tdlib.patch
+    ./build-tdlib.patch
     # Remove curl/wget check — not needed in Nix sandbox (no downloads)
-    ./patches/check-environment.patch
+    ./check-environment.patch
     # Fix ZLIB detection in tdutils: use NDK sysroot on Android, skip on host source-gen step
-    ./patches/tde2e-cmake-zlib.patch
+    ./tde2e-cmake-zlib.patch
     # Fix ZLIB detection in tdutils: use NDK sysroot so TD_HAVE_OPENSSL gets set
-    ./patches/tdutils-cmake-zlib.patch
+    ./tdutils-cmake-zlib.patch
     # Add cpufeatures as static library for NDK < r23 (AndroidNdkModules not available)
-    ./patches/jni-cmake-cpufeatures.patch
+    ./jni-cmake-cpufeatures.patch
     # Remove jniLibs.srcDirs = ['./jni/'] — the source tree contains cmake intermediate
     # files (.o.tmp) that cause mergeJniLibFolders to fail; AGP's cmake build provides output
-    ./patches/jni-srcset.patch
+    ./jni-srcset.patch
   ];
 
   postPatch = ''
