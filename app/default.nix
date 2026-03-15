@@ -17,6 +17,7 @@
         }:
         let
           androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
+            s.cmdline-tools-latest
             s.build-tools-35-0-0
           ]);
         in
@@ -89,6 +90,7 @@
         }:
         let
           androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
+            s.cmdline-tools-latest
             s.build-tools-35-0-0
           ]);
         in

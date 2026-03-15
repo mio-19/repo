@@ -109,6 +109,10 @@ nix run .#forkgram.signScript -- \
   my-release-key.jks \
   --ks-pass password \
   --out forkgram-signed.apk
+NIXPKGS_ALLOW_UNFREE=1 nix run --impure .#meshtastic.signScript -- \
+  my-release-key.jks \
+  --ks-pass password \
+  --out meshtastic-signed.apk
 ```
 
 If `--ks-pass` is omitted the script prompts interactively.
