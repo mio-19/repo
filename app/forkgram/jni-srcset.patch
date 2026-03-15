@@ -8,3 +8,13 @@
  
      externalNativeBuild {
          cmake {
+--- a/TMessagesProj_App/build.gradle
++++ b/TMessagesProj_App/build.gradle
+@@ -31,7 +31,6 @@
+     buildToolsVersion '35.0.0'
+ 
+     defaultConfig.applicationId = "org.forkclient.messenger"
+ 
+-    sourceSets.main.jniLibs.srcDirs = ['../TMessagesProj/jni/']
+ 
+     lintOptions {

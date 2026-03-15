@@ -70,6 +70,15 @@ gradle2nixBuilders.buildGradlePackage {
     echo "APP_ID=14577864" >> gradle.properties
     echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
 
+    # F-Droid builds set SKIP_DNS_RESOLVER=true (they pass F_DROID=1).
+    # Without it, Telegram's custom DNS-over-HTTPS resolver runs and silently
+    # fails to resolve DC IPs, causing phone auth to spin then do nothing.
+    # Force it true so the app uses normal system DNS, just like F-Droid does.
+    substituteInPlace TMessagesProj/build.gradle \
+      --replace-fail \
+      "buildConfigField 'boolean', 'SKIP_DNS_RESOLVER', (Utils['isFdroid']() ? 'true' : 'false')" \
+      "buildConfigField 'boolean', 'SKIP_DNS_RESOLVER', 'true'"
+
 
     # Tell AGP where to find cmake (it looks for version 3.22.1 in the SDK by default)
     echo "cmake.dir=${pkgs.cmake}" >> local.properties
