@@ -58,8 +58,8 @@ in
     apk = pkgs.fetchurl {
       # Long-term: always re-sign in-build with platform key so sharedUser matches
       # both test-key builds and release-script signed builds.
-      url = "https://treble.phh.me/floss-ims-25-resigned.apk";
-      sha256 = "0yimwrkyhd093hchcbdlabba8vzl33i5n0z9sscr87c192yak5yp";
+      url = "https://treble.phh.me/floss-ims-84.apk";
+      sha256 = "0wvkkbjm2q22bjv4w2cdjch917svpn6nqlihirwcpm1bbqkk6j8i";
     };
     packageName = "me.phh.ims";
     certificate = "platform";
