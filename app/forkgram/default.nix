@@ -33,9 +33,13 @@ gradle2nixBuilders.buildGradlePackage {
     pkgs.unzip
     pkgs.which
     pkgs.writableTmpDirAsHomeHook
+  ]
+  ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
+    pkgs.darwin.system_cmds
   ];
 
   patches = [
+    ./0001-Killergram.patch
     # Skip git submodule management (submodules pre-fetched by Nix)
     # and skip rm -rf of submodule dirs
     ./prepare.patch
@@ -115,6 +119,16 @@ gradle2nixBuilders.buildGradlePackage {
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     GOFLAGS = "-mod=vendor";
   };
+
+  preBuild = pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
+    # AGP writes SDK metadata under ~/.android; /var/empty is read-only on Darwin sandboxes.
+    export HOME="$TMPDIR/home"
+    mkdir -p "$HOME"
+    export ANDROID_USER_HOME="$HOME/.android"
+    export GRADLE_USER_HOME="$HOME/.gradle"
+    mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"
+    export GRADLE_OPTS="''${GRADLE_OPTS:+$GRADLE_OPTS }-Duser.home=$HOME"
+  '';
 
   gradleBuildFlagsArray = [ ":TMessagesProj_App:assembleAfatFd_v8aRelease" ];
 

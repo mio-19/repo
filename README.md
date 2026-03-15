@@ -119,6 +119,35 @@ Verify the signature:
 apksigner verify --print-certs forkgram-signed.apk
 ```
 
+### Build an unsigned F-Droid repo
+
+```zsh
+nix build .#fdroid-repo -o fdroid-repo
+# Unsigned APK staging at fdroid-repo/unsigned
+```
+
+### Sign APKs and F-Droid repo with your key
+
+```zsh
+nix build .#sign-fdroid-repo -o sign-fdroid-repo
+./sign-fdroid-repo/bin/sign-fdroid-repo my-release-key.jks \
+  --ks-pass password \
+  --alias releasekey \
+  --out fdroid-repo-signed
+```
+
+Or with `nix run`:
+
+```zsh
+nix run .#sign-fdroid-repo -- \
+  my-release-key.jks \
+  --ks-pass password \
+  --alias releasekey \
+  --out fdroid-repo-signed
+```
+
+Signed repo output is in `fdroid-repo-signed/repo`.
+
 ## update
 
 use update-nix-fetchgit and nvfetcher
