@@ -38,6 +38,7 @@ in
 
   # FLOSS IMS integration:
   # https://github.com/phhusson/ims/issues/22
+  # https://github.com/TrebleDroid/treble_experimentations/wiki
   resources."frameworks/base/core/res" = lib.mkIf (withIMS && wthIWLAN) {
     config_wlan_data_service_package = "com.google.android.iwlan";
     config_wlan_network_service_package = "com.google.android.iwlan";
