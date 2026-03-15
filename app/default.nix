@@ -210,7 +210,7 @@
       };
 
       meshtastic = pkgs.callPackage ./meshtastic { };
-      forkgramFdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
+      fdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
         androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
           s.cmdline-tools-latest
           s.platform-tools
@@ -246,11 +246,11 @@
           defaultOut = "forkgram-signed.apk";
         };
 
-        passthru.fdroidRepo = forkgramFdroidRepo;
+        passthru.fdroidRepo = fdroidRepo;
 
         passthru.signFdroidRepoScript = mkFdroidRepoSignScript {
           name = "sign-fdroid-repo";
-          repoPath = "${forkgramFdroidRepo}";
+          repoPath = "${fdroidRepo}";
           defaultOut = "fdroid-repo-signed";
           defaultAlias = "releasekey";
         };
@@ -263,11 +263,11 @@
           defaultOut = "meshtastic-signed.apk";
         };
       });
-      packages.fdroid-repo = forkgramFdroidRepo;
+      packages.fdroid-repo = fdroidRepo;
 
       packages.sign-fdroid-repo = mkFdroidRepoSignScript {
         name = "sign-fdroid-repo";
-        repoPath = "${forkgramFdroidRepo}";
+        repoPath = "${fdroidRepo}";
         defaultOut = "fdroid-repo-signed";
         defaultAlias = "releasekey";
       };
