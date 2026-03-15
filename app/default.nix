@@ -3,15 +3,6 @@
   perSystem =
     { pkgs, system, ... }:
     let
-      androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
-        s.cmdline-tools-latest
-        s.platform-tools
-        s.platforms-android-35
-        s.platforms-android-36
-        s.build-tools-35-0-0
-        s.build-tools-36-0-0
-        s.ndk-21-4-7075529
-      ]);
 
       # Generic helper: zipalign + apksigner wrapper for any pre-built APK.
       # Args:
@@ -24,6 +15,11 @@
           apkPath,
           defaultOut,
         }:
+        let
+          androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
+            s.build-tools-35-0-0
+          ]);
+        in
         pkgs.writeShellScriptBin name ''
           set -euo pipefail
           usage() {
@@ -91,6 +87,11 @@
           defaultOut,
           defaultAlias,
         }:
+        let
+          androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
+            s.build-tools-35-0-0
+          ]);
+        in
         pkgs.writeShellScriptBin name ''
           set -euo pipefail
           usage() {
@@ -196,13 +197,25 @@
         '';
 
       forkgram = pkgs.callPackage ./forkgram {
-        inherit androidSdk;
+        androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
+          s.cmdline-tools-latest
+          s.platform-tools
+          s.platforms-android-35
+          s.build-tools-35-0-0
+          s.ndk-21-4-7075529
+        ]);
         gradle2nixBuilders = inputs.gradle2nix.builders.${system};
       };
 
       meshtastic = pkgs.callPackage ./meshtastic { };
       forkgramFdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
-        inherit androidSdk;
+        androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
+          s.cmdline-tools-latest
+          s.platform-tools
+          s.platforms-android-35
+          s.build-tools-35-0-0
+          s.ndk-21-4-7075529
+        ]);
         apps = [
           {
             appId = "org.forkgram.messenger";
