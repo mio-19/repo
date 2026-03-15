@@ -1,0 +1,20 @@
+--- a/TMessagesProj/jni/tde2e_source/CMakeLists.txt	2026-03-15 18:35:31.399408198 +1100
++++ b/TMessagesProj/jni/tde2e_source/CMakeLists.txt	2026-03-15 18:35:48.895259323 +1100
+@@ -185,8 +185,15 @@
+   find_package(ZLIB)
+ endif()
+ if (NOT ZLIB_FOUND)
+-  message(WARNING "Can't find zlib: stop TDLib building")
+-  return()
++  if (ANDROID_NDK)
++    set(ZLIB_INCLUDE_DIR "${CMAKE_SYSROOT}/usr/include" CACHE PATH "" FORCE)
++    set(ZLIB_LIBRARY "z" CACHE STRING "" FORCE)
++    set(ZLIB_LIBRARIES "z")
++    set(ZLIB_FOUND 1)
++  elseif (NOT TD_GENERATE_SOURCE_FILES)
++    message(WARNING "Can't find zlib: stop TDLib building")
++    return()
++  endif()
+ endif()
+ 
+ if (NOT TDUTILS_MIME_TYPE OR NOT TDUTILS_USE_EXTERNAL_DEPENDENCIES)

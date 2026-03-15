@@ -35,6 +35,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
     };
+    gradle2nix = {
+      url = "github:tadfisher/gradle2nix/v2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -53,6 +57,7 @@
         inputs.nix-kernelsu-builder.flakeModules.default
         ./openwrt.nix
         ./robotnix.nix
+        ./app
       ];
       perSystem =
         args@{ pkgs, system, ... }:

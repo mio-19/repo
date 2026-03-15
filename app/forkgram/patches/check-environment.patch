@@ -1,0 +1,18 @@
+--- a/TMessagesProj/jni/tde2e_source/example/android/check-environment.sh	2026-03-15 18:35:31.397408215 +1100
++++ b/TMessagesProj/jni/tde2e_source/example/android/check-environment.sh	2026-03-15 18:35:48.895259323 +1100
+@@ -16,14 +16,7 @@
+   exit 1
+ fi
+ 
+-if which wget >/dev/null 2>&1 ; then
+-  WGET="wget -q"
+-elif which curl >/dev/null 2>&1 ; then
+-  WGET="curl -sfLO"
+-else
+-  echo "Error: this script requires either curl or wget tool installed."
+-  exit 1
+-fi
++WGET="true"
+ 
+ for TOOL_NAME in gperf jar java javadoc make perl php sed tar yes unzip ; do
+   if ! which "$TOOL_NAME" >/dev/null 2>&1 ; then

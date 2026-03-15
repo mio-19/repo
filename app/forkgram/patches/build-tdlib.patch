@@ -1,0 +1,28 @@
+--- a/TMessagesProj/jni/tde2e/build-tdlib.sh
++++ b/TMessagesProj/jni/tde2e/build-tdlib.sh
+@@ -1,7 +1,7 @@
+ #!/usr/bin/env bash
+ 
+ ANDROID_SDK_ROOT=${1:-SDK}
+-ANDROID_NDK_VERSION=${2:-23.2.8568313}
++ANDROID_NDK_VERSION=${2:-21.4.7075529}
+ OPENSSL_INSTALL_DIR=${3:-third-party/openssl}
+ ANDROID_STL=${4:-c++_static}
+ TDLIB_INTERFACE=${5:-Java}
+@@ -31,7 +31,6 @@
+ ANDROID_SDK_ROOT="$(cd "$(dirname -- "$ANDROID_SDK_ROOT")" >/dev/null; pwd -P)/$(basename -- "$ANDROID_SDK_ROOT")"
+ ANDROID_NDK_ROOT="$ANDROID_SDK_ROOT/ndk/$ANDROID_NDK_VERSION"
+ OPENSSL_INSTALL_DIR="$(cd "$(dirname -- "$OPENSSL_INSTALL_DIR")" >/dev/null; pwd -P)/$(basename -- "$OPENSSL_INSTALL_DIR")"
+-PATH=$ANDROID_SDK_ROOT/cmake/3.22.1/bin:$PATH
+ TDLIB_INTERFACE_OPTION=$([ "$TDLIB_INTERFACE" == "JSON" ] && echo "-DTD_ANDROID_JSON=ON" || [ "$TDLIB_INTERFACE" == "JSONJava" ] && echo "-DTD_ANDROID_JSON_JAVA=ON" || echo "")
+ 
+ cd $(dirname $0)
+@@ -51,7 +50,7 @@
+ 
+   mkdir -p build-$ABI-$TDLIB_INTERFACE || exit 1
+   cd build-$ABI-$TDLIB_INTERFACE
+-  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake" -DOPENSSL_ROOT_DIR="$OPENSSL_INSTALL_DIR/$ABI" -DCMAKE_BUILD_TYPE=RelWithDebInfo -GNinja -DANDROID_ABI=$ABI -DANDROID_STL=$ANDROID_STL -DANDROID_PLATFORM=android-16 $TDLIB_INTERFACE_OPTION .. || exit 1
++  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake" -DOPENSSL_ROOT_DIR="$OPENSSL_INSTALL_DIR/$ABI" -DCMAKE_BUILD_TYPE=RelWithDebInfo -GNinja -DCMAKE_MAKE_PROGRAM=ninja -DANDROID_LD=lld -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH -DANDROID_ABI=$ABI -DANDROID_STL=$ANDROID_STL -DANDROID_PLATFORM=android-16 $TDLIB_INTERFACE_OPTION .. || exit 1
+   if [ "$TDLIB_INTERFACE" == "Java" ] || [ "$TDLIB_INTERFACE" == "JSONJava" ] ; then
+     cmake --build . --target tde2e || exit 1
+   fi

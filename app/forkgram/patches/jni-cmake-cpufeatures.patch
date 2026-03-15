@@ -1,0 +1,19 @@
+--- a/TMessagesProj/jni/CMakeLists.txt
++++ b/TMessagesProj/jni/CMakeLists.txt
+@@ -680,5 +680,14 @@
+ #            c)
+ #endif()
+ 
+-include(AndroidNdkModules)
+-android_ndk_import_module_cpufeatures()
++# AndroidNdkModules was added in NDK r23; for older NDKs add cpufeatures manually.
++if(EXISTS "${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c")
++  add_library(cpufeatures STATIC
++    "${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c")
++  target_include_directories(cpufeatures PUBLIC
++    "${ANDROID_NDK}/sources/android/cpufeatures")
++  set_target_properties(cpufeatures PROPERTIES POSITION_INDEPENDENT_CODE ON)
++else()
++  include(AndroidNdkModules)
++  android_ndk_import_module_cpufeatures()
++endif()

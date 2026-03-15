@@ -1,0 +1,18 @@
+--- a/TMessagesProj/jni/tde2e_source/tdutils/CMakeLists.txt
++++ b/TMessagesProj/jni/tde2e_source/tdutils/CMakeLists.txt
+@@ -11,7 +11,14 @@
+ endif()
+ 
+ if (NOT ZLIB_FOUND AND TDUTILS_USE_EXTERNAL_DEPENDENCIES)
+-  find_package(ZLIB)
++  if (ANDROID_NDK AND CMAKE_SYSROOT)
++    set(ZLIB_INCLUDE_DIR "${CMAKE_SYSROOT}/usr/include" CACHE PATH "" FORCE)
++    set(ZLIB_LIBRARY "z" CACHE STRING "" FORCE)
++    set(ZLIB_LIBRARIES "z")
++    set(ZLIB_FOUND 1)
++  else()
++    find_package(ZLIB)
++  endif()
+ endif()
+ if (ZLIB_FOUND)
+   set(TD_HAVE_ZLIB 1)

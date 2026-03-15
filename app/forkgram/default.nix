@@ -1,0 +1,118 @@
+{
+  pkgs,
+  androidSdk,
+  gradle2nixBuilders,
+}:
+
+gradle2nixBuilders.buildGradlePackage {
+  pname = "forkgram";
+  version = "12.5.1.0";
+
+  src = pkgs.fetchFromGitHub {
+    owner = "forkgram";
+    repo = "TelegramAndroid";
+    rev = "12.5.1.0";
+    hash = "sha256-XvPUORn15ll6if8kDEd/EzyS2qQ4Ew7fkxC3nCewzzM=";
+    fetchSubmodules = true;
+  };
+
+  lockFile = ./gradle.lock;
+
+  buildJdk = pkgs.jdk17;
+
+  nativeBuildInputs = [
+    androidSdk
+    pkgs.cmake
+    pkgs.gperf
+    pkgs.go
+    pkgs.jdk17
+    pkgs.meson
+    pkgs.ninja
+    pkgs.perl
+    pkgs.python3
+    pkgs.unzip
+    pkgs.which
+    pkgs.writableTmpDirAsHomeHook
+  ];
+
+  patches = [
+    # Skip git submodule management (submodules pre-fetched by Nix)
+    # and skip rm -rf of submodule dirs
+    ./patches/prepare.patch
+    # Fix $(ANDROID_SDK) command-substitution bug (should be ${ANDROID_SDK})
+    ./patches/build_boringssl.patch
+    # Remove PATH prepend for non-existent SDK cmake 3.22.1;
+    # add CMAKE_MAKE_PROGRAM=ninja and BOTH find-root-path modes for OpenSSL/ZLIB
+    ./patches/build-tdlib.patch
+    # Remove curl/wget check — not needed in Nix sandbox (no downloads)
+    ./patches/check-environment.patch
+    # Fix ZLIB detection in tdutils: use NDK sysroot on Android, skip on host source-gen step
+    ./patches/tde2e-cmake-zlib.patch
+    # Fix ZLIB detection in tdutils: use NDK sysroot so TD_HAVE_OPENSSL gets set
+    ./patches/tdutils-cmake-zlib.patch
+    # Add cpufeatures as static library for NDK < r23 (AndroidNdkModules not available)
+    ./patches/jni-cmake-cpufeatures.patch
+    # Remove jniLibs.srcDirs = ['./jni/'] — the source tree contains cmake intermediate
+    # files (.o.tmp) that cause mergeJniLibFolders to fail; AGP's cmake build provides output
+    ./patches/jni-srcset.patch
+  ];
+
+  postPatch = ''
+    patchShebangs TMessagesProj/jni/
+
+    # Fix hardcoded /bin/bash in subprocess call (no /bin/bash in Nix sandbox)
+    substituteInPlace TMessagesProj/jni/prepare.py \
+      --replace-fail 'executable="/bin/bash"' 'executable="${pkgs.bash}/bin/bash"'
+
+    # Tell AGP where to find cmake (it looks for version 3.22.1 in the SDK by default)
+    echo "cmake.dir=${pkgs.cmake}" >> local.properties
+
+    # Use aapt2 from the installed SDK instead of downloading from Maven
+    echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2" >> gradle.properties
+
+    # The repo's release.keystore has unknown credentials. Regenerate it matching
+    # the gradle.properties defaults (storepass=android, alias=androidkey, keypass=android).
+    rm -f TMessagesProj/config/release.keystore
+    keytool -genkey -v \
+      -keystore TMessagesProj/config/release.keystore \
+      -alias androidkey -keyalg RSA -keysize 2048 -validity 10000 \
+      -storepass android -keypass android \
+      -dname "CN=Forkgram Build"
+
+    # boringssl's CMake build runs 'go run err_data_generate.go'.
+    # Set up a vendor dir so go doesn't try to download golang.org/x/{crypto,net}.
+    mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/crypto
+    mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/net
+    cat > TMessagesProj/jni/boringssl/vendor/modules.txt << 'EOF'
+# golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
+## explicit; go 1.11
+# golang.org/x/net v0.0.0-20210614182718-04defd469f4e
+## explicit; go 1.17
+EOF
+  '';
+
+  dontUseCmakeConfigure = true;
+  dontUseNinjaBuild = true;
+  dontUseMesonConfigure = true;
+
+  env = {
+    ANDROID_HOME = "${androidSdk}/share/android-sdk";
+    ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+    GOFLAGS = "-mod=vendor";
+  };
+
+  gradleBuildFlagsArray = [ ":TMessagesProj_App:assembleAfatRelease" ];
+
+  installPhase = ''
+    runHook preInstall
+    install -Dm644 TMessagesProj_App/build/outputs/apk/afat/release/*.apk "$out/forkgram.apk"
+    runHook postInstall
+  '';
+
+  meta = with pkgs.lib; {
+    description = "Telegram Android client fork (ForkGram)";
+    homepage = "https://github.com/forkgram/TelegramAndroid";
+    license = licenses.gpl2Plus;
+    platforms = platforms.linux;
+  };
+}

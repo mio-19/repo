@@ -1,0 +1,11 @@
+--- a/TMessagesProj/jni/build_boringssl.sh	2026-03-15 18:35:31.395408232 +1100
++++ b/TMessagesProj/jni/build_boringssl.sh	2026-03-15 18:35:48.895259323 +1100
+@@ -3,7 +3,7 @@
+ set -e
+ 
+ 
+-if [[ -z "$(ANDROID_SDK)" ]]; then
++if [[ -z "${ANDROID_SDK}" ]]; then
+    cmakePath=""
+ else
+    cmakePath=`find $ANDROID_SDK/cmake -executable -type f | grep cmake$ | head -n 1`/

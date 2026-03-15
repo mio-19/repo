@@ -1,0 +1,57 @@
+--- a/TMessagesProj/jni/prepare.py	2026-03-15 18:35:31.393408249 +1100
++++ b/TMessagesProj/jni/prepare.py	2026-03-15 18:35:48.895259323 +1100
+@@ -176,7 +176,7 @@
+ def removeDir(folder):
+     if win:
+         return 'if exist ' + folder + ' rmdir /Q /S ' + folder + '\nif exist ' + folder + ' exit /b 1'
+-    return 'rm -rf ' + folder
++    return 'true'
+ 
+ def filterByPlatform(commands):
+     commands = commands.split('\n')
+@@ -393,8 +393,6 @@
+     finish(0)
+ 
+ stage('dav1d', """
+-    git submodule init && git submodule update
+-    cd dav1d && git reset --hard HEAD && cd ..
+     export NDK={ndk}
+     export NINJA_PATH=`which ninja`
+     ./build_dav1d_clang.sh {archesStr}
+@@ -402,8 +400,6 @@
+ """.format(ndk=ndkPath,archesStr=' '.join(arches)))
+ 
+ stage('libvpx', """
+-    git submodule init && git submodule update
+-    cd libvpx && git reset --hard HEAD && cd ..
+     export NDK={ndk}
+     export NINJA_PATH=`which ninja`
+     ./build_libvpx_clang.sh {archesStr}
+@@ -411,8 +407,6 @@
+ """.format(ndk=ndkPath,archesStr=' '.join(arches)))
+ 
+ stage('ffmpeg', """
+-    git submodule init && git submodule update
+-    cd ffmpeg && git reset --hard HEAD && cd ..
+     export NDK={ndk}
+     ./build_ffmpeg_clang.sh {archesStr}
+     ./patch_ffmpeg.sh
+@@ -420,8 +414,6 @@
+ """.format(ndk=ndkPath,archesStr=' '.join(arches)))
+ 
+ stage('boringssl', """
+-    git submodule init && git submodule update
+-    cd boringssl && git reset --hard HEAD && cd ..
+     export NDK={ndk}
+     export NINJA_PATH=`which ninja`
+     ./patch_boringssl.sh
+@@ -432,9 +424,6 @@
+ stage('tde2e', """
+     # Install gsed on macOS.
+ 
+-    git submodule init && git submodule update
+-    git reset HEAD tde2e/ && git checkout -- tde2e/
+-    cd tde2e_source && git reset --hard HEAD && cd ..
+     export NDK={ndk}
+     export NINJA_PATH=`which ninja`
+ 
