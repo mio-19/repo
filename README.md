@@ -71,6 +71,53 @@ nix build -L .#grapheneos-tangorpro-kernel -o tangorpro-kernel-dist
 nix build -L .#grapheneos-mustang-kernel -o mustang-kernel-dist
 ```
 
+## ForkGram
+
+Build the APK:
+
+```zsh
+nix build .#packages.x86_64-linux.forkgram -o forkgram
+# APK at forkgram/forkgram.apk
+```
+
+### Generate a signing key
+
+```zsh
+keytool -genkeypair -v \
+  -keystore my-release-key.jks \
+  -alias releasekey -keyalg RSA -keysize 4096 -validity 10000 \
+  -storepass <store-password> -keypass <key-password> \
+  -dname "CN=Your Name,O=Your Org,C=US"
+```
+
+### Re-sign the APK with your key
+
+```zsh
+nix build .#packages.x86_64-linux.forkgram.signScript -o sign-forkgram
+./sign-forkgram/bin/sign-forkgram my-release-key.jks \
+  --ks-pass <store-password> \
+  --key-pass <key-password> \
+  --out forkgram-signed.apk
+```
+
+Or with `nix run`:
+
+```zsh
+nix run .#packages.x86_64-linux.forkgram.signScript -- \
+  my-release-key.jks \
+  --ks-pass <store-password> \
+  --key-pass <key-password> \
+  --out forkgram-signed.apk
+```
+
+If `--ks-pass` / `--key-pass` are omitted the script prompts interactively.
+
+Verify the signature:
+
+```zsh
+apksigner verify --print-certs forkgram-signed.apk
+```
+
 ## update
 
 use update-nix-fetchgit and nvfetcher
