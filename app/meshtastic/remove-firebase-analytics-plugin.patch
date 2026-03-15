@@ -1,0 +1,26 @@
+--- a/build-logic/convention/src/main/kotlin/AnalyticsConventionPlugin.kt
++++ b/build-logic/convention/src/main/kotlin/AnalyticsConventionPlugin.kt
+@@ -40,7 +40,6 @@
+                 productFlavors.all {
+                     if (name == "google") {
+                         apply(plugin = libs.plugin("google-services").get().pluginId)
+-                        apply(plugin = libs.plugin("firebase-crashlytics").get().pluginId)
+                         apply(plugin = libs.plugin("datadog").get().pluginId)
+                     }
+                 }
+@@ -56,15 +55,6 @@
+                 }
+             }
+ 
+-            plugins.withId("com.google.firebase.crashlytics") {
+-                tasks.configureEach {
+-                    if (name.contains("fdroid", ignoreCase = true) &&
+-                        (name.contains("Crashlytics", ignoreCase = true) || name.contains("buildId", ignoreCase = true))
+-                    ) {
+-                        enabled = false
+-                    }
+-                }
+-            }
+ 
+             plugins.withId("com.datadoghq.dd-sdk-android-gradle-plugin") {
+                 tasks.configureEach {

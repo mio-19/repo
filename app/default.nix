@@ -7,7 +7,9 @@
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-35
+        s.platforms-android-36
         s.build-tools-35-0-0
+        s.build-tools-36-0-0
         s.ndk-21-4-7075529
       ]);
 
@@ -80,6 +82,11 @@
         inherit androidSdk;
         gradle2nixBuilders = inputs.gradle2nix.builders.${system};
       };
+
+      meshtastic = pkgs.callPackage ./meshtastic {
+        inherit androidSdk;
+        gradle2nixBuilders = inputs.gradle2nix.builders.${system};
+      };
     in
     {
       packages.forkgram = forkgram.overrideAttrs (_: {
@@ -87,6 +94,14 @@
           name = "sign-forkgram";
           apkPath = "${forkgram}/forkgram.apk";
           defaultOut = "forkgram-signed.apk";
+        };
+      });
+
+      packages.meshtastic = meshtastic.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-meshtastic";
+          apkPath = "${meshtastic}/meshtastic.apk";
+          defaultOut = "meshtastic-signed.apk";
         };
       });
     };

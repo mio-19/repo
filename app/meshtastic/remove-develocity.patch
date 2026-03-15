@@ -1,0 +1,12 @@
+--- a/settings.gradle.kts
++++ b/settings.gradle.kts
+@@ -74,9 +74,5 @@
+ }
+ 
+ plugins {
+-    id("com.gradle.develocity") version("4.3.2")
+-    id("com.gradle.common-custom-user-data-gradle-plugin") version "2.4.0"
+ }
+ 
+-// Shared Develocity and Build Cache configuration
+-apply(from = "gradle/develocity.settings.gradle")

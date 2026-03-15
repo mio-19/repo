@@ -1,0 +1,10 @@
+--- a/build-logic/convention/build.gradle.kts
++++ b/build-logic/convention/build.gradle.kts
+@@ -50,7 +50,6 @@
+     compileOnly(libs.datadog.gradlePlugin)
+     compileOnly(libs.detekt.gradlePlugin)
+     compileOnly(libs.dokka.gradlePlugin)
+-    compileOnly(libs.firebase.crashlytics.gradlePlugin)
+     compileOnly(libs.google.services.gradlePlugin)
+     compileOnly(libs.hilt.gradlePlugin)
+     implementation(libs.kover.gradlePlugin)

@@ -1,0 +1,35 @@
+--- a/build-logic/settings.gradle.kts
++++ b/build-logic/settings.gradle.kts
+@@ -16,6 +16,15 @@
+  */
+ 
+ pluginManagement {
++    resolutionStrategy {
++        eachPlugin {
++            // kotlin-dsl 5.2.0 is bundled with Gradle 9.3.1 and not published to Maven;
++            // redirect to 6.4.2 which is on plugins.gradle.org so gradle2nix can capture it.
++            if (requested.id.id == "org.gradle.kotlin.kotlin-dsl") {
++                useVersion("6.4.2")
++            }
++        }
++    }
+     repositories {
+         gradlePluginPortal()
+         google()
+@@ -30,7 +39,6 @@
+ }
+ 
+ plugins {
+-    id("com.gradle.develocity") version("4.3.2")
+ }
+ 
+ dependencyResolutionManagement {
+@@ -58,8 +66,6 @@
+     }
+ }
+ 
+-// Shared Develocity and Build Cache configuration
+-apply(from = "../gradle/develocity.settings.gradle")
+ 
+ rootProject.name = "build-logic"
+ include(":convention")
