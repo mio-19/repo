@@ -54,11 +54,11 @@ in
     };
 
     samsungIMSApk = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
-      default = null;
+      type = lib.types.path;
+      default = samsungIMSVendorSrc + "/proprietary/system/priv-app/imsservice/imsservice.apk";
       description = ''
-        Path to a patched Samsung imsservice APK (from
-        jameskdev/android_samsung_imsservice workflow).
+        Path to a patched Samsung imsservice APK.
+        Defaults to the APK in samsungIMSVendorSrc.
       '';
     };
 
