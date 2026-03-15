@@ -37,10 +37,18 @@ in
       config_ims_mmtel_package = "me.phh.ims";
     };
 
-    product.additionalProductPackages = lib.mkIf (withIMS && withIWLAN) [
-      "Iwlan"
-      "QualifiedNetworksService"
-    ];
+    product.additionalProductPackages =
+      (lib.mkIf (withIMS && withIWLAN) [
+        "Iwlan"
+        "QualifiedNetworksService"
+      ])
+      ++
+        # FlossIMS uses android.telephony.imsmedia.IImsMedia on newer releases.
+        # Ensure the AOSP IMS media service exists so first-call media setup does not fail.
+        (lib.mkIf withIMS [
+          "ImsMediaService"
+          "libimsmedia"
+        ]);
 
     product.extraConfig = lib.mkIf withIMS (
       ''
