@@ -86,7 +86,7 @@ nix build .#packages.x86_64-linux.forkgram -o forkgram
 keytool -genkeypair -v \
   -keystore my-release-key.jks \
   -alias releasekey -keyalg RSA -keysize 4096 -validity 10000 \
-  -storepass <password> \
+  -storepass password \
   -dname "CN=Your Name,O=Your Org,C=US"
 ```
 
@@ -98,7 +98,7 @@ keytool -genkeypair -v \
 ```zsh
 nix build .#packages.x86_64-linux.forkgram.signScript -o sign-forkgram
 ./sign-forkgram/bin/sign-forkgram my-release-key.jks \
-  --ks-pass <password> \
+  --ks-pass password \
   --out forkgram-signed.apk
 ```
 
@@ -107,7 +107,7 @@ Or with `nix run`:
 ```zsh
 nix run .#packages.x86_64-linux.forkgram.signScript -- \
   my-release-key.jks \
-  --ks-pass <password> \
+  --ks-pass password \
   --out forkgram-signed.apk
 ```
 
