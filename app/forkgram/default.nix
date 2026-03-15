@@ -18,14 +18,14 @@ gradle2nixBuilders.buildGradlePackage {
 
   lockFile = ./gradle.lock;
 
-  buildJdk = pkgs.jdk17;
+  buildJdk = pkgs.jdk21;
 
   nativeBuildInputs = [
     androidSdk
     pkgs.cmake
     pkgs.gperf
     pkgs.go
-    pkgs.jdk17
+    pkgs.jdk21
     pkgs.meson
     pkgs.ninja
     pkgs.perl
@@ -55,6 +55,10 @@ gradle2nixBuilders.buildGradlePackage {
     # Remove jniLibs.srcDirs = ['./jni/'] — the source tree contains cmake intermediate
     # files (.o.tmp) that cause mergeJniLibFolders to fail; AGP's cmake build provides output
     ./jni-srcset.patch
+    # F-Droid prebuild: remove Google Play/GMS deps; bump Java 17→21 (matches F-Droid recipe)
+    ./fdroid-TMessagesProj.patch
+    # F-Droid prebuild: bump Java 17→21 and fix storeFile null (unsigned APK) in App module
+    ./fdroid-TMessagesProj_App.patch
   ];
 
   postPatch = ''
@@ -64,20 +68,15 @@ gradle2nixBuilders.buildGradlePackage {
     substituteInPlace TMessagesProj/jni/prepare.py \
       --replace-fail 'executable="/bin/bash"' 'executable="${pkgs.bash}/bin/bash"'
 
-    # Inject Telegram API credentials — taken from the F-Droid build recipe:
+    # Inject Telegram API credentials and enable F-Droid mode — taken from the F-Droid build recipe:
     # https://gitlab.com/fdroid/fdroiddata/-/blob/master/metadata/org.forkgram.messenger.yml
     # (prebuild_fdroid.sh args: APP_ID=$2 APP_HASH=$3, consistent across all versions)
+    # F_DROID=1 sets SKIP_DNS_RESOLVER=true (normal system DNS), package org.forkgram.messenger,
+    # and disables signing (storeFile null → unsigned APK for external signing).
     echo "APP_ID=14577864" >> gradle.properties
     echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
-
-    # F-Droid builds set SKIP_DNS_RESOLVER=true (they pass F_DROID=1).
-    # Without it, Telegram's custom DNS-over-HTTPS resolver runs and silently
-    # fails to resolve DC IPs, causing phone auth to spin then do nothing.
-    # Force it true so the app uses normal system DNS, just like F-Droid does.
-    substituteInPlace TMessagesProj/build.gradle \
-      --replace-fail \
-      "buildConfigField 'boolean', 'SKIP_DNS_RESOLVER', (Utils['isFdroid']() ? 'true' : 'false')" \
-      "buildConfigField 'boolean', 'SKIP_DNS_RESOLVER', 'true'"
+    substituteInPlace gradle.properties \
+      --replace-fail "F_DROID=0" "F_DROID=1"
 
 
     # Tell AGP where to find cmake (it looks for version 3.22.1 in the SDK by default)
@@ -86,8 +85,8 @@ gradle2nixBuilders.buildGradlePackage {
     # Use aapt2 from the installed SDK instead of downloading from Maven
     echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2" >> gradle.properties
 
-    # The repo's release.keystore has unknown credentials. Regenerate it matching
-    # the gradle.properties defaults (storepass=android, alias=androidkey, keypass=android).
+    # The fdroid signing config (F_DROID=1) references release.keystore with default credentials.
+    # Regenerate it so the build succeeds; output APK will be re-signed externally.
     rm -f TMessagesProj/config/release.keystore
     keytool -genkey -v \
       -keystore TMessagesProj/config/release.keystore \
@@ -117,11 +116,11 @@ gradle2nixBuilders.buildGradlePackage {
     GOFLAGS = "-mod=vendor";
   };
 
-  gradleBuildFlagsArray = [ ":TMessagesProj_App:assembleAfatRelease" ];
+  gradleBuildFlagsArray = [ ":TMessagesProj_App:assembleAfatFd_v8aRelease" ];
 
   installPhase = ''
     runHook preInstall
-    install -Dm644 TMessagesProj_App/build/outputs/apk/afat/release/*.apk "$out/forkgram.apk"
+    install -Dm644 TMessagesProj_App/build/outputs/apk/afatFd_v8a/release/*.apk "$out/forkgram.apk"
     runHook postInstall
   '';
 

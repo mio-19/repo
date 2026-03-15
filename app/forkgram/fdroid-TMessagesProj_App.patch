@@ -1,0 +1,39 @@
+--- a/TMessagesProj_App/build.gradle	2026-03-15 22:21:26.705948398 +1100
++++ b/TMessagesProj_App/build.gradle	2026-03-15 22:36:46.035545224 +1100
+@@ -40,8 +40,8 @@
+     }
+ 
+     compileOptions {
+-        sourceCompatibility JavaVersion.VERSION_17
+-        targetCompatibility JavaVersion.VERSION_17
++        sourceCompatibility JavaVersion.VERSION_21
++        targetCompatibility JavaVersion.VERSION_21
+ 
+         coreLibraryDesugaringEnabled true
+     }
+@@ -56,17 +56,17 @@
+     signingConfigs {
+         if (fdroid) {
+             debug {
+-                storeFile file("")
+-                storePassword ""
+-                keyAlias ""
+-                keyPassword ""
++                storeFile file("../TMessagesProj/config/release.keystore")
++                storePassword "android"
++                keyAlias "androidkey"
++                keyPassword "android"
+             }
+ 
+             release {
+-                storeFile file("")
+-                storePassword ""
+-                keyAlias ""
+-                keyPassword ""
++                storeFile file("../TMessagesProj/config/release.keystore")
++                storePassword "android"
++                keyAlias "androidkey"
++                keyPassword "android"
+             }
+         } else {
+             debug {
