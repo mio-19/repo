@@ -58,7 +58,7 @@
             KEY_PASS="$KS_PASS"
           fi
 
-          TMP=$(mktemp --suffix=.apk)
+          TMP=$(mktemp "''${TMPDIR:-/tmp}/${name}.XXXXXX.apk")
           trap 'rm -f "$TMP"' EXIT
 
           echo "Aligning APK..."
@@ -76,9 +76,116 @@
           echo "Signed APK written to: $OUT"
         '';
 
+      # Generic helper: signs an unsigned F-Droid repo index using fdroidserver.
+      # Args:
+      #   name         – script binary name (e.g. "sign-fdroid-repo")
+      #   repoPath     – store path to unsigned repo root containing repo/
+      #   defaultOut   – default output directory
+      #   defaultAlias – default key alias in keystore
+      mkFdroidRepoSignScript =
+        {
+          name,
+          repoPath,
+          defaultOut,
+          defaultAlias,
+        }:
+        pkgs.writeShellScriptBin name ''
+          set -euo pipefail
+          usage() {
+            echo "Usage: ${name} <keystore> [--ks-pass <pass>] [--key-pass <pass>] [--alias <keyalias>] [--out <output-dir>]"
+            echo ""
+            echo "Signs F-Droid index files from ${repoPath}/repo using fdroidserver."
+            echo "Options:"
+            echo "  --ks-pass   Keystore password (default: env KS_PASS, else prompts)"
+            echo "  --key-pass  Key password (default: env KEY_PASS, else same as --ks-pass)"
+            echo "  --alias     Key alias in keystore (default: ${defaultAlias})"
+            echo "  --out       Output directory (default: ${defaultOut})"
+            exit 1
+          }
+
+          KEYSTORE="''${1:?$(usage)}"
+          shift
+
+          KS_PASS="''${KS_PASS:-}"
+          KEY_PASS="''${KEY_PASS:-}"
+          ALIAS="${defaultAlias}"
+          OUT="${defaultOut}"
+
+          while [[ $# -gt 0 ]]; do
+            case "$1" in
+              --ks-pass)  KS_PASS="$2";  shift 2 ;;
+              --key-pass) KEY_PASS="$2"; shift 2 ;;
+              --alias)    ALIAS="$2";    shift 2 ;;
+              --out)      OUT="$2";      shift 2 ;;
+              *) echo "Unknown option: $1"; usage ;;
+            esac
+          done
+
+          if [[ -z "$KS_PASS" ]]; then
+            read -rsp "Keystore password: " KS_PASS; echo
+          fi
+          if [[ -z "$KEY_PASS" ]]; then
+            KEY_PASS="$KS_PASS"
+          fi
+
+          WORKDIR=$(mktemp -d "''${TMPDIR:-/tmp}/${name}.XXXXXX")
+          trap 'rm -rf "$WORKDIR"' EXIT
+
+          cp -R "${repoPath}"/. "$WORKDIR"/
+          chmod -R u+w "$WORKDIR"
+
+          if [[ ! -d "$WORKDIR/repo" ]]; then
+            echo "Expected unsigned repository in ${repoPath}/repo" >&2
+            exit 1
+          fi
+
+          cat > "$WORKDIR/config.yml" << EOF
+          repo_keyalias: $ALIAS
+          keystore: $KEYSTORE
+          keystorepass: $KS_PASS
+          keypass: $KEY_PASS
+          EOF
+          chmod 600 "$WORKDIR/config.yml"
+
+          export HOME="$WORKDIR/.home"
+          mkdir -p "$HOME"
+
+          (cd "$WORKDIR" && ${pkgs.fdroidserver}/bin/fdroid signindex)
+
+          rm -rf "$OUT"
+          mkdir -p "$OUT"
+          cp -R "$WORKDIR/repo" "$OUT/repo"
+          if [[ -d "$WORKDIR/metadata" ]]; then
+            cp -R "$WORKDIR/metadata" "$OUT/metadata"
+          fi
+
+          echo "Signed F-Droid repo written to: $OUT"
+        '';
+
       forkgram = pkgs.callPackage ./forkgram {
         inherit androidSdk;
         gradle2nixBuilders = inputs.gradle2nix.builders.${system};
+      };
+
+      forkgramFdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
+        apps = [
+          {
+            appId = "org.forkgram.messenger";
+            apkPath = "${forkgram}/forkgram.apk";
+            metadataYml = ''
+              Categories:
+                - Internet
+              License: GPL-2.0-or-later
+              SourceCode: https://github.com/forkgram/TelegramAndroid
+              IssueTracker: https://github.com/forkgram/TelegramAndroid/issues
+              AutoName: Forkgram
+              Summary: Telegram client fork
+              Description: |-
+                Forkgram is a Telegram Android client fork.
+            '';
+          }
+        ];
+        repoVersion = forkgram.version;
       };
     in
     {
@@ -88,6 +195,24 @@
           apkPath = "${forkgram}/forkgram.apk";
           defaultOut = "forkgram-signed.apk";
         };
+
+        passthru.fdroidRepo = forkgramFdroidRepo;
+
+        passthru.signFdroidRepoScript = mkFdroidRepoSignScript {
+          name = "sign-fdroid-repo";
+          repoPath = "${forkgramFdroidRepo}";
+          defaultOut = "fdroid-repo-signed";
+          defaultAlias = "releasekey";
+        };
       });
+
+      packages.fdroid-repo = forkgramFdroidRepo;
+
+      packages.sign-fdroid-repo = mkFdroidRepoSignScript {
+        name = "sign-fdroid-repo";
+        repoPath = "${forkgramFdroidRepo}";
+        defaultOut = "fdroid-repo-signed";
+        defaultAlias = "releasekey";
+      };
     };
 }
