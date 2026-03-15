@@ -128,6 +128,6 @@ gradle2nixBuilders.buildGradlePackage {
     description = "Telegram Android client fork (ForkGram)";
     homepage = "https://github.com/forkgram/TelegramAndroid";
     license = licenses.gpl2Plus;
-    platforms = platforms.linux;
+    platforms = platforms.unix;
   };
 }
