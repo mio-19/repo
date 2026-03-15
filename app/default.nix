@@ -79,7 +79,7 @@
       # Generic helper: signs an unsigned F-Droid repo index using fdroidserver.
       # Args:
       #   name         – script binary name (e.g. "sign-fdroid-repo")
-      #   repoPath     – store path to unsigned repo root containing repo/
+      #   repoPath     – store path to unsigned repo root containing unsigned/
       #   defaultOut   – default output directory
       #   defaultAlias – default key alias in keystore
       mkFdroidRepoSignScript =
@@ -94,7 +94,7 @@
           usage() {
             echo "Usage: ${name} <keystore> [--ks-pass <pass>] [--key-pass <pass>] [--alias <keyalias>] [--out <output-dir>]"
             echo ""
-            echo "Signs F-Droid index files from ${repoPath}/repo using fdroidserver."
+            echo "Signs APKs from ${repoPath}/unsigned and builds a signed F-Droid repo."
             echo "Options:"
             echo "  --ks-pass   Keystore password (default: env KS_PASS, else prompts)"
             echo "  --key-pass  Key password (default: env KEY_PASS, else same as --ks-pass)"
@@ -141,12 +141,20 @@
           cp -R "${repoPath}"/. "$WORKDIR"/
           chmod -R u+w "$WORKDIR"
 
-          if [[ ! -d "$WORKDIR/repo" ]]; then
-            echo "Expected unsigned repository in ${repoPath}/repo" >&2
+          if [[ ! -d "$WORKDIR/unsigned" ]]; then
+            echo "Expected unsigned APK directory in ${repoPath}/unsigned" >&2
             exit 1
           fi
 
-          cat > "$WORKDIR/config.yml" << EOF
+          shopt -s nullglob
+          apk_files=("$WORKDIR"/unsigned/*.apk)
+          shopt -u nullglob
+          if [[ "''${#apk_files[@]}" -eq 0 ]]; then
+            echo "No APK files found in $WORKDIR/unsigned" >&2
+            exit 1
+          fi
+
+          cat >> "$WORKDIR/config.yml" << EOF
           repo_keyalias: $ALIAS
           keystore: $KEYSTORE
           keystorepass: $KS_PASS
@@ -157,6 +165,8 @@
           export HOME="$WORKDIR/.home"
           mkdir -p "$HOME"
 
+          (cd "$WORKDIR" && ${pkgs.fdroidserver}/bin/fdroid publish --error-on-failed)
+          (cd "$WORKDIR" && ${pkgs.fdroidserver}/bin/fdroid update --create-metadata --rename-apks --nosign)
           (cd "$WORKDIR" && ${pkgs.fdroidserver}/bin/fdroid signindex)
 
           rm -rf "$OUT"

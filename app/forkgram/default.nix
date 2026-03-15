@@ -33,7 +33,8 @@ gradle2nixBuilders.buildGradlePackage {
     pkgs.unzip
     pkgs.which
     pkgs.writableTmpDirAsHomeHook
-  ] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
+  ]
+  ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
     pkgs.darwin.system_cmds
   ];
 

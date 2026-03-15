@@ -31,7 +31,9 @@ let
     ) apps
   );
 in
-assert lib.assertMsg (allApkSources != [ ]) "fdroid-repo.nix requires at least one APK source via apkSources or apps";
+assert lib.assertMsg (
+  allApkSources != [ ]
+) "fdroid-repo.nix requires at least one APK source via apkSources or apps";
 
 pkgs.stdenvNoCC.mkDerivation {
   pname = "forkgram-fdroid-repo-unsigned";
@@ -39,27 +41,22 @@ pkgs.stdenvNoCC.mkDerivation {
 
   dontUnpack = true;
 
-  nativeBuildInputs = [
-    pkgs.fdroidserver
-    pkgs.jdk_headless
-  ];
-
   buildPhase = ''
     runHook preBuild
 
     export HOME="$TMPDIR/home"
-    mkdir -p "$HOME" repo metadata
+    mkdir -p "$HOME" unsigned metadata
 
     apk_count=0
 
     for src in ${lib.escapeShellArgs allApkSources}; do
       if [[ -d "$src" ]]; then
         while IFS= read -r apk; do
-          cp "$apk" repo/
+          cp "$apk" unsigned/
           apk_count=$((apk_count + 1))
         done < <(find "$src" -maxdepth 1 -type f -name '*.apk')
       elif [[ -f "$src" ]]; then
-        cp "$src" repo/
+        cp "$src" unsigned/
         apk_count=$((apk_count + 1))
       else
         echo "APK source does not exist: $src" >&2
@@ -74,27 +71,11 @@ pkgs.stdenvNoCC.mkDerivation {
 
     ${lib.concatMapStringsSep "\n" (entry: "cp ${entry.file} metadata/${entry.appId}.yml") appMetadata}
 
-    keytool -genkeypair -v \
-      -keystore repo-signing.jks \
-      -alias unsigned \
-      -keyalg RSA -keysize 2048 -validity 3650 \
-      -storepass unsigned-placeholder \
-      -keypass unsigned-placeholder \
-      -dname "CN=Unsigned F-Droid Repo" >/dev/null
-
     cat > config.yml << EOF
     repo_name: ${repoName}
     repo_description: ${repoDescription}
     repo_url: https://example.invalid/fdroid/repo
-    repo_keyalias: unsigned
-    keystore: repo-signing.jks
-    keystorepass: unsigned-placeholder
-    keypass: unsigned-placeholder
     EOF
-
-    chmod 600 config.yml
-
-    fdroid update --create-metadata --rename-apks --nosign
 
     runHook postBuild
   '';
@@ -102,7 +83,7 @@ pkgs.stdenvNoCC.mkDerivation {
   installPhase = ''
     runHook preInstall
     mkdir -p "$out"
-    cp -R repo "$out/repo"
+    cp -R unsigned "$out/unsigned"
     cp -R metadata "$out/metadata"
     cp config.yml "$out/config.yml"
     runHook postInstall

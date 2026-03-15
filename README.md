@@ -123,10 +123,10 @@ apksigner verify --print-certs forkgram-signed.apk
 
 ```zsh
 nix build .#fdroid-repo -o fdroid-repo
-# Repo content at fdroid-repo/repo
+# Unsigned APK staging at fdroid-repo/unsigned
 ```
 
-### Sign the F-Droid repo index with your key
+### Sign APKs and F-Droid repo with your key
 
 ```zsh
 nix build .#sign-fdroid-repo -o sign-fdroid-repo
