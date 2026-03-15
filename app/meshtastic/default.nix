@@ -16,7 +16,6 @@ gradle2nixBuilders.buildGradlePackage {
     fetchSubmodules = true;
   };
 
-
   lockFile = ./gradle.lock;
 
   buildJdk = pkgs.jdk21;
