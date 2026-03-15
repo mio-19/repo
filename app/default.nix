@@ -38,13 +38,6 @@
           KEYSTORE="''${1:?$(usage)}"
           shift
 
-          # Resolve early so relative paths keep working after we chdir into a temp workdir.
-          KEYSTORE="$(cd "$(dirname "$KEYSTORE")" && pwd)/$(basename "$KEYSTORE")"
-          if [[ ! -f "$KEYSTORE" ]]; then
-            echo "Keystore not found: $KEYSTORE" >&2
-            exit 1
-          fi
-
           KS_PASS="''${KS_PASS:-}"
           KEY_PASS="''${KEY_PASS:-}"
           OUT="${defaultOut}"
