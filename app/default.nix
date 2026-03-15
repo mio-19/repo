@@ -154,11 +154,25 @@
             exit 1
           fi
 
+          keyaliases_yaml=""
+          for apk in "''${apk_files[@]}"; do
+            badging="$(${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt dump badging "$apk")"
+            pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
+            if [[ -z "$pkg" ]]; then
+              echo "Failed to parse package name from $apk" >&2
+              exit 1
+            fi
+            keyaliases_yaml+="  ''${pkg}: ''${ALIAS}"$'\n'
+          done
+
           cat >> "$WORKDIR/config.yml" << EOF
           repo_keyalias: $ALIAS
           keystore: $KEYSTORE
           keystorepass: $KS_PASS
           keypass: $KEY_PASS
+          keydname: CN=F-Droid Repo, OU=F-Droid
+          keyaliases:
+          $keyaliases_yaml
           EOF
           chmod 600 "$WORKDIR/config.yml"
 
@@ -185,6 +199,7 @@
       };
 
       forkgramFdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
+        inherit androidSdk;
         apps = [
           {
             appId = "org.forkgram.messenger";

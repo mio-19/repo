@@ -1,5 +1,6 @@
 {
   pkgs,
+  androidSdk,
   apkSources ? [ ],
   apps ? [ ],
   repoVersion ? "unstable",
@@ -52,11 +53,25 @@ pkgs.stdenvNoCC.mkDerivation {
     for src in ${lib.escapeShellArgs allApkSources}; do
       if [[ -d "$src" ]]; then
         while IFS= read -r apk; do
-          cp "$apk" unsigned/
+          badging="$(${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt dump badging "$apk")"
+          pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
+          ver="$(echo "$badging" | sed -n "s/^package: .* versionCode='\([^']*\)'.*/\1/p")"
+          if [[ -z "$pkg" || -z "$ver" ]]; then
+            echo "Failed to parse package name/versionCode from $apk" >&2
+            exit 1
+          fi
+          cp "$apk" "unsigned/''${pkg}_''${ver}.apk"
           apk_count=$((apk_count + 1))
         done < <(find "$src" -maxdepth 1 -type f -name '*.apk')
       elif [[ -f "$src" ]]; then
-        cp "$src" unsigned/
+        badging="$(${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt dump badging "$src")"
+        pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
+        ver="$(echo "$badging" | sed -n "s/^package: .* versionCode='\([^']*\)'.*/\1/p")"
+        if [[ -z "$pkg" || -z "$ver" ]]; then
+          echo "Failed to parse package name/versionCode from $src" >&2
+          exit 1
+        fi
+        cp "$src" "unsigned/''${pkg}_''${ver}.apk"
         apk_count=$((apk_count + 1))
       else
         echo "APK source does not exist: $src" >&2
