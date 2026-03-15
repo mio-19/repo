@@ -64,6 +64,13 @@ gradle2nixBuilders.buildGradlePackage {
     substituteInPlace TMessagesProj/jni/prepare.py \
       --replace-fail 'executable="/bin/bash"' 'executable="${pkgs.bash}/bin/bash"'
 
+    # Inject Telegram API credentials — taken from the F-Droid build recipe:
+    # https://gitlab.com/fdroid/fdroiddata/-/blob/master/metadata/org.forkgram.messenger.yml
+    # (prebuild_fdroid.sh args: APP_ID=$2 APP_HASH=$3, consistent across all versions)
+    echo "APP_ID=14577864" >> gradle.properties
+    echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
+
+
     # Tell AGP where to find cmake (it looks for version 3.22.1 in the SDK by default)
     echo "cmake.dir=${pkgs.cmake}" >> local.properties
 
