@@ -117,6 +117,15 @@ gradle2nixBuilders.buildGradlePackage {
     GOFLAGS = "-mod=vendor";
   };
 
+  preConfigure = pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
+    # AGP writes SDK metadata under ~/.android; /var/empty is read-only on Darwin sandboxes.
+    export HOME="$TMPDIR/home"
+    mkdir -p "$HOME"
+    export ANDROID_USER_HOME="$HOME/.android"
+    export GRADLE_USER_HOME="$HOME/.gradle"
+    mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"
+  '';
+
   gradleBuildFlagsArray = [ ":TMessagesProj_App:assembleAfatFd_v8aRelease" ];
 
   installPhase = ''
