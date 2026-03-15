@@ -113,6 +113,13 @@
           KEYSTORE="''${1:?$(usage)}"
           shift
 
+          # Resolve before changing directories so relative paths work reliably.
+          KEYSTORE="$(cd "$(dirname "$KEYSTORE")" && pwd)/$(basename "$KEYSTORE")"
+          if [[ ! -f "$KEYSTORE" ]]; then
+            echo "Keystore not found: $KEYSTORE" >&2
+            exit 1
+          fi
+
           KS_PASS="''${KS_PASS:-}"
           KEY_PASS="''${KEY_PASS:-}"
           ALIAS="${defaultAlias}"
