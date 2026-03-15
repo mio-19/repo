@@ -1,14 +1,35 @@
 {
-  pkgs,
-  androidSdk,
-  gradle2nixBuilders,
+  lib,
+  jdk21,
+  jdk17_headless,
+  gradle-packages,
+  stdenv,
+  fetchFromGitHub,
+  apksigner,
+  writableTmpDirAsHomeHook,
+  androidenv,
+  git,
 }:
+let
+  gradle =
+    (gradle-packages.mkGradle {
+      version = "9.3.1";
+      hash = "sha256-smbV/2uQ6tptw7IMsJDjcxMC5VOifF0+TfHw12vq/wY=";
+      defaultJava = jdk21;
+    }).wrapped;
 
-gradle2nixBuilders.buildGradlePackage {
+  androidSdk = (androidenv.override { licenseAccepted = true; }).composeAndroidPackages {
+    platformVersions = [ "36" ];
+    buildToolsVersions = [ "36.0.0" ];
+    includeEmulator = false;
+    includeSystemImages = false;
+  };
+in
+stdenv.mkDerivation (finalAttrs: {
   pname = "meshtastic";
   version = "2.7.13";
 
-  src = pkgs.fetchFromGitHub {
+  src = fetchFromGitHub {
     owner = "meshtastic";
     repo = "Meshtastic-Android";
     rev = "v2.7.13";
@@ -16,66 +37,85 @@ gradle2nixBuilders.buildGradlePackage {
     fetchSubmodules = true;
   };
 
-  lockFile = ./gradle.lock;
-
-  buildJdk = pkgs.jdk21;
-
-  nativeBuildInputs = [
-    androidSdk
-    pkgs.jdk17
-    pkgs.jdk21
-  ];
-
   patches = [
-    # Remove foojay JDK auto-provisioner plugin and toolchainManagement block
-    # — prevents network access in sandbox (follows FDroid 2.7.10 prebuild).
-    # Must be first: later patches assume foojay line is already gone.
+    # Remove foojay JDK auto-provisioner (prevents network access in sandbox).
+    # Must be first: later patches assume this line is already gone.
     ./remove-foojay.patch
-    # Remove develocity build-scan plugin (not needed for building, causes class-load errors)
+    # Remove develocity build-scan plugin (not needed for building,
+    # and causes class-load errors with Gradle 9.3.1)
     ./remove-develocity.patch
-    # Pin kotlin-dsl to 6.4.2 in build-logic (5.2.0 is bundled with Gradle 9.3.1
-    # and not published to Maven; gradle2nix cannot capture it)
+    # Pin kotlin-dsl to 6.4.2 in build-logic; 5.2.0 is bundled with
+    # Gradle 9.3.1 and not published to Maven.
     ./pin-kotlin-dsl.patch
-    # Remove firebase plugin declarations from root build.gradle.kts
-    # (alias …firebase… apply false — unneeded for fdroid flavor)
+    # Remove firebase plugin declarations (unneeded for fdroid flavor)
     ./remove-firebase-root.patch
-    # Remove compileOnly(libs.firebase.crashlytics.gradlePlugin) from build-logic
     ./remove-firebase-convention.patch
-    # Remove firebase-crashlytics apply() call and plugins.withId block from
-    # AnalyticsConventionPlugin.kt so it compiles and runs cleanly without Firebase
+    # Remove firebase-crashlytics apply() and plugins.withId block from
+    # AnalyticsConventionPlugin.kt so it compiles cleanly without Firebase
     ./remove-firebase-analytics-plugin.patch
   ];
 
-  postPatch = ''
-    # Point AGP at the Nix-provided Android SDK
-    echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+  gradleBuildTask = ":app:assembleFdroidRelease";
+  gradleUpdateTask = finalAttrs.gradleBuildTask;
 
-    # Disable JDK auto-download; provide both JDK 17 (build-logic) and JDK 21 (app)
-    echo "org.gradle.java.installations.auto-download=false" >> gradle.properties
-    echo "org.gradle.java.installations.paths=${pkgs.jdk17},${pkgs.jdk21}" >> gradle.properties
-  '';
-
-  dontUseCmakeConfigure = true;
-  dontUseNinjaBuild = true;
-
-  env = {
-    ANDROID_HOME = "${androidSdk}/share/android-sdk";
-    ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+  # Lock refresh steps:
+  # 1. If Meshtastic bumps Gradle, update `gradle.version` and `gradle.hash`.
+  # 2. Build the updater:
+  #    nix build --impure .#meshtastic.mitmCache.updateScript
+  # 3. Copy the resulting `fetch-deps.sh`, replace its `outPath=` with
+  #    `/home/dev/Documents/repo/meshtastic_deps.json`, and run it from the repo root.
+  mitmCache = gradle.fetchDeps {
+    inherit (finalAttrs) pname;
+    pkg = finalAttrs.finalPackage;
+    data = "meshtastic_deps.json";
+    silent = false;
+    useBwrap = false;
   };
 
-  gradleBuildFlagsArray = [ ":app:assembleFdroidRelease" ];
+  nativeBuildInputs = [
+    gradle
+    jdk17_headless
+    apksigner
+    writableTmpDirAsHomeHook
+    git
+  ];
+
+  env = {
+    JAVA_HOME = jdk21;
+    ANDROID_HOME = "${androidSdk.androidsdk}/libexec/android-sdk";
+    ANDROID_SDK_ROOT = "${androidSdk.androidsdk}/libexec/android-sdk";
+    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk.androidsdk}/libexec/android-sdk/build-tools/36.0.0/aapt2";
+    # Provide a deterministic versionCode matching the v2.7.13 release.
+    # fetchFromGitHub strips .git so GitVersionValueSource can't count commits;
+    # VERSION_CODE env var takes priority over the git-based calculation
+    # (see app/build.gradle.kts). Value matches FDroid 2.7.10 build (29319661).
+    VERSION_CODE = "29319661";
+  };
+
+  preConfigure = ''
+    export ANDROID_USER_HOME="$HOME/.android"
+    mkdir -p "$ANDROID_USER_HOME"
+    echo "sdk.dir=${androidSdk.androidsdk}/libexec/android-sdk" > local.properties
+  '';
+
+  gradleFlags = [
+    "-Dorg.gradle.java.installations.auto-download=false"
+    "-Dorg.gradle.java.installations.paths=${jdk17_headless},${jdk21}"
+    "-Dandroid.aapt2FromMavenOverride=${androidSdk.androidsdk}/libexec/android-sdk/build-tools/36.0.0/aapt2"
+    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk.androidsdk}/libexec/android-sdk/build-tools/36.0.0/aapt2"
+  ];
 
   installPhase = ''
     runHook preInstall
-    install -Dm644 app/build/outputs/apk/fdroid/release/app-fdroid-release-unsigned.apk \
-      "$out/meshtastic.apk"
+    apk_path="$(echo app/build/outputs/apk/fdroid/release/*.apk)"
+    install -Dm644 "$apk_path" "$out/meshtastic.apk"
     runHook postInstall
   '';
 
-  meta = with pkgs.lib; {
+  meta = with lib; {
     description = "Meshtastic Android app (F-Droid flavor, unsigned)";
     homepage = "https://meshtastic.org";
     license = licenses.gpl3Only;
     platforms = platforms.linux;
   };
-}
+})

@@ -200,10 +200,7 @@
         gradle2nixBuilders = inputs.gradle2nix.builders.${system};
       };
 
-      meshtastic = pkgs.callPackage ./meshtastic {
-        inherit androidSdk;
-        gradle2nixBuilders = inputs.gradle2nix.builders.${system};
-      };
+      meshtastic = pkgs.callPackage ./meshtastic { };
       forkgramFdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
         inherit androidSdk;
         apps = [
