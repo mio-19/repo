@@ -56,19 +56,19 @@ in
 
   apps.prebuilt.FlossIMS = lib.mkIf withIMS {
     apk = pkgs.fetchurl {
-      # Use phh's platform-resigned build and keep signature intact for android.uid.system.
+      # Long-term: always re-sign in-build with platform key so sharedUser matches
+      # both test-key builds and release-script signed builds.
       url = "https://treble.phh.me/floss-ims-25-resigned.apk";
       sha256 = "0yimwrkyhd093hchcbdlabba8vzl33i5n0z9sscr87c192yak5yp";
     };
     packageName = "me.phh.ims";
-    certificate = "PRESIGNED";
+    certificate = "platform";
     privileged = true;
     partition = "system";
-    # Preserve APK signature block for sharedUser android.uid.system.
+    # Override robotnix prebuilt key path so this APK is signed with build platform key.
     extraConfig = ''
-      LOCAL_SDK_VERSION := current
       LOCAL_DEX_PREOPT := false
-      LOCAL_REPLACE_PREBUILT_APK_INSTALLED := $(LOCAL_PATH)/FlossIMS.apk
+      LOCAL_CERTIFICATE := platform
     '';
   };
 }
