@@ -89,7 +89,7 @@ pkgs.stdenvNoCC.mkDerivation {
     cat > config.yml << EOF
     repo_name: ${repoName}
     repo_description: ${repoDescription}
-    repo_url: https://mio-19.github.io/fdroid-repo/repo/
+    repo_url: https://mio-19.github.io/fdroid-repo/repo
     EOF
 
     runHook postBuild
