@@ -5,3 +5,4 @@
 - Use `nurl`, or run `nix run nixpkgs#nurl <url to patch>`, to get a `fetchpatch` expression for patch URLs.
 - Never use `sed -i` to patch source files in Nix derivations. Use `substituteInPlace --replace-fail` for single-line substitutions. For multi-line or structural changes, generate a proper patch with `diff -u` against the real upstream source file; never write patch hunks by hand.
 - Follow patterns of exisiting code
+- Make sure `nix build` actually can build before declaring completing a task!
