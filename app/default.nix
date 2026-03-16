@@ -223,6 +223,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      meshcore-open = pkgs.callPackage ./meshcore-open {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       fdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
         androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
           s.cmdline-tools-latest
@@ -312,6 +316,23 @@
                 It can open GuitarPro, PowerTab, and TablEdit files.
             '';
           }
+          {
+            appId = "com.meshcore.meshcore_open";
+            apkPath = "${meshcore-open}/meshcore-open.apk";
+            metadataYml = ''
+              Categories:
+                - Internet
+              License: MIT
+              SourceCode: https://github.com/zjs81/meshcore-open
+              IssueTracker: https://github.com/zjs81/meshcore-open/issues
+              AutoName: MeshCore Open
+              Summary: Mesh networking client for MeshCore devices
+              Description: |-
+                MeshCore Open is an open-source client for MeshCore LoRa mesh
+                networking devices, supporting messaging, channels, maps, and
+                device management.
+            '';
+          }
         ];
       };
     in
@@ -362,6 +383,14 @@
           name = "sign-tuxguitar-android";
           apkPath = "${tuxguitar}/tuxguitar-android.apk";
           defaultOut = "tuxguitar-android-signed.apk";
+        };
+      });
+
+      packages.meshcore-open = meshcore-open.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-meshcore-open";
+          apkPath = "${meshcore-open}/meshcore-open.apk";
+          defaultOut = "meshcore-open-signed.apk";
         };
       });
 
