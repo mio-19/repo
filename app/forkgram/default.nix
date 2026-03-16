@@ -13,14 +13,14 @@ let
     s.ndk-21-4-7075529
   ]);
 in
-gradle2nixBuilders.buildGradlePackage {
+gradle2nixBuilders.buildGradlePackage rec {
   pname = "forkgram";
   version = "12.5.1.0";
 
   src = pkgs.fetchFromGitHub {
     owner = "forkgram";
     repo = "TelegramAndroid";
-    rev = "12.5.1.0";
+    rev = version;
     hash = "sha256-XvPUORn15ll6if8kDEd/EzyS2qQ4Ew7fkxC3nCewzzM=";
     fetchSubmodules = true;
   };
