@@ -31,7 +31,7 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "element-hq";
     repo = "element-android";
-    rev = "a28dad949ed6ad7ab265726f8adaa9400754e7b1";
+    tag = "v${finalAttrs.version}";
     hash = "sha256-nPudZGjgztivaupcTPc0DNZhjp87WgBiIZvN4H+NHMI=";
   };
 

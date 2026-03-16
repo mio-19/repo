@@ -35,6 +35,10 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-gBTkQBik0ZgX71Qitv17lsICJm7unO/3Hk2FMkKHXsw=";
   };
 
+  patches = [
+    ./0001-always-show-vanadium.patch
+  ];
+
   gradleBuildTask = ":app:assembleRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 

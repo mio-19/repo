@@ -32,7 +32,7 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "meshtastic";
     repo = "Meshtastic-Android";
-    rev = "v2.7.13";
+    rev = "v${finalAttrs.version}";
     hash = "sha256-bktrjU/KgUeh4eLPfQM3No1oK5YOo3bjRHRk+qGg4X8=";
     fetchSubmodules = true;
   };
