@@ -219,17 +219,6 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      koreader = pkgs.callPackage ./koreader {
-        nixpkgsSrc = inputs.nixpkgs;
-        androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
-          s.cmdline-tools-latest
-          s.platform-tools
-          s.platforms-android-36
-          s.build-tools-36-1-0
-          s.ndk-26-3-11579264
-        ]);
-      };
-
       tuxguitar = pkgs.callPackage ./tuxguitar {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -308,22 +297,6 @@
             '';
           }
           {
-            appId = "org.koreader.launcher.fdroid";
-            apkPath = "${koreader}/koreader.apk";
-            metadataYml = ''
-              Categories:
-                - Reading
-              License: AGPL-3.0-only
-              SourceCode: https://github.com/koreader/koreader
-              IssueTracker: https://github.com/koreader/koreader/issues
-              AutoName: KOReader
-              Summary: Document reader for e-ink and Android
-              Description: |-
-                KOReader is an open-source document reader with extensive format
-                support and e-ink friendly reading features.
-            '';
-          }
-          {
             appId = "app.tuxguitar.android.application";
             apkPath = "${tuxguitar}/tuxguitar-android.apk";
             metadataYml = ''
@@ -383,16 +356,6 @@
           defaultOut = "meditrak-signed.apk";
         };
       });
-
-      packages.koreader = koreader.overrideAttrs (_: {
-        passthru.signScript = mkSignScript {
-          name = "sign-koreader";
-          apkPath = "${koreader}/koreader.apk";
-          defaultOut = "koreader-signed.apk";
-        };
-      });
-
-      packages.koreader-deps = koreader.deps;
 
       packages.tuxguitar-android = tuxguitar.overrideAttrs (_: {
         passthru.signScript = mkSignScript {
