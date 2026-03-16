@@ -8,3 +8,4 @@
 - Make sure `nix build` actually can build before declaring completing a task!
 - Remember to `git add` when nix complaints about path does not exist!
 - Remember no network in nix build environemnt expect for fixed output derviation!!
+- Always set hash to fakeHash or empty or AAAAAA before needing to get new hash like changed fetch options updated tag rev!
