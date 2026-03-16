@@ -234,6 +234,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      shizuku = pkgs.callPackage ./shizuku {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       glimpse = pkgs.callPackage ./glimpse {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -247,6 +251,23 @@
           s.ndk-21-4-7075529
         ]);
         apps = [
+          {
+            appId = "moe.shizuku.privileged.api";
+            apkPath = "${shizuku}/shizuku.apk";
+            metadataYml = ''
+              Categories:
+                - System
+              License: Apache-2.0
+              SourceCode: https://github.com/rikkaapps/shizuku
+              IssueTracker: https://github.com/rikkaapps/shizuku/issues
+              AutoName: Shizuku
+              Summary: Run privileged APIs via a user-service bridge
+              Description: |-
+                Shizuku provides a bridge to use system-level APIs from apps
+                without requiring root for every operation.
+                This package is built from source.
+            '';
+          }
           {
             appId = "app.grapheneos.apps";
             apkPath = "${appstore}/appstore.apk";
@@ -473,6 +494,14 @@
           name = "sign-appstore";
           apkPath = "${appstore}/appstore.apk";
           defaultOut = "appstore-signed.apk";
+        };
+      });
+
+      packages.shizuku = shizuku.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-shizuku";
+          apkPath = "${shizuku}/shizuku.apk";
+          defaultOut = "shizuku-signed.apk";
         };
       });
 
