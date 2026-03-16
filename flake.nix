@@ -61,16 +61,6 @@
       ];
       perSystem =
         args@{ pkgs, system, ... }:
-        let
-          sources = (import ./_sources/generated.nix) {
-            inherit (pkgs)
-              fetchurl
-              fetchgit
-              fetchFromGitHub
-              dockerTools
-              ;
-          };
-        in
         {
           # https://github.com/nix-community/nixos-apple-silicon/pull/353
           packages.zfs-installer =
