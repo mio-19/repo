@@ -7,7 +7,7 @@
   fetchFromGitHub,
   apksigner,
   writableTmpDirAsHomeHook,
-  androidenv,
+  androidSdk,
   git,
 }:
 let
@@ -17,13 +17,6 @@ let
       hash = "sha256-smbV/2uQ6tptw7IMsJDjcxMC5VOifF0+TfHw12vq/wY=";
       defaultJava = jdk21;
     }).wrapped;
-
-  androidSdk = (androidenv.override { licenseAccepted = true; }).composeAndroidPackages {
-    platformVersions = [ "36" ];
-    buildToolsVersions = [ "36.0.0" ];
-    includeEmulator = false;
-    includeSystemImages = false;
-  };
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "meshtastic";
@@ -82,9 +75,9 @@ stdenv.mkDerivation (finalAttrs: {
 
   env = {
     JAVA_HOME = jdk21;
-    ANDROID_HOME = "${androidSdk.androidsdk}/libexec/android-sdk";
-    ANDROID_SDK_ROOT = "${androidSdk.androidsdk}/libexec/android-sdk";
-    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk.androidsdk}/libexec/android-sdk/build-tools/36.0.0/aapt2";
+    ANDROID_HOME = "${androidSdk}/share/android-sdk";
+    ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     # Provide a deterministic versionCode matching the v2.7.13 release.
     # fetchFromGitHub strips .git so GitVersionValueSource can't count commits;
     # VERSION_CODE env var takes priority over the git-based calculation
@@ -95,14 +88,14 @@ stdenv.mkDerivation (finalAttrs: {
   preConfigure = ''
     export ANDROID_USER_HOME="$HOME/.android"
     mkdir -p "$ANDROID_USER_HOME"
-    echo "sdk.dir=${androidSdk.androidsdk}/libexec/android-sdk" > local.properties
+    echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
   '';
 
   gradleFlags = [
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${jdk17_headless},${jdk21}"
-    "-Dandroid.aapt2FromMavenOverride=${androidSdk.androidsdk}/libexec/android-sdk/build-tools/36.0.0/aapt2"
-    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk.androidsdk}/libexec/android-sdk/build-tools/36.0.0/aapt2"
+    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
   ];
 
   installPhase = ''

@@ -209,7 +209,14 @@
         gradle2nixBuilders = inputs.gradle2nix.builders.${system};
       };
 
-      meshtastic = pkgs.callPackage ./meshtastic { };
+      meshtastic = pkgs.callPackage ./meshtastic {
+        androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
+          s.cmdline-tools-latest
+          s.platform-tools
+          s.platforms-android-36
+          s.build-tools-36-0-0
+        ]);
+      };
       fdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
         androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
           s.cmdline-tools-latest
