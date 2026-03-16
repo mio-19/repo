@@ -8,7 +8,6 @@
   gradle-packages,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  git,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -88,7 +87,6 @@ buildDartApplication.override { dart = flutter338; } (finalAttrs: {
     gradle
     jdk17_headless
     writableTmpDirAsHomeHook
-    git
   ];
 
   env = {
