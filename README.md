@@ -1,5 +1,7 @@
 # repo
 
+Note that distributing binaries built from this repository might be disallowed by copyright/trademark holders. This repository is only available as source code only.
+
 android devices rom configurations
 
 command examples:
