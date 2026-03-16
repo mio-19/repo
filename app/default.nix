@@ -232,6 +232,20 @@
         ]);
       };
 
+      meditrak = pkgs.callPackage ./meditrak {
+        androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
+          s.cmdline-tools-latest
+          s.platform-tools
+          s.platforms-android-36
+          # compileSdkVersion 36 requires matching build-tools.
+          s.build-tools-36-0-0
+          # NDK for JNI/CMake build; version pinned in set-ndk-version.patch.
+          s.ndk-27-2-12479018
+          # CMake version required by app/build.gradle externalNativeBuild.
+          s.cmake-3-22-1
+        ]);
+      };
+
       fdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
         androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
           s.cmdline-tools-latest
@@ -289,6 +303,22 @@
                 proprietary Google dependencies.
             '';
           }
+          {
+            appId = "projects.medicationtracker";
+            apkPath = "${meditrak}/meditrak.apk";
+            metadataYml = ''
+              Categories:
+                - Health & Fitness
+              License: GPL-3.0-only
+              SourceCode: https://github.com/AdamGuidarini/MediTrak
+              IssueTracker: https://github.com/AdamGuidarini/MediTrak/issues
+              AutoName: MediTrak
+              Summary: Medication tracker
+              Description: |-
+                MediTrak is a simple, offline medication tracking app.
+                Track doses, set reminders, and view history — no account required.
+            '';
+          }
         ];
       };
     in
@@ -323,6 +353,14 @@
           name = "sign-thunderbird";
           apkPath = "${thunderbird}/thunderbird.apk";
           defaultOut = "thunderbird-signed.apk";
+        };
+      });
+
+      packages.meditrak = meditrak.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-meditrak";
+          apkPath = "${meditrak}/meditrak.apk";
+          defaultOut = "meditrak-signed.apk";
         };
       });
 

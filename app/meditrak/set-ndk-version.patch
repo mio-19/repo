@@ -1,0 +1,11 @@
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -10,6 +10,8 @@
+         includeInBundle = false
+     }
+ 
++    ndkVersion "27.2.12479018"
++
+     defaultConfig {
+         applicationId "projects.medicationtracker"
+         minSdkVersion 29
