@@ -227,6 +227,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      element-android = pkgs.callPackage ./element-android {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       fdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
         androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
           s.cmdline-tools-latest
@@ -333,6 +337,23 @@
                 device management.
             '';
           }
+          {
+            appId = "im.vector.app";
+            apkPath = "${element-android}/element-android.apk";
+            metadataYml = ''
+              Categories:
+                - Internet
+              License: Apache-2.0
+              SourceCode: https://github.com/element-hq/element-android
+              IssueTracker: https://github.com/element-hq/element-android/issues
+              AutoName: Element
+              Summary: Secure Matrix messenger (F-Droid flavor)
+              Description: |-
+                Element is a Matrix-based end-to-end encrypted messenger and
+                collaboration app. This is the F-Droid flavor built from source
+                without proprietary Google services.
+            '';
+          }
         ];
       };
     in
@@ -391,6 +412,14 @@
           name = "sign-meshcore-open";
           apkPath = "${meshcore-open}/meshcore-open.apk";
           defaultOut = "meshcore-open-signed.apk";
+        };
+      });
+
+      packages.element-android = element-android.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-element-android";
+          apkPath = "${element-android}/element-android.apk";
+          defaultOut = "element-android-signed.apk";
         };
       });
 
