@@ -1,9 +1,18 @@
 {
   pkgs,
-  androidSdk,
+  androidSdkBuilder,
   gradle2nixBuilders,
 }:
 
+let
+  androidSdk = androidSdkBuilder (s: [
+    s.cmdline-tools-latest
+    s.platform-tools
+    s.platforms-android-35
+    s.build-tools-35-0-0
+    s.ndk-21-4-7075529
+  ]);
+in
 gradle2nixBuilders.buildGradlePackage {
   pname = "forkgram";
   version = "12.5.1.0";

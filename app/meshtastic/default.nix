@@ -7,10 +7,17 @@
   fetchFromGitHub,
   apksigner,
   writableTmpDirAsHomeHook,
-  androidSdk,
+  androidSdkBuilder,
   git,
 }:
 let
+  androidSdk = androidSdkBuilder (s: [
+    s.cmdline-tools-latest
+    s.platform-tools
+    s.platforms-android-36
+    s.build-tools-36-0-0
+  ]);
+
   gradle =
     (gradle-packages.mkGradle {
       version = "9.3.1";

@@ -203,47 +203,20 @@
         '';
 
       forkgram = pkgs.callPackage ./forkgram {
-        androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
-          s.cmdline-tools-latest
-          s.platform-tools
-          s.platforms-android-35
-          s.build-tools-35-0-0
-          s.ndk-21-4-7075529
-        ]);
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
         gradle2nixBuilders = inputs.gradle2nix.builders.${system};
       };
 
       meshtastic = pkgs.callPackage ./meshtastic {
-        androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
-          s.cmdline-tools-latest
-          s.platform-tools
-          s.platforms-android-36
-          s.build-tools-36-0-0
-        ]);
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
       thunderbird = pkgs.callPackage ./thunderbird {
-        androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
-          s.cmdline-tools-latest
-          s.platform-tools
-          s.platforms-android-36
-          # AGP 8.12.3 with compileSdk=36 resolves aapt2 from build-tools 35.0.0.
-          s.build-tools-35-0-0
-        ]);
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
       meditrak = pkgs.callPackage ./meditrak {
-        androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
-          s.cmdline-tools-latest
-          s.platform-tools
-          s.platforms-android-36
-          # compileSdkVersion 36 requires matching build-tools.
-          s.build-tools-36-0-0
-          # NDK for JNI/CMake build; version pinned in set-ndk-version.patch.
-          s.ndk-27-2-12479018
-          # CMake version required by app/build.gradle externalNativeBuild.
-          s.cmake-3-22-1
-        ]);
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
       fdroidRepo = pkgs.callPackage ./fdroid-repo.nix {

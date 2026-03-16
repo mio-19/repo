@@ -8,9 +8,21 @@
   unzip,
   apksigner,
   writableTmpDirAsHomeHook,
-  androidSdk,
+  androidSdkBuilder,
 }:
 let
+  androidSdk = androidSdkBuilder (s: [
+    s.cmdline-tools-latest
+    s.platform-tools
+    s.platforms-android-36
+    # compileSdkVersion 36 requires matching build-tools.
+    s.build-tools-36-0-0
+    # NDK for JNI/CMake build; version pinned in set-ndk-version.patch.
+    s.ndk-27-2-12479018
+    # CMake version required by app/build.gradle externalNativeBuild.
+    s.cmake-3-22-1
+  ]);
+
   # SQLite amalgamation required by app/src/main/cpp/CMakeLists.txt.
   # CMake's file(DOWNLOAD ...) block is skipped when the target directory already
   # exists; pre-populating it avoids a network download blocked by the Nix sandbox.
