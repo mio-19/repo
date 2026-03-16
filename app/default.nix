@@ -210,6 +210,9 @@
       };
 
       meshtastic = pkgs.callPackage ./meshtastic { };
+
+      thunderbird = pkgs.callPackage ./thunderbird { };
+
       fdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
         androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
           s.cmdline-tools-latest
@@ -250,6 +253,23 @@
                 using LoRa radios. This is the F-Droid flavor built from source.
             '';
           }
+          {
+            appId = "net.thunderbird.android";
+            apkPath = "${thunderbird}/thunderbird.apk";
+            metadataYml = ''
+              Categories:
+                - Internet
+              License: Apache-2.0
+              SourceCode: https://github.com/thunderbird/thunderbird-android
+              IssueTracker: https://github.com/thunderbird/thunderbird-android/issues
+              AutoName: Thunderbird
+              Summary: Thunderbird for Android (foss flavor)
+              Description: |-
+                Thunderbird is a free, open-source email client. This is the F-Droid
+                foss flavor built from the THUNDERBIRD_16_1 branch without any
+                proprietary Google dependencies.
+            '';
+          }
         ];
         repoVersion = forkgram.version;
       };
@@ -279,6 +299,15 @@
           defaultOut = "meshtastic-signed.apk";
         };
       });
+
+      packages.thunderbird = thunderbird.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-thunderbird";
+          apkPath = "${thunderbird}/thunderbird.apk";
+          defaultOut = "thunderbird-signed.apk";
+        };
+      });
+
       packages.fdroid-repo = fdroidRepo;
 
       packages.sign-fdroid-repo = mkFdroidRepoSignScript {

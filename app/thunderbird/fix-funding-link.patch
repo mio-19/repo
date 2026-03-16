@@ -1,0 +1,17 @@
+--- a/app-thunderbird/build.gradle.kts	2026-03-16 11:52:29.517126829 +1100
++++ b/app-thunderbird/build.gradle.kts	2026-03-16 11:52:29.527126737 +1100
+@@ -243,10 +243,10 @@
+ 
+     "fossImplementation"(projects.feature.funding.link)
+ 
+-    fullDebugImplementation(projects.feature.funding.googleplay)
+-    fullDailyImplementation(projects.feature.funding.googleplay)
+-    fullBetaImplementation(projects.feature.funding.googleplay)
+-    fullReleaseImplementation(projects.feature.funding.googleplay)
++    fullDebugImplementation(projects.feature.funding.link)
++    fullDailyImplementation(projects.feature.funding.link)
++    fullBetaImplementation(projects.feature.funding.link)
++    fullReleaseImplementation(projects.feature.funding.link)
+ 
+     implementation(projects.feature.onboarding.migration.thunderbird)
+     implementation(projects.feature.migration.launcher.thunderbird)
