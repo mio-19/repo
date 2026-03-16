@@ -39,6 +39,16 @@ stdenv.mkDerivation (finalAttrs: {
   gradleBuildTask = "assembleRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 
+  postPatch = ''
+    substituteInPlace android/build-scripts/tuxguitar-android/apk/build.gradle \
+      --replace-fail \
+        'versionName "9.99-SNAPSHOT"' \
+        'versionName "${finalAttrs.version}"' \
+      --replace-fail \
+        "versionCode Integer.parseInt(new Date().format('yyMMddHH'))" \
+        'versionCode 20001'
+  '';
+
   # Lock refresh steps:
   # 1. If TuxGuitar bumps Gradle, update gradle.version and gradle.hash.
   # 2. Build the updater:
