@@ -6,7 +6,7 @@
   fetchFromGitHub,
   apksigner,
   writableTmpDirAsHomeHook,
-  androidenv,
+  androidSdk,
 }:
 let
   gradle =
@@ -15,14 +15,6 @@ let
       hash = "sha256-oX3dhaJran9d23H/iwX8UQTAICxuZHgkKXkMkzaGyAY=";
       defaultJava = jdk21;
     }).wrapped;
-
-  androidSdk = (androidenv.override { licenseAccepted = true; }).composeAndroidPackages {
-    platformVersions = [ "36" ];
-    # AGP 8.12.3 with compileSdk=36 selects build-tools 35.0.0
-    buildToolsVersions = [ "35.0.0" ];
-    includeEmulator = false;
-    includeSystemImages = false;
-  };
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "thunderbird-android";
@@ -74,22 +66,22 @@ stdenv.mkDerivation (finalAttrs: {
 
   env = {
     JAVA_HOME = jdk21;
-    ANDROID_HOME = "${androidSdk.androidsdk}/libexec/android-sdk";
-    ANDROID_SDK_ROOT = "${androidSdk.androidsdk}/libexec/android-sdk";
-    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk.androidsdk}/libexec/android-sdk/build-tools/35.0.0/aapt2";
+    ANDROID_HOME = "${androidSdk}/share/android-sdk";
+    ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
   };
 
   preConfigure = ''
     export ANDROID_USER_HOME="$HOME/.android"
     mkdir -p "$ANDROID_USER_HOME"
-    echo "sdk.dir=${androidSdk.androidsdk}/libexec/android-sdk" > local.properties
+    echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
   '';
 
   gradleFlags = [
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${jdk21}"
-    "-Dandroid.aapt2FromMavenOverride=${androidSdk.androidsdk}/libexec/android-sdk/build-tools/35.0.0/aapt2"
-    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk.androidsdk}/libexec/android-sdk/build-tools/35.0.0/aapt2"
+    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
   ];
 
   installPhase = ''

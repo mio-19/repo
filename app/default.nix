@@ -218,7 +218,15 @@
         ]);
       };
 
-      thunderbird = pkgs.callPackage ./thunderbird { };
+      thunderbird = pkgs.callPackage ./thunderbird {
+        androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
+          s.cmdline-tools-latest
+          s.platform-tools
+          s.platforms-android-36
+          # AGP 8.12.3 with compileSdk=36 resolves aapt2 from build-tools 35.0.0.
+          s.build-tools-35-0-0
+        ]);
+      };
 
       fdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
         androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
