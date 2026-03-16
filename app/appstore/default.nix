@@ -73,7 +73,8 @@ stdenv.mkDerivation (finalAttrs: {
 
   gradleFlags = [
     "-Dorg.gradle.java.installations.auto-download=false"
-    "-Dorg.gradle.java.installations.paths=${jdk17}/lib/openjdk,${jdk21}/lib/openjdk"
+    # darwin wants ${jdk17},${jdk21} while linux wants ${jdk17}/lib/openjdk,${jdk21}/lib/openjdk
+    "-Dorg.gradle.java.installations.paths=${jdk17},${jdk21},${jdk17}/lib/openjdk,${jdk21}/lib/openjdk"
     "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
     "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
   ];
