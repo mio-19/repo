@@ -219,6 +219,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      tuxguitar = pkgs.callPackage ./tuxguitar {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       fdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
         androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
           s.cmdline-tools-latest
@@ -292,6 +296,22 @@
                 Track doses, set reminders, and view history — no account required.
             '';
           }
+          {
+            appId = "app.tuxguitar.android.application";
+            apkPath = "${tuxguitar}/tuxguitar-android.apk";
+            metadataYml = ''
+              Categories:
+                - Multimedia
+              License: LGPL-2.1-or-later
+              SourceCode: https://github.com/helge17/tuxguitar
+              IssueTracker: https://github.com/helge17/tuxguitar/issues
+              AutoName: TuxGuitar
+              Summary: Multitrack guitar tablature editor
+              Description: |-
+                TuxGuitar is a multitrack guitar tablature editor and player.
+                It can open GuitarPro, PowerTab, and TablEdit files.
+            '';
+          }
         ];
       };
     in
@@ -334,6 +354,14 @@
           name = "sign-meditrak";
           apkPath = "${meditrak}/meditrak.apk";
           defaultOut = "meditrak-signed.apk";
+        };
+      });
+
+      packages.tuxguitar-android = tuxguitar.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-tuxguitar-android";
+          apkPath = "${tuxguitar}/tuxguitar-android.apk";
+          defaultOut = "tuxguitar-android-signed.apk";
         };
       });
 
