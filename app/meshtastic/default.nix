@@ -116,6 +116,6 @@ stdenv.mkDerivation (finalAttrs: {
     description = "Meshtastic Android app (F-Droid flavor, unsigned)";
     homepage = "https://meshtastic.org";
     license = licenses.gpl3Only;
-    platforms = platforms.linux;
+    platforms = platforms.unix;
   };
 })
