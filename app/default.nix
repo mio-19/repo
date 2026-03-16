@@ -290,7 +290,6 @@
             '';
           }
         ];
-        repoVersion = forkgram.version;
       };
     in
     {
