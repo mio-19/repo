@@ -227,6 +227,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      glimpse = pkgs.callPackage ./glimpse {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       fdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
         androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
           s.cmdline-tools-latest
@@ -236,6 +240,21 @@
           s.ndk-21-4-7075529
         ]);
         apps = [
+          {
+            appId = "org.lineageos.glimpse";
+            apkPath = "${glimpse}/glimpse.apk";
+            metadataYml = ''
+              Categories:
+                - Photography
+              License: Apache-2.0
+              SourceCode: https://github.com/LineageOS/android_packages_apps_Glimpse
+              IssueTracker: https://github.com/LineageOS/android_packages_apps_Glimpse/issues
+              AutoName: Glimpse
+              Summary: LineageOS Glimpse photo gallery
+              Description: |-
+                Glimpse is the default photo gallery app for LineageOS, built from source.
+            '';
+          }
           {
             appId = "org.forkgram.messenger";
             apkPath = "${forkgram}/forkgram.apk";
@@ -391,6 +410,14 @@
           name = "sign-meshcore-open";
           apkPath = "${meshcore-open}/meshcore-open.apk";
           defaultOut = "meshcore-open-signed.apk";
+        };
+      });
+
+      packages.glimpse = glimpse.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-glimpse";
+          apkPath = "${glimpse}/glimpse.apk";
+          defaultOut = "glimpse-signed.apk";
         };
       });
 
