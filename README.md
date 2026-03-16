@@ -143,7 +143,7 @@ nix build .#sign-fdroid-repo -o sign-fdroid-repo
 Or with `nix run`:
 
 ```zsh
-nix run .#sign-fdroid-repo -- \
+NIXPKGS_ALLOW_UNFREE=1 nix run --impure .#sign-fdroid-repo -- \
   my-release-key.jks \
   --ks-pass password \
   --alias releasekey \
