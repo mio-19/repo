@@ -59,7 +59,7 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   env = {
-    JAVA_HOME = "${jdk21}/lib/openjdk";
+    JAVA_HOME = "${jdk21}";
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
