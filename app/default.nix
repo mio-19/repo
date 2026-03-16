@@ -184,6 +184,10 @@
           export HOME="$WORKDIR/.home"
           mkdir -p "$HOME"
 
+          # fdroidserver requires a JDK at runtime (java, keytool, jarsigner).
+          export JAVA_HOME="${pkgs.jdk}"
+          export PATH="$JAVA_HOME/bin:$PATH"
+
           (cd "$WORKDIR" && ${pkgs.fdroidserver}/bin/fdroid publish --error-on-failed)
           (cd "$WORKDIR" && ${pkgs.fdroidserver}/bin/fdroid update --create-metadata --rename-apks --nosign)
           (cd "$WORKDIR" && ${pkgs.fdroidserver}/bin/fdroid signindex)
