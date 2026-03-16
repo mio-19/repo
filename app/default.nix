@@ -234,6 +234,22 @@
                 Forkgram is a Telegram Android client fork.
             '';
           }
+          {
+            appId = "com.geeksville.mesh";
+            apkPath = "${meshtastic}/meshtastic.apk";
+            metadataYml = ''
+              Categories:
+                - Internet
+              License: GPL-3.0-only
+              SourceCode: https://github.com/meshtastic/Meshtastic-Android
+              IssueTracker: https://github.com/meshtastic/Meshtastic-Android/issues
+              AutoName: Meshtastic
+              Summary: Meshtastic mesh networking app
+              Description: |-
+                Meshtastic is an open-source, off-grid mesh networking application
+                using LoRa radios. This is the F-Droid flavor built from source.
+            '';
+          }
         ];
         repoVersion = forkgram.version;
       };
