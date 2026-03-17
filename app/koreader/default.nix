@@ -186,101 +186,101 @@ stdenv.mkDerivation (finalAttrs: {
   # The task wrapper calls ./gradlew inside luajit-launcher/Makefile.
   # We should patch it to call gradle directly.
   postPatch = ''
-        # Many thirdparty build scripts use #!/usr/bin/env python3 shebangs.
-        # buildFHSEnv in buildPhase provides /usr/bin/env for those scripts.
-        mkdir -p offline-tarballs
-        ${lib.concatStringsSep "\n" (
-          lib.mapAttrsToList (
-            name: tarball:
-            if tarball != null then
-              ''
-                ln -s ${tarball} offline-tarballs/${name}-${baseNameOf depsJson.${name}.url}
-              ''
-            else
-              ""
-          ) fetchedDeps
-        )}
-        
-        # Actually, CMake downloads without the quotes, let's use a simpler sed:
-        ${lib.concatStringsSep "\n" (
-          lib.mapAttrsToList (
-            name: tarball:
-            if tarball != null then
-              ''
-                find base/thirdparty -type f \( -name "CMakeLists.txt" -o -name "*.cmake" \) -print0 | xargs -0 sed -i 's|${depsJson.${name}.url}|file://'"$PWD"'/offline-tarballs/${name}-${
-                  baseNameOf depsJson.${name}.url
-                }|g'
-              ''
-            else
-              ""
-          ) fetchedDeps
-        )}
+    # Many thirdparty build scripts use #!/usr/bin/env python3 shebangs.
+    # buildFHSEnv in buildPhase provides /usr/bin/env for those scripts.
+    mkdir -p offline-tarballs
+    ${lib.concatStringsSep "\n" (
+      lib.mapAttrsToList (
+        name: tarball:
+        if tarball != null then
+          ''
+            ln -s ${tarball} offline-tarballs/${name}-${baseNameOf depsJson.${name}.url}
+          ''
+        else
+          ""
+      ) fetchedDeps
+    )}
 
-        sed -i -e 's#\$(ANDROID_LAUNCHER_DIR)/gradlew#gradle#' make/android.mk
+    # Actually, CMake downloads without the quotes, let's use a simpler sed:
+    ${lib.concatStringsSep "\n" (
+      lib.mapAttrsToList (
+        name: tarball:
+        if tarball != null then
+          ''
+            find base/thirdparty -type f \( -name "CMakeLists.txt" -o -name "*.cmake" \) -print0 | xargs -0 sed -i 's|${depsJson.${name}.url}|file://'"$PWD"'/offline-tarballs/${name}-${
+              baseNameOf depsJson.${name}.url
+            }|g'
+          ''
+        else
+          ""
+      ) fetchedDeps
+    )}
 
-        # Inject offline mitmCache local maven repos into gradle build files
-        # so that gradle resolves all dependencies from the nix store.
-        sed -i \
-          -e 's|google()|maven { url = uri("${finalAttrs.mitmCache}/https/dl.google.com/dl/android/maven2") }\n        maven { url = uri("${finalAttrs.mitmCache}/https/maven.google.com") }\n        maven { url = uri("${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2") }\n        google()|g' \
-          platform/android/luajit-launcher/build.gradle \
-          platform/android/luajit-launcher/app/build.gradle
-        # Also add --offline to GRADLE_FLAGS so gradle won't try the network
-        sed -i \
-          -e 's|\$(GRADLE_FLAGS)|$(GRADLE_FLAGS) --offline --no-daemon|' \
-          make/android.mk
+    sed -i -e 's#\$(ANDROID_LAUNCHER_DIR)/gradlew#gradle#' make/android.mk
 
-        # The Nix sandbox has no git history; replace git-based version commands
-        # with hardcoded values matching the package version.
-        sed -i \
-          -e 's|VERSION := \$(shell git describe HEAD)|VERSION := ${finalAttrs.version}|' \
-          Makefile
-        sed -i \
-          -e 's|ANDROID_VERSION ?= \$(shell git rev-list --count HEAD)|ANDROID_VERSION ?= 202510|' \
-          make/android.mk
-        substituteInPlace make/android.mk \
-          --replace-fail \
-            'cp $(ANDROID_LAUNCHER_BUILD)/outputs/apk/$(ANDROID_ARCH)$(ANDROID_FLAVOR)/$(if $(KODEBUG),debug,release)/NativeActivity.apk $(ANDROID_APK)' \
-            'apk_path="$$(find $(ANDROID_LAUNCHER_BUILD)/outputs/apk -type f -name NativeActivity.apk | head -n 1)"; test -n "$$apk_path"; cp "$$apk_path" $(ANDROID_APK)'
+    # Inject offline mitmCache local maven repos into gradle build files
+    # so that gradle resolves all dependencies from the nix store.
+    sed -i \
+      -e 's|google()|maven { url = uri("${finalAttrs.mitmCache}/https/dl.google.com/dl/android/maven2") }\n        maven { url = uri("${finalAttrs.mitmCache}/https/maven.google.com") }\n        maven { url = uri("${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2") }\n        google()|g' \
+      platform/android/luajit-launcher/build.gradle \
+      platform/android/luajit-launcher/app/build.gradle
+    # Also add --offline to GRADLE_FLAGS so gradle won't try the network
+    sed -i \
+      -e 's|\$(GRADLE_FLAGS)|$(GRADLE_FLAGS) --offline --no-daemon|' \
+      make/android.mk
 
-        # Prevent koenv.sh from actually running git clone or checkout.
-        cat ${./koenv-git.sh} >> base/thirdparty/cmake_modules/koenv.sh
+    # The Nix sandbox has no git history; replace git-based version commands
+    # with hardcoded values matching the package version.
+    sed -i \
+      -e 's|VERSION := \$(shell git describe HEAD)|VERSION := ${finalAttrs.version}|' \
+      Makefile
+    sed -i \
+      -e 's|ANDROID_VERSION ?= \$(shell git rev-list --count HEAD)|ANDROID_VERSION ?= 202510|' \
+      make/android.mk
+    substituteInPlace make/android.mk \
+      --replace-fail \
+        'cp $(ANDROID_LAUNCHER_BUILD)/outputs/apk/$(ANDROID_ARCH)$(ANDROID_FLAVOR)/$(if $(KODEBUG),debug,release)/NativeActivity.apk $(ANDROID_APK)' \
+        'apk_path="$$(find $(ANDROID_LAUNCHER_BUILD)/outputs/apk -type f -name NativeActivity.apk | head -n 1)"; test -n "$$apk_path"; cp "$$apk_path" $(ANDROID_APK)'
 
-        cp ${./meson-native.ini} base/meson-native.ini
+    # Prevent koenv.sh from actually running git clone or checkout.
+    cat ${./koenv-git.sh} >> base/thirdparty/cmake_modules/koenv.sh
 
-        sed -i -e "s|--wrap-mode=nodownload|--wrap-mode=nodownload --native-file=$PWD/base/meson-native.ini|g" base/cmake/CMakeLists.txt
+    cp ${./meson-native.ini} base/meson-native.ini
 
-        # gen-hb-version.py tries to write hb-version.h back into the source
-        # tree; if that copy fails the script exits non-zero and meson reports
-        # "Could not execute command". Provide a patch that removes the copy-back
-        # section, and register it in the PATCH_FILES list so apply_patches runs
-        # "patch -p1" on the extracted harfbuzz source before meson configure.
-        cp ${./harfbuzz-no-source-copy.patch} base/thirdparty/harfbuzz/harfbuzz-no-source-copy.patch
-        sed -i 's|no-subset.patch|no-subset.patch\n    harfbuzz-no-source-copy.patch|' \
-          base/thirdparty/harfbuzz/CMakeLists.txt
+    sed -i -e "s|--wrap-mode=nodownload|--wrap-mode=nodownload --native-file=$PWD/base/meson-native.ini|g" base/cmake/CMakeLists.txt
 
-        # LuaJIT uses CROSS+CC for the cross-compiler (TARGET_CC), so CC must be
-        # "clang" to form "aarch64-linux-android21-clang". But HOST_CC (used to
-        # compile host tools minilua/buildvm) must be the native build compiler
-        # since NDK's clang is an Android cross-compiler without Linux headers.
-        substituteInPlace base/thirdparty/luajit/CMakeLists.txt \
-          --replace-fail \
-            'set(HOST_CC ''${HOSTCC})' \
-            'if(DEFINED ENV{CC_FOR_BUILD})
-          set(HOST_CC $ENV{CC_FOR_BUILD})
-        else()
-          set(HOST_CC ''${HOSTCC})
-        endif()'
+    # gen-hb-version.py tries to write hb-version.h back into the source
+    # tree; if that copy fails the script exits non-zero and meson reports
+    # "Could not execute command". Provide a patch that removes the copy-back
+    # section, and register it in the PATCH_FILES list so apply_patches runs
+    # "patch -p1" on the extracted harfbuzz source before meson configure.
+    cp ${./harfbuzz-no-source-copy.patch} base/thirdparty/harfbuzz/harfbuzz-no-source-copy.patch
+    sed -i 's|no-subset.patch|no-subset.patch\n    harfbuzz-no-source-copy.patch|' \
+      base/thirdparty/harfbuzz/CMakeLists.txt
 
-        # chmlib's ffs() is only included on __sun || __sgi; Android clang
-        # fails with -Wimplicit-function-declaration. Add strings.h unconditionally.
-        substituteInPlace base/thirdparty/kpvcrlib/crengine/thirdparty/chmlib/src/chm_lib.c \
-          --replace-fail \
-            '#if __sun || __sgi
-#include <strings.h>
-#endif' \
-            '#include <strings.h>'
+    # LuaJIT uses CROSS+CC for the cross-compiler (TARGET_CC), so CC must be
+    # "clang" to form "aarch64-linux-android21-clang". But HOST_CC (used to
+    # compile host tools minilua/buildvm) must be the native build compiler
+    # since NDK's clang is an Android cross-compiler without Linux headers.
+    substituteInPlace base/thirdparty/luajit/CMakeLists.txt \
+      --replace-fail \
+        'set(HOST_CC ''${HOSTCC})' \
+        'if(DEFINED ENV{CC_FOR_BUILD})
+      set(HOST_CC $ENV{CC_FOR_BUILD})
+    else()
+      set(HOST_CC ''${HOSTCC})
+    endif()'
 
-        patchShebangs --build .
+    # chmlib's ffs() is only included on __sun || __sgi; Android clang
+    # fails with -Wimplicit-function-declaration. Add strings.h unconditionally.
+    substituteInPlace base/thirdparty/kpvcrlib/crengine/thirdparty/chmlib/src/chm_lib.c \
+      --replace-fail \
+        '#if __sun || __sgi
+    #include <strings.h>
+    #endif' \
+        '#include <strings.h>'
+
+    patchShebangs --build .
   '';
 
   # Wait, koreader Android build is 'ANDROID_FLAVOR=fdroid ./kodev release android-arm64'.
