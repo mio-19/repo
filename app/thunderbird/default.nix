@@ -31,7 +31,7 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "thunderbird";
     repo = "thunderbird-android";
-    rev = "9dfc10b2ce8020713284a463961ddc5c0123f580"; # THUNDERBIRD_16_1
+    tag = "THUNDERBIRD_16_1";
     hash = "sha256-FofcHxdIiLrMh/Wne1ybMGKMT0dtHBpcOLfbAvKPcLU=";
   };
 

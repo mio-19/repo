@@ -253,6 +253,9 @@
       haven = pkgs.callPackage ./haven {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
+      koreader = pkgs.callPackage ./koreader {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
 
       fdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
         androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
@@ -476,6 +479,22 @@
                 This package is built from source (arm64).
             '';
           }
+          {
+            appId = "org.koreader.launcher.fdroid";
+            apkPath = "${koreader}/koreader.apk";
+            metadataYml = ''
+              Categories:
+                - Reading
+              License: AGPL-3.0-only
+              SourceCode: https://github.com/koreader/koreader
+              IssueTracker: https://github.com/koreader/koreader/issues
+              AutoName: KOReader
+              Summary: Ebook reader optimized for e-ink and Android devices
+              Description: |-
+                KOReader is a document reader supporting EPUB, PDF, DJVU and more.
+                This package is built from source.
+            '';
+          }
         ];
       };
     in
@@ -589,6 +608,14 @@
           name = "sign-shizuku";
           apkPath = "${shizuku}/shizuku.apk";
           defaultOut = "shizuku-signed.apk";
+        };
+      });
+
+      packages.koreader = koreader.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-koreader";
+          apkPath = "${koreader}/koreader.apk";
+          defaultOut = "koreader-signed.apk";
         };
       });
 
