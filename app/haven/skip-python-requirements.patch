@@ -1,0 +1,17 @@
+--- a/app/build.gradle.kts
++++ b/app/build.gradle.kts
+@@ -144,9 +144,11 @@
+     defaultConfig {
+         version = "3.13"
+ 
+-        pip {
+-            install("rns")
+-            install("rnsh")
++        if (System.getenv("HAVEN_SKIP_PYTHON_REQUIREMENTS") != "1") {
++            pip {
++                install("rns")
++                install("rnsh")
++            }
+         }
+     }
+ }
