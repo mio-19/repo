@@ -176,7 +176,6 @@
           keystorepass: $KS_PASS
           keypass: $KEY_PASS
           keydname: CN=F-Droid Repo, OU=F-Droid
-          build_tools: "35.0.0"
           keyaliases:
           $keyaliases_yaml
           EOF
@@ -188,10 +187,6 @@
           # fdroidserver requires a JDK at runtime (java, keytool, jarsigner).
           export JAVA_HOME="${pkgs.jdk}"
           export PATH="$JAVA_HOME/bin:$PATH"
-
-          # fdroidserver needs the Android SDK to extract icons from APKs.
-          export ANDROID_HOME="${androidSdk}/share/android-sdk"
-          export ANDROID_SDK_ROOT="${androidSdk}/share/android-sdk"
 
           (cd "$WORKDIR" && ${pkgs.fdroidserver}/bin/fdroid publish --error-on-failed)
           (cd "$WORKDIR" && ${pkgs.fdroidserver}/bin/fdroid update --create-metadata --rename-apks --nosign)
