@@ -59,7 +59,7 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   env = {
-    JAVA_HOME = "${jdk21}";
+    JAVA_HOME = if stdenv.isDarwin then "${jdk21}" else "${jdk21}/lib/openjdk";
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
@@ -71,13 +71,16 @@ stdenv.mkDerivation (finalAttrs: {
     echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
   '';
 
-  gradleFlags = [
-    "-Dorg.gradle.java.installations.auto-download=false"
-    # darwin wants ${jdk17},${jdk21} while linux wants ${jdk17}/lib/openjdk,${jdk21}/lib/openjdk
-    "-Dorg.gradle.java.installations.paths=${jdk17},${jdk21},${jdk17}/lib/openjdk,${jdk21}/lib/openjdk"
-    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-  ];
+  gradleFlags =
+    let
+      postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
+    in
+    [
+      "-Dorg.gradle.java.installations.auto-download=false"
+      "-Dorg.gradle.java.installations.paths=${jdk17}${postfix},${jdk21}${postfix}"
+      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+    ];
 
   installPhase = ''
     runHook preInstall
