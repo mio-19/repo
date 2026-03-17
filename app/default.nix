@@ -250,6 +250,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      koreader = pkgs.callPackage ./koreader {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       fdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
         androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
           s.cmdline-tools-latest
@@ -559,6 +563,14 @@
           name = "sign-shizuku";
           apkPath = "${shizuku}/shizuku.apk";
           defaultOut = "shizuku-signed.apk";
+        };
+      });
+
+      packages.koreader = koreader.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-koreader";
+          apkPath = "${koreader}/koreader.apk";
+          defaultOut = "koreader-signed.apk";
         };
       });
 

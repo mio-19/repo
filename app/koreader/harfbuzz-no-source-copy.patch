@@ -1,0 +1,41 @@
+--- a/src/meson.build	2026-01-24 23:09:52.000000000 +1100
++++ b/src/meson.build	2026-03-18 00:49:54.467865346 +1100
+@@ -1,7 +1,7 @@
+ fs = import('fs')
+ 
+ hb_version_h = configure_file(
+-               command: [find_program('gen-hb-version.py'), meson.project_version(), '@OUTPUT@', '@INPUT@'],
++               command: [find_program('python3'), meson.current_source_dir() / 'gen-hb-version.py', meson.project_version(), '@OUTPUT@', '@INPUT@'],
+                input: 'hb-version.h.in',
+                output: 'hb-version.h',
+                install: true,
+@@ -470,7 +470,7 @@
+   input: hb_base_sources + hb_glib_sources + hb_ft_sources +
+          hb_graphite2_sources + hb_uniscribe_sources + hb_gdi_sources +
+          hb_directwrite_sources + hb_coretext_sources + hb_wasm_sources,
+-  command: [find_program('gen-harfbuzzcc.py'),
++  command: [find_program('python3'), meson.current_source_dir() / 'gen-harfbuzzcc.py',
+             '@OUTPUT@', meson.current_source_dir(), '@INPUT@'],
+ )
+ 
+@@ -687,7 +687,7 @@
+   build_by_default: true,
+   output: 'harfbuzz-subset.cc',
+   input: hb_base_sources + hb_subset_sources,
+-  command: [find_program('gen-harfbuzzcc.py'),
++  command: [find_program('python3'), meson.current_source_dir() / 'gen-harfbuzzcc.py',
+             '@OUTPUT@', meson.current_source_dir(), '@INPUT@'],
+ )
+ 
+--- a/src/gen-hb-version.py	2026-01-24 23:09:52.000000000 +1100
++++ b/src/gen-hb-version.py	2026-03-18 00:49:54.481865350 +1100
+@@ -32,9 +32,3 @@
+ 			.replace ("@HB_VERSION@", version)
+ 			.encode ())
+ 
+-# copy it also to the source tree, but only if it has changed
+-baseline_filename = os.path.join (CURRENT_SOURCE_DIR, os.path.basename (OUTPUT))
+-with open(baseline_filename, "rb") as baseline:
+-	with open(OUTPUT, "rb") as generated:
+-		if baseline.read() != generated.read():
+-			shutil.copyfile (OUTPUT, baseline_filename)
