@@ -38,6 +38,8 @@ nix build -L --max-jobs 4 .#gosNoCcache.husky.releaseScript -o release && ./rele
 nix build -L --max-jobs 4 .#gos.tangorpro.releaseScript -o release && ./release ./keys-tangorpro
 nix build -L --max-jobs 4 .#gosNoCcache.tangorpro.releaseScript -o release && ./release ./keys-tangorpro
 nix build -L --max-jobs 4 .#gos.mustang.releaseScript -o release && ./release ./keys-mustang
+nix build -L --max-jobs 4 .#gos.cheetah.releaseScript -o release && ./release ./keys-cheetah
+nix build -L --max-jobs 4 .#gosNoCcache.cheetah.releaseScript -o release && ./release ./keys-cheetah
 ```
 
 It is recommended to have OEM unlocking to be on in developer options when flashing new versions.
@@ -46,14 +48,12 @@ generate keys/updating keys:
 
 ```zsh
 nix build -L .#gos.akita.generateKeysScript -o generate-keys && ./generate-keys ./keys-akita
-
 nix build -L .#gos.husky.generateKeysScript -o generate-keys && ./generate-keys ./keys-husky
-
 nix build -L .#gos.tangorpro.generateKeysScript -o generate-keys && ./generate-keys ./keys-tangorpro
-
 nix build -L .#gos.mustang.generateKeysScript -o generate-keys && ./generate-keys ./keys-mustang
-
-nix build -L .#los.gta4xlwifi.generateKeysScript -o generate-keys && ./generate-keys ./keys-akita
+nix build -L .#gos.cheetah.generateKeysScript -o generate-keys && ./generate-keys ./keys-cheetah
+nix build -L .#gosNoCcache.cheetah.generateKeysScript -o generate-keys && ./generate-keys ./keys-cheetah
+nix build -L .#los.gta4xlwifi.generateKeysScript -o generate-keys && ./generate-keys ./keys-gta4xlwifi
 ```
 
 build kernels (for debugging and developement only):
