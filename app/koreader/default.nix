@@ -109,18 +109,30 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "koreader-android";
-  version = "2025.10";
+  version = "2026.03";
 
+  # Source refresh steps:
+  # 1. Keep `tag = "v${finalAttrs.version}"`.
+  # 2. Set `hash = lib.fakeHash`, run:
+  #      nix build .#packages.x86_64-linux.koreader
+  #    then copy the reported "got:" hash here.
   src = fetchFromGitHub {
     repo = "koreader";
     owner = "koreader";
-    rev = "ccabe19ba77fdf4a32ea39c62bc8264949013fa1";
+    tag = "v${finalAttrs.version}";
     fetchSubmodules = true;
-    hash = "sha256-9tk2rJHivVJHcJGPVVpgjk9kIfZ2IzYqjpMyDYGrvgU=";
+    hash = "sha256-KWpWlFoBEAhVDuRTiF7yj1wlKLzYmvcngI9iWqsDuQY=";
   };
 
-  # Only enable mitmCache when the json exists. Otherwise we can just
-  # run the update script manually.
+  # Gradle lock refresh:
+  #   nix build --impure .#packages.x86_64-linux.koreader.mitmCache.updateScript
+  # then run the produced fetch-deps.sh with `outPath` set to:
+  #   /home/dev/Documents/repo/app/koreader/koreader_gradle_deps.json
+  #
+  # Thirdparty lock refresh:
+  # - run: python app/koreader/refresh-thirdparty-lock.py
+  # - update URL/version entries manually if KOReader upstream changed dependency URLs.
+  # - for git deps (depsJson.git), bump rev/hash entries manually as needed.
   mitmCache =
     if builtins.pathExists ./koreader_gradle_deps.json then
       gradle.fetchDeps {
@@ -255,7 +267,7 @@ stdenv.mkDerivation (finalAttrs: {
     substituteInPlace make/android.mk \
       --replace-fail \
         'ANDROID_VERSION ?= $(shell git rev-list --count HEAD)' \
-        'ANDROID_VERSION ?= 202510'
+        'ANDROID_VERSION ?= 202603'
     substituteInPlace make/android.mk \
       --replace-fail \
         'cp $(ANDROID_LAUNCHER_BUILD)/outputs/apk/$(ANDROID_ARCH)$(ANDROID_FLAVOR)/$(if $(KODEBUG),debug,release)/NativeActivity.apk $(ANDROID_APK)' \
