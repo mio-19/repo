@@ -37,7 +37,7 @@ assert lib.assertMsg (
 ) "fdroid-repo.nix requires at least one APK source via apkSources or apps";
 
 pkgs.stdenvNoCC.mkDerivation {
-  pname = "forkgram-fdroid-repo-unsigned";
+  pname = "fdroid-repo-unsigned";
   version = repoVersion;
 
   dontUnpack = true;
