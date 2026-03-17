@@ -170,5 +170,122 @@
   "libressl": {
     "url": "https://cdn.openbsd.org/pub/OpenBSD/LibreSSL/libressl-4.2.1.tar.gz",
     "hash": "sha256-bVwvWFg1iOp5H0yGRQBAcdAN+lVKW/eIoAbKHrWr1ws="
+  },
+  "git": {
+    "lunasvg": {
+      "url": "https://github.com/sammycage/lunasvg.git",
+      "rev": "610b8bf5148a27489b4e3344b4f5617b81be38c7",
+      "hash": "0dyszz8w2fkw7f4rakxigx40rz6gqk0snjjrnlvmqd9y2j2qvwq3"
+    },
+    "luasec": {
+      "url": "https://github.com/brunoos/luasec",
+      "rev": "4c06287052d68fdbe7429b8f967cdc8ee94aa44a",
+      "hash": "0rrdfbnkd8pgqwh3f0iyd5cxy7g1h0568a88m3sq1z7715js4yx3"
+    },
+    "lodepng": {
+      "url": "https://github.com/lvandeve/lodepng.git",
+      "rev": "0b1d9ccfc2093e5d6620cd9a11d03ee6ff6705f5",
+      "hash": "1yisrsl378fr62895mmnifjgly451nqys02ki63p03j0p8x36gvg"
+    },
+    "popen-noshell": {
+      "url": "https://github.com/famzah/popen-noshell.git",
+      "rev": "e715396a4951ee91c40a98d2824a130f158268bb",
+      "hash": "08za9gx3i1xnkh04pp7vy8ry1bf373dpjy16ky942r9sr0r5kq15"
+    },
+    "lua-htmlparser": {
+      "url": "https://github.com/msva/lua-htmlparser",
+      "rev": "5ce9a775a345cf458c0388d7288e246bb1b82bff",
+      "hash": "0nvkbrvxhfpnvdvyka6apqyj259l8ccv8w2l2l1w5z5kz94wn939"
+    },
+    "lua-rapidjson": {
+      "url": "https://github.com/NiLuJe/lua-rapidjson",
+      "rev": "e84973356255bde06a70ce6263a3a0ef5c8f4ad4",
+      "hash": "0d94wkh4xwrxg5bl6wpgdjcj5y3ici9y9n76yviqp4vvj8ks57j9"
+    },
+    "luajit": {
+      "url": "https://github.com/LuaJIT/LuaJIT",
+      "rev": "659a61693aa3b87661864ad0f12eee14c865cd7f",
+      "hash": "1skbjz6fc6iwmaw7mml7qk4kq5wr19hnf981mg59m1h3qj3qqap2"
+    },
+    "turbo": {
+      "url": "https://github.com/kernelsauce/turbo",
+      "rev": "7fe88c2b99ff9bd6d6df3ee3c4077ea8a7d1e6a3",
+      "hash": "06scjndi5jbpgqg33amcc7w1k8wyscyhfisynx442srrswan855w"
+    },
+    "luasocket": {
+      "url": "https://github.com/lunarmodules/luasocket",
+      "rev": "e3ca4a767a68d127df548d82669aba3689bd84f4",
+      "hash": "1jj3z4d2arak52vcx2nydbxc79l4z7klrsklx5vsdgnrxjcljqs5"
+    },
+    "libjpeg-turbo": {
+      "url": "https://github.com/libjpeg-turbo/libjpeg-turbo.git",
+      "rev": "af9c1c268520a29adf98cad5138dafe612b3d318",
+      "hash": "0yrpwajwmsml301fgx6v2g46y1h2mb3x1446i4r0x8kzjsvck658"
+    },
+    "koreader-lfs": {
+      "url": "https://github.com/lunarmodules/luafilesystem",
+      "rev": "a186cca5833691e830ed255e38ace8ff6b870dbf",
+      "hash": "0vd1b9rnbjl24bbnk91jrkli81dc1b2kvpjlsx319azjmynlk0y6"
+    },
+    "minizip": {
+      "url": "https://github.com/nmoinvaz/minizip",
+      "rev": "0b46a2b4ca317b80bc53594688883f7188ac4d08",
+      "hash": "024wm1s39h0q0jjy8d7hmlsm9al4xl7vy6396vys03lqq4qcrz9z"
+    },
+    "libk2pdfopt": {
+      "url": "https://github.com/koreader/libk2pdfopt.git",
+      "rev": "59ced371378312d8f332d9a35f5b4a3c33b18954",
+      "hash": "0fyg3vnnqf4rzqhbrvnr0r85iqy39vcg515dva6h3yg6rv5r0kb5"
+    },
+    "luajson": {
+      "url": "https://github.com/harningt/luajson.git",
+      "rev": "6ecaf9bea8b121a9ffca5a470a2080298557b55d",
+      "hash": "1s15ajf1ifwp1dv4dhfhm9jbicd7h4pwg505663z4si9l8vb98g7"
+    },
+    "openlipclua": {
+      "url": "https://github.com/notmarek/openlipclua.git",
+      "rev": "96c2d16696a482664b4e84eb3b6d851f807a44d1",
+      "hash": "0n3fqpa6mwxwx1rr2x6ahmwk3h5n8sn7aqzgw9af205rxp464zz8"
+    },
+    "nanosvg": {
+      "url": "https://github.com/memononen/nanosvg.git",
+      "rev": "ea6a6aca009422bba0dbad4c80df6e6ba0c82183",
+      "hash": "1psfc1p5801r17983pj89sfj2xhn436jbr3cahnipzmm55lxya20"
+    },
+    "lj-wpaclient": {
+      "url": "https://github.com/koreader/lj-wpaclient.git",
+      "rev": "0d5c8ee336b699dbb35850a7336d24e89e1aac24",
+      "hash": "0gqs1v209n6bdx9kz4gsmliidk4kdyw8r0bk1linsmc9vdig2w26"
+    },
+    "djvulibre": {
+      "url": "https://gitlab.com/koreader/djvulibre.git",
+      "rev": "6a1e5ba1c9ef81c205a4b270c3f121a1e106f4fc",
+      "hash": "1ng1ky7qk733435vsw6ka3ns31jqhpagh0yxg7vm3p7xvb2rnr1r"
+    },
+    "lua-Spore": {
+      "url": "https://framagit.org/fperrad/lua-Spore",
+      "rev": "52f58c5d8ad8992b363c5cbd27c1eb4b0da4ab74",
+      "hash": "0fifyqi93vr59wjyxkz0f3vjqrkgxgl2kn4qr209v27l55hhn9k2"
+    },
+    "ffi-cdecl": {
+      "url": "https://github.com/koreader/ffi-cdecl.git",
+      "rev": "ea45fb34782a29738334e250e820c825d75e5087",
+      "hash": "1bw283k8m1b0nv821jkvrdyqqz7fi0abb670snhbv50vlsj7pb10"
+    },
+    "zsync2": {
+      "url": "https://github.com/NiLuJe/zsync2.git",
+      "rev": "e281e1eb4466ff6b3866c25dbe62a3e150fa5bfd",
+      "hash": "0c541pjg5i2s2pdbg52r35yd3qfv4md8xynbgix2kk054zg6irl2"
+    },
+    "fbink": {
+      "url": "https://github.com/NiLuJe/FBInk.git",
+      "rev": "92e127008145b2a22fba7c59815d810d716310dd",
+      "hash": "0m9ahczbj5dpnzii8g2bzsz0rw9swklrj8jha6c9p9r0vy53aafx"
+    },
+    "kobo-usbms": {
+      "url": "https://github.com/koreader/KoboUSBMS.git",
+      "rev": "a35a8f639699deaae2e2ee446b5f6c2d2096c1bb",
+      "hash": "0k36g5bikj840zydmj9cp5z52nq0g42y4gcpbjvvbpx1vp2lf9p7"
+    }
   }
 }
