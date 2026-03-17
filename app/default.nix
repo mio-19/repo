@@ -234,7 +234,19 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      shizuku = pkgs.callPackage ./shizuku {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       glimpse = pkgs.callPackage ./glimpse {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
+      sunup = pkgs.callPackage ./sunup {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
+      recorder = pkgs.callPackage ./recorder {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
@@ -247,6 +259,23 @@
           s.ndk-21-4-7075529
         ]);
         apps = [
+          {
+            appId = "moe.shizuku.privileged.api";
+            apkPath = "${shizuku}/shizuku.apk";
+            metadataYml = ''
+              Categories:
+                - System
+              License: Apache-2.0
+              SourceCode: https://github.com/rikkaapps/shizuku
+              IssueTracker: https://github.com/rikkaapps/shizuku/issues
+              AutoName: Shizuku
+              Summary: Run privileged APIs via a user-service bridge
+              Description: |-
+                Shizuku provides a bridge to use system-level APIs from apps
+                without requiring root for every operation.
+                This package is built from source.
+            '';
+          }
           {
             appId = "app.grapheneos.apps";
             apkPath = "${appstore}/appstore.apk";
@@ -392,6 +421,39 @@
                 without proprietary Google services.
             '';
           }
+          {
+            appId = "org.unifiedpush.distributor.sunup";
+            apkPath = "${sunup}/sunup.apk";
+            metadataYml = ''
+              Categories:
+                - System
+              License: GPL-3.0-or-later
+              SourceCode: https://codeberg.org/Sunup/android
+              IssueTracker: https://codeberg.org/Sunup/android/issues
+              AutoName: Sunup
+              Summary: UnifiedPush distributor using a local push gateway
+              Description: |-
+                Sunup is a UnifiedPush distributor that uses a local push gateway
+                to deliver push notifications without relying on Google services.
+                This package is built from source.
+            '';
+          }
+          {
+            appId = "org.lineageos.recorder";
+            apkPath = "${recorder}/recorder.apk";
+            metadataYml = ''
+              Categories:
+                - Multimedia
+              License: Apache-2.0
+              SourceCode: https://github.com/LineageOS/android_packages_apps_Recorder
+              IssueTracker: https://github.com/LineageOS/android_packages_apps_Recorder/issues
+              AutoName: Recorder
+              Summary: LineageOS screen and audio recorder
+              Description: |-
+                Recorder is the LineageOS app for recording audio and screen.
+                This package is built from source.
+            '';
+          }
         ];
       };
     in
@@ -468,11 +530,35 @@
         };
       });
 
+      packages.sunup = sunup.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-sunup";
+          apkPath = "${sunup}/sunup.apk";
+          defaultOut = "sunup-signed.apk";
+        };
+      });
+
+      packages.recorder = recorder.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-recorder";
+          apkPath = "${recorder}/recorder.apk";
+          defaultOut = "recorder-signed.apk";
+        };
+      });
+
       packages.appstore = appstore.overrideAttrs (_: {
         passthru.signScript = mkSignScript {
           name = "sign-appstore";
           apkPath = "${appstore}/appstore.apk";
           defaultOut = "appstore-signed.apk";
+        };
+      });
+
+      packages.shizuku = shizuku.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-shizuku";
+          apkPath = "${shizuku}/shizuku.apk";
+          defaultOut = "shizuku-signed.apk";
         };
       });
 
