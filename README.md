@@ -162,4 +162,7 @@ use update-nix-fetchgit and nvfetcher
 
 ## todo
 
-read <https://xdaforums.com/t/improving-s-pen-sensitivity-under-lineage-roms.4752027/>
+read
+
++ <https://xdaforums.com/t/improving-s-pen-sensitivity-under-lineage-roms.4752027/>
++ <https://github.com/osbm/nixapks>
