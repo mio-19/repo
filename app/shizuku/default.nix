@@ -48,7 +48,9 @@ stdenv.mkDerivation (finalAttrs: {
   prePatch = ''
     # fetchFromGitHub strips .git, so derive a deterministic version from env.
     substituteInPlace build.gradle \
-      --replace-fail "def gitCommitId = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()" "def gitCommitId = System.getenv('SHIZUKU_GIT_COMMIT_ID') ?: '${builtins.substring 0 7 finalAttrs.version}'" \
+      --replace-fail "def gitCommitId = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()" "def gitCommitId = System.getenv('SHIZUKU_GIT_COMMIT_ID') ?: '${
+        builtins.substring 0 7 finalAttrs.version
+      }'" \
       --replace-fail "def gitCommitCount = Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())" "def gitCommitCount = Integer.parseInt(System.getenv('SHIZUKU_GIT_COMMIT_COUNT') ?: '1')"
 
     # AGP 8.10.0 currently fails to resolve in this build environment.
