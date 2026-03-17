@@ -187,7 +187,7 @@ stdenv.mkDerivation (finalAttrs: {
   # We should patch it to call gradle directly.
   postPatch = ''
         # Many thirdparty build scripts use #!/usr/bin/env python3 shebangs.
-        # The Nix sandbox may not provide /usr/bin/env, so create it ourselves.
+        # buildFHSEnv in buildPhase provides /usr/bin/env for those scripts.
         mkdir -p offline-tarballs
         ${lib.concatStringsSep "\n" (
           lib.mapAttrsToList (
@@ -286,11 +286,6 @@ stdenv.mkDerivation (finalAttrs: {
   # Wait, koreader Android build is 'ANDROID_FLAVOR=fdroid ./kodev release android-arm64'.
   buildPhase = ''
     runHook preBuild
-    export TARGET=android
-    export ANDROID_ARCH=arm64
-    export ANDROID_FLAVOR=fdroid
-    export GIT_DEPS=${gitDepsDir}
-    patchShebangs ./kodev
     ${fhsEnv}/bin/koreader-build-env -c "
       set -e
       export TARGET=android
