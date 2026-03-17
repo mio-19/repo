@@ -46,30 +46,37 @@ let
     }).wrapped;
 
   depsJson = builtins.fromJSON (builtins.readFile ./koreader_deps.json);
-  
-  fetchedDeps = lib.mapAttrs (name: info: 
+
+  fetchedDeps = lib.mapAttrs (
+    name: info:
     if info ? hash then
       fetchurl {
         inherit (info) url hash;
       }
-    else null
+    else
+      null
   ) depsJson;
 
   gitDepsDir = stdenv.mkDerivation {
     name = "koreader-git-deps";
     buildCommand = ''
       mkdir -p $out
-      ${lib.concatStringsSep "\n" (lib.mapAttrsToList (name: info: ''
-        cp -a ${fetchgit {
-          inherit (info) url rev;
-          sha256 = info.hash;
-          fetchSubmodules = true;
-        }} $out/${name}
-      '') (depsJson.git or {}))}
+      ${lib.concatStringsSep "\n" (
+        lib.mapAttrsToList (name: info: ''
+          cp -a ${
+            fetchgit {
+              inherit (info) url rev;
+              sha256 = info.hash;
+              fetchSubmodules = true;
+            }
+          } $out/${name}
+        '') (depsJson.git or { })
+      )}
     '';
   };
 
-in stdenv.mkDerivation (finalAttrs: {
+in
+stdenv.mkDerivation (finalAttrs: {
   pname = "koreader-android";
   version = "2025.10";
 
@@ -83,17 +90,40 @@ in stdenv.mkDerivation (finalAttrs: {
 
   # Only enable mitmCache when the json exists. Otherwise we can just
   # run the update script manually.
-  mitmCache = if builtins.pathExists ./koreader_gradle_deps.json then gradle.fetchDeps {
-    inherit (finalAttrs) pname;
-    pkg = finalAttrs.finalPackage;
-    data = "koreader_gradle_deps.json";
-    silent = false;
-    useBwrap = false;
-  } else null;
+  mitmCache =
+    if builtins.pathExists ./koreader_gradle_deps.json then
+      gradle.fetchDeps {
+        inherit (finalAttrs) pname;
+        pkg = finalAttrs.finalPackage;
+        data = "koreader_gradle_deps.json";
+        silent = false;
+        useBwrap = false;
+      }
+    else
+      null;
 
   nativeBuildInputs = [
-    git cmake ninja pkg-config autoconf automake libtool gettext m4 which python3 unzip
-    gradle jdk17 apksigner writableTmpDirAsHomeHook util-linux meson curl buildPackages.stdenv.cc bash
+    git
+    cmake
+    ninja
+    pkg-config
+    autoconf
+    automake
+    libtool
+    gettext
+    m4
+    which
+    python3
+    unzip
+    gradle
+    jdk17
+    apksigner
+    writableTmpDirAsHomeHook
+    util-linux
+    meson
+    curl
+    buildPackages.stdenv.cc
+    bash
   ];
 
   dontUseCmakeConfigure = true;
@@ -115,65 +145,80 @@ in stdenv.mkDerivation (finalAttrs: {
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${jdk17}"
     "-Dorg.gradle.jvmargs=-Xmx4g"
-    "-p" "platform/android/luajit-launcher"
+    "-p"
+    "platform/android/luajit-launcher"
     "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
   ];
-  
+
   gradleUpdateTask = "assemble";
 
   # The task wrapper calls ./gradlew inside luajit-launcher/Makefile.
   # We should patch it to call gradle directly.
   postPatch = ''
-    mkdir -p offline-tarballs
-    ${lib.concatStringsSep "\n" (lib.mapAttrsToList (name: tarball: 
-      if tarball != null then ''
-        ln -s ${tarball} offline-tarballs/${name}-${baseNameOf depsJson.${name}.url}
-      '' else ""
-    ) fetchedDeps)}
-    
-    # Actually, CMake downloads without the quotes, let's use a simpler sed:
-    ${lib.concatStringsSep "\n" (lib.mapAttrsToList (name: tarball: 
-      if tarball != null then ''
-        find base/thirdparty -type f \( -name "CMakeLists.txt" -o -name "*.cmake" \) -print0 | xargs -0 sed -i 's|${depsJson.${name}.url}|file://'"$PWD"'/offline-tarballs/${name}-${baseNameOf depsJson.${name}.url}|g'
-      '' else ""
-    ) fetchedDeps)}
+        mkdir -p offline-tarballs
+        ${lib.concatStringsSep "\n" (
+          lib.mapAttrsToList (
+            name: tarball:
+            if tarball != null then
+              ''
+                ln -s ${tarball} offline-tarballs/${name}-${baseNameOf depsJson.${name}.url}
+              ''
+            else
+              ""
+          ) fetchedDeps
+        )}
+        
+        # Actually, CMake downloads without the quotes, let's use a simpler sed:
+        ${lib.concatStringsSep "\n" (
+          lib.mapAttrsToList (
+            name: tarball:
+            if tarball != null then
+              ''
+                find base/thirdparty -type f \( -name "CMakeLists.txt" -o -name "*.cmake" \) -print0 | xargs -0 sed -i 's|${depsJson.${name}.url}|file://'"$PWD"'/offline-tarballs/${name}-${
+                  baseNameOf depsJson.${name}.url
+                }|g'
+              ''
+            else
+              ""
+          ) fetchedDeps
+        )}
 
-    sed -i -e 's#\$(ANDROID_LAUNCHER_DIR)/gradlew#gradle#' make/android.mk
+        sed -i -e 's#\$(ANDROID_LAUNCHER_DIR)/gradlew#gradle#' make/android.mk
 
-    # Prevent koenv.sh from actually running git clone or checkout.
-    cat << 'EOFkoenv' >> base/thirdparty/cmake_modules/koenv.sh
-clone_git_repo() { (
-    repo="''$1"
-    mkdir -p "''${repo%/*}"
-    if [ -d "''${repo}" ]; then return 0; fi
-    cp -a "''$GIT_DEPS/''${project}" "''$repo"
-    chmod -R u+w "''$repo"
-); }
+        # Prevent koenv.sh from actually running git clone or checkout.
+        cat << 'EOFkoenv' >> base/thirdparty/cmake_modules/koenv.sh
+    clone_git_repo() { (
+        repo="''$1"
+        mkdir -p "''${repo%/*}"
+        if [ -d "''${repo}" ]; then return 0; fi
+        cp -a "''$GIT_DEPS/''${project}" "''$repo"
+        chmod -R u+w "''$repo"
+    ); }
 
-checkout_git_repo() { (
-    tree="''$1"
-    repo="''$2"
-    rm -rf "''$tree"
-    cp -a "''$repo" "''$tree"
-    chmod -R u+w "''$tree"
-); }
-EOFkoenv
+    checkout_git_repo() { (
+        tree="''$1"
+        repo="''$2"
+        rm -rf "''$tree"
+        cp -a "''$repo" "''$tree"
+        chmod -R u+w "''$tree"
+    ); }
+    EOFkoenv
 
-    cat << 'EOF' > base/meson-native.ini
-[binaries]
-c = 'cc'
-cpp = 'c++'
-ar = 'ar'
-strip = 'strip'
-pkgconfig = 'pkg-config'
-EOF
+        cat << 'EOF' > base/meson-native.ini
+    [binaries]
+    c = 'cc'
+    cpp = 'c++'
+    ar = 'ar'
+    strip = 'strip'
+    pkgconfig = 'pkg-config'
+    EOF
 
-    sed -i -e "s|--wrap-mode=nodownload|--wrap-mode=nodownload --native-file=$PWD/base/meson-native.ini|g" base/cmake/CMakeLists.txt
+        sed -i -e "s|--wrap-mode=nodownload|--wrap-mode=nodownload --native-file=$PWD/base/meson-native.ini|g" base/cmake/CMakeLists.txt
 
-    sed -i -e 's|HOSTCC|HOSTCC_IGNORE|g' base/thirdparty/luajit/CMakeLists.txt
-    sed -i -e 's|assert_var_defined(HOSTCC_IGNORE)|set(HOSTCC "cc")|' base/thirdparty/luajit/CMakeLists.txt
+        sed -i -e 's|HOSTCC|HOSTCC_IGNORE|g' base/thirdparty/luajit/CMakeLists.txt
+        sed -i -e 's|assert_var_defined(HOSTCC_IGNORE)|set(HOSTCC "cc")|' base/thirdparty/luajit/CMakeLists.txt
 
-    patchShebangs --build .
+        patchShebangs --build .
   '';
 
   # Wait, koreader Android build is 'ANDROID_FLAVOR=fdroid ./kodev release android-arm64'.
