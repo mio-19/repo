@@ -201,42 +201,61 @@ stdenv.mkDerivation (finalAttrs: {
       ) fetchedDeps
     )}
 
-    # Actually, CMake downloads without the quotes, let's use a simpler sed:
+    # Patch thirdparty download URLs to local offline tarballs.
     ${lib.concatStringsSep "\n" (
       lib.mapAttrsToList (
         name: tarball:
         if tarball != null then
           ''
-            find base/thirdparty -type f \( -name "CMakeLists.txt" -o -name "*.cmake" \) -print0 | xargs -0 sed -i 's|${depsJson.${name}.url}|file://'"$PWD"'/offline-tarballs/${name}-${
-              baseNameOf depsJson.${name}.url
-            }|g'
+            while IFS= read -r cmakeFile; do
+              substituteInPlace "$cmakeFile" \
+                --replace-fail \
+                  '${depsJson.${name}.url}' \
+                  'file://'"$PWD"'/offline-tarballs/${name}-${baseNameOf depsJson.${name}.url}'
+            done < <(grep -rlF '${depsJson.${name}.url}' base/thirdparty --include='CMakeLists.txt' --include='*.cmake' || true)
           ''
         else
           ""
       ) fetchedDeps
     )}
 
-    sed -i -e 's#\$(ANDROID_LAUNCHER_DIR)/gradlew#gradle#' make/android.mk
+    substituteInPlace make/android.mk \
+      --replace-fail \
+        '$(ANDROID_LAUNCHER_DIR)/gradlew' \
+        'gradle'
 
     # Inject offline mitmCache local maven repos into gradle build files
     # so that gradle resolves all dependencies from the nix store.
-    sed -i \
-      -e 's|google()|maven { url = uri("${finalAttrs.mitmCache}/https/dl.google.com/dl/android/maven2") }\n        maven { url = uri("${finalAttrs.mitmCache}/https/maven.google.com") }\n        maven { url = uri("${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2") }\n        google()|g' \
-      platform/android/luajit-launcher/build.gradle \
-      platform/android/luajit-launcher/app/build.gradle
+    substituteInPlace platform/android/luajit-launcher/build.gradle \
+      --replace-fail \
+        'google()' \
+        'maven { url = uri("${finalAttrs.mitmCache}/https/dl.google.com/dl/android/maven2") }
+        maven { url = uri("${finalAttrs.mitmCache}/https/maven.google.com") }
+        maven { url = uri("${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2") }
+        google()'
+    substituteInPlace platform/android/luajit-launcher/app/build.gradle \
+      --replace-fail \
+        'google()' \
+        'maven { url = uri("${finalAttrs.mitmCache}/https/dl.google.com/dl/android/maven2") }
+        maven { url = uri("${finalAttrs.mitmCache}/https/maven.google.com") }
+        maven { url = uri("${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2") }
+        google()'
     # Also add --offline to GRADLE_FLAGS so gradle won't try the network
-    sed -i \
-      -e 's|\$(GRADLE_FLAGS)|$(GRADLE_FLAGS) --offline --no-daemon|' \
-      make/android.mk
+    substituteInPlace make/android.mk \
+      --replace-fail \
+        '$(GRADLE_FLAGS)' \
+        '$(GRADLE_FLAGS) --offline --no-daemon'
 
     # The Nix sandbox has no git history; replace git-based version commands
     # with hardcoded values matching the package version.
-    sed -i \
-      -e 's|VERSION := \$(shell git describe HEAD)|VERSION := ${finalAttrs.version}|' \
-      Makefile
-    sed -i \
-      -e 's|ANDROID_VERSION ?= \$(shell git rev-list --count HEAD)|ANDROID_VERSION ?= 202510|' \
-      make/android.mk
+    substituteInPlace Makefile \
+      --replace-fail \
+        'VERSION := $(shell git describe HEAD)' \
+        'VERSION := ${finalAttrs.version}'
+    substituteInPlace make/android.mk \
+      --replace-fail \
+        'ANDROID_VERSION ?= $(shell git rev-list --count HEAD)' \
+        'ANDROID_VERSION ?= 202510'
     substituteInPlace make/android.mk \
       --replace-fail \
         'cp $(ANDROID_LAUNCHER_BUILD)/outputs/apk/$(ANDROID_ARCH)$(ANDROID_FLAVOR)/$(if $(KODEBUG),debug,release)/NativeActivity.apk $(ANDROID_APK)' \
@@ -247,7 +266,10 @@ stdenv.mkDerivation (finalAttrs: {
 
     cp ${./meson-native.ini} base/meson-native.ini
 
-    sed -i -e "s|--wrap-mode=nodownload|--wrap-mode=nodownload --native-file=$PWD/base/meson-native.ini|g" base/cmake/CMakeLists.txt
+    substituteInPlace base/cmake/CMakeLists.txt \
+      --replace-fail \
+        '--wrap-mode=nodownload' \
+        "--wrap-mode=nodownload --native-file=$PWD/base/meson-native.ini"
 
     # gen-hb-version.py tries to write hb-version.h back into the source
     # tree; if that copy fails the script exits non-zero and meson reports
@@ -255,8 +277,11 @@ stdenv.mkDerivation (finalAttrs: {
     # section, and register it in the PATCH_FILES list so apply_patches runs
     # "patch -p1" on the extracted harfbuzz source before meson configure.
     cp ${./harfbuzz-no-source-copy.patch} base/thirdparty/harfbuzz/harfbuzz-no-source-copy.patch
-    sed -i 's|no-subset.patch|no-subset.patch\n    harfbuzz-no-source-copy.patch|' \
-      base/thirdparty/harfbuzz/CMakeLists.txt
+    substituteInPlace base/thirdparty/harfbuzz/CMakeLists.txt \
+      --replace-fail \
+        'no-subset.patch' \
+        'no-subset.patch
+    harfbuzz-no-source-copy.patch'
 
     # LuaJIT uses CROSS+CC for the cross-compiler (TARGET_CC), so CC must be
     # "clang" to form "aarch64-linux-android21-clang". But HOST_CC (used to
@@ -280,7 +305,6 @@ stdenv.mkDerivation (finalAttrs: {
     #endif' \
         '#include <strings.h>'
 
-    patchShebangs --build .
   '';
 
   # Wait, koreader Android build is 'ANDROID_FLAVOR=fdroid ./kodev release android-arm64'.
