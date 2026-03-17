@@ -242,6 +242,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      sunup = pkgs.callPackage ./sunup {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       fdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
         androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
           s.cmdline-tools-latest
@@ -486,6 +490,14 @@
           name = "sign-glimpse";
           apkPath = "${glimpse}/glimpse.apk";
           defaultOut = "glimpse-signed.apk";
+        };
+      });
+
+      packages.sunup = sunup.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-sunup";
+          apkPath = "${sunup}/sunup.apk";
+          defaultOut = "sunup-signed.apk";
         };
       });
 
