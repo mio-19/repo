@@ -5,7 +5,7 @@ args@{
   ...
 }:
 let
-  enableLindroid = true;
+  enableLindroid = false;
 in
 {
   imports = [

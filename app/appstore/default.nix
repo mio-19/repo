@@ -36,7 +36,7 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   patches = [
-    ./0001-always-show-vanadium.patch
+    ./0001-always-show-vanadium.patch # TODO: not actually work
   ];
 
   gradleBuildTask = ":app:assembleRelease";
