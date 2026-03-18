@@ -273,7 +273,7 @@ stdenv.mkDerivation (finalAttrs: {
     substituteInPlace make/android.mk \
       --replace-fail \
         'cp $(ANDROID_LAUNCHER_BUILD)/outputs/apk/$(ANDROID_ARCH)$(ANDROID_FLAVOR)/$(if $(KODEBUG),debug,release)/NativeActivity.apk $(ANDROID_APK)' \
-        'apk_path="$$(find $(ANDROID_LAUNCHER_BUILD)/outputs/apk -type f -name NativeActivity.apk | head -n 1)"; test -n "$$apk_path"; cp "$$apk_path" $(ANDROID_APK)'
+        'apk_path="$$(find $(ANDROID_LAUNCHER_BUILD)/outputs/apk -type f -path "*/arm64*/fdroid*/release/NativeActivity.apk" | head -n 1)"; if [ -z "$$apk_path" ]; then apk_path="$$(find $(ANDROID_LAUNCHER_BUILD)/outputs/apk -type f -name NativeActivity.apk | head -n 1)"; fi; test -n "$$apk_path"; cp "$$apk_path" $(ANDROID_APK)'
 
     # Prevent koenv.sh from actually running git clone or checkout.
     cat ${./koenv-git.sh} >> base/thirdparty/cmake_modules/koenv.sh
@@ -315,9 +315,46 @@ stdenv.mkDerivation (finalAttrs: {
     substituteInPlace base/thirdparty/kpvcrlib/crengine/thirdparty/chmlib/src/chm_lib.c \
       --replace-fail \
         '#if __sun || __sgi
-    #include <strings.h>
-    #endif' \
+#include <strings.h>
+#endif' \
         '#include <strings.h>'
+
+    # Guard menu container accesses against nil/empty states to avoid
+    # top-menu tap crashes when menu search/menu close is triggered early.
+    substituteInPlace frontend/apps/reader/modules/readermenu.lua \
+      --replace-fail \
+        'function ReaderMenu:onCloseReaderMenu()
+    if not self.menu_container then return true end
+    self.last_tab_index = self.menu_container[1].last_index' \
+        'function ReaderMenu:onCloseReaderMenu()
+    if not self.menu_container or not self.menu_container[1] then
+        self.menu_container = nil
+        return true
+    end
+    self.last_tab_index = self.menu_container[1].last_index' \
+      --replace-fail \
+        'function ReaderMenu:onMenuSearch()
+    self:onShowMenu(nil, true)
+    self.menu_container[1]:onShowMenuSearch()
+end' \
+        'function ReaderMenu:onMenuSearch()
+    self:onShowMenu(nil, true)
+    if self.menu_container and self.menu_container[1] then
+        self.menu_container[1]:onShowMenuSearch()
+    end
+end' \
+      --replace-fail \
+        'function ReaderMenu:_getTabIndexFromLocation(ges)
+    if self.tab_item_table == nil then
+        self:setUpdateItemTable()
+    end' \
+        'function ReaderMenu:_getTabIndexFromLocation(ges)
+    if self.tab_item_table == nil then
+        self:setUpdateItemTable()
+    end
+    if self.tab_item_table == nil or #self.tab_item_table == 0 then
+        return self.last_tab_index or 1
+    end'
 
   '';
 
