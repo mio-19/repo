@@ -36,7 +36,7 @@
     #tag = "2026030700";
     #hash = "sha256-21Db6pD6WJGttTsDUaIq5JU/15izFWvfwCsBlgs/SFo=";
     rev = "d477fba143f661f488cba46900ac4cea31c606eb";
-    hash = "sha256-r4MMTi53+NDrAvOkf0wU8henU5/UYzwjhl145jNsFd0=";
+    hash = "sha256-Ry63KoMV6ilTgrgymLF3MUllp//CoNLKmOqEutPkQ0Q=";
     fetchSubmodules = true;
     deepClone = false;
     leaveDotGit = true; # seems like something wants .git # needed with and after 20260307 # fatal: not a git repository (or any parent up to mount point /) in the log
