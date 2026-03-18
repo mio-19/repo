@@ -219,6 +219,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      microg-re = pkgs.callPackage ./microg-re {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       thunderbird = pkgs.callPackage ./thunderbird {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -387,6 +391,23 @@
               Description: |-
                 Meshtastic is an open-source, off-grid mesh networking application
                 using LoRa radios. This is the F-Droid flavor built from source.
+            '';
+          }
+          {
+            appId = "app.revanced.android.gms";
+            apkPath = "${microg-re}/microg-re.apk";
+            metadataYml = ''
+              Categories:
+                - System
+              License: Apache-2.0
+              SourceCode: https://github.com/MorpheApp/MicroG-RE
+              IssueTracker: https://github.com/MorpheApp/MicroG-RE/issues
+              AutoName: MicroG RE
+              Summary: microG fork for patched Google apps
+              Description: |-
+                MicroG RE is a fork of microG GmsCore adapted for patched Google
+                apps and distributed under an alternative package name.
+                This package is built from source.
             '';
           }
           {
@@ -565,6 +586,14 @@
           name = "sign-meshtastic";
           apkPath = "${meshtastic}/meshtastic.apk";
           defaultOut = "meshtastic-signed.apk";
+        };
+      });
+
+      packages.microg-re = microg-re.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-microg-re";
+          apkPath = "${microg-re}/microg-re.apk";
+          defaultOut = "microg-re-signed.apk";
         };
       });
 
