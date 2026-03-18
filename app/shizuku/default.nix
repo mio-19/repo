@@ -9,7 +9,6 @@
   androidSdkBuilder,
   cmake,
   ninja,
-  perl,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -61,13 +60,19 @@ stdenv.mkDerivation (finalAttrs: {
 
     # Resolve Android plugin IDs via com.android.tools.build:gradle directly,
     # which avoids plugin-marker fetches that may be absent in locked deps.
-    perl -0777 -i -pe 's/pluginManagement \{\n/pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library" || requested.id.id == "com.android.settings") {\n                def agpVersion = requested.version ?: "8.10.1"\n                useModule("com.android.tools.build:gradle:\''${agpVersion}")\n            }\n        }\n    }\n/s' settings.gradle
-    perl -0777 -i -pe 's/pluginManagement \{\n/pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library" || requested.id.id == "com.android.settings") {\n                def agpVersion = requested.version ?: "8.10.1"\n                useModule("com.android.tools.build:gradle:\''${agpVersion}")\n            }\n        }\n    }\n/s' api/settings.gradle
+    pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library" || requested.id.id == "com.android.settings") {\n                def agpVersion = requested.version ?: "8.10.1"\n                useModule("com.android.tools.build:gradle:''${agpVersion}")\n            }\n        }\n    }\n'
+    substituteInPlace settings.gradle \
+      --replace-fail "pluginManagement {" "$pluginResolutionBlock"
+    substituteInPlace api/settings.gradle \
+      --replace-fail "pluginManagement {" "$pluginResolutionBlock"
 
     # Ensure all Gradle repository resolution goes through local cached maven roots.
     cacheRoot="${finalAttrs.mitmCache}"
-    perl -0777 -i -pe "s|repositories \\{\\n|repositories {\\n        maven { url = uri(\"$cacheRoot/https/dl.google.com/dl/android/maven2\") }\\n        maven { url = uri(\"$cacheRoot/https/repo.maven.apache.org/maven2\") }\\n        maven { url = uri(\"$cacheRoot/https/jitpack.io\") }\\n|g" settings.gradle
-    perl -0777 -i -pe "s|repositories \\{\\n|repositories {\\n        maven { url = uri(\"$cacheRoot/https/dl.google.com/dl/android/maven2\") }\\n        maven { url = uri(\"$cacheRoot/https/repo.maven.apache.org/maven2\") }\\n        maven { url = uri(\"$cacheRoot/https/jitpack.io\") }\\n|g" api/settings.gradle
+    printf -v repositoriesBlock 'repositories {\n        maven { url = uri("%s/https/dl.google.com/dl/android/maven2") }\n        maven { url = uri("%s/https/repo.maven.apache.org/maven2") }\n        maven { url = uri("%s/https/jitpack.io") }\n' "$cacheRoot" "$cacheRoot" "$cacheRoot"
+    substituteInPlace settings.gradle \
+      --replace-fail "repositories {" "$repositoriesBlock"
+    substituteInPlace api/settings.gradle \
+      --replace-fail "repositories {" "$repositoriesBlock"
 
     # gradle.fetchDeps runs with MITM env vars; explicitly configure Gradle/JVM
     # proxy and truststore so Java downloads are captured into shizuku_deps.json.
@@ -126,7 +131,6 @@ stdenv.mkDerivation (finalAttrs: {
     writableTmpDirAsHomeHook
     cmake
     ninja
-    perl
   ];
 
   env = {

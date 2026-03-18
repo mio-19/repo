@@ -7,7 +7,6 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  perl,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -50,7 +49,6 @@ stdenv.mkDerivation (finalAttrs: {
     jdk21
     apksigner
     writableTmpDirAsHomeHook
-    perl
   ];
 
   env = {
@@ -61,7 +59,9 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   postPatch = ''
-    perl -0777 -i -pe 's/pluginManagement \{\n/pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                def agpVersion = requested.version ?: "9.1.0"\n                useModule("com.android.tools.build:gradle:\''${agpVersion}")\n            }\n        }\n    }\n/s' settings.gradle
+    pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                def agpVersion = requested.version ?: "9.1.0"\n                useModule("com.android.tools.build:gradle:''${agpVersion}")\n            }\n        }\n    }\n'
+    substituteInPlace settings.gradle \
+      --replace-fail "pluginManagement {" "$pluginResolutionBlock"
     substituteInPlace app/build.gradle.kts \
       --replace-fail 'versionNameSuffix = "-$gitHash"' 'versionNameSuffix = "-unknown"'
   '';
