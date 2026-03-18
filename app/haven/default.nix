@@ -36,9 +36,9 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "GlassOnTin";
     repo = "Haven";
-    # fdroiddata build commit
-    rev = "2ed1f101b97d926b7e142c5b44f84b2c3f05b5a5";
-    hash = "sha256-LV/vFQkcUN19Qv+IHAih9mUH7KrWc5BZ3iNEPka70dw=";
+    tag = "v${finalAttrs.version}";
+    fetchSubmodules = true;
+    hash = "sha256-/xS5ruvZvh9MLdeDqXeR+yuJ2d0Kn+6QZZh/IkZS9tU=";
   };
 
   patches = [
