@@ -10,3 +10,4 @@
 - Remember to `git add` when nix complaints about path does not exist!
 - Remember no network in nix build environemnt expect for fixed output derviation!!
 - Always set hash to fakeHash or empty or AAAAAA before needing to get new hash like changed fetch options updated tag rev!
+- for `''` in nix, prefixing common spaces will be removed. please format nix files corectly that is bash heredoc within double quotes block in nix can have similar indentation as the rest of the file. if unsure run nixfmt on the file and check what did nixfmt do!

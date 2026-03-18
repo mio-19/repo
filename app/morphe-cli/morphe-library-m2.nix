@@ -85,25 +85,25 @@ stdenv.mkDerivation (finalAttrs: {
       ${jdk21}/bin/jar cf "$root/.m2/repository/app/morphe/jadb/1.2.1/jadb-1.2.1.jar" .
     )
     cat > "$root/.m2/repository/app/morphe/jadb/1.2.1/jadb-1.2.1.pom" << 'POMEOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>app.morphe</groupId>
-  <artifactId>jadb</artifactId>
-  <version>1.2.1</version>
-</project>
-POMEOF
+    <?xml version="1.0" encoding="UTF-8"?>
+    <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+      <modelVersion>4.0.0</modelVersion>
+      <groupId>app.morphe</groupId>
+      <artifactId>jadb</artifactId>
+      <version>1.2.1</version>
+    </project>
+    POMEOF
 
     # Patch out GitHub Packages from morphe-library.
     substituteInPlace "$sourceRoot/build.gradle.kts" \
       --replace-fail '    maven {
-        // A repository must be specified for some reason. "registry" is a dummy.
-        url = uri("https://maven.pkg.github.com/MorpheApp/registry")
-        credentials {
-            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
-        }
-    }' '    maven { url = uri("file://'"$root"'/.m2/repository") }'
+            // A repository must be specified for some reason. "registry" is a dummy.
+            url = uri("https://maven.pkg.github.com/MorpheApp/registry")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }' '    maven { url = uri("file://'"$root"'/.m2/repository") }'
 
     # Disable signing.
     echo 'tasks.withType<Sign> { enabled = false }' >> "$sourceRoot/build.gradle.kts"
@@ -111,13 +111,13 @@ POMEOF
     # Remove GitHub Packages from publishing and add a local one for 'publish' task
     substituteInPlace "$sourceRoot/build.gradle.kts" \
       --replace-fail '        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/MorpheApp/morphe-library")
-            credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
-            }
-        }' '        maven { url = uri("file://" + rootProject.projectDir.resolve("build/m2").absolutePath) }'
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/MorpheApp/morphe-library")
+                credentials {
+                    username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                    password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+                }
+            }' '        maven { url = uri("file://" + rootProject.projectDir.resolve("build/m2").absolutePath) }'
   '';
 
   preConfigure = ''
