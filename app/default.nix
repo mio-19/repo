@@ -270,6 +270,9 @@
       koreader = pkgs.callPackage ./koreader {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
+      fdroid-basic = pkgs.callPackage ./fdroid-basic {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
 
       fdroidRepo = pkgs.callPackage ./fdroid-repo.nix {
         androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
@@ -280,6 +283,33 @@
           s.ndk-21-4-7075529
         ]);
         apps = [
+          {
+            appId = "org.fdroid.basic";
+            apkPath = "${fdroid-basic}/fdroid-basic.apk";
+            metadataYml = ''
+              Categories:
+                - App Store & Updater
+                - System
+              License: GPL-3.0-or-later
+              AuthorName: F-Droid
+              AuthorEmail: team@f-droid.org
+              WebSite: https://f-droid.org
+              SourceCode: https://gitlab.com/fdroid/fdroidclient
+              IssueTracker: https://gitlab.com/fdroid/fdroidclient/issues
+              Translation: https://hosted.weblate.org/projects/f-droid/f-droid
+              Changelog: https://gitlab.com/fdroid/fdroidclient/-/blob/HEAD/CHANGELOG.md
+              Donate: https://f-droid.org/donate
+              Liberapay: F-Droid-Data
+              OpenCollective: F-Droid-Euro
+              Bitcoin: bc1qd8few44yaxc3wv5ceeedhdszl238qkvu50rj4v
+              AutoName: F-Droid Basic
+              Summary: Basic F-Droid client
+              Description: |-
+                F-Droid Basic is a lightweight client for browsing and installing
+                applications from F-Droid repositories.
+                This package is built from source.
+            '';
+          }
           {
             appId = "moe.shizuku.privileged.api";
             apkPath = "${shizuku}/shizuku.apk";
@@ -630,6 +660,13 @@
           name = "sign-koreader";
           apkPath = "${koreader}/koreader.apk";
           defaultOut = "koreader-signed.apk";
+        };
+      });
+      packages.fdroid-basic = fdroid-basic.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-fdroid-basic";
+          apkPath = "${fdroid-basic}/fdroid-basic.apk";
+          defaultOut = "fdroid-basic-signed.apk";
         };
       });
 
