@@ -274,6 +274,7 @@
       koreader = pkgs.callPackage ./koreader {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
+      morphe-cli = pkgs.callPackage ./morphe-cli { };
       fdroid-basic = pkgs.callPackage ./fdroid-basic {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -694,6 +695,8 @@
           defaultOut = "koreader-signed.apk";
         };
       });
+      packages.morphe-cli = morphe-cli;
+
       packages.fdroid-basic = fdroid-basic.overrideAttrs (_: {
         passthru.signScript = mkSignScript {
           name = "sign-fdroid-basic";
