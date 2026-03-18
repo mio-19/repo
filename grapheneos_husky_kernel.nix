@@ -2,7 +2,7 @@
 {
   callPackage,
   enableKSU ? false,
-  pwmmode ? "0x01", # 0x02 might be too dark
+  pwmmode ? "0x01", # 0x02 might be too dark under direct sunlight
   enableLindroid ? false,
   enableDaria ? enableLindroid,
 }:
