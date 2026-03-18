@@ -14,7 +14,7 @@ args@{
       let
         src = pkgs-unstable.callPackage ./grapheneos_mustang_kernel.nix { };
       in
-      assert src.src.tag == config.grapheneos.release;
+      assert src.version == config.grapheneos.release;
       src;
 
   };

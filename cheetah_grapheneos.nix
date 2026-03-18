@@ -20,7 +20,7 @@ in
       let
         src = pkgs-unstable.callPackage ./grapheneos_pantah_kernel.nix { inherit enableLindroid; };
       in
-      assert src.src.tag == config.grapheneos.release;
+      assert src.version == config.grapheneos.release;
       src;
   };
   stateVersion = "3";
