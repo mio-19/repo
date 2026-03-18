@@ -130,8 +130,10 @@ stdenv.mkDerivation (finalAttrs: {
   #   /home/dev/Documents/repo/app/koreader/koreader_gradle_deps.json
   #
   # Thirdparty lock refresh:
-  # - run: python app/koreader/refresh-thirdparty-lock.py
-  # - update URL/version entries manually if KOReader upstream changed dependency URLs.
+  # - refresh URLs + hashes from current KOReader source:
+  #     python app/koreader/refresh-thirdparty-lock.py \
+  #       --create-if-missing \
+  #       --source "$(nix eval --raw .#packages.x86_64-linux.koreader.src.outPath)"
   # - for git deps (depsJson.git), bump rev/hash entries manually as needed.
   mitmCache =
     if builtins.pathExists ./koreader_gradle_deps.json then
