@@ -544,6 +544,9 @@
                 This package is built from source (arm64).
             '';
           }
+        ]
+        ++ pkgs.lib.optional pkgs.stdenv.isLinux [
+          # cannot build on darwin due to stdenv
           {
             appId = "org.koreader.launcher.fdroid";
             apkPath = "${koreader}/koreader.apk";
