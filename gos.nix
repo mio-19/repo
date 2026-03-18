@@ -16,7 +16,7 @@ let
 in
 {
   imports = [ ./gos_noleakdns.nix ];
-  buildDateTime = 1773397975;
+  buildDateTime = 1773836399;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   source.dirs."frameworks/base".patches = with pkgs; [
