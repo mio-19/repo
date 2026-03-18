@@ -250,6 +250,9 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      haven = pkgs.callPackage ./haven {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
       koreader = pkgs.callPackage ./koreader {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -459,6 +462,24 @@
             '';
           }
           {
+            appId = "sh.haven.app";
+            apkPath = "${haven}/haven.apk";
+            metadataYml = ''
+              Categories:
+                - Internet
+                - System
+              License: GPL-3.0-only
+              SourceCode: https://github.com/GlassOnTin/Haven
+              IssueTracker: https://github.com/GlassOnTin/Haven/issues
+              AutoName: Haven
+              Summary: SSH/Mosh terminal and Reticulum network client
+              Description: |-
+                Haven is an SSH/Mosh terminal and Reticulum network client for Android,
+                featuring end-to-end encrypted messaging via the Reticulum stack.
+                This package is built from source (arm64).
+            '';
+          }
+          {
             appId = "org.koreader.launcher.fdroid";
             apkPath = "${koreader}/koreader.apk";
             metadataYml = ''
@@ -563,6 +584,14 @@
           name = "sign-recorder";
           apkPath = "${recorder}/recorder.apk";
           defaultOut = "recorder-signed.apk";
+        };
+      });
+
+      packages.haven = haven.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-haven";
+          apkPath = "${haven}/haven.apk";
+          defaultOut = "haven-signed.apk";
         };
       });
 
