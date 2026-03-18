@@ -315,8 +315,8 @@ stdenv.mkDerivation (finalAttrs: {
     substituteInPlace base/thirdparty/kpvcrlib/crengine/thirdparty/chmlib/src/chm_lib.c \
       --replace-fail \
         '#if __sun || __sgi
-#include <strings.h>
-#endif' \
+    #include <strings.h>
+    #endif' \
         '#include <strings.h>'
 
     # Guard menu container and tab-index accesses to avoid top-menu tap crashes.
