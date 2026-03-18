@@ -57,7 +57,7 @@ stdenv.mkDerivation (finalAttrs: {
   mitmCache = gradle.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
-    data = "morphe-cli_deps.json";
+    data = ./morphe-cli_deps.json;
     silent = false;
     useBwrap = false;
   };

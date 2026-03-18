@@ -44,7 +44,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-1RCxI7pBt2bZ/AiZ3EyS6JYRZlW7bhb88pfEc6ViaiA=";
   };
 
-  gradleBuildTask = "publishToMavenLocal";
+  gradleBuildTask = "publish";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 
   mitmCache = gradle.fetchDeps {
@@ -108,10 +108,16 @@ POMEOF
     # Disable signing.
     echo 'tasks.withType<Sign> { enabled = false }' >> "$sourceRoot/build.gradle.kts"
 
-    # Remove GitHub Packages from publishing (not needed, just building local).
+    # Remove GitHub Packages from publishing and add a local one for 'publish' task
     substituteInPlace "$sourceRoot/build.gradle.kts" \
-      --replace-fail 'url = uri("https://maven.pkg.github.com/MorpheApp/morphe-library")' \
-                     'url = uri("file://" + rootProject.projectDir.resolve("build/m2").absolutePath)'
+      --replace-fail '        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/MorpheApp/morphe-library")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }' '        maven { url = uri("file://" + rootProject.projectDir.resolve("build/m2").absolutePath) }'
   '';
 
   preConfigure = ''
@@ -128,9 +134,14 @@ POMEOF
   installPhase = ''
     runHook preInstall
     mkdir -p "$out"
-    # publishToMavenLocal installs to ~/.m2/repository
-    if [ -d "$HOME/.m2/repository/app" ]; then
-      cp -a "$HOME/.m2/repository"/* "$out/"
+    # Copy artifacts from the local maven repo and jadb
+    # Jadb is in ../.m2/repository
+    # Library artifacts are in build/m2
+    if [ -d "build/m2" ]; then
+      cp -a build/m2/. "$out/"
+    fi
+    if [ -d "../.m2/repository" ]; then
+      cp -a ../.m2/repository/. "$out/"
     fi
     runHook postInstall
   '';
