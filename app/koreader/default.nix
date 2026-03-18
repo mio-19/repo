@@ -236,7 +236,7 @@ stdenv.mkDerivation (finalAttrs: {
     substituteInPlace make/android.mk \
       --replace-fail \
         '$(ANDROID_LAUNCHER_DIR)/gradlew' \
-        'gradle'
+        'pushd $(ANDROID_LAUNCHER_DIR); gradle'
 
     # Inject offline mitmCache local maven repos into gradle build files
     # so that gradle resolves all dependencies from the nix store.
@@ -331,7 +331,7 @@ stdenv.mkDerivation (finalAttrs: {
       set -e
       export TARGET=android
       export ANDROID_ARCH=arm64
-      export ANDROID_FLAVOR=fdroid
+      export ANDROID_FLAVOR=Fdroid
       export GIT_DEPS=${gitDepsDir}
       export ANDROID_HOME=${androidSdk}/share/android-sdk
       export ANDROID_SDK_ROOT=${androidSdk}/share/android-sdk
