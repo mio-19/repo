@@ -1,7 +1,7 @@
 {
     "axp_build": {
         "cargoLock": null,
-        "date": "2026-03-10",
+        "date": "2026-03-15",
         "extract": null,
         "name": "axp_build",
         "passthru": null,
@@ -11,13 +11,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "df79a0f102ea0cce4004153397f158d85b5f16d2",
-            "sha256": "sha256-fsj4EO0rTOP+bTdJDwKRec4DRzD/CsroYfpZLZ3kjJA=",
+            "rev": "6181c7ebcb0ca8b45b6df26e249e4cef1ca5f71b",
+            "sha256": "sha256-6XZPhClmW3+fg5beQ9F7nFkuEeK0oi4ju3PAMQ1hVIQ=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://git.disroot.org/AXP.OS/build.git"
         },
-        "version": "df79a0f102ea0cce4004153397f158d85b5f16d2"
+        "version": "6181c7ebcb0ca8b45b6df26e249e4cef1ca5f71b"
     },
     "axp_kernel_patches": {
         "cargoLock": null,
@@ -112,7 +112,7 @@
             "leaveDotGit": false,
             "name": null,
             "rev": "f1d70e817f643b99875f97f732b111ea84f55852",
-            "sha256": "sha256-GrVmlF9T1DzPQS6BUWxnaYrIj+Pk6nGGw/ncJ4t4ucw=",
+            "sha256": "sha256-ZBr/RDKj8C4MGWKv0rE+OdtHVvL0GqL7zBi/vUFJJ4Q=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/samsung-sm8550-cola2261/android_kernel_samsung_sm8550.git"
@@ -252,7 +252,7 @@
             "leaveDotGit": false,
             "name": null,
             "rev": "2c276961bbd7e6b8cad97219431182049bfc5e1c",
-            "sha256": "sha256-GSBGZEQM7kVS7Xr5A8yjDs822wbqZ3VXpD7+bNDIXUw=",
+            "sha256": "sha256-07k13X2QjGcOoqWJdlZf3iSSYHPNfu1r+vmcHj0AJt8=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/Evolution-X-Devices/kernel_samsung_gta4xl.git"
@@ -281,7 +281,7 @@
     },
     "lindroid_drm_loopback": {
         "cargoLock": null,
-        "date": "2026-03-12",
+        "date": "2026-03-17",
         "extract": null,
         "name": "lindroid_drm_loopback",
         "passthru": null,
@@ -291,13 +291,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "6e8cee9dd452db693fae37a6ea8c5c00c38fbcce",
-            "sha256": "sha256-agqq6b3tcD2AGGj/OltYxWLV7jG2QbPictytytFICTM=",
+            "rev": "cd6e02551fca5595ad68d18239cd0fde405fca26",
+            "sha256": "sha256-Vs5KWvv6XHYm4kbVAFDKXUarQ/iWr32IB15166+h5NY=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/Linux-on-droid/lindroid-drm-loopback.git"
         },
-        "version": "6e8cee9dd452db693fae37a6ea8c5c00c38fbcce"
+        "version": "cd6e02551fca5595ad68d18239cd0fde405fca26"
     },
     "lineage_deskclock": {
         "cargoLock": null,
@@ -592,7 +592,7 @@
             "leaveDotGit": false,
             "name": null,
             "rev": "f5d9986a0f480fc0887804c751b3155c0c4da06a",
-            "sha256": "sha256-ZQowVhIcNZNCoIDt3P2kvgPAIshYsUZfH2GO+McFod0=",
+            "sha256": "sha256-a0ke+kqOpCGtEUpiU7nICWU0GNv9c0jQphz5d1vdX8w=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/LineageOS/android_kernel_virt_virtio.git"
@@ -701,7 +701,7 @@
     },
     "sm8550_tab_kernel_sm8550": {
         "cargoLock": null,
-        "date": "2026-01-08",
+        "date": "2026-03-15",
         "extract": null,
         "name": "sm8550_tab_kernel_sm8550",
         "passthru": null,
@@ -711,17 +711,17 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "8149f7e0731e869ac456ea1ef7dae95a08e3d1d8",
-            "sha256": "sha256-7h/bLVePmqNsGWm7gwuu35uCzRnasAwBEQ54by+TmCM=",
+            "rev": "488426dc7b59aee7c253dfe06378552e52f15a35",
+            "sha256": "sha256-44zJyKBR15Tk4ImVsFz/CtwAPvC33U4tBjIDLBFB/S4=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/samsung-sm8550-tab/android_kernel_samsung_sm8550.git"
         },
-        "version": "8149f7e0731e869ac456ea1ef7dae95a08e3d1d8"
+        "version": "488426dc7b59aee7c253dfe06378552e52f15a35"
     },
     "sm8550_tab_kernel_sm8550_modules": {
         "cargoLock": null,
-        "date": "2026-01-10",
+        "date": "2026-03-14",
         "extract": null,
         "name": "sm8550_tab_kernel_sm8550_modules",
         "passthru": null,
@@ -731,13 +731,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "6d4788b39ff175af4b2a5c5ffdf31712f8686e4c",
-            "sha256": "sha256-8sCA1yosOaFldBgA1oNxu/IOwbyJQZI+ntDeJjOEHzw=",
+            "rev": "da5c9e201768a6c76ed6f231f2d5adf91590086c",
+            "sha256": "sha256-p6fIzm91Nsi8f3kNu9Q6Wl7U+iMoL2i9PHIzFC6GWN8=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/samsung-sm8550-tab/android_kernel_samsung_sm8550-modules.git"
         },
-        "version": "6d4788b39ff175af4b2a5c5ffdf31712f8686e4c"
+        "version": "da5c9e201768a6c76ed6f231f2d5adf91590086c"
     },
     "sm8550_tab_vendor_gts9wifi": {
         "cargoLock": null,

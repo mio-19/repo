@@ -8,17 +8,17 @@
 {
   axp_build = {
     pname = "axp_build";
-    version = "df79a0f102ea0cce4004153397f158d85b5f16d2";
+    version = "6181c7ebcb0ca8b45b6df26e249e4cef1ca5f71b";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/build.git";
-      rev = "df79a0f102ea0cce4004153397f158d85b5f16d2";
+      rev = "6181c7ebcb0ca8b45b6df26e249e4cef1ca5f71b";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-fsj4EO0rTOP+bTdJDwKRec4DRzD/CsroYfpZLZ3kjJA=";
+      sha256 = "sha256-6XZPhClmW3+fg5beQ9F7nFkuEeK0oi4ju3PAMQ1hVIQ=";
     };
-    date = "2026-03-10";
+    date = "2026-03-15";
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
@@ -86,7 +86,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-GrVmlF9T1DzPQS6BUWxnaYrIj+Pk6nGGw/ncJ4t4ucw=";
+      sha256 = "sha256-ZBr/RDKj8C4MGWKv0rE+OdtHVvL0GqL7zBi/vUFJJ4Q=";
     };
     date = "2026-03-01";
   };
@@ -184,7 +184,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-GSBGZEQM7kVS7Xr5A8yjDs822wbqZ3VXpD7+bNDIXUw=";
+      sha256 = "sha256-07k13X2QjGcOoqWJdlZf3iSSYHPNfu1r+vmcHj0AJt8=";
     };
     date = "2025-09-05";
   };
@@ -204,17 +204,17 @@
   };
   lindroid_drm_loopback = {
     pname = "lindroid_drm_loopback";
-    version = "6e8cee9dd452db693fae37a6ea8c5c00c38fbcce";
+    version = "cd6e02551fca5595ad68d18239cd0fde405fca26";
     src = fetchgit {
       url = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git";
-      rev = "6e8cee9dd452db693fae37a6ea8c5c00c38fbcce";
+      rev = "cd6e02551fca5595ad68d18239cd0fde405fca26";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-agqq6b3tcD2AGGj/OltYxWLV7jG2QbPictytytFICTM=";
+      sha256 = "sha256-Vs5KWvv6XHYm4kbVAFDKXUarQ/iWr32IB15166+h5NY=";
     };
-    date = "2026-03-12";
+    date = "2026-03-17";
   };
   lineage_deskclock = {
     pname = "lineage_deskclock";
@@ -422,7 +422,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-ZQowVhIcNZNCoIDt3P2kvgPAIshYsUZfH2GO+McFod0=";
+      sha256 = "sha256-a0ke+kqOpCGtEUpiU7nICWU0GNv9c0jQphz5d1vdX8w=";
     };
     date = "2025-12-31";
   };
@@ -498,31 +498,31 @@
   };
   sm8550_tab_kernel_sm8550 = {
     pname = "sm8550_tab_kernel_sm8550";
-    version = "8149f7e0731e869ac456ea1ef7dae95a08e3d1d8";
+    version = "488426dc7b59aee7c253dfe06378552e52f15a35";
     src = fetchgit {
       url = "https://github.com/samsung-sm8550-tab/android_kernel_samsung_sm8550.git";
-      rev = "8149f7e0731e869ac456ea1ef7dae95a08e3d1d8";
+      rev = "488426dc7b59aee7c253dfe06378552e52f15a35";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-7h/bLVePmqNsGWm7gwuu35uCzRnasAwBEQ54by+TmCM=";
+      sha256 = "sha256-44zJyKBR15Tk4ImVsFz/CtwAPvC33U4tBjIDLBFB/S4=";
     };
-    date = "2026-01-08";
+    date = "2026-03-15";
   };
   sm8550_tab_kernel_sm8550_modules = {
     pname = "sm8550_tab_kernel_sm8550_modules";
-    version = "6d4788b39ff175af4b2a5c5ffdf31712f8686e4c";
+    version = "da5c9e201768a6c76ed6f231f2d5adf91590086c";
     src = fetchgit {
       url = "https://github.com/samsung-sm8550-tab/android_kernel_samsung_sm8550-modules.git";
-      rev = "6d4788b39ff175af4b2a5c5ffdf31712f8686e4c";
+      rev = "da5c9e201768a6c76ed6f231f2d5adf91590086c";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-8sCA1yosOaFldBgA1oNxu/IOwbyJQZI+ntDeJjOEHzw=";
+      sha256 = "sha256-p6fIzm91Nsi8f3kNu9Q6Wl7U+iMoL2i9PHIzFC6GWN8=";
     };
-    date = "2026-01-10";
+    date = "2026-03-14";
   };
   sm8550_tab_vendor_gts9wifi = {
     pname = "sm8550_tab_vendor_gts9wifi";
