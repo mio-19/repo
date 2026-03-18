@@ -3,7 +3,8 @@
   jdk21,
   gradle-packages,
   stdenv,
-  fetchFromGitHub,
+  src,
+  version,
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -26,14 +27,7 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "glimpse";
-  version = "72a1550fcb8aeb4590ebf3700767f879a8d6afd8";
-
-  src = fetchFromGitHub {
-    owner = "LineageOS";
-    repo = "android_packages_apps_Glimpse";
-    rev = finalAttrs.version;
-    hash = "sha256-k2h0aV0mn8CPXtaVFOnCysxJ4G1LUY/HuQz3Ea6qm/Y=";
-  };
+  inherit version src;
 
   gradleBuildTask = ":app:assembleRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;

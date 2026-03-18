@@ -3,6 +3,14 @@
   perSystem =
     { pkgs, system, ... }:
     let
+      sources = (import ../_sources/generated.nix) {
+        inherit (pkgs)
+          fetchurl
+          fetchgit
+          fetchFromGitHub
+          dockerTools
+          ;
+      };
 
       # Generic helper: zipalign + apksigner wrapper for any pre-built APK.
       # Args:
@@ -232,6 +240,8 @@
       };
       appstore = pkgs.callPackage ./appstore {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+        src = sources.grapheneos_appstore.src;
+        version = sources.grapheneos_appstore.version;
       };
 
       shizuku = pkgs.callPackage ./shizuku {
@@ -240,6 +250,8 @@
 
       glimpse = pkgs.callPackage ./glimpse {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+        src = sources.lineage_glimpse.src;
+        version = sources.lineage_glimpse.version;
       };
 
       sunup = pkgs.callPackage ./sunup {
@@ -248,6 +260,8 @@
 
       recorder = pkgs.callPackage ./recorder {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+        src = sources.lineage_recorder.src;
+        version = sources.lineage_recorder.version;
       };
 
       haven = pkgs.callPackage ./haven {

@@ -3,7 +3,8 @@
   jdk21,
   gradle-packages,
   stdenv,
-  fetchFromGitHub,
+  src,
+  version,
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -25,14 +26,7 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "recorder";
-  version = "b6700040e7f5b9353c631735bf3e85030bcc3dcd";
-
-  src = fetchFromGitHub {
-    owner = "LineageOS";
-    repo = "android_packages_apps_Recorder";
-    rev = finalAttrs.version;
-    hash = "sha256-FuOqorYsw27xZHkHng9lZ0/UOuyKuPGzNZJHO+4bFtA=";
-  };
+  inherit version src;
 
   gradleBuildTask = ":app:assembleRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;

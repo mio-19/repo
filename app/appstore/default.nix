@@ -4,7 +4,8 @@
   jdk17,
   gradle-packages,
   stdenv,
-  fetchFromGitHub,
+  src,
+  version,
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -26,14 +27,7 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "appstore";
-  version = "0ccf3283bde9f53616e6e940d98aae5424c2ae5a";
-
-  src = fetchFromGitHub {
-    owner = "GrapheneOS";
-    repo = "AppStore";
-    rev = finalAttrs.version;
-    hash = "sha256-gBTkQBik0ZgX71Qitv17lsICJm7unO/3Hk2FMkKHXsw=";
-  };
+  inherit version src;
 
   patches = [
     ./0001-always-show-vanadium.patch # TODO: not actually work
