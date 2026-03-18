@@ -319,42 +319,8 @@ stdenv.mkDerivation (finalAttrs: {
 #endif' \
         '#include <strings.h>'
 
-    # Guard menu container accesses against nil/empty states to avoid
-    # top-menu tap crashes when menu search/menu close is triggered early.
-    substituteInPlace frontend/apps/reader/modules/readermenu.lua \
-      --replace-fail \
-        'function ReaderMenu:onCloseReaderMenu()
-    if not self.menu_container then return true end
-    self.last_tab_index = self.menu_container[1].last_index' \
-        'function ReaderMenu:onCloseReaderMenu()
-    if not self.menu_container or not self.menu_container[1] then
-        self.menu_container = nil
-        return true
-    end
-    self.last_tab_index = self.menu_container[1].last_index' \
-      --replace-fail \
-        'function ReaderMenu:onMenuSearch()
-    self:onShowMenu(nil, true)
-    self.menu_container[1]:onShowMenuSearch()
-end' \
-        'function ReaderMenu:onMenuSearch()
-    self:onShowMenu(nil, true)
-    if self.menu_container and self.menu_container[1] then
-        self.menu_container[1]:onShowMenuSearch()
-    end
-end' \
-      --replace-fail \
-        'function ReaderMenu:_getTabIndexFromLocation(ges)
-    if self.tab_item_table == nil then
-        self:setUpdateItemTable()
-    end' \
-        'function ReaderMenu:_getTabIndexFromLocation(ges)
-    if self.tab_item_table == nil then
-        self:setUpdateItemTable()
-    end
-    if self.tab_item_table == nil or #self.tab_item_table == 0 then
-        return self.last_tab_index or 1
-    end'
+    # Guard menu container and tab-index accesses to avoid top-menu tap crashes.
+    patch -p1 --input ${./readermenu-topbar-crash-guard.patch}
 
   '';
 
