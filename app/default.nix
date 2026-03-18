@@ -274,7 +274,12 @@
       koreader = pkgs.callPackage ./koreader {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
-      morphe-cli = pkgs.callPackage ./morphe-cli { };
+      morphe-library-m2 = pkgs.callPackage ./morphe-cli/morphe-library-m2.nix {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+      morphe-cli = pkgs.callPackage ./morphe-cli {
+        inherit morphe-library-m2;
+      };
       fdroid-basic = pkgs.callPackage ./fdroid-basic {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -695,6 +700,7 @@
           defaultOut = "koreader-signed.apk";
         };
       });
+      packages.morphe-library-m2 = morphe-library-m2;
       packages.morphe-cli = morphe-cli;
 
       packages.fdroid-basic = fdroid-basic.overrideAttrs (_: {
