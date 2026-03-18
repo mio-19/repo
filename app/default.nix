@@ -517,22 +517,6 @@
             '';
           }
           {
-            appId = "org.lineageos.recorder";
-            apkPath = "${recorder}/recorder.apk";
-            metadataYml = ''
-              Categories:
-                - Multimedia
-              License: Apache-2.0
-              SourceCode: https://github.com/LineageOS/android_packages_apps_Recorder
-              IssueTracker: https://github.com/LineageOS/android_packages_apps_Recorder/issues
-              AutoName: Recorder
-              Summary: LineageOS screen and audio recorder
-              Description: |-
-                Recorder is the LineageOS app for recording audio and screen.
-                This package is built from source.
-            '';
-          }
-          {
             appId = "sh.haven.app";
             apkPath = "${haven}/haven.apk";
             metadataYml = ''
@@ -566,6 +550,23 @@
               Summary: Ebook reader optimized for e-ink and Android devices
               Description: |-
                 KOReader is a document reader supporting EPUB, PDF, DJVU and more.
+                This package is built from source.
+            '';
+          }
+          # can build locally but not on garnix
+          {
+            appId = "org.lineageos.recorder";
+            apkPath = "${recorder}/recorder.apk";
+            metadataYml = ''
+              Categories:
+                - Multimedia
+              License: Apache-2.0
+              SourceCode: https://github.com/LineageOS/android_packages_apps_Recorder
+              IssueTracker: https://github.com/LineageOS/android_packages_apps_Recorder/issues
+              AutoName: Recorder
+              Summary: LineageOS screen and audio recorder
+              Description: |-
+                Recorder is the LineageOS app for recording audio and screen.
                 This package is built from source.
             '';
           }
