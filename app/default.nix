@@ -277,8 +277,15 @@
       morphe-library-m2 = pkgs.callPackage ./morphe-cli/morphe-library-m2.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
-      morphe-cli = pkgs.callPackage ./morphe-cli {
+      morphe-patches-gradle-plugin = pkgs.callPackage ./morphe-cli/morphe-patches-gradle-plugin.nix { };
+      morphe-cli = pkgs.callPackage ./morphe-cli/default.nix {
         inherit morphe-library-m2;
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+      morphe-patches = pkgs.callPackage ./morphe-cli/morphe-patches.nix {
+        inherit morphe-patches-gradle-plugin morphe-library-m2;
+        python3 = pkgs.python3;
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
       fdroid-basic = pkgs.callPackage ./fdroid-basic {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
@@ -702,7 +709,9 @@
         };
       });
       packages.morphe-library-m2 = morphe-library-m2;
+      packages.morphe-patches-gradle-plugin = morphe-patches-gradle-plugin;
       packages.morphe-cli = morphe-cli;
+      packages.morphe-patches = morphe-patches;
 
       packages.fdroid-basic = fdroid-basic.overrideAttrs (_: {
         passthru.signScript = mkSignScript {
