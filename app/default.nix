@@ -223,6 +223,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      youtubeMorphe = pkgs.callPackage ./youtube {
+        inherit morphe-cli;
+      };
+
       thunderbird = pkgs.callPackage ./thunderbird {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -611,6 +615,14 @@
           name = "sign-microg-re";
           apkPath = "${microg-re}/microg-re.apk";
           defaultOut = "microg-re-signed.apk";
+        };
+      });
+
+      packages.youtube-morphe = youtubeMorphe.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-youtube-morphe";
+          apkPath = "${youtubeMorphe}/youtube-morphe.apk";
+          defaultOut = "youtube-morphe-signed.apk";
         };
       });
 
