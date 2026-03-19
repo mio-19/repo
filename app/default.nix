@@ -428,6 +428,22 @@
             '';
           }
           {
+            appId = "com.google.android.youtube.morphe";
+            apkPath = "${youtubeMorphe}/youtube-morphe.apk";
+            metadataYml = ''
+              Categories:
+                - Multimedia
+              License: Proprietary
+              SourceCode: https://github.com/MorpheApp/morphe-patches
+              IssueTracker: https://github.com/MorpheApp/morphe-patches/issues
+              AutoName: YouTube Morphe
+              Summary: Patched YouTube APK with package rename
+              Description: |-
+                YouTube Morphe is a patched YouTube APK built with Morphe patches
+                and installed under an alternate package name.
+            '';
+          }
+          {
             appId = "net.thunderbird.android";
             apkPath = "${thunderbird}/thunderbird.apk";
             metadataYml = ''
