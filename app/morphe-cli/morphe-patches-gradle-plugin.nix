@@ -4,7 +4,6 @@
   fetchFromGitHub,
   gradle-packages,
   jdk21,
-  python3,
   writableTmpDirAsHomeHook,
 }:
 let
@@ -40,7 +39,6 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [
     gradle
     jdk21
-    python3
     writableTmpDirAsHomeHook
   ];
 
@@ -51,49 +49,9 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   postUnpack = ''
-root="$PWD"
-
-python3 -c '
-import os, re
-
-def patch_file(filename):
-    if not os.path.exists(filename): return
-    with open(filename, "r") as f: content = f.read()
-    
-    # 1. Replace the GitHub Packages URLs with local M2
-    content = re.sub(r"https://maven.pkg.github.com/MorpheApp/[a-zA-Z0-9.-]+", "file://" + root_dir + "/build/m2", content)
-    
-    # 2. Remove credentials blocks
-    content = re.sub(r"credentials\s*\{[^{}]*\}", "", content)
-    
-    # 3. Disable signing blocks
-    content = re.sub(r"signing\s*\{.*?\}", "/* signing disabled */", content, flags=re.DOTALL)
-    
-    # 4. Disable signing in plugins block
-    content = content.replace("signing", "// signing")
-    
-    with open(filename, "w") as f: f.write(content)
-
-def patch_settings_plugin(filename):
-    if not os.path.exists(filename): return
-    with open(filename, "r") as f: content = f.read()
-    
-    # Replace the hardcoded GitHub URL in SettingsPlugin.kt
-    content = re.sub(r"URI\(\"https://maven.pkg.github.com/MorpheApp/registry\"\)", "URI(\"file://\" + System.getenv(\"MORPHE_PLUGIN_M2\"))", content)
-    
-    # Remove the credentials block entirely in SettingsPlugin.kt
-    # Match repository.credentials { ... }
-    content = re.sub(r"repository\.credentials\s*\{.*?\}", "", content, flags=re.DOTALL)
-    
-    with open(filename, "w") as f: f.write(content)
-
-root_dir = os.path.join(os.getcwd(), "source")
-patch_file(os.path.join(root_dir, "build.gradle.kts"))
-# Find and patch SettingsPlugin.kt
-for root, dirs, files in os.walk(os.path.join(root_dir, "src/main/kotlin")):
-    if "SettingsPlugin.kt" in files:
-        patch_settings_plugin(os.path.join(root, "SettingsPlugin.kt"))
-'
+    patch -d "$sourceRoot" -p0 < ${./morphe-patches-gradle-plugin.patch}
+    patch -d "$sourceRoot/src/main/kotlin/app/morphe/patches/gradle" -p0 < ${./morphe-patches-gradle-plugin-settings.patch}
+    patch -d "$sourceRoot/src/main/kotlin/app/morphe/patches/gradle" -p0 < ${./morphe-patches-gradle-plugin-extension.patch}
   '';
 
   gradleFlags = [

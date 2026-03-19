@@ -1,13 +1,9 @@
 --- build.gradle.kts
 +++ build.gradle.kts
-@@ -6,9 +6,7 @@
--    alias(libs.plugins.binary.compatibility.validator)
-     `maven-publish`
--    signing
--    jacoco
- }
- 
-@@ -50,14 +48,7 @@
+@@ -47,14 +47,7 @@
+             includeGroup("com.github.REAndroid")
+         }
+     }
 -    maven {
 -        // A repository must be specified for some reason. "registry" is a dummy.
 -        url = uri("https://maven.pkg.github.com/MorpheApp/registry")
@@ -16,10 +12,12 @@
 -            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
 -        }
 -    }
-+    maven { url = uri("file://" + System.getenv("MORPHE_PLUGIN_M2")) }
++    maven { url = uri("file://" + System.getenv("MORPHE_LIBRARY_M2")) }
  }
  
-@@ -104,17 +95,7 @@
+ dependencies {
+@@ -103,14 +96,7 @@
+ 
  publishing {
      repositories {
 -        maven {
@@ -32,9 +30,12 @@
 -        }
 +        maven { url = uri("file://" + project.projectDir.resolve("build/m2").absolutePath) }
      }
--
+ 
      publications {
-@@ -151,5 +132,4 @@
+@@ -148,7 +134,4 @@
+     }
+ }
+ 
 -signing {
 -    useGpgCmd()
 -    sign(publishing.publications["morphe-patcher-publication"])

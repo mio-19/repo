@@ -14,6 +14,7 @@ let
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
+    s.platforms-android-33
     s.platforms-android-34
     s.platforms-android-35
     s.build-tools-34-0-0
@@ -32,6 +33,20 @@ let
     repo = "morphe-patcher";
     rev = "v1.2.0";
     hash = "sha256-xsdSxEGd77FANKqL/IvBu4UGTa88MOS2cu/J29YRp44=";
+  };
+
+  apktool-src = fetchFromGitHub {
+    owner = "MorpheApp";
+    repo = "Apktool";
+    rev = "04517bc7c687a6cfdcd813abb02e3134487baa95"; # branch 2.11.2
+    hash = "sha256-dgrjGXGJ86RDjBFB//1rOy7m1uxh3j3ZuXHRgRmLneQ=";
+  };
+
+  multidexlib2-src = fetchFromGitHub {
+    owner = "MorpheApp";
+    repo = "multidexlib2";
+    rev = "41cccc644cf1804362f7aa2fae96a6ffe67ffd22";
+    hash = "sha256-NBubLnNjkZbGFlSCkwbTdvjDeYdRn4xJBJUNCCs/ccU=";
   };
 in
 stdenv.mkDerivation (finalAttrs: {
@@ -59,7 +74,6 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [
     gradle
     jdk21
-    python3
     writableTmpDirAsHomeHook
   ];
 
@@ -67,33 +81,43 @@ stdenv.mkDerivation (finalAttrs: {
     JAVA_HOME = if stdenv.isDarwin then "${jdk21}" else "${jdk21}/lib/openjdk";
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
     MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
-    GITHUB_ACTOR = "nix-build";
-    GITHUB_TOKEN = "ghp_dummy";
   };
 
   postUnpack = ''
     root="$PWD"
     cp -a ${morphe-patcher-src} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
+    cp -a ${apktool-src} "$root/Apktool"
+    chmod -R u+w "$root/Apktool"
 
-    python3 -c '
-import os, re
-def patch(f, p, l):
-    if not os.path.exists(f): return
-    c = open(f).read()
-    c = c.replace("https://maven.pkg.github.com/MorpheApp/registry", "file://" + p)
-    c = re.sub(r"credentials\s*\{.*?\}", "", c, flags=re.DOTALL)
-    c = c.replace("repositories {", "repositories {\n        maven { url = uri(\"file://" + p + "\") }\n        maven { url = uri(\"file://" + l + "\") }")
-    c = re.sub(r"signing\s*\{.*?\}", "/* signing disabled */", c, flags=re.DOTALL)
-    c = c.replace("gradlePluginPortal()", "maven { url = uri(\"file://" + p + "\") }; gradlePluginPortal()")
-    open(f, "w").write(c)
-p = os.environ["MORPHE_PLUGIN_M2"]
-l = os.environ["MORPHE_LIBRARY_M2"]
-patch("source/settings.gradle.kts", p, l)
-patch("morphe-patcher/build.gradle.kts", p, l)
-'
+    cp -a ${multidexlib2-src} "$root/multidexlib2"
+    chmod -R u+w "$root/multidexlib2"
+
+    patch -d "$sourceRoot" -p0 < ${./morphe-patches-settings.patch}
+    patch -d "$root/morphe-patcher" -p0 < ${./morphe-patcher.patch}
+    patch -d "$root/morphe-patcher" -p0 < ${./morphe-patcher-settings.patch}
+
+    cat >> "$sourceRoot/patches/build.gradle.kts" << 'EOF'
+
+    tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
+        manifest {
+            attributes(
+                "Name" to "Morphe Patches",
+                "Description" to "Patches for Morphe",
+                "Version" to project.version.toString(),
+                "Timestamp" to "0",
+                "Source" to "git@github.com:MorpheApp/morphe-patches.git",
+                "Author" to "MorpheApp",
+                "Contact" to "na",
+                "Website" to "https://morphe.software",
+                "License" to "GNU General Public License v3.0, with additional GPL section 7 requirements",
+            )
+        }
+    }
+    EOF
   '';
 
   preConfigure = ''
@@ -106,6 +130,8 @@ patch("morphe-patcher/build.gradle.kts", p, l)
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
     "-Dmaven.repo.local=build/m2"
+    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
   ];
 
   installPhase = ''
