@@ -37,6 +37,10 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-2IO9HYWKgFTK3kLxL9+Ff67O61OmCJc1cr5uz+7otUQ=";
   };
 
+  patches = [
+    ./microg-re-disable-updater.patch
+  ];
+
   gradleBuildTask = ":play-services-core:assembleDefaultRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 
