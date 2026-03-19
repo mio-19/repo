@@ -86,7 +86,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-ZBr/RDKj8C4MGWKv0rE+OdtHVvL0GqL7zBi/vUFJJ4Q=";
+      sha256 = "sha256-GrVmlF9T1DzPQS6BUWxnaYrIj+Pk6nGGw/ncJ4t4ucw=";
     };
     date = "2026-03-01";
   };
@@ -198,7 +198,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-07k13X2QjGcOoqWJdlZf3iSSYHPNfu1r+vmcHj0AJt8=";
+      sha256 = "sha256-GSBGZEQM7kVS7Xr5A8yjDs822wbqZ3VXpD7+bNDIXUw=";
     };
     date = "2025-09-05";
   };
@@ -450,7 +450,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-a0ke+kqOpCGtEUpiU7nICWU0GNv9c0jQphz5d1vdX8w=";
+      sha256 = "sha256-ZQowVhIcNZNCoIDt3P2kvgPAIshYsUZfH2GO+McFod0=";
     };
     date = "2025-12-31";
   };
@@ -495,6 +495,34 @@
       sha256 = "sha256-FuOqorYsw27xZHkHng9lZ0/UOuyKuPGzNZJHO+4bFtA=";
     };
     date = "2026-03-01";
+  };
+  morphe_apktool = {
+    pname = "morphe_apktool";
+    version = "04517bc7c687a6cfdcd813abb02e3134487baa95";
+    src = fetchgit {
+      url = "https://github.com/MorpheApp/Apktool.git";
+      rev = "04517bc7c687a6cfdcd813abb02e3134487baa95";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-dgrjGXGJ86RDjBFB//1rOy7m1uxh3j3ZuXHRgRmLneQ=";
+    };
+    date = "2025-12-07";
+  };
+  morphe_multidexlib2 = {
+    pname = "morphe_multidexlib2";
+    version = "41cccc644cf1804362f7aa2fae96a6ffe67ffd22";
+    src = fetchgit {
+      url = "https://github.com/MorpheApp/multidexlib2.git";
+      rev = "41cccc644cf1804362f7aa2fae96a6ffe67ffd22";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-NBubLnNjkZbGFlSCkwbTdvjDeYdRn4xJBJUNCCs/ccU=";
+    };
+    date = "2026-03-13";
   };
   sm8550_tab_device_gts9wifi = {
     pname = "sm8550_tab_device_gts9wifi";
@@ -548,7 +576,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-44zJyKBR15Tk4ImVsFz/CtwAPvC33U4tBjIDLBFB/S4=";
+      sha256 = "sha256-CNWWL3gQyD+Z+KoWCmU1U/MR8U6c9TvCc5DDTnX0OZ8=";
     };
     date = "2026-03-15";
   };

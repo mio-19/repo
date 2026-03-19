@@ -9,6 +9,8 @@
   git,
   androidSdkBuilder,
   morphe-library-m2,
+  apktool-src,
+  multidexlib2-src,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -37,19 +39,6 @@ let
     hash = "sha256-xsdSxEGd77FANKqL/IvBu4UGTa88MOS2cu/J29YRp44=";
   };
 
-  apktool-src = fetchFromGitHub {
-    owner = "MorpheApp";
-    repo = "Apktool";
-    rev = "04517bc7c687a6cfdcd813abb02e3134487baa95"; # branch 2.11.2
-    hash = "sha256-dgrjGXGJ86RDjBFB//1rOy7m1uxh3j3ZuXHRgRmLneQ=";
-  };
-
-  multidexlib2-src = fetchFromGitHub {
-    owner = "MorpheApp";
-    repo = "multidexlib2";
-    rev = "41cccc644cf1804362f7aa2fae96a6ffe67ffd22";
-    hash = "sha256-NBubLnNjkZbGFlSCkwbTdvjDeYdRn4xJBJUNCCs/ccU=";
-  };
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-cli";
