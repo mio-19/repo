@@ -6,9 +6,10 @@
 }:
 let
   youtubeApk = fetchurl {
-    name = "youtube-21.11.48.apk";
-    url = "https://web.archive.org/web/20260319042759if_/https://d-e03.winudf.com/b/APK/Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmVfMTU2MTA2MTE1Ml8zNzY5ZmE1MQ?_fn=WW91VHViZV8yMS4xMS40ODNfQVBLUHVyZS5hcGs&_p=Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmU%3D&download_id=1664505587805684&is_hot=true&k=f58a936c9fb4c848b9b9637197d7563a69bccca3&uu=https%3A%2F%2Fd-09.winudf.com%2Fb%2FAPK%2FY29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmVfMTU2MTA2MTE1Ml8zNzY5ZmE1MQ%3Fk%3D4a5771b46730a90ed65af11222555f6d69bccca3";
-    hash = "sha256-wJL32chPEbGoQ/T2BxrWWLAumLEwLvnFeP05yNYHL7M=";
+    # APKPure page: https://apkpure.com/youtube-2025/com.google.android.youtube/download/20.41.33
+    name = "youtube-20.41.33.apk";
+    url = "https://d-02.winudf.com/b/APK/Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmVfMTU1NzM4NDY0MF9jNmJjYWE3NA?_fn=WW91VHViZV8yMC40MS4zM19BUEtQdXJlLmFwaw&_p=Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmU%3D&download_id=1757304065173054&is_hot=true&k=6be682542ae60781474875130674b28669bcd896";
+    hash = "sha256-1Az1GJdBm6wG4AKVpMRZP+8gqfFB1alS215aWZ5UZMM=";
   };
 
   morphePatches = fetchurl {
@@ -19,7 +20,7 @@ let
 in
 stdenv.mkDerivation {
   pname = "youtube-morphe";
-  version = "21.11.483-patches-1.19.0";
+  version = "20.41.33-patches-1.19.0";
 
   dontUnpack = true;
 
