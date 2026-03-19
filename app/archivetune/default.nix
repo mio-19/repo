@@ -103,7 +103,8 @@ stdenv.mkDerivation (finalAttrs: {
     unzip -q "$res_archive" -d "$tmp_res_dir"
     (
       cd "$tmp_res_dir"
-      zip -qurX9 "$tmp_apk_raw" AndroidManifest.xml resources.arsc res
+      zip -qurX9 "$tmp_apk_raw" res
+      zip -qurX0 "$tmp_apk_raw" AndroidManifest.xml resources.arsc
     )
 
     ${androidSdk}/share/android-sdk/build-tools/35.0.0/zipalign -P 16 -f 4 \
