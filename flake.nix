@@ -62,6 +62,8 @@
       perSystem =
         args@{ pkgs, system, ... }:
         {
+          formatter = pkgs.nixfmt;
+
           # https://github.com/nix-community/nixos-apple-silicon/pull/353
           packages.zfs-installer =
             (nixpkgs.lib.nixosSystem {
