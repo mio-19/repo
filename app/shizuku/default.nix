@@ -1,5 +1,6 @@
 {
   lib,
+  curl,
   jdk21,
   gradle-packages,
   stdenv,
@@ -11,6 +12,10 @@
   ninja,
 }:
 let
+  rev = "b844bc491f1790c72328e1a8e5b2349f8978f0ea";
+  shortRev = builtins.substring 0 7 rev;
+  commitCount = "1091";
+
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
@@ -29,34 +34,45 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "shizuku";
-  version = "v13.6.0";
+  version = "unstable-2026-03-20";
 
   dontConfigure = true;
 
   src = fetchgit {
     url = "https://github.com/rikkaapps/shizuku.git";
-    tag = finalAttrs.version;
+    rev = rev;
     fetchSubmodules = true;
     gitConfigFile = lib.toFile "gitconfig" ''
       [url "https://github.com/"]
         insteadOf = git@github.com:
     '';
-    hash = "sha256-O4pgMwYpzv57m/tFzWhSAQzMKJB+b/ICMr0Wkd9T+ac=";
+    hash = "sha256-HwpkWG4dbE2AwvmFRb7YHlubVE+fdEM3kfi16H1flX8=";
   };
 
   prePatch = ''
     # fetchFromGitHub strips .git, so derive a deterministic version from env.
     substituteInPlace build.gradle \
-      --replace-fail "def gitCommitId = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()" "def gitCommitId = System.getenv('SHIZUKU_GIT_COMMIT_ID') ?: '${
-        builtins.substring 0 7 finalAttrs.version
-      }'" \
+      --replace-fail "def gitCommitId = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()" "def gitCommitId = System.getenv('SHIZUKU_GIT_COMMIT_ID') ?: '${shortRev}'" \
       --replace-fail "def gitCommitCount = Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())" "def gitCommitCount = Integer.parseInt(System.getenv('SHIZUKU_GIT_COMMIT_COUNT') ?: '1')"
 
     # AGP 8.10.0 currently fails to resolve in this build environment.
-    substituteInPlace settings.gradle \
-      --replace-fail 'version "8.10.0"' 'version "8.10.1"'
     substituteInPlace api/settings.gradle \
       --replace-fail 'version "8.10.0"' 'version "8.10.1"'
+
+    # Upstream requests CMake 3.31+, but this environment only provides the
+    # Android SDK's 3.22.1 package. Keep AGP on that SDK CMake to preserve
+    # prefab package discovery for libcxx.
+    substituteInPlace api/rish/build.gradle \
+      --replace-fail 'version "3.31.0+"' 'version "3.22.1"'
+    substituteInPlace api/rish/src/main/cpp/CMakeLists.txt \
+      --replace-fail 'cmake_minimum_required(VERSION 3.31)' 'cmake_minimum_required(VERSION 3.22)' \
+      --replace-fail 'find_package(cxx REQUIRED CONFIG)' 'include("''${CMAKE_CURRENT_LIST_DIR}/../../../../../.nix-cmake/cxx/cxxConfig.cmake")'
+    substituteInPlace manager/build.gradle \
+      --replace-fail 'version = "3.31.0+"' 'version = "3.22.1"'
+    substituteInPlace manager/src/main/jni/CMakeLists.txt \
+      --replace-fail 'cmake_minimum_required(VERSION 3.31)' 'cmake_minimum_required(VERSION 3.22)' \
+      --replace-fail 'find_package(boringssl REQUIRED CONFIG)' 'include("''${CMAKE_CURRENT_LIST_DIR}/../../../../.nix-cmake/boringssl/boringsslConfig.cmake")' \
+      --replace-fail 'find_package(cxx REQUIRED CONFIG)' 'include("''${CMAKE_CURRENT_LIST_DIR}/../../../../.nix-cmake/cxx/cxxConfig.cmake")'
 
     # Resolve Android plugin IDs via com.android.tools.build:gradle directly,
     # which avoids plugin-marker fetches that may be absent in locked deps.
@@ -68,11 +84,13 @@ stdenv.mkDerivation (finalAttrs: {
 
     # Ensure all Gradle repository resolution goes through local cached maven roots.
     cacheRoot="${finalAttrs.mitmCache}"
-    printf -v repositoriesBlock 'repositories {\n        maven { url = uri("%s/https/dl.google.com/dl/android/maven2") }\n        maven { url = uri("%s/https/repo.maven.apache.org/maven2") }\n        maven { url = uri("%s/https/jitpack.io") }\n' "$cacheRoot" "$cacheRoot" "$cacheRoot"
-    substituteInPlace settings.gradle \
-      --replace-fail "repositories {" "$repositoriesBlock"
-    substituteInPlace api/settings.gradle \
-      --replace-fail "repositories {" "$repositoriesBlock"
+    if [[ -n "$cacheRoot" && -e "$cacheRoot" ]]; then
+      printf -v repositoriesBlock 'repositories {\n        maven { url = uri("%s/https/dl.google.com/dl/android/maven2") }\n        maven { url = uri("%s/https/repo.maven.apache.org/maven2") }\n        maven { url = uri("%s/https/jitpack.io") }\n' "$cacheRoot" "$cacheRoot" "$cacheRoot"
+      substituteInPlace settings.gradle \
+        --replace-fail "repositories {" "$repositoriesBlock"
+      substituteInPlace api/settings.gradle \
+        --replace-fail "repositories {" "$repositoriesBlock"
+    fi
 
     # gradle.fetchDeps runs with MITM env vars; explicitly configure Gradle/JVM
     # proxy and truststore so Java downloads are captured into shizuku_deps.json.
@@ -125,12 +143,11 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   nativeBuildInputs = [
+    curl
     gradle
     jdk21
     apksigner
     writableTmpDirAsHomeHook
-    cmake
-    ninja
   ];
 
   env = {
@@ -139,21 +156,80 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk-bundle";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
-    SHIZUKU_GIT_COMMIT_ID = "2650830";
-    SHIZUKU_GIT_COMMIT_COUNT = "1";
+    SHIZUKU_GIT_COMMIT_ID = shortRev;
+    SHIZUKU_GIT_COMMIT_COUNT = commitCount;
   };
 
   preBuild = ''
     export ANDROID_USER_HOME="$HOME/.android"
     mkdir -p "$ANDROID_USER_HOME"
 
-    # Make AGP/plugin marker artifacts resolvable from mavenLocal in pure builds.
-    m2root="$PWD/.m2/repository"
-    if mkdir -p /build/.m2/repository/com 2>/dev/null; then
-      m2root="/build/.m2/repository"
+    prefabRoot="$PWD/.nix-cmake"
+    cxxPkgDir="$prefabRoot/cxx"
+    boringsslPkgDir="$prefabRoot/boringssl"
+    mkdir -p "$cxxPkgDir" "$boringsslPkgDir"
+
+    cacheRoot="${finalAttrs.mitmCache}"
+    curlArgs=(--fail --location)
+    if [[ -n "''${MITM_CACHE_CA:-}" ]]; then
+      curlArgs+=(--cacert "$MITM_CACHE_CA")
     fi
-    mkdir -p "$m2root/com"
-    ln -sfn "${finalAttrs.mitmCache}/https/dl.google.com/dl/android/maven2/com/android" "$m2root/com/android"
+    cxxAar="$PWD/libcxx.aar"
+    if [[ -n "$cacheRoot" && -e "$cacheRoot/https/repo.maven.apache.org/maven2/org/lsposed/libcxx/libcxx/27.0.12077973/libcxx-27.0.12077973.aar" ]]; then
+      cxxAar="$cacheRoot/https/repo.maven.apache.org/maven2/org/lsposed/libcxx/libcxx/27.0.12077973/libcxx-27.0.12077973.aar"
+    else
+      ${curl}/bin/curl "''${curlArgs[@]}" \
+        --output "$cxxAar" \
+        "https://repo.maven.apache.org/maven2/org/lsposed/libcxx/libcxx/27.0.12077973/libcxx-27.0.12077973.aar"
+    fi
+    (
+      cd "$cxxPkgDir"
+      ${jdk21}/bin/jar xf "$cxxAar" prefab/modules/cxx
+    )
+    cat > "$cxxPkgDir/cxxConfig.cmake" <<'EOF'
+    add_library(cxx::cxx STATIC IMPORTED)
+    set_target_properties(cxx::cxx PROPERTIES
+      IMPORTED_LOCATION "''${CMAKE_CURRENT_LIST_DIR}/prefab/modules/cxx/libs/android.''${ANDROID_ABI}/libcxx.a"
+      INTERFACE_INCLUDE_DIRECTORIES "''${CMAKE_CURRENT_LIST_DIR}/prefab/modules/cxx/include"
+    )
+    EOF
+
+    boringsslAar="$PWD/boringssl.aar"
+    if [[ -n "$cacheRoot" && -e "$cacheRoot/https/repo.maven.apache.org/maven2/io/github/vvb2060/ndk/boringssl/20250114/boringssl-20250114.aar" ]]; then
+      boringsslAar="$cacheRoot/https/repo.maven.apache.org/maven2/io/github/vvb2060/ndk/boringssl/20250114/boringssl-20250114.aar"
+    else
+      ${curl}/bin/curl "''${curlArgs[@]}" \
+        --output "$boringsslAar" \
+        "https://repo.maven.apache.org/maven2/io/github/vvb2060/ndk/boringssl/20250114/boringssl-20250114.aar"
+    fi
+    (
+      cd "$boringsslPkgDir"
+      ${jdk21}/bin/jar xf "$boringsslAar" prefab/modules/crypto_static prefab/modules/ssl_static
+    )
+    cat > "$boringsslPkgDir/boringsslConfig.cmake" <<'EOF'
+    add_library(boringssl::crypto_static STATIC IMPORTED)
+    set_target_properties(boringssl::crypto_static PROPERTIES
+      IMPORTED_LOCATION "''${CMAKE_CURRENT_LIST_DIR}/prefab/modules/crypto_static/libs/android.''${ANDROID_ABI}/libcrypto_static.a"
+      INTERFACE_INCLUDE_DIRECTORIES "''${CMAKE_CURRENT_LIST_DIR}/prefab/modules/crypto_static/include"
+    )
+
+    add_library(boringssl::ssl_static STATIC IMPORTED)
+    set_target_properties(boringssl::ssl_static PROPERTIES
+      IMPORTED_LOCATION "''${CMAKE_CURRENT_LIST_DIR}/prefab/modules/ssl_static/libs/android.''${ANDROID_ABI}/libssl_static.a"
+      INTERFACE_INCLUDE_DIRECTORIES "''${CMAKE_CURRENT_LIST_DIR}/prefab/modules/ssl_static/include"
+      INTERFACE_LINK_LIBRARIES boringssl::crypto_static
+    )
+    EOF
+
+    # Make AGP/plugin marker artifacts resolvable from mavenLocal in pure builds.
+    if [[ -n "$cacheRoot" && -e "$cacheRoot/https/dl.google.com/dl/android/maven2/com/android" ]]; then
+      m2root="$PWD/.m2/repository"
+      if mkdir -p /build/.m2/repository/com 2>/dev/null; then
+        m2root="/build/.m2/repository"
+      fi
+      mkdir -p "$m2root/com"
+      ln -sfn "$cacheRoot/https/dl.google.com/dl/android/maven2/com/android" "$m2root/com/android"
+    fi
 
     echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
   ''
