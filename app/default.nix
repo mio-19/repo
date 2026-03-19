@@ -590,7 +590,7 @@
             '';
           }
         ]
-        ++ pkgs.lib.optional pkgs.stdenv.isLinux [
+        ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
           # cannot build on darwin due to stdenv
           {
             appId = "org.koreader.launcher.fdroid";

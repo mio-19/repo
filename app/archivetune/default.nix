@@ -5,6 +5,8 @@
   stdenv,
   fetchFromGitHub,
   apksigner,
+  zip,
+  unzip,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
@@ -50,6 +52,8 @@ stdenv.mkDerivation (finalAttrs: {
     gradle
     jdk21
     apksigner
+    zip
+    unzip
     writableTmpDirAsHomeHook
   ];
 
@@ -76,28 +80,31 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    apk_path=""
-    for candidate in \
-      app/build/outputs/apk/arm64/release/*-release-unsigned.apk \
-      app/build/outputs/apk/arm64/release/*-release.apk \
-      app/build/outputs/apk/universal/release/*-release-unsigned.apk \
-      app/build/outputs/apk/universal/release/*-release.apk \
-      app/build/outputs/apk/release/*-release-unsigned.apk \
-      app/build/outputs/apk/release/*-release.apk \
-      app/build/outputs/apk/*/release/*.apk \
-      app/build/outputs/apk/release/*.apk; do
-      if [[ -f "$candidate" ]]; then
-        apk_path="$candidate"
-        break
-      fi
-    done
+    apk_path="app/build/outputs/apk/arm64/release/app-arm64-release-unsigned.apk"
+    res_archive="app/build/intermediates/shrunk_resources_binary_format/arm64Release/convertShrunkResourcesToBinaryArm64Release/shrunk-resources-binary-format-arm64-release.ap_"
 
-    if [[ -z "$apk_path" ]]; then
-      echo "ArchiveTune APK not found under app/build/outputs/apk" >&2
+    if [[ ! -f "$apk_path" ]]; then
+      echo "ArchiveTune APK not found at $apk_path" >&2
       exit 1
     fi
 
-    install -Dm644 "$apk_path" "$out/archivetune.apk"
+    if [[ ! -f "$res_archive" ]]; then
+      echo "ArchiveTune resource archive not found at $res_archive" >&2
+      exit 1
+    fi
+
+    # AGP 9 currently leaves code and packaged resources in separate artifacts here.
+    # Reconstruct a standard monolithic APK for downstream consumers like fdroid update.
+    tmp_apk_dir="$(mktemp -d)"
+    mkdir -p "$out"
+    unzip -q "$apk_path" -d "$tmp_apk_dir"
+    unzip -q "$res_archive" -d "$tmp_apk_dir"
+    (
+      cd "$tmp_apk_dir"
+      zip -qrX "$out/archivetune.apk" .
+    )
+
+    ${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt dump badging "$out/archivetune.apk" >/dev/null
     runHook postInstall
   '';
 
