@@ -275,6 +275,9 @@
       haven = pkgs.callPackage ./haven {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
+      archivetune = pkgs.callPackage ./archivetune {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
       koreader = pkgs.callPackage ./koreader {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -565,6 +568,27 @@
                 This package is built from source (arm64).
             '';
           }
+          {
+            appId = "moe.koiverse.archivetune";
+            apkPath = "${archivetune}/archivetune.apk";
+            metadataYml = ''
+              AntiFeatures:
+                NonFreeNet:
+                  en-US: Depends on YouTube and YouTube Music.
+              Categories:
+                - Multimedia
+              License: GPL-3.0-only
+              SourceCode: https://github.com/koiverse/ArchiveTune
+              IssueTracker: https://github.com/koiverse/ArchiveTune/issues
+              AutoName: ArchiveTune
+              Summary: Privacy-focused YouTube Music client
+              Description: |-
+                ArchiveTune is a YouTube Music client for Android with offline-friendly
+                source packaging, modern Material 3 UI, lyrics support, and playback
+                customization features.
+                This package is built from source.
+            '';
+          }
         ]
         ++ pkgs.lib.optional pkgs.stdenv.isLinux [
           # cannot build on darwin due to stdenv
@@ -714,6 +738,14 @@
           name = "sign-haven";
           apkPath = "${haven}/haven.apk";
           defaultOut = "haven-signed.apk";
+        };
+      });
+
+      packages.archivetune = archivetune.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-archivetune";
+          apkPath = "${archivetune}/archivetune.apk";
+          defaultOut = "archivetune-signed.apk";
         };
       });
 
