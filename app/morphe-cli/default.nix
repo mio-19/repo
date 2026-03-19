@@ -7,9 +7,20 @@
   makeWrapper,
   writableTmpDirAsHomeHook,
   git,
+  androidSdkBuilder,
   morphe-library-m2,
 }:
 let
+  androidSdk = androidSdkBuilder (s: [
+    s.cmdline-tools-latest
+    s.platform-tools
+    s.platforms-android-33
+    s.platforms-android-34
+    s.platforms-android-35
+    s.build-tools-34-0-0
+    s.build-tools-35-0-0
+  ]);
+
   gradle =
     (gradle-packages.mkGradle {
       version = "8.14.3";
@@ -72,6 +83,9 @@ stdenv.mkDerivation (finalAttrs: {
 
   env = {
     JAVA_HOME = if stdenv.isDarwin then "${jdk21}" else "${jdk21}/lib/openjdk";
+    ANDROID_HOME = "${androidSdk}/share/android-sdk";
+    ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
   };
 
   # Set up the workspace: arrange all dependency sources as sibling directories,
@@ -154,6 +168,8 @@ stdenv.mkDerivation (finalAttrs: {
   gradleFlags = [
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
+    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
   ];
 
   installPhase = ''
