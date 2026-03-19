@@ -88,6 +88,12 @@ stdenv.mkDerivation (finalAttrs: {
       --replace-fail "-Xmx4g" "-Xmx8g" \
       --replace-fail "-XX:MaxPermSize=2048m " ""
 
+    # The release tarball is not a tagged git checkout inside the Nix sandbox,
+    # so upstream's gitTag()-based F-Droid suffix logic would append "-dev".
+    substituteInPlace vector-app/build.gradle \
+      --replace-fail 'versionName "''${versionMajor}.''${versionMinor}.''${versionPatch}''${getFdroidVersionSuffix()}"' \
+      'versionName "''${versionMajor}.''${versionMinor}.''${versionPatch}"'
+
     # Tell the Gradle Doctor plugin that this is a CI build so it skips the
     # JAVA_HOME-matches-Gradle-daemon check (irrelevant in the Nix sandbox).
     substituteInPlace tools/gradle/doctor.gradle \

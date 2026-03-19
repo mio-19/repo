@@ -94,15 +94,20 @@ stdenv.mkDerivation (finalAttrs: {
     fi
 
     # AGP 9 currently leaves code and packaged resources in separate artifacts here.
-    # Reconstruct a standard monolithic APK for downstream consumers like fdroid update.
-    tmp_apk_dir="$(mktemp -d)"
+    # Merge the packaged resources into the original APK while preserving how AGP
+    # stored native libraries in the code artifact.
+    tmp_res_dir="$(mktemp -d)"
+    tmp_apk_raw="$(mktemp --suffix=.apk)"
     mkdir -p "$out"
-    unzip -q "$apk_path" -d "$tmp_apk_dir"
-    unzip -q "$res_archive" -d "$tmp_apk_dir"
+    cp "$apk_path" "$tmp_apk_raw"
+    unzip -q "$res_archive" -d "$tmp_res_dir"
     (
-      cd "$tmp_apk_dir"
-      zip -qrX "$out/archivetune.apk" .
+      cd "$tmp_res_dir"
+      zip -qurX9 "$tmp_apk_raw" AndroidManifest.xml resources.arsc res
     )
+
+    ${androidSdk}/share/android-sdk/build-tools/35.0.0/zipalign -P 16 -f 4 \
+      "$tmp_apk_raw" "$out/archivetune.apk"
 
     ${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt dump badging "$out/archivetune.apk" >/dev/null
     runHook postInstall

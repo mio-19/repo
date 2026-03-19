@@ -1,0 +1,77 @@
+--- a/frontend/apps/filemanager/filemanagermenu.lua
++++ b/frontend/apps/filemanager/filemanagermenu.lua
+@@ -1019,6 +1019,16 @@
+     if self.tab_item_table == nil then
+         self:setUpdateItemTable()
+     end
++    if self.tab_item_table == nil or #self.tab_item_table == 0 then
++        logger.err("filemanagermenu onShowMenu: empty tab_item_table")
++        return true
++    end
++    if tab_index == nil then
++        tab_index = G_reader_settings:readSetting("filemanagermenu_tab_index") or 1
++    end
++    if type(tab_index) ~= "number" or tab_index < 1 or tab_index > #self.tab_item_table then
++        tab_index = G_reader_settings:readSetting("filemanagermenu_tab_index") or 1
++    end
+ 
+     local menu_container = CenterContainer:new{
+         ignore = "height",
+@@ -1059,7 +1069,10 @@
+ end
+ 
+ function FileManagerMenu:onCloseFileManagerMenu()
+-    if not self.menu_container then return true end
++    if not self.menu_container or not self.menu_container[1] then
++        self.menu_container = nil
++        return true
++    end
+     local last_tab_index = self.menu_container[1].last_index
+     G_reader_settings:saveSetting("filemanagermenu_tab_index", last_tab_index)
+     UIManager:close(self.menu_container)
+@@ -1072,6 +1085,9 @@
+         self:setUpdateItemTable()
+     end
+     local last_tab_index = G_reader_settings:readSetting("filemanagermenu_tab_index") or 1
++    if self.tab_item_table == nil or #self.tab_item_table == 0 then
++        return last_tab_index
++    end
+     if not ges then
+         return last_tab_index
+     -- if the start position is far right
+@@ -1088,14 +1104,22 @@
+ 
+ function FileManagerMenu:onTapShowMenu(ges)
+     if self.activation_menu ~= "swipe" then
+-        self:onShowMenu(self:_getTabIndexFromLocation(ges))
++        local ok, err = pcall(self.onShowMenu, self, self:_getTabIndexFromLocation(ges))
++        if not ok then
++            logger.err("filemanagermenu tap top-area onShowMenu failed:", err)
++            return true
++        end
+         return true
+     end
+ end
+ 
+ function FileManagerMenu:onSwipeShowMenu(ges)
+     if self.activation_menu ~= "tap" and ges.direction == "south" then
+-        self:onShowMenu(self:_getTabIndexFromLocation(ges))
++        local ok, err = pcall(self.onShowMenu, self, self:_getTabIndexFromLocation(ges))
++        if not ok then
++            logger.err("filemanagermenu swipe top-area onShowMenu failed:", err)
++            return true
++        end
+         return true
+     end
+ end
+@@ -1117,7 +1141,9 @@
+ 
+ function FileManagerMenu:onMenuSearch()
+     self:onShowMenu(nil, true)
+-    self.menu_container[1]:onShowMenuSearch()
++    if self.menu_container and self.menu_container[1] then
++        self.menu_container[1]:onShowMenuSearch()
++    end
+ end
+ 
+ function FileManagerMenu:registerToMainMenu(widget)

@@ -321,6 +321,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     # Guard menu container and tab-index accesses to avoid top-menu tap crashes.
     patch -p1 --input ${./readermenu-topbar-crash-guard.patch}
+    patch -p1 --input ${./filemanagermenu-topbar-crash-guard.patch}
 
   '';
 
