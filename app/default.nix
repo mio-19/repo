@@ -441,7 +441,7 @@
             '';
           }
           {
-            appId = "com.google.android.youtube.morphe";
+            appId = "app.morphe.android.youtube";
             apkPath = "${youtubeMorphe}/youtube-morphe.apk";
             metadataYml = ''
               Categories:
