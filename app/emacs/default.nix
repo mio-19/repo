@@ -92,7 +92,14 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    install -Dm644 "java/emacs-${finalAttrs.version}-${minSdk}-${androidAbi}.apk" "$out/emacs.apk"
+    apk="$out/emacs.apk"
+    install -Dm644 "java/emacs-${finalAttrs.version}-${minSdk}-${androidAbi}.apk" "$apk"
+
+    chmod u+w "$apk"
+    zip -q -d "$apk" 'assets/lisp/*.elc' 'assets/lisp/*/*.elc' 'assets/lisp/*/*/*.elc' \
+      'assets/lisp/*/*/*/*.elc' 'assets/info/*.elc'
+    "${androidSdk}/share/android-sdk/build-tools/34.0.0/zipalign" -f 4 "$apk" "$apk.aligned"
+    mv "$apk.aligned" "$apk"
 
     runHook postInstall
   '';
