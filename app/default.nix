@@ -469,7 +469,7 @@
               Summary: Thunderbird for Android (foss flavor)
               Description: |-
                 Thunderbird is a free, open-source email client. This is the F-Droid
-                foss flavor built from the THUNDERBIRD_16_1 branch without any
+                foss flavor built from the THUNDERBIRD_17_0 branch without any
                 proprietary Google dependencies.
             '';
           }

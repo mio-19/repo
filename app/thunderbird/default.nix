@@ -26,13 +26,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "thunderbird-android";
-  version = "16.1";
+  version = "17.0";
 
   src = fetchFromGitHub {
     owner = "thunderbird";
     repo = "thunderbird-android";
-    tag = "THUNDERBIRD_16_1";
-    hash = "sha256-FofcHxdIiLrMh/Wne1ybMGKMT0dtHBpcOLfbAvKPcLU=";
+    tag = "THUNDERBIRD_17_0";
+    hash = "sha256-sDUWRfHpyj9VcPWjyatdOAVZK8jYv4a5BckE+js3BLs=";
   };
 
   patches = [
@@ -56,7 +56,8 @@ stdenv.mkDerivation (finalAttrs: {
   # 2. Build the updater:
   #    nix build --impure .#thunderbird.mitmCache.updateScript
   # 3. Copy the resulting `fetch-deps.sh`, replace its `outPath=` with
-  #    `/home/dev/Documents/repo/thunderbird_deps.json`, and run it from the repo root.
+  #    `/home/dev/Documents/repo/app/thunderbird/thunderbird_deps.json`, and run it
+  #    from the repo root.
   mitmCache = gradle.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
