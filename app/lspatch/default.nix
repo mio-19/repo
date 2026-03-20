@@ -158,7 +158,7 @@ let
       description = "LSPatch CLI and manager app built from source";
       homepage = "https://github.com/JingMatrix/LSPatch";
       license = licenses.gpl3Only;
-      platforms = platforms.linux;
+      platforms = platforms.unix;
     };
   });
 in
