@@ -107,7 +107,7 @@
         pkgs.writeShellScriptBin name ''
                               set -euo pipefail
                               usage() {
-                                echo "Usage: ${name} <keystore> [--ks-pass <pass>] [--key-pass <pass>] [--alias <keyalias>] [--out <output-dir>]"
+                                echo "Usage: ${name} <keystore> [--ks-pass <pass>] [--key-pass <pass>] [--alias <keyalias>] [--out <output-dir>] [--repo-url <url>]"
                                 echo ""
                                 echo "Signs APKs from ${repoPath}/unsigned and builds a signed F-Droid repo."
                                 echo "Options:"
@@ -115,6 +115,7 @@
                                 echo "  --key-pass  Key password (default: env KEY_PASS, else same as --ks-pass)"
                                 echo "  --alias     Key alias in keystore (default: ${defaultAlias})"
                                 echo "  --out       Output directory (default: ${defaultOut})"
+                                echo "  --repo-url  Final published repo URL written to repo metadata"
                                 exit 1
                               }
 
@@ -132,6 +133,7 @@
                               KEY_PASS="''${KEY_PASS:-}"
                               ALIAS="${defaultAlias}"
                               OUT="${defaultOut}"
+                              REPO_URL=""
 
                               while [[ $# -gt 0 ]]; do
                                 case "$1" in
@@ -139,6 +141,7 @@
                                   --key-pass) KEY_PASS="$2"; shift 2 ;;
                                   --alias)    ALIAS="$2";    shift 2 ;;
                                   --out)      OUT="$2";      shift 2 ;;
+                                  --repo-url) REPO_URL="$2"; shift 2 ;;
                                   *) echo "Unknown option: $1"; usage ;;
                                 esac
                               done
@@ -155,6 +158,13 @@
 
                               cp -R "${repoPath}"/. "$WORKDIR"/
                               chmod -R u+w "$WORKDIR"
+
+                              if [[ -f "$WORKDIR/config.yml" ]]; then
+                                tmp_config="$WORKDIR/config.yml.tmp"
+                                grep -Ev '^(repo_url|repo_keyalias|keystore|keystorepass|keypass|keydname|keyaliases):' \
+                                  "$WORKDIR/config.yml" > "$tmp_config" || true
+                                mv "$tmp_config" "$WORKDIR/config.yml"
+                              fi
 
                               if [[ ! -d "$WORKDIR/unsigned" ]]; then
                                 echo "Expected unsigned APK directory in ${repoPath}/unsigned" >&2
@@ -180,14 +190,17 @@
                                 keyaliases_yaml+="  ''${pkg}: ''${ALIAS}"$'\n'
                               done
 
-                    printf '%s\n' \
-                      "repo_keyalias: $ALIAS" \
-                      "keystore: $KEYSTORE" \
-                      "keystorepass: $KS_PASS" \
-                      "keypass: $KEY_PASS" \
-                      "keydname: CN=F-Droid Repo, OU=F-Droid" \
-                      "keyaliases:" \
-                      "$keyaliases_yaml" >> "$WORKDIR/config.yml"
+                              printf '%s\n' \
+                                "repo_keyalias: $ALIAS" \
+                                "keystore: $KEYSTORE" \
+                                "keystorepass: $KS_PASS" \
+                                "keypass: $KEY_PASS" \
+                                "keydname: CN=F-Droid Repo, OU=F-Droid" \
+                                "keyaliases:" \
+                                "$keyaliases_yaml" >> "$WORKDIR/config.yml"
+                              if [[ -n "$REPO_URL" ]]; then
+                                printf 'repo_url: %s\n' "$REPO_URL" >> "$WORKDIR/config.yml"
+                              fi
                               chmod 600 "$WORKDIR/config.yml"
 
                               export HOME="$WORKDIR/.home"
