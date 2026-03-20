@@ -8,7 +8,7 @@ let
   youtubeApk = fetchurl {
     # APKPure page: https://apkpure.com/youtube-2025/com.google.android.youtube/download/20.21.37
     name = "youtube-20.21.37.apk";
-    url = "https://d-08.winudf.com/b/APK/Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmVfMTU1NDc3MTM5Ml82ZTI3MjU5Ng?_fn=WW91VHViZV8yMC4yMS4zN19BUEtQdXJlLmFwaw&_p=Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmU%3D&is_hot=false&k=7e1f28dc0b8bfa2379a226e224b7cdc969bd2bae";
+    url = "https://web.archive.org/web/20260320085821if_/https://d-08.winudf.com/b/APK/Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmVfMTU1NDc3MTM5Ml82ZTI3MjU5Ng?_fn=WW91VHViZV8yMC4yMS4zN19BUEtQdXJlLmFwaw&_p=Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmU%3D&download_id=otr_1682901765726057&is_hot=false&k=5bc01633e7b1d5e124747a02c4a80f1269be5d9e";
     hash = "sha256-3b85+icp8ycmFu+OVaYTqhf6dSeiX5I/hJstLEQBACo=";
   };
 

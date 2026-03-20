@@ -101,7 +101,7 @@ stdenv.mkDerivation (finalAttrs: {
     description = "GNU Emacs for Android with the Termux shared user ID";
     homepage = "https://www.gnu.org/software/emacs/";
     license = licenses.gpl3Plus;
-    platforms = platforms.linux;
+    platforms = platforms.unix;
     sourceProvenance = with sourceTypes; [ fromSource ];
   };
 })

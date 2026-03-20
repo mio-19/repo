@@ -91,7 +91,7 @@ stdenv.mkDerivation (finalAttrs: {
     description = "Nix-on-Droid terminal emulator app";
     homepage = "https://github.com/nix-community/nix-on-droid";
     license = licenses.mit;
-    platforms = platforms.linux;
+    platforms = platforms.unix;
     sourceProvenance = with sourceTypes; [ fromSource ];
   };
 })
