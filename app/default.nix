@@ -254,6 +254,13 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      lspatch = pkgs.callPackage ./lspatch {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
+      lspatch-cli = lspatch.cli;
+      lspatch-manager = lspatch.manager;
+
       nix-on-droid = pkgs.callPackage ./nix-on-droid {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -527,6 +534,27 @@
             '';
           }
           {
+            appId = "org.lsposed.lspatch";
+            apkPath = "${lspatch-manager}/lspatch-manager.apk";
+            metadataYml = ''
+              Categories:
+                - Development
+                - System
+              License: GPL-3.0-only
+              WebSite: https://github.com/JingMatrix/LSPatch
+              SourceCode: https://github.com/JingMatrix/LSPatch
+              IssueTracker: https://github.com/JingMatrix/LSPatch/issues
+              AutoName: LSPatch
+              Summary: Rootless LSPosed patch manager
+              Description: |-
+                LSPatch is a rootless implementation of the LSPosed framework.
+
+                This package is the Android manager app built from source.
+                The matching CLI jar is also packaged separately in this repo
+                as `lspatch-cli`.
+            '';
+          }
+          {
             appId = "com.termux.nix";
             apkPath = "${nix-on-droid}/nix-on-droid.apk";
             metadataYml = ''
@@ -786,6 +814,16 @@
           name = "sign-emacs";
           apkPath = "${emacs}/emacs.apk";
           defaultOut = "emacs-signed.apk";
+        };
+      });
+
+      packages.lspatch-cli = lspatch-cli;
+
+      packages.lspatch-manager = lspatch-manager.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-lspatch-manager";
+          apkPath = "${lspatch-manager}/lspatch-manager.apk";
+          defaultOut = "lspatch-manager-signed.apk";
         };
       });
 

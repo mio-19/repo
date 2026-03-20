@@ -1,0 +1,32 @@
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -23,26 +23,9 @@
+     }
+ }
+ 
+-val commitCount = run {
+-    val repo = FileRepository(rootProject.file(".git"))
+-    val refId = repo.refDatabase.exactRef("refs/remotes/origin/master").objectId!!
+-    Git(repo).log().add(refId).call().count()
+-}
+-
+-val (coreCommitCount, coreLatestTag) = FileRepositoryBuilder().setGitDir(rootProject.file(".git/modules/core"))
+-    .runCatching {
+-        build().use { repo ->
+-            val git = Git(repo)
+-            val coreCommitCount =
+-                git.log()
+-                    .add(repo.refDatabase.exactRef("HEAD").objectId)
+-                    .call().count() + 4200
+-            val ver = git.describe()
+-                .setTags(true)
+-                .setAbbrev(0).call().removePrefix("v")
+-            coreCommitCount to ver
+-        }
+-    }.getOrNull() ?: (1 to "1.0")
++val commitCount = 20260315
++val coreCommitCount = 7213
++val coreLatestTag = "1.11.0"
+ 
+ // sync from https://github.com/JingMatrix/LSPosed/blob/master/build.gradle.kts
+ val defaultManagerPackageName by extra("org.lsposed.lspatch")
