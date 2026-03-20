@@ -30,15 +30,14 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "haven";
-  # fdroiddata: versionName 2.2.2, versionCode 661 (arm64 flavor = 66 * 10 + 1)
-  version = "2.2.2";
+  version = "2.4.1";
 
   src = fetchFromGitHub {
     owner = "GlassOnTin";
     repo = "Haven";
     tag = "v${finalAttrs.version}";
     fetchSubmodules = true;
-    hash = "sha256-/xS5ruvZvh9MLdeDqXeR+yuJ2d0Kn+6QZZh/IkZS9tU=";
+    hash = "sha256-2Pzewx90nVsz5auy3fLjNgiIyrT/wDdWOPsrIf4fdc4=";
   };
 
   patches = [
