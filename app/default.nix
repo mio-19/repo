@@ -241,6 +241,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      nix-on-droid = pkgs.callPackage ./nix-on-droid {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       termux = pkgs.callPackage ./termux {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -510,6 +514,29 @@
             '';
           }
           {
+            appId = "com.termux.nix";
+            apkPath = "${nix-on-droid}/nix-on-droid.apk";
+            metadataYml = ''
+              Categories:
+                - Development
+              License: MIT
+              WebSite: https://nix-on-droid.unboiled.info
+              SourceCode: https://github.com/nix-community/nix-on-droid
+              IssueTracker: https://github.com/nix-community/nix-on-droid/issues
+              Name: Nix-on-Droid
+              AutoName: Nix
+              Description: |-
+                Nix-on-Droid brings the Nix package manager to Android.
+
+                This app is the terminal-emulator part, built from the
+                `nix-on-droid-app` source repository that F-Droid uses for
+                the `com.termux.nix` package.
+
+                Nix-on-Droid uses a fork of the Termux application as its
+                terminal emulator.
+            '';
+          }
+          {
             appId = "com.termux";
             apkPath = "${termux}/termux.apk";
             metadataYml = ''
@@ -746,6 +773,14 @@
           name = "sign-emacs";
           apkPath = "${emacs}/emacs.apk";
           defaultOut = "emacs-signed.apk";
+        };
+      });
+
+      packages.nix-on-droid = nix-on-droid.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-nix-on-droid";
+          apkPath = "${nix-on-droid}/nix-on-droid.apk";
+          defaultOut = "nix-on-droid-signed.apk";
         };
       });
 
