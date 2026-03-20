@@ -38,6 +38,7 @@ stdenv.mkDerivation {
 
     morphe-cli patch \
       --patches=${morphePatches} \
+      --enable="Hide 'Get Music Premium'" \
       --enable="Change package name" \
       --unsigned \
       --temporary-files-path "$workdir/tmp" \
