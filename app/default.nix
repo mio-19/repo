@@ -237,6 +237,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      termux = pkgs.callPackage ./termux {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       meditrak = pkgs.callPackage ./meditrak {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -474,6 +478,27 @@
             '';
           }
           {
+            appId = "com.termux";
+            apkPath = "${termux}/termux.apk";
+            metadataYml = ''
+              Categories:
+                - Development
+              License: GPL-3.0-only
+              WebSite: https://termux.com
+              SourceCode: https://github.com/termux/termux-app
+              IssueTracker: https://github.com/termux/termux-app/issues
+              Changelog: https://github.com/termux/termux-app/releases
+              Donate: https://termux.com/donate.html
+              OpenCollective: Termux
+              AutoName: Termux
+              Summary: Terminal emulator with Linux packages
+              Description: |-
+                Termux combines terminal emulation with a Linux package collection.
+                This package is built from source from the upstream termux-app
+                repository and follows the F-Droid universal APK build approach.
+            '';
+          }
+          {
             appId = "projects.medicationtracker";
             apkPath = "${meditrak}/meditrak.apk";
             metadataYml = ''
@@ -681,6 +706,14 @@
           name = "sign-thunderbird";
           apkPath = "${thunderbird}/thunderbird.apk";
           defaultOut = "thunderbird-signed.apk";
+        };
+      });
+
+      packages.termux = termux.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-termux";
+          apkPath = "${termux}/termux.apk";
+          defaultOut = "termux-signed.apk";
         };
       });
 
