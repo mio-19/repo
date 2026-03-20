@@ -246,6 +246,10 @@
         inherit morphe-cli;
       };
 
+      youtubeMusicMorphe = pkgs.callPackage ./youtube-music {
+        inherit morphe-cli;
+      };
+
       thunderbird = pkgs.callPackage ./thunderbird {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -486,6 +490,22 @@
               Description: |-
                 YouTube Morphe is a patched YouTube APK built with Morphe patches
                 and installed under an alternate package name.
+            '';
+          }
+          {
+            appId = "app.morphe.android.apps.youtube.music";
+            apkPath = "${youtubeMusicMorphe}/youtube-music-morphe.apk";
+            metadataYml = ''
+              Categories:
+                - Multimedia
+              License: Proprietary
+              SourceCode: https://github.com/MorpheApp/morphe-patches
+              IssueTracker: https://github.com/MorpheApp/morphe-patches/issues
+              AutoName: YouTube Music Morphe
+              Summary: Patched YouTube Music APK with package rename
+              Description: |-
+                YouTube Music Morphe is a patched YouTube Music APK built with
+                Morphe patches and installed under an alternate package name.
             '';
           }
           {
@@ -798,6 +818,14 @@
           name = "sign-youtube-morphe";
           apkPath = "${youtubeMorphe}/youtube-morphe.apk";
           defaultOut = "youtube-morphe-signed.apk";
+        };
+      });
+
+      packages.youtube-music-morphe = youtubeMusicMorphe.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-youtube-music-morphe";
+          apkPath = "${youtubeMusicMorphe}/youtube-music-morphe.apk";
+          defaultOut = "youtube-music-morphe-signed.apk";
         };
       });
 
