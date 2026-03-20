@@ -16,24 +16,24 @@ let
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
-    s.platforms-android-34
-    s.build-tools-34-0-0
+    s.platforms-android-36
+    s.build-tools-36-0-0
     s.ndk-25-2-9519653
   ]);
 
-  versionCode = "300200029";
+  versionCode = "310050029";
   androidAbi = "arm64-v8a";
   minSdk = "29";
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "emacs";
-  version = "30.2";
+  version = "31.0.50";
 
   src = fetchFromGitHub {
     owner = "emacs-mirror";
     repo = "emacs";
-    rev = "emacs-${finalAttrs.version}";
-    hash = "sha256-3Lfb3HqdlXqSnwJfxe7npa4GGR9djldy8bKRpkQCdSA=";
+    rev = "c852297037cbf5fad63dc548530491e2d9fa3b48";
+    hash = "sha256-PNeXgSZ1zYVDyiIw6Wi1Kn7o0vM7VUty0+xCmkoHNAg=";
   };
 
   nativeBuildInputs = [
@@ -73,12 +73,12 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preConfigure
 
     ./configure \
-      --with-android="${androidSdk}/share/android-sdk/platforms/android-34/android.jar" \
+      --with-android="${androidSdk}/share/android-sdk/platforms/android-36/android.jar" \
       --with-gnutls=ifavailable \
       --without-android-debug \
       --with-shared-user-id=com.termux \
       ANDROID_CC="${androidSdk}/share/android-sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android${minSdk}-clang" \
-      SDK_BUILD_TOOLS="${androidSdk}/share/android-sdk/build-tools/34.0.0"
+      SDK_BUILD_TOOLS="${androidSdk}/share/android-sdk/build-tools/36.0.0"
 
     runHook postConfigure
   '';
@@ -92,14 +92,7 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    apk="$out/emacs.apk"
-    install -Dm644 "java/emacs-${finalAttrs.version}-${minSdk}-${androidAbi}.apk" "$apk"
-
-    chmod u+w "$apk"
-    zip -q -d "$apk" 'assets/lisp/*.elc' 'assets/lisp/*/*.elc' 'assets/lisp/*/*/*.elc' \
-      'assets/lisp/*/*/*/*.elc' 'assets/info/*.elc'
-    "${androidSdk}/share/android-sdk/build-tools/34.0.0/zipalign" -f 4 "$apk" "$apk.aligned"
-    mv "$apk.aligned" "$apk"
+    install -Dm644 "java/emacs-${finalAttrs.version}-${minSdk}-${androidAbi}.apk" "$out/emacs.apk"
 
     runHook postInstall
   '';
