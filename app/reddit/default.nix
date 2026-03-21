@@ -16,10 +16,10 @@ let
   ]);
 
   redditXapk = fetchurl {
-    # APKPure page: https://apkpure.com/reddit-app/com.reddit.frontpage/download/2026.04.0
-    name = "reddit-2026.04.0.xapk";
-    url = "https://web.archive.org/web/20260321001122if_/https://d-14.winudf.com/b/XAPK/Y29tLnJlZGRpdC5mcm9udHBhZ2VfMjYwNDA0MV8zYTZiNjQxMg?_fn=UmVkZGl0XzIwMjYuMDQuMF9BUEtQdXJlLnhhcGs&_p=Y29tLnJlZGRpdC5mcm9udHBhZ2U%3D&download_id=otr_1945302452763944&is_hot=true&k=5a05c58f7ddcb913b586d3ab3e9ebac869bf3364";
-    hash = "sha256-8bSHG+zZXj/pWiDztoQR+5PpzrecXHiP9QTty9BOlfA=";
+    # APKPure page: https://apkpure.com/reddit-app/com.reddit.frontpage/download/2026.10.0
+    name = "reddit-2026.10.0.xapk";
+    url = "https://web.archive.org/web/20260321014813/https://d-e03.winudf.com/b/XAPK/Y29tLnJlZGRpdC5mcm9udHBhZ2VfMjYxMDExMV82NDQ3NzhhMA?_fn=UmVkZGl0XzIwMjYuMTAuMF9BUEtQdXJlLnhhcGs&_p=Y29tLnJlZGRpdC5mcm9udHBhZ2U%3D&download_id=otr_1288900400242495&is_hot=false&k=d4e785d5506f5669ef2435f252b6507e69bf4a45&uu=https%3A%2F%2Fd-12.winudf.com%2Fb%2FXAPK%2FY29tLnJlZGRpdC5mcm9udHBhZ2VfMjYxMDExMV82NDQ3NzhhMA%3Fk%3De687161b965656916cbd871934051b1369bf4a45";
+    hash = "sha256-0T6VT/G2FU3uvk9RGd17aQJFAqxVF18lbpIzncyEvDw=";
   };
 
   morphePatches = fetchurl {
@@ -30,7 +30,7 @@ let
 in
 stdenv.mkDerivation {
   pname = "reddit-morphe";
-  version = "2026.04.0-patches-1.20.0";
+  version = "2026.10.0-patches-1.20.0";
 
   dontUnpack = true;
 
