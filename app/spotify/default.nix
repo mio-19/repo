@@ -40,7 +40,6 @@ stdenv.mkDerivation {
     revanced-cli patch \
       -b \
       -p ${revancedBundle} \
-      -e "Change package name" \
       -o "$workdir/spotify-revanced.apk" \
       "$workdir/spotify-base.apk"
 

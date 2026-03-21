@@ -559,7 +559,7 @@
             '';
           }
           {
-            appId = "com.spotify.music.revanced";
+            appId = "com.spotify.music";
             apkPath = "${spotifyRevanced}/spotify-revanced.apk";
             metadataYml = ''
               Categories:
@@ -568,10 +568,10 @@
               SourceCode: https://github.com/ReVanced/revanced-patches
               IssueTracker: https://github.com/ReVanced/revanced-patches/issues
               AutoName: Spotify ReVanced
-              Summary: Patched Spotify APK with package rename
+              Summary: Patched Spotify APK
               Description: |-
                 Spotify ReVanced is a patched Spotify APK built with ReVanced
-                patches and installed under an alternate package name.
+                patches and kept under the original package name.
             '';
           }
           {
