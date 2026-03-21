@@ -1,0 +1,33 @@
+--- a/src/main/kotlin/app/revanced/patches/gradle/PatchesPlugin.kt
++++ b/src/main/kotlin/app/revanced/patches/gradle/PatchesPlugin.kt
+@@ -232,18 +232,18 @@
+  * Configure the manifest file with the "about" information from the extension.
+  */
+ private fun Project.configureJarTask(patchesExtension: PatchesExtension) {
+-    tasks.withType(Jar::class.java).configureEach {
+-        it.archiveExtension.set("rvp")
+-        it.manifest.apply {
+-            attributes["Name"] = patchesExtension.about.name
+-            attributes["Description"] = patchesExtension.about.description
+-            attributes["Version"] = project.version.toString()
+-            attributes["Timestamp"] = System.currentTimeMillis().toString()
+-            attributes["Source"] = patchesExtension.about.source
+-            attributes["Author"] = patchesExtension.about.author
+-            attributes["Contact"] = patchesExtension.about.contact
+-            attributes["Website"] = patchesExtension.about.website
+-            attributes["License"] = patchesExtension.about.license
++    tasks.withType(Jar::class.java).configureEach { jar ->
++        jar.archiveExtension.set("rvp")
++        jar.doFirst {
++            jar.manifest.attributes["Name"] = patchesExtension.about.name
++            jar.manifest.attributes["Description"] = patchesExtension.about.description
++            jar.manifest.attributes["Version"] = project.version.toString()
++            jar.manifest.attributes["Timestamp"] = System.currentTimeMillis().toString()
++            jar.manifest.attributes["Source"] = patchesExtension.about.source
++            jar.manifest.attributes["Author"] = patchesExtension.about.author
++            jar.manifest.attributes["Contact"] = patchesExtension.about.contact
++            jar.manifest.attributes["Website"] = patchesExtension.about.website
++            jar.manifest.attributes["License"] = patchesExtension.about.license
+         }
+     }
+ }

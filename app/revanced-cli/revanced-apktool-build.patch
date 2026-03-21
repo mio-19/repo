@@ -1,0 +1,25 @@
+--- build.gradle.kts
++++ build.gradle.kts
+@@ -97,11 +97,7 @@
+         publishing {
+             repositories {
+                 maven {
+-                    url = uri("https://maven.pkg.github.com/revanced/Apktool")
+-                    credentials {
+-                        username = System.getenv("GITHUB_ACTOR") ?: project.findProperty("gpr.user").toString()
+-                        password = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.key").toString()
+-                    }
++                    url = uri("file://" + System.getenv("HOME") + "/.m2/repository")
+                 }
+             }
+             publications {
+@@ -162,3 +158,9 @@
+ tasks.wrapper {
+     distributionType = Wrapper.DistributionType.ALL
+ }
++
++allprojects {
++    tasks.withType<org.gradle.plugins.signing.Sign>().configureEach {
++        enabled = false
++    }
++}

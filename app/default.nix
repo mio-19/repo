@@ -256,6 +256,11 @@
         inherit morphe-cli;
       };
 
+      spotifyRevanced = pkgs.callPackage ./spotify {
+        apkeditor = pkgs.apkeditor;
+        inherit revanced-cli revanced-patches;
+      };
+
       thunderbird = pkgs.callPackage ./thunderbird {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -345,6 +350,29 @@
         apktool-src = sources.morphe_apktool.src;
         multidexlib2-src = sources.morphe_multidexlib2.src;
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+      revanced-jadb-m2 = pkgs.callPackage ./revanced-cli/revanced-jadb-m2.nix { };
+      revanced-apktool-m2 = pkgs.callPackage ./revanced-cli/revanced-apktool-m2.nix {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+      revanced-multidexlib2-m2 = pkgs.callPackage ./revanced-cli/revanced-multidexlib2-m2.nix { };
+      revanced-patcher-m2 = pkgs.callPackage ./revanced-cli/revanced-patcher-m2.nix {
+        inherit revanced-apktool-m2 revanced-multidexlib2-m2;
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+      revanced-library-m2 = pkgs.callPackage ./revanced-cli/revanced-library-m2.nix {
+        inherit revanced-jadb-m2 revanced-patcher-m2;
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+      revanced-patches-gradle-plugin =
+        pkgs.callPackage ./revanced-cli/revanced-patches-gradle-plugin.nix
+          { };
+      revanced-patches = pkgs.callPackage ./revanced-cli/revanced-patches.nix {
+        inherit revanced-patches-gradle-plugin revanced-patcher-m2;
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+      revanced-cli = pkgs.callPackage ./revanced-cli/default.nix {
+        inherit revanced-library-m2 revanced-patcher-m2;
       };
       fdroid-basic = pkgs.callPackage ./fdroid-basic {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
@@ -528,6 +556,22 @@
               Description: |-
                 Reddit Morphe is a patched Reddit APK built with Morphe patches
                 and installed under an alternate package name.
+            '';
+          }
+          {
+            appId = "com.spotify.music.revanced";
+            apkPath = "${spotifyRevanced}/spotify-revanced.apk";
+            metadataYml = ''
+              Categories:
+                - Multimedia
+              License: Proprietary
+              SourceCode: https://github.com/ReVanced/revanced-patches
+              IssueTracker: https://github.com/ReVanced/revanced-patches/issues
+              AutoName: Spotify ReVanced
+              Summary: Patched Spotify APK with package rename
+              Description: |-
+                Spotify ReVanced is a patched Spotify APK built with ReVanced
+                patches and installed under an alternate package name.
             '';
           }
           {
@@ -859,6 +903,14 @@
         };
       });
 
+      packages.spotify-revanced = spotifyRevanced.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-spotify-revanced";
+          apkPath = "${spotifyRevanced}/spotify-revanced.apk";
+          defaultOut = "spotify-revanced-signed.apk";
+        };
+      });
+
       packages.thunderbird = thunderbird.overrideAttrs (_: {
         passthru.signScript = mkSignScript {
           name = "sign-thunderbird";
@@ -999,6 +1051,14 @@
       packages.morphe-patches-gradle-plugin = morphe-patches-gradle-plugin;
       packages.morphe-cli = morphe-cli;
       packages.morphe-patches = morphe-patches;
+      packages.revanced-jadb-m2 = revanced-jadb-m2;
+      packages.revanced-apktool-m2 = revanced-apktool-m2;
+      packages.revanced-multidexlib2-m2 = revanced-multidexlib2-m2;
+      packages.revanced-patcher-m2 = revanced-patcher-m2;
+      packages.revanced-library-m2 = revanced-library-m2;
+      packages.revanced-patches-gradle-plugin = revanced-patches-gradle-plugin;
+      packages.revanced-patches = revanced-patches;
+      packages.revanced-cli = revanced-cli;
 
       packages.fdroid-basic = fdroid-basic.overrideAttrs (_: {
         passthru.signScript = mkSignScript {
