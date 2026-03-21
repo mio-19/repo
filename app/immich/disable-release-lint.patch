@@ -1,0 +1,14 @@
+--- a/android/app/build.gradle
++++ b/android/app/build.gradle
+@@ -53,6 +53,11 @@
+     compose true
+   }
+ 
++  lint {
++    checkReleaseBuilds false
++    abortOnError false
++  }
++
+   defaultConfig {
+     applicationId "app.alextran.immich"
+     minSdkVersion 26

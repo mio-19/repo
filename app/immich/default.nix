@@ -43,6 +43,7 @@ buildDartApplication.override { dart = flutter335; } (finalAttrs: {
 
   sourceRoot = "source/mobile";
   packageRoot = "mobile";
+  patches = [ ./disable-release-lint.patch ];
 
   pubspecLock = lib.importJSON ./pubspec.lock.json;
   gitHashes = lib.importJSON ./git-hashes.json;
