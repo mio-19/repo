@@ -1,0 +1,87 @@
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -14,6 +14,11 @@ tasks.withType(Test).configureEach {
+ }
+ 
+ final def getVersionCode = { ->
++    final def versionCodeOverride = System.getenv('GADGETBRIDGE_VERSION_CODE')
++    if (versionCodeOverride != null && !versionCodeOverride.isBlank()) {
++        return Integer.valueOf(versionCodeOverride)
++    }
++
+     try {
+         final def commitCount = providers.exec {
+             commandLine('git', 'rev-list', 'HEAD', '--count')
+@@ -27,31 +32,36 @@ final def getVersionCode = { ->
+ tasks.register("buildGitChangelog"){
+     final def changelogFile = new File("${project.rootDir}/app/build/generated/res/changelog/xml/changelog_git.xml")
+ 
+-    inputs.file(project.rootProject.file(".git/HEAD"))
+     outputs.file(changelogFile)
+ 
+     doLast {
+-        final def allCommits = providers.exec {
+-            commandLine('git', 'log', '--pretty=format:%h %s')
+-        }.standardOutput.asText.get()
+-
+         def commitVersionCode = getVersionCode()
+-        def includedCommits = 0
+         final def changelogNode = new Node(null, 'changelog')
+ 
+-        allCommits.trim().eachLine { final line ->
+-            if (includedCommits > 100) {
+-                return true
+-            }
+-
+-            final def (commitHash, commitMessage) = line.split(" ", 2)
+-            if (commitMessage.contains("Translated using Weblate")) {
+-                return true
++        try {
++            inputs.file(project.rootProject.file(".git/HEAD"))
++            final def allCommits = providers.exec {
++                commandLine('git', 'log', '--pretty=format:%h %s')
++            }.standardOutput.asText.get()
++
++            def includedCommits = 0
++            allCommits.trim().eachLine { final line ->
++                if (includedCommits > 100) {
++                    return true
++                }
++
++                final def (commitHash, commitMessage) = line.split(" ", 2)
++                if (commitMessage.contains("Translated using Weblate")) {
++                    return true
++                }
++
++                final def releaseNode = new Node(changelogNode, 'release', [version: commitHash, versioncode: commitVersionCode--])
++                def _ = new Node(releaseNode, 'change', [:], commitMessage)
++                includedCommits++
+             }
+-
+-            final def releaseNode = new Node(changelogNode, 'release', [version: commitHash, versioncode: commitVersionCode--])
+-            def _ = new Node(releaseNode, 'change', [:], commitMessage)
+-            includedCommits++
++        } catch (ignored) {
++            final def releaseNode = new Node(changelogNode, 'release', [version: 'release', versioncode: commitVersionCode ?: 0])
++            def _ = new Node(releaseNode, 'change', [:], "Gadgetbridge ${android.defaultConfig.versionName}")
+         }
+ 
+         changelogFile.getParentFile().mkdirs()
+@@ -60,12 +70,17 @@ tasks.register("buildGitChangelog"){
+ }
+ 
+ final def getGitHashShort = { ->
++    final def gitHashOverride = System.getenv('GADGETBRIDGE_GIT_HASH_SHORT')
++    if (gitHashOverride != null && !gitHashOverride.isBlank()) {
++        return gitHashOverride
++    }
++
+     try {
+         return providers.exec {
+             commandLine('git', 'rev-parse', '--short', 'HEAD')
+         }.standardOutput.asText.get().trim()
+     } catch (ignored) {
+-        return null
++        return "release"
+     }
+ }
