@@ -1,0 +1,220 @@
+diff -ruN src.orig/build.gradle.kts src/build.gradle.kts
+--- src.orig/build.gradle.kts	2026-03-21 22:23:45.648640365 +1100
++++ src/build.gradle.kts	2026-03-21 22:23:45.820640849 +1100
+@@ -1,8 +1,6 @@
+ plugins {
+     alias(libs.plugins.android.application) apply false
+     alias(libs.plugins.ben.manes.versions)
+-    alias(libs.plugins.crashlytics) apply false
+-    alias(libs.plugins.google.services) apply false
+     alias(libs.plugins.kotlin.android) apply false
+     alias(libs.plugins.ksp) apply false
+ }
+diff -ruN src.orig/mobile/build.gradle.kts src/mobile/build.gradle.kts
+--- src.orig/mobile/build.gradle.kts	2026-03-21 22:23:45.650640371 +1100
++++ src/mobile/build.gradle.kts	2026-03-21 22:23:45.820640849 +1100
+@@ -3,10 +3,8 @@
+ plugins {
+     alias(libs.plugins.aboutLibraries)
+     alias(libs.plugins.android.application)
+-    alias(libs.plugins.crashlytics)
+     alias(libs.plugins.kotlin.compose)
+     alias(libs.plugins.ksp)
+-    alias(libs.plugins.google.services)
+     kotlin("android")
+     kotlin("kapt")
+     id("kotlin-parcelize")
+@@ -78,8 +76,6 @@
+     implementation(libs.core.ktx)
+     implementation(libs.dexmaker)
+     implementation(libs.dnsjava)
+-    implementation(libs.firebase.analytics)
+-    implementation(libs.firebase.crashlytics)
+     implementation(libs.foundation.layout)
+     implementation(libs.fragment.ktx)
+     implementation(libs.hiddenapibypass)
+@@ -91,7 +87,6 @@
+     implementation(libs.lifecycle.runtime.ktx)
+     implementation(libs.material)
+     implementation(libs.material3.android)
+-    implementation(libs.play.services.oss.licenses)
+     implementation(libs.preference)
+     implementation(libs.preferencex.simplemenu)
+     implementation(libs.room.ktx)
+diff -ruN src.orig/mobile/src/main/java/be/mygod/vpnhotspot/App.kt src/mobile/src/main/java/be/mygod/vpnhotspot/App.kt
+--- src.orig/mobile/src/main/java/be/mygod/vpnhotspot/App.kt	2026-03-21 22:23:45.662640405 +1100
++++ src/mobile/src/main/java/be/mygod/vpnhotspot/App.kt	2026-03-21 22:23:45.820640849 +1100
+@@ -4,10 +4,8 @@
+ import android.app.Application
+ import android.content.ActivityNotFoundException
+ import android.content.ClipboardManager
+-import android.content.ContentProvider
+ import android.content.Context
+ import android.content.Intent
+-import android.content.pm.ProviderInfo
+ import android.content.res.Configuration
+ import android.location.LocationManager
+ import android.os.Build
+@@ -27,21 +25,12 @@
+ import be.mygod.vpnhotspot.root.RootManager
+ import be.mygod.vpnhotspot.util.DeviceStorageApp
+ import be.mygod.vpnhotspot.util.Services
+-import be.mygod.vpnhotspot.util.privateLookup
+ import be.mygod.vpnhotspot.widget.SmartSnackbar
+-import com.google.android.gms.dynamite.DynamiteModule
+-import com.google.firebase.analytics.ParametersBuilder
+-import com.google.firebase.analytics.ktx.analytics
+-import com.google.firebase.analytics.logEvent
+-import com.google.firebase.crashlytics.FirebaseCrashlytics
+-import com.google.firebase.ktx.Firebase
+-import com.google.firebase.provider.FirebaseInitProvider
+ import kotlinx.coroutines.DEBUG_PROPERTY_NAME
+ import kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON
+ import kotlinx.coroutines.GlobalScope
+ import kotlinx.coroutines.launch
+ import timber.log.Timber
+-import java.lang.invoke.MethodType
+ import java.util.Locale
+ 
+ class App : Application() {
+@@ -63,31 +52,24 @@
+ 
+         // overhead of debug mode is minimal: https://github.com/Kotlin/kotlinx.coroutines/blob/f528898/docs/debugging.md#debug-mode
+         System.setProperty(DEBUG_PROPERTY_NAME, DEBUG_PROPERTY_VALUE_ON)
+-        DynamiteModule::class.java.getDeclaredField("zzf").apply { isAccessible = true }.set(null, false)
+-        // call super.attachInfo get around ProviderInfo check
+-        FirebaseInitProvider::class.java.privateLookup().findSpecial(ContentProvider::class.java, "attachInfo",
+-            MethodType.methodType(Void.TYPE, Context::class.java, ProviderInfo::class.java),
+-            FirebaseInitProvider::class.java).bindTo(FirebaseInitProvider()).invokeWithArguments(deviceStorage, null)
+-        FirebaseCrashlytics.getInstance().apply {
+-            setCustomKey("uname.release", Os.uname().release)
+-            setCustomKey("build", Build.DISPLAY)
+-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) setCustomKey("extension_s",
+-                SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S))
+-        }
++        Timber.i(
++            "App start: uname.release=%s, build=%s, extension_s=%s",
++            Os.uname().release,
++            Build.DISPLAY,
++            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
++                SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S).toString()
++            } else "n/a",
++        )
+         Timber.plant(object : Timber.DebugTree() {
+             @SuppressLint("LogNotTimber")
+             override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+                 if (t == null) {
+                     if (priority != Log.DEBUG || BuildConfig.DEBUG) Log.println(priority, tag, message)
+-                    FirebaseCrashlytics.getInstance().log("${"XXVDIWEF".getOrElse(priority) { 'X' }}/$tag: $message")
+                 } else {
+                     if (priority >= Log.WARN || priority == Log.DEBUG) {
+                         Log.println(priority, tag, message)
+                         Log.w(tag, message, t)
+                     }
+-                    if (priority >= Log.INFO && t !is NoShellException) {
+-                        FirebaseCrashlytics.getInstance().recordException(t)
+-                    }
+                 }
+             }
+         })
+@@ -111,11 +93,20 @@
+      * This method is used to log "expected" and well-handled errors, i.e. we care less about logs, etc.
+      * logException is inappropriate sometimes because it flushes all logs that could be used to investigate other bugs.
+      */
+-    fun logEvent(@Size(min = 1L, max = 40L) event: String, block: ParametersBuilder.() -> Unit = { }) {
+-        Firebase.analytics.logEvent(event) {
+-            block(this)
+-            Timber.i(if (bundle.isEmpty) event else "$event, extras: $bundle")
++    class EventLogger {
++        private val params = linkedMapOf<String, String>()
++
++        fun param(key: String, value: String) {
++            params[key] = value
+         }
++
++        internal fun format() = params.toString()
++    }
++
++    fun logEvent(@Size(min = 1L, max = 40L) event: String, block: EventLogger.() -> Unit = { }) {
++        val logger = EventLogger().apply(block)
++        val extras = logger.format()
++        Timber.i(if (extras == "{}") event else "$event, extras: $extras")
+     }
+ 
+     /**
+diff -ruN src.orig/mobile/src/main/java/be/mygod/vpnhotspot/net/wifi/P2pSupplicantConfiguration.kt src/mobile/src/main/java/be/mygod/vpnhotspot/net/wifi/P2pSupplicantConfiguration.kt
+--- src.orig/mobile/src/main/java/be/mygod/vpnhotspot/net/wifi/P2pSupplicantConfiguration.kt	2026-03-21 22:23:45.678640450 +1100
++++ src/mobile/src/main/java/be/mygod/vpnhotspot/net/wifi/P2pSupplicantConfiguration.kt	2026-03-21 22:23:45.822640855 +1100
+@@ -6,8 +6,6 @@
+ import be.mygod.vpnhotspot.net.MacAddressCompat
+ import be.mygod.vpnhotspot.root.RepeaterCommands
+ import be.mygod.vpnhotspot.root.RootManager
+-import com.google.firebase.crashlytics.CustomKeysAndValues
+-import com.google.firebase.crashlytics.FirebaseCrashlytics
+ 
+ /**
+  * This parser is based on:
+@@ -134,11 +132,12 @@
+             }
+             content = Content(result, target!!, persistentMacLine, legacy)
+         } catch (e: Exception) {
+-            FirebaseCrashlytics.getInstance().recordException(e, CustomKeysAndValues.Builder().apply {
+-                putString("config", config)
+-                ownerAddress?.let { putString("ownerAddress", it) }
+-                putString("p2pGroup", group.toString())
+-            }.build())
++            be.mygod.vpnhotspot.App.Companion.app.logEvent("p2p_config_parse_failure") {
++                param("config", config)
++                ownerAddress?.let { param("ownerAddress", it) }
++                param("p2pGroup", group.toString())
++                param("cause", e.toString())
++            }
+             throw LoggedException(e)
+         }
+     }
+diff -ruN src.orig/mobile/src/main/java/be/mygod/vpnhotspot/root/RootManager.kt src/mobile/src/main/java/be/mygod/vpnhotspot/root/RootManager.kt
+--- src.orig/mobile/src/main/java/be/mygod/vpnhotspot/root/RootManager.kt	2026-03-21 22:23:45.652640376 +1100
++++ src/mobile/src/main/java/be/mygod/vpnhotspot/root/RootManager.kt	2026-03-21 22:23:45.820640849 +1100
+@@ -14,7 +14,6 @@
+ import be.mygod.vpnhotspot.App.Companion.app
+ import be.mygod.vpnhotspot.util.Services
+ import be.mygod.vpnhotspot.util.UnblockCentral
+-import com.google.firebase.crashlytics.FirebaseCrashlytics
+ import kotlinx.coroutines.CancellationException
+ import kotlinx.coroutines.CoroutineScope
+ import kotlinx.coroutines.GlobalScope
+@@ -80,7 +79,7 @@
+     override suspend fun initServer(server: RootServer) {
+         Logger.me = this
+         AppProcess.shouldRelocateHeuristics.let {
+-            FirebaseCrashlytics.getInstance().setCustomKey("RootManager.relocateEnabled", it)
++            Timber.i("RootManager.relocateEnabled=%s", it)
+             server.init(app, it)
+         }
+         server.execute(RootInit())
+diff -ruN src.orig/mobile/src/main/java/be/mygod/vpnhotspot/AboutLibrariesActivity.kt src/mobile/src/main/java/be/mygod/vpnhotspot/AboutLibrariesActivity.kt
+--- src.orig/mobile/src/main/java/be/mygod/vpnhotspot/AboutLibrariesActivity.kt	2026-03-22 03:18:38.970834222 +1100
++++ src/mobile/src/main/java/be/mygod/vpnhotspot/AboutLibrariesActivity.kt	2026-03-22 03:18:39.008834223 +1100
+@@ -44,7 +44,7 @@
+                 Scaffold(
+                     topBar = {
+                         TopAppBar(
+-                            title = { Text(stringResource(com.google.android.gms.oss.licenses.R.string.oss_license_title)) },
++                            title = { Text("Open source licenses") },
+                             colors = TopAppBarDefaults.topAppBarColors(
+                                 containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                             )
+diff -ruN src.orig/mobile/src/main/res/xml/pref_settings.xml src/mobile/src/main/res/xml/pref_settings.xml
+--- src.orig/mobile/src/main/res/xml/pref_settings.xml	2026-03-22 03:14:56.228825243 +1100
++++ src/mobile/src/main/res/xml/pref_settings.xml	2026-03-22 03:14:56.250825245 +1100
+@@ -99,10 +99,5 @@
+             app:icon="@drawable/ic_action_card_giftcard"
+             app:title="@string/settings_misc_donate"
+             app:summary="@string/settings_misc_donate_summary"/>
+-        <Preference
+-            app:key="misc.licenses"
+-            app:icon="@drawable/ic_action_code"
+-            app:title="@string/oss_license_title"
+-            app:summary="@string/preferences_license_summary"/>
+     </PreferenceCategory>
+ </PreferenceScreen>

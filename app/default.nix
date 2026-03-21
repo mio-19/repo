@@ -332,6 +332,9 @@
       haven = pkgs.callPackage ./haven {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
+      vpnhotspot = pkgs.callPackage ./vpnhotspot {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
       archivetune = pkgs.callPackage ./archivetune {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -710,6 +713,34 @@
             '';
           }
           {
+            appId = "be.mygod.vpnhotspot";
+            apkPath = "${vpnhotspot}/vpnhotspot.apk";
+            metadataYml = ''
+              Categories:
+                - Connectivity
+                - VPN & Proxy
+              License: Apache-2.0
+              AuthorName: Mygod Studio
+              AuthorEmail: contact-vpnhotspot@mygod.be
+              WebSite: https://mygod.be/
+              SourceCode: https://github.com/Mygod/VPNHotspot
+              IssueTracker: https://github.com/Mygod/VPNHotspot/issues
+              Changelog: https://github.com/Mygod/VPNHotspot/releases
+              Donate: https://mygod.be/donate/
+              AutoName: VPN Hotspot
+              Summary: Share VPN connections over hotspot and tethering
+              Description: |-
+                VPN Hotspot helps share a VPN connection over Wi-Fi hotspot,
+                USB tethering, Bluetooth tethering, and related Android
+                networking paths.
+
+                This package is built from source and follows the F-Droid
+                packaging approach, with Google services removed for a fully
+                libre build.
+              RequiresRoot: true
+            '';
+          }
+          {
             appId = "projects.medicationtracker";
             apkPath = "${meditrak}/meditrak.apk";
             metadataYml = ''
@@ -983,6 +1014,14 @@
           name = "sign-gadgetbridge";
           apkPath = "${gadgetbridge}/gadgetbridge.apk";
           defaultOut = "gadgetbridge-signed.apk";
+        };
+      });
+
+      packages.vpnhotspot = vpnhotspot.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-vpnhotspot";
+          apkPath = "${vpnhotspot}/vpnhotspot.apk";
+          defaultOut = "vpnhotspot-signed.apk";
         };
       });
 
