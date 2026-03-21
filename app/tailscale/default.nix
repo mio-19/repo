@@ -2,112 +2,32 @@
   lib,
   stdenv,
   stdenvNoCC,
-  buildGoModule,
   fetchFromGitHub,
-  fetchurl,
   androidSdkBuilder,
   gradle-packages,
-  go_1_24,
   go_1_26,
   jdk17,
-  makeWrapper,
   writableTmpDirAsHomeHook,
   gnumake,
   zip,
   unzip,
-  zlib,
 }:
 let
   version = "1.96.2";
+  rev = "a82504d6b278d1c2cf55191395a9d063574ea66b";
 
   src = fetchFromGitHub {
     owner = "tailscale";
     repo = "tailscale-android";
-    rev = "1.96.2-td916d8651-ga82504d6b";
+    inherit rev;
     hash = "sha256-1RWHKUzqbiK/fOkkOdjAhQ/F/qU1rOVqEa8ANv7zW+c=";
-  };
-
-  goToolchainRev = "5cce30e20c1fc6d8463b0a99acdd9777c4ad124b";
-
-  tailscaleGoToolchain = fetchurl {
-    url = "https://github.com/tailscale/go/releases/download/build-${goToolchainRev}/linux-amd64.tar.gz";
-    hash = "sha256-DBVVWSLjaufFWIchBwy/cLYLaGeZ9lHuu0ptzC9XBPY=";
   };
 
   xMobileSrc = fetchFromGitHub {
     owner = "golang";
     repo = "mobile";
     rev = "81131f6468ab";
-    hash = "sha256-LIFK+KQPgpzZqh7U92fEnCSHBSVF8HPv9lIVhWy5xBo=";
-  };
-
-  gomobilePinned = buildGoModule {
-    pname = "gomobile-tailscale";
-    version = "81131f6468ab";
-    src = xMobileSrc;
-    vendorHash = "sha256-SD5FXRG5nDGVDWAG9dOhVm1ga3NBV8iEBtjiaFTFLIU=";
-    doCheck = false;
-    nativeBuildInputs = [ makeWrapper ];
-    subPackages = [
-      "bind"
-      "cmd/gobind"
-      "cmd/gomobile"
-    ];
-    go = go_1_24;
-
-    postInstall = ''
-      mkdir -p $out/src/golang.org/x
-      ln -s $src $out/src/golang.org/x/mobile
-    '';
-
-    postFixup = ''
-      for prog in gomobile gobind; do
-        wrapProgram $out/bin/$prog \
-          --suffix GOPATH : $out \
-          --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ zlib ]}"
-      done
-    '';
-  };
-
-  goVendor = stdenvNoCC.mkDerivation {
-    pname = "tailscale-go-vendor";
-    inherit version src;
-
-    nativeBuildInputs = [ jdk17 ];
-
-    outputHashMode = "recursive";
-    outputHashAlgo = "sha256";
-    outputHash = "sha256-hDZL0OAH7/iknhnEcvXmzWKMDwnJ2SfnyobAsm/qPsI=";
-
-    dontConfigure = true;
-    dontFixup = true;
-
-    buildPhase = ''
-      runHook preBuild
-
-      export HOME="$TMPDIR/home"
-      mkdir -p "$HOME"
-      export GOCACHE="$TMPDIR/go-cache"
-      export GOPATH="$TMPDIR/go"
-      export PATH="$TMPDIR/go-toolchain/bin:$PATH"
-
-      mkdir -p "$TMPDIR/go-toolchain"
-      tar -xzf ${tailscaleGoToolchain} -C "$TMPDIR/go-toolchain" --strip-components=1
-
-      cp -R "$src" source
-      chmod -R u+w source
-      cd source
-
-      go mod vendor
-
-      runHook postBuild
-    '';
-
-    installPhase = ''
-      runHook preInstall
-      cp -R vendor "$out"
-      runHook postInstall
-    '';
+    hash = "sha256-/WelLIFKCHuMZnRnaWFvBo8wZB33fRJurbbFEs16tG0=";
   };
 
   goModCache = stdenvNoCC.mkDerivation {
@@ -118,7 +38,7 @@ let
 
     outputHashMode = "recursive";
     outputHashAlgo = "sha256";
-    outputHash = "sha256-CG825wTedXiobnEyhdN+au4CYmg2UfhonMxRzHsQFJc=";
+    outputHash = "sha256-ehqH2q9/+Nj86BQEfQ6OXKmSUr2/GM8GS5p1DD+lyAY=";
 
     dontConfigure = true;
     dontFixup = true;
@@ -131,10 +51,17 @@ let
       export GOPATH="$TMPDIR/go"
       export GOCACHE="$TMPDIR/go-build-cache"
       export GOMODCACHE="$TMPDIR/go-mod-cache"
+      export GOPROXY=https://proxy.golang.org,direct
+      export GOSUMDB=sum.golang.org
 
       cp -R "$src" source
       chmod -R u+w source
       cd source
+
+      cp -R ${xMobileSrc} x-mobile
+      chmod -R u+w x-mobile
+      patch -d x-mobile -p1 < ${./gomobile-avoid-empty-go-mod.patch}
+      go mod edit -replace=golang.org/x/mobile=./x-mobile
 
       go mod download
 
@@ -180,6 +107,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     gradle
+    go_1_26
     gnumake
     jdk17
     writableTmpDirAsHomeHook
@@ -196,17 +124,12 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2";
   };
 
-  postUnpack = "";
-
   preBuild = ''
     export HOME="$PWD/.home"
-    mkdir -p "$HOME/.android"
+    mkdir -p "$HOME/.android" "$HOME/.cache"
 
     patchShebangs tool build-tags.sh version-ldflags.sh
 
-    export PATH="${go_1_26}/bin:$PATH"
-    export TOOLCHAINDIR="${go_1_26}"
-    export TOOLCHAIN_DIR=1
     export GOCACHE="$TMPDIR/go-cache"
     export GOPATH="$TMPDIR/go"
     export GOMODCACHE="$PWD/.gomodcache"
@@ -214,6 +137,14 @@ stdenv.mkDerivation (finalAttrs: {
     chmod -R u+w "$GOMODCACHE"
     export GOPROXY=off
     export GOSUMDB=off
+
+    cp -R ${xMobileSrc} x-mobile
+    chmod -R u+w x-mobile
+    patch -d x-mobile -p1 < ${./gomobile-avoid-empty-go-mod.patch}
+    go mod edit -replace=golang.org/x/mobile=./x-mobile
+
+    export TOOLCHAINDIR="${go_1_26}/share/go"
+    export PATH="$TOOLCHAINDIR/bin:$PATH"
 
     cat > tailscale.version <<EOF
     VERSION_LONG="${version}"
@@ -229,16 +160,13 @@ stdenv.mkDerivation (finalAttrs: {
     substituteInPlace android/build.gradle \
       --replace-fail 'ndkVersion "23.1.7779620"' 'ndkVersion "26.1.10909125"'
 
+    echo "org.gradle.jvmargs=-Xmx4096m" >> android/gradle.properties
     cat >> android/gradle.properties <<EOF
     android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2
     org.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2
     EOF
 
-    mkdir -p android/build/go/bin
-    cp ${gomobilePinned}/bin/gobind android/build/go/bin/gobind
-    cp ${gomobilePinned}/bin/gomobile android/build/go/bin/gomobile
-    chmod +x android/build/go/bin/gobind android/build/go/bin/gomobile
-
+    make env
     make libtailscale
   '';
 

@@ -1,0 +1,68 @@
+--- a/cmd/gomobile/bind.go
++++ b/cmd/gomobile/bind.go
+@@ -230,10 +230,9 @@
+ 	cmd := exec.Command("go", "list")
+ 	cmd.Env = append(os.Environ(), "GOOS="+platformOS(targetPlatform), "GOARCH="+targetArch)
+ 
+-	tags := append(buildTags[:], platformTags(targetPlatform)...)
+-
+-	// TODO(hyangah): probably we don't need to add all the dependencies.
+-	cmd.Args = append(cmd.Args, "-m", "-json", "-tags="+strings.Join(tags, ","), "all")
++	// Module metadata does not depend on build tags here, and passing
++	// -tags to `go list -m` can make module resolution fail on newer Go.
++	cmd.Args = append(cmd.Args, "-m", "-json", "all")
+ 	cmd.Dir = src
+ 
+ 	output, err := cmd.Output()
+@@ -315,18 +315,19 @@
+ 		return nil
+ 	}
+ 
++	f, err := getModuleVersions(targetPlatform, targetArch, ".")
++	if err != nil {
++		return err
++	}
++	if f == nil {
++		return nil
++	}
++	bs, err := f.Format()
++	if err != nil {
++		return err
++	}
++
+ 	return writeFile(filepath.Join(dir, "go.mod"), func(w io.Writer) error {
+-		f, err := getModuleVersions(targetPlatform, targetArch, ".")
+-		if err != nil {
+-			return err
+-		}
+-		if f == nil {
+-			return nil
+-		}
+-		bs, err := f.Format()
+-		if err != nil {
+-			return err
+-		}
+ 		if _, err := w.Write(bs); err != nil {
+ 			return err
+ 		}
+--- a/cmd/gomobile/bind_androidapp.go
++++ b/cmd/gomobile/bind_androidapp.go
+@@ -379,10 +379,16 @@
+ 			return err
+ 		}
+ 
+-		// Run `go mod tidy` to force to create go.sum.
+-		// Without go.sum, `go build` fails as of Go 1.16.
+-		if err := goModTidyAt(srcDir, env); err != nil {
++		if _, err := os.Stat(filepath.Join(srcDir, "go.mod")); err != nil && !os.IsNotExist(err) {
+ 			return err
++		} else if err == nil {
++			// Run `go mod tidy` to force to create go.sum.
++			// Without go.sum, `go build` fails as of Go 1.16.
++			if err := goModTidyAt(srcDir, env); err != nil {
++				return err
++			}
++		} else {
++			env = append(env, "GO111MODULE=off")
+ 		}
+ 	}
