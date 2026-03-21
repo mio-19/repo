@@ -250,6 +250,12 @@
         inherit morphe-cli;
       };
 
+      redditMorphe = pkgs.callPackage ./reddit {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+        apkeditor = pkgs.apkeditor;
+        inherit morphe-cli;
+      };
+
       thunderbird = pkgs.callPackage ./thunderbird {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -506,6 +512,22 @@
               Description: |-
                 YouTube Music Morphe is a patched YouTube Music APK built with
                 Morphe patches and installed under an alternate package name.
+            '';
+          }
+          {
+            appId = "com.reddit.frontpage.morphe";
+            apkPath = "${redditMorphe}/reddit-morphe.apk";
+            metadataYml = ''
+              Categories:
+                - Internet
+              License: Proprietary
+              SourceCode: https://github.com/MorpheApp/morphe-patches
+              IssueTracker: https://github.com/MorpheApp/morphe-patches/issues
+              AutoName: Reddit Morphe
+              Summary: Patched Reddit APK with package rename
+              Description: |-
+                Reddit Morphe is a patched Reddit APK built with Morphe patches
+                and installed under an alternate package name.
             '';
           }
           {
@@ -826,6 +848,14 @@
           name = "sign-youtube-music-morphe";
           apkPath = "${youtubeMusicMorphe}/youtube-music-morphe.apk";
           defaultOut = "youtube-music-morphe-signed.apk";
+        };
+      });
+
+      packages.reddit-morphe = redditMorphe.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-reddit-morphe";
+          apkPath = "${redditMorphe}/reddit-morphe.apk";
+          defaultOut = "reddit-morphe-signed.apk";
         };
       });
 
