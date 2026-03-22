@@ -11,7 +11,12 @@ callPackage ./grapheneos_kernel_common.nix { } {
   pname = "grapheneos-husky-kernel";
   buildScript = "build_shusky.sh";
   distDir = "shusky";
-  inherit enableKSU enableLindroid enableDaria enableDroidspaces;
+  inherit
+    enableKSU
+    enableLindroid
+    enableDaria
+    enableDroidspaces
+    ;
   extraBuildCommands = ''
     apply_patch ${
       if pwmmode == "0x01" then

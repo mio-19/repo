@@ -153,9 +153,9 @@ stdenvNoCC.mkDerivation {
         sed -i "/endmenu/i\\source \"drivers/lindroid-drm/Kconfig\"" aosp/drivers/Kconfig
 
         cd aosp
-        apply_patch ${./kernel/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch}
+        #see bwlow#apply_patch ${./kernel/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch}
         apply_patch ${./kernel/3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch}
-        apply_patch ${./kernel/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch}
+        #see bwlow#apply_patch ${./kernel/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch}
         cd ..
 
         ${lib.optionalString enableDaria ''
@@ -172,6 +172,20 @@ stdenvNoCC.mkDerivation {
             hash = "sha256-DjVQs4Y/PTCMXMqLyIkz/Wrzpfz/bjF550jsj24jWw0=";
           }
         }
+        # patch same with lindroid ./kernel/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
+        apply_patch ${
+          fetchpatch {
+            url = "https://raw.githubusercontent.com/ravindu644/Droidspaces-OSS/refs/heads/main/Documentation/resources/kernel-patches/GKI/02.fix_restore%20cgroup%20file%20prefix%20handling%20.patch";
+            hash = "sha256-rjHyjy4QtbukDdPrxCzJY6DzXhHHcPHkYHrnWzHIvLQ";
+          }
+        }
+        # patch same with lindroid ./kernel/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch
+        apply_patch ${
+          fetchpatch {
+            url = "https://github.com/ravindu644/Droidspaces-OSS/raw/refs/heads/main/Documentation/resources/kernel-patches/GKI/04.use_android_abi_padding_for_sysvipc_task_struct.patch";
+            hash = "sha256-nGDXr85d7HrxrCr7QKq61XqqNWl+CFjY2ltRStnZCEg=";
+          }
+        }
         cd ..
       ''}
 
@@ -184,22 +198,6 @@ stdenvNoCC.mkDerivation {
             hash = "sha256-JtnZ4U1NstMavQPIOxjyF6TVG4I9/X3qOBPdwJt8/6Q=";
           }
         }
-        ${lib.optionalString (!enableLindroid) ''
-          # patch duplicated with lindroid ./kernel/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
-          apply_patch ${
-            fetchpatch {
-              url = "https://raw.githubusercontent.com/ravindu644/Droidspaces-OSS/refs/heads/main/Documentation/resources/kernel-patches/GKI/02.fix_restore%20cgroup%20file%20prefix%20handling%20.patch";
-              hash = "sha256-rjHyjy4QtbukDdPrxCzJY6DzXhHHcPHkYHrnWzHIvLQ";
-            }
-          }
-          # patch duplicated with lindroid ./kernel/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch
-          apply_patch ${
-            fetchpatch {
-              url = "https://github.com/ravindu644/Droidspaces-OSS/raw/refs/heads/main/Documentation/resources/kernel-patches/GKI/04.use_android_abi_padding_for_sysvipc_task_struct.patch";
-              hash = "sha256-nGDXr85d7HrxrCr7QKq61XqqNWl+CFjY2ltRStnZCEg=";
-            }
-          }
-        ''}
         cd ..
       ''}
 
