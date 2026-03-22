@@ -170,7 +170,7 @@ in
       -validity 10000 \
       -dname "CN=GrapheneOS AppStore,O=GrapheneOS,C=US"
     
-    ${self.packages.${pkgs.stdenv.hostPlatform.system}.appstore.signScript} \
+    ${lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.appstore.signScript} \
       "$keystore" \
       --ks-pass android \
       --out prebuilt/app-release.apk
