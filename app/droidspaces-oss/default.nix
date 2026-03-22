@@ -48,7 +48,7 @@ stdenv.mkDerivation (finalAttrs: {
     '';
   };
 
-  sourceRoot = "Android";
+  sourceRoot = "${finalAttrs.src.name}/Android";
 
   gradleBuildTask = ":app:assembleRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
