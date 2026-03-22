@@ -539,70 +539,6 @@
             '';
           }
           {
-            appId = "app.morphe.android.youtube";
-            apkPath = "${youtubeMorphe}/youtube-morphe.apk";
-            metadataYml = ''
-              Categories:
-                - Multimedia
-              License: Proprietary
-              SourceCode: https://github.com/MorpheApp/morphe-patches
-              IssueTracker: https://github.com/MorpheApp/morphe-patches/issues
-              AutoName: YouTube Morphe
-              Summary: Patched YouTube APK with package rename
-              Description: |-
-                YouTube Morphe is a patched YouTube APK built with Morphe patches
-                and installed under an alternate package name.
-            '';
-          }
-          {
-            appId = "app.morphe.android.apps.youtube.music";
-            apkPath = "${youtubeMusicMorphe}/youtube-music-morphe.apk";
-            metadataYml = ''
-              Categories:
-                - Multimedia
-              License: Proprietary
-              SourceCode: https://github.com/MorpheApp/morphe-patches
-              IssueTracker: https://github.com/MorpheApp/morphe-patches/issues
-              AutoName: YouTube Music Morphe
-              Summary: Patched YouTube Music APK with package rename
-              Description: |-
-                YouTube Music Morphe is a patched YouTube Music APK built with
-                Morphe patches and installed under an alternate package name.
-            '';
-          }
-          {
-            appId = "com.reddit.frontpage.morphe";
-            apkPath = "${redditMorphe}/reddit-morphe.apk";
-            metadataYml = ''
-              Categories:
-                - Internet
-              License: Proprietary
-              SourceCode: https://github.com/MorpheApp/morphe-patches
-              IssueTracker: https://github.com/MorpheApp/morphe-patches/issues
-              AutoName: Reddit Morphe
-              Summary: Patched Reddit APK with package rename
-              Description: |-
-                Reddit Morphe is a patched Reddit APK built with Morphe patches
-                and installed under an alternate package name.
-            '';
-          }
-          {
-            appId = "com.spotify.music";
-            apkPath = "${spotifyRevanced}/spotify-revanced.apk";
-            metadataYml = ''
-              Categories:
-                - Multimedia
-              License: Proprietary
-              SourceCode: https://github.com/ReVanced/revanced-patches
-              IssueTracker: https://github.com/ReVanced/revanced-patches/issues
-              AutoName: Spotify ReVanced
-              Summary: Patched Spotify APK
-              Description: |-
-                Spotify ReVanced is a patched Spotify APK built with ReVanced
-                patches and kept under the original package name.
-            '';
-          }
-          {
             appId = "net.thunderbird.android";
             apkPath = "${thunderbird}/thunderbird.apk";
             metadataYml = ''
@@ -917,6 +853,71 @@
               Description: |-
                 Recorder is the LineageOS app for recording audio and screen.
                 This package is built from source.
+            '';
+          }
+          # gradle lock platform dependent issue. need update lock for darwin:
+          {
+            appId = "app.morphe.android.youtube";
+            apkPath = "${youtubeMorphe}/youtube-morphe.apk";
+            metadataYml = ''
+              Categories:
+                - Multimedia
+              License: Proprietary
+              SourceCode: https://github.com/MorpheApp/morphe-patches
+              IssueTracker: https://github.com/MorpheApp/morphe-patches/issues
+              AutoName: YouTube Morphe
+              Summary: Patched YouTube APK with package rename
+              Description: |-
+                YouTube Morphe is a patched YouTube APK built with Morphe patches
+                and installed under an alternate package name.
+            '';
+          }
+          {
+            appId = "app.morphe.android.apps.youtube.music";
+            apkPath = "${youtubeMusicMorphe}/youtube-music-morphe.apk";
+            metadataYml = ''
+              Categories:
+                - Multimedia
+              License: Proprietary
+              SourceCode: https://github.com/MorpheApp/morphe-patches
+              IssueTracker: https://github.com/MorpheApp/morphe-patches/issues
+              AutoName: YouTube Music Morphe
+              Summary: Patched YouTube Music APK with package rename
+              Description: |-
+                YouTube Music Morphe is a patched YouTube Music APK built with
+                Morphe patches and installed under an alternate package name.
+            '';
+          }
+          {
+            appId = "com.reddit.frontpage.morphe";
+            apkPath = "${redditMorphe}/reddit-morphe.apk";
+            metadataYml = ''
+              Categories:
+                - Internet
+              License: Proprietary
+              SourceCode: https://github.com/MorpheApp/morphe-patches
+              IssueTracker: https://github.com/MorpheApp/morphe-patches/issues
+              AutoName: Reddit Morphe
+              Summary: Patched Reddit APK with package rename
+              Description: |-
+                Reddit Morphe is a patched Reddit APK built with Morphe patches
+                and installed under an alternate package name.
+            '';
+          }
+          {
+            appId = "com.spotify.music";
+            apkPath = "${spotifyRevanced}/spotify-revanced.apk";
+            metadataYml = ''
+              Categories:
+                - Multimedia
+              License: Proprietary
+              SourceCode: https://github.com/ReVanced/revanced-patches
+              IssueTracker: https://github.com/ReVanced/revanced-patches/issues
+              AutoName: Spotify ReVanced
+              Summary: Patched Spotify APK
+              Description: |-
+                Spotify ReVanced is a patched Spotify APK built with ReVanced
+                patches and kept under the original package name.
             '';
           }
         ];
