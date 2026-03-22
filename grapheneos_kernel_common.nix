@@ -165,18 +165,21 @@ stdenvNoCC.mkDerivation {
         apply_patch ${./kernel/sidharth-hack.patch}
       ''}
 
+      ${lib.optionalString (enableLindroid || enableDroidspaces) ''
+        apply_patch ${
+          fetchpatch {
+            url = "https://github.com/ravindu644/Droidspaces-OSS/raw/refs/heads/main/Documentation/resources/kernel-patches/GKI/03.5.15+_use_android_abi_padding_for_posix_mqueue.patch";
+            hash = "sha256-DjVQs4Y/PTCMXMqLyIkz/Wrzpfz/bjF550jsj24jWw0=";
+          }
+        }
+      ''}
+
       ${lib.optionalString enableDroidspaces ''
         # TODO: enable configs.
         apply_patch ${
           fetchpatch {
             url = "https://github.com/ravindu644/Droidspaces-OSS/raw/refs/heads/main/Documentation/resources/kernel-patches/GKI/01.disable_crc_checks_for_lkms.patch";
             hash = "sha256-JtnZ4U1NstMavQPIOxjyF6TVG4I9/X3qOBPdwJt8/6Q=";
-          }
-        }
-        apply_patch ${
-          fetchpatch {
-            url = "https://github.com/ravindu644/Droidspaces-OSS/raw/refs/heads/main/Documentation/resources/kernel-patches/GKI/03.5.15+_use_android_abi_padding_for_posix_mqueue.patch";
-            hash = "sha256-DjVQs4Y/PTCMXMqLyIkz/Wrzpfz/bjF550jsj24jWw0=";
           }
         }
         ${lib.optionalString (!enableLindroid) ''
