@@ -152,12 +152,11 @@ stdenvNoCC.mkDerivation {
         echo "obj-y += lindroid-drm/" >> aosp/drivers/Makefile
         sed -i "/endmenu/i\\source \"drivers/lindroid-drm/Kconfig\"" aosp/drivers/Kconfig
 
-        (
-          cd aosp
-          apply_patch ${./kernel/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch}
-          apply_patch ${./kernel/3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch}
-          apply_patch ${./kernel/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch}
-        )
+        cd aosp
+        apply_patch ${./kernel/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch}
+        apply_patch ${./kernel/3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch}
+        apply_patch ${./kernel/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch}
+        cd ..
 
         ${lib.optionalString enableDaria ''
           apply_patch ${./kernel/0001-daria.patch}
@@ -166,16 +165,19 @@ stdenvNoCC.mkDerivation {
       ''}
 
       ${lib.optionalString (enableLindroid || enableDroidspaces) ''
+        cd aosp
         apply_patch ${
           fetchpatch {
             url = "https://github.com/ravindu644/Droidspaces-OSS/raw/refs/heads/main/Documentation/resources/kernel-patches/GKI/03.5.15+_use_android_abi_padding_for_posix_mqueue.patch";
             hash = "sha256-DjVQs4Y/PTCMXMqLyIkz/Wrzpfz/bjF550jsj24jWw0=";
           }
         }
+        cd ..
       ''}
 
       ${lib.optionalString enableDroidspaces ''
         # TODO: enable configs.
+        cd aosp
         apply_patch ${
           fetchpatch {
             url = "https://github.com/ravindu644/Droidspaces-OSS/raw/refs/heads/main/Documentation/resources/kernel-patches/GKI/01.disable_crc_checks_for_lkms.patch";
@@ -198,6 +200,7 @@ stdenvNoCC.mkDerivation {
             }
           }
         ''}
+        cd ..
       ''}
 
 
