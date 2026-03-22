@@ -8,6 +8,7 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   pkgsCross,
+  applyPatches,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -28,11 +29,23 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "droidspaces-oss";
   version = "5.7.1-unstable";
 
-  src = fetchFromGitHub {
-    owner = "ravindu644";
-    repo = "Droidspaces-OSS";
-    rev = "ad62661b2c5442bd26beefc69f83665ce4325762";
-    hash = "sha256-EPTiKMLNd4WCYi7rkjZgYFlw5kJrtK1MUUmvkn+zgVU=";
+  src = applyPatches {
+    src = fetchFromGitHub {
+      owner = "ravindu644";
+      repo = "Droidspaces-OSS";
+      rev = "ad62661b2c5442bd26beefc69f83665ce4325762";
+      hash = "sha256-EPTiKMLNd4WCYi7rkjZgYFlw5kJrtK1MUUmvkn+zgVU=";
+    };
+    postPatch = ''
+      rm Android/app/src/main/assets/binaries/busybox-aarch64
+      cp ${lib.getExe pkgsCross.aarch64-multiplatform.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-aarch64
+      rm Android/app/src/main/assets/binaries/busybox-armhf
+      cp ${lib.getExe pkgsCross.armv7l-hf-multiplatform.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-armhf
+      rm Android/app/src/main/assets/binaries/busybox-x86
+      cp ${lib.getExe pkgsCross.gnu32.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-x86
+      rm Android/app/src/main/assets/binaries/busybox-x86_64
+      cp ${lib.getExe pkgsCross.gnu64.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-x86_64
+    '';
   };
 
   sourceRoot = "source/Android";
@@ -69,15 +82,6 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   postPatch = ''
-    rm Android/app/src/main/assets/binaries/busybox-aarch64
-    cp ${lib.getExe pkgsCross.aarch64-multiplatform.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-aarch64
-    rm Android/app/src/main/assets/binaries/busybox-armhf
-    cp ${lib.getExe pkgsCross.armv7l-hf-multiplatform.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-armhf
-    rm Android/app/src/main/assets/binaries/busybox-x86
-    cp ${lib.getExe pkgsCross.gnu32.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-x86
-    rm Android/app/src/main/assets/binaries/busybox-x86_64
-    cp ${lib.getExe pkgsCross.gnu64.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-x86_64
-
     substituteInPlace app/build.gradle.kts \
       --replace-fail \
       'var fallbackKeystore = file(System.getProperty("user.home") + "/.android/debug.keystore")' \
