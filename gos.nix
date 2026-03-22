@@ -2,6 +2,7 @@ args@{
   pkgs,
   pkgs-unstable,
   lib,
+  self,
   ...
 }:
 let
@@ -154,6 +155,26 @@ in
   source.dirs."external/Camera" = lib.mkForce {
     src = pkgs-unstable.callPackage ./grapheneos_camera_app.nix { };
   };
+  source.dirs."external/AppStore".postPatch = ''
+    rm prebuilt/app-release.apk prebuilt/app-release.apk.idsig
+    keystore="$TMPDIR/grapheneos-appstore-signing-key.jks"
+
+    # We don't expect out of band upgrade so use a key generated every time.
+    keytool -genkeypair \
+      -keystore "$keystore" \
+      -storepass android \
+      -keypass android \
+      -alias androiddebugkey \
+      -keyalg RSA \
+      -keysize 4096 \
+      -validity 10000 \
+      -dname "CN=GrapheneOS AppStore,O=GrapheneOS,C=US"
+    
+    ${self.packages.${pkgs.stdenv.hostPlatform.system}.appstore.signScript} \
+      "$keystore" \
+      --ks-pass android \
+      --out prebuilt/app-release.apk
+  '';
   source.dirs."packages/modules/Connectivity".patches = with pkgs; [
     (fetchpatch {
       name = "Connectivity: Add capability to allow tethering to use VPN upstreams";
