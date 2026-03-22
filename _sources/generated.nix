@@ -86,7 +86,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-ZBr/RDKj8C4MGWKv0rE+OdtHVvL0GqL7zBi/vUFJJ4Q=";
+      sha256 = "sha256-GrVmlF9T1DzPQS6BUWxnaYrIj+Pk6nGGw/ncJ4t4ucw=";
     };
     date = "2026-03-01";
   };
@@ -198,7 +198,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-07k13X2QjGcOoqWJdlZf3iSSYHPNfu1r+vmcHj0AJt8=";
+      sha256 = "sha256-GSBGZEQM7kVS7Xr5A8yjDs822wbqZ3VXpD7+bNDIXUw=";
     };
     date = "2025-09-05";
   };
@@ -428,17 +428,17 @@
   };
   lineage_kernel_mainline_configs = {
     pname = "lineage_kernel_mainline_configs";
-    version = "cbd8590fed658bd598bd77f4460bb96c0f1fb0c7";
+    version = "ca0ee32212c14c2a07bd33ecca6071b880947a7a";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_kernel_mainline_configs.git";
-      rev = "cbd8590fed658bd598bd77f4460bb96c0f1fb0c7";
+      rev = "ca0ee32212c14c2a07bd33ecca6071b880947a7a";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-yT+Vo7GUFCIMwv8+5Vj2iM83sFsyHqI1XJc7XObtpeU=";
+      sha256 = "sha256-baSDDg6NZP3P0O27dn1jaBQCEqOwz6eFtB9yNyt2r0s=";
     };
-    date = "2025-12-05";
+    date = "2026-03-05";
   };
   lineage_kernel_virt_virtio = {
     pname = "lineage_kernel_virt_virtio";
@@ -450,7 +450,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-a0ke+kqOpCGtEUpiU7nICWU0GNv9c0jQphz5d1vdX8w=";
+      sha256 = "sha256-ZQowVhIcNZNCoIDt3P2kvgPAIshYsUZfH2GO+McFod0=";
     };
     date = "2025-12-31";
   };
@@ -576,7 +576,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-44zJyKBR15Tk4ImVsFz/CtwAPvC33U4tBjIDLBFB/S4=";
+      sha256 = "sha256-CNWWL3gQyD+Z+KoWCmU1U/MR8U6c9TvCc5DDTnX0OZ8=";
     };
     date = "2026-03-15";
   };
