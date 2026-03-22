@@ -166,6 +166,7 @@ stdenvNoCC.mkDerivation {
       ''}
 
       ${lib.optionalString enableDroidspaces ''
+        # TODO: enable configs.
         apply_patch ${
           fetchpatch {
             url = "https://github.com/ravindu644/Droidspaces-OSS/raw/refs/heads/main/Documentation/resources/kernel-patches/GKI/01.disable_crc_checks_for_lkms.patch";
