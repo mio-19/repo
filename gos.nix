@@ -160,7 +160,7 @@ in
     keystore="$TMPDIR/grapheneos-appstore-signing-key.jks"
 
     # We don't expect out of band upgrade so use a key generated every time.
-    ${lib.getExe pkgs.jdk "keytool"} -genkeypair \
+    ${lib.getExe' pkgs.jdk "keytool"} -genkeypair \
       -keystore "$keystore" \
       -storepass android \
       -keypass android \
