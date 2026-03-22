@@ -27,6 +27,7 @@
   fetchurl,
   fetchFromGitHub,
   dockerTools,
+  fetchpatch,
 }:
 {
   pname,
@@ -45,6 +46,7 @@
   installSubdir ? "grapheneos",
   enableKSU,
   enableLindroid,
+  enableDroidspaces ? false,
   enableDaria ? enableLindroid,
   buildCommand ? null,
   extraBuildCommands ? "",
@@ -161,6 +163,37 @@ stdenvNoCC.mkDerivation {
           apply_patch ${./kernel/0001-daria.patch}
         ''}
         apply_patch ${./kernel/sidharth-hack.patch}
+      ''}
+
+      ${lib.optionalString enableDroidspaces ''
+        apply_patch ${
+          fetchpatch {
+            url = "https://github.com/ravindu644/Droidspaces-OSS/raw/refs/heads/main/Documentation/resources/kernel-patches/GKI/01.disable_crc_checks_for_lkms.patch";
+            hash = "sha256-JtnZ4U1NstMavQPIOxjyF6TVG4I9/X3qOBPdwJt8/6Q=";
+          }
+        }
+        apply_patch ${
+          fetchpatch {
+            url = "https://github.com/ravindu644/Droidspaces-OSS/raw/refs/heads/main/Documentation/resources/kernel-patches/GKI/03.5.15+_use_android_abi_padding_for_posix_mqueue.patch";
+            hash = "sha256-DjVQs4Y/PTCMXMqLyIkz/Wrzpfz/bjF550jsj24jWw0=";
+          }
+        }
+        ${lib.optionalString (!enableLindroid) ''
+          # patch duplicated with lindroid ./kernel/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
+          apply_patch ${
+            fetchpatch {
+              url = "https://raw.githubusercontent.com/ravindu644/Droidspaces-OSS/refs/heads/main/Documentation/resources/kernel-patches/GKI/02.fix_restore%20cgroup%20file%20prefix%20handling%20.patch";
+              hash = "";
+            }
+          }
+          # patch duplicated with lindroid ./kernel/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch
+          apply_patch ${
+            fetchpatch {
+              url = "https://github.com/ravindu644/Droidspaces-OSS/raw/refs/heads/main/Documentation/resources/kernel-patches/GKI/04.use_android_abi_padding_for_sysvipc_task_struct.patch";
+              hash = "sha256-nGDXr85d7HrxrCr7QKq61XqqNWl+CFjY2ltRStnZCEg=";
+            }
+          }
+        ''}
       ''}
 
 
