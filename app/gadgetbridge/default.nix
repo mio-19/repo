@@ -37,7 +37,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   src = fetchgit {
     url = "https://codeberg.org/Freeyourgadget/Gadgetbridge.git";
-    rev = "e6f8a2087d31a6b4c21554901e99114efe766cc0";
+    rev = finalAttrs.version;
     fetchSubmodules = true;
     hash = "sha256-GqmfZPz0+Ed2D0Y/aYC0Mib1fYhsVRknc6HGKMu011o=";
   };
