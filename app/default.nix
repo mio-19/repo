@@ -238,6 +238,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      droidspaces-oss = pkgs.callPackage ./droidspaces-oss {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       microg-re = pkgs.callPackage ./microg-re {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -452,6 +456,23 @@
               Description: |-
                 GrapheneOS App Store is the client for GrapheneOS app repositories.
                 This package is built from source.
+            '';
+          }
+          {
+            appId = "com.droidspaces.app";
+            apkPath = "${droidspaces-oss}/droidspaces-oss.apk";
+            metadataYml = ''
+              Categories:
+                - System
+              License: GPL-3.0-only
+              SourceCode: https://github.com/ravindu644/Droidspaces-OSS
+              IssueTracker: https://github.com/ravindu644/Droidspaces-OSS/issues
+              AutoName: Droidspaces
+              Summary: Containerized Linux workspace plus terminal for Android
+              Description: |-
+                Droidspaces launches pre-configured Linux containers, terminals,
+                and utilities directly on Android. The build here matches upstream
+                source artifacts.
             '';
           }
           {
@@ -924,6 +945,14 @@
           name = "sign-meshtastic";
           apkPath = "${meshtastic}/meshtastic.apk";
           defaultOut = "meshtastic-signed.apk";
+        };
+      });
+
+      packages.droidspaces-oss = droidspaces-oss.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-droidspaces-oss";
+          apkPath = "${droidspaces-oss}/droidspaces-oss.apk";
+          defaultOut = "droidspaces-oss-signed.apk";
         };
       });
 
