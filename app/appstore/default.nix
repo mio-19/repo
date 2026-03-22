@@ -6,6 +6,7 @@
   stdenv,
   src,
   version,
+  fetchpatch,
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -30,7 +31,12 @@ stdenv.mkDerivation (finalAttrs: {
   inherit version src;
 
   patches = [
-    ./0001-always-show-vanadium.patch # TODO: not actually work
+    #./0001-always-show-vanadium.patch # TODO: not actually work
+    (fetchpatch {
+      name = "Fix details screen shared axis transition grouping";
+      url = "https://github.com/GrapheneOS/AppStore/pull/469.patch";
+      hash = "sha256-/V0ZvhOLtceDjUG2JIsPWg4KgGQRzSdQe2kQ+pF7QXE=";
+    })
   ];
 
   gradleBuildTask = ":app:assembleRelease";
