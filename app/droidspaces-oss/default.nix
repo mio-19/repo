@@ -72,7 +72,7 @@ stdenv.mkDerivation (finalAttrs: {
     rm Android/app/src/main/assets/binaries/busybox-aarch64
     cp ${lib.getExe pkgsCross.aarch64-multiplatform.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-aarch64
     rm Android/app/src/main/assets/binaries/busybox-armhf
-    cp ${lib.getExe pkgsCross.armv7l-multiplatform.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-armhf
+    cp ${lib.getExe pkgsCross.armv7l-hf-multiplatform.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-armhf
     rm Android/app/src/main/assets/binaries/busybox-x86
     cp ${lib.getExe pkgsCross.gnu32.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-x86
     rm Android/app/src/main/assets/binaries/busybox-x86_64
