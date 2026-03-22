@@ -35,17 +35,6 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-EPTiKMLNd4WCYi7rkjZgYFlw5kJrtK1MUUmvkn+zgVU=";
   };
 
-  postPatch = ''
-    rm Android/app/src/main/assets/binaries/busybox-aarch64
-    cp ${lib.getExe pkgsCross.aarch64-multiplatform.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-aarch64
-    rm Android/app/src/main/assets/binaries/busybox-armhf
-    cp ${lib.getExe pkgsCross.armv7l-multiplatform.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-armhf
-    rm Android/app/src/main/assets/binaries/busybox-x86
-    cp ${lib.getExe pkgsCross.gnu32.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-x86
-    rm Android/app/src/main/assets/binaries/busybox-x86_64
-    cp ${lib.getExe pkgsCross.gnu64.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-x86_64
-  '';
-
   sourceRoot = "source/Android";
 
   gradleBuildTask = ":app:assembleRelease";
@@ -80,6 +69,15 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   postPatch = ''
+    rm Android/app/src/main/assets/binaries/busybox-aarch64
+    cp ${lib.getExe pkgsCross.aarch64-multiplatform.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-aarch64
+    rm Android/app/src/main/assets/binaries/busybox-armhf
+    cp ${lib.getExe pkgsCross.armv7l-multiplatform.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-armhf
+    rm Android/app/src/main/assets/binaries/busybox-x86
+    cp ${lib.getExe pkgsCross.gnu32.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-x86
+    rm Android/app/src/main/assets/binaries/busybox-x86_64
+    cp ${lib.getExe pkgsCross.gnu64.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-x86_64
+
     substituteInPlace app/build.gradle.kts \
       --replace-fail \
       'var fallbackKeystore = file(System.getProperty("user.home") + "/.android/debug.keystore")' \
