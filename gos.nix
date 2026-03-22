@@ -16,7 +16,10 @@ let
   };
 in
 {
-  imports = [ ./gos_noleakdns.nix ];
+  imports = [
+    ./gos_noleakdns.nix
+    ./gos-apple.nix
+  ];
   buildDateTime = 1773836399;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
@@ -169,7 +172,7 @@ in
       -keysize 4096 \
       -validity 10000 \
       -dname "CN=GrapheneOS AppStore,O=GrapheneOS,C=US"
-    
+
     ${lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.appstore.signScript} \
       "$keystore" \
       --ks-pass android \
