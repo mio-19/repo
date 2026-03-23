@@ -288,6 +288,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      kernelsu = pkgs.callPackage ./kernelsu {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       gadgetbridge = pkgs.callPackage ./gadgetbridge {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -618,6 +622,28 @@
                 Termux combines terminal emulation with a Linux package collection.
                 This package is built from source from the upstream termux-app
                 repository and follows the F-Droid universal APK build approach.
+            '';
+          }
+          {
+            appId = "me.weishu.kernelsu";
+            apkPath = "${kernelsu}/kernelsu.apk";
+            metadataYml = ''
+              Categories:
+                - System
+              License: GPL-3.0-or-later
+              WebSite: https://kernelsu.org/
+              SourceCode: https://github.com/tiann/KernelSU
+              IssueTracker: https://github.com/tiann/KernelSU/issues
+              Changelog: https://github.com/tiann/KernelSU/releases
+              AutoName: KernelSU
+              Summary: Kernel-based root manager
+              Description: |-
+                KernelSU is a kernel-based root solution for Android with a
+                companion manager app for granting root access, managing modules,
+                and configuring policies.
+
+                This package is the upstream manager app built from source.
+              RequiresRoot: true
             '';
           }
           {
@@ -1036,6 +1062,14 @@
           name = "sign-termux";
           apkPath = "${termux}/termux.apk";
           defaultOut = "termux-signed.apk";
+        };
+      });
+
+      packages.kernelsu = kernelsu.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-kernelsu";
+          apkPath = "${kernelsu}/kernelsu.apk";
+          defaultOut = "kernelsu-signed.apk";
         };
       });
 
