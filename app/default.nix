@@ -580,29 +580,6 @@
             '';
           }
           {
-            appId = "com.termux.nix";
-            apkPath = "${nix-on-droid}/nix-on-droid.apk";
-            metadataYml = ''
-              Categories:
-                - Development
-              License: MIT
-              WebSite: https://nix-on-droid.unboiled.info
-              SourceCode: https://github.com/nix-community/nix-on-droid
-              IssueTracker: https://github.com/nix-community/nix-on-droid/issues
-              Name: Nix-on-Droid
-              AutoName: Nix
-              Description: |-
-                Nix-on-Droid brings the Nix package manager to Android.
-
-                This app is the terminal-emulator part, built from the
-                `nix-on-droid-app` source repository that F-Droid uses for
-                the `com.termux.nix` package.
-
-                Nix-on-Droid uses a fork of the Termux application as its
-                terminal emulator.
-            '';
-          }
-          {
             appId = "nodomain.freeyourgadget.gadgetbridge";
             apkPath = "${gadgetbridge}/gadgetbridge.apk";
             metadataYml = ''
@@ -822,6 +799,30 @@
                 from this repo when both are installed and signed together.
 
                 Install Termux first, then install this Emacs build.
+            '';
+          }
+          # [CXX1429] error when building with ndkBuild using /nix/var/nix/builds/nix-38269-3239929316/source/termux-shared/src/main/cpp/Android.mk: ERROR: Unknown host CPU architecture: arm64
+          {
+            appId = "com.termux.nix";
+            apkPath = "${nix-on-droid}/nix-on-droid.apk";
+            metadataYml = ''
+              Categories:
+                - Development
+              License: MIT
+              WebSite: https://nix-on-droid.unboiled.info
+              SourceCode: https://github.com/nix-community/nix-on-droid
+              IssueTracker: https://github.com/nix-community/nix-on-droid/issues
+              Name: Nix-on-Droid
+              AutoName: Nix
+              Description: |-
+                Nix-on-Droid brings the Nix package manager to Android.
+
+                This app is the terminal-emulator part, built from the
+                `nix-on-droid-app` source repository that F-Droid uses for
+                the `com.termux.nix` package.
+
+                Nix-on-Droid uses a fork of the Termux application as its
+                terminal emulator.
             '';
           }
           # ndk from nixpkgs: error: Android NDK doesn't support building on arm64-apple-darwin, as far as we know
