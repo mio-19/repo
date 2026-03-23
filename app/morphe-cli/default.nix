@@ -35,20 +35,27 @@ let
   morphe-patcher-src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patcher";
-    rev = "v1.2.0";
-    hash = "sha256-xsdSxEGd77FANKqL/IvBu4UGTa88MOS2cu/J29YRp44=";
+    rev = "v1.3.2";
+    hash = "sha256-KxWdkgiRN4mFb4auibSpMKUydE7ZaAMPGhow7Pq5Y1A=";
+  };
+
+  arsclib-src = fetchFromGitHub {
+    owner = "MorpheApp";
+    repo = "ARSCLib";
+    rev = "9696ffecda";
+    hash = "sha256-DOMVxqbp9B11BhhJZ209oTLcSJv04uj2aMkK41TVFGQ=";
   };
 
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-cli";
-  version = "1.5.0";
+  version = "1.6.2";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-cli";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-00muzlayNnZnSKc+bPL9q7924uln6NLkfs+Mf3AfkCQ=";
+    hash = "sha256-ifUGLzQvUHPCJ1lWAKTTscK/80ecqwnoBR5ncvIokp0=";
   };
 
   gradleBuildTask = "shadowJar";
@@ -86,6 +93,9 @@ stdenv.mkDerivation (finalAttrs: {
     cp -a ${morphe-patcher-src} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
 
+    cp -a ${arsclib-src} "$root/ARSCLib"
+    chmod -R u+w "$root/ARSCLib"
+
     cp -a ${apktool-src} "$root/Apktool"
     chmod -R u+w "$root/Apktool"
 
@@ -99,26 +109,18 @@ stdenv.mkDerivation (finalAttrs: {
     # ---- Patch GitHub Packages repos out of build.gradle files ----
 
     # morphe-cli: replace GitHub Packages with local maven repo
+    gh_credentials=$'        credentials {\n            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")\n            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")\n        }'
+
     substituteInPlace "$sourceRoot/build.gradle.kts" \
-      --replace-fail '    maven {
-            // A repository must be specified for some reason. "registry" is a dummy.
-            url = uri("https://maven.pkg.github.com/MorpheApp/registry")
-            credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
-            }
-        }' '    maven { url = uri("file://" + rootProject.projectDir.resolve("../.m2/repository").absolutePath) }'
+      --replace-fail '        url = uri("https://maven.pkg.github.com/MorpheApp/registry")' \
+                     '        url = uri("file://" + rootProject.projectDir.resolve("../.m2/repository").absolutePath)'
+    substituteInPlace "$sourceRoot/build.gradle.kts" --replace-fail "$gh_credentials" ""
 
     # morphe-patcher: replace GitHub Packages with local maven repo
     substituteInPlace "$root/morphe-patcher/build.gradle.kts" \
-      --replace-fail '    maven {
-            // A repository must be specified for some reason. "registry" is a dummy.
-            url = uri("https://maven.pkg.github.com/MorpheApp/registry")
-            credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
-            }
-        }' '    maven { url = uri("file://" + rootProject.projectDir.resolve("../.m2/repository").absolutePath) }'
+      --replace-fail '        url = uri("https://maven.pkg.github.com/MorpheApp/registry")' \
+                     '        url = uri("file://" + rootProject.projectDir.resolve("../.m2/repository").absolutePath)'
+    substituteInPlace "$root/morphe-patcher/build.gradle.kts" --replace-fail "$gh_credentials" ""
 
     # ---- Fix morphe-patcher composite build for multidexlib2 ----
     substituteInPlace "$root/morphe-patcher/settings.gradle.kts" \
@@ -148,6 +150,21 @@ stdenv.mkDerivation (finalAttrs: {
     # JVM variant can't be substituted that way. Remove it.
     substituteInPlace "$sourceRoot/settings.gradle.kts" \
       --replace-fail '"morphe-library" to "app.morphe:morphe-library",' ""
+
+    # The foojay resolver plugin is only used for toolchain discovery.
+    # Nix already pins Java, so remove this plugin to avoid an extra plugin fetch.
+    substituteInPlace "$sourceRoot/settings.gradle.kts" \
+      --replace-fail '    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"' ""
+
+    # Use the pinned Nix JDK instead of Gradle-managed Java toolchains.
+    substituteInPlace "$sourceRoot/build.gradle.kts" \
+      --replace-fail '        languageVersion.set(JavaLanguageVersion.of(17))' \
+                     '        languageVersion.set(JavaLanguageVersion.of(21))'
+    substituteInPlace "$sourceRoot/build.gradle.kts" \
+      --replace-fail '        vendor.set(JvmVendorSpec.ADOPTIUM)' ""
+    substituteInPlace "$sourceRoot/build.gradle.kts" \
+      --replace-fail '        jvmTarget.set(JvmTarget.JVM_17)' \
+                     '        jvmTarget.set(JvmTarget.JVM_21)'
 
     # ---- Disable signing tasks (no GPG in sandbox) ----
     echo 'tasks.withType<Sign> { enabled = false }' >> "$sourceRoot/build.gradle.kts"

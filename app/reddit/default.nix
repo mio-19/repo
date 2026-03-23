@@ -3,6 +3,7 @@
   stdenv,
   fetchurl,
   morphe-cli,
+  morphe-patches,
   apkeditor,
   zip,
   unzip,
@@ -22,15 +23,11 @@ let
     hash = "sha256-8bSHG+zZXj/pWiDztoQR+5PpzrecXHiP9QTty9BOlfA=";
   };
 
-  morphePatches = fetchurl {
-    name = "patches-1.20.0.mpp";
-    url = "https://github.com/MorpheApp/morphe-patches/releases/download/v1.20.0/patches-1.20.0.mpp";
-    hash = "sha256-r65NcSLhRPEnWnCsVjzzt5gmNElovpjTs0VKY2375Hs=";
-  };
+  morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
 in
 stdenv.mkDerivation {
   pname = "reddit-morphe";
-  version = "2026.04.0-patches-1.20.0";
+  version = "2026.04.0-patches-${morphe-patches.version}";
 
   dontUnpack = true;
 

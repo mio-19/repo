@@ -33,23 +33,30 @@ let
   morphe-patcher-src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patcher";
-    rev = "v1.2.0";
-    hash = "sha256-xsdSxEGd77FANKqL/IvBu4UGTa88MOS2cu/J29YRp44=";
+    rev = "v1.3.2";
+    hash = "sha256-KxWdkgiRN4mFb4auibSpMKUydE7ZaAMPGhow7Pq5Y1A=";
+  };
+
+  arsclib-src = fetchFromGitHub {
+    owner = "MorpheApp";
+    repo = "ARSCLib";
+    rev = "9696ffecda";
+    hash = "sha256-DOMVxqbp9B11BhhJZ209oTLcSJv04uj2aMkK41TVFGQ=";
   };
 
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches";
-  version = "1.20.0";
+  version = "1.21.1";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-Yc0ufjMUzC6z9Oht5sKIRNAdgdI/qJ83qYHiO4iyE54=";
+    hash = "sha256-l/R/ZH6dsSlcaOuiNUEse0mwG1a1gHnOCNnZBk3IlGo=";
   };
 
-  gradleBuildTask = "publish";
+  gradleBuildTask = "generatePatchesList";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 
   mitmCache = gradle.fetchDeps {
@@ -79,6 +86,8 @@ stdenv.mkDerivation (finalAttrs: {
     root="$PWD"
     cp -a ${morphe-patcher-src} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
+    cp -a ${arsclib-src} "$root/ARSCLib"
+    chmod -R u+w "$root/ARSCLib"
     cp -a ${apktool-src} "$root/Apktool"
     chmod -R u+w "$root/Apktool"
 
@@ -88,6 +97,19 @@ stdenv.mkDerivation (finalAttrs: {
     patch -d "$sourceRoot" -p0 < ${./morphe-patches-settings.patch}
     patch -d "$root/morphe-patcher" -p0 < ${./morphe-patcher.patch}
     patch -d "$root/morphe-patcher" -p0 < ${./morphe-patcher-settings.patch}
+
+    cat >> "$sourceRoot/settings.gradle.kts" << 'EOF'
+
+    // Added by Nix build: include ARSCLib as composite build.
+    val arsclibDir = file("../ARSCLib")
+    if (arsclibDir.exists()) {
+        includeBuild(arsclibDir) {
+            dependencySubstitution {
+                substitute(module("com.github.MorpheApp:ARSCLib")).using(project(":"))
+            }
+        }
+    }
+    EOF
 
     cat >> "$sourceRoot/patches/build.gradle.kts" << 'EOF'
 
@@ -126,9 +148,8 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
     mkdir -p "$out"
-    if [ -d "build/m2" ]; then
-      cp -a build/m2/. "$out/"
-    fi
+    install -Dm644 "patches/build/libs/patches-${finalAttrs.version}.mpp" \
+      "$out/patches-${finalAttrs.version}.mpp"
     runHook postInstall
   '';
 

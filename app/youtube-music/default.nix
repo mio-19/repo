@@ -3,6 +3,7 @@
   stdenv,
   fetchurl,
   morphe-cli,
+  morphe-patches,
 }:
 let
   youtubeMusicApk = fetchurl {
@@ -12,15 +13,11 @@ let
     hash = "sha256-y5zjbRRS/M/t9lvPvQY21QXzjMXlUcibiE2Wn4OAYlQ=";
   };
 
-  morphePatches = fetchurl {
-    name = "patches-1.20.0.mpp";
-    url = "https://github.com/MorpheApp/morphe-patches/releases/download/v1.20.0/patches-1.20.0.mpp";
-    hash = "sha256-r65NcSLhRPEnWnCsVjzzt5gmNElovpjTs0VKY2375Hs=";
-  };
+  morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
 in
 stdenv.mkDerivation {
   pname = "youtube-music-morphe";
-  version = "8.44.54-patches-1.20.0";
+  version = "8.44.54-patches-${morphe-patches.version}";
 
   dontUnpack = true;
 

@@ -247,17 +247,17 @@
       };
 
       youtubeMorphe = pkgs.callPackage ./youtube {
-        inherit morphe-cli;
+        inherit morphe-cli morphe-patches;
       };
 
       youtubeMusicMorphe = pkgs.callPackage ./youtube-music {
-        inherit morphe-cli;
+        inherit morphe-cli morphe-patches;
       };
 
       redditMorphe = pkgs.callPackage ./reddit {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
         apkeditor = pkgs.apkeditor;
-        inherit morphe-cli;
+        inherit morphe-cli morphe-patches;
       };
 
       spotifyRevanced = pkgs.callPackage ./spotify {
