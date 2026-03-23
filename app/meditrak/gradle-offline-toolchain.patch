@@ -1,0 +1,18 @@
+--- MediTrak-0.17.2/settings.gradle	2026-03-18 12:34:06.000000000 +1100
++++ MediTrak-0.17.2-patched/settings.gradle	2026-03-24 00:50:18.064068711 +1100
+@@ -1,5 +1,2 @@
+-plugins {
+-    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+-}
+ include ':app'
+-rootProject.name = "MedicationTracker"
+\ No newline at end of file
++rootProject.name = "MedicationTracker"
+--- MediTrak-0.17.2/gradle/gradle-daemon-jvm.properties	2026-03-18 12:34:06.000000000 +1100
++++ MediTrak-0.17.2-patched/gradle/gradle-daemon-jvm.properties	2026-03-24 00:50:18.072068694 +1100
+@@ -9,5 +9,4 @@
+ toolchainUrl.UNIX.X86_64=https\://api.foojay.io/disco/v3.0/ids/ecd23fd7707c683afbcd6052998cb6a9/redirect
+ toolchainUrl.WINDOWS.AARCH64=https\://api.foojay.io/disco/v3.0/ids/e55dccbfe27cb97945148c61a39c89c5/redirect
+ toolchainUrl.WINDOWS.X86_64=https\://api.foojay.io/disco/v3.0/ids/e7337738591f6120002875ec9a5cf45c/redirect
+-toolchainVendor=JETBRAINS
+ toolchainVersion=21

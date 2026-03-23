@@ -52,14 +52,11 @@ stdenv.mkDerivation (finalAttrs: {
   patches = [
     # Pin NDK version so AGP does not attempt to download it from the network.
     ./set-ndk-version.patch
+    # Disable upstream JVM auto-resolution so Gradle uses the Nix-provided JDK offline.
+    ./gradle-offline-toolchain.patch
   ];
 
   postPatch = ''
-    # Upstream pins the Gradle daemon JVM vendor to JetBrains; relax that so
-    # the Nix-provided JDK 21 can satisfy the toolchain requirement offline.
-    substituteInPlace gradle/gradle-daemon-jvm.properties \
-      --replace-fail "toolchainVendor=JETBRAINS" ""
-
     # Pre-populate the SQLite amalgamation directory so CMake's file(DOWNLOAD ...)
     # block is skipped (it checks: if NOT EXISTS <dir>, then download).
     mkdir -p app/src/main/cpp/sqlite3
