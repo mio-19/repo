@@ -399,7 +399,6 @@
           s.platform-tools
           s.platforms-android-35
           s.build-tools-35-0-0
-          s.ndk-21-4-7075529
         ]);
         apps = [
           {
@@ -601,28 +600,6 @@
 
                 Nix-on-Droid uses a fork of the Termux application as its
                 terminal emulator.
-            '';
-          }
-          {
-            appId = "me.weishu.kernelsu";
-            apkPath = "${kernelsu}/kernelsu.apk";
-            metadataYml = ''
-              Categories:
-                - System
-              License: GPL-3.0-or-later
-              WebSite: https://kernelsu.org/
-              SourceCode: https://github.com/tiann/KernelSU
-              IssueTracker: https://github.com/tiann/KernelSU/issues
-              Changelog: https://github.com/tiann/KernelSU/releases
-              AutoName: KernelSU
-              Summary: Kernel-based root manager
-              Description: |-
-                KernelSU is a kernel-based root solution for Android with a
-                companion manager app for granting root access, managing modules,
-                and configuring policies.
-
-                This package is the upstream manager app built from source.
-              RequiresRoot: true
             '';
           }
           {
@@ -845,6 +822,30 @@
                 from this repo when both are installed and signed together.
 
                 Install Termux first, then install this Emacs build.
+            '';
+          }
+          # ndk from nixpkgs: error: Android NDK doesn't support building on arm64-apple-darwin, as far as we know
+          # actually ndk from android-nixpkgs run fine on aarch64 darwin with rosetta2 with x86_64 ndk.
+          {
+            appId = "me.weishu.kernelsu";
+            apkPath = "${kernelsu}/kernelsu.apk";
+            metadataYml = ''
+              Categories:
+                - System
+              License: GPL-3.0-or-later
+              WebSite: https://kernelsu.org/
+              SourceCode: https://github.com/tiann/KernelSU
+              IssueTracker: https://github.com/tiann/KernelSU/issues
+              Changelog: https://github.com/tiann/KernelSU/releases
+              AutoName: KernelSU
+              Summary: Kernel-based root manager
+              Description: |-
+                KernelSU is a kernel-based root solution for Android with a
+                companion manager app for granting root access, managing modules,
+                and configuring policies.
+
+                This package is the upstream manager app built from source.
+              RequiresRoot: true
             '';
           }
           # cannot build on darwin due to stdenv
