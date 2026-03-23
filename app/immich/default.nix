@@ -75,7 +75,7 @@ buildDartApplication.override { dart = flutter335; } (finalAttrs: {
     useBwrap = false;
   };
 
-  gradleUpdateTask = ":app:dependencies --configuration releaseRuntimeClasspath";
+  gradleUpdateTask = ":app:assembleRelease";
 
   dontDartBuild = true;
   dontDartInstall = true;
@@ -119,7 +119,8 @@ buildDartApplication.override { dart = flutter335; } (finalAttrs: {
     substituteInPlace android/app/build.gradle \
       --replace-fail "//f configurations.all {" "configurations.all {" \
       --replace-fail "//f     exclude group: 'com.google.android.gms'" "    exclude group: 'com.google.android.gms'" \
-      --replace-fail "//f }" "}"
+      --replace-fail "//f }" "}" \
+      --replace-fail "      signingConfig signingConfigs.release" ""
 
     substituteInPlace android/gradle.properties \
       --replace-fail "org.gradle.jvmargs=-Xmx4096M" "org.gradle.jvmargs=-Xmx8192M"
@@ -188,6 +189,84 @@ buildDartApplication.override { dart = flutter335; } (finalAttrs: {
 
       substituteInPlace .dart_tool/package_config.json \
         --replace-fail "$geolocator_android_store_dir" "$PWD/.dart-patched/geolocator_android"
+    fi
+
+    ${python3}/bin/python3 - <<'PY' > android_plugin_dirs.sh
+    import json
+    import shlex
+    import urllib.parse
+
+    with open(".dart_tool/package_config.json") as f:
+        data = json.load(f)
+
+    wanted = {
+        "native_video_player": "NATIVE_VIDEO_PLAYER_DIR",
+        "home_widget": "HOME_WIDGET_DIR",
+    }
+
+    found = {env_name: "" for env_name in wanted.values()}
+    for pkg in data["packages"]:
+        env_name = wanted.get(pkg["name"])
+        if env_name:
+            found[env_name] = urllib.parse.urlparse(pkg["rootUri"]).path.removesuffix("/.")
+
+    for env_name, path in found.items():
+        print(f"export {env_name}={shlex.quote(path)}")
+    PY
+    . ./android_plugin_dirs.sh
+
+    flutter_engine_version="$(cat flutter-sdk/bin/internal/engine.version)"
+    if [ -n "$NATIVE_VIDEO_PLAYER_DIR" ] || [ -n "$HOME_WIDGET_DIR" ]; then
+      mkdir -p .dart-patched
+
+      if [ -n "$NATIVE_VIDEO_PLAYER_DIR" ]; then
+        cp -LR "$NATIVE_VIDEO_PLAYER_DIR" .dart-patched/native_video_player
+        chmod -R u+w .dart-patched/native_video_player
+        substituteInPlace .dart-patched/native_video_player/android/build.gradle \
+          --replace-fail '     implementation("androidx.media3:media3-ui:1.9.2")' \
+            "     implementation(\"androidx.media3:media3-ui:1.9.2\")
+     implementation \"androidx.annotation:annotation:1.8.0\"
+     compileOnly \"io.flutter:flutter_embedding_release:1.0.0-$flutter_engine_version\""
+        substituteInPlace .dart_tool/package_config.json \
+          --replace-fail "$NATIVE_VIDEO_PLAYER_DIR" "$PWD/.dart-patched/native_video_player"
+        NATIVE_VIDEO_PLAYER_DIR="$PWD/.dart-patched/native_video_player"
+      fi
+
+      if [ -n "$HOME_WIDGET_DIR" ]; then
+        cp -LR "$HOME_WIDGET_DIR" .dart-patched/home_widget
+        chmod -R u+w .dart-patched/home_widget
+        substituteInPlace .dart-patched/home_widget/android/build.gradle \
+          --replace-fail '    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+"' \
+            "    implementation \"org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+\"
+    compileOnly \"io.flutter:flutter_embedding_release:1.0.0-$flutter_engine_version\""
+        substituteInPlace .dart_tool/package_config.json \
+          --replace-fail "$HOME_WIDGET_DIR" "$PWD/.dart-patched/home_widget"
+        HOME_WIDGET_DIR="$PWD/.dart-patched/home_widget"
+      fi
+
+      : > android/local-plugin-settings.gradle
+      if [ -n "$NATIVE_VIDEO_PLAYER_DIR" ]; then
+        printf '%s\n' \
+          'include(":native_video_player")' \
+          "project(\":native_video_player\").projectDir = new File(\"$NATIVE_VIDEO_PLAYER_DIR/android\")" \
+          >> android/local-plugin-settings.gradle
+      fi
+      if [ -n "$HOME_WIDGET_DIR" ]; then
+        printf '%s\n' \
+          'include(":home_widget")' \
+          "project(\":home_widget\").projectDir = new File(\"$HOME_WIDGET_DIR/android\")" \
+          >> android/local-plugin-settings.gradle
+      fi
+
+      if ! grep -Fq 'apply from: "local-plugin-settings.gradle"' android/settings.gradle; then
+        printf '\napply from: "local-plugin-settings.gradle"\n' >> android/settings.gradle
+      fi
+
+      if ! grep -Fq "implementation project(':native_video_player')" android/app/build.gradle; then
+        substituteInPlace android/app/build.gradle \
+          --replace-fail 'implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serialization_version"' \
+            $'implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serialization_version"\n  implementation project(\x27:native_video_player\x27)\n  implementation project(\x27:home_widget\x27)'
+      fi
     fi
   '';
 
