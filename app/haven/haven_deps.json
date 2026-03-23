@@ -2202,6 +2202,13 @@
    "jar": "sha256-IzDfCEG+hO76fGuktaLJj6oVOFXIClr0GP3trMKkvFs=",
    "pom": "sha256-3wcScmdSbWV0CB9vabuUupu7DUxusj7XLpQGHmLgkjU="
   },
+  "com/hierynomus#smbj/0.13.0": {
+   "module": "sha256-0jZteodzmpkjvaqz9KODr/x/Afz8bgEJkmec84zxPmo=",
+   "pom": "sha256-Z9dks+NvrHGuFvPYKKOMMiamY5obdIeN773v8geG9os="
+  },
+  "com/hierynomus/smbj/0.13.0/smbj-0.13.0": {
+   "jar": "sha256-2aL7JYXsL2LSaJuJTguY8wrGlNPaGFCdvZntYJWasJM="
+  },
   "com/google#google/5": {
    "pom": "sha256-4J00XnPKP7yn8+BfMN63Tp053Wt5qT/ujFEfI0F7aCg="
   },
@@ -3403,6 +3410,69 @@
   "org/xerial#sqlite-jdbc/3.41.2.2": {
    "jar": "sha256-DNq0EJR+BLZ0Pfmc8VQyZ93RBzV9b3aUjRRb5ZD9SX0=",
    "pom": "sha256-rhGjsR3LrBtkA2ieP9jYKyzupV6C2/xLsyrt7fjMrI4="
+  },
+  "org/slf4j#slf4j-api/2.0.17": {
+   "jar": "sha256-e3UdlSBhlU1av+1xgcH2RdM2CRtnmJFZHWMynGIuuDI=",
+   "pom": "sha256-FQxAKH987NwhuTgMqsmOkoxPM8Aj22s0jfHFrJdwJr8="
+  },
+  "org/slf4j#slf4j-api/2.0.9": {
+   "jar": "sha256-CBiTDcjX3rtAMgRhFpHaWOSdQsULb/z9zgLa23w8K2w=",
+   "pom": "sha256-nDplT50KoaNLMXjr5TqJx2eS4dgfwelznL6bFhBSM4U="
+  },
+  "org/slf4j#slf4j-bom/2.0.17": {
+   "pom": "sha256-940ntkK0uIbrg5/BArXNn+fzDzdZn/5oGFvk4WCQMek="
+  },
+  "org/slf4j#slf4j-bom/2.0.9": {
+   "pom": "sha256-6u9FhIB9gSxqC2z4OdXkf1DHVDJ3GbnOCB4nHRXaYkM="
+  },
+  "org/slf4j#slf4j-parent/2.0.17": {
+   "pom": "sha256-lc1x6FLf2ykSbli3uTnVfsKy5gJDkYUuC1Rd7ggrvzs="
+  },
+  "org/slf4j#slf4j-parent/2.0.9": {
+   "pom": "sha256-wwfwQkFB8cUArlzw04aOSGbLIZ7V45m2bFoHxh6iH9U="
+  },
+  "org/bouncycastle#bcprov-jdk18on/1.75": {
+   "jar": "sha256-fyQBjpIS29phxpIS+NexUkwo77l48Q31kN87TMrEe9U=",
+   "pom": "sha256-xsz1X7ueoQxiuyBiJzeZMJnUd0aI6qDUpF4e7arbkTQ="
+  },
+  "net/engio#mbassador/1.3.0": {
+   "jar": "sha256-8GUDGkkMiMmyDTTzycTrbg3/4ynAkHiMODV04ax8a7o=",
+   "pom": "sha256-C9XdZoV4kN+J9j8UxSzP2PYfzcYfh4ck/XwcXKijwcc="
+  },
+  "com/hierynomus#asn-one/0.6.0": {
+   "module": "sha256-kTF65Trklkji5iC7kCU8wz8Y+aKpbzxUHmY8XyIYDC4=",
+   "pom": "sha256-wuf3bSKfKjXjkpIqI6U6DjEQ6emHfafnFWbTuqM9B9I="
+  },
+  "com/hierynomus/asn-one/0.6.0/asn-one-0.6.0": {
+   "jar": "sha256-5PcP2ShJtSJABIuOus4MmhfTu3uciCs8d3jOw0WElfU="
+  },
+  "com/github/spotbugs#spotbugs-annotations/4.8.6": {
+   "module": "sha256-2ye9p0GFWoGc1Q6dYSMMQv4qoqZEuU1zMTwFIXrgUjk=",
+   "pom": "sha256-3U71+ubjJmCxUtecvHW8uuM0JWxX3ID8TfDhdhWZRWI="
+  },
+  "com/github/spotbugs/spotbugs-annotations/4.8.6/spotbugs-annotations-4.8.6": {
+   "jar": "sha256-RUi3SoFe1E9UgMpPBiBKiwCAncfl9qglqe3xj0A3e2U="
+  },
+  "com/yubico/yubikit#android/2.8.1": {
+   "module": "sha256-lomBmHzR2icSn+QkYhpXymi5G1cfBrxvRgFZrH80NOE=",
+   "pom": "sha256-NIap5JG1+GFlUCtvwRRSRtmyTu/E76zmzHJ++fA35u8="
+  },
+  "com/yubico/yubikit#core/2.8.1": {
+   "module": "sha256-PUf3GNMRKSlAbaSiJqxW/Z5Jfh3OmWGPKfU7K9kwohk=",
+   "pom": "sha256-910eH20xQuzXG7SX8H5+L4hF7WiUEhY7uQRwZjvZEVg="
+  },
+  "com/yubico/yubikit#fido/2.8.1": {
+   "module": "sha256-HwikDWUZij9TiSiXEuS70KWp/Mgv+RPs18/d0tKw+KU=",
+   "pom": "sha256-/fuVEYrRompMV2aBOcJH8zH+PLPS/HNe0mu4LUlN+Lg="
+  },
+  "com/yubico/yubikit/android/2.8.1/android-2.8.1": {
+   "aar": "sha256-yutVJsQ+Ux5Mx+gq4gX2cQNNyKVTf2vlFXKXHD9KFrc="
+  },
+  "com/yubico/yubikit/core/2.8.1/core-2.8.1": {
+   "jar": "sha256-bkayxStB8Y255kd2Q76+gWeahKzmqpTikFaZD479y/s="
+  },
+  "com/yubico/yubikit/fido/2.8.1/fido-2.8.1": {
+   "jar": "sha256-OveqX1Y0X47z828mbuiClq9KfrDtJacdUIQy79u1TPw="
   }
  }
 }

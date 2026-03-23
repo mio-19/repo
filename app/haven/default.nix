@@ -18,7 +18,7 @@ let
     s.build-tools-36-0-0
     s.build-tools-35-0-0
     s.ndk-27-0-12077973
-    s.cmake-3-22-1
+    s.cmake-3-31-6
   ]);
 
   gradle =
@@ -30,14 +30,14 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "haven";
-  version = "2.4.1";
+  version = "3.7.1";
 
   src = fetchFromGitHub {
     owner = "GlassOnTin";
     repo = "Haven";
     tag = "v${finalAttrs.version}";
     fetchSubmodules = true;
-    hash = "sha256-2Pzewx90nVsz5auy3fLjNgiIyrT/wDdWOPsrIf4fdc4=";
+    hash = "sha256-eKIhBlI6pZoqB1aT/+VoGSjXJ18buCpKmmL2jQCcJQ0=";
   };
 
   patches = [
