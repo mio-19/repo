@@ -237,6 +237,10 @@ stdenv.mkDerivation (finalAttrs: {
       --replace-fail \
         '$(ANDROID_LAUNCHER_DIR)/gradlew' \
         'pushd $(ANDROID_LAUNCHER_DIR); gradle'
+    substituteInPlace make/android.mk \
+      --replace-fail \
+        "'app:assemble\$(ANDROID_ARCH)\$(ANDROID_FLAVOR)\$(if \$(KODEBUG),Debug,Release)'" \
+        "'app:assemble\$(ANDROID_ARCH)\$(ANDROID_FLAVOR)\$(if \$(KODEBUG),Debug,Release)'; popd"
 
     # Inject offline mitmCache local maven repos into gradle build files
     # so that gradle resolves all dependencies from the nix store.
@@ -254,6 +258,8 @@ stdenv.mkDerivation (finalAttrs: {
         maven { url = uri("${finalAttrs.mitmCache}/https/maven.google.com") }
         maven { url = uri("${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2") }
         google()'
+    echo >> platform/android/luajit-launcher/gradle.properties
+    echo 'org.gradle.jvmargs=-Xmx4g' >> platform/android/luajit-launcher/gradle.properties
     # Also add --offline to GRADLE_FLAGS so gradle won't try the network
     substituteInPlace make/android.mk \
       --replace-fail \
@@ -319,13 +325,16 @@ stdenv.mkDerivation (finalAttrs: {
     #endif' \
         '#include <strings.h>'
 
-    # Guard menu container and tab-index accesses to avoid top-menu tap crashes.
+    # Guard reader menu container and tab-index accesses to avoid top-menu taps
+    # crashing there. The analogous filemanager patch did not fix the reported
+    # issue and has been removed.
     patch -p1 --input ${./readermenu-topbar-crash-guard.patch}
-    patch -p1 --input ${./filemanagermenu-topbar-crash-guard.patch}
 
   '';
 
   # Wait, koreader Android build is 'ANDROID_FLAVOR=fdroid ./kodev release android-arm64'.
+  # Keep `-i` here because `kodev release` otherwise updates the l10n
+  # submodule over the network, which is not allowed in the Nix build.
   buildPhase = ''
     runHook preBuild
     ${fhsEnv}/bin/koreader-build-env -c "
