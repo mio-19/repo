@@ -4,6 +4,7 @@
   gradle-packages,
   stdenv,
   fetchFromGitHub,
+  fetchurl,
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -24,6 +25,16 @@ let
       hash = "sha256-jZepeYT2y9K4X+TGCnQ0QKNHVEvxiBgEjmEfUojUbJQ=";
       defaultJava = jdk21;
     }).wrapped;
+
+  ksudArm64 = fetchurl {
+    url = "https://github.com/tiann/KernelSU/releases/download/v1.0.5/ksud-aarch64-linux-android";
+    hash = "sha256-Od7Jz+fXl9vM2ZnfmTVU5RDo2zbznsOi8lxb59SDerY=";
+  };
+
+  ksudX8664 = fetchurl {
+    url = "https://github.com/tiann/KernelSU/releases/download/v1.0.5/ksud-x86_64-linux-android";
+    hash = "sha256-lSqct3y8R/ODGuOUoOkCVBRctfE8lCfNR09cPnntZsQ=";
+  };
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "kernelsu";
@@ -72,6 +83,11 @@ stdenv.mkDerivation (finalAttrs: {
       --replace-fail \
       'val managerVersionName by extra(getVersionName())' \
       'val managerVersionName by extra("v1.0.5")'
+
+    # TODO: replace these fetched release artifacts with ksud binaries built
+    # from source in Nix, matching the upstream GitHub workflow.
+    install -Dm755 ${ksudArm64} app/src/main/jniLibs/arm64-v8a/libksud.so
+    install -Dm755 ${ksudX8664} app/src/main/jniLibs/x86_64/libksud.so
 
     printf '\norg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m\n' >> gradle.properties
   '';
