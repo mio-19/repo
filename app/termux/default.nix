@@ -1,6 +1,6 @@
 {
   lib,
-  jdk17,
+  jdk21,
   gradle-packages,
   stdenv,
   fetchFromGitHub,
@@ -10,50 +10,53 @@
   androidSdkBuilder,
 }:
 let
+  rev = "3f0dec3574a6617ff7ff0b78d30b29cfffd71b20";
+
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
-    s.platforms-android-30
-    s.build-tools-30-0-2
-    s.ndk-21-4-7075529
+    s.platforms-android-36
+    s.build-tools-35-0-0
+    s.build-tools-36-0-0
+    s.ndk-29-0-13113456
   ]);
 
   gradle =
     (gradle-packages.mkGradle {
-      version = "7.2";
-      hash = "sha256-9YFwmpw16cuS4W9YXSxLyZsrGl+F0rrb09xr/1nh5t0=";
-      defaultJava = jdk17;
+      version = "9.2.1";
+      hash = "sha256-cvRMn468sa9Dg49F7lxKqcVESJizRoqz9K97YHbFvD8=";
+      defaultJava = jdk21;
     }).wrapped;
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "termux-app";
-  version = "0.118.3";
+  version = "unstable-2026-02-21";
 
   src = fetchFromGitHub {
     owner = "termux";
     repo = "termux-app";
-    tag = "v${finalAttrs.version}";
-    hash = "sha256-MEGHS23nrZwl+FQrQm3oIEzWio+qEJdhsP1jvZp4hTk=";
+    rev = rev;
+    hash = "sha256-a81+LZaJPdofknb1aGkzyowoGCYzNlcwU1H8k2+sEwY=";
   };
 
   bootstrapAarch64 = fetchurl {
-    url = "https://github.com/termux/termux-packages/releases/download/bootstrap-2025.03.28-r1+apt-android-7/bootstrap-aarch64.zip";
-    hash = "sha256-yNcCtvdCk1ABw3zagbisaVBKldXPKPKJlTLdjNSwV+s=";
+    url = "https://github.com/termux/termux-packages/releases/download/bootstrap-2026.02.12-r1+apt.android-7/bootstrap-aarch64.zip";
+    hash = "sha256-6irrqIGeUX23EfjDI2nonnxSzuc+B5MP+RGF4auT9PM=";
   };
 
   bootstrapArm = fetchurl {
-    url = "https://github.com/termux/termux-packages/releases/download/bootstrap-2025.03.28-r1+apt-android-7/bootstrap-arm.zip";
-    hash = "sha256-87udGzJVKzT/9Bhh2/GT7FuihI1n13msHHJW2mZA+F0=";
+    url = "https://github.com/termux/termux-packages/releases/download/bootstrap-2026.02.12-r1+apt.android-7/bootstrap-arm.zip";
+    hash = "sha256-o49NOy9zX4O+K/VO/0Y+htwyo+L5+GHBVXxDeNJJwBg=";
   };
 
   bootstrapI686 = fetchurl {
-    url = "https://github.com/termux/termux-packages/releases/download/bootstrap-2025.03.28-r1+apt-android-7/bootstrap-i686.zip";
-    hash = "sha256-Nts+GsNUf5oXT9djvZpIT6GjRJzdgeHPJAj/BFT4OcY=";
+    url = "https://github.com/termux/termux-packages/releases/download/bootstrap-2026.02.12-r1+apt.android-7/bootstrap-i686.zip";
+    hash = "sha256-9bwLAlufO0ILX8ru/AZPiI9fIqDW/XCQ9KrAwz6zVVs=";
   };
 
   bootstrapX86_64 = fetchurl {
-    url = "https://github.com/termux/termux-packages/releases/download/bootstrap-2025.03.28-r1+apt-android-7/bootstrap-x86_64.zip";
-    hash = "sha256-HBJOwjlu5wpRsLCldPKapllSaqK59Vj5k7L7BdHlGFU=";
+    url = "https://github.com/termux/termux-packages/releases/download/bootstrap-2026.02.12-r1+apt.android-7/bootstrap-x86_64.zip";
+    hash = "sha256-t/0PLjpN5TS+MUT5+RrMdoYw/EY+rxNKsuZMVF6DT3o=";
   };
 
   gradleBuildTask = ":app:assembleRelease";
@@ -69,16 +72,16 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     gradle
-    jdk17
+    jdk21
     apksigner
     writableTmpDirAsHomeHook
   ];
 
   env = {
-    JAVA_HOME = jdk17;
-    JITPACK_NDK_VERSION = "21.4.7075529";
+    JAVA_HOME = jdk21;
+    JITPACK_NDK_VERSION = "29.0.13113456";
     TERMUX_SPLIT_APKS_FOR_RELEASE_BUILDS = "0";
-    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/30.0.2/aapt2";
+    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
   };
 
   preConfigure = ''
@@ -87,15 +90,16 @@ stdenv.mkDerivation (finalAttrs: {
 
     sdkRoot="$PWD/android-sdk"
     mkdir -p "$sdkRoot/build-tools" "$sdkRoot/platforms" "$sdkRoot/ndk"
-    cp -a "${androidSdk}/share/android-sdk/build-tools/30.0.2" "$sdkRoot/build-tools/"
-    ln -s "${androidSdk}/share/android-sdk/platforms/android-30" "$sdkRoot/platforms/android-30"
+    cp -a "${androidSdk}/share/android-sdk/build-tools/35.0.0" "$sdkRoot/build-tools/"
+    cp -a "${androidSdk}/share/android-sdk/build-tools/36.0.0" "$sdkRoot/build-tools/"
+    ln -s "${androidSdk}/share/android-sdk/platforms/android-36" "$sdkRoot/platforms/android-36"
     ln -s "${androidSdk}/share/android-sdk/platform-tools" "$sdkRoot/platform-tools"
-    ln -s "${androidSdk}/share/android-sdk/ndk/21.4.7075529" "$sdkRoot/ndk/21.4.7075529"
+    ln -s "${androidSdk}/share/android-sdk/ndk/29.0.13113456" "$sdkRoot/ndk/29.0.13113456"
     cp -a "${androidSdk}/share/android-sdk/licenses" "$sdkRoot/"
 
     export ANDROID_HOME="$sdkRoot"
     export ANDROID_SDK_ROOT="$sdkRoot"
-    export ANDROID_NDK_ROOT="$sdkRoot/ndk/21.4.7075529"
+    export ANDROID_NDK_ROOT="$sdkRoot/ndk/29.0.13113456"
     echo "sdk.dir=$sdkRoot" > local.properties
 
     cp "${finalAttrs.bootstrapAarch64}" app/src/main/cpp/bootstrap-aarch64.zip
@@ -106,9 +110,9 @@ stdenv.mkDerivation (finalAttrs: {
 
   gradleFlags = [
     "-Dorg.gradle.java.installations.auto-download=false"
-    "-Dorg.gradle.java.installations.paths=${jdk17}"
-    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/30.0.2/aapt2"
-    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/30.0.2/aapt2"
+    "-Dorg.gradle.java.installations.paths=${jdk21}"
+    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
   ];
 
   installPhase = ''
