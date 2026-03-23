@@ -6,3 +6,4 @@ broken but can compile:
 + vpnhotspot crash when open settings
 + meshcore-open black screen
 + emacs crash when launching
++ kernelsu cannot communicate with the kernel
