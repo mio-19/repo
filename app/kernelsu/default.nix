@@ -1,15 +1,17 @@
 {
   lib,
+  pkgs,
   jdk21,
   gradle-packages,
   stdenv,
   fetchFromGitHub,
-  fetchurl,
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
 let
+  version = "1.0.5";
+
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
@@ -26,26 +28,87 @@ let
       defaultJava = jdk21;
     }).wrapped;
 
-  ksudArm64 = fetchurl {
-    url = "https://github.com/tiann/KernelSU/releases/download/v1.0.5/ksud-aarch64-linux-android";
-    hash = "sha256-Od7Jz+fXl9vM2ZnfmTVU5RDo2zbznsOi8lxb59SDerY=";
+  kernelsuSrc = fetchFromGitHub {
+    owner = "tiann";
+    repo = "KernelSU";
+    tag = "v${version}";
+    hash = "sha256-UZADtLgR7F89fxVc+rxcM2A+67hm6uBSGlQ4oR/YtRA=";
   };
 
-  ksudX8664 = fetchurl {
-    url = "https://github.com/tiann/KernelSU/releases/download/v1.0.5/ksud-x86_64-linux-android";
-    hash = "sha256-lSqct3y8R/ODGuOUoOkCVBRctfE8lCfNR09cPnntZsQ=";
+  androidCrossConfig = {
+    config.allowUnfree = true;
+    localSystem = pkgs.stdenv.buildPlatform.system;
+  };
+
+  aarch64AndroidPkgs = import pkgs.path (
+    androidCrossConfig
+    // {
+      crossSystem = {
+        config = "aarch64-unknown-linux-android";
+        androidSdkVersion = "35";
+        androidNdkVersion = "27";
+        useAndroidPrebuilt = true;
+        rust.rustcTarget = "aarch64-linux-android";
+      };
+    }
+  );
+
+  x86_64AndroidPkgs = import pkgs.path (
+    androidCrossConfig
+    // {
+      crossSystem = {
+        config = "x86_64-unknown-linux-android";
+        androidSdkVersion = "35";
+        androidNdkVersion = "27";
+        useAndroidPrebuilt = true;
+        rust.rustcTarget = "x86_64-linux-android";
+      };
+    }
+  );
+
+  mkKsud =
+    {
+      crossPkgs,
+      rustTarget,
+    }:
+    crossPkgs.rustPlatform.buildRustPackage {
+      pname = "ksud";
+      inherit version;
+
+      src = kernelsuSrc;
+      sourceRoot = "${kernelsuSrc.name}/userspace/ksud";
+
+      cargoLock = {
+        lockFile = "${kernelsuSrc}/userspace/ksud/Cargo.lock";
+        outputHashes = {
+          "hole-punch-0.0.4-alpha.0" = "sha256-Ye8jEhvDOxBsIzmLTF1oxSuIuFdcy0+sh5cCYbg+VZg=";
+          "java-properties-2.0.0" = "sha256-fvekRqJI3Xwzo9z0Li36NFMIYnP5FMP8D9uVcK32soc=";
+          "loopdev-0.5.0" = "sha256-div16sh2axal/SR3LRFLZxl3oOXBxzKA1hPq4ceJgjw=";
+          "rustix-0.38.34" = "sha256-XzuiOKEvVee6nN8EltOgWrC4sUGhLKkm7pdPqDKuDWY=";
+        };
+      };
+
+      doCheck = false;
+      dontFixup = true;
+
+      CARGO_BUILD_TARGET = rustTarget;
+    };
+
+  ksudArm64 = mkKsud {
+    crossPkgs = aarch64AndroidPkgs;
+    rustTarget = "aarch64-linux-android";
+  };
+
+  ksudX8664 = mkKsud {
+    crossPkgs = x86_64AndroidPkgs;
+    rustTarget = "x86_64-linux-android";
   };
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "kernelsu";
-  version = "1.0.5";
+  inherit version;
 
-  src = fetchFromGitHub {
-    owner = "tiann";
-    repo = "KernelSU";
-    tag = "v${finalAttrs.version}";
-    hash = "sha256-UZADtLgR7F89fxVc+rxcM2A+67hm6uBSGlQ4oR/YtRA=";
-  };
+  src = kernelsuSrc;
 
   sourceRoot = "source/manager";
 
@@ -84,10 +147,8 @@ stdenv.mkDerivation (finalAttrs: {
       'val managerVersionName by extra(getVersionName())' \
       'val managerVersionName by extra("v1.0.5")'
 
-    # TODO: replace these fetched release artifacts with ksud binaries built
-    # from source in Nix, matching the upstream GitHub workflow.
-    install -Dm755 ${ksudArm64} app/src/main/jniLibs/arm64-v8a/libksud.so
-    install -Dm755 ${ksudX8664} app/src/main/jniLibs/x86_64/libksud.so
+    install -Dm755 ${ksudArm64}/bin/ksud app/src/main/jniLibs/arm64-v8a/libksud.so
+    install -Dm755 ${ksudX8664}/bin/ksud app/src/main/jniLibs/x86_64/libksud.so
 
     printf '\norg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m\n' >> gradle.properties
   '';
