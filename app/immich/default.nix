@@ -116,11 +116,19 @@ buildDartApplication.override { dart = flutter335; } (finalAttrs: {
     GRADLEW_SCRIPT
     chmod +x android/gradlew
 
+    pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application") {\n                def agpVersion = requested.version ?: "8.10.1"\n                useModule("com.android.tools.build:gradle:''${agpVersion}")\n            }\n        }\n    }\n'
+    substituteInPlace android/settings.gradle \
+      --replace-fail "pluginManagement {" "$pluginResolutionBlock"
+
     substituteInPlace android/app/build.gradle \
       --replace-fail "//f configurations.all {" "configurations.all {" \
       --replace-fail "//f     exclude group: 'com.google.android.gms'" "    exclude group: 'com.google.android.gms'" \
       --replace-fail "//f }" "}" \
       --replace-fail "      signingConfig signingConfigs.release" ""
+
+    substituteInPlace android/settings.gradle \
+      --replace-fail "id \"com.android.application\" version '8.11.2' apply false" \
+        "id \"com.android.application\" version '8.10.1' apply false"
 
     substituteInPlace android/gradle.properties \
       --replace-fail "org.gradle.jvmargs=-Xmx4096M" "org.gradle.jvmargs=-Xmx8192M"
@@ -223,6 +231,9 @@ buildDartApplication.override { dart = flutter335; } (finalAttrs: {
         cp -LR "$NATIVE_VIDEO_PLAYER_DIR" .dart-patched/native_video_player
         chmod -R u+w .dart-patched/native_video_player
         substituteInPlace .dart-patched/native_video_player/android/build.gradle \
+          --replace-fail "    ext.kotlin_version = '2.2.20'" "    ext.kotlin_version = '2.0.20'" \
+          --replace-fail '        classpath("com.android.tools.build:gradle:8.13.2")' \
+            '        classpath("com.android.tools.build:gradle:8.1.2")' \
           --replace-fail '     implementation("androidx.media3:media3-ui:1.9.2")' \
             "     implementation(\"androidx.media3:media3-ui:1.9.2\")
      implementation \"androidx.annotation:annotation:1.8.0\"
