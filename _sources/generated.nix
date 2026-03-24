@@ -8,31 +8,31 @@
 {
   axp_build = {
     pname = "axp_build";
-    version = "e5a0185915a0a9c34e7d035e0258afc65aad5003";
+    version = "996e23fd7a9a937e9143ee80e59879295706145d";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/build.git";
-      rev = "e5a0185915a0a9c34e7d035e0258afc65aad5003";
+      rev = "996e23fd7a9a937e9143ee80e59879295706145d";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-61MGjMamjDeXfGzX0a9Jb0QHumkXY9d+ukSYCvvskAU=";
+      sha256 = "sha256-MHC6KWZO9gSefOEKfteL/Jckk2tfkYtLj7Rw+KafOKw=";
     };
-    date = "2026-03-20";
+    date = "2026-03-23";
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
-    version = "ee5618a1bc9fb918c30ae846c81e045ad0e5a164";
+    version = "c727457efdd506bd5c53d660bbe728e35eff6587";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
-      rev = "ee5618a1bc9fb918c30ae846c81e045ad0e5a164";
+      rev = "c727457efdd506bd5c53d660bbe728e35eff6587";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-/iU+RcThveqjdZ1Qdgfcv6TwS5KCG0o3Ad8ubE4IEnE=";
+      sha256 = "sha256-ivvLi96EQmUq2xoitqFWPKpE7OiX/DvrJ3s7qE7+vQU=";
     };
-    date = "2026-03-21";
+    date = "2026-03-24";
   };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
@@ -86,7 +86,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-GrVmlF9T1DzPQS6BUWxnaYrIj+Pk6nGGw/ncJ4t4ucw=";
+      sha256 = "sha256-ZBr/RDKj8C4MGWKv0rE+OdtHVvL0GqL7zBi/vUFJJ4Q=";
     };
     date = "2026-03-01";
   };
@@ -198,7 +198,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-GSBGZEQM7kVS7Xr5A8yjDs822wbqZ3VXpD7+bNDIXUw=";
+      sha256 = "sha256-07k13X2QjGcOoqWJdlZf3iSSYHPNfu1r+vmcHj0AJt8=";
     };
     date = "2025-09-05";
   };
@@ -450,23 +450,23 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-ZQowVhIcNZNCoIDt3P2kvgPAIshYsUZfH2GO+McFod0=";
+      sha256 = "sha256-a0ke+kqOpCGtEUpiU7nICWU0GNv9c0jQphz5d1vdX8w=";
     };
     date = "2025-12-31";
   };
   lineage_latinime = {
     pname = "lineage_latinime";
-    version = "d6cc930e24d75a0d3b46c63d5437137a13f06f02";
+    version = "379a01675f64aeba8f98bbb61a1c287bb77f4834";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git";
-      rev = "d6cc930e24d75a0d3b46c63d5437137a13f06f02";
+      rev = "379a01675f64aeba8f98bbb61a1c287bb77f4834";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-Ikm853Pmgc/FQKGam/05l2LvLfZZhKVbHOyxz6S0XIg=";
+      sha256 = "sha256-dkxUZVJyoPmj8afF0hb0/0Ox6yrAerp+wWlVodQ1VkU=";
     };
-    date = "2026-03-01";
+    date = "2026-03-23";
   };
   lineage_prebuilts_bootmgr = {
     pname = "lineage_prebuilts_bootmgr";
@@ -576,7 +576,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-CNWWL3gQyD+Z+KoWCmU1U/MR8U6c9TvCc5DDTnX0OZ8=";
+      sha256 = "sha256-44zJyKBR15Tk4ImVsFz/CtwAPvC33U4tBjIDLBFB/S4=";
     };
     date = "2026-03-15";
   };
