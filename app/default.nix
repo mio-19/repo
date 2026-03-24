@@ -373,6 +373,9 @@
       archivetune = pkgs.callPackage ./archivetune {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
+      amethyst = pkgs.callPackage ./amethyst {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
       koreader = pkgs.callPackage ./koreader {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -775,6 +778,26 @@
                 source packaging, modern Material 3 UI, lyrics support, and playback
                 customization features.
                 This package is built from source.
+            '';
+          }
+          {
+            appId = "org.angelauramc.amethyst";
+            apkPath = "${amethyst}/amethyst.apk";
+            metadataYml = ''
+              Categories:
+                - Games
+              License: GPL-3.0-only
+              SourceCode: https://github.com/AngelAuraMC/Amethyst-Android
+              IssueTracker: https://github.com/AngelAuraMC/Amethyst-Android/issues
+              Changelog: https://github.com/AngelAuraMC/Amethyst-Android/commits/v3_openjdk
+              AutoName: Amethyst
+              Summary: Android launcher for Minecraft Java Edition
+              Description: |-
+                Amethyst is an Android launcher for Minecraft Java Edition based
+                on the PojavLauncher codebase with an updated native stack and
+                bundled runtime components.
+                This package is built from source from the latest `v3_openjdk`
+                branch commit pinned in this repo.
             '';
           }
         ]
@@ -1330,6 +1353,13 @@
           name = "sign-archivetune";
           apkPath = "${archivetune}/archivetune.apk";
           defaultOut = "archivetune-signed.apk";
+        };
+      });
+      packages.amethyst = amethyst.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-amethyst";
+          apkPath = "${amethyst}/amethyst.apk";
+          defaultOut = "amethyst-signed.apk";
         };
       });
 
