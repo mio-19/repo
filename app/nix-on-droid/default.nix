@@ -15,7 +15,7 @@ let
     s.platforms-android-30
     s.build-tools-30-0-3
     s.build-tools-33-0-2
-    s.ndk-21-4-7075529
+    s.ndk-27-3-13750724
   ]);
 
   gradle =
@@ -57,11 +57,11 @@ stdenv.mkDerivation (finalAttrs: {
     JAVA_HOME = jdk17_headless;
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/21.4.7075529";
+    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/33.0.2/aapt2";
     TERMUX_PACKAGE_VARIANT = "apt-android-7";
     TERMUX_SPLIT_APKS_FOR_RELEASE_BUILDS = "0";
-    JITPACK_NDK_VERSION = "21.4.7075529";
+    JITPACK_NDK_VERSION = "27.3.13750724";
   };
 
   preConfigure = ''
