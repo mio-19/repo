@@ -25,5 +25,5 @@ in
       src;
   };
   signing.avb.size = 4096;
-  stateVersion = "2";
+  stateVersion = "3";
 }
