@@ -316,6 +316,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      zotero-android = pkgs.callPackage ./zotero-android {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       tuxguitar = pkgs.callPackage ./tuxguitar {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -677,6 +681,27 @@
               Description: |-
                 TuxGuitar is a multitrack guitar tablature editor and player.
                 It can open GuitarPro, PowerTab, and TablEdit files.
+            '';
+          }
+          {
+            appId = "org.zotero.android";
+            apkPath = "${zotero-android}/zotero-android.apk";
+            metadataYml = ''
+              Categories:
+                - Reading
+                - Science & Education
+              License: AGPL-3.0-only
+              WebSite: https://www.zotero.org/
+              SourceCode: https://github.com/zotero/zotero-android
+              IssueTracker: https://github.com/zotero/zotero-android/issues
+              Changelog: https://github.com/zotero/zotero-android/releases
+              AutoName: Zotero
+              Summary: Sync and manage your Zotero library on Android
+              Description: |-
+                Zotero is a research assistant for collecting, organizing,
+                annotating, and syncing references, PDFs, and notes.
+
+                This package is built from source from the latest upstream tag.
             '';
           }
           {
@@ -1177,6 +1202,14 @@
           name = "sign-meditrak";
           apkPath = "${meditrak}/meditrak.apk";
           defaultOut = "meditrak-signed.apk";
+        };
+      });
+
+      packages.zotero-android = zotero-android.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-zotero-android";
+          apkPath = "${zotero-android}/zotero-android.apk";
+          defaultOut = "zotero-android-signed.apk";
         };
       });
 
