@@ -92,18 +92,21 @@ def choose_best_file(files):
 def parse_icon_path(apk_path):
     badging = run(aapt, "dump", "badging", str(apk_path))
     candidates = []
+    fallback = None
     for line in badging.splitlines():
         match = re.match(r"application-icon-(\d+):'([^']+)'", line)
-        if not match:
+        if match:
+            density = int(match.group(1))
+            if density < 65000:
+                candidates.append((density, match.group(2)))
             continue
-        density = int(match.group(1))
-        if density >= 65000:
-            continue
-        candidates.append((density, match.group(2)))
-    if not candidates:
-        return None
-    candidates.sort()
-    return candidates[-1][1]
+        match = re.match(r"application: .* icon='([^']+)'", line)
+        if match:
+            fallback = match.group(1)
+    if candidates:
+        candidates.sort()
+        return candidates[-1][1]
+    return fallback
 
 
 def parse_adaptive_layers(apk_path, xml_path):
@@ -125,6 +128,8 @@ def load_image_from_apk(zf, inner_path):
 
 def parse_color(color):
     color = color.lstrip("#")
+    if len(color) == 6:
+        color = f"ff{color}"
     if len(color) != 8:
         raise ValueError(f"unsupported color format: {color}")
     alpha, red, green, blue = [int(color[i : i + 2], 16) for i in range(0, 8, 2)]
@@ -156,7 +161,7 @@ def build_icon(apk_path):
         return None
     resources = parse_resources(apk_path)
     with zipfile.ZipFile(apk_path) as zf:
-        if icon_path.lower().endswith((".png", ".webp")):
+        if icon_path.lower().endswith((".png", ".webp", ".jpg", ".jpeg")):
             return load_image_from_apk(zf, icon_path)
 
         background_id, foreground_id = parse_adaptive_layers(apk_path, icon_path)
