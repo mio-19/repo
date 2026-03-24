@@ -12,7 +12,6 @@
   cmake,
   gnumake,
   python3,
-  python3Packages,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
