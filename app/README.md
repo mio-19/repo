@@ -7,6 +7,7 @@ broken but can compile:
 + meshcore-open black screen
 + emacs crash when launching
 + kernelsu cannot communicate with the kernel
++ Amethyst Failed to install JRE 17
 
 slightly broken:
 
