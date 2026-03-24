@@ -13,30 +13,30 @@ let
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
-    s.platforms-android-34
+    s.platforms-android-35
     s.build-tools-33-0-1
-    s.build-tools-34-0-0
+    s.build-tools-35-0-0
   ]);
 
   gradle =
     (gradle-packages.mkGradle {
-      version = "8.5";
-      hash = "sha256-nZJnhwZqCBc56CAIWDOLSmnoN8OoIaM6yp2wndSkECY=";
+      version = "9.2.1";
+      hash = "sha256-cvRMn468sa9Dg49F7lxKqcVESJizRoqz9K97YHbFvD8=";
       defaultJava = jdk17_headless;
     }).wrapped;
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "zotero-android";
-  version = "1.0.19-32_3";
+  version = "1.0.0-231";
 
   src = fetchFromGitHub {
     owner = "zotero";
     repo = "zotero-android";
     tag = finalAttrs.version;
-    hash = "sha256-XmNTetiUJJwGBSrzmKX1lvsydBSxh7y9KPT1OP7yFfs=";
+    hash = "sha256-E/urUZoKLpXtL/HzI17w0Cs4ny5qjwfxzfQm8C5l5ZE=";
   };
 
-  gradleBuildTask = ":app:assembleBetaRelease";
+  gradleBuildTask = ":app:assembleInternalRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 
   mitmCache = gradle.fetchDeps {
@@ -59,16 +59,15 @@ stdenv.mkDerivation (finalAttrs: {
     JAVA_HOME = jdk17_headless;
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2";
+    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
     REALM_DISABLE_ANALYTICS = "true";
   };
 
   prePatch = ''
     substituteInPlace app/build.gradle.kts \
-      --replace-fail 'import com.github.triplet.gradle.androidpublisher.ReleaseStatus' "" \
       --replace-fail 'import com.github.triplet.gradle.androidpublisher.ResolutionStrategy' "" \
-      --replace-fail '    id("com.github.triplet.play") version "3.7.0"' "" \
-      --replace-fail $'play {\n    track.set("internal")\n    defaultToAppBundles.set(true)\n    releaseStatus.set(ReleaseStatus.DRAFT)\n    resolutionStrategy.set(ResolutionStrategy.AUTO)\n}\n' "" \
+      --replace-fail '    id("com.github.triplet.play") version "3.12.1"' "" \
+      --replace-fail $'play {\n    track.set("internal")\n    defaultToAppBundles.set(true)\n    resolutionStrategy.set(ResolutionStrategy.AUTO)\n}\n' "" \
       --replace-fail '            signingConfig = signingConfigs.getAt("release")' ""
   '';
 
@@ -81,14 +80,14 @@ stdenv.mkDerivation (finalAttrs: {
   gradleFlags = [
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
-    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
-    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
+    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
   ];
 
   installPhase = ''
     runHook preInstall
     install -Dm644 \
-      app/build/outputs/apk/beta/release/app-beta-release-unsigned.apk \
+      app/build/outputs/apk/internal/release/app-internal-release-unsigned.apk \
       "$out/zotero-android.apk"
     runHook postInstall
   '';
