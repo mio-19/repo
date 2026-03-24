@@ -1,5 +1,9 @@
 # Tailscale Packaging State
 
+Status update 2026-03-25:
+- `nix build .#tailscale` succeeds
+- current NDK pin: `ndk-27-3-13750724`
+
 Current upstream target:
 - App repo: `tailscale/tailscale-android`
 - Release: `1.96.2`

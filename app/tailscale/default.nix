@@ -80,7 +80,7 @@ let
     s.platform-tools
     s.platforms-android-34
     s.build-tools-34-0-0
-    s.ndk-26-1-10909125
+    s.ndk-27-3-13750724
   ]);
 
   gradle =
@@ -119,8 +119,8 @@ stdenv.mkDerivation (finalAttrs: {
     JAVA_HOME = if stdenv.isDarwin then "${jdk17}" else "${jdk17}/lib/openjdk";
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/26.1.10909125";
-    NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/26.1.10909125";
+    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
+    NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2";
   };
 
@@ -173,7 +173,7 @@ stdenv.mkDerivation (finalAttrs: {
     EOF
 
     substituteInPlace android/build.gradle \
-      --replace-fail 'ndkVersion "23.1.7779620"' 'ndkVersion "26.1.10909125"'
+      --replace-fail 'ndkVersion "23.1.7779620"' 'ndkVersion "27.3.13750724"'
 
     echo "org.gradle.jvmargs=-Xmx4096m" >> android/gradle.properties
     cat >> android/gradle.properties <<EOF
