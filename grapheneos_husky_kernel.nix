@@ -5,7 +5,7 @@
   pwmmode ? "0x01", # 0x02 might be too dark under direct sunlight
   enableLindroid ? false,
   enableDaria ? enableLindroid,
-  enableDroidspaces ? true,
+  enableDroidspaces ? false,
 }:
 callPackage ./grapheneos_kernel_common.nix { } {
   pname = "grapheneos-husky-kernel";
