@@ -7,3 +7,7 @@ broken but can compile:
 + meshcore-open black screen
 + emacs crash when launching
 + kernelsu cannot communicate with the kernel
+
+slightly broken:
+
++ zotero: its pdf viewer is paid and proprietary. showing red text asking for key.
