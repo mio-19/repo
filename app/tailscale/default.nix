@@ -14,12 +14,11 @@
 }:
 let
   version = "1.96.2";
-  rev = "a82504d6b278d1c2cf55191395a9d063574ea66b";
 
   src = fetchFromGitHub {
     owner = "tailscale";
     repo = "tailscale-android";
-    inherit rev;
+    tag = "v${version}";
     hash = "sha256-1RWHKUzqbiK/fOkkOdjAhQ/F/qU1rOVqEa8ANv7zW+c=";
   };
 
