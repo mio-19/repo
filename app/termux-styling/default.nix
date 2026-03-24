@@ -15,14 +15,15 @@ let
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
-    s.platforms-android-34
-    s.build-tools-34-0-0
+    s.platforms-android-36
+    s.build-tools-35-0-0
+    s.build-tools-36-0-0
   ]);
 
   gradle =
     (gradle-packages.mkGradle {
-      version = "8.5";
-      hash = "sha256-nZJnhwZqCBc56CAIWDOLSmnoN8OoIaM6yp2wndSkECY=";
+      version = "8.13";
+      hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
       defaultJava = jdk21;
     }).wrapped;
 in
@@ -73,13 +74,13 @@ stdenv.mkDerivation (finalAttrs: {
     JAVA_HOME = jdk21;
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2";
+    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
   };
 
   postPatch = ''
     substituteInPlace app/build.gradle \
       --replace-fail '        versionCode 1000' '        versionCode 1001' \
-      --replace-fail '        versionName "0.32.1"' '        versionName "0.32.1+git.20250625"'
+      --replace-fail '        versionName "0.32.2"' '        versionName "0.32.2+git.20250625"'
 
     mv app/src/main/assets/colors/rosé-pine.properties app/src/main/assets/colors/rose-pine.properties
     mv app/src/main/assets/colors/rosé-pine-dawn.properties app/src/main/assets/colors/rose-pine-dawn.properties
@@ -95,8 +96,8 @@ stdenv.mkDerivation (finalAttrs: {
   gradleFlags = [
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${jdk21}"
-    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
-    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
+    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
   ];
 
   installPhase = ''
