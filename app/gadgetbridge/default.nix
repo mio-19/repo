@@ -109,7 +109,7 @@ stdenv.mkDerivation (finalAttrs: {
   meta = with lib; {
     description = "Gadgetbridge wearable companion for Android";
     homepage = "https://codeberg.org/Freeyourgadget/Gadgetbridge";
-    license = licenses.asl20;
+    license = licenses.agpl3Only;
     platforms = platforms.unix;
   };
 })
