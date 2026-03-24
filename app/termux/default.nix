@@ -8,6 +8,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  fetchpatch,
 }:
 let
   rev = "3f0dec3574a6617ff7ff0b78d30b29cfffd71b20";
@@ -38,6 +39,14 @@ stdenv.mkDerivation (finalAttrs: {
     rev = rev;
     hash = "sha256-a81+LZaJPdofknb1aGkzyowoGCYzNlcwU1H8k2+sEwY=";
   };
+
+  patches = [
+    (fetchpatch {
+      name = "Fixed: Improve dark mode support for settings and shared activities";
+      url = "https://github.com/termux/termux-app/pull/5025.patch";
+      hash = "sha256-07jVCLJX96jZDoWcMlBLtjh2K9dLC1ciVOBzfC1kTpU=";
+    })
+  ];
 
   bootstrapAarch64 = fetchurl {
     url = "https://github.com/termux/termux-packages/releases/download/bootstrap-2026.02.12-r1+apt.android-7/bootstrap-aarch64.zip";
