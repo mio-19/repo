@@ -191,7 +191,7 @@ stdenvNoCC.mkDerivation {
       ''}
 
       ${lib.optionalString enableDroidspaces ''
-        # TODO: enable configs.
+        sed -i "/^CONFIG_PCI_ENDPOINT=y$/a CONFIG_DEVTMPFS=y" aosp/arch/arm64/configs/gki_defconfig
         cd aosp
         echo skipping because cannot apply patch ${
           fetchpatch {
