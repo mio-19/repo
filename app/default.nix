@@ -1,7 +1,7 @@
 { inputs, ... }:
 {
   perSystem =
-    { pkgs, system, ... }:
+    { pkgs, lib, system, ... }:
     let
       sources = (import ../_sources/generated.nix) {
         inherit (pkgs)
@@ -73,7 +73,7 @@
             "${apkPath}" "$TMP"
 
           echo "Signing APK..."
-          ${androidSdk}/share/android-sdk/build-tools/35.0.0/apksigner sign \
+          ${lib.getExe pkgs.apksigner} sign \
             --ks "$KEYSTORE" \
             --ks-pass "pass:$KS_PASS" \
             --key-pass "pass:$KEY_PASS" \
@@ -210,14 +210,14 @@
           export JAVA_HOME="${pkgs.jdk}"
           export PATH="$JAVA_HOME/bin:$PATH"
 
-          (cd "$WORKDIR" && ${pkgs.fdroidserver}/bin/fdroid publish --error-on-failed)
-          (cd "$WORKDIR" && ${pkgs.fdroidserver}/bin/fdroid update --create-metadata --rename-apks --nosign)
+          (cd "$WORKDIR" && ${lib.getExe pkgs.fdroidserver} publish --error-on-failed)
+          (cd "$WORKDIR" && ${lib.getExe pkgs.fdroidserver} update --create-metadata --rename-apks --nosign)
           ${iconPython}/bin/python3 ${./fdroid-repo-icon-fallback.py} \
             "$WORKDIR" \
             "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt" \
             "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2" \
             "${iconFont}"
-          (cd "$WORKDIR" && ${pkgs.fdroidserver}/bin/fdroid signindex)
+          (cd "$WORKDIR" && ${lib.getExe pkgs.fdroidserver} signindex)
 
           rm -rf "$OUT"
           mkdir -p "$OUT"
