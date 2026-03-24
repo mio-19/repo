@@ -7,6 +7,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  fetchpatch,
 }:
 let
   rev = "79338cb19f4b86cae4d2e81e6de60ba7f613bb9b";
@@ -35,6 +36,14 @@ stdenv.mkDerivation (finalAttrs: {
     rev = rev;
     hash = "sha256-sVKJFVloCruZUz9JhEdomizUM+S2vavk2c0C27lR8E4=";
   };
+
+  patches = [
+    (fetchpatch {
+      name = "Fix Android 12 + 15";
+      url = "https://github.com/termux/termux-styling/pull/263.patch";
+      hash = "sha256-S40xTaUrnE7jAo+PNveVMp0S9NOvHbAi5ubVv0yxvmU=";
+    })
+  ];
 
   gradleBuildTask = ":app:assembleRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
