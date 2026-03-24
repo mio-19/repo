@@ -14,18 +14,10 @@ let
 
   allApkSources = appApkSources;
 
-  appMetadata = lib.filter (x: x != null) (
-    map (
-      app:
-      if app ? appId && app ? metadataYml then
-        {
-          appId = app.appId;
-          file = pkgs.writeText "fdroid-metadata-${lib.replaceStrings [ "." ] [ "-" ] app.appId}.yml" app.metadataYml;
-        }
-      else
-        null
-    ) apps
-  );
+  appMetadata = map (app: {
+    appId = app.appId;
+    file = pkgs.writeText "fdroid-metadata-${lib.replaceStrings [ "." ] [ "-" ] app.appId}.yml" app.metadataYml;
+  }) apps;
 in
 assert lib.assertMsg (
   allApkSources != [ ]
