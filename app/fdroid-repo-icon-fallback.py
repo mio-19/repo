@@ -1,11 +1,14 @@
 import hashlib
+import io
 import json
 import re
 import subprocess
 import sys
 import zipfile
 from pathlib import Path
+from xml.sax.saxutils import escape
 
+import cairosvg
 from PIL import Image, ImageDraw, ImageFont
 
 workdir = Path(sys.argv[1])
@@ -25,18 +28,47 @@ with index_v2_path.open() as f:
 densities = [120, 160, 240, 320, 480, 640]
 resource_line_re = re.compile(r"\s*resource (0x[0-9a-f]+) ([^/]+)/(.+)")
 file_line_re = re.compile(r"\s+\(([^)]*)\) \(file\) ([^ ]+) type=([A-Z]+)")
-color_line_re = re.compile(r"\s+\(\) (#[0-9a-fA-F]{8})")
+color_line_re = re.compile(r"\s+\(\) (#[0-9a-fA-F]{6,8})")
+reference_line_re = re.compile(r"\s+\(\) (@0x[0-9a-f]+)")
 xml_id_re = re.compile(r"drawable\(0x[0-9a-f]+\)=@(0x[0-9a-f]+)")
+xml_element_re = re.compile(r"^(\s*)E: ([^ ]+)")
+xml_attr_re = re.compile(r"^(\s*)A: (?:.+:)?([^(:]+)\([^)]+\)=(.*)$")
+
+framework_colors = {
+    "0x0106000b": "#ffffffff",
+    "0x0106000c": "#ff000000",
+    "0x0106000d": "#00000000",
+}
 
 
 def run(*cmd):
     return subprocess.check_output(cmd, text=True)
 
 
+def strip_raw_suffix(value):
+    return re.sub(r'\s+\(Raw: ".*"\)$', "", value).strip()
+
+
+def unquote(value):
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] == '"':
+        return value[1:-1]
+    return value
+
+
+def parse_number(value):
+    if value is None:
+        return None
+    match = re.match(r"(-?\d+(?:\.\d+)?)", value)
+    return float(match.group(1)) if match else None
+
+
 def parse_resources(apk_path):
     output = run(aapt2, "dump", "resources", str(apk_path))
     resources = {}
+    path_to_resource = {}
     current = None
+    current_id = None
     for line in output.splitlines():
         match = resource_line_re.match(line)
         if match:
@@ -45,25 +77,31 @@ def parse_resources(apk_path):
                 "name": match.group(3),
                 "files": [],
                 "color": None,
+                "ref": None,
             }
-            resources[match.group(1)] = current
+            current_id = match.group(1)
+            resources[current_id] = current
             continue
         if current is None:
             continue
         match = file_line_re.match(line)
         if match:
-            current["files"].append(
-                {
-                    "qualifier": match.group(1),
-                    "path": match.group(2),
-                    "kind": match.group(3),
-                }
-            )
+            entry = {
+                "qualifier": match.group(1),
+                "path": match.group(2),
+                "kind": match.group(3),
+            }
+            current["files"].append(entry)
+            path_to_resource[entry["path"]] = current_id
             continue
         match = color_line_re.match(line)
         if match:
             current["color"] = match.group(1)
-    return resources
+            continue
+        match = reference_line_re.match(line)
+        if match:
+            current["ref"] = match.group(1)
+    return resources, path_to_resource
 
 
 def choose_best_file(files):
@@ -84,9 +122,9 @@ def choose_best_file(files):
                 score = density
                 break
         is_raster = entry["path"].lower().endswith((".png", ".webp", ".jpg", ".jpeg"))
-        ranked.append((is_raster, score, entry["path"]))
+        ranked.append((is_raster, score, entry["path"], entry))
     ranked.sort()
-    return ranked[-1][2] if ranked else None
+    return ranked[-1][3] if ranked else None
 
 
 def parse_icon_path(apk_path):
@@ -104,6 +142,31 @@ def parse_icon_path(apk_path):
         return None
     candidates.sort()
     return candidates[-1][1]
+
+
+def parse_xmltree(apk_path, xml_path):
+    output = run(aapt2, "dump", "xmltree", "--file", xml_path, str(apk_path))
+    root = None
+    stack = []
+    for line in output.splitlines():
+        element_match = xml_element_re.match(line)
+        if element_match:
+            indent = len(element_match.group(1))
+            node = {"tag": element_match.group(2), "attrs": {}, "children": []}
+            while stack and stack[-1][0] >= indent:
+                stack.pop()
+            if stack:
+                stack[-1][1]["children"].append(node)
+            else:
+                root = node
+            stack.append((indent, node))
+            continue
+        attr_match = xml_attr_re.match(line)
+        if attr_match and stack:
+            name = attr_match.group(2)
+            value = unquote(strip_raw_suffix(attr_match.group(3)))
+            stack[-1][1]["attrs"][name] = value
+    return root
 
 
 def parse_adaptive_layers(apk_path, xml_path):
@@ -125,10 +188,316 @@ def load_image_from_apk(zf, inner_path):
 
 def parse_color(color):
     color = color.lstrip("#")
+    if len(color) == 6:
+        color = f"ff{color}"
     if len(color) != 8:
         raise ValueError(f"unsupported color format: {color}")
     alpha, red, green, blue = [int(color[i : i + 2], 16) for i in range(0, 8, 2)]
     return (red, green, blue, alpha)
+
+
+def color_to_svg(color):
+    red, green, blue, alpha = parse_color(color)
+    return f"rgba({red},{green},{blue},{alpha / 255:.6f})"
+
+
+def resolve_color(value, resources, seen=None):
+    if value is None:
+        return None
+    if value.startswith("#"):
+        return value
+    if value.startswith("@0x"):
+        resource_id = value[1:]
+        if resource_id.startswith("0x01"):
+            return framework_colors.get(resource_id)
+        if seen is None:
+            seen = set()
+        if resource_id in seen:
+            return None
+        seen = seen | {resource_id}
+        resource = resources.get(resource_id)
+        if resource is None:
+            return None
+        if resource["color"] is not None:
+            return resource["color"]
+        if resource["ref"] is not None:
+            return resolve_color(resource["ref"], resources, seen)
+    return None
+
+
+def render_svg(svg, size=512):
+    png = cairosvg.svg2png(
+        bytestring=svg.encode(),
+        output_width=size,
+        output_height=size,
+    )
+    image = Image.open(io.BytesIO(png))
+    image.load()
+    return image.convert("RGBA")
+
+
+def render_vector_node(node, resources):
+    tag = node["tag"]
+    attrs = node["attrs"]
+    if tag == "group":
+        transforms = []
+        pivot_x = parse_number(attrs.get("pivotX")) or 0
+        pivot_y = parse_number(attrs.get("pivotY")) or 0
+        rotation = parse_number(attrs.get("rotation"))
+        scale_x = parse_number(attrs.get("scaleX"))
+        scale_y = parse_number(attrs.get("scaleY"))
+        translate_x = parse_number(attrs.get("translateX"))
+        translate_y = parse_number(attrs.get("translateY"))
+        if translate_x or translate_y:
+            transforms.append(f"translate({translate_x or 0} {translate_y or 0})")
+        if rotation:
+            transforms.append(f"translate({pivot_x} {pivot_y})")
+            transforms.append(f"rotate({rotation})")
+            transforms.append(f"translate({-pivot_x} {-pivot_y})")
+        if scale_x is not None or scale_y is not None:
+            transforms.append(f"scale({scale_x or 1} {scale_y or 1})")
+        content = "".join(render_vector_node(child, resources) for child in node["children"])
+        transform_attr = f' transform="{" ".join(transforms)}"' if transforms else ""
+        return f"<g{transform_attr}>{content}</g>"
+    if tag == "path":
+        path_data = attrs.get("pathData")
+        if not path_data:
+            return ""
+        fill_color = resolve_color(attrs.get("fillColor"), resources)
+        stroke_color = resolve_color(attrs.get("strokeColor"), resources)
+        fill = color_to_svg(fill_color) if fill_color else "none"
+        stroke = color_to_svg(stroke_color) if stroke_color else "none"
+        fill_rule = ' fill-rule="evenodd"' if attrs.get("fillType") == "1" else ""
+        fill_alpha = parse_number(attrs.get("fillAlpha"))
+        stroke_alpha = parse_number(attrs.get("strokeAlpha"))
+        opacity_attr = f' opacity="{fill_alpha}"' if fill_alpha is not None else ""
+        stroke_opacity_attr = f' stroke-opacity="{stroke_alpha}"' if stroke_alpha is not None else ""
+        stroke_width = parse_number(attrs.get("strokeWidth"))
+        stroke_attr = f' stroke-width="{stroke_width}"' if stroke_width is not None else ""
+        return (
+            f'<path d="{escape(path_data)}" fill="{fill}" stroke="{stroke}"'
+            f"{stroke_attr}{fill_rule}{opacity_attr}{stroke_opacity_attr}/>"
+        )
+    return "".join(render_vector_node(child, resources) for child in node["children"])
+
+
+def render_vector(node, resources):
+    viewport_width = parse_number(node["attrs"].get("viewportWidth")) or 108
+    viewport_height = parse_number(node["attrs"].get("viewportHeight")) or 108
+    content = "".join(render_vector_node(child, resources) for child in node["children"])
+    svg = (
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {viewport_width} {viewport_height}">'
+        f"{content}</svg>"
+    )
+    return render_svg(svg)
+
+
+def gradient_direction(angle):
+    normalized = int(angle or 0) % 360
+    if normalized == 0:
+        return ("0%", "100%", "0%", "0%")
+    if normalized == 45:
+        return ("0%", "100%", "100%", "0%")
+    if normalized == 90:
+        return ("0%", "0%", "100%", "0%")
+    if normalized == 135:
+        return ("0%", "0%", "100%", "100%")
+    if normalized == 180:
+        return ("0%", "0%", "0%", "100%")
+    if normalized == 225:
+        return ("100%", "0%", "0%", "100%")
+    if normalized == 270:
+        return ("100%", "0%", "0%", "0%")
+    if normalized == 315:
+        return ("100%", "100%", "0%", "0%")
+    return ("0%", "0%", "100%", "0%")
+
+
+def shape_svg(node, resources):
+    attrs = node["attrs"]
+    shape_type = attrs.get("shape", "rectangle")
+    solid = None
+    gradient = None
+    radius = 0
+    for child in node["children"]:
+        if child["tag"] == "solid":
+            solid = resolve_color(child["attrs"].get("color"), resources)
+        elif child["tag"] == "gradient":
+            start_color = resolve_color(child["attrs"].get("startColor"), resources)
+            end_color = resolve_color(child["attrs"].get("endColor"), resources)
+            if start_color and end_color:
+                gradient = (
+                    start_color,
+                    end_color,
+                    gradient_direction(parse_number(child["attrs"].get("angle"))),
+                )
+        elif child["tag"] == "corners":
+            radius = parse_number(child["attrs"].get("radius")) or 0
+
+    if gradient is not None:
+        start_color, end_color, (x1, y1, x2, y2) = gradient
+        fill = (
+            "<defs><linearGradient id=\"grad\" "
+            f'x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}">'
+            f'<stop offset="0%" stop-color="{color_to_svg(start_color)}"/>'
+            f'<stop offset="100%" stop-color="{color_to_svg(end_color)}"/>'
+            "</linearGradient></defs>"
+        )
+        fill_value = "url(#grad)"
+    else:
+        fill = ""
+        fill_value = color_to_svg(solid or "#00000000")
+
+    if shape_type == "oval":
+        body = f'<ellipse cx="54" cy="54" rx="54" ry="54" fill="{fill_value}"/>'
+    else:
+        body = (
+            f'<rect x="0" y="0" width="108" height="108" rx="{radius}" ry="{radius}" '
+            f'fill="{fill_value}"/>'
+        )
+    return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108">{fill}{body}</svg>'
+
+
+def render_shape(node, resources):
+    return render_svg(shape_svg(node, resources))
+
+
+def composite_image(base, layer):
+    if layer is None:
+        return base
+    if layer.size != base.size:
+        layer = layer.resize(base.size, Image.Resampling.LANCZOS)
+    base.alpha_composite(layer)
+    return base
+
+
+def render_drawable(apk_path, zf, resources, path_to_resource, ref, seen=None):
+    if ref is None:
+        return None
+    if seen is None:
+        seen = set()
+    if ref in seen:
+        return None
+    seen = seen | {ref}
+
+    if ref.startswith("#"):
+        return Image.new("RGBA", (512, 512), parse_color(ref))
+
+    if ref.startswith("@0x"):
+        resource_id = ref[1:]
+        if resource_id.startswith("0x01"):
+            color = framework_colors.get(resource_id)
+            return Image.new("RGBA", (512, 512), parse_color(color)) if color else None
+    elif ref.startswith("@"):
+        return None
+    else:
+        if ref.lower().endswith((".png", ".webp", ".jpg", ".jpeg")):
+            return load_image_from_apk(zf, ref)
+        resource_id = path_to_resource.get(ref)
+        if resource_id is None:
+            node = parse_xmltree(apk_path, ref)
+            return render_xml_node(apk_path, zf, resources, path_to_resource, node, seen)
+
+    resource = resources.get(resource_id)
+    if resource is None:
+        return None
+
+    resolved_color = resource["color"] or resolve_color(resource["ref"], resources)
+    if resolved_color is not None:
+        return Image.new("RGBA", (512, 512), parse_color(resolved_color))
+
+    best_file = choose_best_file(resource["files"])
+    if best_file is None:
+        return None
+
+    path = best_file["path"]
+    if path.lower().endswith((".png", ".webp", ".jpg", ".jpeg")):
+        return load_image_from_apk(zf, path)
+
+    node = parse_xmltree(apk_path, path)
+    return render_xml_node(apk_path, zf, resources, path_to_resource, node, seen)
+
+
+def render_bitmap(apk_path, zf, resources, path_to_resource, node, seen):
+    return render_drawable(apk_path, zf, resources, path_to_resource, node["attrs"].get("src"), seen)
+
+
+def render_selector(apk_path, zf, resources, path_to_resource, node, seen):
+    for item in node["children"]:
+        drawable = item["attrs"].get("drawable")
+        if drawable:
+            rendered = render_drawable(apk_path, zf, resources, path_to_resource, drawable, seen)
+            if rendered is not None:
+                return rendered
+        for child in item["children"]:
+            rendered = render_xml_node(apk_path, zf, resources, path_to_resource, child, seen)
+            if rendered is not None:
+                return rendered
+    return None
+
+
+def render_layer_list(apk_path, zf, resources, path_to_resource, node, seen):
+    canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
+    rendered_any = False
+    for item in node["children"]:
+        drawable = item["attrs"].get("drawable")
+        layer = render_drawable(apk_path, zf, resources, path_to_resource, drawable, seen) if drawable else None
+        if layer is None:
+            for child in item["children"]:
+                layer = render_xml_node(apk_path, zf, resources, path_to_resource, child, seen)
+                if layer is not None:
+                    break
+        if layer is not None:
+            rendered_any = True
+            composite_image(canvas, layer)
+    return canvas if rendered_any else None
+
+
+def render_adaptive_icon(apk_path, zf, resources, path_to_resource, node, seen):
+    canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
+    rendered_any = False
+    for tag in ("background", "foreground"):
+        for child in node["children"]:
+            if child["tag"] != tag:
+                continue
+            drawable = child["attrs"].get("drawable")
+            layer = render_drawable(apk_path, zf, resources, path_to_resource, drawable, seen) if drawable else None
+            if layer is None:
+                for grandchild in child["children"]:
+                    layer = render_xml_node(apk_path, zf, resources, path_to_resource, grandchild, seen)
+                    if layer is not None:
+                        break
+            if layer is not None:
+                rendered_any = True
+                composite_image(canvas, layer)
+    return canvas if rendered_any else None
+
+
+def render_xml_node(apk_path, zf, resources, path_to_resource, node, seen):
+    if node is None:
+        return None
+    tag = node["tag"]
+    if tag == "adaptive-icon":
+        return render_adaptive_icon(apk_path, zf, resources, path_to_resource, node, seen)
+    if tag == "vector":
+        return render_vector(node, resources)
+    if tag == "shape":
+        return render_shape(node, resources)
+    if tag == "selector":
+        return render_selector(apk_path, zf, resources, path_to_resource, node, seen)
+    if tag == "layer-list":
+        return render_layer_list(apk_path, zf, resources, path_to_resource, node, seen)
+    if tag == "bitmap":
+        return render_bitmap(apk_path, zf, resources, path_to_resource, node, seen)
+    if tag == "inset":
+        drawable = node["attrs"].get("drawable")
+        if drawable:
+            return render_drawable(apk_path, zf, resources, path_to_resource, drawable, seen)
+        for child in node["children"]:
+            rendered = render_xml_node(apk_path, zf, resources, path_to_resource, child, seen)
+            if rendered is not None:
+                return rendered
+    return None
 
 
 def make_placeholder_icon(label, seed):
@@ -154,41 +523,32 @@ def build_icon(apk_path):
     icon_path = parse_icon_path(apk_path)
     if icon_path is None:
         return None
-    resources = parse_resources(apk_path)
+    resources, path_to_resource = parse_resources(apk_path)
     with zipfile.ZipFile(apk_path) as zf:
-        if icon_path.lower().endswith((".png", ".webp")):
+        if icon_path.lower().endswith((".png", ".webp", ".jpg", ".jpeg")):
             return load_image_from_apk(zf, icon_path)
 
-        background_id, foreground_id = parse_adaptive_layers(apk_path, icon_path)
-        if not background_id or not foreground_id:
-            return None
+        image = render_drawable(apk_path, zf, resources, path_to_resource, icon_path)
+        if image is not None:
+            return image
 
-        background = resources.get(background_id)
-        foreground = resources.get(foreground_id)
-        if foreground is None:
+        background_id, foreground_id = parse_adaptive_layers(apk_path, icon_path)
+        if not background_id and not foreground_id:
             return None
 
         canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
-        if background is not None:
-            if background["color"] is not None:
-                canvas = Image.new("RGBA", (512, 512), parse_color(background["color"]))
-            elif background["files"]:
-                background_path = choose_best_file(background["files"])
-                if background_path is not None:
-                    background_image = load_image_from_apk(zf, background_path)
-                    if background_image is not None:
-                        background_image = background_image.resize((512, 512), Image.Resampling.LANCZOS)
-                        canvas.alpha_composite(background_image)
-
-        foreground_path = choose_best_file(foreground["files"])
-        if foreground_path is None:
-            return None
-        foreground_image = load_image_from_apk(zf, foreground_path)
-        if foreground_image is None:
-            return None
-        foreground_image = foreground_image.resize((512, 512), Image.Resampling.LANCZOS)
-        canvas.alpha_composite(foreground_image)
-        return canvas
+        rendered_any = False
+        if background_id:
+            background = render_drawable(apk_path, zf, resources, path_to_resource, f"@{background_id}")
+            if background is not None:
+                rendered_any = True
+                composite_image(canvas, background)
+        if foreground_id:
+            foreground = render_drawable(apk_path, zf, resources, path_to_resource, f"@{foreground_id}")
+            if foreground is not None:
+                rendered_any = True
+                composite_image(canvas, foreground)
+        return canvas if rendered_any else None
 
 
 def ensure_icon(pkg, version_code, apk_rel_path, label):
