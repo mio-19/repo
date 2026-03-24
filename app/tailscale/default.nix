@@ -25,6 +25,7 @@ let
   xMobileSrc = fetchFromGitHub {
     owner = "golang";
     repo = "mobile";
+    # https://github.com/tailscale/tailscale-android/blob/5c5030c5434dc465d1e277b19222456544553482/go.mod#L7
     rev = "81131f6468ab";
     hash = "sha256-/WelLIFKCHuMZnRnaWFvBo8wZB33fRJurbbFEs16tG0=";
   };
