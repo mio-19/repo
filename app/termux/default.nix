@@ -59,6 +59,13 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-t/0PLjpN5TS+MUT5+RrMdoYw/EY+rxNKsuZMVF6DT3o=";
   };
 
+  postPatch = ''
+    substituteInPlace app/build.gradle \
+      --replace-fail \
+        "        versionCode 118" \
+        "        versionCode 1002"
+  '';
+
   gradleBuildTask = ":app:assembleRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 
