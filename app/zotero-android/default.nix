@@ -8,6 +8,7 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   git,
+  fetchpatch,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -35,6 +36,14 @@ stdenv.mkDerivation (finalAttrs: {
     tag = finalAttrs.version;
     hash = "sha256-E/urUZoKLpXtL/HzI17w0Cs4ny5qjwfxzfQm8C5l5ZE=";
   };
+
+  patches = [
+    (fetchpatch {
+      name = "Add a button to fetch all";
+      url = "https://github.com/zotero/zotero-android/pull/291.patch";
+      hash = "sha256-gdDpOwy5PUeDksqxz0B1DMHSSgH3nyj0vdQGSd0oNG4=";
+    })
+  ];
 
   gradleBuildTask = ":app:assembleInternalRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
