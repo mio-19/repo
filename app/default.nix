@@ -739,24 +739,6 @@
             '';
           }
           {
-            appId = "sh.haven.app";
-            apkPath = "${haven}/haven.apk";
-            metadataYml = ''
-              Categories:
-                - Internet
-                - System
-              License: GPL-3.0-only
-              SourceCode: https://github.com/GlassOnTin/Haven
-              IssueTracker: https://github.com/GlassOnTin/Haven/issues
-              AutoName: Haven
-              Summary: SSH/Mosh terminal and Reticulum network client
-              Description: |-
-                Haven is an SSH/Mosh terminal and Reticulum network client for Android,
-                featuring end-to-end encrypted messaging via the Reticulum stack.
-                This package is built from source (arm64).
-            '';
-          }
-          {
             appId = "app.gamenative";
             apkPath = "${gamenative}/gamenative.apk";
             metadataYml = ''
@@ -912,6 +894,25 @@
                 from this repo when both are installed and signed together.
 
                 Install Termux first, then install this Emacs build.
+            '';
+          }
+          # need different gradle lockfile on darwin
+          {
+            appId = "sh.haven.app";
+            apkPath = "${haven}/haven.apk";
+            metadataYml = ''
+              Categories:
+                - Internet
+                - System
+              License: GPL-3.0-only
+              SourceCode: https://github.com/GlassOnTin/Haven
+              IssueTracker: https://github.com/GlassOnTin/Haven/issues
+              AutoName: Haven
+              Summary: SSH/Mosh terminal and Reticulum network client
+              Description: |-
+                Haven is an SSH/Mosh terminal and Reticulum network client for Android,
+                featuring end-to-end encrypted messaging via the Reticulum stack.
+                This package is built from source (arm64).
             '';
           }
           # on darwin:  error: bitwise operation between different enumeration types ('ecma_property_flags_t' and 'ecma_property_types_t') [-Werror,-Wenum-enum-conversion]

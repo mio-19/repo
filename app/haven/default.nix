@@ -103,6 +103,15 @@ stdenv.mkDerivation (finalAttrs: {
       export no_proxy=""
     fi
   '';
+  preBuild = lib.optionalString stdenv.isDarwin ''
+    # AGP writes SDK metadata under ~/.android; /var/empty is read-only on Darwin sandboxes.
+    export HOME="$TMPDIR/home"
+    mkdir -p "$HOME"
+    export ANDROID_USER_HOME="$HOME/.android"
+    export GRADLE_USER_HOME="$HOME/.gradle"
+    mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"
+    export GRADLE_OPTS="''${GRADLE_OPTS:+$GRADLE_OPTS }-Duser.home=$HOME"
+  '';
 
   gradleFlags = [
     "-Dorg.gradle.java.installations.auto-download=false"
