@@ -115,6 +115,10 @@ nix run .#forkgram.signScript -- \
   my-release-key.jks \
   --ks-pass password \
   --out forkgram-signed.apk
+nix run .#zotero-android.signScript -- \
+  my-release-key.jks \
+  --ks-pass password \
+  --out zotero-signed.apk
 NIXPKGS_ALLOW_UNFREE=1 nix run --impure .#meshtastic.signScript -- \
   my-release-key.jks \
   --ks-pass password \
