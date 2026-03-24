@@ -8,17 +8,17 @@
 {
   axp_build = {
     pname = "axp_build";
-    version = "996e23fd7a9a937e9143ee80e59879295706145d";
+    version = "284c30f5657178e2ed2a5848ab08b5949cfae1c1";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/build.git";
-      rev = "996e23fd7a9a937e9143ee80e59879295706145d";
+      rev = "284c30f5657178e2ed2a5848ab08b5949cfae1c1";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-MHC6KWZO9gSefOEKfteL/Jckk2tfkYtLj7Rw+KafOKw=";
+      sha256 = "sha256-+UBoAA7Q9CVtgksYi1xXrNTNoF7PpsL9W0CB8Kr4qY0=";
     };
-    date = "2026-03-23";
+    date = "2026-03-24";
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
@@ -148,45 +148,45 @@
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
-    version = "00397dc1db28a8d8883ce1ff4e196a79beec7323";
+    version = "163db8f1deee73d3583abcef869c8f10c6907f27";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/AppStore.git";
-      rev = "00397dc1db28a8d8883ce1ff4e196a79beec7323";
+      rev = "163db8f1deee73d3583abcef869c8f10c6907f27";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-zckOQiK4KpK6Mt5M1dMLXllL3tpt++VKIuG9HPtjwGg=";
+      sha256 = "sha256-AVDmjMGEXBWN2oavCBXPAj4Lb8RVrs3SEqsMmaD+zGs=";
     };
-    date = "2026-03-20";
+    date = "2026-03-24";
   };
   grapheneos_camera = {
     pname = "grapheneos_camera";
-    version = "6cdca9db417f792df5843cf495542fc678640431";
+    version = "3d1d1ffb67b24d64877c8bccbfd0504cf763f95b";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/Camera.git";
-      rev = "6cdca9db417f792df5843cf495542fc678640431";
+      rev = "3d1d1ffb67b24d64877c8bccbfd0504cf763f95b";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-rlcIzqM+kqbhwA8WV8MxETT8exDP675AtUo4QNB30jY=";
+      sha256 = "sha256-CAxraMY3QkiLRJxY7e4g0SkQqGKViA6Y3mRI2VJbPO0=";
     };
-    date = "2026-03-20";
+    date = "2026-03-24";
   };
   grapheneos_info = {
     pname = "grapheneos_info";
-    version = "7895c08f4d155628d016748d23cc25fbf8627879";
+    version = "1306e3502494dfcc65e1d05c99941987bfdaa44a";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/Info.git";
-      rev = "7895c08f4d155628d016748d23cc25fbf8627879";
+      rev = "1306e3502494dfcc65e1d05c99941987bfdaa44a";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-ROPWvqrpX+HG7B6VMmqUfvY05qllQgEsHmPYsBUlDV8=";
+      sha256 = "sha256-IcVPs+7+MEg9JpxIa2ypmqdaUMXZhkO5KFClHujde54=";
     };
-    date = "2026-03-20";
+    date = "2026-03-24";
   };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
