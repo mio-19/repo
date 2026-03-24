@@ -273,6 +273,11 @@
         inherit revanced-cli revanced-patches;
       };
 
+      duolingoRevanced = pkgs.callPackage ./duolingo {
+        apkeditor = pkgs.apkeditor;
+        inherit revanced-cli revanced-patches;
+      };
+
       thunderbird = pkgs.callPackage ./thunderbird {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -1110,6 +1115,22 @@
                 patches and kept under the original package name.
             '';
           }
+          {
+            appId = "com.duolingo";
+            apkPath = "${duolingoRevanced}/duolingo-revanced.apk";
+            metadataYml = ''
+              Categories:
+                - Internet
+              License: Proprietary
+              SourceCode: https://github.com/ReVanced/revanced-patches
+              IssueTracker: https://github.com/ReVanced/revanced-patches/issues
+              AutoName: Duolingo ReVanced
+              Summary: Patched Duolingo APK
+              Description: |-
+                Duolingo ReVanced is a patched Duolingo APK built with ReVanced
+                patches and kept under the original package name.
+            '';
+          }
         ];
       };
     in
@@ -1184,6 +1205,14 @@
           name = "sign-spotify-revanced";
           apkPath = "${spotifyRevanced}/spotify-revanced.apk";
           defaultOut = "spotify-revanced-signed.apk";
+        };
+      });
+
+      packages.duolingo-revanced = duolingoRevanced.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-duolingo-revanced";
+          apkPath = "${duolingoRevanced}/duolingo-revanced.apk";
+          defaultOut = "duolingo-revanced-signed.apk";
         };
       });
 
