@@ -1,7 +1,6 @@
 {
   pkgs,
   androidSdk,
-  apkSources ? [ ],
   apps ? [ ],
   repoVersion ? "unstable",
   repoName ? "Unofficial Repo",
@@ -11,13 +10,9 @@
 let
   lib = pkgs.lib;
 
-  appApkSources = lib.concatMap (
-    app:
-    (if app ? apkPath then [ app.apkPath ] else [ ])
-    ++ (if app ? apkSources then app.apkSources else [ ])
-  ) apps;
+  appApkSources = map (app: app.apkPath) apps;
 
-  allApkSources = apkSources ++ appApkSources;
+  allApkSources = appApkSources;
 
   appMetadata = lib.filter (x: x != null) (
     map (
