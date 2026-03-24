@@ -356,6 +356,9 @@
       haven = pkgs.callPackage ./haven {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
+      gamenative = pkgs.callPackage ./gamenative {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
       vpnhotspot = pkgs.callPackage ./vpnhotspot {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -1261,6 +1264,13 @@
           name = "sign-koreader";
           apkPath = "${koreader}/koreader.apk";
           defaultOut = "koreader-signed.apk";
+        };
+      });
+      packages.gamenative = gamenative.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-gamenative";
+          apkPath = "${gamenative}/gamenative.apk";
+          defaultOut = "gamenative-signed.apk";
         };
       });
       packages.morphe-library-m2 = morphe-library-m2;
