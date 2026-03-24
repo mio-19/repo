@@ -106,10 +106,7 @@
             s.cmdline-tools-latest
             s.build-tools-35-0-0
           ]);
-          iconPython = pkgs.python3.withPackages (ps: [
-            ps.cairosvg
-            ps.pillow
-          ]);
+          iconPython = pkgs.python3.withPackages (ps: [ ps.pillow ]);
           iconFont = "${pkgs.dejavu_fonts}/share/fonts/truetype/DejaVuSans-Bold.ttf";
         in
         pkgs.writeShellScriptBin name ''
