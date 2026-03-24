@@ -46,6 +46,11 @@ stdenv.mkDerivation (finalAttrs: {
       url = "https://github.com/termux/termux-app/pull/5025.patch";
       hash = "sha256-07jVCLJX96jZDoWcMlBLtjh2K9dLC1ciVOBzfC1kTpU=";
     })
+    (fetchpatch {
+      name = "Add graphics in terminal support: - Sixel and iTerm2 protocols";
+      url = "https://github.com/termux/termux-app/pull/5003.patch";
+      hash = "sha256-RYxFj06h4Zm46Rlu2plKXGLS2rqAxegbkcR164yON6c=";
+    })
   ];
 
   bootstrapAarch64 = fetchurl {
