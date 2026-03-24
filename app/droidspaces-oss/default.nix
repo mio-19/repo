@@ -27,14 +27,14 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "droidspaces-oss";
-  version = "5.7.1-unstable";
+  version = "5.8.0";
 
   src = applyPatches {
     src = fetchFromGitHub {
       owner = "ravindu644";
       repo = "Droidspaces-OSS";
-      rev = "ad62661b2c5442bd26beefc69f83665ce4325762";
-      hash = "sha256-EPTiKMLNd4WCYi7rkjZgYFlw5kJrtK1MUUmvkn+zgVU=";
+      tag = "v5.8.0";
+      hash = "sha256-JuOaN/geBpZ0US7qqQydlpd/zA+w8AMdl7KnBiQd7Pk=";
     };
     postPatch = ''
       rm Android/app/src/main/assets/binaries/busybox-aarch64
