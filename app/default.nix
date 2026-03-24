@@ -607,27 +607,6 @@
             '';
           }
           {
-            appId = "nodomain.freeyourgadget.gadgetbridge";
-            apkPath = "${gadgetbridge}/gadgetbridge.apk";
-            metadataYml = ''
-              Categories:
-                - Connectivity
-                - Health & Fitness
-              License: Apache-2.0
-              WebSite: https://gadgetbridge.org/
-              SourceCode: https://codeberg.org/Freeyourgadget/Gadgetbridge
-              IssueTracker: https://codeberg.org/Freeyourgadget/Gadgetbridge/issues
-              Changelog: https://codeberg.org/Freeyourgadget/Gadgetbridge/releases
-              AutoName: Gadgetbridge
-              Summary: Companion app for wearable devices
-              Description: |-
-                Gadgetbridge is a libre companion app for wearable devices.
-
-                This package is built from source and follows the current
-                F-Droid mainline build, including the Fossil HR asset build step.
-            '';
-          }
-          {
             appId = "be.mygod.vpnhotspot";
             apkPath = "${vpnhotspot}/vpnhotspot.apk";
             metadataYml = ''
@@ -933,6 +912,28 @@
                 from this repo when both are installed and signed together.
 
                 Install Termux first, then install this Emacs build.
+            '';
+          }
+          # on darwin:  error: bitwise operation between different enumeration types ('ecma_property_flags_t' and 'ecma_property_types_t') [-Werror,-Wenum-enum-conversion]
+          {
+            appId = "nodomain.freeyourgadget.gadgetbridge";
+            apkPath = "${gadgetbridge}/gadgetbridge.apk";
+            metadataYml = ''
+              Categories:
+                - Connectivity
+                - Health & Fitness
+              License: Apache-2.0
+              WebSite: https://gadgetbridge.org/
+              SourceCode: https://codeberg.org/Freeyourgadget/Gadgetbridge
+              IssueTracker: https://codeberg.org/Freeyourgadget/Gadgetbridge/issues
+              Changelog: https://codeberg.org/Freeyourgadget/Gadgetbridge/releases
+              AutoName: Gadgetbridge
+              Summary: Companion app for wearable devices
+              Description: |-
+                Gadgetbridge is a libre companion app for wearable devices.
+
+                This package is built from source and follows the current
+                F-Droid mainline build, including the Fossil HR asset build step.
             '';
           }
           # [CXX1429] error when building with ndkBuild using /nix/var/nix/builds/nix-38269-3239929316/source/termux-shared/src/main/cpp/Android.mk: ERROR: Unknown host CPU architecture: arm64
