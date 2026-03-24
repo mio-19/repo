@@ -11,13 +11,13 @@
   applyPatches,
 }:
 let
-  version = "5.8.0";
+  version = "5.8.1";
 
   srcBase = fetchFromGitHub {
     owner = "ravindu644";
     repo = "Droidspaces-OSS";
     tag = "v${version}";
-    hash = "sha256-JuOaN/geBpZ0US7qqQydlpd/zA+w8AMdl7KnBiQd7Pk=";
+    hash = "sha256-Eth8dKa7Bd8r02dYtE8Waz1dl5e3XFwsyBcK1pgH060=";
   };
 
   androidSdk = androidSdkBuilder (s: [
