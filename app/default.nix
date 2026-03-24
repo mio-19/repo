@@ -292,6 +292,10 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
+      tailscale = pkgs.callPackage ./tailscale {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       termux = pkgs.callPackage ./termux {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -765,6 +769,26 @@
         ]
         ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
           {
+            appId = "com.tailscale.ipn";
+            apkPath = "${tailscale}/tailscale.apk";
+            metadataYml = ''
+              Categories:
+                - Internet
+              License: BSD-3-Clause
+              WebSite: https://tailscale.com/
+              SourceCode: https://github.com/tailscale/tailscale-android
+              IssueTracker: https://github.com/tailscale/tailscale-android/issues
+              Changelog: https://github.com/tailscale/tailscale-android/releases
+              AutoName: Tailscale
+              Summary: Mesh VPN client
+              Description: |-
+                Tailscale is a mesh VPN client for connecting devices over a
+                private WireGuard-based network.
+                This package is built from source from the upstream
+                tailscale-android repository.
+            '';
+          }
+          {
             appId = "com.termux";
             apkPath = "${termux}/termux.apk";
             metadataYml = ''
@@ -1094,6 +1118,14 @@
           name = "sign-nix-on-droid";
           apkPath = "${nix-on-droid}/nix-on-droid.apk";
           defaultOut = "nix-on-droid-signed.apk";
+        };
+      });
+
+      packages.tailscale = tailscale.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-tailscale";
+          apkPath = "${tailscale}/tailscale.apk";
+          defaultOut = "tailscale-signed.apk";
         };
       });
 

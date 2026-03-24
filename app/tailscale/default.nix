@@ -144,7 +144,22 @@ stdenv.mkDerivation (finalAttrs: {
     go mod edit -replace=golang.org/x/mobile=./x-mobile
 
     export TOOLCHAINDIR="${go_1_26}/share/go"
+    export TOOLCHAIN_DIR="$TOOLCHAINDIR"
     export PATH="$TOOLCHAINDIR/bin:$PATH"
+
+    # gomobile still falls back to GOPATH-style package resolution while
+    # building the generated gobind wrapper. Mirror the resolved module graph
+    # into GOPATH/src so those imports remain available in GOPATH mode.
+    mkdir -p "$GOPATH/src/github.com/tailscale" "$GOPATH/src/golang.org/x"
+    ln -s "$PWD" "$GOPATH/src/github.com/tailscale/tailscale-android"
+    ln -s "$PWD/x-mobile" "$GOPATH/src/golang.org/x/mobile"
+    find "$GOMODCACHE" -name go.mod -print | while read -r gomod; do
+      module_dir="$(dirname "$gomod")"
+      rel_path="''${module_dir#$GOMODCACHE/}"
+      module_path="''${rel_path%@*}"
+      mkdir -p "$GOPATH/src/$(dirname "$module_path")"
+      ln -s "$module_dir" "$GOPATH/src/$module_path"
+    done
 
     cat > tailscale.version <<EOF
     VERSION_LONG="${version}"
