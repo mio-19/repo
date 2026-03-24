@@ -4,8 +4,8 @@
   apkSources ? [ ],
   apps ? [ ],
   repoVersion ? "unstable",
-  repoName ? "Forkgram Unofficial Repo",
-  repoDescription ? "Unsigned F-Droid repository for Forkgram builds",
+  repoName ? "Unofficial Repo",
+  repoDescription ? "Unsigned F-Droid repository",
 }:
 
 let
