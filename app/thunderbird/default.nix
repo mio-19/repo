@@ -7,6 +7,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  fetchpatch,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -36,6 +37,11 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   patches = [
+    (fetchpatch {
+      name = "feat: configure notification actions";
+      url = "https://github.com/thunderbird/thunderbird-android/pull/10301.patch";
+      hash = "sha256-VXmW7qZktMeoFDtmijw/mJLT1yCPgfM5BytrFy89rr8=";
+    })
     # Remove foojay JDK auto-provisioner, glean telemetry module,
     # googleplay funding module, and app-k9mail from project settings.
     # Replaces maven.mozilla.org with jitpack.io (keeping jitpack content filter).
