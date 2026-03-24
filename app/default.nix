@@ -1,7 +1,12 @@
 { inputs, ... }:
 {
   perSystem =
-    { pkgs, lib, system, ... }:
+    {
+      pkgs,
+      lib,
+      system,
+      ...
+    }:
     let
       sources = (import ../_sources/generated.nix) {
         inherit (pkgs)
@@ -285,6 +290,10 @@
       };
 
       termux = pkgs.callPackage ./termux {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
+      termux-styling = pkgs.callPackage ./termux-styling {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
@@ -774,6 +783,29 @@
             '';
           }
           {
+            appId = "com.termux.styling";
+            apkPath = "${termux-styling}/termux-styling.apk";
+            metadataYml = ''
+              Categories:
+                - Development
+              License: GPL-3.0-only
+              WebSite: https://termux.com
+              SourceCode: https://github.com/termux/termux-styling
+              IssueTracker: https://github.com/termux/termux-styling/issues
+              Changelog: https://github.com/termux/termux-styling/releases
+              Donate: https://termux.com/donate.html
+              OpenCollective: Termux
+              AutoName: Termux:Styling
+              Summary: Color schemes and fonts for Termux
+              Description: |-
+                This Termux plugin provides color schemes and powerline-ready fonts
+                to customize the terminal appearance.
+                This package is built from source from the upstream
+                termux-styling GitHub repository at the latest commit after the
+                0.32.1 F-Droid release.
+            '';
+          }
+          {
             appId = "org.gnu.emacs";
             apkPath = "${emacs}/emacs.apk";
             metadataYml = ''
@@ -1067,6 +1099,14 @@
           name = "sign-termux";
           apkPath = "${termux}/termux.apk";
           defaultOut = "termux-signed.apk";
+        };
+      });
+
+      packages.termux-styling = termux-styling.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-termux-styling";
+          apkPath = "${termux-styling}/termux-styling.apk";
+          defaultOut = "termux-styling-signed.apk";
         };
       });
 
