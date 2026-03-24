@@ -11,6 +11,15 @@
   applyPatches,
 }:
 let
+  version = "5.8.0";
+
+  srcBase = fetchFromGitHub {
+    owner = "ravindu644";
+    repo = "Droidspaces-OSS";
+    tag = "v${version}";
+    hash = "sha256-JuOaN/geBpZ0US7qqQydlpd/zA+w8AMdl7KnBiQd7Pk=";
+  };
+
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
@@ -24,19 +33,65 @@ let
       hash = "sha256-OPZs1u7yF7TDWFW7EepOn7xTWUzMy1+4Lf0xfvjCxaM=";
       defaultJava = jdk17;
     }).wrapped;
+
+  mkDroidspacesStatic =
+    {
+      crossPkgs,
+      suffix,
+    }:
+    crossPkgs.pkgsStatic.stdenv.mkDerivation {
+      pname = "droidspaces-${suffix}";
+      inherit version srcBase;
+      src = srcBase;
+
+      enableParallelBuilding = true;
+
+      buildPhase = ''
+        runHook preBuild
+        make droidspaces CC="$CC"
+        runHook postBuild
+      '';
+
+      installPhase = ''
+        runHook preInstall
+        install -Dm755 output/droidspaces "$out/bin/droidspaces-${suffix}"
+        runHook postInstall
+      '';
+
+      meta.mainProgram = "droidspaces-${suffix}";
+    };
+
+  droidspacesAarch64 = mkDroidspacesStatic {
+    crossPkgs = pkgsCross.aarch64-multiplatform;
+    suffix = "aarch64";
+  };
+
+  droidspacesArmhf = mkDroidspacesStatic {
+    crossPkgs = pkgsCross.armv7l-hf-multiplatform;
+    suffix = "armhf";
+  };
+
+  droidspacesX86 = mkDroidspacesStatic {
+    crossPkgs = pkgsCross.gnu32;
+    suffix = "x86";
+  };
+
+  droidspacesX8664 = mkDroidspacesStatic {
+    crossPkgs = pkgsCross.gnu64;
+    suffix = "x86_64";
+  };
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "droidspaces-oss";
-  version = "5.8.0";
+  inherit version;
 
   src = applyPatches {
-    src = fetchFromGitHub {
-      owner = "ravindu644";
-      repo = "Droidspaces-OSS";
-      tag = "v5.8.0";
-      hash = "sha256-JuOaN/geBpZ0US7qqQydlpd/zA+w8AMdl7KnBiQd7Pk=";
-    };
+    src = srcBase;
     postPatch = ''
+      cp ${lib.getExe' droidspacesAarch64 "droidspaces-aarch64"} Android/app/src/main/assets/binaries/droidspaces-aarch64
+      cp ${lib.getExe' droidspacesArmhf "droidspaces-armhf"} Android/app/src/main/assets/binaries/droidspaces-armhf
+      cp ${lib.getExe' droidspacesX86 "droidspaces-x86"} Android/app/src/main/assets/binaries/droidspaces-x86
+      cp ${lib.getExe' droidspacesX8664 "droidspaces-x86_64"} Android/app/src/main/assets/binaries/droidspaces-x86_64
       rm Android/app/src/main/assets/binaries/busybox-aarch64
       cp ${lib.getExe pkgsCross.aarch64-multiplatform.pkgsStatic.busybox} Android/app/src/main/assets/binaries/busybox-aarch64
       rm Android/app/src/main/assets/binaries/busybox-armhf
