@@ -286,6 +286,10 @@
         inherit revanced-cli revanced-patches;
       };
 
+      instagramRevanced = pkgs.callPackage ./instagram {
+        inherit apkeditor revanced-cli revanced-patches;
+      };
+
       thunderbird = pkgs.callPackage ./thunderbird {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -432,6 +436,7 @@
       revanced-cli = pkgs.callPackage ./revanced-cli/default.nix {
         inherit revanced-library-m2 revanced-patcher-m2;
       };
+      apkeditor = pkgs.apkeditor;
       fdroid-basic = pkgs.callPackage ./fdroid-basic {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -1171,6 +1176,22 @@
                 ReVanced patches and kept under the original package name.
             '';
           }
+          {
+            appId = "com.instagram.android";
+            apkPath = "${instagramRevanced}/instagram-revanced.apk";
+            metadataYml = ''
+              Categories:
+                - Internet
+              License: Proprietary
+              SourceCode: https://github.com/ReVanced/revanced-patches
+              IssueTracker: https://github.com/ReVanced/revanced-patches/issues
+              AutoName: Instagram ReVanced
+              Summary: Patched Instagram APK
+              Description: |-
+                Instagram ReVanced is a patched Instagram APK built with
+                ReVanced patches and kept under the original package name.
+            '';
+          }
         ];
       };
     in
@@ -1269,6 +1290,14 @@
           name = "sign-facebook-revanced";
           apkPath = "${facebookRevanced}/facebook-revanced.apk";
           defaultOut = "facebook-revanced-signed.apk";
+        };
+      });
+
+      packages.instagram-revanced = instagramRevanced.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-instagram-revanced";
+          apkPath = "${instagramRevanced}/instagram-revanced.apk";
+          defaultOut = "instagram-revanced-signed.apk";
         };
       });
 
