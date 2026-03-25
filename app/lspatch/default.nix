@@ -135,7 +135,7 @@ let
     '';
 
     gradleFlags = [
-    "-xlintVitalRelease"
+      "-xlintVitalRelease"
       "--no-daemon"
       "-Dorg.gradle.java.installations.auto-download=false"
       "-Dorg.gradle.java.installations.paths=${jdk21}"
