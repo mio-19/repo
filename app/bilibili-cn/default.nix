@@ -22,7 +22,6 @@ stdenv.mkDerivation {
   dontUnpack = true;
 
   nativeBuildInputs = [
-    apkeditor
     jdk21
   ];
 
