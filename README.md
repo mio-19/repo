@@ -46,7 +46,7 @@ nix build -L --max-jobs 4 .#gos.cheetah.releaseScript -o release && ./release ./
 nix build -L --max-jobs 4 .#gosNoCcache.cheetah.releaseScript -o release && ./release ./keys-cheetah
 ```
 
-It is recommended to have OEM unlocking to be on in developer options when flashing new versions.
+It is recommended to have OEM unlocking to be on in developer options when flashing new versions to avoid bricked devices.
 
 generate keys/updating keys:
 
