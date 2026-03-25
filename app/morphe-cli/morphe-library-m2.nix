@@ -127,7 +127,6 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   gradleFlags = [
-    "-xlintVitalRelease"
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
   ];
