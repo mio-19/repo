@@ -151,7 +151,7 @@ let
     s.platforms-android-34
     s.build-tools-34-0-0
     s.build-tools-36-0-0
-    s.ndk-28-2-13676358
+    s.ndk-29-0-14206865
     s.cmake-3-22-1
   ]);
 
@@ -192,12 +192,18 @@ stdenv.mkDerivation (finalAttrs: {
     JAVA_HOME = if stdenv.isDarwin then "${jdk17}" else "${jdk17}/lib/openjdk";
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
+    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     CURRENT_COMMIT = rev;
   };
 
   postPatch = ''
+    substituteInPlace app/build.gradle \
+      --replace-fail "    compileSdkVersion 34
+" "    compileSdkVersion 34
+    ndkVersion \"29.0.14206865\"
+"
+
     substituteInPlace app/build.gradle \
       --replace-fail "def commit= 'git rev-parse --verify --short HEAD'.execute().text.trim()" "def commit = System.getenv('TERMUX_X11_GIT_SHORT_COMMIT') ?: '${shortRev}'" \
       --replace-fail '-''${commit.length()==1?"nongit":commit}-''${(new Date()).format("dd.MM.yy")}' '+git.''${commit}' \
