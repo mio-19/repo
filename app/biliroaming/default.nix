@@ -57,19 +57,6 @@ let
       ln -s ${ninja}/bin/ninja "$out/share/android-sdk/cmake/3.31.1/bin/ninja"
   '';
 
-  dexBuilder = fetchFromGitHub {
-    owner = "LSPosed";
-    repo = "DexBuilder";
-    rev = "7143923480f010ea50949f07a776f352ff20783b";
-    hash = "sha256-jCW2cWozXaCuJnbXjglUgBeAU4mLN3F5+txjr+Aq5Ng=";
-  };
-
-  parallelHashmap = fetchFromGitHub {
-    owner = "greg7mdp";
-    repo = "parallel-hashmap";
-    rev = "0cd57d29a959256ed66b2afdd1009928fc625d09";
-    hash = "sha256-9iJ27qyasUSL6tkOxgf5fDnObOsvKj/goDDyY/XWk20=";
-  };
   gradle =
     (gradle-packages.mkGradle {
       version = "8.12";
@@ -85,19 +72,15 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "yujincheng08";
     repo = "BiliRoaming";
     rev = "b0fd682058c3f6826186b030a7d12a3acb4aa029";
-    hash = "sha256-HgZuJUFpiECADsMccMPJx/Q2y3JoXvCjdQ2qsqIgw7k=";
+    hash = "sha256-k6T5sGStxmvS0jj+ZI4N47C/DdWa9pPOtMHK7oNdN44=";
+    fetchSubmodules = true;
+    gitConfigFile = lib.toFile "gitconfig" ''
+      [url "https://github.com/"]
+        insteadOf = git@github.com:
+    '';
   };
 
   postUnpack = ''
-    chmod -R u+w "$sourceRoot/app/src/main/jni/dex_builder" 2>/dev/null || true
-    rm -rf "$sourceRoot/app/src/main/jni/dex_builder"
-    mkdir -p "$sourceRoot/app/src/main/jni/dex_builder"
-    cp -R ${dexBuilder}/* "$sourceRoot/app/src/main/jni/dex_builder/"
-    chmod -R u+w "$sourceRoot/app/src/main/jni/dex_builder"
-    chmod -R u+w "$sourceRoot/app/src/main/jni/dex_builder/external"
-    rm -rf "$sourceRoot/app/src/main/jni/dex_builder/external/parallel_hashmap"
-    mkdir -p "$sourceRoot/app/src/main/jni/dex_builder/external/parallel_hashmap"
-    cp -R ${parallelHashmap}/. "$sourceRoot/app/src/main/jni/dex_builder/external/parallel_hashmap"
     cat >> "$sourceRoot/app/build.gradle.kts" <<'EOF'
     tasks.register("lintVitalRelease")
     tasks.register("lintVitalDebug")
