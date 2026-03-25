@@ -89,26 +89,26 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   postUnpack = ''
-        chmod -R u+w "$sourceRoot/app/src/main/jni/dex_builder" 2>/dev/null || true
-        rm -rf "$sourceRoot/app/src/main/jni/dex_builder"
-        mkdir -p "$sourceRoot/app/src/main/jni/dex_builder"
-        cp -R ${dexBuilder}/* "$sourceRoot/app/src/main/jni/dex_builder/"
-        chmod -R u+w "$sourceRoot/app/src/main/jni/dex_builder"
-        chmod -R u+w "$sourceRoot/app/src/main/jni/dex_builder/external"
-        rm -rf "$sourceRoot/app/src/main/jni/dex_builder/external/parallel_hashmap"
-        mkdir -p "$sourceRoot/app/src/main/jni/dex_builder/external/parallel_hashmap"
-        cp -R ${parallelHashmap}/. "$sourceRoot/app/src/main/jni/dex_builder/external/parallel_hashmap"
-        cat >> "$sourceRoot/app/build.gradle.kts" <<'EOF'
+    chmod -R u+w "$sourceRoot/app/src/main/jni/dex_builder" 2>/dev/null || true
+    rm -rf "$sourceRoot/app/src/main/jni/dex_builder"
+    mkdir -p "$sourceRoot/app/src/main/jni/dex_builder"
+    cp -R ${dexBuilder}/* "$sourceRoot/app/src/main/jni/dex_builder/"
+    chmod -R u+w "$sourceRoot/app/src/main/jni/dex_builder"
+    chmod -R u+w "$sourceRoot/app/src/main/jni/dex_builder/external"
+    rm -rf "$sourceRoot/app/src/main/jni/dex_builder/external/parallel_hashmap"
+    mkdir -p "$sourceRoot/app/src/main/jni/dex_builder/external/parallel_hashmap"
+    cp -R ${parallelHashmap}/. "$sourceRoot/app/src/main/jni/dex_builder/external/parallel_hashmap"
+    cat >> "$sourceRoot/app/build.gradle.kts" <<'EOF'
     tasks.register("lintVitalRelease")
     tasks.register("lintVitalDebug")
     EOF
-        substituteInPlace "$sourceRoot/app/build.gradle.kts" \
-          --replace-fail \
-            'val appVerCode = jgit.repo()?.commitCount("refs/remotes/origin/master") ?: 0' \
-            'val appVerCode = jgit.repo()?.commitCount("refs/remotes/origin/master") ?: 1' \
-          --replace-fail \
-            'version = "4.1.0+"' \
-            'version = "3.31.1"'
+    substituteInPlace "$sourceRoot/app/build.gradle.kts" \
+      --replace-fail \
+        'val appVerCode = jgit.repo()?.commitCount("refs/remotes/origin/master") ?: 0' \
+        'val appVerCode = jgit.repo()?.commitCount("refs/remotes/origin/master") ?: 1' \
+      --replace-fail \
+        'version = "4.1.0+"' \
+        'version = "3.31.1"'
   '';
 
   gradleBuildTask = ":app:assembleRelease";
