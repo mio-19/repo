@@ -102,6 +102,7 @@ buildDartApplication.override { dart = flutter338; } (finalAttrs: {
 
   # Flags used by the gradle() shell function in the fetchDeps update run.
   gradleFlags = [
+    "-xlintVitalRelease"
     "--project-dir"
     "android"
     "-Dorg.gradle.java.installations.auto-download=false"

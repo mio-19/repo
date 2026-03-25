@@ -98,6 +98,7 @@ buildDartApplication.override { dart = flutter335; } (finalAttrs: {
   };
 
   gradleFlags = [
+    "-xlintVitalRelease"
     "--project-dir"
     "android"
     "-Dorg.gradle.java.installations.auto-download=false"

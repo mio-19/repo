@@ -71,6 +71,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   gradleFlags = [
+    "-xlintVitalRelease"
     "--no-daemon"
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${jdk17_headless}"

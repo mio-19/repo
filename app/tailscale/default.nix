@@ -186,6 +186,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   gradleFlags = [
+    "-xlintVitalRelease"
     "-p"
     "android"
     "-Dorg.gradle.java.installations.auto-download=false"

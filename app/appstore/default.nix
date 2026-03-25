@@ -76,6 +76,7 @@ stdenv.mkDerivation (finalAttrs: {
       postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
     in
     [
+      "-xlintVitalRelease"
       "-Dorg.gradle.java.installations.auto-download=false"
       "-Dorg.gradle.java.installations.paths=${jdk17}${postfix},${jdk21}${postfix}"
       "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
