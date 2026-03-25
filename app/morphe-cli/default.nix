@@ -19,7 +19,6 @@ let
     s.platforms-android-33
     s.platforms-android-34
     s.platforms-android-35
-    s.build-tools-34-0-0
     s.build-tools-35-0-0
   ]);
 
