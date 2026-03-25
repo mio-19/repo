@@ -73,11 +73,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   gradleFlags = [
-    "-xlintVitalAnalyzeRelease"
-    "-xlintVitalAnalyzeBasicDefaultRelease"
-    "-xlintVitalReportFullDefaultRelease"
-    "-xlintVitalReportBasicDefaultRelease"
-    "-xlintVitalReportBasicNightlyRelease"
+    "-xlintVitalRelease"
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${jdk21}"
     "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
