@@ -11,3 +11,4 @@ broken but can compile:
 slightly broken:
 
 + facebook: patches don't apply
++ com.bilibili.app.in: no music controller as notification on android 16 qpr2
