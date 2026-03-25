@@ -31,11 +31,16 @@ stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
 
+    workdir="$TMPDIR/bilibili-cn"
+    mkdir -p "$workdir" "$workdir/out"
+
+    cp "${bilibiliApk}" "$workdir/bilibili.apk"
+
     "${jdk21}/bin/java" -jar ${lspatchCli}/lspatch.jar \
       --force \
       --output "$workdir/out" \
       --embed "${biliroaming}/biliroaming.apk" \
-      ${bilibiliApk}
+      "$workdir/bilibili.apk"
 
     runHook postBuild
   '';
