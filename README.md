@@ -4,7 +4,7 @@ This repository contains many llm generated glue code.
 
 Note that distributing binaries built from this repository might be disallowed by copyright/trademark holders. This repository is only available as source code only.
 
-Using this repository may result in data loss, boot loops, bricked devices, exploded devices, dead SD cards, thermonuclear war, lawsuit, banned account, money loss, or you getting fired because the alarm app failed. By proceeding, you accept full responsibility for any issues that may arise.
+Using this repository may result in data loss, boot loops, bricked devices, injuries due to exploded devices, dead SD cards, thermonuclear war, lawsuit, banned account, money loss, or you getting fired because the alarm app failed. By proceeding, you accept full responsibility for any issues that may arise.
 
 android devices rom configurations
 
