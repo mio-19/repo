@@ -278,6 +278,10 @@
         inherit revanced-cli revanced-patches;
       };
 
+      microsoftLensRevanced = pkgs.callPackage ./microsoft-lens {
+        inherit revanced-cli revanced-patches;
+      };
+
       thunderbird = pkgs.callPackage ./thunderbird {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -1131,6 +1135,22 @@
                 patches and kept under the original package name.
             '';
           }
+          {
+            appId = "com.microsoft.office.officelens";
+            apkPath = "${microsoftLensRevanced}/microsoft-lens-revanced.apk";
+            metadataYml = ''
+              Categories:
+                - Productivity
+              License: Proprietary
+              SourceCode: https://github.com/ReVanced/revanced-patches
+              IssueTracker: https://github.com/ReVanced/revanced-patches/issues
+              AutoName: Microsoft Lens ReVanced
+              Summary: Patched Microsoft Lens APK
+              Description: |-
+                Microsoft Lens ReVanced is a patched Microsoft Lens APK built
+                with ReVanced patches and kept under the original package name.
+            '';
+          }
         ];
       };
     in
@@ -1213,6 +1233,14 @@
           name = "sign-duolingo-revanced";
           apkPath = "${duolingoRevanced}/duolingo-revanced.apk";
           defaultOut = "duolingo-revanced-signed.apk";
+        };
+      });
+
+      packages.microsoft-lens-revanced = microsoftLensRevanced.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-microsoft-lens-revanced";
+          apkPath = "${microsoftLensRevanced}/microsoft-lens-revanced.apk";
+          defaultOut = "microsoft-lens-revanced-signed.apk";
         };
       });
 
