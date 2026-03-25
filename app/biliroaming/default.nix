@@ -18,45 +18,8 @@ let
     s.platforms-android-35
     s.build-tools-35-0-0
     s.ndk-29-0-14206865
-    s.cmake-3-31-1
+    s.cmake-4-1-2
   ]);
-
-  androidSdkForBuild = runCommand "biliroaming-android-sdk" { } ''
-    mkdir -p "$out/share/android-sdk"
-    for entry in ${androidSdk}/share/android-sdk/*; do
-      name="$(basename "$entry")"
-      if [ "$name" != "cmake" ]; then
-        ln -s "$entry" "$out/share/android-sdk/$name"
-      fi
-    done
-
-    mkdir -p "$out/share/android-sdk/cmake"
-    for entry in ${androidSdk}/share/android-sdk/cmake/*; do
-      name="$(basename "$entry")"
-      if [ "$name" != "3.31.1" ]; then
-        ln -s "$entry" "$out/share/android-sdk/cmake/$name"
-      fi
-    done
-
-    mkdir -p "$out/share/android-sdk/cmake/3.31.1"
-    for entry in ${androidSdk}/share/android-sdk/cmake/3.31.1/*; do
-      name="$(basename "$entry")"
-      if [ "$name" != "bin" ]; then
-        ln -s "$entry" "$out/share/android-sdk/cmake/3.31.1/$name"
-      fi
-    done
-
-    mkdir -p "$out/share/android-sdk/cmake/3.31.1/bin"
-    for entry in ${androidSdk}/share/android-sdk/cmake/3.31.1/bin/*; do
-      name="$(basename "$entry")"
-      if [ "$name" != "ninja" ]; then
-        ln -s "$entry" "$out/share/android-sdk/cmake/3.31.1/bin/$name"
-      fi
-    done
-
-      ln -s ${ninja}/bin/ninja "$out/share/android-sdk/cmake/3.31.1/bin/ninja"
-  '';
-
   gradle =
     (gradle-packages.mkGradle {
       version = "8.12";
@@ -81,17 +44,10 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   postUnpack = ''
-    cat >> "$sourceRoot/app/build.gradle.kts" <<'EOF'
-    tasks.register("lintVitalRelease")
-    tasks.register("lintVitalDebug")
-    EOF
     substituteInPlace "$sourceRoot/app/build.gradle.kts" \
       --replace-fail \
         'val appVerCode = jgit.repo()?.commitCount("refs/remotes/origin/master") ?: 0' \
-        'val appVerCode = jgit.repo()?.commitCount("refs/remotes/origin/master") ?: 1' \
-      --replace-fail \
-        'version = "4.1.0+"' \
-        'version = "3.31.1"'
+        'val appVerCode = jgit.repo()?.commitCount("refs/remotes/origin/master") ?: 1'
   '';
 
   gradleBuildTask = ":app:assembleRelease";
@@ -113,10 +69,10 @@ stdenv.mkDerivation (finalAttrs: {
 
   env = {
     JAVA_HOME = jdk21;
-    ANDROID_HOME = "${androidSdkForBuild}/share/android-sdk";
-    ANDROID_SDK_ROOT = "${androidSdkForBuild}/share/android-sdk";
-    ANDROID_NDK_ROOT = "${androidSdkForBuild}/share/android-sdk/ndk/29.0.14206865";
-    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdkForBuild}/share/android-sdk/build-tools/35.0.0/aapt2";
+    ANDROID_HOME = "${androidSdk}/share/android-sdk";
+    ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
+    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
     ANDROID_USER_HOME = "$(pwd)/.android";
     GRADLE_USER_HOME = "$(pwd)/.gradle";
   };
@@ -126,36 +82,17 @@ stdenv.mkDerivation (finalAttrs: {
     export GRADLE_USER_HOME="$PWD/.gradle"
     mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"
 
-    sdkRoot="$PWD/android-sdk"
-    mkdir -p "$sdkRoot/build-tools" "$sdkRoot/platforms" "$sdkRoot/ndk" "$sdkRoot/cmake"
-    cp -a "${androidSdkForBuild}/share/android-sdk/build-tools/35.0.0" "$sdkRoot/build-tools/"
-    cp -a "${androidSdkForBuild}/share/android-sdk/cmake/3.31.1" "$sdkRoot/cmake/"
-    ln -s "${androidSdkForBuild}/share/android-sdk/platforms/android-35" "$sdkRoot/platforms/android-35"
-    ln -s "${androidSdkForBuild}/share/android-sdk/platform-tools" "$sdkRoot/platform-tools"
-    ln -s "${androidSdkForBuild}/share/android-sdk/ndk/29.0.14206865" "$sdkRoot/ndk/29.0.14206865"
-    cp -a "${androidSdkForBuild}/share/android-sdk/licenses" "$sdkRoot/"
-
-    export ANDROID_HOME="$sdkRoot"
-    export ANDROID_SDK_ROOT="$sdkRoot"
-    export ANDROID_NDK_ROOT="$sdkRoot/ndk/29.0.14206865"
-    export ANDROID_AAPT2_FROM_MAVEN_OVERRIDE="$sdkRoot/build-tools/35.0.0/aapt2"
-
-    echo "sdk.dir=$sdkRoot" > local.properties
     cat >> gradle.properties <<EOF
     org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g
-    android.aapt2FromMavenOverride=$sdkRoot/build-tools/35.0.0/aapt2
-    org.gradle.project.android.aapt2FromMavenOverride=$sdkRoot/build-tools/35.0.0/aapt2
     EOF
   '';
 
   gradleFlags = [
     "--no-daemon"
-    "-x"
-    "lintVitalRelease"
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${jdk21}"
-    "-Dandroid.aapt2FromMavenOverride=${androidSdkForBuild}/share/android-sdk/build-tools/35.0.0/aapt2"
-    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdkForBuild}/share/android-sdk/build-tools/35.0.0/aapt2"
+    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
   ];
 
   installPhase = ''
