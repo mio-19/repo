@@ -1,7 +1,7 @@
 # # pixel8pro-stock.patch pixel8pro-stock-fix-attempt3.patch lindroid ksu105 0001-daria.patch sidharth-hack.patch
 {
   callPackage,
-  enableKSU ? true,
+  enableKSU ? false,
   pwmmode ? "0x01", # 0x02 might be too dark under direct sunlight
   enableLindroid ? false,
   enableDaria ? enableLindroid,
