@@ -10,4 +10,4 @@ broken but can compile:
 
 slightly broken:
 
-+ zotero: its pdf viewer is paid and proprietary. showing red text asking for key.
++ facebook: patches don't apply
