@@ -1,7 +1,7 @@
 {
   lib,
   stdenv,
-  fetchFromGitHub,
+  fetchFromGitLab,
   gradle-packages,
   jdk17,
   writableTmpDirAsHomeHook,
@@ -30,7 +30,7 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "revanced-patches";
   version = "6.1.0";
 
-  src = fetchFromGitHub {
+  src = fetchFromGitLab {
     owner = "ReVanced";
     repo = "revanced-patches";
     rev = "v${finalAttrs.version}";
