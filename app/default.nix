@@ -282,6 +282,10 @@
         inherit revanced-cli revanced-patches;
       };
 
+      facebookRevanced = pkgs.callPackage ./facebook {
+        inherit revanced-cli revanced-patches;
+      };
+
       thunderbird = pkgs.callPackage ./thunderbird {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -1151,6 +1155,22 @@
                 with ReVanced patches and kept under the original package name.
             '';
           }
+          {
+            appId = "com.facebook.katana";
+            apkPath = "${facebookRevanced}/facebook-revanced.apk";
+            metadataYml = ''
+              Categories:
+                - Internet
+              License: Proprietary
+              SourceCode: https://github.com/ReVanced/revanced-patches
+              IssueTracker: https://github.com/ReVanced/revanced-patches/issues
+              AutoName: Facebook ReVanced
+              Summary: Patched Facebook APK
+              Description: |-
+                Facebook ReVanced is a patched Facebook APK built with
+                ReVanced patches and kept under the original package name.
+            '';
+          }
         ];
       };
     in
@@ -1241,6 +1261,14 @@
           name = "sign-microsoft-lens-revanced";
           apkPath = "${microsoftLensRevanced}/microsoft-lens-revanced.apk";
           defaultOut = "microsoft-lens-revanced-signed.apk";
+        };
+      });
+
+      packages.facebook-revanced = facebookRevanced.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-facebook-revanced";
+          apkPath = "${facebookRevanced}/facebook-revanced.apk";
+          defaultOut = "facebook-revanced-signed.apk";
         };
       });
 
