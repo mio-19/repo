@@ -3,7 +3,7 @@
   stdenv,
   fetchFromGitHub,
   fetchzip,
-  runCommandNoCC,
+  runCommand,
   androidSdkBuilder,
   gradle-packages,
   jdk17,
@@ -105,7 +105,7 @@ let
     hash = "sha256-IZvwTVnzQamnk4W+OzY3ovHLs9Z0vhPAUXDQkeFwFew=";
   };
 
-  src = runCommandNoCC "termux-x11-src-${shortRev}" { } ''
+  src = runCommand "termux-x11-src-${shortRev}" { } ''
     cp -R ${rootSrc} "$out"
     chmod -R u+w "$out"
 
