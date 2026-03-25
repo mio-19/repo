@@ -1351,6 +1351,14 @@
         };
       });
 
+      packages.bilibili-cn = bilibiliCn.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-bilibili-cn";
+          apkPath = "${bilibiliCn}/bilibili-cn.apk";
+          defaultOut = "bilibili-cn-signed.apk";
+        };
+      });
+
       packages.instagram-revanced = instagramRevanced.overrideAttrs (_: {
         passthru.signScript = mkSignScript {
           name = "sign-instagram-revanced";

@@ -51,6 +51,10 @@ stdenv.mkDerivation {
     runHook postInstall
   '';
 
+  passthru = {
+    inherit bilibiliApk;
+  };
+
   meta = with lib; {
     description = "Bilibili cn client patched with the latest BiliRoaming Xposed module via LSPatch";
     homepage = "https://github.com/yujincheng08/BiliRoaming";
