@@ -294,8 +294,12 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      bilibiliRoaming = pkgs.callPackage ./bilibili {
-        apkeditor = pkgs.apkeditor;
+      bilibiliPlay = pkgs.callPackage ./bilibili {
+        lspatchCli = lspatch-cli;
+        biliroaming = biliroaming;
+      };
+
+      bilibiliCn = pkgs.callPackage ./bilibili-cn {
         lspatchCli = lspatch-cli;
         biliroaming = biliroaming;
       };
@@ -1188,14 +1192,31 @@
           }
           {
             appId = "com.bilibili.app.in";
-            apkPath = "${bilibiliRoaming}/bilibili-roaming.apk";
+            apkPath = "${bilibiliPlay}/bilibili-roaming.apk";
             metadataYml = ''
               Categories:
                 - Video Players & Editors
               License: Proprietary
               SourceCode: https://github.com/yujincheng08/BiliRoaming
               IssueTracker: https://github.com/yujincheng08/BiliRoaming/issues
-              AutoName: BiliBili Roaming
+              AutoName: BiliBili Play
+              Summary: BiliBili Google Play version patched with BiliRoaming via LSPatch
+              Description: |-
+                BiliBili Roaming embeds the latest BiliRoaming Xposed module
+                using LSPatch so the official BiliBili client bypasses region
+                locks and gains other enhancements without root.
+            '';
+          }
+          {
+            appId = "tv.danmaku.bili";
+            apkPath = "${bilibiliCn}/bilibili-cn.apk";
+            metadataYml = ''
+              Categories:
+                - Video Players & Editors
+              License: Proprietary
+              SourceCode: https://github.com/yujincheng08/BiliRoaming
+              IssueTracker: https://github.com/yujincheng08/BiliRoaming/issues
+              AutoName: BiliBili CN
               Summary: BiliBili patched with BiliRoaming via LSPatch
               Description: |-
                 BiliBili Roaming embeds the latest BiliRoaming Xposed module
@@ -1322,10 +1343,10 @@
 
       packages.biliroaming = biliroaming;
 
-      packages.bilibili-roaming = bilibiliRoaming.overrideAttrs (_: {
+      packages.bilibili-roaming = bilibiliPlay.overrideAttrs (_: {
         passthru.signScript = mkSignScript {
           name = "sign-bilibili-roaming";
-          apkPath = "${bilibiliRoaming}/bilibili-roaming.apk";
+          apkPath = "${bilibiliPlay}/bilibili-roaming.apk";
           defaultOut = "bilibili-roaming-signed.apk";
         };
       });
