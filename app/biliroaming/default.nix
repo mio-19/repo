@@ -73,8 +73,6 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
-    ANDROID_USER_HOME = "$(pwd)/.android";
-    GRADLE_USER_HOME = "$(pwd)/.gradle";
   };
 
   preConfigure = ''
