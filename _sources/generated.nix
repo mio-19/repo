@@ -8,17 +8,17 @@
 {
   axp_build = {
     pname = "axp_build";
-    version = "284c30f5657178e2ed2a5848ab08b5949cfae1c1";
+    version = "f16543c34ca3f2ccecdb75a620e202cd1557a523";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/build.git";
-      rev = "284c30f5657178e2ed2a5848ab08b5949cfae1c1";
+      rev = "f16543c34ca3f2ccecdb75a620e202cd1557a523";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-+UBoAA7Q9CVtgksYi1xXrNTNoF7PpsL9W0CB8Kr4qY0=";
+      sha256 = "sha256-k2IYmSiae6uVYlCCJwZiV6A/8L+IfQbCwPCMGpvxvMk=";
     };
-    date = "2026-03-24";
+    date = "2026-03-25";
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
@@ -86,7 +86,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-ZBr/RDKj8C4MGWKv0rE+OdtHVvL0GqL7zBi/vUFJJ4Q=";
+      sha256 = "sha256-GrVmlF9T1DzPQS6BUWxnaYrIj+Pk6nGGw/ncJ4t4ucw=";
     };
     date = "2026-03-01";
   };
@@ -198,7 +198,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-07k13X2QjGcOoqWJdlZf3iSSYHPNfu1r+vmcHj0AJt8=";
+      sha256 = "sha256-GSBGZEQM7kVS7Xr5A8yjDs822wbqZ3VXpD7+bNDIXUw=";
     };
     date = "2025-09-05";
   };
@@ -450,7 +450,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-a0ke+kqOpCGtEUpiU7nICWU0GNv9c0jQphz5d1vdX8w=";
+      sha256 = "sha256-ZQowVhIcNZNCoIDt3P2kvgPAIshYsUZfH2GO+McFod0=";
     };
     date = "2025-12-31";
   };
@@ -526,31 +526,31 @@
   };
   sm8550_tab_device_gts9wifi = {
     pname = "sm8550_tab_device_gts9wifi";
-    version = "0013fdf8533c81adc37d37ec379a5baa1344e1a3";
+    version = "a9d94b7bc20a66224c1d5b73a237fa225d46f874";
     src = fetchgit {
       url = "https://github.com/samsung-sm8550-tab/android_device_samsung_gts9wifi.git";
-      rev = "0013fdf8533c81adc37d37ec379a5baa1344e1a3";
+      rev = "a9d94b7bc20a66224c1d5b73a237fa225d46f874";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-jfBO+Ikw8vghwZKlx1ydmIMo3xkMREt358Yo50ctKTc=";
+      sha256 = "sha256-uRwsjj9mQxnWD5T7mrajzOBjiZm5cDCYbCdMWaM3HZc=";
     };
-    date = "2026-01-09";
+    date = "2026-03-24";
   };
   sm8550_tab_device_sm8550_common = {
     pname = "sm8550_tab_device_sm8550_common";
-    version = "bd511aaf1e85a3e2862999eba9c1c7c1db3fb58f";
+    version = "6627a6755019e3f4c3202d21921db1ffcb69d341";
     src = fetchgit {
       url = "https://github.com/samsung-sm8550-tab/android_device_samsung_sm8550-common.git";
-      rev = "bd511aaf1e85a3e2862999eba9c1c7c1db3fb58f";
+      rev = "6627a6755019e3f4c3202d21921db1ffcb69d341";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-5FACA8HTo9JgDlxPW5nj6W0k2JYYxgOBOiN8SDiG86o=";
+      sha256 = "sha256-qcxQG4cuZMdk2dHT7hfrcHH/gLmuVpBlrzBPc9JKCr8=";
     };
-    date = "2026-03-12";
+    date = "2026-03-25";
   };
   sm8550_tab_hardware_samsung = {
     pname = "sm8550_tab_hardware_samsung";
@@ -576,7 +576,7 @@
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-44zJyKBR15Tk4ImVsFz/CtwAPvC33U4tBjIDLBFB/S4=";
+      sha256 = "sha256-CNWWL3gQyD+Z+KoWCmU1U/MR8U6c9TvCc5DDTnX0OZ8=";
     };
     date = "2026-03-15";
   };
