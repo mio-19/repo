@@ -17,8 +17,8 @@ let
     # AGP may resolve aapt2 from build-tools 35.0.0 even with compileSdk 36.
     s.build-tools-35-0-0
     s.build-tools-36-0-0
-    # Flutter 3.38.x specifies ndkVersion = "28.2.13676358" in FlutterExtension.kt
-    s.ndk-28-2-13676358
+    # Flutter 3.38.x defaults to ndkVersion = "28.2.13676358" in FlutterExtension.kt; override below
+    s.ndk-29-0-14206865
     s.cmake-3-22-1
   ]);
 
@@ -122,6 +122,8 @@ buildDartApplication.override { dart = flutter338; } (finalAttrs: {
     exec ${gradle}/bin/gradle "$@"
     GRADLEW_SCRIPT
     chmod +x android/gradlew
+    substituteInPlace android/app/build.gradle.kts \
+      --replace 'ndkVersion = flutter.ndkVersion' 'ndkVersion = "29.0.14206865"'
   '';
 
   preConfigure = ''
