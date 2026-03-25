@@ -11,4 +11,4 @@ broken but can compile:
 slightly broken:
 
 + facebook: patches don't apply
-+ com.bilibili.app.in: no reliable music controller on android 16 qpr2
++ com.bilibili.app.in: no reliable music controller on android 16 qpr2. or is this a feature?
