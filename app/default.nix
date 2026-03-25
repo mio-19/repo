@@ -1187,7 +1187,7 @@
             '';
           }
           {
-            appId = "tv.danmaku.bili";
+            appId = "com.bilibili.app.in";
             apkPath = "${bilibiliRoaming}/bilibili-roaming.apk";
             metadataYml = ''
               Categories:
