@@ -76,7 +76,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   gradleFlags = [
-    "-xlintVitalRelease"
+    "-xlintVitalAnalyzeRelease"
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
     "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
