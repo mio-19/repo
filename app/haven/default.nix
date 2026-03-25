@@ -17,7 +17,7 @@ let
     s.platforms-android-36
     s.build-tools-36-0-0
     s.build-tools-35-0-0
-    s.ndk-27-0-12077973
+    s.ndk-27-3-13750724
     s.cmake-3-31-6
   ]);
 
@@ -30,14 +30,14 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "haven";
-  version = "3.11.1";
+  version = "3.13.1";
 
   src = fetchFromGitHub {
     owner = "GlassOnTin";
     repo = "Haven";
     tag = "v${finalAttrs.version}";
     fetchSubmodules = true;
-    hash = "sha256-1yZp+mab5Un1Fk9HY/kWjRLPgdvHJHk4BvCb3H3Awps=";
+    hash = "sha256-NKNrkDgVJakUCBlIxj3NGMvDqjdcjOV31YZHKob1060=";
   };
 
   patches = [
@@ -45,6 +45,8 @@ stdenv.mkDerivation (finalAttrs: {
     ./remove-signing-config.patch
     # Allow skipping Chaquopy pip requirements in reproducible/offline builds.
     ./skip-python-requirements.patch
+    # Override AGP's default NDK selection for the native local module.
+    ./set-ndk-version.patch
   ];
 
   # fdroiddata: gradle: [arm64]  →  assembleArm64Release
@@ -76,7 +78,7 @@ stdenv.mkDerivation (finalAttrs: {
     JAVA_HOME = jdk17_headless;
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.0.12077973";
+    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     HAVEN_SKIP_PYTHON_REQUIREMENTS = "1";
   };
