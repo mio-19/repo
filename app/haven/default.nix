@@ -30,14 +30,14 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "haven";
-  version = "3.13.1";
+  version = "3.14.0";
 
   src = fetchFromGitHub {
     owner = "GlassOnTin";
     repo = "Haven";
     tag = "v${finalAttrs.version}";
     fetchSubmodules = true;
-    hash = "sha256-NKNrkDgVJakUCBlIxj3NGMvDqjdcjOV31YZHKob1060=";
+    hash = "sha256-6Tjl3wxr7XhZyJ+QtBEhpevH/FGwL28J1MnMYGRe780=";
   };
 
   patches = [
