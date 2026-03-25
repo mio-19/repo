@@ -8,16 +8,16 @@
 }:
 let
   bilibiliApk = fetchurl {
-    # https://www.apkmirror.com/apk/bilibili/bilibili-%e5%93%94%e5%93%a9%e5%93%94%e5%93%a9/bilibili-all-your-fav-videos-8-87-0-release/bilibili-all-your-fav-videos-8-87-0-android-apk-download/
-    name = "tv.danmaku.bili-8.87.0.apk";
-    url = "https://web.archive.org/web/20260325113840if_/https://eb5e7388c3df147b74dd2379b7cf8323.r2.cloudflarestorage.com/downloadprod/wp-content/uploads/2026/03/53/69ba8a2ccdd7a/tv.danmaku.bili_8.87.0-8870400_minAPI23%28arm64-v8a%29%28nodpi%29_apkmirror.com.apk?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=72a5ba3a0b8a601e535d5525f12f8177%2F20260325%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260325T113825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=184dd7cee7a90b6a318b66006894871a5f19f6a7b71b24c34d643d616643e1a6";
+    # https://www.apkmirror.com/apk/bilibili/bilibili-%e5%93%94%e5%93%a9%e5%93%94%e5%93%a9/bilibili-all-your-fav-videos-8-71-0-release/bilibili-all-your-fav-videos-8-71-0-2-android-apk-download/
+    name = "tv.danmaku.bili-8.71.0.apk";
+    url = "https://web.archive.org/web/20260325114822/https://eb5e7388c3df147b74dd2379b7cf8323.r2.cloudflarestorage.com/downloadprod/wp-content/uploads/2025/11/07/691ec7d10fc45/tv.danmaku.bili_8.71.0-8710600_minAPI23%28armeabi-v7a%2Cx86%29%28nodpi%29_apkmirror.com.apk?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=72a5ba3a0b8a601e535d5525f12f8177%2F20260325%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260325T114811Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=17fa4e48203ee87ac65361f33874bdad6acc369659c3883b70294a3871118d22";
     hash = "";
   };
 
 in
 stdenv.mkDerivation {
   pname = "bilibili-cn";
-  version = "8.87.0";
+  version = "8.71.0";
 
   dontUnpack = true;
 
