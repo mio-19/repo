@@ -63,6 +63,7 @@ stdenv.mkDerivation (finalAttrs: {
     substituteInPlace settings.gradle \
       --replace-fail "pluginManagement {" "$pluginResolutionBlock"
     substituteInPlace app/build.gradle.kts \
+      --replace-fail '  lint {' $'  lint {\n    checkReleaseBuilds = false' \
       --replace-fail 'versionNameSuffix = "-$gitHash"' 'versionNameSuffix = "-unknown"'
   '';
 
