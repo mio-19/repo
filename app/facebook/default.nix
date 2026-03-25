@@ -34,7 +34,6 @@ stdenv.mkDerivation {
     chmod u+w "$workdir/facebook.apk"
 
     revanced-cli patch \
-      -f \
       -b \
       -p ${revancedBundle} \
       -o "$workdir/facebook-revanced.apk" \
