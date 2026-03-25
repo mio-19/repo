@@ -172,3 +172,4 @@ read
 
 + <https://xdaforums.com/t/improving-s-pen-sensitivity-under-lineage-roms.4752027/>
 + <https://github.com/osbm/nixapks>
++ <https://github.com/tiann/KernelSU/issues/2942#issuecomment-4078266560>
