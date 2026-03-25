@@ -290,6 +290,16 @@
         inherit apkeditor revanced-cli revanced-patches;
       };
 
+      biliroaming = pkgs.callPackage ./biliroaming {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
+      bilibiliRoaming = pkgs.callPackage ./bilibili {
+        apkeditor = pkgs.apkeditor;
+        lspatchCli = lspatch-cli;
+        biliroaming = biliroaming;
+      };
+
       thunderbird = pkgs.callPackage ./thunderbird {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -1177,6 +1187,23 @@
             '';
           }
           {
+            appId = "tv.danmaku.bili";
+            apkPath = "${bilibiliRoaming}/bilibili-roaming.apk";
+            metadataYml = ''
+              Categories:
+                - Video Players & Editors
+              License: Proprietary
+              SourceCode: https://github.com/yujincheng08/BiliRoaming
+              IssueTracker: https://github.com/yujincheng08/BiliRoaming/issues
+              AutoName: BiliBili Roaming
+              Summary: BiliBili patched with BiliRoaming via LSPatch
+              Description: |-
+                BiliBili Roaming embeds the latest BiliRoaming Xposed module
+                using LSPatch so the official BiliBili client bypasses region
+                locks and gains other enhancements without root.
+            '';
+          }
+          {
             appId = "com.instagram.android";
             apkPath = "${instagramRevanced}/instagram-revanced.apk";
             metadataYml = ''
@@ -1290,6 +1317,16 @@
           name = "sign-facebook-revanced";
           apkPath = "${facebookRevanced}/facebook-revanced.apk";
           defaultOut = "facebook-revanced-signed.apk";
+        };
+      });
+
+      packages.biliroaming = biliroaming;
+
+      packages.bilibili-roaming = bilibiliRoaming.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-bilibili-roaming";
+          apkPath = "${bilibiliRoaming}/bilibili-roaming.apk";
+          defaultOut = "bilibili-roaming-signed.apk";
         };
       });
 
