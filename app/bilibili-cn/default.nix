@@ -7,18 +7,17 @@
   biliroaming,
 }:
 let
-  bilibiliXapk = fetchurl {
-    # APKPure page: https://apkpure.com/bilibili-cn/com.bilibili.app.in/download
-    name = "bilibili-3.20.4.xapk";
-    url = "https://web.archive.org/web/20260325091913if_/https://d-e03.winudf.com/b/XAPK/Y29tLmJpbGliaWxpLmFwcC5pbl84MjMwODAwX2QwOTQ0MWNl?_fn=5ZOU5ZOp5ZOU5ZOpXzMuMjAuNF9BUEtQdXJlLnhhcGs&_p=Y29tLmJpbGliaWxpLmFwcC5pbg%3D%3D&download_id=1604604969224655&is_hot=true&k=73a846966fe740e9afd465bec8c4939c69c4fa05&uu=https%3A%2F%2Fd-13.winudf.com%2Fb%2FXAPK%2FY29tLmJpbGliaWxpLmFwcC5pbl84MjMwODAwX2QwOTQ0MWNl%3Fk%3D8ae72aafe12b58b2181c4f65b92ffe4e69c4fa05";
-    hash = "sha256-A+kdswvRBcK8/4Voo5++Hq3VzKBWQW4FrU6HJyhp7As=";
+  bilibiliApk = fetchurl {
+    # https://www.apkmirror.com/apk/bilibili/bilibili-%e5%93%94%e5%93%a9%e5%93%94%e5%93%a9/bilibili-all-your-fav-videos-8-87-0-release/bilibili-all-your-fav-videos-8-87-0-android-apk-download/
+    name = "tv.danmaku.bili-8.87.0.apk";
+    url = "https://web.archive.org/web/20260325113840if_/https://eb5e7388c3df147b74dd2379b7cf8323.r2.cloudflarestorage.com/downloadprod/wp-content/uploads/2026/03/53/69ba8a2ccdd7a/tv.danmaku.bili_8.87.0-8870400_minAPI23%28arm64-v8a%29%28nodpi%29_apkmirror.com.apk?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=72a5ba3a0b8a601e535d5525f12f8177%2F20260325%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260325T113825Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=184dd7cee7a90b6a318b66006894871a5f19f6a7b71b24c34d643d616643e1a6";
+    hash = "";
   };
 
-  version = "3.20.4-lspatched";
 in
 stdenv.mkDerivation {
-  pname = "bilibili-roaming";
-  inherit version;
+  pname = "bilibili-cn";
+  version = "8.87.0";
 
   dontUnpack = true;
 
@@ -34,18 +33,11 @@ stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
 
-    workdir="$TMPDIR/bilibili-roaming"
-    mkdir -p "$workdir" "$workdir/out"
-    cp ${bilibiliXapk} "$workdir/bilibili.xapk"
-    chmod u+w "$workdir/bilibili.xapk"
-
-    APKEditor m -i "$workdir/bilibili.xapk" -o "$workdir/bilibili-base.apk"
-
     "${jdk21}/bin/java" -jar ${lspatchCli}/lspatch.jar \
       --force \
       --output "$workdir/out" \
       --embed "${biliroaming}/biliroaming.apk" \
-      "$workdir/bilibili-base.apk"
+      ${bilibiliApk}
 
     runHook postBuild
   '';
@@ -57,12 +49,12 @@ stdenv.mkDerivation {
       echo "No patched APK produced" >&2
       exit 1
     fi
-    install -Dm644 "$output_apk" "$out/bilibili-roaming.apk"
+    install -Dm644 "$output_apk" "$out/bilibili-cn.apk"
     runHook postInstall
   '';
 
   meta = with lib; {
-    description = "Bilibili client patched with the latest BiliRoaming Xposed module via LSPatch";
+    description = "Bilibili cn client patched with the latest BiliRoaming Xposed module via LSPatch";
     homepage = "https://github.com/yujincheng08/BiliRoaming";
     license = licenses.gpl3Only;
     platforms = platforms.unix;
