@@ -31,7 +31,7 @@
         let
           androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
             s.cmdline-tools-latest
-            s.build-tools-35-0-0
+            s.build-tools-36-0-0
           ]);
         in
         pkgs.writeShellScriptBin name ''
@@ -74,7 +74,7 @@
           trap 'rm -f "$TMP"' EXIT
 
           echo "Aligning APK..."
-          ${androidSdk}/share/android-sdk/build-tools/35.0.0/zipalign -f 4 \
+          ${androidSdk}/share/android-sdk/build-tools/36.0.0/zipalign -f 4 \
             "${apkPath}" "$TMP"
 
           echo "Signing APK..."
@@ -104,7 +104,7 @@
         let
           androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
             s.cmdline-tools-latest
-            s.build-tools-35-0-0
+            s.build-tools-36-0-0
           ]);
           iconPython = pkgs.python3.withPackages (ps: [
             ps.cairosvg
@@ -189,7 +189,7 @@
 
           keyaliases_yaml=""
           for apk in "''${apk_files[@]}"; do
-            badging="$(${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt dump badging "$apk")"
+            badging="$(${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt dump badging "$apk")"
             pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
             if [[ -z "$pkg" ]]; then
               echo "Failed to parse package name from $apk" >&2
@@ -222,8 +222,8 @@
           (cd "$WORKDIR" && ${lib.getExe pkgs.fdroidserver} update --create-metadata --rename-apks --nosign)
           ${iconPython}/bin/python3 ${./fdroid-repo-icon-fallback.py} \
             "$WORKDIR" \
-            "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt" \
-            "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2" \
+            "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt" \
+            "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2" \
             "${iconFont}"
           (cd "$WORKDIR" && ${lib.getExe pkgs.fdroidserver} signindex)
 
@@ -432,8 +432,8 @@
         androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
           s.cmdline-tools-latest
           s.platform-tools
-          s.platforms-android-35
-          s.build-tools-35-0-0
+          s.platforms-android-36
+          s.build-tools-36-0-0
         ]);
         apps = [
           {
