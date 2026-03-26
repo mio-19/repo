@@ -38,7 +38,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   src = fetchgit {
     url = "https://github.com/rikkaapps/shizuku.git";
-    rev = rev;
+    inherit rev;
     fetchSubmodules = true;
     gitConfigFile = lib.toFile "gitconfig" ''
       [url "https://github.com/"]
