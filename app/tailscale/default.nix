@@ -19,8 +19,10 @@ let
   src = fetchFromGitHub {
     owner = "tailscale";
     repo = "tailscale-android";
-    tag = "v${version}";
-    hash = "sha256-1RWHKUzqbiK/fOkkOdjAhQ/F/qU1rOVqEa8ANv7zW+c=";
+    #tag = "v${version}";
+    #hash = "sha256-1RWHKUzqbiK/fOkkOdjAhQ/F/qU1rOVqEa8ANv7zW+c=";
+    rev = "3b6b8269f50118fcff9f73b3ad1c78ed9b7d35ad";
+    hash = "sha256-LmAfTLPpaJOPmCqNrdtCRS9KTtVD+3XKUG9qsN/gPaw=";
   };
 
   xMobileSrc = fetchFromGitHub {
@@ -39,7 +41,7 @@ let
 
     outputHashMode = "recursive";
     outputHashAlgo = "sha256";
-    outputHash = "sha256-ehqH2q9/+Nj86BQEfQ6OXKmSUr2/GM8GS5p1DD+lyAY=";
+    outputHash = "sha256-le/WUXpIbJj5BdsB8V1p+h/IKnF9Gevx27KfU4hs2g0=";
 
     dontConfigure = true;
     dontFixup = true;
