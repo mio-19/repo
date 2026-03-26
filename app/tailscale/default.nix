@@ -11,18 +11,15 @@
   gnumake,
   zip,
   unzip,
-  fetchpatch,
 }:
 let
-  version = "1.97.0-pre.0.20260325";
+  version = "1.96.2";
 
   src = fetchFromGitHub {
     owner = "tailscale";
     repo = "tailscale-android";
-    #tag = "v${version}";
-    #hash = "sha256-1RWHKUzqbiK/fOkkOdjAhQ/F/qU1rOVqEa8ANv7zW+c=";
-    rev = "3b6b8269f50118fcff9f73b3ad1c78ed9b7d35ad";
-    hash = "sha256-LmAfTLPpaJOPmCqNrdtCRS9KTtVD+3XKUG9qsN/gPaw=";
+    tag = "v${version}";
+    hash = "sha256-1RWHKUzqbiK/fOkkOdjAhQ/F/qU1rOVqEa8ANv7zW+c=";
   };
 
   xMobileSrc = fetchFromGitHub {
@@ -41,7 +38,7 @@ let
 
     outputHashMode = "recursive";
     outputHashAlgo = "sha256";
-    outputHash = "sha256-le/WUXpIbJj5BdsB8V1p+h/IKnF9Gevx27KfU4hs2g0=";
+    outputHash = "sha256-ehqH2q9/+Nj86BQEfQ6OXKmSUr2/GM8GS5p1DD+lyAY=";
 
     dontConfigure = true;
     dontFixup = true;
@@ -96,14 +93,6 @@ in
 stdenv.mkDerivation (finalAttrs: {
   pname = "tailscale";
   inherit version src;
-
-  patches = [
-    (fetchpatch {
-      name = "Fix/restart vpn state bug";
-      url = "https://github.com/tailscale/tailscale-android/pull/730.diff";
-      hash = "sha256-1thWUOONa0HZLXAK4Z0tJ2AmbLJrNATJn6Y7UmN6Yvg=";
-    })
-  ];
 
   gradleBuildTask = "assembleRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
