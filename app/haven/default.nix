@@ -125,7 +125,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   installPhase = ''
     runHook preInstall
-    apk_path="$(echo app/build/outputs/apk/arm64/release/haven-*.apk)"
+    apk_path="$(echo app/build/outputs/apk/*Full/release/haven-*-release.apk)"
     install -Dm644 "$apk_path" "$out/haven.apk"
     runHook postInstall
   '';
