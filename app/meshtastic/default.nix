@@ -115,7 +115,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   meta = with lib; {
     description = "Meshtastic Android app (F-Droid flavor, unsigned)";
-    homepage = "https://meshtastic.org";
+    homepage = "https://github.com/meshtastic/Meshtastic-Android";
     license = licenses.gpl3Only;
     platforms = platforms.unix;
   };
