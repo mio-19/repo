@@ -14,7 +14,7 @@
   fetchpatch,
 }:
 let
-  version = "1.96.2";
+  version = "1.97.0-pre.0.20260325";
 
   src = fetchFromGitHub {
     owner = "tailscale";
