@@ -100,8 +100,8 @@ stdenv.mkDerivation (finalAttrs: {
   patches = [
     (fetchpatch {
       name = "Fix/restart vpn state bug";
-      url = "https://github.com/tailscale/tailscale-android/pull/730.patch";
-      hash = "sha256-atbOLGzzvTQRIp/xKwUY0rEWZg5H5vataqlPTRef5AQ=";
+      url = "https://github.com/tailscale/tailscale-android/pull/730.diff";
+      hash = "sha256-1thWUOONa0HZLXAK4Z0tJ2AmbLJrNATJn6Y7UmN6Yvg=";
     })
   ];
 
