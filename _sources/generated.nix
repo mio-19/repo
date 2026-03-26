@@ -22,17 +22,17 @@
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
-    version = "c727457efdd506bd5c53d660bbe728e35eff6587";
+    version = "4dadc04f8b90195b52faaf91b9d258fccf3dde34";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
-      rev = "c727457efdd506bd5c53d660bbe728e35eff6587";
+      rev = "4dadc04f8b90195b52faaf91b9d258fccf3dde34";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-ivvLi96EQmUq2xoitqFWPKpE7OiX/DvrJ3s7qE7+vQU=";
+      sha256 = "sha256-rcVx76IAUeZO3J7SgRBMqvdp33X7VrQLZv/JEVHmLms=";
     };
-    date = "2026-03-24";
+    date = "2026-03-26";
   };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";

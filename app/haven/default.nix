@@ -49,8 +49,7 @@ stdenv.mkDerivation (finalAttrs: {
     ./set-ndk-version.patch
   ];
 
-  # fdroiddata: gradle: [arm64]  →  assembleArm64Release
-  gradleBuildTask = ":app:assembleArm64Release";
+  gradleBuildTask = ":app:assembleArm64FullRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 
   # Lock refresh steps:
