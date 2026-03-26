@@ -8,8 +8,6 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  cmake,
-  ninja,
 }:
 let
   rev = "b844bc491f1790c72328e1a8e5b2349f8978f0ea";
