@@ -184,6 +184,9 @@ stdenv.mkDerivation (finalAttrs: {
     substituteInPlace android/build.gradle \
       --replace-fail 'ndkVersion "23.1.7779620"' 'ndkVersion "27.3.13750724"'
 
+    substituteInPlace Makefile \
+      --replace-fail 'ndk;23.1.7779620' 'ndk;27.3.13750724'
+
     echo "org.gradle.jvmargs=-Xmx4096m" >> android/gradle.properties
     cat >> android/gradle.properties <<EOF
     android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2

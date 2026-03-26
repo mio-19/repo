@@ -13,3 +13,4 @@
 - for `''` in nix, prefixing common spaces will be removed. please format nix files corectly that is bash heredoc within double quotes block in nix can have similar indentation as the rest of the file. if unsure run nixfmt on the file and check what did nixfmt do!
 - if any group-index hash mismatch, update the hash (replace old hash with new hash) in all json deps files!
 - always need "-xlintVitalRelease" in gradleFlags unless `Task 'lintVitalRelease' not found in root project`; with this flag added gradle should not fetch "play-sdk/index/snapshot" "group-index" files - see <https://github.com/NixOS/nixpkgs/issues/501643#issuecomment-4122356032>
+- update mitm: `$(nix build .\#tailscale.mitmCache.updateScript --no-link --print-out-paths)`
