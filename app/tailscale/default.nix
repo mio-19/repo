@@ -11,6 +11,7 @@
   gnumake,
   zip,
   unzip,
+  fetchpatch,
 }:
 let
   version = "1.96.2";
@@ -93,6 +94,14 @@ in
 stdenv.mkDerivation (finalAttrs: {
   pname = "tailscale";
   inherit version src;
+
+  patches = [
+    (fetchpatch {
+      name = "Fix/restart vpn state bug";
+      url = "https://github.com/tailscale/tailscale-android/pull/730.diff";
+      hash = "sha256-1thWUOONa0HZLXAK4Z0tJ2AmbLJrNATJn6Y7UmN6Yvg=";
+    })
+  ];
 
   gradleBuildTask = "assembleRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
