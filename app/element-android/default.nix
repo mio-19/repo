@@ -60,7 +60,7 @@ stdenv.mkDerivation (finalAttrs: {
   mitmCache = gradle.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
-    data = "element_android_deps.json";
+    data = ./element_android_deps.json;
     silent = false;
     useBwrap = false;
   };
