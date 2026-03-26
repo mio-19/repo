@@ -157,14 +157,7 @@ stdenv.mkDerivation (finalAttrs: {
     if [[ -n "''${MITM_CACHE_CA:-}" ]]; then
       curlArgs+=(--cacert "$MITM_CACHE_CA")
     fi
-    cxxAar="$PWD/libcxx.aar"
-    if [[ -n "$cacheRoot" && -e "$cacheRoot/https/repo.maven.apache.org/maven2/org/lsposed/libcxx/libcxx/27.0.12077973/libcxx-27.0.12077973.aar" ]]; then
-      cxxAar="$cacheRoot/https/repo.maven.apache.org/maven2/org/lsposed/libcxx/libcxx/27.0.12077973/libcxx-27.0.12077973.aar"
-    else
-      ${lib.getExe curl} "''${curlArgs[@]}" \
-        --output "$cxxAar" \
-        "https://repo.maven.apache.org/maven2/org/lsposed/libcxx/libcxx/27.0.12077973/libcxx-27.0.12077973.aar"
-    fi
+    cxxAar="$cacheRoot/https/repo.maven.apache.org/maven2/org/lsposed/libcxx/libcxx/27.0.12077973/libcxx-27.0.12077973.aar"
     (
       cd "$cxxPkgDir"
       ${lib.getExe' jdk21 "jar"} xf "$cxxAar" prefab/modules/cxx
@@ -177,14 +170,7 @@ stdenv.mkDerivation (finalAttrs: {
     )
     EOF
 
-    boringsslAar="$PWD/boringssl.aar"
-    if [[ -n "$cacheRoot" && -e "$cacheRoot/https/repo.maven.apache.org/maven2/io/github/vvb2060/ndk/boringssl/20250114/boringssl-20250114.aar" ]]; then
-      boringsslAar="$cacheRoot/https/repo.maven.apache.org/maven2/io/github/vvb2060/ndk/boringssl/20250114/boringssl-20250114.aar"
-    else
-      ${lib.getExe curl} "''${curlArgs[@]}" \
-        --output "$boringsslAar" \
-        "https://repo.maven.apache.org/maven2/io/github/vvb2060/ndk/boringssl/20250114/boringssl-20250114.aar"
-    fi
+    boringsslAar="$cacheRoot/https/repo.maven.apache.org/maven2/io/github/vvb2060/ndk/boringssl/20250114/boringssl-20250114.aar"
     (
       cd "$boringsslPkgDir"
       ${lib.getExe' jdk21 "jar"} xf "$boringsslAar" prefab/modules/crypto_static prefab/modules/ssl_static
@@ -237,11 +223,7 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    if ls out/apk/*.apk >/dev/null 2>&1; then
-      apk_path="$(echo out/apk/*.apk | awk '{print $1}')"
-    else
-      apk_path="$(echo manager/build/outputs/apk/release/*.apk | awk '{print $1}')"
-    fi
+    apk_path="$(echo manager/build/outputs/apk/release/*.apk | awk '{print $1}')"
 
     install -Dm644 "$apk_path" "$out/shizuku.apk"
 
