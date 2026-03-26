@@ -191,14 +191,10 @@ stdenv.mkDerivation (finalAttrs: {
     EOF
 
     # Make AGP/plugin marker artifacts resolvable from mavenLocal in pure builds.
-    if [[ -n "$cacheRoot" && -e "$cacheRoot/https/dl.google.com/dl/android/maven2/com/android" ]]; then
-      m2root="$PWD/.m2/repository"
-      if mkdir -p /build/.m2/repository/com 2>/dev/null; then
-        m2root="/build/.m2/repository"
-      fi
-      mkdir -p "$m2root/com"
-      ln -sfn "$cacheRoot/https/dl.google.com/dl/android/maven2/com/android" "$m2root/com/android"
-    fi
+    [[ -n "$cacheRoot" && -e "$cacheRoot/https/dl.google.com/dl/android/maven2/com/android" ]]
+    m2root="/build/.m2/repository"
+    mkdir -p "$m2root/com"
+    ln -sfn "$cacheRoot/https/dl.google.com/dl/android/maven2/com/android" "$m2root/com/android"
 
     echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
   ''
