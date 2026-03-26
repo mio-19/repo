@@ -198,22 +198,22 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   postPatch = ''
-        substituteInPlace app/build.gradle \
-          --replace-fail "    compileSdkVersion 34
+    substituteInPlace app/build.gradle \
+      --replace-fail "    compileSdkVersion 34
     " "    compileSdkVersion 34
         ndkVersion \"29.0.14206865\"
     "
 
-        substituteInPlace app/build.gradle \
-          --replace-fail "def commit= 'git rev-parse --verify --short HEAD'.execute().text.trim()" "def commit = System.getenv('TERMUX_X11_GIT_SHORT_COMMIT') ?: '${shortRev}'" \
-          --replace-fail '-''${commit.length()==1?"nongit":commit}-''${(new Date()).format("dd.MM.yy")}' '+git.''${commit}' \
-          --replace-fail "\"\\\"\" + (\"git rev-parse HEAD\\n\".execute().getText().trim() ?: (System.getenv('CURRENT_COMMIT') ?: \"NO_COMMIT\")) + \"\\\"\"" "\"\\\"\" + (System.getenv('CURRENT_COMMIT') ?: \"${rev}\") + \"\\\"\""
+    substituteInPlace app/build.gradle \
+      --replace-fail "def commit= 'git rev-parse --verify --short HEAD'.execute().text.trim()" "def commit = System.getenv('TERMUX_X11_GIT_SHORT_COMMIT') ?: '${shortRev}'" \
+      --replace-fail '-''${commit.length()==1?"nongit":commit}-''${(new Date()).format("dd.MM.yy")}' '+git.''${commit}' \
+      --replace-fail "\"\\\"\" + (\"git rev-parse HEAD\\n\".execute().getText().trim() ?: (System.getenv('CURRENT_COMMIT') ?: \"NO_COMMIT\")) + \"\\\"\"" "\"\\\"\" + (System.getenv('CURRENT_COMMIT') ?: \"${rev}\") + \"\\\"\""
 
-        substituteInPlace shell-loader/build.gradle \
-          --replace-fail "\"\\\"\" + (\"git rev-parse HEAD\\n\".execute().getText().trim() ?: (System.getenv('CURRENT_COMMIT') ?: \"NO_COMMIT\")) + \"\\\"\"" "\"\\\"\" + (System.getenv('CURRENT_COMMIT') ?: \"${rev}\") + \"\\\"\""
+    substituteInPlace shell-loader/build.gradle \
+      --replace-fail "\"\\\"\" + (\"git rev-parse HEAD\\n\".execute().getText().trim() ?: (System.getenv('CURRENT_COMMIT') ?: \"NO_COMMIT\")) + \"\\\"\"" "\"\\\"\" + (System.getenv('CURRENT_COMMIT') ?: \"${rev}\") + \"\\\"\""
 
-        substituteInPlace app/src/main/cpp/recipes/xkbcomp.cmake \
-          --replace-fail 'COMMAND "/usr/bin/gcc"' 'COMMAND "${gcc}/bin/gcc"'
+    substituteInPlace app/src/main/cpp/recipes/xkbcomp.cmake \
+      --replace-fail 'COMMAND "/usr/bin/gcc"' 'COMMAND "${gcc}/bin/gcc"'
   '';
 
   preConfigure = ''
