@@ -22,7 +22,7 @@ let
     s.platforms-android-36
     s.build-tools-36-0-0
     s.ndk-29-0-13113456
-    s.cmake-3-22-1
+    s.cmake-3-31-6
   ]);
 
   gradle =
@@ -58,21 +58,6 @@ stdenv.mkDerivation (finalAttrs: {
     # AGP 8.10.0 currently fails to resolve in this build environment.
     substituteInPlace api/settings.gradle \
       --replace-fail 'version "8.10.0"' 'version "8.10.1"'
-
-    # Upstream requests CMake 3.31+, but this environment only provides the
-    # Android SDK's 3.22.1 package. Keep AGP on that SDK CMake to preserve
-    # prefab package discovery for libcxx.
-    substituteInPlace api/rish/build.gradle \
-      --replace-fail 'version "3.31.0+"' 'version "3.22.1"'
-    substituteInPlace api/rish/src/main/cpp/CMakeLists.txt \
-      --replace-fail 'cmake_minimum_required(VERSION 3.31)' 'cmake_minimum_required(VERSION 3.22)' \
-      --replace-fail 'find_package(cxx REQUIRED CONFIG)' 'include("''${CMAKE_CURRENT_LIST_DIR}/../../../../../.nix-cmake/cxx/cxxConfig.cmake")'
-    substituteInPlace manager/build.gradle \
-      --replace-fail 'version = "3.31.0+"' 'version = "3.22.1"'
-    substituteInPlace manager/src/main/jni/CMakeLists.txt \
-      --replace-fail 'cmake_minimum_required(VERSION 3.31)' 'cmake_minimum_required(VERSION 3.22)' \
-      --replace-fail 'find_package(boringssl REQUIRED CONFIG)' 'include("''${CMAKE_CURRENT_LIST_DIR}/../../../../.nix-cmake/boringssl/boringsslConfig.cmake")' \
-      --replace-fail 'find_package(cxx REQUIRED CONFIG)' 'include("''${CMAKE_CURRENT_LIST_DIR}/../../../../.nix-cmake/cxx/cxxConfig.cmake")'
 
     # Resolve Android plugin IDs via com.android.tools.build:gradle directly,
     # which avoids plugin-marker fetches that may be absent in locked deps.
@@ -178,13 +163,13 @@ stdenv.mkDerivation (finalAttrs: {
     if [[ -n "$cacheRoot" && -e "$cacheRoot/https/repo.maven.apache.org/maven2/org/lsposed/libcxx/libcxx/27.0.12077973/libcxx-27.0.12077973.aar" ]]; then
       cxxAar="$cacheRoot/https/repo.maven.apache.org/maven2/org/lsposed/libcxx/libcxx/27.0.12077973/libcxx-27.0.12077973.aar"
     else
-      ${curl}/bin/curl "''${curlArgs[@]}" \
+      ${lib.getExe curl} "''${curlArgs[@]}" \
         --output "$cxxAar" \
         "https://repo.maven.apache.org/maven2/org/lsposed/libcxx/libcxx/27.0.12077973/libcxx-27.0.12077973.aar"
     fi
     (
       cd "$cxxPkgDir"
-      ${jdk21}/bin/jar xf "$cxxAar" prefab/modules/cxx
+      ${lib.getExe' jdk21 "jar"} xf "$cxxAar" prefab/modules/cxx
     )
     cat > "$cxxPkgDir/cxxConfig.cmake" <<'EOF'
     add_library(cxx::cxx STATIC IMPORTED)
@@ -198,13 +183,13 @@ stdenv.mkDerivation (finalAttrs: {
     if [[ -n "$cacheRoot" && -e "$cacheRoot/https/repo.maven.apache.org/maven2/io/github/vvb2060/ndk/boringssl/20250114/boringssl-20250114.aar" ]]; then
       boringsslAar="$cacheRoot/https/repo.maven.apache.org/maven2/io/github/vvb2060/ndk/boringssl/20250114/boringssl-20250114.aar"
     else
-      ${curl}/bin/curl "''${curlArgs[@]}" \
+      ${lib.getExe curl} "''${curlArgs[@]}" \
         --output "$boringsslAar" \
         "https://repo.maven.apache.org/maven2/io/github/vvb2060/ndk/boringssl/20250114/boringssl-20250114.aar"
     fi
     (
       cd "$boringsslPkgDir"
-      ${jdk21}/bin/jar xf "$boringsslAar" prefab/modules/crypto_static prefab/modules/ssl_static
+      ${lib.getExe' jdk21 "jar"} xf "$boringsslAar" prefab/modules/crypto_static prefab/modules/ssl_static
     )
     cat > "$boringsslPkgDir/boringsslConfig.cmake" <<'EOF'
     add_library(boringssl::crypto_static STATIC IMPORTED)
