@@ -11,6 +11,7 @@
   gnumake,
   zip,
   unzip,
+  fetchpatch,
 }:
 let
   version = "1.96.2";
@@ -21,6 +22,14 @@ let
     tag = "v${version}";
     hash = "sha256-1RWHKUzqbiK/fOkkOdjAhQ/F/qU1rOVqEa8ANv7zW+c=";
   };
+
+  patches = [
+    (fetchpatch {
+      name = "Fix/restart vpn state bug";
+      url = "https://github.com/tailscale/tailscale-android/pull/730.patch";
+      hash = "sha256-atbOLGzzvTQRIp/xKwUY0rEWZg5H5vataqlPTRef5AQ=";
+    })
+  ];
 
   xMobileSrc = fetchFromGitHub {
     owner = "golang";
