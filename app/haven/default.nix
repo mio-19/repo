@@ -49,6 +49,7 @@ stdenv.mkDerivation (finalAttrs: {
     ./set-ndk-version.patch
   ];
 
+  # full/foss split: https://github.com/GlassOnTin/Haven/commit/50debc9b31e94e45a814e05e2fb41a5b6cc61cc3#r180656319
   gradleBuildTask = ":app:assembleArm64FullRelease";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 
@@ -59,7 +60,7 @@ stdenv.mkDerivation (finalAttrs: {
   mitmCache = gradle.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
-    data = "haven_deps.json";
+    data = ./haven_deps.json;
     silent = false;
     useBwrap = false;
   };
@@ -115,7 +116,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   gradleFlags = [
-    "-xlintVitalAnalyzeFullRel"
+    "-xlintVitalAnalyzeFullRelease"
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
     "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
