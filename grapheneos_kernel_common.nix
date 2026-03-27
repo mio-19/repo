@@ -28,6 +28,7 @@
   fetchFromGitHub,
   dockerTools,
   fetchpatch,
+  callPackage,
 }:
 {
   pname,
@@ -65,7 +66,7 @@ let
   #version = "${kernelPixel.date}-${builtins.substring 0 8 kernelPixel.version}";
 
   lindroidDrm = sources.lindroid_drm_loopback.src;
-  kernelSUSrc = import ./ksuNext-c.nix { inherit fetchgit; };
+  kernelSUSrc = callPackage ./ksuNext.nix { };
   kernelBuildEnv = buildFHSEnv {
     name = "${pname}-build-env";
     targetPkgs =
