@@ -5,9 +5,7 @@
   gradle-packages,
   androidSdkBuilder,
   jdk21,
-  ninja,
   writableTmpDirAsHomeHook,
-  runCommand,
 }:
 let
   version = "1.6.13";
