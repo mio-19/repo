@@ -308,6 +308,10 @@
         biliroaming = biliroaming;
       };
 
+      rednote = pkgs.callPackage ./rednote {
+        lspatchCli = lspatch-cli;
+      };
+
       thunderbird = pkgs.callPackage ./thunderbird {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -1226,6 +1230,22 @@
                 BiliBili Roaming embeds the latest BiliRoaming Xposed module
                 using LSPatch so the official BiliBili client bypasses region
                 locks and gains other enhancements without root.
+            '';
+          }
+          {
+            appId = "com.xingin.xhs";
+            apkPath = "${rednote}/rednote.apk";
+            metadataYml = ''
+              Categories:
+                - Internet
+              License: Proprietary
+              SourceCode: https://xiaohongshu.cn.uptodown.com/android/dw/1032665165
+              IssueTracker: https://xiaohongshu.cn.uptodown.com/android/dw/1032665165
+              AutoName: RedNote
+              Summary: Patched Xiaohongshu APK
+              Description: |-
+                RedNote is a patched Xiaohongshu (Little Red Book) APK built with
+                LSPatch
             '';
           }
           {
