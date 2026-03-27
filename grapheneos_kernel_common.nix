@@ -118,22 +118,24 @@ stdenvNoCC.mkDerivation {
       }
 
       ${extraBuildCommands}
-      ${lib.optionalString enableKSU/*https://github.com/tiann/KernelSU/issues/2942#issuecomment-3969773467*/ ''
-        # KernelSU v1.0.5 style tree injection shared across GrapheneOS kernels.
-        rm -rf aosp/KernelSU
-        cp -r ${kernelSUSrc} aosp/KernelSU
-        chmod -R u+w aosp/KernelSU
-        ln -sfn ../KernelSU/kernel aosp/drivers/kernelsu
-        printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> aosp/drivers/Makefile
-        sed -i "/endmenu/i\\source \"drivers/kernelsu/Kconfig\"" aosp/drivers/Kconfig
+      ${lib.optionalString enableKSU # https://github.com/tiann/KernelSU/issues/2942#issuecomment-3969773467
+        ''
+          # KernelSU v1.0.5 style tree injection shared across GrapheneOS kernels.
+          rm -rf aosp/KernelSU
+          cp -r ${kernelSUSrc} aosp/KernelSU
+          chmod -R u+w aosp/KernelSU
+          ln -sfn ../KernelSU/kernel aosp/drivers/kernelsu
+          printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> aosp/drivers/Makefile
+          sed -i "/endmenu/i\\source \"drivers/kernelsu/Kconfig\"" aosp/drivers/Kconfig
 
-        cp aosp/KernelSU/kernel/Makefile aosp/KernelSU/kernel/Makefile.orig
-        {
-          echo "srctree := $(pwd)/aosp"
-          echo "src := KernelSU/kernel"
-          cat aosp/KernelSU/kernel/Makefile.orig
-        } > aosp/KernelSU/kernel/Makefile
-      ''}
+          cp aosp/KernelSU/kernel/Makefile aosp/KernelSU/kernel/Makefile.orig
+          {
+            echo "srctree := $(pwd)/aosp"
+            echo "src := KernelSU/kernel"
+            cat aosp/KernelSU/kernel/Makefile.orig
+          } > aosp/KernelSU/kernel/Makefile
+        ''
+      }
 
       ${lib.optionalString enableLindroid ''
         # lindroid steps
