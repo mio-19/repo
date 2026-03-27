@@ -119,5 +119,7 @@ in
           '';
         });
       */
+      # followings are for debug:
+      packages.ksuNext = pkgs.callPackage ./ksuNext.nix { };
     };
 }
