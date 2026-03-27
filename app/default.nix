@@ -430,7 +430,6 @@
       };
       morphe-patches = pkgs.callPackage ./morphe-cli/morphe-patches.nix {
         inherit morphe-patches-gradle-plugin morphe-library-m2;
-        python3 = pkgs.python3;
         apktool-src = sources.morphe_apktool.src;
         multidexlib2-src = sources.morphe_multidexlib2.src;
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
