@@ -1,13 +1,25 @@
+From 9f61464383a0cb401bd81020180aacfbeee03ae3 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Fri, 27 Mar 2026 22:38:21 +1100
+Subject: [PATCH] always show vanadium
+
+---
+ app/src/main/java/app/grapheneos/apps/core/Repo.kt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
 diff --git a/app/src/main/java/app/grapheneos/apps/core/Repo.kt b/app/src/main/java/app/grapheneos/apps/core/Repo.kt
-index a4d789d..e68d756 100644
+index a4d789d..81ece6f 100644
 --- a/app/src/main/java/app/grapheneos/apps/core/Repo.kt
 +++ b/app/src/main/java/app/grapheneos/apps/core/Repo.kt
-@@ -171,7 +171,7 @@ class RPackageContainer(val repo: Repo, val packageName: String,
-     // whether this is a resource-only package. enforced during package installation
-     val noCode = json.optBoolean("noCode", false)
-     // whether to show this package on the main screen
--    val isTopLevel = json.optBoolean("isTopLevel", true)
-+    val isTopLevel = json.optBoolean("isTopLevel", true) || packageName == "app.vanadium.browser"
-     val showAutoUpdateNotifications = json.optBoolean("showAutoUpdateNotifications", !noCode)
+@@ -556,7 +556,7 @@ private class ComplexDependency(string: String) {
  
-     val isSharedLibrary = json.optBoolean("isSharedLibrary", false)
+ private fun checkStaticDeps(json: JSONObject, dependentManifestPkgName: String, repo: Repo): Boolean {
+     json.optJSONArray("supportedDevices")?.asStringList()?.let { devices ->
+-        if (!devices.contains(Build.DEVICE)) {
++        if (!dependentManifestPkgName.contains("vanadium") && !devices.contains(Build.DEVICE)) {
+             return false
+         }
+     }
+-- 
+2.53.0
+
