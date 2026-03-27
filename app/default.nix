@@ -290,6 +290,10 @@
         inherit apkeditor revanced-cli revanced-patches;
       };
 
+      immich = pkgs.callPackage ./immich {
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+      };
+
       biliroaming = pkgs.callPackage ./biliroaming {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -1338,6 +1342,14 @@
           name = "sign-facebook-revanced";
           apkPath = "${facebookRevanced}/facebook-revanced.apk";
           defaultOut = "facebook-revanced-signed.apk";
+        };
+      });
+
+      packages.immich = immich.overrideAttrs (_: {
+        passthru.signScript = mkSignScript {
+          name = "sign-immich";
+          apkPath = "${immich}/immich.apk";
+          defaultOut = "immich-signed.apk";
         };
       });
 
