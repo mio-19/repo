@@ -50,7 +50,7 @@ stdenv.mkDerivation (finalAttrs: {
   mitmCache = gradle.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
-    data = "appstore_deps.json";
+    data = ./appstore_deps.json;
     silent = false;
     useBwrap = false;
   };
