@@ -1,8 +1,8 @@
 { fetchgit }:
 fetchgit {
   url = "https://github.com/tiann/KernelSU.git";
-  rev = "v3.1.0";
-  hash = "sha256-R1EROyD/3tgg4tI3Q3DKMBiMLKccpXQOf4yHibL1Yz4=";
+  rev = "v3.2.1";
+  hash = "sha256-3jj+OLZFthm97b8IysRQ1PgWCs6yeWuA/Z0NAekW2bE=";
   leaveDotGit = true;
   deepClone = true;
   # populate values that require us to use git and deepClone. By doing this in postFetch we
@@ -10,12 +10,9 @@ fetchgit {
   postFetch = ''
     cd "$out"
 
-    git rev-parse HEAD > "$out/COMMIT"
-    date -u -d "@$(git log -1 --pretty=%ct)" "+%Y-%m-%dT%H:%M:%SZ" > "$out/SOURCE_DATE_EPOCH"
-
     KSU_GIT_VERSION="$(git rev-list --count HEAD)"
     KSU_VERSION="$((10000 + KSU_GIT_VERSION + 200))"
-    echo "$KSU_VERSION" > "$out/KSU_VERSION"
+    KSU_VERSION_TAG="$(git describe --tags --abbrev=0)"
 
     echo "KSU_VERSION=$KSU_VERSION"
 

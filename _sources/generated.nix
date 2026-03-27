@@ -526,17 +526,17 @@
   };
   sm8550_tab_device_gts9wifi = {
     pname = "sm8550_tab_device_gts9wifi";
-    version = "a9d94b7bc20a66224c1d5b73a237fa225d46f874";
+    version = "682c96229acb8cedf904795990ac0887a2838bac";
     src = fetchgit {
       url = "https://github.com/samsung-sm8550-tab/android_device_samsung_gts9wifi.git";
-      rev = "a9d94b7bc20a66224c1d5b73a237fa225d46f874";
+      rev = "682c96229acb8cedf904795990ac0887a2838bac";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-uRwsjj9mQxnWD5T7mrajzOBjiZm5cDCYbCdMWaM3HZc=";
+      sha256 = "sha256-gK4UkR4NZiF8CTJhuNQNBTnkRt1GeC3rrKTMB5WrtMM=";
     };
-    date = "2026-03-24";
+    date = "2026-03-26";
   };
   sm8550_tab_device_sm8550_common = {
     pname = "sm8550_tab_device_sm8550_common";
