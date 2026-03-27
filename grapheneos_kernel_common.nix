@@ -66,7 +66,7 @@ let
   #version = "${kernelPixel.date}-${builtins.substring 0 8 kernelPixel.version}";
 
   lindroidDrm = sources.lindroid_drm_loopback.src;
-  kernelSUSrc = callPackage ./ksuNext.nix { };
+  kernelSUSrc = callPackage ./kernelSU.nix { };
   kernelBuildEnv = buildFHSEnv {
     name = "${pname}-build-env";
     targetPkgs =
