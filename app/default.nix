@@ -1116,368 +1116,367 @@
           }
         ];
       };
-      scope0 = lib.makeScope pkgs.newScope (self: {
+      scope1 = {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+        forkgram = forkgram.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-forkgram";
+            apkPath = "${forkgram}/forkgram.apk";
+            defaultOut = "forkgram-signed.apk";
+          };
+        });
+
+        meshtastic = meshtastic.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-meshtastic";
+            apkPath = "${meshtastic}/meshtastic.apk";
+            defaultOut = "meshtastic-signed.apk";
+          };
+        });
+
+        droidspaces-oss = droidspaces-oss.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-droidspaces-oss";
+            apkPath = "${droidspaces-oss}/droidspaces-oss.apk";
+            defaultOut = "droidspaces-oss-signed.apk";
+          };
+        });
+
+        microg-re = microg-re.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-microg-re";
+            apkPath = "${microg-re}/microg-re.apk";
+            defaultOut = "microg-re-signed.apk";
+          };
+        });
+
+        youtube-morphe = youtubeMorphe.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-youtube-morphe";
+            apkPath = "${youtubeMorphe}/youtube-morphe.apk";
+            defaultOut = "youtube-morphe-signed.apk";
+          };
+        });
+
+        youtube-music-morphe = youtubeMusicMorphe.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-youtube-music-morphe";
+            apkPath = "${youtubeMusicMorphe}/youtube-music-morphe.apk";
+            defaultOut = "youtube-music-morphe-signed.apk";
+          };
+        });
+
+        reddit-morphe = redditMorphe.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-reddit-morphe";
+            apkPath = "${redditMorphe}/reddit-morphe.apk";
+            defaultOut = "reddit-morphe-signed.apk";
+          };
+        });
+
+        spotify-revanced = spotifyRevanced.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-spotify-revanced";
+            apkPath = "${spotifyRevanced}/spotify-revanced.apk";
+            defaultOut = "spotify-revanced-signed.apk";
+          };
+        });
+
+        duolingo-revanced = duolingoRevanced.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-duolingo-revanced";
+            apkPath = "${duolingoRevanced}/duolingo-revanced.apk";
+            defaultOut = "duolingo-revanced-signed.apk";
+          };
+        });
+
+        microsoft-lens-revanced = microsoftLensRevanced.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-microsoft-lens-revanced";
+            apkPath = "${microsoftLensRevanced}/microsoft-lens-revanced.apk";
+            defaultOut = "microsoft-lens-revanced-signed.apk";
+          };
+        });
+
+        facebook-revanced = facebookRevanced.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-facebook-revanced";
+            apkPath = "${facebookRevanced}/facebook-revanced.apk";
+            defaultOut = "facebook-revanced-signed.apk";
+          };
+        });
+
+        immich = immich.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-immich";
+            apkPath = "${immich}/immich.apk";
+            defaultOut = "immich-signed.apk";
+          };
+        });
+
+        biliroaming = biliroaming;
+
+        bilibili-roaming = bilibiliPlay.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-bilibili-roaming";
+            apkPath = "${bilibiliPlay}/bilibili-roaming.apk";
+            defaultOut = "bilibili-roaming-signed.apk";
+          };
+        });
+
+        bilibili-cn = bilibiliCn.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-bilibili-cn";
+            apkPath = "${bilibiliCn}/bilibili-cn.apk";
+            defaultOut = "bilibili-cn-signed.apk";
+          };
+        });
+
+        instagram-revanced = instagramRevanced.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-instagram-revanced";
+            apkPath = "${instagramRevanced}/instagram-revanced.apk";
+            defaultOut = "instagram-revanced-signed.apk";
+          };
+        });
+
+        thunderbird = thunderbird.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-thunderbird";
+            apkPath = "${thunderbird}/thunderbird.apk";
+            defaultOut = "thunderbird-signed.apk";
+          };
+        });
+
+        emacs = emacs.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-emacs";
+            apkPath = "${emacs}/emacs.apk";
+            defaultOut = "emacs-signed.apk";
+          };
+        });
+
+        lspatch-cli = lspatch-cli;
+
+        lspatch-manager = lspatch-manager.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-lspatch-manager";
+            apkPath = "${lspatch-manager}/lspatch-manager.apk";
+            defaultOut = "lspatch-manager-signed.apk";
+          };
+        });
+
+        nix-on-droid = nix-on-droid.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-nix-on-droid";
+            apkPath = "${nix-on-droid}/nix-on-droid.apk";
+            defaultOut = "nix-on-droid-signed.apk";
+          };
+        });
+
+        tailscale = tailscale.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-tailscale";
+            apkPath = "${tailscale}/tailscale.apk";
+            defaultOut = "tailscale-signed.apk";
+          };
+        });
+
+        termux = termux.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-termux";
+            apkPath = "${termux}/termux.apk";
+            defaultOut = "termux-signed.apk";
+          };
+        });
+
+        termux-styling = termux-styling.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-termux-styling";
+            apkPath = "${termux-styling}/termux-styling.apk";
+            defaultOut = "termux-styling-signed.apk";
+          };
+        });
+
+        termux-x11 = termuxX11.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-termux-x11";
+            apkPath = "${termuxX11}/termux-x11.apk";
+            defaultOut = "termux-x11-signed.apk";
+          };
+        });
+
+        kernelsu = kernelsu.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-kernelsu";
+            apkPath = "${kernelsu}/kernelsu.apk";
+            defaultOut = "kernelsu-signed.apk";
+          };
+        });
+
+        gadgetbridge = gadgetbridge.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-gadgetbridge";
+            apkPath = "${gadgetbridge}/gadgetbridge.apk";
+            defaultOut = "gadgetbridge-signed.apk";
+          };
+        });
+
+        vpnhotspot = vpnhotspot.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-vpnhotspot";
+            apkPath = "${vpnhotspot}/vpnhotspot.apk";
+            defaultOut = "vpnhotspot-signed.apk";
+          };
+        });
+
+        meditrak = meditrak.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-meditrak";
+            apkPath = "${meditrak}/meditrak.apk";
+            defaultOut = "meditrak-signed.apk";
+          };
+        });
+
+        zotero-android = zotero-android.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-zotero-android";
+            apkPath = "${zotero-android}/zotero-android.apk";
+            defaultOut = "zotero-android-signed.apk";
+          };
+        });
+
+        tuxguitar-android = tuxguitar.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-tuxguitar-android";
+            apkPath = "${tuxguitar}/tuxguitar-android.apk";
+            defaultOut = "tuxguitar-android-signed.apk";
+          };
+        });
+
+        meshcore-open = meshcore-open.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-meshcore-open";
+            apkPath = "${meshcore-open}/meshcore-open.apk";
+            defaultOut = "meshcore-open-signed.apk";
+          };
+        });
+
+        element-android = element-android.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-element-android";
+            apkPath = "${element-android}/element-android.apk";
+            defaultOut = "element-android-signed.apk";
+          };
+        });
+        glimpse = glimpse.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-glimpse";
+            apkPath = "${glimpse}/glimpse.apk";
+            defaultOut = "glimpse-signed.apk";
+          };
+        });
+
+        sunup = sunup.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-sunup";
+            apkPath = "${sunup}/sunup.apk";
+            defaultOut = "sunup-signed.apk";
+          };
+        });
+
+        recorder = recorder.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-recorder";
+            apkPath = "${recorder}/recorder.apk";
+            defaultOut = "recorder-signed.apk";
+          };
+        });
+
+        haven = haven.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-haven";
+            apkPath = "${haven}/haven.apk";
+            defaultOut = "haven-signed.apk";
+          };
+        });
+
+        archivetune = archivetune.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-archivetune";
+            apkPath = "${archivetune}/archivetune.apk";
+            defaultOut = "archivetune-signed.apk";
+          };
+        });
+        amethyst = amethyst.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-amethyst";
+            apkPath = "${amethyst}/amethyst.apk";
+            defaultOut = "amethyst-signed.apk";
+          };
+        });
+
+        appstore = appstore.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-appstore";
+            apkPath = "${appstore}/appstore.apk";
+            defaultOut = "appstore-signed.apk";
+          };
+        });
+
+        shizuku = shizuku.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-shizuku";
+            apkPath = "${shizuku}/shizuku.apk";
+            defaultOut = "shizuku-signed.apk";
+          };
+        });
+
+        koreader = koreader.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-koreader";
+            apkPath = "${koreader}/koreader.apk";
+            defaultOut = "koreader-signed.apk";
+          };
+        });
+        gamenative = gamenative.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-gamenative";
+            apkPath = "${gamenative}/gamenative.apk";
+            defaultOut = "gamenative-signed.apk";
+          };
+        });
+        morphe-library-m2 = morphe-library-m2;
+        morphe-patches-gradle-plugin = morphe-patches-gradle-plugin;
+        morphe-cli = morphe-cli;
+        morphe-patches = morphe-patches;
+        revanced-jadb-m2 = revanced-jadb-m2;
+        revanced-apktool-m2 = revanced-apktool-m2;
+        revanced-multidexlib2-m2 = revanced-multidexlib2-m2;
+        revanced-patcher-m2 = revanced-patcher-m2;
+        revanced-library-m2 = revanced-library-m2;
+        revanced-patches-gradle-plugin = revanced-patches-gradle-plugin;
+        revanced-patches = revanced-patches;
+        revanced-cli = revanced-cli;
+
+        fdroid-basic = fdroid-basic.overrideAttrs (_: {
+          passthru.signScript = mkSignScript {
+            name = "sign-fdroid-basic";
+            apkPath = "${fdroid-basic}/fdroid-basic.apk";
+            defaultOut = "fdroid-basic-signed.apk";
+          };
+        });
+
         fdroid-repo = fdroidRepo;
-      });
+      };
+      scope2 = lib.makeScope pkgs.newScope (self: scope1);
     in
     {
       packages =
         lib.filesystem.packagesFromDirectoryRecursive {
-          inherit (scope0) callPackage newScope;
+          inherit (scope2) callPackage newScope;
           directory = ./by-name;
         }
-        // {
-          forkgram = forkgram.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-forkgram";
-              apkPath = "${forkgram}/forkgram.apk";
-              defaultOut = "forkgram-signed.apk";
-            };
-          });
-
-          meshtastic = meshtastic.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-meshtastic";
-              apkPath = "${meshtastic}/meshtastic.apk";
-              defaultOut = "meshtastic-signed.apk";
-            };
-          });
-
-          droidspaces-oss = droidspaces-oss.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-droidspaces-oss";
-              apkPath = "${droidspaces-oss}/droidspaces-oss.apk";
-              defaultOut = "droidspaces-oss-signed.apk";
-            };
-          });
-
-          microg-re = microg-re.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-microg-re";
-              apkPath = "${microg-re}/microg-re.apk";
-              defaultOut = "microg-re-signed.apk";
-            };
-          });
-
-          youtube-morphe = youtubeMorphe.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-youtube-morphe";
-              apkPath = "${youtubeMorphe}/youtube-morphe.apk";
-              defaultOut = "youtube-morphe-signed.apk";
-            };
-          });
-
-          youtube-music-morphe = youtubeMusicMorphe.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-youtube-music-morphe";
-              apkPath = "${youtubeMusicMorphe}/youtube-music-morphe.apk";
-              defaultOut = "youtube-music-morphe-signed.apk";
-            };
-          });
-
-          reddit-morphe = redditMorphe.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-reddit-morphe";
-              apkPath = "${redditMorphe}/reddit-morphe.apk";
-              defaultOut = "reddit-morphe-signed.apk";
-            };
-          });
-
-          spotify-revanced = spotifyRevanced.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-spotify-revanced";
-              apkPath = "${spotifyRevanced}/spotify-revanced.apk";
-              defaultOut = "spotify-revanced-signed.apk";
-            };
-          });
-
-          duolingo-revanced = duolingoRevanced.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-duolingo-revanced";
-              apkPath = "${duolingoRevanced}/duolingo-revanced.apk";
-              defaultOut = "duolingo-revanced-signed.apk";
-            };
-          });
-
-          microsoft-lens-revanced = microsoftLensRevanced.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-microsoft-lens-revanced";
-              apkPath = "${microsoftLensRevanced}/microsoft-lens-revanced.apk";
-              defaultOut = "microsoft-lens-revanced-signed.apk";
-            };
-          });
-
-          facebook-revanced = facebookRevanced.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-facebook-revanced";
-              apkPath = "${facebookRevanced}/facebook-revanced.apk";
-              defaultOut = "facebook-revanced-signed.apk";
-            };
-          });
-
-          immich = immich.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-immich";
-              apkPath = "${immich}/immich.apk";
-              defaultOut = "immich-signed.apk";
-            };
-          });
-
-          biliroaming = biliroaming;
-
-          bilibili-roaming = bilibiliPlay.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-bilibili-roaming";
-              apkPath = "${bilibiliPlay}/bilibili-roaming.apk";
-              defaultOut = "bilibili-roaming-signed.apk";
-            };
-          });
-
-          bilibili-cn = bilibiliCn.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-bilibili-cn";
-              apkPath = "${bilibiliCn}/bilibili-cn.apk";
-              defaultOut = "bilibili-cn-signed.apk";
-            };
-          });
-
-          instagram-revanced = instagramRevanced.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-instagram-revanced";
-              apkPath = "${instagramRevanced}/instagram-revanced.apk";
-              defaultOut = "instagram-revanced-signed.apk";
-            };
-          });
-
-          thunderbird = thunderbird.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-thunderbird";
-              apkPath = "${thunderbird}/thunderbird.apk";
-              defaultOut = "thunderbird-signed.apk";
-            };
-          });
-
-          emacs = emacs.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-emacs";
-              apkPath = "${emacs}/emacs.apk";
-              defaultOut = "emacs-signed.apk";
-            };
-          });
-
-          lspatch-cli = lspatch-cli;
-
-          lspatch-manager = lspatch-manager.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-lspatch-manager";
-              apkPath = "${lspatch-manager}/lspatch-manager.apk";
-              defaultOut = "lspatch-manager-signed.apk";
-            };
-          });
-
-          nix-on-droid = nix-on-droid.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-nix-on-droid";
-              apkPath = "${nix-on-droid}/nix-on-droid.apk";
-              defaultOut = "nix-on-droid-signed.apk";
-            };
-          });
-
-          tailscale = tailscale.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-tailscale";
-              apkPath = "${tailscale}/tailscale.apk";
-              defaultOut = "tailscale-signed.apk";
-            };
-          });
-
-          termux = termux.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-termux";
-              apkPath = "${termux}/termux.apk";
-              defaultOut = "termux-signed.apk";
-            };
-          });
-
-          termux-styling = termux-styling.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-termux-styling";
-              apkPath = "${termux-styling}/termux-styling.apk";
-              defaultOut = "termux-styling-signed.apk";
-            };
-          });
-
-          termux-x11 = termuxX11.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-termux-x11";
-              apkPath = "${termuxX11}/termux-x11.apk";
-              defaultOut = "termux-x11-signed.apk";
-            };
-          });
-
-          kernelsu = kernelsu.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-kernelsu";
-              apkPath = "${kernelsu}/kernelsu.apk";
-              defaultOut = "kernelsu-signed.apk";
-            };
-          });
-
-          gadgetbridge = gadgetbridge.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-gadgetbridge";
-              apkPath = "${gadgetbridge}/gadgetbridge.apk";
-              defaultOut = "gadgetbridge-signed.apk";
-            };
-          });
-
-          vpnhotspot = vpnhotspot.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-vpnhotspot";
-              apkPath = "${vpnhotspot}/vpnhotspot.apk";
-              defaultOut = "vpnhotspot-signed.apk";
-            };
-          });
-
-          meditrak = meditrak.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-meditrak";
-              apkPath = "${meditrak}/meditrak.apk";
-              defaultOut = "meditrak-signed.apk";
-            };
-          });
-
-          zotero-android = zotero-android.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-zotero-android";
-              apkPath = "${zotero-android}/zotero-android.apk";
-              defaultOut = "zotero-android-signed.apk";
-            };
-          });
-
-          tuxguitar-android = tuxguitar.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-tuxguitar-android";
-              apkPath = "${tuxguitar}/tuxguitar-android.apk";
-              defaultOut = "tuxguitar-android-signed.apk";
-            };
-          });
-
-          meshcore-open = meshcore-open.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-meshcore-open";
-              apkPath = "${meshcore-open}/meshcore-open.apk";
-              defaultOut = "meshcore-open-signed.apk";
-            };
-          });
-
-          element-android = element-android.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-element-android";
-              apkPath = "${element-android}/element-android.apk";
-              defaultOut = "element-android-signed.apk";
-            };
-          });
-          glimpse = glimpse.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-glimpse";
-              apkPath = "${glimpse}/glimpse.apk";
-              defaultOut = "glimpse-signed.apk";
-            };
-          });
-
-          sunup = sunup.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-sunup";
-              apkPath = "${sunup}/sunup.apk";
-              defaultOut = "sunup-signed.apk";
-            };
-          });
-
-          recorder = recorder.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-recorder";
-              apkPath = "${recorder}/recorder.apk";
-              defaultOut = "recorder-signed.apk";
-            };
-          });
-
-          haven = haven.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-haven";
-              apkPath = "${haven}/haven.apk";
-              defaultOut = "haven-signed.apk";
-            };
-          });
-
-          archivetune = archivetune.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-archivetune";
-              apkPath = "${archivetune}/archivetune.apk";
-              defaultOut = "archivetune-signed.apk";
-            };
-          });
-          amethyst = amethyst.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-amethyst";
-              apkPath = "${amethyst}/amethyst.apk";
-              defaultOut = "amethyst-signed.apk";
-            };
-          });
-
-          appstore = appstore.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-appstore";
-              apkPath = "${appstore}/appstore.apk";
-              defaultOut = "appstore-signed.apk";
-            };
-          });
-
-          shizuku = shizuku.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-shizuku";
-              apkPath = "${shizuku}/shizuku.apk";
-              defaultOut = "shizuku-signed.apk";
-            };
-          });
-
-          koreader = koreader.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-koreader";
-              apkPath = "${koreader}/koreader.apk";
-              defaultOut = "koreader-signed.apk";
-            };
-          });
-          gamenative = gamenative.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-gamenative";
-              apkPath = "${gamenative}/gamenative.apk";
-              defaultOut = "gamenative-signed.apk";
-            };
-          });
-          morphe-library-m2 = morphe-library-m2;
-          morphe-patches-gradle-plugin = morphe-patches-gradle-plugin;
-          morphe-cli = morphe-cli;
-          morphe-patches = morphe-patches;
-          revanced-jadb-m2 = revanced-jadb-m2;
-          revanced-apktool-m2 = revanced-apktool-m2;
-          revanced-multidexlib2-m2 = revanced-multidexlib2-m2;
-          revanced-patcher-m2 = revanced-patcher-m2;
-          revanced-library-m2 = revanced-library-m2;
-          revanced-patches-gradle-plugin = revanced-patches-gradle-plugin;
-          revanced-patches = revanced-patches;
-          revanced-cli = revanced-cli;
-
-          fdroid-basic = fdroid-basic.overrideAttrs (_: {
-            passthru.signScript = mkSignScript {
-              name = "sign-fdroid-basic";
-              apkPath = "${fdroid-basic}/fdroid-basic.apk";
-              defaultOut = "fdroid-basic-signed.apk";
-            };
-          });
-
-          fdroid-repo = fdroidRepo;
-        };
+        // scope1;
     };
 }
