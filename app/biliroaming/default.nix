@@ -6,6 +6,7 @@
   androidSdkBuilder,
   jdk21,
   writableTmpDirAsHomeHook,
+  fetchpatch,
 }:
 let
   version = "1.6.13";
@@ -40,6 +41,14 @@ stdenv.mkDerivation (finalAttrs: {
         insteadOf = git@github.com:
     '';
   };
+
+  patches = [
+    (fetchpatch {
+      name = "skip ad";
+      url = "https://github.com/yujincheng08/BiliRoaming/pull/1701.patch";
+      hash = "sha256-295vl53oiZfqS+CdAZSwHl/yv4d4uC5vcrhv0oCZBxg=";
+    })
+  ];
 
   postUnpack = ''
     substituteInPlace "$sourceRoot/app/build.gradle.kts" \
