@@ -2,6 +2,8 @@
   pkgs,
   androidSdkBuilder,
   gradle2nixBuilders,
+  forkgram,
+  mkSignScript,
 }:
 
 let
@@ -147,6 +149,11 @@ gradle2nixBuilders.buildGradlePackage rec {
     runHook postInstall
   '';
 
+  passthru.signScript = mkSignScript {
+    name = "sign-forkgram";
+    apkPath = "${forkgram}/forkgram.apk";
+    defaultOut = "forkgram-signed.apk";
+  };
   meta = with pkgs.lib; {
     description = "Telegram Android client fork (ForkGram)";
     homepage = "https://github.com/forkgram/TelegramAndroid";

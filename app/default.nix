@@ -88,11 +88,6 @@
           echo "Signed APK written to: $OUT"
         '';
 
-      forkgram = pkgs.callPackage ./forkgram {
-        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
-        gradle2nixBuilders = inputs.gradle2nix.builders.${system};
-      };
-
       meshtastic = pkgs.callPackage ./meshtastic {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
@@ -315,13 +310,8 @@
 
       scope1 = {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
-        forkgram = forkgram.overrideAttrs (_: {
-          passthru.signScript = mkSignScript {
-            name = "sign-forkgram";
-            apkPath = "${forkgram}/forkgram.apk";
-            defaultOut = "forkgram-signed.apk";
-          };
-        });
+        gradle2nixBuilders = inputs.gradle2nix.builders.${system};
+        inherit mkSignScript;
 
         meshtastic = meshtastic.overrideAttrs (_: {
           passthru.signScript = mkSignScript {

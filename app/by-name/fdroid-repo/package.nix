@@ -1,5 +1,7 @@
 {
-  callPackage,lib,stdenv,
+  callPackage,
+  lib,
+  stdenv,
   androidSdkBuilder,
   fdroid-basic,
   shizuku,
