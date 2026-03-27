@@ -31,7 +31,7 @@ stdenv.mkDerivation (finalAttrs: {
   inherit version src;
 
   patches = [
-    #./0001-always-show-vanadium.patch # TODO: not actually work
+    ./0001-always-show-vanadium.patch # TODO: test
     (fetchpatch {
       name = "Fix details screen shared axis transition grouping";
       url = "https://github.com/GrapheneOS/AppStore/pull/469.patch";
