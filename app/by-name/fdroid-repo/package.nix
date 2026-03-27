@@ -8,7 +8,7 @@
   appstore,
   droidspaces-oss,
   glimpse,
-  forkgram,
+  apk,
   meshtastic,
   microg-re,
   thunderbird,
@@ -146,8 +146,8 @@ callPackage ./fdroid-repo.nix {
       '';
     }
     {
-      apkPath = "${forkgram}/${forkgram.meta.mainApk}";
-      inherit (forkgram.meta) appId metadataYml;
+      apkPath = "${apk.forkgram}/${apk.forkgram.meta.mainApk}";
+      inherit (apk.forkgram.meta) appId metadataYml;
     }
     {
       appId = "com.geeksville.mesh";

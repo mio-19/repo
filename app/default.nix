@@ -662,6 +662,11 @@
           };
         });
 
+        apk = lib.filesystem.packagesFromDirectoryRecursive {
+          inherit (scope2) callPackage newScope;
+          directory = ./by-name-apk;
+        };
+
       };
       scope2 = lib.makeScope pkgs.newScope (self: scope1);
     in
