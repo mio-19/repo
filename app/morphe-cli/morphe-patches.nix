@@ -4,7 +4,6 @@
   fetchFromGitHub,
   gradle-packages,
   jdk21,
-  python3,
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
   morphe-patches-gradle-plugin,
