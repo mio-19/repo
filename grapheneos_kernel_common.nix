@@ -118,7 +118,7 @@ stdenvNoCC.mkDerivation {
       }
 
       ${extraBuildCommands}
-      ${lib.optionalString enableKSU ''
+      ${lib.optionalString enableKSU/*https://github.com/tiann/KernelSU/issues/2942#issuecomment-3969773467*/ ''
         # KernelSU v1.0.5 style tree injection shared across GrapheneOS kernels.
         rm -rf aosp/KernelSU
         cp -r ${kernelSUSrc} aosp/KernelSU
