@@ -1,8 +1,8 @@
 { fetchgit }:
 fetchgit {
-  url = "https://github.com/WildKernels/Wild_KSU.git";
-  rev = "v3.1.2";
-  hash = "sha256-nLqDOFQWOQWMvBAoEpCpkqibojuOeT3jdpYt0FhcCUc=";
+  url = "https://github.com/KernelSU-Next/KernelSU-Next.git";
+  rev = "690042684b17064f228278d35f51b54f5b6d0224";
+  hash = "sha256-LKtVO2CJ5h6tNJpSxlh2BNpuTEG5j5Gk5NEVQ4AyOEQ=";
   leaveDotGit = true;
   deepClone = true;
   # populate values that require us to use git and deepClone. By doing this in postFetch we
