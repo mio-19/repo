@@ -65,7 +65,7 @@ let
   #version = "${kernelPixel.date}-${builtins.substring 0 8 kernelPixel.version}";
 
   lindroidDrm = sources.lindroid_drm_loopback.src;
-  kernelSUSrc = import ./kernelSU.nix { inherit fetchgit; };
+  kernelSUSrc = import ./wildKSU.nix { inherit fetchgit; };
   kernelBuildEnv = buildFHSEnv {
     name = "${pname}-build-env";
     targetPkgs =

@@ -2,7 +2,7 @@
 fetchgit {
   url = "https://github.com/WildKernels/Wild_KSU.git";
   rev = "v3.1.2";
-  hash = "";
+  hash = "sha256-nLqDOFQWOQWMvBAoEpCpkqibojuOeT3jdpYt0FhcCUc=";
   leaveDotGit = true;
   deepClone = true;
   # populate values that require us to use git and deepClone. By doing this in postFetch we
@@ -19,7 +19,7 @@ fetchgit {
     substituteInPlace "$out/kernel/Kbuild" \
       --replace-fail \
       "KSU_VERSION_FALLBACK := 1" \
-      "KSU_VERSION_FALLBACK := $KSU_VERSION"
+      "KSU_VERSION_FALLBACK := $KSU_VERSION" \
       --replace-fail \
       "KSU_VERSION_TAG_FALLBACK := v0.0.1" \
       "KSU_VERSION_TAG_FALLBACK := v$KSU_VERSION_TAG"
