@@ -151,7 +151,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   passthru.signScript = mkSignScript {
     name = "sign-forkgram";
-    apkPath = "${forkgram}/forkgram.apk";
+    apkPath = "${forkgram}/${forkgram.meta.mainApk}";
     defaultOut = "forkgram-signed.apk";
   };
   meta = with pkgs.lib; {
@@ -159,5 +159,6 @@ gradle2nixBuilders.buildGradlePackage rec {
     homepage = "https://github.com/forkgram/TelegramAndroid";
     license = licenses.gpl2Plus;
     platforms = platforms.unix;
+    mainApk = "forkgram.apk";
   };
 }
