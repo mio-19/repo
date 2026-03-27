@@ -160,5 +160,17 @@ gradle2nixBuilders.buildGradlePackage rec {
     license = licenses.gpl2Plus;
     platforms = platforms.unix;
     mainApk = "forkgram.apk";
+    appId = "org.forkgram.messenger";
+    metadataYml = ''
+      Categories:
+        - Internet
+      License: GPL-2.0-or-later
+      SourceCode: https://github.com/forkgram/TelegramAndroid
+      IssueTracker: https://github.com/forkgram/TelegramAndroid/issues
+      AutoName: Forkgram
+      Summary: Telegram client fork
+      Description: |-
+        Forkgram is a Telegram Android client fork.
+    '';
   };
 }

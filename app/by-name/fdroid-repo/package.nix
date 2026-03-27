@@ -146,19 +146,8 @@ callPackage ./fdroid-repo.nix {
       '';
     }
     {
-      appId = "org.forkgram.messenger";
-      apkPath = "${forkgram}/forkgram.apk";
-      metadataYml = ''
-        Categories:
-          - Internet
-        License: GPL-2.0-or-later
-        SourceCode: https://github.com/forkgram/TelegramAndroid
-        IssueTracker: https://github.com/forkgram/TelegramAndroid/issues
-        AutoName: Forkgram
-        Summary: Telegram client fork
-        Description: |-
-          Forkgram is a Telegram Android client fork.
-      '';
+      apkPath = "${forkgram}/${forkgram.meta.mainApk}";
+      inherit (forkgram.meta) appId metadataYml;
     }
     {
       appId = "com.geeksville.mesh";
