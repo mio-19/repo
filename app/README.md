@@ -1,5 +1,7 @@
 # app
 
+note: lspatch patched app might need cleaning cache after updating
+
 broken but can compile:
 
 + koreader crash when tapping top area
