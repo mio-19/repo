@@ -75,7 +75,7 @@ buildDartApplication.override { dart = flutter335; } (finalAttrs: {
     useBwrap = false;
   };
 
-  gradleUpdateTask = ":app:assembleRelease";
+  gradleUpdateTask = ":assembleRelease :app:assembleRelease :home_widget:assembleRelease home_widget:extractReleaseAnnotations :home_widget:mapReleaseSourceSetPaths :home_widget:mapReleaseSourceSetPaths";
 
   dontDartBuild = true;
   dontDartInstall = true;
