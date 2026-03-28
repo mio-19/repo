@@ -1,0 +1,28 @@
+--- a/rdp-kotlin/build.gradle.kts
++++ b/rdp-kotlin/build.gradle.kts
+@@ -50,11 +50,23 @@
+     outputs.dir(jniDir)
+ 
+     workingDir = rustDir
+-    commandLine("cargo", "ndk",
++    environment(
++        "PATH",
++        listOfNotNull(
++            System.getenv("HAVEN_RUST_BIN"),
++            System.getenv("PATH"),
++        ).joinToString(":"),
++    )
++    environment("CARGO", System.getenv("HAVEN_CARGO") ?: "cargo")
++    environment("RUSTC", System.getenv("HAVEN_RUSTC") ?: "rustc")
++    commandLine(
++        System.getenv("HAVEN_CARGO") ?: "cargo",
++        "ndk",
+         "-o", jniDir.absolutePath,
+         "-t", "arm64-v8a",
+         "-t", "x86_64",
+-        "build", "--release")
++        "build", "--release",
++    )
+ }
+ 
+ // No publishing block needed — consumed via includeBuild() in settings.gradle.kts
