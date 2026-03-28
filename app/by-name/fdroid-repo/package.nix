@@ -57,6 +57,9 @@ let
 
     # cannot build on darwin due to nixpkgs didn't package android toolchain for darwin aarch64
     "kernelsu"
+
+    # build tool "qmake" runs on linux only
+    "firebird"
   ];
 
   excludedApkNames = [
