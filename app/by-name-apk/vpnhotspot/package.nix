@@ -4,7 +4,7 @@
   jdk21,
   gradle-packages,
   stdenv,
-  fetchFromGitHub,
+  fetchgit,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   git,
@@ -33,16 +33,13 @@ let
       pname = "vpnhotspot";
       version = "2.19.1";
 
-      src = fetchFromGitHub {
-        owner = "Mygod";
-        repo = "VPNHotspot";
-        tag = "v${finalAttrs.version}";
-        hash = "sha256-706n9cGGZYxB3KG7/MWbsTfICfHJpaXygihBs+MeaGA=";
+      src = fetchgit {
+        url = "https://codeberg.org/zinga/VPNHotspot.git";
+        rev = "db3dcedc3c2b40929e3e0c04fed457cf5003457f";
+        hash = "sha256-fCMve90QwT2K0axT1JHZ774ciko5+XSo4hZou+KfHQk=";
       };
 
-      patches = [ ./remove-google-services.patch ];
-
-      gradleBuildTask = ":mobile:assembleRelease";
+      gradleBuildTask = ":mobile:assembleFreedomRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
 
       mitmCache = gradle.fetchDeps {
@@ -70,17 +67,12 @@ let
       };
 
       postPatch = ''
-        substituteInPlace mobile/build.gradle.kts \
-          --replace-fail '    compileSdk = 36' '    compileSdk = 36
-    ndkVersion = "27.3.13750724"'
+            substituteInPlace mobile/build.gradle.kts \
+              --replace-fail '    compileSdk = 36' '    compileSdk = 36
+        ndkVersion = "27.3.13750724"'
 
-        while IFS= read -r gradleFile; do
-          substituteInPlace "$gradleFile" \
-            --replace-fail '27.0.12077973' '27.3.13750724'
-        done < <(grep -rlF '27.0.12077973' . || true)
-
-        substituteInPlace mobile/build.gradle.kts \
-          --replace-fail 'vcsInfo.include = true' 'vcsInfo.include = false'
+            substituteInPlace mobile/build.gradle.kts \
+              --replace-fail 'vcsInfo.include = true' 'vcsInfo.include = false'
       '';
 
       preConfigure = ''
@@ -92,7 +84,7 @@ let
       '';
 
       gradleFlags = [
-        "-xlintVitalRelease"
+        "-xlintVitalFreedomRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk21}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
@@ -101,13 +93,13 @@ let
 
       installPhase = ''
         runHook preInstall
-        install -Dm644 mobile/build/outputs/apk/release/mobile-release-unsigned.apk "$out/vpnhotspot.apk"
+        install -Dm644 mobile/build/outputs/apk/freedom/release/mobile-freedom-release-unsigned.apk "$out/vpnhotspot.apk"
         runHook postInstall
       '';
 
       meta = with lib; {
         description = "Android VPN tethering and hotspot helper";
-        homepage = "https://github.com/Mygod/VPNHotspot";
+        homepage = "https://codeberg.org/zinga/VPNHotspot";
         license = licenses.asl20;
         platforms = platforms.unix;
       };
@@ -118,19 +110,15 @@ mk-apk-package {
   mainApk = "vpnhotspot.apk";
   signScriptName = "sign-vpnhotspot";
   fdroid = {
-    appId = "be.mygod.vpnhotspot";
+    appId = "be.mygod.vpnhotspot_foss";
     metadataYml = ''
       Categories:
         - Connectivity
         - VPN & Proxy
       License: Apache-2.0
-      AuthorName: Mygod Studio
-      AuthorEmail: contact-vpnhotspot@mygod.be
-      WebSite: https://mygod.be/
-      SourceCode: https://github.com/Mygod/VPNHotspot
-      IssueTracker: https://github.com/Mygod/VPNHotspot/issues
-      Changelog: https://github.com/Mygod/VPNHotspot/releases
-      Donate: https://mygod.be/donate/
+      AuthorName: zinga
+      SourceCode: https://codeberg.org/zinga/VPNHotspot
+      IssueTracker: https://codeberg.org/zinga/VPNHotspot/issues
       AutoName: VPN Hotspot
       Summary: Share VPN connections over hotspot and tethering
       Description: |-
@@ -138,9 +126,9 @@ mk-apk-package {
         USB tethering, Bluetooth tethering, and related Android
         networking paths.
 
-        This package is built from source and follows the F-Droid
-        packaging approach, with Google services removed for a fully
-        libre build.
+        This package is built from the same fork and freedom flavor
+        used by F-Droid, while keeping this repo's newer NDK and CMake
+        toolchain overrides for reproducible native builds.
       RequiresRoot: true
     '';
   };
