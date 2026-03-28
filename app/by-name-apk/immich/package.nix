@@ -312,4 +312,24 @@ mk-apk-package {
   inherit appPackage;
   mainApk = "immich.apk";
   signScriptName = "sign-immich";
+  fdroid = {
+    appId = "app.alextran.immich";
+    metadataYml = ''
+      Categories:
+        - Cloud Storage & File Sync
+        - Multimedia
+        - System
+      License: AGPL-3.0-only
+      SourceCode: https://github.com/immich-app/immich
+      IssueTracker: https://github.com/immich-app/immich/issues
+      Translation: https://hosted.weblate.org/projects/immich/
+      Changelog: https://github.com/immich-app/immich/releases
+      AutoName: Immich
+      Summary: Photo and video backup app
+      Description: |-
+        Immich is a self-hosted photo and video backup application.
+
+        This package builds the Android mobile app from source.
+    '';
+  };
 }
