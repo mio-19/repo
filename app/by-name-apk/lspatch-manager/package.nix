@@ -1,16 +1,9 @@
 {
-  callPackage,
   mk-apk-package,
-  androidSdkBuilder,
+  lspatch,
 }:
 let
-  appPackage =
-    let
-      lspatch = callPackage ../../by-name/lspatch/common.nix {
-        inherit androidSdkBuilder;
-      };
-    in
-    lspatch.manager;
+  appPackage = lspatch.manager;
 in
 mk-apk-package {
   inherit appPackage;
