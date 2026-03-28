@@ -57,10 +57,6 @@ let
   ];
 
   excludedApkNames = [
-    # ndk from nixpkgs: error: Android NDK doesn't support building on arm64-apple-darwin, as far as we know
-    # actually ndk from android-nixpkgs run fine on aarch64 darwin with rosetta2 with x86_64 ndk.
-    # ndk failed to build on x86_64 linux after recent nixpkgs bump. last working: 9cf7092bdd603554bd8b63c216e8943cf9b12512 first broken: 4724d5647207377bede08da3212f809cbd94a648
-    "kernelsu"
   ];
 
   fdroidApks = lib.filterAttrs (
