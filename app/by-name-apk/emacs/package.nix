@@ -21,7 +21,7 @@ let
         s.platform-tools
         s.platforms-android-36
         s.build-tools-36-0-0
-        s.ndk-27-3-13750724
+        s.ndk-25-2-9519653
       ]);
 
       versionCode = "310050029";
@@ -80,7 +80,7 @@ let
           --with-gnutls=ifavailable \
           --without-android-debug \
           --with-shared-user-id=com.termux \
-          ANDROID_CC="${androidSdk}/share/android-sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android${minSdk}-clang" \
+          ANDROID_CC="${androidSdk}/share/android-sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android${minSdk}-clang" \
           SDK_BUILD_TOOLS="${androidSdk}/share/android-sdk/build-tools/36.0.0"
 
         runHook postConfigure
