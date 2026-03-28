@@ -2,7 +2,6 @@
   pkgs,
   androidSdkBuilder,
   gradle2nixBuilders,
-  forkgram,
   mkSignScript,
 }:
 
@@ -151,7 +150,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   passthru.signScript = mkSignScript {
     name = "sign-forkgram";
-    apkPath = "${forkgram}/${forkgram.meta.mainApk}";
+    apkPath = "${placeholder "out"}/forkgram.apk";
     defaultOut = "forkgram-signed.apk";
   };
   meta = with pkgs.lib; {

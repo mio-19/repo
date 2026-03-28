@@ -248,6 +248,10 @@ buildDartApplication.override { dart = flutter335; } (finalAttrs: {
         cp -LR "$HOME_WIDGET_DIR" .dart-patched/home_widget
         chmod -R u+w .dart-patched/home_widget
         substituteInPlace .dart-patched/home_widget/android/build.gradle \
+          --replace-fail '    implementation "androidx.glance:glance-appwidget:1.+"' \
+            '    implementation "androidx.glance:glance-appwidget:1.2.0-rc01"' \
+          --replace-fail '    implementation "androidx.work:work-runtime-ktx:2.+"' \
+            '    implementation "androidx.work:work-runtime-ktx:2.11.2"' \
           --replace-fail '    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+"' \
             "    implementation \"org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+\"
     compileOnly \"io.flutter:flutter_embedding_release:1.0.0-$flutter_engine_version\""
