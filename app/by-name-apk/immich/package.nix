@@ -22,7 +22,7 @@ let
         s.build-tools-35-0-0
         s.build-tools-36-0-0
         s.ndk-29-0-14206865
-        s.cmake-3-22-1
+        s.cmake-3-31-6
       ]);
 
       gradle =
@@ -156,7 +156,7 @@ let
 
         echo "sdk.dir=${androidSdk}/share/android-sdk" > android/local.properties
         echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/29.0.14206865" >> android/local.properties
-        echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.22.1" >> android/local.properties
+        echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6" >> android/local.properties
         echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
         echo "flutter.versionName=2.6.1" >> android/local.properties
         echo "flutter.versionCode=3039" >> android/local.properties

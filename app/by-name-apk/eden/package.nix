@@ -25,7 +25,7 @@ let
         # Boost.Process/Asio native code on std::aligned_alloc with the newer
         # libc++ sysroot, so this stays on the baseline NDK for now.
         s.ndk-28-2-13676358
-        s.cmake-3-22-1
+        s.cmake-3-31-6
       ]);
 
       gradle =
@@ -79,7 +79,8 @@ let
         substituteInPlace src/android/app/build.gradle.kts \
           --replace-fail 'val autoVersion = (((System.currentTimeMillis() / 1000) - 1451606400) / 10).toInt()' \
             'val autoVersion = 202603280' \
-          --replace-fail 'versionName = getGitVersion()' 'versionName = "${finalAttrs.version}"'
+          --replace-fail 'versionName = getGitVersion()' 'versionName = "${finalAttrs.version}"' \
+          --replace-fail 'version = "3.22.1"' 'version = "3.31.6"'
       '';
 
       preConfigure = ''
@@ -89,7 +90,7 @@ let
         cat > src/android/local.properties <<EOF
         sdk.dir=${androidSdk}/share/android-sdk
         ndk.dir=${androidSdk}/share/android-sdk/ndk/28.2.13676358
-        cmake.dir=${androidSdk}/share/android-sdk/cmake/3.22.1
+        cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6
         EOF
 
         cd src/android

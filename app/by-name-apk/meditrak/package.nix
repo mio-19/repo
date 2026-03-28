@@ -23,7 +23,7 @@ let
         # NDK for JNI/CMake build; version pinned in set-ndk-version.patch.
         s.ndk-27-3-13750724
         # CMake version required by app/build.gradle externalNativeBuild.
-        s.cmake-3-22-1
+        s.cmake-3-31-6
       ]);
 
       # SQLite amalgamation required by app/src/main/cpp/CMakeLists.txt.
@@ -64,6 +64,9 @@ let
         # block is skipped (it checks: if NOT EXISTS <dir>, then download).
         mkdir -p app/src/main/cpp/sqlite3
         cd app/src/main/cpp/sqlite3 && ${unzip}/bin/unzip -q ${sqliteAmalgamationZip} && cd -
+
+        substituteInPlace app/build.gradle \
+          --replace-fail "            version '3.22.1'" "            version '3.31.6'"
       '';
 
       gradleBuildTask = ":app:assembleRelease";
@@ -101,6 +104,7 @@ let
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+        echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6" >> local.properties
       '';
 
       gradleFlags = [
