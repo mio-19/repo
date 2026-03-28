@@ -8,7 +8,6 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  ...
 }:
 let
   inherit (sources.lineage_glimpse)

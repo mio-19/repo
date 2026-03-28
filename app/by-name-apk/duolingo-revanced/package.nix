@@ -6,7 +6,6 @@
   revanced-cli,
   revanced-patches,
   apkeditor,
-  ...
 }:
 let
   appPackage =

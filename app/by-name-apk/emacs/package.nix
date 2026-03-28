@@ -12,7 +12,6 @@
   ncurses,
   zip,
   which,
-  ...
 }:
 let
   appPackage =

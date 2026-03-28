@@ -11,7 +11,6 @@
   gradle-packages,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  ...
 }:
 let
   appPackage =

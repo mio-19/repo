@@ -7,7 +7,6 @@
   fetchFromGitHub,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  ...
 }:
 let
   appPackage =

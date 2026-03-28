@@ -10,7 +10,6 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  ...
 }:
 let
   inherit (sources.grapheneos_appstore)

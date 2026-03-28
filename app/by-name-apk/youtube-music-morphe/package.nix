@@ -5,7 +5,6 @@
   fetchurl,
   morphe-cli,
   morphe-patches,
-  ...
 }:
 let
   appPackage =

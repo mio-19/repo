@@ -5,7 +5,6 @@
   fetchurl,
   revanced-cli,
   revanced-patches,
-  ...
 }:
 let
   appPackage =

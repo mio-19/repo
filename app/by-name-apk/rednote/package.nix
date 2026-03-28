@@ -5,7 +5,6 @@
   fetchurl,
   jdk21,
   lspatch-cli,
-  ...
 }:
 let
   appPackage =

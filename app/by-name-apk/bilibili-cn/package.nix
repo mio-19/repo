@@ -6,7 +6,6 @@
   jdk21,
   lspatch-cli,
   biliroaming,
-  ...
 }:
 let
   appPackage =

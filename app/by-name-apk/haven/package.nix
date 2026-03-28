@@ -10,7 +10,6 @@
   androidSdkBuilder,
   git,
   python313,
-  ...
 }:
 let
   appPackage =

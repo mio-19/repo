@@ -10,7 +10,6 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   fetchpatch,
-  ...
 }:
 let
   appPackage =

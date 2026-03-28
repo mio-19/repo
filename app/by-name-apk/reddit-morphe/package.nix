@@ -9,7 +9,6 @@
   zip,
   unzip,
   androidSdkBuilder,
-  ...
 }:
 let
   appPackage =

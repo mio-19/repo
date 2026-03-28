@@ -28,7 +28,6 @@
   buildPackages,
   bash,
   buildFHSEnv,
-  ...
 }:
 let
   appPackage =

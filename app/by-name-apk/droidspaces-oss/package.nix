@@ -10,7 +10,6 @@
   androidSdkBuilder,
   pkgsCross,
   applyPatches,
-  ...
 }:
 let
   appPackage =

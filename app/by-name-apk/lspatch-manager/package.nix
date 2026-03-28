@@ -2,7 +2,6 @@
   callPackage,
   mk-apk-package,
   androidSdkBuilder,
-  ...
 }:
 let
   appPackage =

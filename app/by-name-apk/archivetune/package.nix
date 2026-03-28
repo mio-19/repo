@@ -10,7 +10,6 @@
   unzip,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  ...
 }:
 let
   appPackage =

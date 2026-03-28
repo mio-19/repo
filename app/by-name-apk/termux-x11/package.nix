@@ -13,7 +13,6 @@
   bison,
   python3,
   gcc,
-  ...
 }:
 let
   appPackage =

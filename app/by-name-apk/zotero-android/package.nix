@@ -10,7 +10,6 @@
   androidSdkBuilder,
   git,
   fetchpatch,
-  ...
 }:
 let
   appPackage =

@@ -13,7 +13,6 @@
   cmake,
   gnumake,
   python3,
-  ...
 }:
 let
   appPackage =

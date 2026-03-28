@@ -13,7 +13,6 @@
   zip,
   unzip,
   fetchpatch,
-  ...
 }:
 let
   appPackage =
