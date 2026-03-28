@@ -18,43 +18,8 @@ let
     s.platforms-android-36
     s.build-tools-36-0-0
     s.ndk-29-0-13113456
-    s.cmake-3-31-1
+    s.cmake-3-31-6
   ]);
-
-  androidSdkForBuild = runCommand "lspatch-android-sdk" { } ''
-    mkdir -p "$out/share/android-sdk"
-    for entry in ${androidSdk}/share/android-sdk/*; do
-      name="$(basename "$entry")"
-      if [ "$name" != "cmake" ]; then
-        ln -s "$entry" "$out/share/android-sdk/$name"
-      fi
-    done
-
-    mkdir -p "$out/share/android-sdk/cmake"
-    for entry in ${androidSdk}/share/android-sdk/cmake/*; do
-      name="$(basename "$entry")"
-      if [ "$name" != "3.31.1" ]; then
-        ln -s "$entry" "$out/share/android-sdk/cmake/$name"
-      fi
-    done
-
-    mkdir -p "$out/share/android-sdk/cmake/3.31.1"
-    for entry in ${androidSdk}/share/android-sdk/cmake/3.31.1/*; do
-      name="$(basename "$entry")"
-      if [ "$name" != "bin" ]; then
-        ln -s "$entry" "$out/share/android-sdk/cmake/3.31.1/$name"
-      fi
-    done
-
-    mkdir -p "$out/share/android-sdk/cmake/3.31.1/bin"
-    for entry in ${androidSdk}/share/android-sdk/cmake/3.31.1/bin/*; do
-      name="$(basename "$entry")"
-      if [ "$name" != "ninja" ]; then
-        ln -s "$entry" "$out/share/android-sdk/cmake/3.31.1/bin/$name"
-      fi
-    done
-    ln -s ${ninja}/bin/ninja "$out/share/android-sdk/cmake/3.31.1/bin/ninja"
-  '';
 
   gradle =
     (gradle-packages.mkGradle {
@@ -99,10 +64,10 @@ let
 
     env = {
       JAVA_HOME = jdk21;
-      ANDROID_HOME = "${androidSdkForBuild}/share/android-sdk";
-      ANDROID_SDK_ROOT = "${androidSdkForBuild}/share/android-sdk";
-      ANDROID_NDK_ROOT = "${androidSdkForBuild}/share/android-sdk/ndk/29.0.13113456";
-      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdkForBuild}/share/android-sdk/build-tools/36.0.0/aapt2";
+      ANDROID_HOME = "${androidSdk}/share/android-sdk";
+      ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+      ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.13113456";
+      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     };
 
     preConfigure = ''
@@ -123,8 +88,8 @@ let
       "--no-daemon"
       "-Dorg.gradle.java.installations.auto-download=false"
       "-Dorg.gradle.java.installations.paths=${jdk21}"
-      "-Dandroid.aapt2FromMavenOverride=${androidSdkForBuild}/share/android-sdk/build-tools/36.0.0/aapt2"
-      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdkForBuild}/share/android-sdk/build-tools/36.0.0/aapt2"
+      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
     ];
 
     installPhase = ''
