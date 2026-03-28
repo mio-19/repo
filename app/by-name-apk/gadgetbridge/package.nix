@@ -21,7 +21,7 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
-        s.build-tools-36-0-0
+        s.build-tools-36-1-0
       ]);
 
       gradle =
@@ -75,12 +75,15 @@ let
         JAVA_HOME = jdk21;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
         GADGETBRIDGE_VERSION_CODE = "246";
         GADGETBRIDGE_GIT_HASH_SHORT = "release";
       };
 
       postPatch = ''
+        substituteInPlace app/build.gradle \
+          --replace-fail "    buildToolsVersion = '36.0.0'" "    buildToolsVersion = '36.1.0'"
+
         rm -f external/jerryscript/tools/babel/package.json
       '';
 
@@ -100,8 +103,8 @@ let
         "-xlintVitalMainlineRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk21}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
       ];
 
       installPhase = ''
