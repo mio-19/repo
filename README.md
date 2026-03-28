@@ -104,24 +104,15 @@ keytool -genkeypair -v \
 ### Re-sign the APK with your key
 
 ```zsh
-nix build .#forkgram.signScript -o sign-forkgram
-./sign-forkgram/bin/sign-forkgram my-release-key.jks \
-  --ks-pass password \
-  --out forkgram-signed.apk
-```
-
-Or with `nix run`:
-
-```zsh
-nix run .#forkgram.signScript -- \
+nix run .#apk.forkgram.signScript -- \
   my-release-key.jks \
   --ks-pass password \
   --out forkgram-signed.apk
-nix run -L .#zotero-android.signScript -- \
+nix run -L .#apk.zotero-android.signScript -- \
   my-release-key.jks \
   --ks-pass password \
   --out zotero-signed.apk
-NIXPKGS_ALLOW_UNFREE=1 nix run --impure .#meshtastic.signScript -- \
+NIXPKGS_ALLOW_UNFREE=1 nix run --impure .#apk.meshtastic.signScript -- \
   my-release-key.jks \
   --ks-pass password \
   --out meshtastic-signed.apk

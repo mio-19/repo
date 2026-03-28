@@ -6,7 +6,7 @@ let
       stdenv,
       fetchurl,
       jdk21,
-      lspatchCli,
+      lspatch-cli,
     }:
     let
       rednoteApk = fetchurl {
@@ -42,7 +42,7 @@ let
 
         cp "${rednoteApk}" "$workdir/rednote.apk"
 
-        "${jdk21}/bin/java" -jar ${lspatchCli}/lspatch.jar \
+        "${jdk21}/bin/java" -jar ${lspatch-cli}/lspatch.jar \
           --force \
           --output "$workdir/out" \
           --embed "${rednoteHelper}" \

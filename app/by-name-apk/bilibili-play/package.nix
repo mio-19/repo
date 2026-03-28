@@ -7,7 +7,7 @@ let
       fetchurl,
       apkeditor,
       jdk21,
-      lspatchCli,
+      lspatch-cli,
       biliroaming,
     }:
     let
@@ -45,7 +45,7 @@ let
 
         APKEditor m -i "$workdir/bilibili.xapk" -o "$workdir/bilibili-base.apk"
 
-        "${jdk21}/bin/java" -jar ${lspatchCli}/lspatch.jar \
+        "${jdk21}/bin/java" -jar ${lspatch-cli}/lspatch.jar \
           --force \
           --output "$workdir/out" \
           --embed "${biliroaming}/biliroaming.apk" \

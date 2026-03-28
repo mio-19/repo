@@ -100,57 +100,32 @@
         multidexlib2-src = sources.morphe_multidexlib2.src;
       };
 
-      packageScope = lib.fix (
-        self:
-        let
-          apkScope = lib.makeScope pkgs.newScope (
-            _:
-            self
-            // helperScope
-            // {
-              lspatchCli = self."lspatch-cli";
-            }
-          );
+      apkScope = lib.makeScope pkgs.newScope (_: byName // helperScope);
 
-          apk = lib.filesystem.packagesFromDirectoryRecursive {
-            inherit (apkScope) callPackage;
-            directory = ./by-name-apk;
-          };
+      apk = lib.filesystem.packagesFromDirectoryRecursive {
+        inherit (apkScope) callPackage;
+        directory = ./by-name-apk;
+      };
 
-          byNameScope = lib.makeScope pkgs.newScope (
-            _:
-            self
-            // helperScope
-            // {
-              inherit apk;
-            }
-          );
-
-          byName = lib.filesystem.packagesFromDirectoryRecursive {
-            inherit (byNameScope)
-              callPackage
-              newScope
-              ;
-            directory = ./by-name;
-          };
-        in
-        helperScope // apk // byName
+      byNameScope = lib.makeScope pkgs.newScope (
+        _:
+        helperScope
+        // {
+          inherit apk;
+        }
       );
+
+      byName = lib.filesystem.packagesFromDirectoryRecursive {
+        inherit (byNameScope)
+          callPackage
+          newScope
+          ;
+        directory = ./by-name;
+      };
     in
     {
-      packages = builtins.removeAttrs packageScope [
-        "androidSdkBuilder"
-        "gradle2nixBuilders"
-        "mkSignScript"
-        "sources"
-        "apkeditor"
-        "apktool-src"
-        "multidexlib2-src"
-        "callPackage"
-        "newScope"
-        "overrideScope"
-        "packages"
-        "mk-apk-package"
-      ];
+      packages = byName // {
+        inherit apk;
+      };
     };
 }
