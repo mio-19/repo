@@ -241,7 +241,7 @@ let
       description = "TI-Nspire emulator for Android";
       homepage = "https://github.com/nspire-emus/firebird";
       license = licenses.gpl3Only;
-      platforms = platforms.linux;
+      platforms = platforms.unix;
     };
   });
 in
