@@ -30,6 +30,7 @@ let
 
       version = "v3_openjdk-258a8488";
 
+      # https://github.com/AngelAuraMC/angelauramc-openjdk-build/actions
       jre8Pojav = fetchurl {
         name = "jre8-pojav.zip";
         url = "https://web.archive.org/web/20260324115718/https://productionresultssa10.blob.core.windows.net/actions-results/0e976468-66eb-48c5-ab72-9fcea72b1aa3/workflow-job-run-cc794f90-74e0-5bcd-904b-e0ffd336b256/artifacts/557d0d369aa1ac3c31cbb7b7cf155ecc92686aa06b1541bb8645b002b7cf7541.zip?rscd=attachment%3B+filename%3D%22jre8-pojav.zip%22&rsct=application%2Fzip&se=2026-03-24T12%3A07%3A05Z&sig=IV6QzxFyOk6nSVI5ci5frSp3knhRuuQz0Z9tUl1RQRA%3D&ske=2026-03-24T15%3A49%3A52Z&skoid=ca7593d4-ee42-46cd-af88-8b886a2f84eb&sks=b&skt=2026-03-24T11%3A49%3A52Z&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skv=2025-11-05&sp=r&spr=https&sr=b&st=2026-03-24T11%3A57%3A00Z&sv=2025-11-05";
@@ -38,7 +39,7 @@ let
 
       jre17Pojav = fetchurl {
         name = "jre17-pojav.zip";
-        url = "https://web.archive.org/web/20260324115727/https://productionresultssa1.blob.core.windows.net/actions-results/14cf2225-a217-44e1-964f-b68eee9450ba/workflow-job-run-68da9bab-66f4-5a5b-8393-e7b46f104935/artifacts/c428f5f9b02e4a2ede0f97efdfa5f3ce28531f3cf5cef779324c026e24bd79a2.zip?rscd=attachment%3B+filename%3D%22jre17-pojav.zip%22&rsct=application%2Fzip&se=2026-03-24T12%3A06%3A48Z&sig=YC3lf0CrLcOQoPp2OjxWOTOXIuQIQ32YTG%2Bxz5K17o8%3D&ske=2026-03-24T12%3A58%3A44Z&skoid=ca7593d4-ee42-46cd-af88-8b886a2f84eb&sks=b&skt=2026-03-24T08%3A58%3A44Z&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skv=2025-11-05&sp=r&spr=https&sr=b&st=2026-03-24T11%3A56%3A43Z&sv=2025-11-05";
+        url = "https://web.archive.org/web/20260328022223if_/https://productionresultssa1.blob.core.windows.net/actions-results/14cf2225-a217-44e1-964f-b68eee9450ba/workflow-job-run-68da9bab-66f4-5a5b-8393-e7b46f104935/artifacts/c428f5f9b02e4a2ede0f97efdfa5f3ce28531f3cf5cef779324c026e24bd79a2.zip?rscd=attachment%3B+filename%3D%22jre17-pojav.zip%22&rsct=application%2Fzip&se=2026-03-28T02%3A32%3A09Z&sig=4Dbuy9%2FSx%2BYLmFIhb6REbi4zM0c43NG%2F4sWed%2BnYdiE%3D&ske=2026-03-28T04%3A11%3A45Z&skoid=ca7593d4-ee42-46cd-af88-8b886a2f84eb&sks=b&skt=2026-03-28T00%3A11%3A45Z&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skv=2025-11-05&sp=r&spr=https&sr=b&st=2026-03-28T02%3A22%3A04Z&sv=2025-11-05";
         hash = "sha256-v3JD1X+xWZ/jAa2OMdtdih6sRBqWP/zTf8ITnPTLNP8=";
       };
 
