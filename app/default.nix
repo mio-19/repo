@@ -124,6 +124,6 @@
       };
     in
     {
-      packages = lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk;
+      packages = byName // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk;
     };
 }
