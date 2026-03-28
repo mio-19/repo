@@ -22,7 +22,7 @@ let
         s.build-tools-36-0-0
         # Flutter 3.38.x defaults to ndkVersion = "28.2.13676358" in FlutterExtension.kt; override below
         s.ndk-29-0-14206865
-        s.cmake-3-22-1
+        s.cmake-3-31-6
       ]);
 
       gradle =
@@ -134,7 +134,7 @@ let
         mkdir -p "$ANDROID_USER_HOME"
         # local.properties is read by settings.gradle.kts (flutter.sdk) and AGP (sdk.dir).
         echo "sdk.dir=${androidSdk}/share/android-sdk" > android/local.properties
-        echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.22.1" >> android/local.properties
+        echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6" >> android/local.properties
         echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
       '';
 
