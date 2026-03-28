@@ -31,13 +31,16 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "zotero-android";
-      version = "1.0.0-231";
+      version = "1.0.0-233";
 
       src = fetchFromGitHub {
         owner = "zotero";
         repo = "zotero-android";
+        # Upstream has multiple tag naming schemes. Check the tags page sorted by
+        # time, not raw version ordering:
+        # https://github.com/zotero/zotero-android/tags
         tag = finalAttrs.version;
-        hash = "sha256-E/urUZoKLpXtL/HzI17w0Cs4ny5qjwfxzfQm8C5l5ZE=";
+        hash = "sha256-KtvngKnb/bMjBqCp3eLbZTDvFy/ugzyCB4I6RI/5Noo=";
       };
 
       patches = [

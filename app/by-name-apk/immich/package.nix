@@ -34,14 +34,14 @@ let
     in
     buildDartApplication.override { dart = flutter335; } (finalAttrs: {
       pname = "immich";
-      version = "2.6.1+3039";
+      version = "2.6.3+3041";
 
       src = fetchFromGitHub {
         owner = "immich-app";
         repo = "immich";
-        tag = "v2.6.1";
+        tag = "v2.6.3";
         fetchSubmodules = true;
-        hash = "sha256-DlpjmR3p+crBwBjU589t6WMzhAwSsZiviPsT2Sp7mk4=";
+        hash = "sha256-2vkHeTUPezEf6Qz4bVmln7unTIVuGdzXPTjr6vnW0NE=";
       };
 
       sourceRoot = "source/mobile";
