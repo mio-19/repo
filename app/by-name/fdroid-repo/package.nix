@@ -36,7 +36,7 @@ let
     # [CXX1429] error when building with ndkBuild using /nix/var/nix/builds/nix-38269-3239929316/source/termux-shared/src/main/cpp/Android.mk: ERROR: Unknown host CPU architecture: arm64
     "nix-on-droid"
 
-    # cannot build on darwin due to stdenv
+    # cannot build on darwin due to fhs
     "koreader"
 
     # can build locally but not on garnix
