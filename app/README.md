@@ -9,6 +9,8 @@ broken but can compile:
 + meshcore-open black screen
 + emacs crash when launching
 + kernelsu cannot communicate with the kernel because of the need to change KSU_EXPECTED_HASH
++ immich white screen
++ rednote crashed
 
 slightly broken:
 
