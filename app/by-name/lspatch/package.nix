@@ -103,8 +103,6 @@ let
       ANDROID_SDK_ROOT = "${androidSdkForBuild}/share/android-sdk";
       ANDROID_NDK_ROOT = "${androidSdkForBuild}/share/android-sdk/ndk/29.0.13113456";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdkForBuild}/share/android-sdk/build-tools/36.0.0/aapt2";
-      ANDROID_USER_HOME = "$(pwd)/.android";
-      GRADLE_USER_HOME = "$(pwd)/.gradle";
     };
 
     preConfigure = ''
@@ -112,25 +110,11 @@ let
       export GRADLE_USER_HOME="$PWD/.gradle"
       mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"
 
-      sdkRoot="$PWD/android-sdk"
-      mkdir -p "$sdkRoot/build-tools" "$sdkRoot/platforms" "$sdkRoot/ndk" "$sdkRoot/cmake"
-      cp -a "${androidSdkForBuild}/share/android-sdk/build-tools/36.0.0" "$sdkRoot/build-tools/"
-      cp -a "${androidSdkForBuild}/share/android-sdk/cmake/3.31.1" "$sdkRoot/cmake/"
-      ln -s "${androidSdkForBuild}/share/android-sdk/platforms/android-36" "$sdkRoot/platforms/android-36"
-      ln -s "${androidSdkForBuild}/share/android-sdk/platform-tools" "$sdkRoot/platform-tools"
-      ln -s "${androidSdkForBuild}/share/android-sdk/ndk/29.0.13113456" "$sdkRoot/ndk/29.0.13113456"
-      cp -a "${androidSdkForBuild}/share/android-sdk/licenses" "$sdkRoot/"
-
-      export ANDROID_HOME="$sdkRoot"
-      export ANDROID_SDK_ROOT="$sdkRoot"
-      export ANDROID_NDK_ROOT="$sdkRoot/ndk/29.0.13113456"
-      export ANDROID_AAPT2_FROM_MAVEN_OVERRIDE="$sdkRoot/build-tools/36.0.0/aapt2"
-
-      echo "sdk.dir=$sdkRoot" > local.properties
+      echo "sdk.dir=$ANDROID_HOME" > local.properties
       cat >> gradle.properties <<EOF
       org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g
-      android.aapt2FromMavenOverride=$sdkRoot/build-tools/36.0.0/aapt2
-      org.gradle.project.android.aapt2FromMavenOverride=$sdkRoot/build-tools/36.0.0/aapt2
+      android.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/36.0.0/aapt2
+      org.gradle.project.android.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/36.0.0/aapt2
       EOF
     '';
 
