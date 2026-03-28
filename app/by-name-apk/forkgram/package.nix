@@ -12,6 +12,7 @@ let
     s.platforms-android-35
     s.build-tools-35-0-0
     s.ndk-21-4-7075529
+    # ndk-23-2-8568313 could not be realized under the pinned Android SDK packaging because auto-patchelf could not satisfy host libs like libsqlite3.so.0, libgdbm.so.3, libssl.so.1.0.0, and libffi.so.6.
   ]);
 in
 gradle2nixBuilders.buildGradlePackage rec {
