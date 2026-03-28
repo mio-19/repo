@@ -1,18 +1,19 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  jdk17,
+  gradle-packages,
+  stdenv,
+  fetchFromGitHub,
+  apksigner,
+  writableTmpDirAsHomeHook,
+  androidSdkBuilder,
+  pkgsCross,
+  applyPatches,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      jdk17,
-      gradle-packages,
-      stdenv,
-      fetchFromGitHub,
-      apksigner,
-      writableTmpDirAsHomeHook,
-      androidSdkBuilder,
-      pkgsCross,
-      applyPatches,
-    }:
+  appPackage =
     let
       version = "5.8.1";
 
@@ -186,10 +187,9 @@ let
         license = licenses.gpl3Only;
         platforms = platforms.unix;
       };
-    })
-  ) { };
+    });
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "droidspaces-oss.apk";
   signScriptName = "sign-droidspaces-oss";

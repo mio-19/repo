@@ -1,17 +1,18 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  jdk21,
+  gradle-packages,
+  stdenv,
+  fetchFromGitHub,
+  apksigner,
+  writableTmpDirAsHomeHook,
+  androidSdkBuilder,
+  fetchpatch,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      jdk21,
-      gradle-packages,
-      stdenv,
-      fetchFromGitHub,
-      apksigner,
-      writableTmpDirAsHomeHook,
-      androidSdkBuilder,
-      fetchpatch,
-    }:
+  appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -120,10 +121,9 @@ let
         license = licenses.asl20;
         platforms = platforms.unix;
       };
-    })
-  ) { };
+    });
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "thunderbird.apk";
   signScriptName = "sign-thunderbird";

@@ -1,14 +1,15 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  stdenv,
+  fetchurl,
+  revanced-cli,
+  revanced-patches,
+  apkeditor,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      stdenv,
-      fetchurl,
-      revanced-cli,
-      revanced-patches,
-      apkeditor,
-    }:
+  appPackage =
     let
       duolingoXapk = fetchurl {
         # APKPure page: https://apkpure.com/duolingo-language-lessons/com.duolingo/download/6.54.5
@@ -60,10 +61,9 @@ let
         homepage = "https://github.com/ReVanced/revanced-patches";
         platforms = platforms.unix;
       };
-    }
-  ) { };
+    };
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "duolingo-revanced.apk";
   signScriptName = "sign-duolingo-revanced";

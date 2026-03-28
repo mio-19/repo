@@ -1,17 +1,18 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  buildDartApplication,
+  runCommand,
+  fetchFromGitHub,
+  flutter338,
+  jdk17_headless,
+  gradle-packages,
+  writableTmpDirAsHomeHook,
+  androidSdkBuilder,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      buildDartApplication,
-      runCommand,
-      fetchFromGitHub,
-      flutter338,
-      jdk17_headless,
-      gradle-packages,
-      writableTmpDirAsHomeHook,
-      androidSdkBuilder,
-    }:
+  appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -179,10 +180,9 @@ let
         license = licenses.mit;
         platforms = platforms.unix;
       };
-    })
-  ) { };
+    });
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "meshcore-open.apk";
   signScriptName = "sign-meshcore-open";

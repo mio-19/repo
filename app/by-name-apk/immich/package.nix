@@ -1,19 +1,20 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  buildDartApplication,
+  runCommand,
+  fetchFromGitHub,
+  flutter335,
+  git,
+  jdk17_headless,
+  python3,
+  gradle-packages,
+  writableTmpDirAsHomeHook,
+  androidSdkBuilder,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      buildDartApplication,
-      runCommand,
-      fetchFromGitHub,
-      flutter335,
-      git,
-      jdk17_headless,
-      python3,
-      gradle-packages,
-      writableTmpDirAsHomeHook,
-      androidSdkBuilder,
-    }:
+  appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -306,10 +307,9 @@ let
         license = licenses.agpl3Only;
         platforms = platforms.unix;
       };
-    })
-  ) { };
+    });
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "immich.apk";
   signScriptName = "sign-immich";

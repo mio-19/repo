@@ -1,16 +1,19 @@
-{ callPackage, ... }:
+{
+  callPackage,
+  mk-apk-package,
+  androidSdkBuilder,
+  ...
+}:
 let
-  appPackage = callPackage (
-    { callPackage, androidSdkBuilder, ... }:
+  appPackage =
     let
       lspatch = callPackage ../../by-name/lspatch/common.nix {
         inherit androidSdkBuilder;
       };
     in
-    lspatch.manager
-  ) { };
+    lspatch.manager;
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "lspatch-manager.apk";
   signScriptName = "sign-lspatch-manager";

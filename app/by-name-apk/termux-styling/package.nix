@@ -1,17 +1,18 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  jdk21,
+  gradle-packages,
+  stdenv,
+  fetchFromGitHub,
+  apksigner,
+  writableTmpDirAsHomeHook,
+  androidSdkBuilder,
+  fetchpatch,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      jdk21,
-      gradle-packages,
-      stdenv,
-      fetchFromGitHub,
-      apksigner,
-      writableTmpDirAsHomeHook,
-      androidSdkBuilder,
-      fetchpatch,
-    }:
+  appPackage =
     let
       rev = "79338cb19f4b86cae4d2e81e6de60ba7f613bb9b";
 
@@ -118,10 +119,9 @@ let
         license = licenses.gpl3Only;
         platforms = platforms.unix;
       };
-    })
-  ) { };
+    });
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "termux-styling.apk";
   signScriptName = "sign-termux-styling";

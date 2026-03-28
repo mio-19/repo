@@ -1,13 +1,14 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  stdenv,
+  fetchurl,
+  morphe-cli,
+  morphe-patches,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      stdenv,
-      fetchurl,
-      morphe-cli,
-      morphe-patches,
-    }:
+  appPackage =
     let
       youtubeApk = fetchurl {
         # APKPure page: https://apkpure.com/youtube-2025/com.google.android.youtube/download/20.45.36
@@ -59,10 +60,9 @@ let
         homepage = "https://github.com/MorpheApp/morphe-patches";
         platforms = platforms.unix;
       };
-    }
-  ) { };
+    };
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "youtube-morphe.apk";
   signScriptName = "sign-youtube-morphe";

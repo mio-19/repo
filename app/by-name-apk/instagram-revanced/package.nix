@@ -1,14 +1,15 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  stdenv,
+  fetchurl,
+  revanced-cli,
+  revanced-patches,
+  apkeditor,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      stdenv,
-      fetchurl,
-      revanced-cli,
-      revanced-patches,
-      apkeditor,
-    }:
+  appPackage =
     let
       instagramXapk = fetchurl {
         # APKPure page: https://apkpure.com/instagram-android-2025/com.instagram.android/download/401.0.0.48.79
@@ -60,10 +61,9 @@ let
         homepage = "https://github.com/ReVanced/revanced-patches";
         platforms = platforms.unix;
       };
-    }
-  ) { };
+    };
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "instagram-revanced.apk";
   signScriptName = "sign-instagram-revanced";

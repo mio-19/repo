@@ -1,21 +1,22 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  stdenv,
+  stdenvNoCC,
+  fetchFromGitHub,
+  androidSdkBuilder,
+  gradle-packages,
+  go_1_26,
+  jdk17,
+  writableTmpDirAsHomeHook,
+  gnumake,
+  zip,
+  unzip,
+  fetchpatch,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      stdenv,
-      stdenvNoCC,
-      fetchFromGitHub,
-      androidSdkBuilder,
-      gradle-packages,
-      go_1_26,
-      jdk17,
-      writableTmpDirAsHomeHook,
-      gnumake,
-      zip,
-      unzip,
-      fetchpatch,
-    }:
+  appPackage =
     let
       version = "1.96.2";
 
@@ -222,10 +223,9 @@ let
         license = licenses.bsd3;
         platforms = platforms.unix;
       };
-    })
-  ) { };
+    });
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "tailscale.apk";
   signScriptName = "sign-tailscale";

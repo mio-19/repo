@@ -1,13 +1,14 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  stdenv,
+  fetchurl,
+  morphe-cli,
+  morphe-patches,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      stdenv,
-      fetchurl,
-      morphe-cli,
-      morphe-patches,
-    }:
+  appPackage =
     let
       youtubeMusicApk = fetchurl {
         # Uptodown page: https://youtube-music.en.uptodown.com/android/download/1122511188
@@ -59,10 +60,9 @@ let
         homepage = "https://github.com/MorpheApp/morphe-patches";
         platforms = platforms.unix;
       };
-    }
-  ) { };
+    };
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "youtube-music-morphe.apk";
   signScriptName = "sign-youtube-music-morphe";

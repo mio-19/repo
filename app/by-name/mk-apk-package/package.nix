@@ -1,6 +1,8 @@
 {
   lib,
   mkSignScript,
+}:
+{
   appPackage,
   mainApk,
   signScriptName,

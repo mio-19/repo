@@ -1,18 +1,19 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  jdk21,
+  gradle-packages,
+  stdenv,
+  fetchFromGitHub,
+  fetchurl,
+  apksigner,
+  writableTmpDirAsHomeHook,
+  androidSdkBuilder,
+  fetchpatch,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      jdk21,
-      gradle-packages,
-      stdenv,
-      fetchFromGitHub,
-      fetchurl,
-      apksigner,
-      writableTmpDirAsHomeHook,
-      androidSdkBuilder,
-      fetchpatch,
-    }:
+  appPackage =
     let
       rev = "3f0dec3574a6617ff7ff0b78d30b29cfffd71b20";
 
@@ -161,10 +162,9 @@ let
         license = licenses.gpl3Only;
         platforms = platforms.unix;
       };
-    })
-  ) { };
+    });
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "termux.apk";
   signScriptName = "sign-termux";

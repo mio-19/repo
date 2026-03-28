@@ -1,14 +1,15 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  stdenv,
+  fetchurl,
+  jdk21,
+  lspatch-cli,
+  biliroaming,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      stdenv,
-      fetchurl,
-      jdk21,
-      lspatch-cli,
-      biliroaming,
-    }:
+  appPackage =
     let
       bilibiliApk = fetchurl {
         # https://www.apkmirror.com/apk/bilibili/bilibili-哔哩哔哩/bilibili-all-your-fav-videos-8-71-0-release/bilibili-all-your-fav-videos-8-71-0-3-android-apk-download/
@@ -69,10 +70,9 @@ let
         license = licenses.gpl3Only;
         platforms = platforms.unix;
       };
-    }
-  ) { };
+    };
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "bilibili-cn.apk";
   signScriptName = "sign-bilibili-cn";

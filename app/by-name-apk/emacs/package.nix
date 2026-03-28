@@ -1,20 +1,21 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  androidSdkBuilder,
+  jdk17,
+  autoconf,
+  automake,
+  m4,
+  texinfo,
+  ncurses,
+  zip,
+  which,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      stdenv,
-      fetchFromGitHub,
-      androidSdkBuilder,
-      jdk17,
-      autoconf,
-      automake,
-      m4,
-      texinfo,
-      ncurses,
-      zip,
-      which,
-    }:
+  appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -107,10 +108,9 @@ let
         platforms = platforms.unix;
         sourceProvenance = with sourceTypes; [ fromSource ];
       };
-    })
-  ) { };
+    });
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "emacs.apk";
   signScriptName = "sign-emacs";

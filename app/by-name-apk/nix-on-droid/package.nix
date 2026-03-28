@@ -1,15 +1,16 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  jdk17_headless,
+  gradle-packages,
+  stdenv,
+  fetchFromGitHub,
+  writableTmpDirAsHomeHook,
+  androidSdkBuilder,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      jdk17_headless,
-      gradle-packages,
-      stdenv,
-      fetchFromGitHub,
-      writableTmpDirAsHomeHook,
-      androidSdkBuilder,
-    }:
+  appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -98,10 +99,9 @@ let
         platforms = platforms.unix;
         sourceProvenance = with sourceTypes; [ fromSource ];
       };
-    })
-  ) { };
+    });
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "nix-on-droid.apk";
   signScriptName = "sign-nix-on-droid";

@@ -1,13 +1,14 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  stdenv,
+  fetchurl,
+  revanced-cli,
+  revanced-patches,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      stdenv,
-      fetchurl,
-      revanced-cli,
-      revanced-patches,
-    }:
+  appPackage =
     let
       microsoftLensApk = fetchurl {
         # APKPure page: https://apkpure.com/microsoft-lens-pdf-scanner/com.microsoft.office.officelens
@@ -56,10 +57,9 @@ let
         homepage = "https://github.com/ReVanced/revanced-patches";
         platforms = platforms.unix;
       };
-    }
-  ) { };
+    };
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "microsoft-lens-revanced.apk";
   signScriptName = "sign-microsoft-lens-revanced";

@@ -1,17 +1,18 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  pkgs,
+  jdk21,
+  gradle-packages,
+  stdenv,
+  fetchFromGitHub,
+  apksigner,
+  writableTmpDirAsHomeHook,
+  androidSdkBuilder,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      pkgs,
-      jdk21,
-      gradle-packages,
-      stdenv,
-      fetchFromGitHub,
-      apksigner,
-      writableTmpDirAsHomeHook,
-      androidSdkBuilder,
-    }:
+  appPackage =
     let
       version = "1.0.5";
 
@@ -189,10 +190,9 @@ let
         license = licenses.gpl3Plus;
         platforms = platforms.unix;
       };
-    })
-  ) { };
+    });
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "kernelsu.apk";
   signScriptName = "sign-kernelsu";

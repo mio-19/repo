@@ -1,18 +1,19 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  jdk21,
+  jdk17_headless,
+  gradle-packages,
+  stdenv,
+  fetchFromGitea,
+  apksigner,
+  writableTmpDirAsHomeHook,
+  androidSdkBuilder,
+  git,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      jdk21,
-      jdk17_headless,
-      gradle-packages,
-      stdenv,
-      fetchFromGitea,
-      apksigner,
-      writableTmpDirAsHomeHook,
-      androidSdkBuilder,
-      git,
-    }:
+  appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -93,10 +94,9 @@ let
         license = licenses.gpl3Plus;
         platforms = platforms.unix;
       };
-    })
-  ) { };
+    });
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "sunup.apk";
   signScriptName = "sign-sunup";

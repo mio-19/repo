@@ -1,37 +1,37 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  fetchurl,
+  fetchgit,
+  androidSdkBuilder,
+  gradle-packages,
+  jdk17,
+  git,
+  cmake,
+  ninja,
+  pkg-config,
+  autoconf,
+  automake,
+  libtool,
+  gettext,
+  m4,
+  which,
+  python3,
+  apksigner,
+  writableTmpDirAsHomeHook,
+  unzip,
+  util-linux,
+  meson,
+  curl,
+  buildPackages,
+  bash,
+  buildFHSEnv,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      stdenv,
-      fetchFromGitHub,
-      fetchurl,
-      fetchgit,
-      androidSdkBuilder,
-      gradle-packages,
-      jdk17,
-      git,
-      cmake,
-      ninja,
-      pkg-config,
-      autoconf,
-      automake,
-      libtool,
-      gettext,
-      m4,
-      which,
-      python3,
-      apksigner,
-      writableTmpDirAsHomeHook,
-      unzip,
-      util-linux,
-      meson,
-      curl,
-      buildPackages,
-      bash,
-      buildFHSEnv,
-    }:
-
+  appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -383,10 +383,9 @@ let
       passthru = {
         mitmCache = finalAttrs.mitmCache;
       };
-    })
-  ) { };
+    });
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "koreader.apk";
   signScriptName = "sign-koreader";

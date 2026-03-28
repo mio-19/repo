@@ -124,8 +124,6 @@
       };
     in
     {
-      packages = byName // {
-        inherit apk;
-      };
+      packages = builtins.removeAttrs byName [ "mk-apk-package" ] // apk;
     };
 }

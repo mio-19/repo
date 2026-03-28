@@ -1,15 +1,16 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  stdenv,
+  fetchurl,
+  apkeditor,
+  jdk21,
+  lspatch-cli,
+  biliroaming,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      stdenv,
-      fetchurl,
-      apkeditor,
-      jdk21,
-      lspatch-cli,
-      biliroaming,
-    }:
+  appPackage =
     let
       bilibiliXapk = fetchurl {
         # APKPure page: https://apkpure.com/bilibili-cn/com.bilibili.app.in/download
@@ -71,10 +72,9 @@ let
         license = licenses.gpl3Only;
         platforms = platforms.unix;
       };
-    }
-  ) { };
+    };
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "bilibili-roaming.apk";
   signScriptName = "sign-bilibili-roaming";

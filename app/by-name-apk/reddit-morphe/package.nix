@@ -1,17 +1,18 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  stdenv,
+  fetchurl,
+  morphe-cli,
+  morphe-patches,
+  apkeditor,
+  zip,
+  unzip,
+  androidSdkBuilder,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      stdenv,
-      fetchurl,
-      morphe-cli,
-      morphe-patches,
-      apkeditor,
-      zip,
-      unzip,
-      androidSdkBuilder,
-    }:
+  appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -81,10 +82,9 @@ let
         homepage = "https://github.com/MorpheApp/morphe-patches";
         platforms = platforms.unix;
       };
-    }
-  ) { };
+    };
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "reddit-morphe.apk";
   signScriptName = "sign-reddit-morphe";

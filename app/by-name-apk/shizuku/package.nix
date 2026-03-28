@@ -1,17 +1,18 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  curl,
+  jdk21,
+  gradle-packages,
+  stdenv,
+  fetchgit,
+  apksigner,
+  writableTmpDirAsHomeHook,
+  androidSdkBuilder,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      curl,
-      jdk21,
-      gradle-packages,
-      stdenv,
-      fetchgit,
-      apksigner,
-      writableTmpDirAsHomeHook,
-      androidSdkBuilder,
-    }:
+  appPackage =
     let
       rev = "b844bc491f1790c72328e1a8e5b2349f8978f0ea";
       shortRev = builtins.substring 0 7 rev;
@@ -235,10 +236,9 @@ let
         license = licenses.asl20;
         platforms = platforms.unix;
       };
-    })
-  ) { };
+    });
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "shizuku.apk";
   signScriptName = "sign-shizuku";

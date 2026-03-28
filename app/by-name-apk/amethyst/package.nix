@@ -1,17 +1,18 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  jdk21,
+  gradle-packages,
+  stdenv,
+  fetchFromGitHub,
+  fetchurl,
+  unzip,
+  writableTmpDirAsHomeHook,
+  androidSdkBuilder,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      jdk21,
-      gradle-packages,
-      stdenv,
-      fetchFromGitHub,
-      fetchurl,
-      unzip,
-      writableTmpDirAsHomeHook,
-      androidSdkBuilder,
-    }:
+  appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -138,10 +139,9 @@ let
         license = licenses.gpl3Only;
         platforms = platforms.unix;
       };
-    })
-  ) { };
+    });
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "amethyst.apk";
   signScriptName = "sign-amethyst";

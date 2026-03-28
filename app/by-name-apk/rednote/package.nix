@@ -1,13 +1,14 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  stdenv,
+  fetchurl,
+  jdk21,
+  lspatch-cli,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      stdenv,
-      fetchurl,
-      jdk21,
-      lspatch-cli,
-    }:
+  appPackage =
     let
       rednoteApk = fetchurl {
         # https://xiaohongshu.cn.uptodown.com/android/dw/1032665165
@@ -72,10 +73,9 @@ let
         license = licenses.gpl3Only;
         platforms = platforms.unix;
       };
-    }
-  ) { };
+    };
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "rednote.apk";
   signScriptName = "sign-rednote";

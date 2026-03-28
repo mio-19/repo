@@ -1,14 +1,15 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  stdenv,
+  fetchurl,
+  revanced-cli,
+  revanced-patches,
+  apkeditor,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      stdenv,
-      fetchurl,
-      revanced-cli,
-      revanced-patches,
-      apkeditor,
-    }:
+  appPackage =
     let
       spotifyXapk = fetchurl {
         # APKPure page: https://apkpure.com/spotify-music-and-podcasts/com.spotify.music/download/9.1.32.2083
@@ -60,10 +61,9 @@ let
         homepage = "https://github.com/ReVanced/revanced-patches";
         platforms = platforms.unix;
       };
-    }
-  ) { };
+    };
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "spotify-revanced.apk";
   signScriptName = "sign-spotify-revanced";

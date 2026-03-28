@@ -1,13 +1,14 @@
-{ callPackage, ... }:
+{
+  mk-apk-package,
+  lib,
+  stdenv,
+  fetchurl,
+  revanced-cli,
+  revanced-patches,
+  ...
+}:
 let
-  appPackage = callPackage (
-    {
-      lib,
-      stdenv,
-      fetchurl,
-      revanced-cli,
-      revanced-patches,
-    }:
+  appPackage =
     let
       facebookApk = fetchurl {
         # APKPure page: https://apkpure.com/facebook-app/com.facebook.katana/download/490.0.0.63.82
@@ -56,10 +57,9 @@ let
         homepage = "https://github.com/ReVanced/revanced-patches";
         platforms = platforms.unix;
       };
-    }
-  ) { };
+    };
 in
-callPackage ../../by-name/mk-apk-package/package.nix {
+mk-apk-package {
   inherit appPackage;
   mainApk = "facebook-revanced.apk";
   signScriptName = "sign-facebook-revanced";
