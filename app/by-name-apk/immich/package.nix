@@ -19,8 +19,7 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
-        s.build-tools-35-0-0
-        s.build-tools-36-0-0
+        s.build-tools-36-1-0
         s.ndk-29-0-14206865
         s.cmake-3-31-6
       ]);
@@ -78,7 +77,7 @@ let
         useBwrap = false;
       };
 
-      gradleUpdateTask = ":assembleRelease :app:assembleRelease :home_widget:assembleRelease home_widget:extractReleaseAnnotations :home_widget:mapReleaseSourceSetPaths :home_widget:mapReleaseSourceSetPaths";
+      gradleUpdateTask = ":app:assembleRelease :home_widget:assembleRelease home_widget:extractReleaseAnnotations :home_widget:mapReleaseSourceSetPaths :home_widget:mapReleaseSourceSetPaths";
 
       dontDartBuild = true;
       dontDartInstall = true;
@@ -97,7 +96,7 @@ let
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
         ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
       };
 
       gradleFlags = [
@@ -106,8 +105,8 @@ let
         "android"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
       ];
 
       postPatch = ''
@@ -120,19 +119,18 @@ let
         GRADLEW_SCRIPT
         chmod +x android/gradlew
 
-        pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application") {\n                def agpVersion = requested.version ?: "8.10.1"\n                useModule("com.android.tools.build:gradle:''${agpVersion}")\n            }\n        }\n    }\n'
+        pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application") {\n                def agpVersion = requested.version ?: "8.11.2"\n                useModule("com.android.tools.build:gradle:''${agpVersion}")\n            }\n        }\n    }\n'
         substituteInPlace android/settings.gradle \
           --replace-fail "pluginManagement {" "$pluginResolutionBlock"
+
+        substituteInPlace android/build.gradle \
+          --replace-fail 'buildToolsVersion "36.0.0"' 'buildToolsVersion "36.1.0"'
 
         substituteInPlace android/app/build.gradle \
           --replace-fail "//f configurations.all {" "configurations.all {" \
           --replace-fail "//f     exclude group: 'com.google.android.gms'" "    exclude group: 'com.google.android.gms'" \
           --replace-fail "//f }" "}" \
           --replace-fail "      signingConfig signingConfigs.release" ""
-
-        substituteInPlace android/settings.gradle \
-          --replace-fail "id \"com.android.application\" version '8.11.2' apply false" \
-            "id \"com.android.application\" version '8.10.1' apply false"
 
         substituteInPlace android/gradle.properties \
           --replace-fail "org.gradle.jvmargs=-Xmx4096M" "org.gradle.jvmargs=-Xmx8192M"
@@ -166,8 +164,8 @@ let
         GRADLE_OPTS="''${GRADLE_OPTS:-}"
         GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.auto-download=false"
         GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        GRADLE_OPTS="$GRADLE_OPTS -Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        GRADLE_OPTS="$GRADLE_OPTS -Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
         if [[ -n "''${MITM_CACHE_KEYSTORE:-}" ]]; then
           GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyHost=$MITM_CACHE_HOST"
           GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyPort=$MITM_CACHE_PORT"
