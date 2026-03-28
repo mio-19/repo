@@ -21,7 +21,7 @@ let
         s.platforms-android-36
         s.build-tools-35-0-0
         s.build-tools-36-0-0
-        s.ndk-28-2-13676358
+        s.ndk-29-0-14206865
         s.cmake-3-22-1
       ]);
 
@@ -95,8 +95,8 @@ let
         JAVA_HOME = jdk17_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
-        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
+        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
+        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
       };
 
@@ -136,6 +136,17 @@ let
 
         substituteInPlace android/gradle.properties \
           --replace-fail "org.gradle.jvmargs=-Xmx4096M" "org.gradle.jvmargs=-Xmx8192M"
+
+        while IFS= read -r gradleFile; do
+          if grep -Fq '27.0.12077973' "$gradleFile"; then
+            substituteInPlace "$gradleFile" \
+              --replace-fail '27.0.12077973' '29.0.14206865'
+          fi
+          if grep -Fq '28.2.13676358' "$gradleFile"; then
+            substituteInPlace "$gradleFile" \
+              --replace-fail '28.2.13676358' '29.0.14206865'
+          fi
+        done < <(find android . -type f \( -name '*.gradle' -o -name '*.gradle.kts' -o -name '*.properties' \))
       '';
 
       preConfigure = ''
@@ -144,6 +155,7 @@ let
         export PUB_CACHE="$PWD/.pub-cache"
 
         echo "sdk.dir=${androidSdk}/share/android-sdk" > android/local.properties
+        echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/29.0.14206865" >> android/local.properties
         echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.22.1" >> android/local.properties
         echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
         echo "flutter.versionName=2.6.1" >> android/local.properties
