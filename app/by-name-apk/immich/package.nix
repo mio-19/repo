@@ -19,10 +19,9 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
-        s.build-tools-35-0-0
-        s.build-tools-36-0-0
-        s.ndk-28-2-13676358
-        s.cmake-3-22-1
+        s.build-tools-36-1-0
+        s.ndk-29-0-14206865
+        s.cmake-3-31-6
       ]);
 
       gradle =
@@ -78,7 +77,7 @@ let
         useBwrap = false;
       };
 
-      gradleUpdateTask = ":assembleRelease :app:assembleRelease :home_widget:assembleRelease home_widget:extractReleaseAnnotations :home_widget:mapReleaseSourceSetPaths :home_widget:mapReleaseSourceSetPaths";
+      gradleUpdateTask = ":app:assembleRelease :home_widget:assembleRelease home_widget:extractReleaseAnnotations :home_widget:mapReleaseSourceSetPaths :home_widget:mapReleaseSourceSetPaths";
 
       dontDartBuild = true;
       dontDartInstall = true;
@@ -95,9 +94,9 @@ let
         JAVA_HOME = jdk17_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
-        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
+        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
       };
 
       gradleFlags = [
@@ -106,8 +105,8 @@ let
         "android"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
       ];
 
       postPatch = ''
@@ -120,9 +119,12 @@ let
         GRADLEW_SCRIPT
         chmod +x android/gradlew
 
-        pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application") {\n                def agpVersion = requested.version ?: "8.10.1"\n                useModule("com.android.tools.build:gradle:''${agpVersion}")\n            }\n        }\n    }\n'
+        pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application") {\n                def agpVersion = requested.version ?: "8.11.2"\n                useModule("com.android.tools.build:gradle:''${agpVersion}")\n            }\n        }\n    }\n'
         substituteInPlace android/settings.gradle \
           --replace-fail "pluginManagement {" "$pluginResolutionBlock"
+
+        substituteInPlace android/build.gradle \
+          --replace-fail 'buildToolsVersion "36.0.0"' 'buildToolsVersion "36.1.0"'
 
         substituteInPlace android/app/build.gradle \
           --replace-fail "//f configurations.all {" "configurations.all {" \
@@ -130,12 +132,19 @@ let
           --replace-fail "//f }" "}" \
           --replace-fail "      signingConfig signingConfigs.release" ""
 
-        substituteInPlace android/settings.gradle \
-          --replace-fail "id \"com.android.application\" version '8.11.2' apply false" \
-            "id \"com.android.application\" version '8.10.1' apply false"
-
         substituteInPlace android/gradle.properties \
           --replace-fail "org.gradle.jvmargs=-Xmx4096M" "org.gradle.jvmargs=-Xmx8192M"
+
+        while IFS= read -r gradleFile; do
+          if grep -Fq '27.0.12077973' "$gradleFile"; then
+            substituteInPlace "$gradleFile" \
+              --replace-fail '27.0.12077973' '29.0.14206865'
+          fi
+          if grep -Fq '28.2.13676358' "$gradleFile"; then
+            substituteInPlace "$gradleFile" \
+              --replace-fail '28.2.13676358' '29.0.14206865'
+          fi
+        done < <(find android . -type f \( -name '*.gradle' -o -name '*.gradle.kts' -o -name '*.properties' \))
       '';
 
       preConfigure = ''
@@ -144,7 +153,8 @@ let
         export PUB_CACHE="$PWD/.pub-cache"
 
         echo "sdk.dir=${androidSdk}/share/android-sdk" > android/local.properties
-        echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.22.1" >> android/local.properties
+        echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/29.0.14206865" >> android/local.properties
+        echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6" >> android/local.properties
         echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
         echo "flutter.versionName=2.6.1" >> android/local.properties
         echo "flutter.versionCode=3039" >> android/local.properties
@@ -154,8 +164,8 @@ let
         GRADLE_OPTS="''${GRADLE_OPTS:-}"
         GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.auto-download=false"
         GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        GRADLE_OPTS="$GRADLE_OPTS -Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        GRADLE_OPTS="$GRADLE_OPTS -Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
         if [[ -n "''${MITM_CACHE_KEYSTORE:-}" ]]; then
           GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyHost=$MITM_CACHE_HOST"
           GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyPort=$MITM_CACHE_PORT"

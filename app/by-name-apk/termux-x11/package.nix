@@ -155,7 +155,7 @@ let
         s.build-tools-34-0-0
         s.build-tools-36-0-0
         s.ndk-29-0-14206865
-        s.cmake-3-22-1
+        s.cmake-3-31-6
       ]);
 
       gradle =
@@ -223,6 +223,7 @@ let
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+        echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6" >> local.properties
       '';
 
       gradleFlags = [

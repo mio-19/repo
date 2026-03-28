@@ -195,16 +195,13 @@ let
 
         # Make AGP/plugin marker artifacts resolvable from mavenLocal in pure builds.
         [[ -n "$cacheRoot" && -e "$cacheRoot/https/dl.google.com/dl/android/maven2/com/android" ]]
-        m2root="/build/.m2/repository"
+        m2root="$HOME/.m2/repository"
         mkdir -p "$m2root/com"
         ln -sfn "$cacheRoot/https/dl.google.com/dl/android/maven2/com/android" "$m2root/com/android"
 
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
       ''
       + lib.optionalString stdenv.isDarwin ''
-        # AGP writes SDK metadata under ~/.android; /var/empty is read-only on Darwin sandboxes.
-        export HOME="$TMPDIR/home"
-        mkdir -p "$HOME"
         export ANDROID_USER_HOME="$HOME/.android"
         export GRADLE_USER_HOME="$HOME/.gradle"
         mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"

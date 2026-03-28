@@ -20,6 +20,9 @@ let
     s.platform-tools
     s.platforms-android-31
     s.build-tools-31-0-0
+    # Tried NDK 27.3.13750724 here, but the build then failed later in
+    # androiddeployqt packaging with no Qt Android platform plugin included,
+    # so this remains on the baseline NDK until that Qt packaging issue is fixed.
     s.ndk-21-4-7075529
   ]);
 

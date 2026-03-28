@@ -20,8 +20,8 @@ let
         s.platform-tools
         s.platforms-android-35
         s.build-tools-35-0-0
-        s.ndk-28-0-13004108
-        s.cmake-3-22-1
+        s.ndk-29-0-14206865
+        s.cmake-3-31-6
       ]);
 
       gradle =
@@ -49,7 +49,7 @@ let
           crossSystem = {
             config = "aarch64-unknown-linux-android";
             androidSdkVersion = "35";
-            androidNdkVersion = "27";
+            androidNdkVersion = "29";
             useAndroidPrebuilt = true;
             rust.rustcTarget = "aarch64-linux-android";
           };
@@ -62,7 +62,7 @@ let
           crossSystem = {
             config = "x86_64-unknown-linux-android";
             androidSdkVersion = "35";
-            androidNdkVersion = "27";
+            androidNdkVersion = "29";
             useAndroidPrebuilt = true;
             rust.rustcTarget = "x86_64-linux-android";
           };
@@ -137,7 +137,8 @@ let
         JAVA_HOME = if stdenv.isDarwin then "${jdk21}" else "${jdk21}/lib/openjdk";
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/28.0.13004108";
+        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
+        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
       };
 
@@ -149,6 +150,9 @@ let
           --replace-fail \
           'val managerVersionName by extra(getVersionName())' \
           'val managerVersionName by extra("v1.0.5")'
+        substituteInPlace build.gradle.kts \
+          --replace-fail 'val androidCompileNdkVersion = "28.0.13004108"' \
+            'val androidCompileNdkVersion = "29.0.14206865"'
 
         install -Dm755 ${ksudArm64}/bin/ksud app/src/main/jniLibs/arm64-v8a/libksud.so
         install -Dm755 ${ksudX8664}/bin/ksud app/src/main/jniLibs/x86_64/libksud.so
@@ -160,6 +164,8 @@ let
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+        echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/29.0.14206865" >> local.properties
+        echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6" >> local.properties
       '';
 
       gradleFlags =
@@ -167,7 +173,6 @@ let
           postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
         in
         [
-          "-xlintVitalRelease"
           "-Dorg.gradle.java.installations.auto-download=false"
           "-Dorg.gradle.java.installations.paths=${jdk21}${postfix}"
           "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"

@@ -18,8 +18,8 @@ let
         s.platforms-android-36
         s.build-tools-35-0-0
         s.build-tools-36-0-0
-        s.ndk-27-0-12077973
-        s.cmake-3-22-1
+        s.ndk-27-3-13750724
+        s.cmake-3-31-6
       ]);
 
       gradle =
@@ -64,11 +64,21 @@ let
         JAVA_HOME = jdk21;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.0.12077973";
+        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
+        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
       };
 
       postPatch = ''
+        substituteInPlace mobile/build.gradle.kts \
+          --replace-fail '    compileSdk = 36' '    compileSdk = 36
+    ndkVersion = "27.3.13750724"'
+
+        while IFS= read -r gradleFile; do
+          substituteInPlace "$gradleFile" \
+            --replace-fail '27.0.12077973' '27.3.13750724'
+        done < <(grep -rlF '27.0.12077973' . || true)
+
         substituteInPlace mobile/build.gradle.kts \
           --replace-fail 'vcsInfo.include = true' 'vcsInfo.include = false'
       '';
@@ -77,6 +87,8 @@ let
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+        echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/27.3.13750724" >> local.properties
+        echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6" >> local.properties
       '';
 
       gradleFlags = [

@@ -36,7 +36,7 @@ let
     # [CXX1429] error when building with ndkBuild using /nix/var/nix/builds/nix-38269-3239929316/source/termux-shared/src/main/cpp/Android.mk: ERROR: Unknown host CPU architecture: arm64
     "nix-on-droid"
 
-    # cannot build on darwin due to stdenv
+    # cannot build on darwin due to fhs
     "koreader"
 
     # can build locally but not on garnix
@@ -54,13 +54,15 @@ let
     "bilibili-cn"
     "rednote"
     "instagram-revanced"
+
+    # cannot build on darwin due to nixpkgs didn't package android toolchain for darwin aarch64
+    "kernelsu"
+
+    # build tool "qmake" runs on linux only
+    "firebird"
   ];
 
   excludedApkNames = [
-    # ndk from nixpkgs: error: Android NDK doesn't support building on arm64-apple-darwin, as far as we know
-    # actually ndk from android-nixpkgs run fine on aarch64 darwin with rosetta2 with x86_64 ndk.
-    # ndk failed to build on x86_64 linux after recent nixpkgs bump. last working: 9cf7092bdd603554bd8b63c216e8943cf9b12512 first broken: 4724d5647207377bede08da3212f809cbd94a648
-    "kernelsu"
   ];
 
   fdroidApks = lib.filterAttrs (
@@ -75,7 +77,7 @@ callPackage ./fdroid-repo.nix {
     s.cmdline-tools-latest
     s.platform-tools
     s.platforms-android-36
-    s.build-tools-36-0-0
+    s.build-tools-36-1-0
   ]);
 
   apps = lib.mapAttrsToList (_: mkFdroidApp) fdroidApks;

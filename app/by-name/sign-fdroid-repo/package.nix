@@ -25,7 +25,7 @@ let
     let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
-        s.build-tools-36-0-0
+        s.build-tools-36-1-0
       ]);
       iconPython = python3.withPackages (ps: [
         ps.cairosvg
@@ -110,7 +110,7 @@ let
 
       keyaliases_yaml=""
       for apk in "''${apk_files[@]}"; do
-        badging="$(${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt dump badging "$apk")"
+        badging="$(${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt dump badging "$apk")"
         pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
         if [[ -z "$pkg" ]]; then
           echo "Failed to parse package name from $apk" >&2
@@ -143,8 +143,8 @@ let
       (cd "$WORKDIR" && ${lib.getExe fdroidserver} update --create-metadata --rename-apks --nosign)
       ${iconPython}/bin/python3 ${./fdroid-repo-icon-fallback.py} \
         "$WORKDIR" \
-        "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt" \
-        "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2" \
+        "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt" \
+        "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2" \
         "${iconFont}"
       (cd "$WORKDIR" && ${lib.getExe fdroidserver} signindex)
 

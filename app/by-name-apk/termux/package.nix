@@ -22,7 +22,7 @@ let
         s.platforms-android-36
         s.build-tools-35-0-0
         s.build-tools-36-0-0
-        s.ndk-29-0-13113456
+        s.ndk-29-0-14206865
       ]);
 
       gradle =
@@ -106,7 +106,7 @@ let
 
       env = {
         JAVA_HOME = jdk21;
-        JITPACK_NDK_VERSION = "29.0.13113456";
+        JITPACK_NDK_VERSION = "29.0.14206865";
         TERMUX_SPLIT_APKS_FOR_RELEASE_BUILDS = "0";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
       };
@@ -121,12 +121,12 @@ let
         cp -a "${androidSdk}/share/android-sdk/build-tools/36.0.0" "$sdkRoot/build-tools/"
         ln -s "${androidSdk}/share/android-sdk/platforms/android-36" "$sdkRoot/platforms/android-36"
         ln -s "${androidSdk}/share/android-sdk/platform-tools" "$sdkRoot/platform-tools"
-        ln -s "${androidSdk}/share/android-sdk/ndk/29.0.13113456" "$sdkRoot/ndk/29.0.13113456"
+        ln -s "${androidSdk}/share/android-sdk/ndk/29.0.14206865" "$sdkRoot/ndk/29.0.14206865"
         cp -a "${androidSdk}/share/android-sdk/licenses" "$sdkRoot/"
 
         export ANDROID_HOME="$sdkRoot"
         export ANDROID_SDK_ROOT="$sdkRoot"
-        export ANDROID_NDK_ROOT="$sdkRoot/ndk/29.0.13113456"
+        export ANDROID_NDK_ROOT="$sdkRoot/ndk/29.0.14206865"
         echo "sdk.dir=$sdkRoot" > local.properties
 
         cp "${finalAttrs.bootstrapAarch64}" app/src/main/cpp/bootstrap-aarch64.zip
