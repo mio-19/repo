@@ -21,7 +21,7 @@ let
         # compileSdkVersion 36 requires matching build-tools.
         s.build-tools-36-0-0
         # NDK for JNI/CMake build; version pinned in set-ndk-version.patch.
-        s.ndk-27-2-12479018
+        s.ndk-27-3-13750724
         # CMake version required by app/build.gradle externalNativeBuild.
         s.cmake-3-22-1
       ]);

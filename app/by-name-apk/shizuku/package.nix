@@ -22,7 +22,10 @@ let
         s.platform-tools
         s.platforms-android-36
         s.build-tools-36-0-0
-        s.ndk-29-0-13113456
+        # NDK 29 reaches Gradle, but Shizuku's native dependency chain still
+        # expects org.lsposed.libcxx artifacts for the older 27.0.12077973
+        # version, so the NDK bump is not fully buildable yet.
+        s.ndk-29-0-14206865
         s.cmake-3-31-6
       ]);
 
@@ -115,6 +118,17 @@ let
           --replace-fail "android.signingConfigs.sign.storePassword = android.signingConfigs.debug.storePassword" "android.signingConfigs.sign.storePassword = 'android'" \
           --replace-fail "android.signingConfigs.sign.keyAlias = android.signingConfigs.debug.keyAlias" "android.signingConfigs.sign.keyAlias = 'androiddebugkey'" \
           --replace-fail "android.signingConfigs.sign.keyPassword = android.signingConfigs.debug.keyPassword" "android.signingConfigs.sign.keyPassword = 'android'"
+
+        while IFS= read -r gradleFile; do
+          if grep -Fq '27.0.12077973' "$gradleFile"; then
+            substituteInPlace "$gradleFile" \
+              --replace-fail '27.0.12077973' '29.0.14206865'
+          fi
+          if grep -Fq '29.0.13113456' "$gradleFile"; then
+            substituteInPlace "$gradleFile" \
+              --replace-fail '29.0.13113456' '29.0.14206865'
+          fi
+        done < <(grep -rlE '27\.0\.12077973|29\.0\.13113456' . || true)
       '';
 
       gradleBuildTask = ":manager:assembleRelease";
@@ -140,7 +154,8 @@ let
         JAVA_HOME = if stdenv.isDarwin then "${jdk21}" else "${jdk21}/lib/openjdk";
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk-bundle";
+        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
+        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
         SHIZUKU_GIT_COMMIT_ID = shortRev;
         SHIZUKU_GIT_COMMIT_COUNT = commitCount;
@@ -200,6 +215,7 @@ let
         ln -sfn "$cacheRoot/https/dl.google.com/dl/android/maven2/com/android" "$m2root/com/android"
 
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+        echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/29.0.14206865" >> local.properties
       ''
       + lib.optionalString stdenv.isDarwin ''
         export ANDROID_USER_HOME="$HOME/.android"
