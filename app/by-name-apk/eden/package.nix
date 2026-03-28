@@ -21,7 +21,7 @@ let
         s.platforms-android-36
         s.build-tools-35-0-0
         s.build-tools-36-0-0
-        s.ndk-28-2-13676358
+        s.ndk-29-0-14206865
         s.cmake-3-22-1
       ]);
 
@@ -67,8 +67,8 @@ let
         JAVA_HOME = jdk21;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
-        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
+        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
+        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
       };
 
@@ -76,7 +76,8 @@ let
         substituteInPlace src/android/app/build.gradle.kts \
           --replace-fail 'val autoVersion = (((System.currentTimeMillis() / 1000) - 1451606400) / 10).toInt()' \
             'val autoVersion = 202603280' \
-          --replace-fail 'versionName = getGitVersion()' 'versionName = "${finalAttrs.version}"'
+          --replace-fail 'versionName = getGitVersion()' 'versionName = "${finalAttrs.version}"' \
+          --replace-fail 'ndkVersion = "28.2.13676358"' 'ndkVersion = "29.0.14206865"'
       '';
 
       preConfigure = ''
@@ -85,7 +86,7 @@ let
 
         cat > src/android/local.properties <<EOF
         sdk.dir=${androidSdk}/share/android-sdk
-        ndk.dir=${androidSdk}/share/android-sdk/ndk/28.2.13676358
+        ndk.dir=${androidSdk}/share/android-sdk/ndk/29.0.14206865
         cmake.dir=${androidSdk}/share/android-sdk/cmake/3.22.1
         EOF
 
