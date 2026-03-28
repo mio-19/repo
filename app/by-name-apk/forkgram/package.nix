@@ -11,7 +11,10 @@ let
     s.platform-tools
     s.platforms-android-35
     s.build-tools-35-0-0
-    s.ndk-21-4-7075529
+    # NDK 27 gets past the initial Gradle pin mismatch, but Forkgram's bundled
+    # native dependency scripts still assume the old NDK tool/bin layout and
+    # libvpx configure currently fails to link against the newer sysroot setup.
+    s.ndk-27-3-13750724
   ]);
 in
 gradle2nixBuilders.buildGradlePackage rec {
@@ -81,6 +84,16 @@ gradle2nixBuilders.buildGradlePackage rec {
     # Fix hardcoded /bin/bash in subprocess call (no /bin/bash in Nix sandbox)
     substituteInPlace TMessagesProj/jni/prepare.py \
       --replace-fail 'executable="/bin/bash"' 'executable="${pkgs.bash}/bin/bash"'
+    substituteInPlace TMessagesProj/jni/build_dav1d_clang.sh \
+      --replace-fail 'AR=''${TOOLS_PREFIX}ar' 'AR=''${LLVM_BIN}/llvm-ar' \
+      --replace-fail 'STRIP=''${TOOLS_PREFIX}strip' 'STRIP=''${LLVM_BIN}/llvm-strip' \
+      --replace-fail 'NM=''${TOOLS_PREFIX}nm' 'NM=''${LLVM_BIN}/llvm-nm'
+    substituteInPlace TMessagesProj/jni/build_libvpx_clang.sh \
+      --replace-fail 'export AR=''${TOOLS_PREFIX}ar' 'export AR=''${LLVM_BIN}/llvm-ar' \
+      --replace-fail 'export STRIP=''${TOOLS_PREFIX}strip' 'export STRIP=''${LLVM_BIN}/llvm-strip' \
+      --replace-fail 'export RANLIB=''${TOOLS_PREFIX}ranlib' 'export RANLIB=''${LLVM_BIN}/llvm-ranlib' \
+      --replace-fail 'export NM=''${TOOLS_PREFIX}nm' 'export NM=''${LLVM_BIN}/llvm-nm' \
+      --replace-fail 'export LDFLAGS="-L''${PLATFORM}/usr/lib"' 'export LDFLAGS="--sysroot=''${LLVM_PREFIX}/sysroot"'
 
     # Inject Telegram API credentials and enable F-Droid mode — taken from the F-Droid build recipe:
     # https://gitlab.com/fdroid/fdroiddata/-/blob/master/metadata/org.forkgram.messenger.yml
@@ -92,8 +105,23 @@ gradle2nixBuilders.buildGradlePackage rec {
     substituteInPlace gradle.properties \
       --replace-fail "F_DROID=0" "F_DROID=1"
 
+    while IFS= read -r gradleFile; do
+      substituteInPlace "$gradleFile" \
+        --replace-fail '21.4.7075529' '27.3.13750724'
+    done < <(printf '%s\n' \
+      TMessagesProj/build.gradle \
+      TMessagesProj_App/build.gradle \
+      TMessagesProj_AppHuawei/build.gradle \
+      TMessagesProj_AppStandalone/build.gradle \
+      TMessagesProj_AppTests/build.gradle)
+    substituteInPlace TMessagesProj/build.gradle \
+      --replace-fail "commandLine 'python3', 'prepare.py', 'silent', 'ndk=' + ndkDir, 'arm', 'arm64'" \
+        "commandLine 'python3', 'prepare.py', 'silent', 'ndk=' + ndkDir, 'arm64'"
+
 
     # Tell AGP where to find cmake (it looks for version 3.22.1 in the SDK by default)
+    echo "sdk.dir=${androidSdk}/share/android-sdk" >> local.properties
+    echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/27.3.13750724" >> local.properties
     echo "cmake.dir=${pkgs.cmake}" >> local.properties
 
     # Use aapt2 from the installed SDK instead of downloading from Maven
@@ -127,6 +155,8 @@ gradle2nixBuilders.buildGradlePackage rec {
   env = {
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+    ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
+    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
     GOFLAGS = "-mod=vendor";
   };
 
