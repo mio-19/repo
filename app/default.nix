@@ -88,55 +88,55 @@
           echo "Signed APK written to: $OUT"
         '';
 
-      meshtastic = pkgs.callPackage ./by-name-apk/meshtastic/raw.nix {
+      meshtastic = pkgs.callPackage ./by-name-apk/meshtastic/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      droidspaces-oss = pkgs.callPackage ./by-name-apk/droidspaces-oss/raw.nix {
+      droidspaces-oss = pkgs.callPackage ./by-name-apk/droidspaces-oss/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      microg-re = pkgs.callPackage ./by-name-apk/microg-re/raw.nix {
+      microg-re = pkgs.callPackage ./by-name-apk/microg-re/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      youtubeMorphe = pkgs.callPackage ./by-name-apk/youtube-morphe/raw.nix {
+      youtubeMorphe = pkgs.callPackage ./by-name-apk/youtube-morphe/package.nix {
         inherit morphe-cli morphe-patches;
       };
 
-      youtubeMusicMorphe = pkgs.callPackage ./by-name-apk/youtube-music-morphe/raw.nix {
+      youtubeMusicMorphe = pkgs.callPackage ./by-name-apk/youtube-music-morphe/package.nix {
         inherit morphe-cli morphe-patches;
       };
 
-      redditMorphe = pkgs.callPackage ./by-name-apk/reddit-morphe/raw.nix {
+      redditMorphe = pkgs.callPackage ./by-name-apk/reddit-morphe/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
         apkeditor = pkgs.apkeditor;
         inherit morphe-cli morphe-patches;
       };
 
-      spotifyRevanced = pkgs.callPackage ./by-name-apk/spotify-revanced/raw.nix {
+      spotifyRevanced = pkgs.callPackage ./by-name-apk/spotify-revanced/package.nix {
         apkeditor = pkgs.apkeditor;
         inherit revanced-cli revanced-patches;
       };
 
-      duolingoRevanced = pkgs.callPackage ./by-name-apk/duolingo-revanced/raw.nix {
+      duolingoRevanced = pkgs.callPackage ./by-name-apk/duolingo-revanced/package.nix {
         apkeditor = pkgs.apkeditor;
         inherit revanced-cli revanced-patches;
       };
 
-      microsoftLensRevanced = pkgs.callPackage ./by-name-apk/microsoft-lens-revanced/raw.nix {
+      microsoftLensRevanced = pkgs.callPackage ./by-name-apk/microsoft-lens-revanced/package.nix {
         inherit revanced-cli revanced-patches;
       };
 
-      facebookRevanced = pkgs.callPackage ./by-name-apk/facebook-revanced/raw.nix {
+      facebookRevanced = pkgs.callPackage ./by-name-apk/facebook-revanced/package.nix {
         inherit revanced-cli revanced-patches;
       };
 
-      instagramRevanced = pkgs.callPackage ./by-name-apk/instagram-revanced/raw.nix {
+      instagramRevanced = pkgs.callPackage ./by-name-apk/instagram-revanced/package.nix {
         inherit apkeditor revanced-cli revanced-patches;
       };
 
-      immich = pkgs.callPackage ./by-name-apk/immich/raw.nix {
+      immich = pkgs.callPackage ./by-name-apk/immich/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
@@ -144,124 +144,124 @@
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      bilibiliPlay = pkgs.callPackage ./by-name-apk/bilibili-play/raw.nix {
+      bilibiliPlay = pkgs.callPackage ./by-name-apk/bilibili-play/package.nix {
         lspatchCli = lspatch-cli;
         biliroaming = biliroaming;
       };
 
-      bilibiliCn = pkgs.callPackage ./by-name-apk/bilibili-cn/raw.nix {
+      bilibiliCn = pkgs.callPackage ./by-name-apk/bilibili-cn/package.nix {
         lspatchCli = lspatch-cli;
         biliroaming = biliroaming;
       };
 
-      rednote = pkgs.callPackage ./by-name-apk/rednote/raw.nix {
+      rednote = pkgs.callPackage ./by-name-apk/rednote/package.nix {
         lspatchCli = lspatch-cli;
       };
 
-      thunderbird = pkgs.callPackage ./by-name-apk/thunderbird/raw.nix {
+      thunderbird = pkgs.callPackage ./by-name-apk/thunderbird/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      emacs = pkgs.callPackage ./by-name-apk/emacs/raw.nix {
+      emacs = pkgs.callPackage ./by-name-apk/emacs/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
       lspatch-cli = pkgs.callPackage ./by-name/lspatch-cli/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
-      lspatch-manager = pkgs.callPackage ./by-name-apk/lspatch-manager/raw.nix {
+      lspatch-manager = pkgs.callPackage ./by-name-apk/lspatch-manager/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      nix-on-droid = pkgs.callPackage ./by-name-apk/nix-on-droid/raw.nix {
+      nix-on-droid = pkgs.callPackage ./by-name-apk/nix-on-droid/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      tailscale = pkgs.callPackage ./by-name-apk/tailscale/raw.nix {
+      tailscale = pkgs.callPackage ./by-name-apk/tailscale/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      termux = pkgs.callPackage ./by-name-apk/termux/raw.nix {
+      termux = pkgs.callPackage ./by-name-apk/termux/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      termux-styling = pkgs.callPackage ./by-name-apk/termux-styling/raw.nix {
+      termux-styling = pkgs.callPackage ./by-name-apk/termux-styling/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      termuxX11 = pkgs.callPackage ./by-name-apk/termux-x11/raw.nix {
+      termuxX11 = pkgs.callPackage ./by-name-apk/termux-x11/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      kernelsu = pkgs.callPackage ./by-name-apk/kernelsu/raw.nix {
+      kernelsu = pkgs.callPackage ./by-name-apk/kernelsu/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      gadgetbridge = pkgs.callPackage ./by-name-apk/gadgetbridge/raw.nix {
+      gadgetbridge = pkgs.callPackage ./by-name-apk/gadgetbridge/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      meditrak = pkgs.callPackage ./by-name-apk/meditrak/raw.nix {
+      meditrak = pkgs.callPackage ./by-name-apk/meditrak/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      zotero-android = pkgs.callPackage ./by-name-apk/zotero-android/raw.nix {
+      zotero-android = pkgs.callPackage ./by-name-apk/zotero-android/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      tuxguitar = pkgs.callPackage ./by-name-apk/tuxguitar-android/raw.nix {
+      tuxguitar = pkgs.callPackage ./by-name-apk/tuxguitar-android/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      meshcore-open = pkgs.callPackage ./by-name-apk/meshcore-open/raw.nix {
+      meshcore-open = pkgs.callPackage ./by-name-apk/meshcore-open/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      element-android = pkgs.callPackage ./by-name-apk/element-android/raw.nix {
+      element-android = pkgs.callPackage ./by-name-apk/element-android/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
-      appstore = pkgs.callPackage ./by-name-apk/appstore/raw.nix {
+      appstore = pkgs.callPackage ./by-name-apk/appstore/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
         src = sources.grapheneos_appstore.src;
         version = sources.grapheneos_appstore.version;
       };
 
-      shizuku = pkgs.callPackage ./by-name-apk/shizuku/raw.nix {
+      shizuku = pkgs.callPackage ./by-name-apk/shizuku/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      glimpse = pkgs.callPackage ./by-name-apk/glimpse/raw.nix {
+      glimpse = pkgs.callPackage ./by-name-apk/glimpse/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
         src = sources.lineage_glimpse.src;
         version = sources.lineage_glimpse.version;
       };
 
-      sunup = pkgs.callPackage ./by-name-apk/sunup/raw.nix {
+      sunup = pkgs.callPackage ./by-name-apk/sunup/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
 
-      recorder = pkgs.callPackage ./by-name-apk/recorder/raw.nix {
+      recorder = pkgs.callPackage ./by-name-apk/recorder/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
         src = sources.lineage_recorder.src;
         version = sources.lineage_recorder.version;
       };
 
-      haven = pkgs.callPackage ./by-name-apk/haven/raw.nix {
+      haven = pkgs.callPackage ./by-name-apk/haven/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
-      gamenative = pkgs.callPackage ./by-name-apk/gamenative/raw.nix {
+      gamenative = pkgs.callPackage ./by-name-apk/gamenative/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
-      vpnhotspot = pkgs.callPackage ./by-name-apk/vpnhotspot/raw.nix {
+      vpnhotspot = pkgs.callPackage ./by-name-apk/vpnhotspot/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
-      archivetune = pkgs.callPackage ./by-name-apk/archivetune/raw.nix {
+      archivetune = pkgs.callPackage ./by-name-apk/archivetune/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
-      amethyst = pkgs.callPackage ./by-name-apk/amethyst/raw.nix {
+      amethyst = pkgs.callPackage ./by-name-apk/amethyst/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
-      koreader = pkgs.callPackage ./by-name-apk/koreader/raw.nix {
+      koreader = pkgs.callPackage ./by-name-apk/koreader/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
       morphe-library-m2 = pkgs.callPackage ./by-name/morphe-library-m2/package.nix {
@@ -306,76 +306,9 @@
         inherit revanced-library-m2 revanced-patcher-m2;
       };
       apkeditor = pkgs.apkeditor;
-      fdroid-basic = pkgs.callPackage ./by-name-apk/fdroid-basic/raw.nix {
+      fdroid-basic = pkgs.callPackage ./by-name-apk/fdroid-basic/package.nix {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
       };
-
-      mkPackagesFrom =
-        scope: dir: names:
-        lib.genAttrs names (name: scope.callPackage (dir + "/${name}/package.nix") { });
-
-      apkPackageNames = [
-        "amethyst"
-        "appstore"
-        "archivetune"
-        "bilibili-cn"
-        "bilibili-play"
-        "droidspaces-oss"
-        "duolingo-revanced"
-        "element-android"
-        "emacs"
-        "facebook-revanced"
-        "fdroid-basic"
-        "forkgram"
-        "gadgetbridge"
-        "gamenative"
-        "glimpse"
-        "haven"
-        "immich"
-        "instagram-revanced"
-        "kernelsu"
-        "koreader"
-        "lspatch-manager"
-        "meditrak"
-        "meshcore-open"
-        "meshtastic"
-        "microg-re"
-        "microsoft-lens-revanced"
-        "nix-on-droid"
-        "recorder"
-        "reddit-morphe"
-        "rednote"
-        "shizuku"
-        "spotify-revanced"
-        "sunup"
-        "tailscale"
-        "termux"
-        "termux-styling"
-        "termux-x11"
-        "thunderbird"
-        "tuxguitar-android"
-        "vpnhotspot"
-        "youtube-morphe"
-        "youtube-music-morphe"
-        "zotero-android"
-      ];
-
-      byNamePackageNames = [
-        "biliroaming"
-        "lspatch-cli"
-        "morphe-cli"
-        "morphe-library-m2"
-        "morphe-patches"
-        "morphe-patches-gradle-plugin"
-        "revanced-apktool-m2"
-        "revanced-cli"
-        "revanced-jadb-m2"
-        "revanced-library-m2"
-        "revanced-multidexlib2-m2"
-        "revanced-patcher-m2"
-        "revanced-patches"
-        "revanced-patches-gradle-plugin"
-      ];
 
       scope1 = {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
@@ -440,21 +373,27 @@
         fdroid-basic = fdroid-basic;
       };
 
-      apkScope = lib.makeScope pkgs.newScope (_: scope1 // { raw = scope1; });
-      apk = mkPackagesFrom apkScope ./by-name-apk apkPackageNames;
+      apkScope = lib.makeScope pkgs.newScope (
+        _:
+        scope1
+        // {
+          inherit sources;
+          lspatchCli = lspatch-cli;
+        }
+      );
 
-      byName = builtins.intersectAttrs (lib.genAttrs byNamePackageNames (_: null)) scope1 // {
-        fdroid-repo = (
-          pkgs.callPackage ./by-name/fdroid-repo/package.nix ({
-            androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
-            inherit apk;
-          })
-        );
+      apk = lib.filesystem.packagesFromDirectoryRecursive {
+        inherit (apkScope) callPackage;
+        directory = ./by-name-apk;
+      };
 
-        sign-fdroid-repo = pkgs.callPackage ./by-name/sign-fdroid-repo/package.nix {
-          androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
-          fdroid-repo = byName.fdroid-repo;
-        };
+      byNameScope = lib.makeScope pkgs.newScope (_: scope1 // { inherit apk; });
+      byName = lib.filesystem.packagesFromDirectoryRecursive {
+        inherit (byNameScope)
+          callPackage
+          newScope
+          ;
+        directory = ./by-name;
       };
     in
     {
