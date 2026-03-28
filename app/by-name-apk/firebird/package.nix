@@ -20,7 +20,10 @@ let
     s.platform-tools
     s.platforms-android-31
     s.build-tools-31-0-0
-    s.ndk-21-4-7075529
+    # NDK 27 is wired through, but the current build now fails later in
+    # androiddeployqt packaging with no Qt Android platform plugin included,
+    # so this bump is not verified buildable yet.
+    s.ndk-27-3-13750724
   ]);
 
   gradle =
@@ -165,8 +168,8 @@ let
       JAVA_HOME = jdk17_headless;
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-      ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/21.4.7075529";
-      ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/21.4.7075529";
+      ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
+      ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
       ANDROID_NDK_HOST = "linux-x86_64";
       ANDROID_NDK_PLATFORM = "android-21";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/31.0.0/aapt2";
