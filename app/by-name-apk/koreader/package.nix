@@ -38,10 +38,7 @@ let
         s.platforms-android-34
         s.platforms-android-30
         s.build-tools-34-0-0
-        # NDK 27 makes the Android looper headers reject KOReader's current
-        # ALooper_pollAll usage in android-luajit-launcher, so this package
-        # needs a native source fix before the NDK bump can be made buildable.
-        s.ndk-27-3-13750724
+        s.ndk-26-1-10909125
       ]);
 
       gradle =
@@ -182,7 +179,7 @@ let
       env = {
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
+        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/26.1.10909125";
         JAVA_HOME = jdk17;
         CC_FOR_BUILD = "${buildPackages.stdenv.cc}/bin/cc";
         CXX_FOR_BUILD = "${buildPackages.stdenv.cc}/bin/c++";
@@ -355,14 +352,14 @@ let
           export GIT_DEPS=${gitDepsDir}
           export ANDROID_HOME=${androidSdk}/share/android-sdk
           export ANDROID_SDK_ROOT=${androidSdk}/share/android-sdk
-          export ANDROID_NDK_HOME=${androidSdk}/share/android-sdk/ndk/27.3.13750724
+          export ANDROID_NDK_HOME=${androidSdk}/share/android-sdk/ndk/26.1.10909125
           export JAVA_HOME=${jdk17}
           export CC_FOR_BUILD=${buildPackages.stdenv.cc}/bin/cc
           export CXX_FOR_BUILD=${buildPackages.stdenv.cc}/bin/c++
           export LD_FOR_BUILD=${buildPackages.stdenv.cc}/bin/ld
           export AR_FOR_BUILD=${buildPackages.stdenv.cc.bintools.bintools}/bin/ar
           export PKG_CONFIG_FOR_BUILD=${buildPackages.pkg-config}/bin/pkg-config
-          export PATH=${androidSdk}/share/android-sdk/ndk/27.3.13750724/toolchains/llvm/prebuilt/linux-x86_64/bin:\$PATH
+          export PATH=${androidSdk}/share/android-sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/linux-x86_64/bin:\$PATH
           cd $PWD
           bash ./kodev release -i android-arm64
         "

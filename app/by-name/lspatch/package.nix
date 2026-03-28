@@ -17,10 +17,7 @@ let
     s.platform-tools
     s.platforms-android-36
     s.build-tools-36-0-0
-    # NDK 29 reaches Gradle with the substitutions below, but the native x86
-    # build currently fails in lsplant on duplicate SSE intrinsic definitions
-    # from Clang 21's emmintrin.h, so this package is not buildable yet on 29.
-    s.ndk-29-0-14206865
+    s.ndk-29-0-13113456
     s.cmake-3-31-6
   ]);
 
@@ -69,8 +66,7 @@ let
       JAVA_HOME = jdk21;
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-      ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
-      ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
+      ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.13113456";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     };
 
@@ -80,25 +76,11 @@ let
       mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"
 
       echo "sdk.dir=$ANDROID_HOME" > local.properties
-      echo "ndk.dir=$ANDROID_HOME/ndk/29.0.14206865" >> local.properties
       cat >> gradle.properties <<EOF
       org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g
       android.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/36.0.0/aapt2
       org.gradle.project.android.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/36.0.0/aapt2
       EOF
-    '';
-
-    postPatch = ''
-      while IFS= read -r gradleFile; do
-        if grep -Fq '27.0.12077973' "$gradleFile"; then
-          substituteInPlace "$gradleFile" \
-            --replace-fail '27.0.12077973' '29.0.14206865'
-        fi
-        if grep -Fq '29.0.13113456' "$gradleFile"; then
-          substituteInPlace "$gradleFile" \
-            --replace-fail '29.0.13113456' '29.0.14206865'
-        fi
-      done < <(grep -rlE '27\.0\.12077973|29\.0\.13113456' . || true)
     '';
 
     gradleFlags = [
