@@ -168,39 +168,27 @@ buildDartApplication.override { dart = flutter335; } (finalAttrs: {
     dart --packages=.dart_tool/package_config.json bin/generate_keys.dart
     dart format lib/generated/codegen_loader.g.dart lib/generated/translations.g.dart
 
-    ${python3}/bin/python3 - <<'PY' > geolocator_android_store_dir.txt
-    import json
-    import urllib.parse
+    mkdir -p .dart-patched
 
-    with open(".dart_tool/package_config.json") as f:
-        data = json.load(f)
+    clone_dart_package() {
+      local source_dir="$1"
+      local patched_name="$2"
+      local patched_dir="$PWD/.dart-patched/$patched_name"
 
-    geolocator_root = ""
-    for pkg in data["packages"]:
-        if pkg["name"] == "geolocator_android":
-            geolocator_root = urllib.parse.urlparse(pkg["rootUri"]).path.removesuffix("/.")
-            break
+      cp -LR "$source_dir" "$patched_dir"
+      chmod -R u+w "$patched_dir"
+      printf '%s\n' "$patched_dir"
+    }
 
-    print(geolocator_root)
-    PY
-    geolocator_android_store_dir="$(cat geolocator_android_store_dir.txt)"
-    if [ -n "$geolocator_android_store_dir" ]; then
-      mkdir -p .dart-patched
-      cp -LR "$geolocator_android_store_dir" .dart-patched/geolocator_android
-      chmod -R u+w .dart-patched/geolocator_android
-
-      substituteInPlace .dart-patched/geolocator_android/android/build.gradle \
-        --replace-fail "    implementation 'com.google.android.gms:play-services-location:21.2.0'" ""
-
-      rm .dart-patched/geolocator_android/android/src/main/java/com/baseflow/geolocator/location/FusedLocationClient.java
-      install -m644 ${./GeolocationManager.java} \
-        .dart-patched/geolocator_android/android/src/main/java/com/baseflow/geolocator/location/GeolocationManager.java
+    replace_dart_package_root() {
+      local original_dir="$1"
+      local patched_dir="$2"
 
       substituteInPlace .dart_tool/package_config.json \
-        --replace-fail "$geolocator_android_store_dir" "$PWD/.dart-patched/geolocator_android"
-    fi
+        --replace-fail "$original_dir" "$patched_dir"
+    }
 
-    ${python3}/bin/python3 - <<'PY' > android_plugin_dirs.sh
+    ${python3}/bin/python3 - <<'PY' > dart_package_dirs.sh
     import json
     import shlex
     import urllib.parse
@@ -209,6 +197,7 @@ buildDartApplication.override { dart = flutter335; } (finalAttrs: {
         data = json.load(f)
 
     wanted = {
+        "geolocator_android": "GEOLOCATOR_ANDROID_DIR",
         "native_video_player": "NATIVE_VIDEO_PLAYER_DIR",
         "home_widget": "HOME_WIDGET_DIR",
     }
@@ -222,16 +211,26 @@ buildDartApplication.override { dart = flutter335; } (finalAttrs: {
     for env_name, path in found.items():
         print(f"export {env_name}={shlex.quote(path)}")
     PY
-    . ./android_plugin_dirs.sh
+    . ./dart_package_dirs.sh
+
+    if [ -n "$GEOLOCATOR_ANDROID_DIR" ]; then
+      patched_geolocator_android_dir="$(clone_dart_package "$GEOLOCATOR_ANDROID_DIR" geolocator_android)"
+
+      substituteInPlace "$patched_geolocator_android_dir/android/build.gradle" \
+        --replace-fail "    implementation 'com.google.android.gms:play-services-location:21.2.0'" ""
+
+      rm "$patched_geolocator_android_dir/android/src/main/java/com/baseflow/geolocator/location/FusedLocationClient.java"
+      install -m644 ${./GeolocationManager.java} \
+        "$patched_geolocator_android_dir/android/src/main/java/com/baseflow/geolocator/location/GeolocationManager.java"
+
+      replace_dart_package_root "$GEOLOCATOR_ANDROID_DIR" "$patched_geolocator_android_dir"
+    fi
 
     flutter_engine_version="$(cat flutter-sdk/bin/internal/engine.version)"
     if [ -n "$NATIVE_VIDEO_PLAYER_DIR" ] || [ -n "$HOME_WIDGET_DIR" ]; then
-      mkdir -p .dart-patched
-
       if [ -n "$NATIVE_VIDEO_PLAYER_DIR" ]; then
-        cp -LR "$NATIVE_VIDEO_PLAYER_DIR" .dart-patched/native_video_player
-        chmod -R u+w .dart-patched/native_video_player
-        substituteInPlace .dart-patched/native_video_player/android/build.gradle \
+        patched_native_video_player_dir="$(clone_dart_package "$NATIVE_VIDEO_PLAYER_DIR" native_video_player)"
+        substituteInPlace "$patched_native_video_player_dir/android/build.gradle" \
           --replace-fail "    ext.kotlin_version = '2.2.20'" "    ext.kotlin_version = '2.0.20'" \
           --replace-fail '        classpath("com.android.tools.build:gradle:8.13.2")' \
             '        classpath("com.android.tools.build:gradle:8.1.2")' \
@@ -239,15 +238,13 @@ buildDartApplication.override { dart = flutter335; } (finalAttrs: {
             "     implementation(\"androidx.media3:media3-ui:1.9.2\")
      implementation \"androidx.annotation:annotation:1.8.0\"
      compileOnly \"io.flutter:flutter_embedding_release:1.0.0-$flutter_engine_version\""
-        substituteInPlace .dart_tool/package_config.json \
-          --replace-fail "$NATIVE_VIDEO_PLAYER_DIR" "$PWD/.dart-patched/native_video_player"
-        NATIVE_VIDEO_PLAYER_DIR="$PWD/.dart-patched/native_video_player"
+        replace_dart_package_root "$NATIVE_VIDEO_PLAYER_DIR" "$patched_native_video_player_dir"
+        NATIVE_VIDEO_PLAYER_DIR="$patched_native_video_player_dir"
       fi
 
       if [ -n "$HOME_WIDGET_DIR" ]; then
-        cp -LR "$HOME_WIDGET_DIR" .dart-patched/home_widget
-        chmod -R u+w .dart-patched/home_widget
-        substituteInPlace .dart-patched/home_widget/android/build.gradle \
+        patched_home_widget_dir="$(clone_dart_package "$HOME_WIDGET_DIR" home_widget)"
+        substituteInPlace "$patched_home_widget_dir/android/build.gradle" \
           --replace-fail '    implementation "androidx.glance:glance-appwidget:1.+"' \
             '    implementation "androidx.glance:glance-appwidget:1.2.0-rc01"' \
           --replace-fail '    implementation "androidx.work:work-runtime-ktx:2.+"' \
@@ -255,9 +252,8 @@ buildDartApplication.override { dart = flutter335; } (finalAttrs: {
           --replace-fail '    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+"' \
             "    implementation \"org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+\"
     compileOnly \"io.flutter:flutter_embedding_release:1.0.0-$flutter_engine_version\""
-        substituteInPlace .dart_tool/package_config.json \
-          --replace-fail "$HOME_WIDGET_DIR" "$PWD/.dart-patched/home_widget"
-        HOME_WIDGET_DIR="$PWD/.dart-patched/home_widget"
+        replace_dart_package_root "$HOME_WIDGET_DIR" "$patched_home_widget_dir"
+        HOME_WIDGET_DIR="$patched_home_widget_dir"
       fi
 
       : > android/local-plugin-settings.gradle
