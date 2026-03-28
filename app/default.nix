@@ -31,7 +31,7 @@
         let
           androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
             s.cmdline-tools-latest
-            s.build-tools-36-0-0
+            s.build-tools-36-1-0
           ]);
         in
         pkgs.writeShellScriptBin name ''
@@ -74,7 +74,7 @@
           trap 'rm -f "$TMP"' EXIT
 
           echo "Aligning APK..."
-          ${androidSdk}/share/android-sdk/build-tools/36.0.0/zipalign -f 4 \
+          ${androidSdk}/share/android-sdk/build-tools/36.1.0/zipalign -f 4 \
             "${apkPath}" "$TMP"
 
           echo "Signing APK..."

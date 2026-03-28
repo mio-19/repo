@@ -77,7 +77,7 @@ callPackage ./fdroid-repo.nix {
     s.cmdline-tools-latest
     s.platform-tools
     s.platforms-android-36
-    s.build-tools-36-0-0
+    s.build-tools-36-1-0
   ]);
 
   apps = lib.mapAttrsToList (_: mkFdroidApp) fdroidApks;

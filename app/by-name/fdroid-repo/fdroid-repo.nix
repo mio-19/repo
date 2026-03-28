@@ -40,7 +40,7 @@ pkgs.stdenvNoCC.mkDerivation {
     for src in ${lib.escapeShellArgs allApkSources}; do
       if [[ -d "$src" ]]; then
         while IFS= read -r apk; do
-          badging="$(${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt dump badging "$apk")"
+          badging="$(${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt dump badging "$apk")"
           pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
           ver="$(echo "$badging" | sed -n "s/^package: .* versionCode='\([^']*\)'.*/\1/p")"
           if [[ -z "$pkg" || -z "$ver" ]]; then
@@ -51,7 +51,7 @@ pkgs.stdenvNoCC.mkDerivation {
           apk_count=$((apk_count + 1))
         done < <(find "$src" -maxdepth 1 -type f -name '*.apk')
       elif [[ -f "$src" ]]; then
-        badging="$(${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt dump badging "$src")"
+        badging="$(${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt dump badging "$src")"
         pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
         ver="$(echo "$badging" | sed -n "s/^package: .* versionCode='\([^']*\)'.*/\1/p")"
         if [[ -z "$pkg" || -z "$ver" ]]; then
