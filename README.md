@@ -82,11 +82,11 @@ nix build -L .#grapheneos-mustang-kernel -o mustang-kernel-dist
 Build the APK (unsigned):
 
 ```zsh
-nix build .#forkgram -o forkgram
+nix build .#apk_forkgram -o forkgram
 # APK at forkgram/forkgram.apk
 ```
 
-note on nix+gradle: always need "-xlintVitalRelease" in gradleFlags unless `Task 'lintVitalRelease' not found in root project`; with this flag added gradle should not fetch "play-sdk/index/snapshot" "group-index" files - see https://github.com/NixOS/nixpkgs/issues/501643#issuecomment-4122356032
+note on nix+gradle: always need "-xlintVitalRelease" in gradleFlags unless `Task 'lintVitalRelease' not found in root project`; with this flag added gradle should not fetch "play-sdk/index/snapshot" "group-index" files - see <https://github.com/NixOS/nixpkgs/issues/501643#issuecomment-4122356032>
 
 ### Generate a signing key
 
@@ -104,24 +104,15 @@ keytool -genkeypair -v \
 ### Re-sign the APK with your key
 
 ```zsh
-nix build .#forkgram.signScript -o sign-forkgram
-./sign-forkgram/bin/sign-forkgram my-release-key.jks \
-  --ks-pass password \
-  --out forkgram-signed.apk
-```
-
-Or with `nix run`:
-
-```zsh
-nix run .#forkgram.signScript -- \
+nix run .#apk_forkgram.signScript -- \
   my-release-key.jks \
   --ks-pass password \
   --out forkgram-signed.apk
-nix run -L .#zotero-android.signScript -- \
+nix run -L .#apk_zotero-android.signScript -- \
   my-release-key.jks \
   --ks-pass password \
   --out zotero-signed.apk
-NIXPKGS_ALLOW_UNFREE=1 nix run --impure .#meshtastic.signScript -- \
+NIXPKGS_ALLOW_UNFREE=1 nix run --impure .#apk_meshtastic.signScript -- \
   my-release-key.jks \
   --ks-pass password \
   --out meshtastic-signed.apk
