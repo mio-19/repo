@@ -38,6 +38,9 @@ let
         s.platforms-android-34
         s.platforms-android-30
         s.build-tools-34-0-0
+        # Tried NDK 27.3.13750724 here, but KOReader's android-luajit-launcher
+        # still uses ALooper_pollAll, which the newer headers mark unavailable,
+        # so this stays on the baseline NDK until the native source is updated.
         s.ndk-26-1-10909125
       ]);
 

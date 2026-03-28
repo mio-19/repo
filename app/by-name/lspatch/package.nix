@@ -17,6 +17,9 @@ let
     s.platform-tools
     s.platforms-android-36
     s.build-tools-36-0-0
+    # Tried NDK 29.0.14206865 here, but LSPatch then failed in native x86
+    # lsplant builds with duplicate SSE intrinsic definitions under Clang 21,
+    # so this stays on the baseline NDK for now.
     s.ndk-29-0-13113456
     s.cmake-3-31-6
   ]);

@@ -21,6 +21,9 @@ let
         s.platforms-android-36
         s.build-tools-35-0-0
         s.build-tools-36-0-0
+        # Tried NDK 29.0.14206865 here, but Eden then failed deeper in bundled
+        # Boost.Process/Asio native code on std::aligned_alloc with the newer
+        # libc++ sysroot, so this stays on the baseline NDK for now.
         s.ndk-28-2-13676358
         s.cmake-3-22-1
       ]);

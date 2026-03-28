@@ -11,6 +11,9 @@ let
     s.platform-tools
     s.platforms-android-35
     s.build-tools-35-0-0
+    # Tried NDK 27.3.13750724 here, but Forkgram's bundled native dependency
+    # scripts still assume older NDK tool/bin and sysroot layouts; dav1d was
+    # patched forward, but libvpx still failed to link cleanly, so keep baseline.
     s.ndk-21-4-7075529
   ]);
 in
