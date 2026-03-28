@@ -1,0 +1,20 @@
+--- a/core/local/build.gradle.kts
++++ b/core/local/build.gradle.kts
+@@ -8,6 +8,7 @@
+ android {
+     namespace = "sh.haven.core.local"
+     compileSdk = 36
++    ndkVersion = "27.3.13750724"
+ 
+     defaultConfig {
+         minSdk = 26
+--- a/termlib/lib/build.gradle.kts
++++ b/termlib/lib/build.gradle.kts
+@@ -10,6 +10,7 @@
+ android {
+     namespace = "org.connectbot.terminal"
+     compileSdk = 36
++    ndkVersion = "27.3.13750724"
+ 
+     defaultConfig {
+         minSdk = 24

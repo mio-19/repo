@@ -3,14 +3,20 @@
   callPackage,
   enableKSU ? true,
   pwmmode ? "0x01", # 0x02 might be too dark under direct sunlight
-  enableLindroid ? true,
+  enableLindroid ? false,
   enableDaria ? enableLindroid,
+  enableDroidspaces ? true,
 }:
 callPackage ./grapheneos_kernel_common.nix { } {
   pname = "grapheneos-husky-kernel";
   buildScript = "build_shusky.sh";
   distDir = "shusky";
-  inherit enableKSU enableLindroid enableDaria;
+  inherit
+    enableKSU
+    enableLindroid
+    enableDaria
+    enableDroidspaces
+    ;
   extraBuildCommands = ''
     apply_patch ${
       if pwmmode == "0x01" then

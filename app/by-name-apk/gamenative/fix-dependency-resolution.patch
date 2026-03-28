@@ -1,0 +1,34 @@
+--- a/app/build.gradle.kts
++++ b/app/build.gradle.kts
+@@ -247,6 +247,10 @@
+     implementation(libs.datastore.preferences)
+     implementation(libs.jetbrains.kotlinx.json)
+     implementation(libs.kotlin.coroutines)
++    implementation("com.squareup.okio:okio-jvm:3.16.0")
++    implementation("org.apache.commons:commons-lang3:3.18.0")
++    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.2.0")
++    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1")
+     implementation(libs.timber)
+     implementation(libs.zxing)
+ 
+--- a/gradle/libs.versions.toml
++++ b/gradle/libs.versions.toml
+@@ -5,15 +5,15 @@
+ apng = "3.0.2" # https://mvnrepository.com/artifact/com.github.penfeizhou.android.animation/apng
+ composeBom = "2025.01.01" # https://mvnrepository.com/artifact/androidx.compose/compose-bom
+ coreKtx = "1.15.0" # https://mvnrepository.com/artifact/androidx.core/core-ktx
+-coroutines = "1.10.1" # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
++coroutines = "1.10.2" # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-core
+ dagger-hilt = "2.55" # https://mvnrepository.com/artifact/com.google.dagger/hilt-android
+ dataStore = "1.1.2" # https://mvnrepository.com/artifact/androidx.datastore/datastore-preferences
+ espressoCore = "3.6.1" # https://mvnrepository.com/artifact/androidx.test.espresso/espresso-core
+ feature-delivery = "2.1.0" # https://mvnrepository.com/artifact/com.google.android.play/feature-delivery
+ play-integrity = "1.6.0" # https://mvnrepository.com/artifact/com.google.android.play/integrity
+ hiltNavigationCompose = "1.2.0" # https://mvnrepository.com/artifact/androidx.hilt/hilt-navigation-compose
+-javasteam = "1.8.0.1-13-SNAPSHOT" # https://mvnrepository.com/artifact/in.dragonbra/javasteam
+-json = "1.8.0" # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json
++javasteam = "1.8.0.1-13-20260308.075210-1" # https://mvnrepository.com/artifact/in.dragonbra/javasteam
++json = "1.8.1" # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json
+ junit = "4.13.2" # https://mvnrepository.com/artifact/junit/junit
+ junitVersion = "1.2.1" # https://mvnrepository.com/artifact/androidx.test.ext/junit
+ kotlin = "2.1.21" # https://mvnrepository.com/artifact/org.jetbrains.kotlin.android/org.jetbrains.kotlin.android.gradle.plugin

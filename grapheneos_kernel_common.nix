@@ -27,6 +27,8 @@
   fetchurl,
   fetchFromGitHub,
   dockerTools,
+  fetchpatch,
+  callPackage,
 }:
 {
   pname,
@@ -45,6 +47,7 @@
   installSubdir ? "grapheneos",
   enableKSU,
   enableLindroid,
+  enableDroidspaces ? false,
   enableDaria ? enableLindroid,
   buildCommand ? null,
   extraBuildCommands ? "",
@@ -63,7 +66,7 @@ let
   #version = "${kernelPixel.date}-${builtins.substring 0 8 kernelPixel.version}";
 
   lindroidDrm = sources.lindroid_drm_loopback.src;
-  kernelSUSrc = import ./kernelSU105.nix { inherit fetchgit; };
+  kernelSUSrc = callPackage ./kernelSU105.nix { };
   kernelBuildEnv = buildFHSEnv {
     name = "${pname}-build-env";
     targetPkgs =
@@ -115,28 +118,49 @@ stdenvNoCC.mkDerivation {
       }
 
       ${extraBuildCommands}
-      ${lib.optionalString enableKSU ''
-        # KernelSU v1.0.5 style tree injection shared across GrapheneOS kernels.
-        rm -rf aosp/KernelSU
-        cp -r ${kernelSUSrc} aosp/KernelSU
-        chmod -R u+w aosp/KernelSU
-        ln -sfn ../KernelSU/kernel aosp/drivers/kernelsu
-        printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> aosp/drivers/Makefile
-        sed -i "/endmenu/i\\source \"drivers/kernelsu/Kconfig\"" aosp/drivers/Kconfig
+      ${lib.optionalString enableKSU # https://github.com/tiann/KernelSU/issues/2942#issuecomment-3969773467
+        ''
+          # KernelSU v1.0.5 style tree injection shared across GrapheneOS kernels.
+          rm -rf aosp/KernelSU
+          cp -r ${kernelSUSrc} aosp/KernelSU
+          chmod -R u+w aosp/KernelSU
+          ln -sfn ../KernelSU/kernel aosp/drivers/kernelsu
+          printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> aosp/drivers/Makefile
+          sed -i "/endmenu/i\\source \"drivers/kernelsu/Kconfig\"" aosp/drivers/Kconfig
 
-        cp aosp/KernelSU/kernel/Makefile aosp/KernelSU/kernel/Makefile.orig
-        {
-          echo "srctree := $(pwd)/aosp"
-          echo "src := KernelSU/kernel"
-          cat aosp/KernelSU/kernel/Makefile.orig
-        } > aosp/KernelSU/kernel/Makefile
-      ''}
+          cp aosp/KernelSU/kernel/Makefile aosp/KernelSU/kernel/Makefile.orig
+          {
+            echo "srctree := $(pwd)/aosp"
+            echo "src := KernelSU/kernel"
+            cat aosp/KernelSU/kernel/Makefile.orig
+          } > aosp/KernelSU/kernel/Makefile
+        ''
+      }
 
       ${lib.optionalString enableLindroid ''
         # lindroid steps
+        sed -i "/^CONFIG_INTERCONNECT=y$/a CONFIG_DRM_LINDROID_EVDI=y" aosp/arch/arm64/configs/gki_defconfig
+
+        rm -rf aosp/drivers/lindroid-drm
+        cp -r ${lindroidDrm} aosp/drivers/lindroid-drm
+        echo "obj-y += lindroid-drm/" >> aosp/drivers/Makefile
+        sed -i "/endmenu/i\\source \"drivers/lindroid-drm/Kconfig\"" aosp/drivers/Kconfig
+
+        cd aosp
+        #see bwlow#apply_patch ${./kernel/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch}
+        apply_patch ${./kernel/3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch}
+        #see bwlow#apply_patch ${./kernel/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch}
+        cd ..
+
+        ${lib.optionalString enableDaria ''
+          apply_patch ${./kernel/0001-daria.patch}
+        ''}
+        apply_patch ${./kernel/sidharth-hack.patch}
+      ''}
+
+      ${lib.optionalString (enableLindroid || enableDroidspaces) ''
         sed -i "/^# CONFIG_PID_NS is not set$/d" aosp/arch/arm64/configs/gki_defconfig
         sed -i "/^CONFIG_NAMESPACES=y$/a CONFIG_USER_NS=y" aosp/arch/arm64/configs/gki_defconfig
-        sed -i "/^CONFIG_INTERCONNECT=y$/a CONFIG_DRM_LINDROID_EVDI=y" aosp/arch/arm64/configs/gki_defconfig
         sed -i "/^CONFIG_TMPFS=y$/a CONFIG_TMPFS_POSIX_ACL=y" aosp/arch/arm64/configs/gki_defconfig
         sed -i "/^CONFIG_CPUSETS=y$/a CONFIG_CGROUP_DEVICE=y" aosp/arch/arm64/configs/gki_defconfig
         sed -i "/^CONFIG_UAPI_HEADER_TEST=y$/a CONFIG_SYSVIPC=y" aosp/arch/arm64/configs/gki_defconfig
@@ -145,22 +169,40 @@ stdenvNoCC.mkDerivation {
         sed -i "/^  from_kuid$/a\\  from_kuid_munged" aosp/android/abi_gki_aarch64_pixel
         sed -i "/^  mac_pton$/a\\  make_kuid" aosp/android/abi_gki_aarch64_pixel
 
-        rm -rf aosp/drivers/lindroid-drm
-        cp -r ${lindroidDrm} aosp/drivers/lindroid-drm
-        echo "obj-y += lindroid-drm/" >> aosp/drivers/Makefile
-        sed -i "/endmenu/i\\source \"drivers/lindroid-drm/Kconfig\"" aosp/drivers/Kconfig
+        cd aosp
+        apply_patch ${
+          fetchpatch {
+            url = "https://github.com/ravindu644/Droidspaces-OSS/raw/refs/heads/main/Documentation/resources/kernel-patches/GKI/03.5.15+_use_android_abi_padding_for_posix_mqueue.patch";
+            hash = "sha256-DjVQs4Y/PTCMXMqLyIkz/Wrzpfz/bjF550jsj24jWw0=";
+          }
+        }
+        # patch same with lindroid ./kernel/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch
+        apply_patch ${
+          fetchpatch {
+            url = "https://raw.githubusercontent.com/ravindu644/Droidspaces-OSS/refs/heads/main/Documentation/resources/kernel-patches/GKI/02.fix_restore%20cgroup%20file%20prefix%20handling%20.patch";
+            hash = "sha256-rjHyjy4QtbukDdPrxCzJY6DzXhHHcPHkYHrnWzHIvLQ";
+          }
+        }
+        # patch same with lindroid ./kernel/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch
+        apply_patch ${
+          fetchpatch {
+            url = "https://github.com/ravindu644/Droidspaces-OSS/raw/refs/heads/main/Documentation/resources/kernel-patches/GKI/04.use_android_abi_padding_for_sysvipc_task_struct.patch";
+            hash = "sha256-nGDXr85d7HrxrCr7QKq61XqqNWl+CFjY2ltRStnZCEg=";
+          }
+        }
+        cd ..
+      ''}
 
-        (
-          cd aosp
-          apply_patch ${./kernel/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch}
-          apply_patch ${./kernel/3dcc884c689681dda2d9ad24a9e219013f70cfe8.patch}
-          apply_patch ${./kernel/a72032ecf33c63d8a4abb64b08c1a0b847c82a32.patch}
-        )
-
-        ${lib.optionalString enableDaria ''
-          apply_patch ${./kernel/0001-daria.patch}
-        ''}
-        apply_patch ${./kernel/sidharth-hack.patch}
+      ${lib.optionalString enableDroidspaces ''
+        sed -i "/^CONFIG_PCI_ENDPOINT=y$/a CONFIG_DEVTMPFS=y" aosp/arch/arm64/configs/gki_defconfig
+        cd aosp
+        echo skipping because cannot apply patch ${
+          fetchpatch {
+            url = "https://github.com/ravindu644/Droidspaces-OSS/raw/refs/heads/main/Documentation/resources/kernel-patches/GKI/01.disable_crc_checks_for_lkms.patch";
+            hash = "sha256-JtnZ4U1NstMavQPIOxjyF6TVG4I9/X3qOBPdwJt8/6Q=";
+          }
+        }
+        cd ..
       ''}
 
 

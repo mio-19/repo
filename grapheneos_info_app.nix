@@ -87,6 +87,7 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   gradleFlags = [
+    "-xlintVitalRelease"
     "-Dandroid.aapt2FromMavenOverride=${androidSdk.androidsdk}/libexec/android-sdk/build-tools/36.1.0/aapt2"
     "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk.androidsdk}/libexec/android-sdk/build-tools/36.1.0/aapt2"
   ];

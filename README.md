@@ -1,8 +1,10 @@
 # repo
 
+This repository contains many llm generated glue code.
+
 Note that distributing binaries built from this repository might be disallowed by copyright/trademark holders. This repository is only available as source code only.
 
-Using this repository may result in data loss, boot loops, bricked devices, exploded devices, dead SD cards, thermonuclear war, or you getting fired because the alarm app failed. By proceeding, you accept full responsibility for any issues that may arise.
+Using this repository may result in data loss, boot loops, bricked devices, injuries due to exploded devices, dead SD cards, thermonuclear war, lawsuit, banned account, money loss, or you getting fired because the alarm app failed. By proceeding, you accept full responsibility for any issues that may arise.
 
 android devices rom configurations
 
@@ -44,7 +46,7 @@ nix build -L --max-jobs 4 .#gos.cheetah.releaseScript -o release && ./release ./
 nix build -L --max-jobs 4 .#gosNoCcache.cheetah.releaseScript -o release && ./release ./keys-cheetah
 ```
 
-It is recommended to have OEM unlocking to be on in developer options when flashing new versions.
+It is recommended to have OEM unlocking to be on in developer options when flashing new versions to avoid bricked devices.
 
 generate keys/updating keys:
 
@@ -84,6 +86,8 @@ nix build .#forkgram -o forkgram
 # APK at forkgram/forkgram.apk
 ```
 
+note on nix+gradle: always need "-xlintVitalRelease" in gradleFlags unless `Task 'lintVitalRelease' not found in root project`; with this flag added gradle should not fetch "play-sdk/index/snapshot" "group-index" files - see https://github.com/NixOS/nixpkgs/issues/501643#issuecomment-4122356032
+
 ### Generate a signing key
 
 ```zsh
@@ -113,6 +117,10 @@ nix run .#forkgram.signScript -- \
   my-release-key.jks \
   --ks-pass password \
   --out forkgram-signed.apk
+nix run -L .#zotero-android.signScript -- \
+  my-release-key.jks \
+  --ks-pass password \
+  --out zotero-signed.apk
 NIXPKGS_ALLOW_UNFREE=1 nix run --impure .#meshtastic.signScript -- \
   my-release-key.jks \
   --ks-pass password \
@@ -166,3 +174,4 @@ read
 
 + <https://xdaforums.com/t/improving-s-pen-sensitivity-under-lineage-roms.4752027/>
 + <https://github.com/osbm/nixapks>
++ <https://github.com/tiann/KernelSU/issues/2942#issuecomment-4078266560>

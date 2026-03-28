@@ -1,0 +1,14 @@
+--- a/app/build.gradle.kts
++++ b/app/build.gradle.kts
+@@ -107,6 +107,11 @@
+         )
+     }
+ 
++    lint {
++        checkReleaseBuilds = false
++        abortOnError = false
++    }
++
+     buildTypes {
+         debug {
+             isDebuggable = true
