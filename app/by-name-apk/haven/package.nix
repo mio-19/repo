@@ -164,14 +164,14 @@ let
     in
     {
       pname = "haven";
-      version = "3.28.0";
+      version = "4.0.0";
 
       src = fetchFromGitHub {
         owner = "GlassOnTin";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-eMEFubFeok8R9rLQk8xYdLnldumXJBpazxKAOndFhI0=";
+        hash = "sha256-7mf64vDAK98dEfEOWXzKL22bMJYi52cLA5U0pNeot1s=";
       };
 
       patches = [
