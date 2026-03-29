@@ -43,6 +43,7 @@ let
         revanced-cli patch \
           -b \
           -p ${revancedBundle} \
+          --enable="Disable Play Integrity" \
           -o "$workdir/spotify-revanced.apk" \
           "$workdir/spotify-base.apk"
 
