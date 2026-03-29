@@ -54,6 +54,7 @@ let
     "bilibili-cn"
     "rednote"
     "instagram-revanced"
+    "duolingo-hoodles"
 
     # cannot build on darwin due to nixpkgs didn't package android toolchain for darwin aarch64
     "kernelsu"
