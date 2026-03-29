@@ -52,7 +52,6 @@ let
 
         morphe-cli patch \
           --patches=${hoodlesPatches} \
-          --enable="Disable Pairip license check" \
           --unsigned \
           --temporary-files-path "$workdir/tmp" \
           --out "$workdir/duolingo-hoodles.apk" \
