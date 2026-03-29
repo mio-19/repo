@@ -10,6 +10,7 @@
   unzip,
   androidSdkBuilder,
 }:
+# from https://www.reddit.com/r/MorpheApp/s/Pmhww9wfa4
 let
   appPackage =
     let
