@@ -46,7 +46,7 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "hoodles-patches";
-  version = "1.21.1";
+  version = "1.16.0";
 
   src = fetchFromGitHub {
     owner = "hoo-dles";
@@ -106,6 +106,26 @@ stdenv.mkDerivation (finalAttrs: {
             dependencySubstitution {
                 substitute(module("com.github.MorpheApp:ARSCLib")).using(project(":"))
             }
+        }
+    }
+
+    // Added by Nix build: include morphe-patcher as composite build
+    val patcherDir = file("../morphe-patcher")
+    if (patcherDir.exists()) {
+        includeBuild(patcherDir) {
+            dependencySubstitution {
+                substitute(module("app.morphe:morphe-patcher")).using(project(":"))
+            }
+        }
+    }
+
+    dependencyResolutionManagement {
+        repositories {
+            maven { url = uri("file://" + System.getenv("MORPHE_PLUGIN_M2")) }
+            maven { url = uri("file://" + System.getenv("MORPHE_LIBRARY_M2")) }
+            maven { url = uri("https://jitpack.io") }
+            google()
+            mavenCentral()
         }
     }
     EOF

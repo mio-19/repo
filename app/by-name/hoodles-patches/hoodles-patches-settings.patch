@@ -1,17 +1,19 @@
---- settings.gradle.kts.orig	2026-03-29 14:57:45.905434212 +1100
-+++ settings.gradle.kts	2026-03-29 14:57:46.143433358 +1100
-@@ -5,12 +5,8 @@
+--- settings.gradle.kts	2026-03-29 15:30:11.890265925 +1100
++++ settings.gradle.kts	2026-03-29 15:30:11.908265852 +1100
+@@ -4,14 +4,8 @@
+     repositories {
          gradlePluginPortal()
          google()
-         maven {
+-        maven {
 -            name = "GitHubPackages"
 -            url = uri("https://maven.pkg.github.com/MorpheApp/registry")
 -            credentials {
 -                username = providers.gradleProperty("gpr.user").orNull ?: System.getenv("GITHUB_ACTOR")
 -                password = providers.gradleProperty("gpr.key").orNull ?: System.getenv("GITHUB_TOKEN")
 -            }
+-        }
 +        maven { url = uri("file://" + System.getenv("MORPHE_PLUGIN_M2")) }
 +        maven { url = uri("file://" + System.getenv("MORPHE_LIBRARY_M2")) }
-         }
          maven { url = uri("https://jitpack.io") }
      }
+ }

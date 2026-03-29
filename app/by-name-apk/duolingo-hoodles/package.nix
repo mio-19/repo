@@ -51,7 +51,6 @@ let
 
         morphe-cli patch \
           --patches=${hoodlesPatches} \
-          --enable="Change package name" \
           --unsigned \
           --temporary-files-path "$workdir/tmp" \
           --out "$workdir/duolingo-hoodles.apk" \
