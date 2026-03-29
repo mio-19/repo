@@ -51,7 +51,7 @@ in
           # include files in the images.
           # to set UCI configuration, create a uci-defauts scripts as per
           # official OpenWRT ImageBuilder recommendation.
-          files = pkgs.runCommand "image-files" { } "";
+          files = pkgs.runCommand "image-files" { } "mkdir -p $out";
         };
 
       in
