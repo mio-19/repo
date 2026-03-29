@@ -51,7 +51,7 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "hoo-dles";
     repo = "morphe-patches";
-    rev = "3ce297d4b5bc3b6fdc9f5a7704b4727500a9150f";
+    rev = "v${finalAttrs.version}";
     hash = "sha256-NmZGPwQpcQMxOPJE1uJ7ho9YU26TZIXaM5H7Y8vL9oI=";
   };
 
