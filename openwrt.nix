@@ -19,6 +19,8 @@ in
           # add package to include in the image, ie. packages that you don't
           # want to install manually later
           packages = [
+            # https://github.com/astro/nix-openwrt-imagebuilder/issues/53
+            "luci"
             # btop tmux curl nano diffutils git git-lfs git-http: for me
             "btop"
             "tmux"
