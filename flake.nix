@@ -65,6 +65,8 @@
         {
           formatter = pkgs.nixfmt;
 
+          packages.ollama-static = pkgs.pkgsStatic.ollama;
+
           # https://github.com/nix-community/nixos-apple-silicon/pull/353
           packages.zfs-installer =
             (nixpkgs.lib.nixosSystem {
