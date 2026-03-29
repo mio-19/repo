@@ -7,6 +7,7 @@
   revanced-patches,
   apkeditor,
 }:
+# TODO: https://github.com/brosssh/morphe-patches/blob/main/patches/src/main/kotlin/app/morphe/patches/instagram/Constants.kt
 let
   appPackage =
     let
