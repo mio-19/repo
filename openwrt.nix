@@ -19,10 +19,15 @@ in
           # add package to include in the image, ie. packages that you don't
           # want to install manually later
           packages = [
+            # btop tmux curl nano diffutils git git-lfs git-http: for me
+            "btop"
             "tmux"
             "curl"
             "nano"
             "diffutils"
+            "git"
+            "git-lfs"
+            "git-http"
             "tailscale"
             "luci-app-aria2"
             "luci-app-irqbalance"
@@ -30,7 +35,15 @@ in
             "docker"
             "dockerd"
             "luci-app-dockerman"
+            # shadow : try out nix/lix
             "shadow"
+            # kmod-fs-btrfs btrfs-progs kmod-usb-storage kmod-usb-storage-uas block-mount parted : usb storage - https://openwrt.org/docs/guide-user/additional-software/extroot_configuration
+            "kmod-fs-btrfs"
+            "btrfs-progs"
+            "kmod-usb-storage"
+            "kmod-usb-storage-uas"
+            "block-mount"
+            "parted"
           ];
 
           disabledServices = [ ];
