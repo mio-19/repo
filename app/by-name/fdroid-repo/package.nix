@@ -67,7 +67,8 @@ let
 
   fdroidApks = lib.filterAttrs (
     name: app:
-    (app.meta ? metadataYml)
+    (app ? meta)
+    && (app.meta ? metadataYml)
     && !(builtins.elem name excludedApkNames)
     && (stdenv.isLinux || !(builtins.elem name linuxOnlyApkNames))
   ) apk;
