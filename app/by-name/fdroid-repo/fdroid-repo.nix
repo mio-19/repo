@@ -71,7 +71,7 @@ pkgs.stdenvNoCC.mkDerivation {
       exit 1
     fi
 
-    ${lib.concatMapStringsSep "\n" (entry: "cp ${entry.file} metadata/${entry.appId}.yml") appMetadata}
+    ${lib.concatMapStringsSep "\n" (entry: "[ -f metadata/${entry.appId}.yml ] || cp ${entry.file} metadata/${entry.appId}.yml") appMetadata}
 
     cat > config.yml << EOF
     repo_name: ${repoName}
