@@ -71,7 +71,6 @@ pkgs.stdenvNoCC.mkDerivation {
       exit 1
     fi
 
-    # allow multiple entries of the same appId with different versions/variants.
     ${lib.concatMapStringsSep "\n" (entry: "[ -f metadata/${entry.appId}.yml ] || cp ${entry.file} metadata/${entry.appId}.yml") appMetadata}
 
     cat > config.yml << EOF
