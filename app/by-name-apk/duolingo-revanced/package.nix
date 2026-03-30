@@ -74,11 +74,10 @@ mk-apk-package {
       License: Proprietary
       SourceCode: https://github.com/ReVanced/revanced-patches
       IssueTracker: https://github.com/ReVanced/revanced-patches/issues
-      AutoName: Duolingo ReVanced
+      AutoName: Duolingo
       Summary: Patched Duolingo APK
       Description: |-
-        Duolingo ReVanced is a patched Duolingo APK built with ReVanced
-        patches and kept under the original package name.
+        Duolingo ReVanced or Hoodles
     '';
   };
 }
