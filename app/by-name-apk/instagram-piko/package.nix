@@ -7,10 +7,12 @@
   piko-patches,
 }:
 let
+  # https://www.reddit.com/r/MorpheApp/comments/1s75ei7/instagram_patches_by_crimera/
+  # https://www.reddit.com/r/MorpheApp/s/gIch9P2l95
   instagramApk = fetchurl {
     name = "instagram-423-0-0-26-66.apk";
     url = "https://web.archive.org/web/20260330043542if_/https://dw.uptodown.net/dwn/7zskvd5g1faKCm6BHNRGzN3N6hjZySBKYyppcYLjyNolqFiELWXBY3z97C0muhAkuARQ8iwDVV2-M2Zt2SRtd_Rddk6O3V6ZFLBLjtPxatIcara_lBZQKzZE_qD8hxMg/UUMTBef2KbVdRyEHO3GJJOQhaEzo7xpc0pxqKbcorVQp-4PFSI0S2dV_ta2cK40Mb_eReFsPqsf9LrP61PYZ9-KhCyEjx7kOig6UC5POKsqP3HlHQEBNeeHYxm-HWH6w/sq04eZ3aopdf0fVv2UAnussPw3e8h73rs2Q87s_4Ew8emq7bhyURLJOXwPyDdYw9qSzuQfHPJjildXyNgwu5KA==/instagram-423-0-0-26-66.apk";
-    hash = "sha256-0c3n9v9sqp65w82z6l679q64v6l0q1kl0qkv4x88ynxz7svwcn13";
+    hash = "sha256-I1jGtz6/W49QJ3tiQGfAgJpNDE7HUPMF4sVcrNNOdjA=";
     # Mirror metadata from https://instagram.en.uptodown.com/android/download/1157536748 via the archived download URL above.
   };
 
