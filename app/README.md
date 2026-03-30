@@ -10,6 +10,7 @@ broken but can compile:
 + kernelsu cannot communicate with the kernel because of the need to change KSU_EXPECTED_HASH
 + immich white screen
 + rednote crashed
++ twitter cannot login
 
 slightly broken:
 
