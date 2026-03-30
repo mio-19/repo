@@ -59,6 +59,7 @@ let
         morphe-cli patch \
           --patches=${morphePatches} \
           --enable="Change package name" \
+          --enable="Disable Play Store updates" \
           --unsigned \
           --temporary-files-path "$workdir/tmp" \
           --out "$workdir/reddit-morphe.apk" \
