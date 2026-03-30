@@ -1,0 +1,32 @@
+--- settings.gradle.kts
++++ settings.gradle.kts
+@@ -2,8 +2,8 @@
+ 
+ // Include Morphe forks of libraries as composite builds if they exist locally
+ mapOf(
+-    "ARSCLib" to "com.github.MorpheApp:arsclib",
+-    "multidexlib2" to "app.morphe:multidexlib",
++    "ARSCLib" to "com.github.MorpheApp:ARSCLib",
++    "multidexlib2" to "app.morphe:multidexlib2",
+ ).forEach { (libraryPath, libraryName) ->
+     val libDir = file("../$libraryPath")
+     if (libDir.exists()) {
+@@ -14,3 +14,18 @@
+         }
+     }
+ }
++
++
++// Added by Nix build: include Apktool as composite build.
++val apktoolDir = file("../Apktool")
++if (apktoolDir.exists()) {
++    includeBuild(apktoolDir) {
++        dependencySubstitution {
++            substitute(module("app.morphe:apktool-lib")).using(project(":brut.apktool:apktool-lib"))
++            substitute(module("app.morphe:brut.j.common")).using(project(":brut.j.common"))
++            substitute(module("app.morphe:brut.j.util")).using(project(":brut.j.util"))
++            substitute(module("app.morphe:brut.j.dir")).using(project(":brut.j.dir"))
++            substitute(module("app.morphe:brut.j.xml")).using(project(":brut.j.xml"))
++        }
++    }
++}

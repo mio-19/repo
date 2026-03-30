@@ -73,9 +73,9 @@ stdenv.mkDerivation (finalAttrs: {
     # Copy deps file to source directory for fetchDeps
     cp "${./morphe-patches_deps.json}" "$sourceRoot/"
 
-    # Replace GitHubPackages maven repo with local paths from env vars
-    sed -i '/name = "GitHubPackages"/,/}/d' "$sourceRoot/settings.gradle.kts"
-    sed -i 's/google()/google()\n        maven { url = uri("file:\/\/" + System.getenv("MORPHE_PLUGIN_M2")) }\n        maven { url = uri("file:\/\/" + System.getenv("MORPHE_LIBRARY_M2")) }/' "$sourceRoot/settings.gradle.kts"
+    patch -d "$sourceRoot" -p0 < ${./morphe-patches-settings.patch}
+    patch -d "$root/morphe-patcher" -p0 < ${./morphe-patcher.patch}
+    patch -d "$root/morphe-patcher" -p0 < ${./morphe-patcher-settings.patch}
 
     cat >> "$sourceRoot/settings.gradle.kts" << 'EOF'
 
@@ -85,6 +85,16 @@ stdenv.mkDerivation (finalAttrs: {
         includeBuild(arsclibDir) {
             dependencySubstitution {
                 substitute(module("com.github.MorpheApp:ARSCLib")).using(project(":"))
+            }
+        }
+    }
+
+    // Added by Nix build: include morphe-patcher as composite build
+    val patcherDir = file("../morphe-patcher")
+    if (patcherDir.exists()) {
+        includeBuild(patcherDir) {
+            dependencySubstitution {
+                substitute(module("app.morphe:morphe-patcher")).using(project(":"))
             }
         }
     }
