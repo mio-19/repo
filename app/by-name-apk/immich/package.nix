@@ -20,6 +20,8 @@ let
         s.platform-tools
         s.platforms-android-36
         s.build-tools-36-1-0
+        s.ndk-27-0-12077973
+        s.ndk-28-2-13676358
         s.ndk-29-0-14206865
         s.cmake-3-31-6
       ]);
@@ -30,6 +32,8 @@ let
           hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
           defaultJava = jdk17_headless;
         }).wrapped;
+
+      pythonWithYaml = python3.withPackages (ps: [ ps.pyyaml ]);
     in
     buildDartApplication.override { dart = flutter335; } (finalAttrs: {
       pname = "immich";
@@ -94,8 +98,6 @@ let
         JAVA_HOME = jdk17_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
-        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
       };
 
@@ -113,9 +115,55 @@ let
         cp -LR ${flutter335} flutter-sdk
         chmod -R u+w flutter-sdk
 
+        cat > android/gradle-version-normalize.init.gradle << 'INIT_SCRIPT'
+        allprojects {
+          buildscript {
+            configurations.matching { it.name == "classpath" }.all {
+              resolutionStrategy.eachDependency { details ->
+                if (details.requested.group == "com.android.tools.build" && details.requested.name == "gradle") {
+                  details.useVersion("8.11.2")
+                }
+              }
+            }
+          }
+          configurations.configureEach {
+            exclude group: "androidx.room", module: "room-runtime"
+            exclude group: "androidx.room", module: "room-ktx"
+            exclude group: "androidx.sqlite", module: "sqlite"
+            exclude group: "androidx.sqlite", module: "sqlite-framework"
+            resolutionStrategy.eachDependency { details ->
+              if (details.requested.group == "androidx.appcompat" && details.requested.name == "appcompat") {
+                details.useVersion("1.7.0")
+              }
+              if (details.requested.group == "androidx.appcompat" && details.requested.name == "appcompat-resources") {
+                details.useVersion("1.7.0")
+              }
+              if (details.requested.group == "androidx.media" && details.requested.name == "media") {
+                details.useVersion("1.1.0")
+              }
+              if (details.requested.group == "androidx.transition" && details.requested.name == "transition") {
+                details.useVersion("1.5.0")
+              }
+              if (details.requested.group == "androidx.slidingpanelayout" && details.requested.name == "slidingpanelayout") {
+                details.useVersion("1.2.0")
+              }
+              if (details.requested.group == "androidx.constraintlayout" && details.requested.name == "constraintlayout") {
+                details.useVersion("2.0.1")
+              }
+              if (details.requested.group == "androidx.exifinterface" && details.requested.name == "exifinterface") {
+                details.useVersion("1.3.7")
+              }
+              if (details.requested.group == "com.google.android.material" && details.requested.name == "material") {
+                details.useVersion("1.7.0")
+              }
+            }
+          }
+        }
+        INIT_SCRIPT
+
         cat > android/gradlew << 'GRADLEW_SCRIPT'
         #!/bin/sh
-        exec ${gradle}/bin/gradle "$@"
+        exec ${gradle}/bin/gradle -I "$PWD/gradle-version-normalize.init.gradle" "$@"
         GRADLEW_SCRIPT
         chmod +x android/gradlew
 
@@ -135,16 +183,6 @@ let
         substituteInPlace android/gradle.properties \
           --replace-fail "org.gradle.jvmargs=-Xmx4096M" "org.gradle.jvmargs=-Xmx8192M"
 
-        while IFS= read -r gradleFile; do
-          if grep -Fq '27.0.12077973' "$gradleFile"; then
-            substituteInPlace "$gradleFile" \
-              --replace-fail '27.0.12077973' '29.0.14206865'
-          fi
-          if grep -Fq '28.2.13676358' "$gradleFile"; then
-            substituteInPlace "$gradleFile" \
-              --replace-fail '28.2.13676358' '29.0.14206865'
-          fi
-        done < <(find android . -type f \( -name '*.gradle' -o -name '*.gradle.kts' -o -name '*.properties' \))
       '';
 
       preConfigure = ''
@@ -153,7 +191,6 @@ let
         export PUB_CACHE="$PWD/.pub-cache"
 
         echo "sdk.dir=${androidSdk}/share/android-sdk" > android/local.properties
-        echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/29.0.14206865" >> android/local.properties
         echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6" >> android/local.properties
         echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
         echo "flutter.versionName=2.6.1" >> android/local.properties
@@ -201,6 +238,21 @@ let
             --replace-fail "$original_dir" "$patched_dir"
         }
 
+        replace_flutter_plugin_root() {
+          local original_dir="$1"
+          local patched_dir="$2"
+
+          if [ -f .flutter-plugins-dependencies ] && grep -Fq "$original_dir" .flutter-plugins-dependencies; then
+            substituteInPlace .flutter-plugins-dependencies \
+              --replace-fail "$original_dir" "$patched_dir"
+          fi
+
+          if [ -f .flutter-plugins ] && grep -Fq "$original_dir" .flutter-plugins; then
+            substituteInPlace .flutter-plugins \
+              --replace-fail "$original_dir" "$patched_dir"
+          fi
+        }
+
         ${python3}/bin/python3 - <<'PY' > dart_package_dirs.sh
         import json
         import shlex
@@ -210,6 +262,7 @@ let
             data = json.load(f)
 
         wanted = {
+            "bonsoir_android": "BONSOIR_ANDROID_DIR",
             "geolocator_android": "GEOLOCATOR_ANDROID_DIR",
             "native_video_player": "NATIVE_VIDEO_PLAYER_DIR",
             "home_widget": "HOME_WIDGET_DIR",
@@ -226,6 +279,20 @@ let
         PY
         . ./dart_package_dirs.sh
 
+        if [ -n "$BONSOIR_ANDROID_DIR" ]; then
+          patched_bonsoir_android_dir="$(clone_dart_package "$BONSOIR_ANDROID_DIR" bonsoir_android)"
+
+          substituteInPlace "$patched_bonsoir_android_dir/android/build.gradle" \
+            --replace-fail "    ext.kotlin_version = '1.7.10'" "    ext.kotlin_version = '2.2.20'" \
+            --replace-fail "        classpath 'com.android.tools.build:gradle:7.3.0'" \
+              "        classpath 'com.android.tools.build:gradle:8.11.2'" \
+            --replace-fail '        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"' \
+              '        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"'
+
+          replace_dart_package_root "$BONSOIR_ANDROID_DIR" "$patched_bonsoir_android_dir"
+          replace_flutter_plugin_root "$BONSOIR_ANDROID_DIR" "$patched_bonsoir_android_dir"
+        fi
+
         if [ -n "$GEOLOCATOR_ANDROID_DIR" ]; then
           patched_geolocator_android_dir="$(clone_dart_package "$GEOLOCATOR_ANDROID_DIR" geolocator_android)"
 
@@ -237,6 +304,7 @@ let
             "$patched_geolocator_android_dir/android/src/main/java/com/baseflow/geolocator/location/GeolocationManager.java"
 
           replace_dart_package_root "$GEOLOCATOR_ANDROID_DIR" "$patched_geolocator_android_dir"
+          replace_flutter_plugin_root "$GEOLOCATOR_ANDROID_DIR" "$patched_geolocator_android_dir"
         fi
 
         flutter_engine_version="$(cat flutter-sdk/bin/internal/engine.version)"
@@ -252,6 +320,7 @@ let
          implementation \"androidx.annotation:annotation:1.8.0\"
          compileOnly \"io.flutter:flutter_embedding_release:1.0.0-$flutter_engine_version\""
             replace_dart_package_root "$NATIVE_VIDEO_PLAYER_DIR" "$patched_native_video_player_dir"
+            replace_flutter_plugin_root "$NATIVE_VIDEO_PLAYER_DIR" "$patched_native_video_player_dir"
             NATIVE_VIDEO_PLAYER_DIR="$patched_native_video_player_dir"
           fi
 
@@ -266,6 +335,7 @@ let
                 "    implementation \"org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+\"
         compileOnly \"io.flutter:flutter_embedding_release:1.0.0-$flutter_engine_version\""
             replace_dart_package_root "$HOME_WIDGET_DIR" "$patched_home_widget_dir"
+            replace_flutter_plugin_root "$HOME_WIDGET_DIR" "$patched_home_widget_dir"
             HOME_WIDGET_DIR="$patched_home_widget_dir"
           fi
 
@@ -293,6 +363,150 @@ let
                 $'implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serialization_version"\n  implementation project(\x27:native_video_player\x27)\n  implementation project(\x27:home_widget\x27)'
           fi
         fi
+
+        patch_plugin_gradle_file() {
+          local gradle_file="$1"
+          local target_agp='8.11.2'
+          local target_kotlin='2.2.20'
+
+          [ -f "$gradle_file" ] || return 0
+
+          for major in 7 8; do
+            for minor in $(seq 0 20); do
+              for patch in 0 1 2; do
+                old_agp="$major.$minor.$patch"
+                if [ "$old_agp" != "$target_agp" ] && grep -Fq "com.android.tools.build:gradle:$old_agp" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "com.android.tools.build:gradle:$old_agp" "com.android.tools.build:gradle:$target_agp"
+                fi
+              done
+            done
+          done
+
+          for major in 1 2; do
+            for minor in $(seq 0 9); do
+              for patch in $(seq 0 30); do
+                old_kotlin="$major.$minor.$patch"
+                if [ "$old_kotlin" != "$target_kotlin" ] && grep -Fq "ext.kotlin_version = '$old_kotlin'" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "ext.kotlin_version = '$old_kotlin'" "ext.kotlin_version = '$target_kotlin'"
+                fi
+                if [ "$old_kotlin" != "$target_kotlin" ] && grep -Fq "org.jetbrains.kotlin:kotlin-gradle-plugin:$old_kotlin" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "org.jetbrains.kotlin:kotlin-gradle-plugin:$old_kotlin" "org.jetbrains.kotlin:kotlin-gradle-plugin:$target_kotlin"
+                fi
+              done
+            done
+          done
+
+          if grep -Fq 'androidx.biometric:biometric' "$gradle_file" && ! grep -Fq 'nixExcludeRoomSqliteForBiometric' "$gradle_file"; then
+            if [[ "$gradle_file" == *.gradle.kts ]]; then
+              cat >> "$gradle_file" <<'EOF'
+        // nixExcludeRoomSqliteForBiometric
+        configurations.configureEach {
+          exclude(group = "androidx.room", module = "room-runtime")
+          exclude(group = "androidx.room", module = "room-ktx")
+          exclude(group = "androidx.sqlite", module = "sqlite")
+          exclude(group = "androidx.sqlite", module = "sqlite-framework")
+        }
+        EOF
+            else
+              cat >> "$gradle_file" <<'EOF'
+        // nixExcludeRoomSqliteForBiometric
+        configurations.all {
+          exclude group: 'androidx.room', module: 'room-runtime'
+          exclude group: 'androidx.room', module: 'room-ktx'
+          exclude group: 'androidx.sqlite', module: 'sqlite'
+          exclude group: 'androidx.sqlite', module: 'sqlite-framework'
+        }
+        EOF
+            fi
+          fi
+        }
+
+        patch_ndk_version_file() {
+          local file="$1"
+          [ -f "$file" ] || return 0
+          return 0
+        }
+
+        declare -A patched_pkg_dirs
+
+        while IFS= read -r pkg_dir; do
+          work_pkg_dir="$pkg_dir"
+          if [ -f "$work_pkg_dir/android/build.gradle" ] || [ -f "$work_pkg_dir/android/build.gradle.kts" ]; then
+            if [[ "$pkg_dir" == /nix/store/* ]]; then
+              if [ -z "''${patched_pkg_dirs[$pkg_dir]:-}" ]; then
+                patched_pkg_dirs[$pkg_dir]="$(clone_dart_package "$pkg_dir" "$(basename "$pkg_dir")")"
+                replace_dart_package_root "$pkg_dir" "''${patched_pkg_dirs[$pkg_dir]}"
+                replace_flutter_plugin_root "$pkg_dir" "''${patched_pkg_dirs[$pkg_dir]}"
+              fi
+              work_pkg_dir="''${patched_pkg_dirs[$pkg_dir]}"
+            fi
+          fi
+          for gradle_rel in android/build.gradle android/build.gradle.kts; do
+            gradle_file="$work_pkg_dir/$gradle_rel"
+            if [ -f "$gradle_file" ]; then
+              patch_plugin_gradle_file "$gradle_file"
+            fi
+          done
+          if [ -d "$work_pkg_dir/android" ]; then
+            while IFS= read -r ndk_file; do
+              patch_ndk_version_file "$ndk_file"
+            done < <(find "$work_pkg_dir/android" -type f \( -name '*.gradle' -o -name '*.gradle.kts' -o -name '*.properties' \))
+          fi
+        done < <(${python3}/bin/python3 - <<'PY'
+        import json
+        import urllib.parse
+
+        with open(".dart_tool/package_config.json") as f:
+            data = json.load(f)
+
+        seen = set()
+        for pkg in data["packages"]:
+            uri = pkg.get("rootUri", "")
+            if not uri.startswith("file://"):
+                continue
+            path = urllib.parse.urlparse(uri).path.removesuffix("/.")
+            if path and path not in seen:
+                seen.add(path)
+                print(path)
+        PY
+        )
+
+        ${pythonWithYaml}/bin/python3 ${../_shared/generate-flutter-plugins.py}
+
+        while IFS= read -r plugin_dir; do
+          [ -n "$plugin_dir" ] || continue
+          work_plugin_dir="$plugin_dir"
+          if [[ "$plugin_dir" == /nix/store/* ]]; then
+            if [ -z "''${patched_pkg_dirs[$plugin_dir]:-}" ]; then
+              patched_pkg_dirs[$plugin_dir]="$(clone_dart_package "$plugin_dir" "$(basename "$plugin_dir")")"
+              if grep -Fq "$plugin_dir" .dart_tool/package_config.json; then
+                replace_dart_package_root "$plugin_dir" "''${patched_pkg_dirs[$plugin_dir]}"
+              fi
+              replace_flutter_plugin_root "$plugin_dir" "''${patched_pkg_dirs[$plugin_dir]}"
+            fi
+            work_plugin_dir="''${patched_pkg_dirs[$plugin_dir]}"
+          fi
+          patch_plugin_gradle_file "$work_plugin_dir/android/build.gradle"
+          patch_plugin_gradle_file "$work_plugin_dir/android/build.gradle.kts"
+          if [ -d "$work_plugin_dir/android" ]; then
+            while IFS= read -r ndk_file; do
+              patch_ndk_version_file "$ndk_file"
+            done < <(find "$work_plugin_dir/android" -type f \( -name '*.gradle' -o -name '*.gradle.kts' -o -name '*.properties' \))
+          fi
+        done < <(${python3}/bin/python3 - <<'PY'
+        import json
+
+        with open(".flutter-plugins-dependencies") as f:
+            data = json.load(f)
+        for plugin in data.get("plugins", {}).get("android", []):
+            path = plugin.get("path", "")
+            if path:
+                print(path)
+        PY
+        )
       '';
 
       buildPhase = ''

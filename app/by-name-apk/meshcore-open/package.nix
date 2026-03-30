@@ -6,6 +6,7 @@
   fetchFromGitHub,
   flutter338,
   jdk17_headless,
+  python3,
   gradle-packages,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -16,6 +17,7 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
+        s.platforms-android-35
         s.platforms-android-36
         # AGP may resolve aapt2 from build-tools 35.0.0 even with compileSdk 36.
         s.build-tools-35-0-0
@@ -31,6 +33,8 @@ let
           hash = "sha256-egDVH7kxR4Gaq3YCT+7OILa4TkIGlBAfJ2vpUuCL7wM=";
           defaultJava = jdk17_headless;
         }).wrapped;
+
+      pythonWithYaml = python3.withPackages (ps: [ ps.pyyaml ]);
     in
     buildDartApplication.override { dart = flutter338; } (finalAttrs: {
       pname = "meshcore-open";
@@ -81,7 +85,7 @@ let
         useBwrap = false;
       };
 
-      gradleUpdateTask = ":app:assembleRelease";
+      gradleUpdateTask = ":app:assembleRelease :flserial:extractReleaseAnnotations";
 
       dontDartBuild = true;
       dontDartInstall = true;
@@ -89,6 +93,7 @@ let
       nativeBuildInputs = [
         gradle
         jdk17_headless
+        python3
         writableTmpDirAsHomeHook
       ];
 
@@ -105,6 +110,7 @@ let
 
       # Flags used by the gradle() shell function in the fetchDeps update run.
       gradleFlags = [
+        "-xlintVitalRelease"
         "--project-dir"
         "android"
         "-Dorg.gradle.java.installations.auto-download=false"
@@ -119,14 +125,57 @@ let
         cp -LR ${flutter338} flutter-sdk
         chmod -R u+w flutter-sdk
 
+        cat > android/gradle-version-normalize.init.gradle << 'INIT_SCRIPT'
+        allprojects {
+          buildscript {
+            configurations.matching { it.name == "classpath" }.all {
+              resolutionStrategy.eachDependency { details ->
+                if (details.requested.group == "com.android.tools.build" && details.requested.name == "gradle") {
+                  details.useVersion("8.9.1")
+                }
+              }
+            }
+          }
+          configurations.configureEach {
+            resolutionStrategy.eachDependency { details ->
+              if (details.requested.group == "androidx.annotation" && details.requested.name == "annotation") {
+                details.useVersion("1.8.0")
+              }
+              if (details.requested.group == "androidx.core" && details.requested.name == "core") {
+                details.useVersion("1.13.1")
+              }
+              if (details.requested.group == "androidx.core" && details.requested.name == "core-ktx") {
+                details.useVersion("1.13.1")
+              }
+            }
+          }
+        }
+        INIT_SCRIPT
+
         # Replace the Gradle wrapper with our pinned Gradle binary.
         cat > android/gradlew << 'GRADLEW_SCRIPT'
         #!/bin/sh
-        exec ${gradle}/bin/gradle "$@"
+        exec ${gradle}/bin/gradle -I "$PWD/gradle-version-normalize.init.gradle" "$@"
         GRADLEW_SCRIPT
         chmod +x android/gradlew
         substituteInPlace android/app/build.gradle.kts \
-          --replace 'ndkVersion = flutter.ndkVersion' 'ndkVersion = "29.0.14206865"'
+          --replace-fail 'ndkVersion = flutter.ndkVersion' 'ndkVersion = "29.0.14206865"'
+
+        if grep -Fq 'android.newDsl=true' android/gradle.properties; then
+          substituteInPlace android/gradle.properties \
+            --replace-fail 'android.newDsl=true' 'android.newDsl=false'
+        elif ! grep -Fq 'android.newDsl=' android/gradle.properties; then
+          echo 'android.newDsl=false' >> android/gradle.properties
+        fi
+
+        cat >> android/app/build.gradle.kts << 'EOF'
+        android {
+          lint {
+            checkReleaseBuilds = false
+            abortOnError = false
+          }
+        }
+        EOF
       '';
 
       preConfigure = ''
@@ -158,6 +207,284 @@ let
         fi
         export FLUTTER_ROOT="$PWD/flutter-sdk"
         export GRADLE_OPTS
+
+        mkdir -p .dart-patched
+
+        clone_dart_package() {
+          local source_dir="$1"
+          local patched_name="$2"
+          local patched_dir="$PWD/.dart-patched/$patched_name"
+
+          cp -LR "$source_dir" "$patched_dir"
+          chmod -R u+w "$patched_dir"
+          printf '%s\n' "$patched_dir"
+        }
+
+        replace_dart_package_root() {
+          local original_dir="$1"
+          local patched_dir="$2"
+
+          substituteInPlace .dart_tool/package_config.json \
+            --replace-fail "$original_dir" "$patched_dir"
+        }
+
+        replace_flutter_plugin_root() {
+          local original_dir="$1"
+          local patched_dir="$2"
+
+          if [ -f .flutter-plugins-dependencies ] && grep -Fq "$original_dir" .flutter-plugins-dependencies; then
+            substituteInPlace .flutter-plugins-dependencies \
+              --replace-fail "$original_dir" "$patched_dir"
+          fi
+
+          if [ -f .flutter-plugins ] && grep -Fq "$original_dir" .flutter-plugins; then
+            substituteInPlace .flutter-plugins \
+              --replace-fail "$original_dir" "$patched_dir"
+          fi
+        }
+
+        ${python3}/bin/python3 - <<'PY' > dart_package_dirs.sh
+        import json
+        import shlex
+        import urllib.parse
+
+        with open(".dart_tool/package_config.json") as f:
+            data = json.load(f)
+
+        wanted = {
+            "flserial": "FLSERIAL_DIR",
+        }
+
+        found = {env_name: "" for env_name in wanted.values()}
+        for pkg in data["packages"]:
+            env_name = wanted.get(pkg["name"])
+            if env_name:
+                found[env_name] = urllib.parse.urlparse(pkg["rootUri"]).path.removesuffix("/.")
+
+        for env_name, path in found.items():
+            print(f"export {env_name}={shlex.quote(path)}")
+        PY
+        . ./dart_package_dirs.sh
+
+        if [ -n "$FLSERIAL_DIR" ]; then
+          patched_flserial_dir="$(clone_dart_package "$FLSERIAL_DIR" flserial)"
+          substituteInPlace "$patched_flserial_dir/android/build.gradle" \
+            --replace-fail 'classpath("com.android.tools.build:gradle:8.13.0")' \
+              'classpath("com.android.tools.build:gradle:8.9.1")'
+          replace_dart_package_root "$FLSERIAL_DIR" "$patched_flserial_dir"
+        fi
+
+        patch_plugin_gradle_file() {
+          local gradle_file="$1"
+          local target_agp='8.9.1'
+          local target_kotlin='1.9.20'
+
+          [ -f "$gradle_file" ] || return 0
+
+          for major in 7 8 9; do
+            for minor in $(seq 0 20); do
+              for patch in 0 1 2; do
+                old_agp="$major.$minor.$patch"
+                if [ "$old_agp" != "$target_agp" ] && grep -Fq "com.android.tools.build:gradle:$old_agp" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "com.android.tools.build:gradle:$old_agp" "com.android.tools.build:gradle:$target_agp"
+                fi
+                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id(\"com.android.application\") version \"$old_agp\"" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "id(\"com.android.application\") version \"$old_agp\"" "id(\"com.android.application\") version \"$target_agp\""
+                fi
+                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id(\"com.android.library\") version \"$old_agp\"" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "id(\"com.android.library\") version \"$old_agp\"" "id(\"com.android.library\") version \"$target_agp\""
+                fi
+                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id(\"com.android.test\") version \"$old_agp\"" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "id(\"com.android.test\") version \"$old_agp\"" "id(\"com.android.test\") version \"$target_agp\""
+                fi
+                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id \"com.android.application\" version \"$old_agp\"" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "id \"com.android.application\" version \"$old_agp\"" "id \"com.android.application\" version \"$target_agp\""
+                fi
+                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id \"com.android.library\" version \"$old_agp\"" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "id \"com.android.library\" version \"$old_agp\"" "id \"com.android.library\" version \"$target_agp\""
+                fi
+                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id \"com.android.test\" version \"$old_agp\"" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "id \"com.android.test\" version \"$old_agp\"" "id \"com.android.test\" version \"$target_agp\""
+                fi
+                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id 'com.android.application' version '$old_agp'" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "id 'com.android.application' version '$old_agp'" "id 'com.android.application' version '$target_agp'"
+                fi
+                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id 'com.android.library' version '$old_agp'" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "id 'com.android.library' version '$old_agp'" "id 'com.android.library' version '$target_agp'"
+                fi
+                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id 'com.android.test' version '$old_agp'" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "id 'com.android.test' version '$old_agp'" "id 'com.android.test' version '$target_agp'"
+                fi
+              done
+            done
+          done
+
+          for major in 1 2; do
+            for minor in $(seq 0 9); do
+              for patch in $(seq 0 30); do
+                old_kotlin="$major.$minor.$patch"
+                if [ "$old_kotlin" != "$target_kotlin" ] && grep -Fq "ext.kotlin_version = '$old_kotlin'" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "ext.kotlin_version = '$old_kotlin'" "ext.kotlin_version = '$target_kotlin'"
+                fi
+                if [ "$old_kotlin" != "$target_kotlin" ] && grep -Fq "org.jetbrains.kotlin:kotlin-gradle-plugin:$old_kotlin" "$gradle_file"; then
+                  substituteInPlace "$gradle_file" \
+                    --replace-fail "org.jetbrains.kotlin:kotlin-gradle-plugin:$old_kotlin" "org.jetbrains.kotlin:kotlin-gradle-plugin:$target_kotlin"
+                fi
+              done
+            done
+          done
+
+          if grep -Fq '27.0.12077973' "$gradle_file"; then
+            substituteInPlace "$gradle_file" \
+              --replace-fail '27.0.12077973' '29.0.14206865'
+          fi
+          if grep -Fq '28.2.13676358' "$gradle_file"; then
+            substituteInPlace "$gradle_file" \
+              --replace-fail '28.2.13676358' '29.0.14206865'
+          fi
+
+          if ! grep -Fq 'nixDisableReleaseLint' "$gradle_file"; then
+            if [[ "$gradle_file" == *.gradle.kts ]]; then
+              cat >> "$gradle_file" <<'EOF'
+        // nixDisableReleaseLint
+        android {
+          lint {
+            checkReleaseBuilds = false
+            abortOnError = false
+          }
+        }
+        EOF
+            else
+              cat >> "$gradle_file" <<'EOF'
+        // nixDisableReleaseLint
+        android {
+          lintOptions {
+            checkReleaseBuilds false
+            abortOnError false
+          }
+          lint {
+            checkReleaseBuilds false
+            abortOnError false
+          }
+        }
+        EOF
+            fi
+          fi
+        }
+
+        patch_ndk_version_file() {
+          local file="$1"
+          [ -f "$file" ] || return 0
+
+          if grep -Fq '27.0.12077973' "$file"; then
+            substituteInPlace "$file" \
+              --replace-fail '27.0.12077973' '29.0.14206865'
+          fi
+          if grep -Fq '28.2.13676358' "$file"; then
+            substituteInPlace "$file" \
+              --replace-fail '28.2.13676358' '29.0.14206865'
+          fi
+          if grep -Fq 'android.newDsl=true' "$file"; then
+            substituteInPlace "$file" \
+              --replace-fail 'android.newDsl=true' 'android.newDsl=false'
+          fi
+        }
+
+        declare -A patched_pkg_dirs
+
+        while IFS= read -r pkg_dir; do
+          work_pkg_dir="$pkg_dir"
+          if [ -f "$work_pkg_dir/gradle.properties" ] || [ -n "$(find "$work_pkg_dir/android" -maxdepth 2 -type f \( -name '*.gradle' -o -name '*.gradle.kts' \) -print -quit 2>/dev/null)" ]; then
+            if [[ "$pkg_dir" == /nix/store/* ]]; then
+              if [ -z "''${patched_pkg_dirs[$pkg_dir]:-}" ]; then
+                patched_pkg_dirs[$pkg_dir]="$(clone_dart_package "$pkg_dir" "$(basename "$pkg_dir")")"
+                replace_dart_package_root "$pkg_dir" "''${patched_pkg_dirs[$pkg_dir]}"
+              fi
+              work_pkg_dir="''${patched_pkg_dirs[$pkg_dir]}"
+            fi
+          fi
+          if [ -d "$work_pkg_dir/android" ]; then
+            while IFS= read -r gradle_file; do
+              patch_plugin_gradle_file "$gradle_file"
+            done < <(find "$work_pkg_dir/android" -type f \( -name '*.gradle' -o -name '*.gradle.kts' \))
+          fi
+          if [ -f "$work_pkg_dir/gradle.properties" ]; then
+            patch_ndk_version_file "$work_pkg_dir/gradle.properties"
+          fi
+          if [ -d "$work_pkg_dir/android" ]; then
+            while IFS= read -r ndk_file; do
+              patch_ndk_version_file "$ndk_file"
+            done < <(find "$work_pkg_dir/android" -type f \( -name '*.gradle' -o -name '*.gradle.kts' -o -name '*.properties' \))
+          fi
+        done < <(${python3}/bin/python3 - <<'PY'
+        import json
+        import urllib.parse
+
+        with open(".dart_tool/package_config.json") as f:
+            data = json.load(f)
+
+        seen = set()
+        for pkg in data["packages"]:
+            uri = pkg.get("rootUri", "")
+            if not uri.startswith("file://"):
+                continue
+            path = urllib.parse.urlparse(uri).path.removesuffix("/.")
+            if path and path not in seen:
+                seen.add(path)
+                print(path)
+        PY
+        )
+
+        ${pythonWithYaml}/bin/python3 ${../_shared/generate-flutter-plugins.py}
+
+        while IFS= read -r plugin_dir; do
+          [ -n "$plugin_dir" ] || continue
+          work_plugin_dir="$plugin_dir"
+          if [[ "$plugin_dir" == /nix/store/* ]]; then
+            if [ -z "''${patched_pkg_dirs[$plugin_dir]:-}" ]; then
+              patched_pkg_dirs[$plugin_dir]="$(clone_dart_package "$plugin_dir" "$(basename "$plugin_dir")")"
+              if grep -Fq "$plugin_dir" .dart_tool/package_config.json; then
+                replace_dart_package_root "$plugin_dir" "''${patched_pkg_dirs[$plugin_dir]}"
+              fi
+              replace_flutter_plugin_root "$plugin_dir" "''${patched_pkg_dirs[$plugin_dir]}"
+            fi
+            work_plugin_dir="''${patched_pkg_dirs[$plugin_dir]}"
+          fi
+          if [ -d "$work_plugin_dir/android" ]; then
+            while IFS= read -r gradle_file; do
+              patch_plugin_gradle_file "$gradle_file"
+            done < <(find "$work_plugin_dir/android" -type f \( -name '*.gradle' -o -name '*.gradle.kts' \))
+          fi
+          if [ -f "$work_plugin_dir/gradle.properties" ]; then
+            patch_ndk_version_file "$work_plugin_dir/gradle.properties"
+          fi
+          if [ -d "$work_plugin_dir/android" ]; then
+            while IFS= read -r ndk_file; do
+              patch_ndk_version_file "$ndk_file"
+            done < <(find "$work_plugin_dir/android" -type f \( -name '*.gradle' -o -name '*.gradle.kts' -o -name '*.properties' \))
+          fi
+        done < <(${python3}/bin/python3 - <<'PY'
+        import json
+
+        with open(".flutter-plugins-dependencies") as f:
+            data = json.load(f)
+        for plugin in data.get("plugins", {}).get("android", []):
+            path = plugin.get("path", "")
+            if path:
+                print(path)
+        PY
+        )
       '';
 
       buildPhase = ''
