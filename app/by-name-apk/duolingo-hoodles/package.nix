@@ -89,10 +89,10 @@ mk-apk-package {
       License: Proprietary
       SourceCode: https://github.com/hoo-dles/morphe-patches
       IssueTracker: https://github.com/hoo-dles/morphe-patches/issues
-      AutoName: Duolingo
+      AutoName: Duolingo Hoodles
       Summary: Patched Duolingo APK
       Description: |-
-        Duolingo ReVanced or Hoodles
+        Duolingo Hoodles is a patched Duolingo APK built with Hoodles patches
     '';
   };
 }
