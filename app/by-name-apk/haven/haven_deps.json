@@ -1,1942 +1,2042 @@
 {
  "!comment": "This is a nixpkgs Gradle dependency lockfile. For more details, refer to the Gradle section in the nixpkgs manual.",
  "!version": 1,
- "https://dl.google.com/dl/android/maven2": {
-  "androidx/activity#activity-compose/1.10.1": {
+ "https://dl.google.com": {
+  "dl/android/maven2/androidx/activity#activity-compose/1.10.1": {
    "module": "sha256-HtE6UO27iFlidR4by1uKQgeiDLeA6iSP+mU6qz+xD+k=",
    "pom": "sha256-5k22txJvtRI5S8PPQzKjiCgAnaqN1W7L5sDHMAshJ/U="
   },
-  "androidx/activity#activity-compose/1.5.1": {
+  "dl/android/maven2/androidx/activity#activity-compose/1.5.1": {
    "module": "sha256-EKRNJHpFVa8Z47uOBrXyTE7XIlLF/qzo3iRKNeziVvc=",
    "pom": "sha256-WXMut9+X0+Yr7/yPAIv1tOsOeqL2q244l2nHOsFVigg="
   },
-  "androidx/activity#activity-compose/1.8.0": {
+  "dl/android/maven2/androidx/activity#activity-compose/1.8.0": {
    "module": "sha256-O6fpL5LpTTSRk8LG4WYIRoTnL+H/PgZu1Prrxwf5vB8=",
    "pom": "sha256-Indw1+AfBvTAuezN/T05E7dexB5wgJEpZv0iu20fcgU="
   },
-  "androidx/activity#activity-compose/1.8.2": {
+  "dl/android/maven2/androidx/activity#activity-compose/1.8.2": {
    "module": "sha256-BGDApGupp0+SsYDkp4dRdFOEp49GLeLMJA8y2kzvz0Y=",
    "pom": "sha256-JradkUmWHA5utPfGSdYXs111ukHhPqrQLjddAwYTu3k="
   },
-  "androidx/activity#activity-ktx/1.10.1": {
+  "dl/android/maven2/androidx/activity#activity-ktx/1.10.1": {
    "module": "sha256-fBg4lRiaJ/16pZ/c9QKfpk+tKOnTkSmpyzDkC15CZ64=",
    "pom": "sha256-QhNJDkzitXUOREUkbf6d5PZlXCEjwEp5qCSMyIk+K/Q="
   },
-  "androidx/activity#activity-ktx/1.5.1": {
+  "dl/android/maven2/androidx/activity#activity-ktx/1.5.1": {
    "module": "sha256-iQ6286o9EZI2tMluxrG+tkfClqTZnKfkpQChZKlcoss=",
    "pom": "sha256-HkJ1ffCAQfMMYjbKtI8pVShpEN60zzOhR/4qAdxzlew="
   },
-  "androidx/activity#activity-ktx/1.7.0": {
+  "dl/android/maven2/androidx/activity#activity-ktx/1.7.0": {
    "module": "sha256-9AAacJtvcTKyKl4Xwk+Lips8RipZjeOw8WzFekNEurY=",
    "pom": "sha256-cEmjrk2pyvNQojMroLECJd7ovohU1gioN76X0ipxk8g="
   },
-  "androidx/activity#activity-ktx/1.8.0": {
+  "dl/android/maven2/androidx/activity#activity-ktx/1.8.0": {
    "module": "sha256-AlGoJtlIl9XGiealOfxTO0t2hNP2PiQCIRgtfLS0+xM=",
    "pom": "sha256-yUOdGOyxut9ZADJZebKmWHpAvtTwdNq2nOvQDPrjkbc="
   },
-  "androidx/activity#activity-ktx/1.8.2": {
+  "dl/android/maven2/androidx/activity#activity-ktx/1.8.2": {
    "module": "sha256-LERcZwnl77Bh2zVR7ztx9KU+ANtAu754KSj1UxmYmA0=",
    "pom": "sha256-P9OfuW2EzlCxemHIoVhJdIUc04M1dUVWcybJSnFxztw="
   },
-  "androidx/activity#activity/1.1.0": {
+  "dl/android/maven2/androidx/activity#activity/1.1.0": {
    "pom": "sha256-NpAAH8WletF2ys96E/ViGb/7c7k8eXjbrB4eXbCC1sA="
   },
-  "androidx/activity#activity/1.10.1": {
+  "dl/android/maven2/androidx/activity#activity/1.10.1": {
    "module": "sha256-iTtzpLFtGcAzhnWtC5+lEi2cacRPYRhxvYxAfTviOmg=",
    "pom": "sha256-CuTeiIl09c75gmYJAOwyoz8QlodQ23r6lDja7Bg/FOc="
   },
-  "androidx/activity#activity/1.5.1": {
+  "dl/android/maven2/androidx/activity#activity/1.5.1": {
    "module": "sha256-xDF/uVzicWuI8fSlM0eV79oIQJej8kR//MsQpBLIW+Q=",
    "pom": "sha256-0pzNzkb0xxoBruYLr4MjRihvOB2dEbzHPuvtXRr3LN0="
   },
-  "androidx/activity#activity/1.7.0": {
+  "dl/android/maven2/androidx/activity#activity/1.7.0": {
    "module": "sha256-KnRrASaoqy9XbnFn8aeFtFLvfumXq9l57gxaKcNvbqY=",
    "pom": "sha256-7eFnck23n8fFLPAv4JeZtFqUpTHX8CaFp4M3vAYsA5s="
   },
-  "androidx/activity#activity/1.8.0": {
+  "dl/android/maven2/androidx/activity#activity/1.8.0": {
    "module": "sha256-0UXYtTz9Ef0m5H591FwAcTPvluok9nFctlPHN2RdHfY=",
    "pom": "sha256-ZRMShfU8sELo/9GJ5wXa/JuK5tYkNeh3ismrO44/dW8="
   },
-  "androidx/activity#activity/1.8.2": {
+  "dl/android/maven2/androidx/activity#activity/1.8.2": {
    "module": "sha256-yJI4ceVWzVRnrdq6xnc+d486TT2hm/yBU7uu4NFFKY8=",
    "pom": "sha256-2wwWcKLxdo4Q+5umbIQQByF2eKu8Zr+7HvHCClMknAg="
   },
-  "androidx/activity/activity-compose/1.10.1/activity-compose-1.10.1": {
+  "dl/android/maven2/androidx/activity/activity-compose/1.10.1/activity-compose-1.10.1": {
    "aar": "sha256-+JrxsmzMg0Y0OHyFfC3U9GVNN2UIkAOcUnwv7QfbamE="
   },
-  "androidx/activity/activity-compose/1.8.2/activity-compose-1.8.2": {
+  "dl/android/maven2/androidx/activity/activity-compose/1.8.2/activity-compose-1.8.2": {
    "aar": "sha256-WmfphPFO0q/Fhao6I+3/HBeRyAyqK/aKD3mcGxGjkDg="
   },
-  "androidx/activity/activity-ktx/1.10.1/activity-ktx-1.10.1": {
+  "dl/android/maven2/androidx/activity/activity-ktx/1.10.1/activity-ktx-1.10.1": {
    "aar": "sha256-85b1jb13LAZbhzaWt0o9TQh1VLN2YoDmO0myXbtTqxY="
   },
-  "androidx/activity/activity-ktx/1.8.2/activity-ktx-1.8.2": {
+  "dl/android/maven2/androidx/activity/activity-ktx/1.8.2/activity-ktx-1.8.2": {
    "aar": "sha256-XHgoPRlWsUsiz2rXDHEqc6oIQRa3U1UmF2w7heapIFo="
   },
-  "androidx/activity/activity/1.10.1/activity-1.10.1": {
+  "dl/android/maven2/androidx/activity/activity/1.10.1/activity-1.10.1": {
    "aar": "sha256-titSjJF96b5Jfrb4iDAZfCDp0hJnw5FsYTSS5e6DfU0="
   },
-  "androidx/activity/activity/1.5.1/activity-1.5.1": {
+  "dl/android/maven2/androidx/activity/activity/1.5.1/activity-1.5.1": {
    "aar": "sha256-SwS0LSwfgcAvrw97bpzJ/t4Q/e6PZhNs1LmfiOj0jA8="
   },
-  "androidx/activity/activity/1.8.2/activity-1.8.2": {
+  "dl/android/maven2/androidx/activity/activity/1.8.2/activity-1.8.2": {
    "aar": "sha256-7MEZJiUwpuL583MgfkctR2MGvtPUshb+YbHqQuO+9og="
   },
-  "androidx/annotation#annotation-experimental/1.0.0": {
+  "dl/android/maven2/androidx/annotation#annotation-experimental/1.0.0": {
    "pom": "sha256-a3P/Zgj0sdbLq2ILZXCKOC0LOZAc9Oaw0W+EobBNdzI="
   },
-  "androidx/annotation#annotation-experimental/1.3.1": {
+  "dl/android/maven2/androidx/annotation#annotation-experimental/1.3.1": {
    "module": "sha256-m2l0p9/ibTwgndY+FvjuJGG1egkXiRYMoetJK7G/P4Q=",
    "pom": "sha256-Qm+UMQtHvfAE3CA42uqpQ8XOT0sGPob3i8U24jLj3fw="
   },
-  "androidx/annotation#annotation-experimental/1.4.1": {
+  "dl/android/maven2/androidx/annotation#annotation-experimental/1.4.1": {
    "module": "sha256-KsL3EG4S8mNCW0pN/ICYlEf7iVZ1/pAthnWap0/RK30=",
    "pom": "sha256-/leyKEF/TXxneQPcYftKfPmT1gNJneJtjYET5HfMTxs="
   },
-  "androidx/annotation#annotation-jvm/1.7.1": {
+  "dl/android/maven2/androidx/annotation#annotation-jvm/1.7.1": {
    "jar": "sha256-42uOS4OTpK3HTj1KsirVo2OW8M6i5AtXNOrhSTff0iQ=",
    "module": "sha256-i/TiA0KAOTjXXVGR/xegC9smRXvXNA0O2aJyNR1TCJc=",
    "pom": "sha256-OG3EDKbc5wRaaIn7RsU8mchJtqVYSkgpcRKfH0rHclU="
   },
-  "androidx/annotation#annotation-jvm/1.8.1": {
+  "dl/android/maven2/androidx/annotation#annotation-jvm/1.8.1": {
    "module": "sha256-yVnjsM3HXBXv4BYF+laqefAz45I44VBji4+r3mqhIaA=",
    "pom": "sha256-1JIDczqm+uBGw6PeTnlu7TR1lXVUhqZCc5iYRHWXULQ="
   },
-  "androidx/annotation#annotation-jvm/1.8.2": {
+  "dl/android/maven2/androidx/annotation#annotation-jvm/1.8.2": {
    "jar": "sha256-mqsybZSSgAmRhUNgrCSPSTzn98MYNRkwm3is6eJA9vY=",
    "module": "sha256-0ARlfPKJgq6NqDF8DB/sZjxifQ0MVDMPC6qSy8NgzcE=",
    "pom": "sha256-fTsoYOo2URFTqXE1Wdq2DXf3IWf63JwcMZjCMDX7xIA="
   },
-  "androidx/annotation#annotation-jvm/1.9.1": {
+  "dl/android/maven2/androidx/annotation#annotation-jvm/1.9.1": {
    "jar": "sha256-HjQ5F+vye6lv5NxSscrX/TK3OPvGNVu2zVs7MF1yEtA=",
    "module": "sha256-A/tlkXfIYY5HQlklwRvJHzhHA+omwmW+myXNeSkrURw=",
    "pom": "sha256-ibmcIY1gAZMWtQqreYFnB7whaWyJagMOGxrgOJYby44="
   },
-  "androidx/annotation#annotation/1.0.2": {
+  "dl/android/maven2/androidx/annotation#annotation/1.0.2": {
    "pom": "sha256-XIaFSZJaWI4RehherYZYB62IImduDXyATCdH2N1YZvk="
   },
-  "androidx/annotation#annotation/1.1.0": {
+  "dl/android/maven2/androidx/annotation#annotation/1.1.0": {
    "pom": "sha256-LpNyuneA70SVKtv4a2bh8IaCweUnfJJhhfZWShN5nv4="
   },
-  "androidx/annotation#annotation/1.7.1": {
+  "dl/android/maven2/androidx/annotation#annotation/1.7.1": {
    "module": "sha256-rJTf70+CzNLKdXOlN3nb89+rZQ5lQFak1N+Qr0NXKZA=",
    "pom": "sha256-Fe8CdtKDpnq2exiTqJ5+FFE6MrP3B/rCk5x72SqNwXI="
   },
-  "androidx/annotation#annotation/1.8.1": {
+  "dl/android/maven2/androidx/annotation#annotation/1.8.1": {
    "module": "sha256-5jhuha/dhlBE4hZXXkk+05pjpjJb2SU3miFCnDlByLU=",
    "pom": "sha256-txIll07Ah+uWwl72gZ9VscIvUw6FykRrpzX7Zu0E/1w="
   },
-  "androidx/annotation#annotation/1.9.1": {
+  "dl/android/maven2/androidx/annotation#annotation/1.9.1": {
    "module": "sha256-8gSwW3KKl1YXGLxxYkLkfGKcAIWoDudPylPU1ji8vj8=",
    "pom": "sha256-xzOIHC4X1ffIZhzAKpFZyxYLeyCUon1ZORbIfT4lBjY="
   },
-  "androidx/annotation/annotation-experimental/1.3.1/annotation-experimental-1.3.1": {
+  "dl/android/maven2/androidx/annotation/annotation-experimental/1.3.1/annotation-experimental-1.3.1": {
    "aar": "sha256-5NSdw4gLe3Q36lTOcUYeAol/qk4ezFPmPsrbGhTCDJw="
   },
-  "androidx/annotation/annotation-experimental/1.4.1/annotation-experimental-1.4.1": {
+  "dl/android/maven2/androidx/annotation/annotation-experimental/1.4.1/annotation-experimental-1.4.1": {
    "aar": "sha256-a9THx0dvgmDNO9u4EYNYPpP8n3kMJ96n3DFBgcv4eqA="
   },
-  "androidx/appcompat#appcompat-resources/1.2.0": {
+  "dl/android/maven2/androidx/appcompat#appcompat-resources/1.2.0": {
    "module": "sha256-ddmGW8aw93kEO09lI6lEvSzLdSb1wfXvJGJKx43sO9M=",
    "pom": "sha256-FJ3YzsNmS++P/ehsOWuh4qsVbqaHk9KYANAIusvJwPg="
   },
-  "androidx/appcompat#appcompat-resources/1.7.0": {
+  "dl/android/maven2/androidx/appcompat#appcompat-resources/1.7.0": {
    "module": "sha256-18ygtVPsEJ7yCscK5kOPWE/Gu16yaaf1tAmOAsbWh/k=",
    "pom": "sha256-u/Kluax4kEydp5LhZzF5MnT5X7SmEjBxkUCz4O9za6o="
   },
-  "androidx/appcompat#appcompat-resources/1.7.1": {
+  "dl/android/maven2/androidx/appcompat#appcompat-resources/1.7.1": {
    "module": "sha256-FjzF4PJJQz3bABb70BGrjeB88j4H5hjHRkRojibNGOg=",
    "pom": "sha256-L6+SLow9cG8p2GKz+7OqE0dwXCHG6uGFhtK7H3Nm6gE="
   },
-  "androidx/appcompat#appcompat/1.2.0": {
+  "dl/android/maven2/androidx/appcompat#appcompat/1.2.0": {
    "module": "sha256-JnCQL8bCYEfELg9g7jRlb6BxhB2zcN6VgZhBO1q1j8M=",
    "pom": "sha256-jrPL6CO2CYU7SBZG49LBqjnb3lPdJpcS/YRP/e8uu0I="
   },
-  "androidx/appcompat#appcompat/1.7.0": {
+  "dl/android/maven2/androidx/appcompat#appcompat/1.7.0": {
    "module": "sha256-OIQq8rlsmVQMx1Yzd1SzAw3giwKdS/OqBuTs90HaaL8=",
    "pom": "sha256-pXtCj0KKkzfXtIOiFipXDU5nK87/QRpkZeU+h0dQasM="
   },
-  "androidx/appcompat#appcompat/1.7.1": {
+  "dl/android/maven2/androidx/appcompat#appcompat/1.7.1": {
    "module": "sha256-i78WeSyBzC3Qg2gXg6U4L1cwB+7oFXGCky8bRU4rfwQ=",
    "pom": "sha256-H3mRDMIN4Zis84Z7HpP57VndtkNYWy6cKO5VUYrxvAA="
   },
-  "androidx/appcompat/appcompat-resources/1.2.0/appcompat-resources-1.2.0": {
+  "dl/android/maven2/androidx/appcompat/appcompat-resources/1.2.0/appcompat-resources-1.2.0": {
    "aar": "sha256-xHApfAP/PeHD0V2s8L4MrmOrwQtS8CHdB64o2qMQD+U="
   },
-  "androidx/appcompat/appcompat-resources/1.7.1/appcompat-resources-1.7.1": {
+  "dl/android/maven2/androidx/appcompat/appcompat-resources/1.7.1/appcompat-resources-1.7.1": {
    "aar": "sha256-ji2zEiTKU7EIx4TaKzYZWQYnFtQWshDP7z1aOCgwbfA="
   },
-  "androidx/appcompat/appcompat/1.2.0/appcompat-1.2.0": {
+  "dl/android/maven2/androidx/appcompat/appcompat/1.2.0/appcompat-1.2.0": {
    "aar": "sha256-PSExpVphp3cyLiEm4AGAEe+mM55TtEFT62UbFgIMynA="
   },
-  "androidx/appcompat/appcompat/1.7.1/appcompat-1.7.1": {
+  "dl/android/maven2/androidx/appcompat/appcompat/1.7.1/appcompat-1.7.1": {
    "aar": "sha256-KtM0oyOygEbom3OMd9GEyz3MoypVGrBIhRsv2iOjuiY="
   },
-  "androidx/arch/core#core-common/2.1.0": {
+  "dl/android/maven2/androidx/arch/core#core-common/2.1.0": {
    "jar": "sha256-/hI3vwKdBj5/Kf45rq9z73TIsKNlhIb8KdPFQyZlOIk=",
    "pom": "sha256-g7uzlg6qvGAKw2bJTLWUFORBUyodaqk4iwuL/6zlzwE="
   },
-  "androidx/arch/core#core-common/2.2.0": {
+  "dl/android/maven2/androidx/arch/core#core-common/2.2.0": {
    "jar": "sha256-ZTCKBrHADuGGy54ZMhOD8EO5k4E/FSLEf0o+MwO9ukE=",
    "module": "sha256-7fQgDP3C2UYjIlLJnl3LnGG7kJ61RQsmE9HU/cl0uYE=",
    "pom": "sha256-HhfUr41kJb4qafivTWVKh+BFYlmp7vFUKGm8sCNUfig="
   },
-  "androidx/arch/core#core-runtime/2.1.0": {
+  "dl/android/maven2/androidx/arch/core#core-runtime/2.1.0": {
    "pom": "sha256-wMTtAWDNLKGDkAFd6LOStpfBczJ8aywJR9TmL2lYwF0="
   },
-  "androidx/arch/core#core-runtime/2.2.0": {
+  "dl/android/maven2/androidx/arch/core#core-runtime/2.2.0": {
    "module": "sha256-qLF1E5SeXbbJYBwwvhnflTdi3Yd1EvHiz8+ugdJECUQ=",
    "pom": "sha256-D5U3BlmBQNnYc1zdWusfo1kz9OLzHAvz64GgU6TIwaU="
   },
-  "androidx/arch/core/core-runtime/2.1.0/core-runtime-2.1.0": {
+  "dl/android/maven2/androidx/arch/core/core-runtime/2.1.0/core-runtime-2.1.0": {
    "aar": "sha256-3XdhW9PdJ1r7EbYt8luuRrELShF803lDr0W9y/h1WFI="
   },
-  "androidx/arch/core/core-runtime/2.2.0/core-runtime-2.2.0": {
+  "dl/android/maven2/androidx/arch/core/core-runtime/2.2.0/core-runtime-2.2.0": {
    "aar": "sha256-ob5eDKorB2I4Yq9q4hs6sHGBIyRRhNDjDeqBtT+ZCkc="
   },
-  "androidx/autofill#autofill/1.0.0": {
+  "dl/android/maven2/androidx/autofill#autofill/1.0.0": {
    "pom": "sha256-Nner6tXU4Gz3bLrLlUFR4FF3nCJ0SURR+0JON1qp5FA="
   },
-  "androidx/autofill/autofill/1.0.0/autofill-1.0.0": {
+  "dl/android/maven2/androidx/autofill/autofill/1.0.0/autofill-1.0.0": {
    "aar": "sha256-yUaPVuBQBuoVGkJsVJV80Hmbi4OledKEbdIgYfM+Xs0="
   },
-  "androidx/biometric#biometric/1.2.0-alpha05": {
+  "dl/android/maven2/androidx/biometric#biometric/1.2.0-alpha05": {
    "module": "sha256-6XI1KAFZi6UPvDIHHB5m4qMPLoIo/9HQqiM+jH8F5i4=",
    "pom": "sha256-k4hKEjm0DR8VwbTr4VjUm2KkziHiknF+qdGGDZw2PRs="
   },
-  "androidx/biometric/biometric/1.2.0-alpha05/biometric-1.2.0-alpha05": {
+  "dl/android/maven2/androidx/biometric/biometric/1.2.0-alpha05/biometric-1.2.0-alpha05": {
    "aar": "sha256-mzqDaOkVYlkr0+qjzlT8y7XeLjWvzrljH1wYjrExBm8="
   },
-  "androidx/cardview#cardview/1.0.0": {
+  "dl/android/maven2/androidx/cardview#cardview/1.0.0": {
    "pom": "sha256-5k704ItYNY/ie1meb+gKGxU9sBTGRL7uYwqycQYcPmw="
   },
-  "androidx/cardview/cardview/1.0.0/cardview-1.0.0": {
+  "dl/android/maven2/androidx/cardview/cardview/1.0.0/cardview-1.0.0": {
    "aar": "sha256-EZPATCKj1rWUba6fToxZ1q3eanG2vV2H+5nYLdoa/sc="
   },
-  "androidx/collection#collection-jvm/1.4.2": {
+  "dl/android/maven2/androidx/collection#collection-jvm/1.4.2": {
    "jar": "sha256-mEzpvXgAVer7ihBayj9RRoa/exticux8ZFqYzkD8fbQ=",
    "module": "sha256-qtazU2wPDlcKpzPVFB1w+mubOt03D3OjEcpMpd7iVEg=",
    "pom": "sha256-rbs3nisWDwjmPjQa0Eu8xwM/bYaOxRrBHkM0ZCpOOe8="
   },
-  "androidx/collection#collection-jvm/1.4.5": {
+  "dl/android/maven2/androidx/collection#collection-jvm/1.4.5": {
    "module": "sha256-0kq0tJY72cP4nhwA15eqeV6wK6/HGNzf0mYhH5k/KyM=",
    "pom": "sha256-0eYk/dD1wygCSsORVHJkScQzfZ5WoFR/sLsW1Dn6FlY="
   },
-  "androidx/collection#collection-jvm/1.5.0": {
+  "dl/android/maven2/androidx/collection#collection-jvm/1.5.0": {
    "jar": "sha256-cLNZJOS6vN/6N9Dlde4DnFai2XEjNCYkxItgMjNwQ0E=",
    "module": "sha256-3eheKSUJIxtUcbsJG1dQmdT0MWHrKB6HOFA4oBYQcuY=",
    "pom": "sha256-EcQVhk00AvYdQm5nIQFY3OGwRoBBJSaplPGCPs08s4g="
   },
-  "androidx/collection#collection-ktx/1.1.0": {
+  "dl/android/maven2/androidx/collection#collection-ktx/1.1.0": {
    "pom": "sha256-ch52507kFY0/6XWQdLfs7tT/fYTtNKP6ylhD+4dKyUY="
   },
-  "androidx/collection#collection-ktx/1.5.0": {
+  "dl/android/maven2/androidx/collection#collection-ktx/1.5.0": {
    "jar": "sha256-k5tKhpdkDnfYPk6LTEqdGPgTAZjFlhGUr43Z253Hw1M=",
    "module": "sha256-QiiJTiXux+FzKbIGunLoqtJVvFNQGNxirMXv87XHqqU=",
    "pom": "sha256-mD+NBjDQctW/zRZqSYrHIT86RKmMCQUQBM6WQp2GfOo="
   },
-  "androidx/collection#collection/1.0.0": {
+  "dl/android/maven2/androidx/collection#collection/1.0.0": {
    "pom": "sha256-p5E6UnWtaOVV0mEuvowUw2exU+FMpIoYcqZImQIOVO8="
   },
-  "androidx/collection#collection/1.1.0": {
+  "dl/android/maven2/androidx/collection#collection/1.1.0": {
    "jar": "sha256-YyoOVAdGHed0QJNSlA4pKikQN3JCB6eHggx32vfTO3I=",
    "pom": "sha256-Z+kGbKSs/cbjzFCCk8MboDmAV/8Rjk9wseGBPJo0VtE="
   },
-  "androidx/collection#collection/1.4.2": {
+  "dl/android/maven2/androidx/collection#collection/1.4.2": {
    "module": "sha256-AybSz1rb5ZIxKBDKH3HGwMww91PEPwfHQCNht4ineEw=",
    "pom": "sha256-TyYVoXrqz+EraCmCFKGfKhnGjGbVkAdb27+2WevOK38="
   },
-  "androidx/collection#collection/1.4.5": {
+  "dl/android/maven2/androidx/collection#collection/1.4.5": {
    "module": "sha256-I34e/Faj4lqOpM7sJlWMKZhEv8U6rQb/P1PKHINeKMg=",
    "pom": "sha256-DA39zlfaULfpyifTsZv/vjuY8x3cfgPNWEz3eAmns0k="
   },
-  "androidx/collection#collection/1.5.0": {
+  "dl/android/maven2/androidx/collection#collection/1.5.0": {
    "module": "sha256-v+t72E8/fdp71ztnCdSh9h9aN/hDcouuCKBn49+aCu8=",
    "pom": "sha256-LWXI0LNtS0+q3ESv+breI9hx1xWe7fKz8C2AKzS3elc="
   },
-  "androidx/compose#compose-bom/2026.01.01": {
+  "dl/android/maven2/androidx/compose#compose-bom/2026.01.01": {
    "pom": "sha256-9vetYgEP73hfsOG8gAZUSBI7XRDBxDG2dyhLMWZi2U0="
   },
-  "androidx/compose#compose-bom/2026.02.00": {
+  "dl/android/maven2/androidx/compose#compose-bom/2026.02.00": {
    "pom": "sha256-9vRMnIHwwECjn+kvpoayBG9ZSAhzh878vOnwUkIgUSo="
   },
-  "androidx/compose/animation#animation-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/animation#animation-android/1.10.2": {
    "module": "sha256-Le8221K9CtueYOMK63lV/qk044wAQVXoldxDwdk0bgQ=",
    "pom": "sha256-Yk8Q6RVvS9IuO9DduL0XadZ2w2p9CiDqjruNwsakKxE="
   },
-  "androidx/compose/animation#animation-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/animation#animation-android/1.10.3": {
    "module": "sha256-Mjp0kA0yfr9sLZqLO8+rXgNCvSkwUwax9xauPma+Ins=",
    "pom": "sha256-I7tlfv5lweXjgm8TyB9cOVf8M2v24mfQ7TTDi59tTsM="
   },
-  "androidx/compose/animation#animation-core-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/animation#animation-core-android/1.10.2": {
    "module": "sha256-3VXnNWI4H9CzXIMjNNjgH5pY7YVHkwa+N3EeXcSslOs=",
    "pom": "sha256-Yit++eGpCJzDiAdHq4Xqp1COwLJHqDOZEB/9vdGEmrM="
   },
-  "androidx/compose/animation#animation-core-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/animation#animation-core-android/1.10.3": {
    "module": "sha256-q6tWJzNf3sSMKcBEebN/PFpTWpzXjK7ph3Rmgj4ApBo=",
    "pom": "sha256-lu2ihrYEwn5pLDq+kwQLl93aE/fNyWeQSTu60Dm+7f4="
   },
-  "androidx/compose/animation#animation-core/1.10.2": {
+  "dl/android/maven2/androidx/compose/animation#animation-core/1.10.2": {
    "module": "sha256-2+bESacrRs3ZtRRWSZlOs5EJ25nq0/tR19bT6VRNTt8=",
    "pom": "sha256-Yw7rG2+gMBhMZAfDhmm18gOf8lMxExSdsHm5V8GRx3k="
   },
-  "androidx/compose/animation#animation-core/1.10.3": {
+  "dl/android/maven2/androidx/compose/animation#animation-core/1.10.3": {
    "module": "sha256-l31UYSBiQ8GmYEmqmGt7kUZSUl1ZS/oBmNrDquN833o=",
    "pom": "sha256-NkkWG8sIDWVUmv/co1RF0GwgT5kGbJPDKFMmZYlCtnQ="
   },
-  "androidx/compose/animation#animation/1.10.2": {
+  "dl/android/maven2/androidx/compose/animation#animation/1.10.2": {
    "module": "sha256-c7bjBkqMk8Z1KHdha3cwc0fGZpQuYqgpB/wUXBTMZAo=",
    "pom": "sha256-1ehdgIHrAGxgteDsFyDgMjhv1oYmfS58kUbCjh/BDbs="
   },
-  "androidx/compose/animation#animation/1.10.3": {
+  "dl/android/maven2/androidx/compose/animation#animation/1.10.3": {
    "module": "sha256-2JmXmsDYrxIZHP0zYZk7Ao/A4F2d0ZTnSCtXr13K6cM=",
    "pom": "sha256-3LuiNvxfKVEfS342anPyxcsEztZk+6tW2gJUI03VbJA="
   },
-  "androidx/compose/animation/animation-android/1.10.2/animation-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/animation/animation-android/1.10.2/animation-android-1.10.2": {
    "aar": "sha256-TZS59+voBQc8OrnWiPB/uNiRPpIL4k8q2Z9VML8Y+EE="
   },
-  "androidx/compose/animation/animation-android/1.10.3/animation-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/animation/animation-android/1.10.3/animation-android-1.10.3": {
    "aar": "sha256-wuczGu30syGPwkONXz2WqClVeX/RJNpYU66eOvbzMMw="
   },
-  "androidx/compose/animation/animation-core-android/1.10.2/animation-core-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/animation/animation-core-android/1.10.2/animation-core-android-1.10.2": {
    "aar": "sha256-VzZa4A93iowoyf1QJOHQpFpd6F+ZayuxCBo8qlwoKWQ="
   },
-  "androidx/compose/animation/animation-core-android/1.10.3/animation-core-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/animation/animation-core-android/1.10.3/animation-core-android-1.10.3": {
    "aar": "sha256-F4RkgCj3fvmh04DC6ng61aeqjZWg3dVRlHMC36aujBQ="
   },
-  "androidx/compose/foundation#foundation-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/foundation#foundation-android/1.10.2": {
    "module": "sha256-3JZBjpo2RJ7WeBMgmUuENK05DpTnO3sf6Mh47J6xGeU=",
    "pom": "sha256-wb16aCC6qCxJ18NICHVDcAFPLkUe+F15p96NhC50788="
   },
-  "androidx/compose/foundation#foundation-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/foundation#foundation-android/1.10.3": {
    "module": "sha256-uNpo3TiipUbu2FQx8BwXSuUQrmvP1secP5ZoTAkHH54=",
    "pom": "sha256-16ZgjzUDqsMBtv4pIgMDY741ECXXhEx0yBvteXniXOY="
   },
-  "androidx/compose/foundation#foundation-layout-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/foundation#foundation-layout-android/1.10.2": {
    "module": "sha256-K9Cbr1Ico116hEL4BFbNeKea3j39Fpox34IQdx+ponY=",
    "pom": "sha256-entGZor2S5SR6YekdWTB/hdl1qQ2qQvXI61PFjxn24Y="
   },
-  "androidx/compose/foundation#foundation-layout-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/foundation#foundation-layout-android/1.10.3": {
    "module": "sha256-9Nqn+yHgXkbFN9sRmosCdPvU3krciw1iFmBNnkULraA=",
    "pom": "sha256-4LdM1w13psJMDsW51wNx+Y2qe/cKFVKCqY1V6Kz5I7k="
   },
-  "androidx/compose/foundation#foundation-layout/1.10.2": {
+  "dl/android/maven2/androidx/compose/foundation#foundation-layout/1.10.2": {
    "module": "sha256-n39rztrrw0FqSrECYkgEM3bHo0xukr9HOJcI7D1Dyes=",
    "pom": "sha256-ulkxnrwKE64qQo7ndqA/CS9eGJChQWgZUvbpbV9yc/Y="
   },
-  "androidx/compose/foundation#foundation-layout/1.10.3": {
+  "dl/android/maven2/androidx/compose/foundation#foundation-layout/1.10.3": {
    "module": "sha256-lg8WeGGrOMvm1WsESFFEYb8UimKT1dc6L/IkBUmrAcU=",
    "pom": "sha256-6BMurMS3PG5Ipj7e44GSw85SoQ/4oHGqyF1t4Xs0aJY="
   },
-  "androidx/compose/foundation#foundation/1.10.2": {
+  "dl/android/maven2/androidx/compose/foundation#foundation/1.10.2": {
    "module": "sha256-dO4ZMkgklDnXBBDPUFkB0Hfe9sGH4js2Kbpj2GqdkRE=",
    "pom": "sha256-iqk9pn92T/Fot321aPoOyknF9IoQm9sGb2b9ArbZiIo="
   },
-  "androidx/compose/foundation#foundation/1.10.3": {
+  "dl/android/maven2/androidx/compose/foundation#foundation/1.10.3": {
    "module": "sha256-lV4M7M5fiwyM/KfkzKxCZLoMfE9lfk7u5xGCgDAxz2Q=",
    "pom": "sha256-VtaEAsemd/9nQAA5urnGCyUjZWIcvvOMPVrfy3Dklg4="
   },
-  "androidx/compose/foundation/foundation-android/1.10.2/foundation-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/foundation/foundation-android/1.10.2/foundation-android-1.10.2": {
    "aar": "sha256-BoVU65kBoDrBGf4D0VMDSRHIfY84huab3IQKwh2xbNA="
   },
-  "androidx/compose/foundation/foundation-android/1.10.3/foundation-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/foundation/foundation-android/1.10.3/foundation-android-1.10.3": {
    "aar": "sha256-gdGgFxTXQddHwNKghzsLw6gXz6K6MN7xgCv8Jyjm01s="
   },
-  "androidx/compose/foundation/foundation-layout-android/1.10.2/foundation-layout-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/foundation/foundation-layout-android/1.10.2/foundation-layout-android-1.10.2": {
    "aar": "sha256-PPoGaR4uNyNjgleLWQ3YYEMmM5h0X/aS5MWv8qO1s+c="
   },
-  "androidx/compose/foundation/foundation-layout-android/1.10.3/foundation-layout-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/foundation/foundation-layout-android/1.10.3/foundation-layout-android-1.10.3": {
    "aar": "sha256-T0wVsZtJj/1dmxvZM6e6G80zj1Cs1d9CtG9zKMMpEXA="
   },
-  "androidx/compose/material#material-icons-core-android/1.7.8": {
+  "dl/android/maven2/androidx/compose/material#material-icons-core-android/1.7.8": {
    "module": "sha256-maHKg+VCYaZeuW1E6gL65DWIvkWt5el5Y9c+hInqSlQ=",
    "pom": "sha256-32ceEUQSC0P4NGTh6U/4KNDe2BMrOxW4beB/G4LQ2TI="
   },
-  "androidx/compose/material#material-icons-core/1.7.8": {
+  "dl/android/maven2/androidx/compose/material#material-icons-core/1.7.8": {
    "module": "sha256-+dY2VbrBn/fyer9oqcDzj15CyF42VlW5kObhoxf5Li8=",
    "pom": "sha256-7u/GzRxmuvIdv06RbEZQQBd4d4TNIycjPOwjgGQiKZo="
   },
-  "androidx/compose/material#material-icons-extended-android/1.7.8": {
+  "dl/android/maven2/androidx/compose/material#material-icons-extended-android/1.7.8": {
    "module": "sha256-1NUCk14XUlX9dzCxwtzkJheZw6cK5CfhpqhFB5/il/E=",
    "pom": "sha256-4Vgr/oTV31lIfD7S0zmWAdwqFiQXCOy2cholgJ34VY4="
   },
-  "androidx/compose/material#material-icons-extended/1.7.8": {
+  "dl/android/maven2/androidx/compose/material#material-icons-extended/1.7.8": {
    "module": "sha256-25AVLMGKfyw9CTHyAy0sMBbzX4JHG/TJ9WIHAqDN7ZU=",
    "pom": "sha256-2tNyMWPBsE0MTM5NKA593BBBsI1zuMT40Hpnx1V1hRU="
   },
-  "androidx/compose/material#material-ripple-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/material#material-ripple-android/1.10.2": {
    "module": "sha256-k8A2/IDg1IHt/kOEXyNQgjgHRSOv/iMFxNEpsjgnq4o=",
    "pom": "sha256-WvD7kH6ocnpoEWUjW2UGCduS4BgT0YYnwKEw6ljwrKA="
   },
-  "androidx/compose/material#material-ripple-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/material#material-ripple-android/1.10.3": {
    "module": "sha256-ttnfIEVhMrAL1zHj9qJbugVoJc6bny/Du4Y42ElNELs=",
    "pom": "sha256-ZU7yTj4MY8R11nzJlYbK/d4bYSMka1+agXSHcHPJRng="
   },
-  "androidx/compose/material#material-ripple/1.10.2": {
+  "dl/android/maven2/androidx/compose/material#material-ripple/1.10.2": {
    "module": "sha256-DK+/Svsl8VHthWG1ZexhBpw0Gq8ka/mFq4r7bJhAgUM=",
    "pom": "sha256-KytDZKAxv7him2oywg+RCr4BnGdLYXE/tu03cz+EGyY="
   },
-  "androidx/compose/material#material-ripple/1.10.3": {
+  "dl/android/maven2/androidx/compose/material#material-ripple/1.10.3": {
    "module": "sha256-20Pv6SOl4/tSlrdPNa0+T1N9715yn+05+eCRffu7Dt8=",
    "pom": "sha256-v8UJKc6vKulFRr6/+0bcLaI+TWAdhDmbtF0zakzhZ/g="
   },
-  "androidx/compose/material/material-icons-core-android/1.7.8/material-icons-core-android-1.7.8": {
+  "dl/android/maven2/androidx/compose/material/material-icons-core-android/1.7.8/material-icons-core-android-1.7.8": {
    "aar": "sha256-MywGsl5mLMQX+wh+drj6pcskn0mS/6M2AISj1KuIIoQ="
   },
-  "androidx/compose/material/material-icons-extended-android/1.7.8/material-icons-extended-android-1.7.8": {
+  "dl/android/maven2/androidx/compose/material/material-icons-extended-android/1.7.8/material-icons-extended-android-1.7.8": {
    "aar": "sha256-ZOhiafEQaEiYHddvAEb4G0bzvZLvsiZF3o/QRMBAK2E="
   },
-  "androidx/compose/material/material-ripple-android/1.10.2/material-ripple-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/material/material-ripple-android/1.10.2/material-ripple-android-1.10.2": {
    "aar": "sha256-SPZbh1vFMbwStHZkxDJI1IWtdySSEnGqUHWXgvlbs7c="
   },
-  "androidx/compose/material/material-ripple-android/1.10.3/material-ripple-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/material/material-ripple-android/1.10.3/material-ripple-android-1.10.3": {
    "aar": "sha256-oBYwUKQmwnr6j24nBfqrFoTuLvlfa/yrDg7FCyvU8bc="
   },
-  "androidx/compose/material3#material3-android/1.4.0": {
+  "dl/android/maven2/androidx/compose/material3#material3-android/1.4.0": {
    "module": "sha256-/M1qjQ0z/PfDJ3vEPrRSxzgD7GIFl8gdvEp54pCnGpc=",
    "pom": "sha256-zANiZTJAcIoBDeUP7oyviEphD7sQtgE+hmlNd8Q/68c="
   },
-  "androidx/compose/material3#material3/1.4.0": {
+  "dl/android/maven2/androidx/compose/material3#material3/1.4.0": {
    "module": "sha256-dXCB0Sja+IAcHdmsxDH6UmnmVrKKCkkK6YzO5o6cNFI=",
    "pom": "sha256-ZytDH1nI4KhSJpCy9G8beWZxBjiJPGDDHF8Z+EctYsw="
   },
-  "androidx/compose/material3/material3-android/1.4.0/material3-android-1.4.0": {
+  "dl/android/maven2/androidx/compose/material3/material3-android/1.4.0/material3-android-1.4.0": {
    "aar": "sha256-Ojfos23zgi/h5gWfD5+v2ogAOIhgR3YkrBuUIsQYo24="
   },
-  "androidx/compose/runtime#runtime-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-android/1.10.2": {
    "module": "sha256-/OSONI5rGiwXNtCThxHgLGHy6htJafiDV9BiUDYOluA=",
    "pom": "sha256-xOtK5w6hhh5l+AdiZYPXSOjiB+CDSj8ZTSkFt/ekC44="
   },
-  "androidx/compose/runtime#runtime-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-android/1.10.3": {
    "module": "sha256-KCea11OltzpZ6tABkug0XIIWlDfesMtEjVsyMXFHN+c=",
    "pom": "sha256-OZBrX01+PMW/3eWx5IedgBef0pdpounC7tkfdbBnjAA="
   },
-  "androidx/compose/runtime#runtime-annotation-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-annotation-android/1.10.2": {
    "module": "sha256-3dswbw4Y/VwzrrzbEfAUDlkCE6TxcVq4hZXMpG4sPxk=",
    "pom": "sha256-0pXOlvMyiGhBMM9xDtjOyOcRNa1NzIN1aVfJphGRaOA="
   },
-  "androidx/compose/runtime#runtime-annotation-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-annotation-android/1.10.3": {
    "module": "sha256-1ZQG1Kljj3LqqRQicWIchrS4a62o2AeRP9E7lmSzZnQ=",
    "pom": "sha256-53/iUj5/TZ2yrgxxhDZbU5L2Z+6+D1N5rpjdofiZ5u0="
   },
-  "androidx/compose/runtime#runtime-annotation/1.10.2": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-annotation/1.10.2": {
    "module": "sha256-ZE41sINE5OSZALN7VJdjnlN9bTXNcvZeSQioSrqCvV8=",
    "pom": "sha256-vgICQEeT5zicLYyvmpBzcD9ep0TVGwy6VqdKBj0JbLg="
   },
-  "androidx/compose/runtime#runtime-annotation/1.10.3": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-annotation/1.10.3": {
    "module": "sha256-9UO4qePHCf/CVZG02SNc8t4707jSYxC9Q5FWv6SmSAc=",
    "pom": "sha256-ibxJAcldeaudOEnuW0wuwFFe0zMoPQW5lLaCXa5Q5MY="
   },
-  "androidx/compose/runtime#runtime-retain-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-retain-android/1.10.2": {
    "module": "sha256-DahX6z8PeMn98/xeIJ/m+zaJ4zvLdXJr2Ge+ZVyXREM=",
    "pom": "sha256-+rSJj3ibBddPmYB8EsvuLM4oWzHBmQfc3gFD95lZk7Y="
   },
-  "androidx/compose/runtime#runtime-retain-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-retain-android/1.10.3": {
    "module": "sha256-MXi8jP01HrACt45vGWi12yRl3CEnkAFOFHyVvKklPxs=",
    "pom": "sha256-yY1/hIlKXExJz5PGJijFRgNy/u7WgqPHxDKFujtShzs="
   },
-  "androidx/compose/runtime#runtime-retain/1.10.2": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-retain/1.10.2": {
    "module": "sha256-U5Rb39vDDJkOmuM8N/tsO7ye76GqjoeKNm1niQ6vWG0=",
    "pom": "sha256-pmUgPT/hMcoXbfWCtkMaLjzIXZci9LeWcyJ7BVMb96M="
   },
-  "androidx/compose/runtime#runtime-retain/1.10.3": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-retain/1.10.3": {
    "module": "sha256-aWcuiUpHnTeh9u5zmAHFLLRfkO3A/KWydTIE+QkZeUs=",
    "pom": "sha256-rJrVjitZSSYOAA4a/qDzo2HQnY5V3+3bczJws+v3Ymo="
   },
-  "androidx/compose/runtime#runtime-saveable-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-saveable-android/1.10.2": {
    "module": "sha256-TtQses1jWEhwbRVPG++dP3ThGCkmd9sD12jIgRIUfm4=",
    "pom": "sha256-fWhp9oyai+1GO3EBdBt6Y41MhRsaoUDzZlCKZ+Y6CuQ="
   },
-  "androidx/compose/runtime#runtime-saveable-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-saveable-android/1.10.3": {
    "module": "sha256-VsOzzS3Nw9LvfgSgeW7UxJ8tBnkzLhY+8xTw8UkX6rs=",
    "pom": "sha256-6Iy/Ms2zUf0+bdQGkLxIVl15tSHOH055Cm/wVAXwS/A="
   },
-  "androidx/compose/runtime#runtime-saveable/1.10.2": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-saveable/1.10.2": {
    "module": "sha256-ANG3ryxd7/QdyN+NkHY0dnXQAiwUZ35g51GcecZjBdk=",
    "pom": "sha256-JVQuFexmeKw+hNsKiMRmXwgdz416E638eWP/ddtXXL0="
   },
-  "androidx/compose/runtime#runtime-saveable/1.10.3": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-saveable/1.10.3": {
    "module": "sha256-4vDNF/VEwJmkXJcI5rbMTIIZaUEalM07azjUketviV0=",
    "pom": "sha256-px1yQeATtwxQNKA7ErxcVyWaZWF3zTzmBfN0s10BBpY="
   },
-  "androidx/compose/runtime#runtime-saveable/1.7.0": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-saveable/1.7.0": {
    "module": "sha256-V096AtKqST7Zo0pfOFZyJm6XS77qNQMnRU6gCL3S7Zc=",
    "pom": "sha256-UG3TGS4UUkxsHClvNFl7hGoyZPqtF820AuHszCJNDko="
   },
-  "androidx/compose/runtime#runtime-saveable/1.7.2": {
+  "dl/android/maven2/androidx/compose/runtime#runtime-saveable/1.7.2": {
    "module": "sha256-FxVMRcWwgYnTBIuFW4qKh8oW6tPrSSlNPwgb5fU8gNU=",
    "pom": "sha256-IYnj3yw5lvauRmHnJdS/Are46F3PWcULaM5lay0SjJc="
   },
-  "androidx/compose/runtime#runtime/1.0.1": {
+  "dl/android/maven2/androidx/compose/runtime#runtime/1.0.1": {
    "module": "sha256-JUOox+3Ba96R8UAoa0/Tdz1yBKKDpOyZ9uXihqqSwMM=",
    "pom": "sha256-iriBQ6tzG09pstEhQ6SPMskYCQSz9ZJVyVAFNndOtMg="
   },
-  "androidx/compose/runtime#runtime/1.10.2": {
+  "dl/android/maven2/androidx/compose/runtime#runtime/1.10.2": {
    "module": "sha256-M6hpeeFw8D+nfnkk+VjOZaC7ui8cXchmzOn+g60Mx38=",
    "pom": "sha256-0cQQlie+6UMcjwjZRWM6IdE1gc9KZypdWepCABI+mAM="
   },
-  "androidx/compose/runtime#runtime/1.10.3": {
+  "dl/android/maven2/androidx/compose/runtime#runtime/1.10.3": {
    "module": "sha256-OF7i4j9/NyL3R6zKAl8Cxaww6cs0+iLjk9a0XWkxuBE=",
    "pom": "sha256-3M3driajZxP4oLys6b7tlo9Daeegx+jVhCCpl1JnTY8="
   },
-  "androidx/compose/runtime#runtime/1.7.0": {
+  "dl/android/maven2/androidx/compose/runtime#runtime/1.7.0": {
    "module": "sha256-e5NRsP9t+SdtAtQPEnZa5Vv1xt+4/430x338oTj7n8E=",
    "pom": "sha256-eUHY/NaDVXGG0vU8gXPDX3GqrJ1OZI6a6x7cS5L702E="
   },
-  "androidx/compose/runtime/runtime-android/1.10.2/runtime-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/runtime/runtime-android/1.10.2/runtime-android-1.10.2": {
    "aar": "sha256-z8AeOfh/rbQ8nh61epkwm/xo5IVBjUv0rz3ql6kYxBg="
   },
-  "androidx/compose/runtime/runtime-android/1.10.3/runtime-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/runtime/runtime-android/1.10.3/runtime-android-1.10.3": {
    "aar": "sha256-KUDv/B1LgiJPFnTP/1EK5QrQl+NBDbUKY6iWM4q2rRQ="
   },
-  "androidx/compose/runtime/runtime-annotation-android/1.10.2/runtime-annotation-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/runtime/runtime-annotation-android/1.10.2/runtime-annotation-android-1.10.2": {
    "aar": "sha256-BfqP1cCLyKPM0+y6IKdgBDcD+kNykODxG1Qnqj7griA="
   },
-  "androidx/compose/runtime/runtime-annotation-android/1.10.3/runtime-annotation-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/runtime/runtime-annotation-android/1.10.3/runtime-annotation-android-1.10.3": {
    "aar": "sha256-54gaWMzr0mbQWgKyltLHUHe2Z0yHwfGioaQLbAPbYdo="
   },
-  "androidx/compose/runtime/runtime-retain-android/1.10.2/runtime-retain-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/runtime/runtime-retain-android/1.10.2/runtime-retain-android-1.10.2": {
    "aar": "sha256-NVMXKPtZsa1PX0ps2xdZ1E+JFk+kHA4NqH1o/VGDTSQ="
   },
-  "androidx/compose/runtime/runtime-retain-android/1.10.3/runtime-retain-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/runtime/runtime-retain-android/1.10.3/runtime-retain-android-1.10.3": {
    "aar": "sha256-916zvCLUIdfD6mlbhb/McM1HyzW2ex7jvJVtDtoOkE4="
   },
-  "androidx/compose/runtime/runtime-saveable-android/1.10.2/runtime-saveable-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/runtime/runtime-saveable-android/1.10.2/runtime-saveable-android-1.10.2": {
    "aar": "sha256-Lj0r1Lr3GKx51MsxJgLqdRjeHjeiNktmXSv+1vsXx5k="
   },
-  "androidx/compose/runtime/runtime-saveable-android/1.10.3/runtime-saveable-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/runtime/runtime-saveable-android/1.10.3/runtime-saveable-android-1.10.3": {
    "aar": "sha256-8Pus8urEHarJ2DxD3miK5DwP019NJr420NL91JuEJKo="
   },
-  "androidx/compose/ui#ui-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/ui#ui-android/1.10.2": {
    "module": "sha256-YEwFi5t19ngcN006YN36nbCcqbGaUuUmHdLzWfzcN7g=",
    "pom": "sha256-IbQCosMPb47IiwNLURAbMxad2vL5DGTRaqGE3JbEIqY="
   },
-  "androidx/compose/ui#ui-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/ui#ui-android/1.10.3": {
    "module": "sha256-XRoIiX1g3OfsAaLRQ1hoHgfVeBuRs43pnWE7x+EtAdo=",
    "pom": "sha256-s3+dZKRTNtRGb1KmSyT7Am6Qj8QTR0eOn9JD3/b267Q="
   },
-  "androidx/compose/ui#ui-geometry-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/ui#ui-geometry-android/1.10.2": {
    "module": "sha256-Ba8a2eDl271xlio0ZAJ32UkkQPE9kaXyrc6EfR6K/vU=",
    "pom": "sha256-vZlDta6WD1DKHYHSI09509apF1/8/NaLuWhU5PPoev4="
   },
-  "androidx/compose/ui#ui-geometry-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/ui#ui-geometry-android/1.10.3": {
    "module": "sha256-sWdhNcePQffskcK7B6WwJKkG2EvuF5QplohDd47hh4A=",
    "pom": "sha256-VJt0g+uiwafPIqT2ucF1SyVTKjGWYGgOSQJrGvIvA9w="
   },
-  "androidx/compose/ui#ui-geometry/1.10.2": {
+  "dl/android/maven2/androidx/compose/ui#ui-geometry/1.10.2": {
    "module": "sha256-4P2e4tIOvEBEw2QT8Ul38OiTRPWeVDzKTMh6gUhg724=",
    "pom": "sha256-eWnIhgHV7VvjDbLFJJENC6SbUXvNqj3eaV+Lkcra4G4="
   },
-  "androidx/compose/ui#ui-geometry/1.10.3": {
+  "dl/android/maven2/androidx/compose/ui#ui-geometry/1.10.3": {
    "module": "sha256-SzEX8CtQ5tmZpN28GGSukZf2/AqVaTfQUSEguOEPEcE=",
    "pom": "sha256-sT6P5CzzN3Wv9uyktQ9ESGEL4Aa9WWViXA+0fuOBqqM="
   },
-  "androidx/compose/ui#ui-graphics-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/ui#ui-graphics-android/1.10.2": {
    "module": "sha256-U9i8PwddrwO4YNn96J3bLF6bjk95zAuRiujo0e31A/M=",
    "pom": "sha256-Ji7HuwQcWpTWu1H/RAXZ6sX5JZcOP9BkVflNuyLxbRk="
   },
-  "androidx/compose/ui#ui-graphics-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/ui#ui-graphics-android/1.10.3": {
    "module": "sha256-grXUwu0qR8YaYgCYoxbUIRR0edr0Xhhi7ecmupRWRXA=",
    "pom": "sha256-Gpsj2t2BL2AIiVg1nmDus6mTifmbAKMFlumVb+Rm6Fg="
   },
-  "androidx/compose/ui#ui-graphics/1.10.2": {
+  "dl/android/maven2/androidx/compose/ui#ui-graphics/1.10.2": {
    "module": "sha256-GWQZ4Zt8oY5jarGBPzEOWy/Q5Gyp+2/bHF4WXjmAKTo=",
    "pom": "sha256-+c/DhmS1mzKsxFYPNDQcrDu6Wp72FFHoN6UB3/ADWcM="
   },
-  "androidx/compose/ui#ui-graphics/1.10.3": {
+  "dl/android/maven2/androidx/compose/ui#ui-graphics/1.10.3": {
    "module": "sha256-+TLUicT10Y18/H4qRf4FqUPz2ZXxCYLqaxSlTNWxTbA=",
    "pom": "sha256-tHiL5Cn/7bOWIE/o/hwQ2IfFikWxeDk+HBYQeIdJ80Y="
   },
-  "androidx/compose/ui#ui-text-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/ui#ui-text-android/1.10.2": {
    "module": "sha256-du7TQwjfP813i70BNI7MKxm3dQP6YCq1ECBwacbvy3Q=",
    "pom": "sha256-5rcRMS6uuuQ1Jiya65f+OPudAD5ixLLWOdxcLwYHNo8="
   },
-  "androidx/compose/ui#ui-text-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/ui#ui-text-android/1.10.3": {
    "module": "sha256-rGiyg8Oq7iaN0JFtbF1vaC2VfUxGQHO1ITadQl2WzuQ=",
    "pom": "sha256-cPBUg5nyVKCx8CwKc6pj2xZDd6WXikblLUTyjKnw+gE="
   },
-  "androidx/compose/ui#ui-text/1.10.2": {
+  "dl/android/maven2/androidx/compose/ui#ui-text/1.10.2": {
    "module": "sha256-HdtSKEUulo33VldOxs8kty2Yezuxu/DDb45UJEEAKvU=",
    "pom": "sha256-dU88jooNcvV7yJ6Cvhp0ZjAnCnVQTlDus6Z8DB5ty4M="
   },
-  "androidx/compose/ui#ui-text/1.10.3": {
+  "dl/android/maven2/androidx/compose/ui#ui-text/1.10.3": {
    "module": "sha256-haXswnFmPKAd7NzhurV83jYZb5E//C+3P5WZ5US9Qqo=",
    "pom": "sha256-j0fhA0L7GrlAM5PF5Ja6nTrxg3p5vqwbU3pyjRWoLsc="
   },
-  "androidx/compose/ui#ui-tooling-preview-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/ui#ui-tooling-preview-android/1.10.2": {
    "module": "sha256-ctxtzHPeCOLWpAm8ZlXFbOi2KSGVyRjvgh4ia0pUyhc=",
    "pom": "sha256-d5XJgAYZaUlSSeJkf/p2v75WVf1pO1bxO0K/Tk3Ykus="
   },
-  "androidx/compose/ui#ui-tooling-preview-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/ui#ui-tooling-preview-android/1.10.3": {
    "module": "sha256-4NKuVPtCQ/qaDa889a46FIhpK5VoXVJHwDJkk0ANd+Q=",
    "pom": "sha256-Xa+Xr6Jz0JO7Ztmiboi8vA9+V1OnOvdI1nWrvur2h+U="
   },
-  "androidx/compose/ui#ui-tooling-preview/1.10.2": {
+  "dl/android/maven2/androidx/compose/ui#ui-tooling-preview/1.10.2": {
    "module": "sha256-rvIRCjWosLRIg2A1r62oxoZeN0hk7YdjA+tNcq2QWrE=",
    "pom": "sha256-nzMawft6h0sZIgJ0zCe7VWEVCFTH8Os1f5OOah3hVyo="
   },
-  "androidx/compose/ui#ui-tooling-preview/1.10.3": {
+  "dl/android/maven2/androidx/compose/ui#ui-tooling-preview/1.10.3": {
    "module": "sha256-DG7moBoSmM07KGsvuTUcTR6KQRcKRB3VbThlMl+P7RM=",
    "pom": "sha256-qK92isQdm3v6CbezaOZ7KMC1/LemuOI2OSmvLrEN8jA="
   },
-  "androidx/compose/ui#ui-unit-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/ui#ui-unit-android/1.10.2": {
    "module": "sha256-BjXQ1kyI+Z3l4mLN0zx1ivfCAtIuoPbKOoB8G2mNqL4=",
    "pom": "sha256-HvezjGg4PUl/2T+A43yT1DqPTGG1gpQiO97zhdMnS1k="
   },
-  "androidx/compose/ui#ui-unit-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/ui#ui-unit-android/1.10.3": {
    "module": "sha256-/17a1s8c1ySMzVE88kTMFBC4pTR6YX3i3zuL0meamJc=",
    "pom": "sha256-guJ8AwLT7kka44KE9VSY1nfyn7WoT+754DAERXiT4mY="
   },
-  "androidx/compose/ui#ui-unit/1.10.2": {
+  "dl/android/maven2/androidx/compose/ui#ui-unit/1.10.2": {
    "module": "sha256-hMNNEX2Yiql+nxpmaTEqgBC74Wn5H3TyBzHWSxoGMdI=",
    "pom": "sha256-6YZF1vHuC+27IlAYssJGbSCbDWsMRrT4B77wTmbrgNs="
   },
-  "androidx/compose/ui#ui-unit/1.10.3": {
+  "dl/android/maven2/androidx/compose/ui#ui-unit/1.10.3": {
    "module": "sha256-CG0H2oG0hq72OPujv81wxtuP1XdysVlCoE5upjXUauE=",
    "pom": "sha256-5KqSTzmnDfOn24yH1cvtBWAfU8AgCiPMJfMgE++8Og0="
   },
-  "androidx/compose/ui#ui-util-android/1.10.2": {
+  "dl/android/maven2/androidx/compose/ui#ui-util-android/1.10.2": {
    "module": "sha256-7eoGlfmgQxRQfaXsMzc9q8ykrkj3wBtDyIcod+vkVI8=",
    "pom": "sha256-98DhS+y31fAMQBzT4f52NZk7ezhBM1ahMygRpHaAf/4="
   },
-  "androidx/compose/ui#ui-util-android/1.10.3": {
+  "dl/android/maven2/androidx/compose/ui#ui-util-android/1.10.3": {
    "module": "sha256-CHc44KqiVPFnUNbXe+zkXlV+IXg4tpfzNSGkk921A4w=",
    "pom": "sha256-1Wpwkp6DnE8GXsb2Go9MiD/7Ksc+emv2P9sX23KChXg="
   },
-  "androidx/compose/ui#ui-util/1.10.2": {
+  "dl/android/maven2/androidx/compose/ui#ui-util/1.10.2": {
    "module": "sha256-vzig4znYRTTt+emGyml6PEefTkt874dkvjG+NDSXAzI=",
    "pom": "sha256-BYEQWBs0MofZM2QCpnqQXT+KAJSaNAAFpMRnBmAZ/8w="
   },
-  "androidx/compose/ui#ui-util/1.10.3": {
+  "dl/android/maven2/androidx/compose/ui#ui-util/1.10.3": {
    "module": "sha256-4cJmCnWz0AgrA8B4B79MiKtRQoXbt0ReNfR7xb7DLoo=",
    "pom": "sha256-N+YqmcZHwFWdn/BGtprFrPsEDvNwdfY+0tHKSrzDtj8="
   },
-  "androidx/compose/ui#ui/1.0.1": {
+  "dl/android/maven2/androidx/compose/ui#ui/1.0.1": {
    "module": "sha256-VwMaasm2DltWeS6/XN5uFoEv9WbtkZDL0YiwC0bBN3k=",
    "pom": "sha256-IfZaw0n3m8YNhGbQ64DNBj8YUvRMrKShyfN8GandvWY="
   },
-  "androidx/compose/ui#ui/1.10.2": {
+  "dl/android/maven2/androidx/compose/ui#ui/1.10.2": {
    "module": "sha256-XmuaPdWFGpJ6TOfekGIu/RQ/VKbeHVY3eTkTul0n200=",
    "pom": "sha256-pP9718Utae89K8WJhob6Kq7fCKDHNaZ+nl/VhwApRmI="
   },
-  "androidx/compose/ui#ui/1.10.3": {
+  "dl/android/maven2/androidx/compose/ui#ui/1.10.3": {
    "module": "sha256-LHphYd6DiycvSaaWrhkMAHL2/4Sm8YnSb/CBevZYFCM=",
    "pom": "sha256-oCqHFkP73QFxgeE1JH7O4Z/w/RblaoF2ZmMx5TdIjg8="
   },
-  "androidx/compose/ui/ui-android/1.10.2/ui-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/ui/ui-android/1.10.2/ui-android-1.10.2": {
    "aar": "sha256-43mvtBNzzKVdvs6+qXLdthsF2qUHPY6QzxBzlntsQGg="
   },
-  "androidx/compose/ui/ui-android/1.10.3/ui-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/ui/ui-android/1.10.3/ui-android-1.10.3": {
    "aar": "sha256-BJCHKcAIlrz+PTVCZQrLTLvaidEegpgXGZvdbfUov+0="
   },
-  "androidx/compose/ui/ui-geometry-android/1.10.2/ui-geometry-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/ui/ui-geometry-android/1.10.2/ui-geometry-android-1.10.2": {
    "aar": "sha256-rPxVXoL5ogM3n+1aHRHR/bSpJRgyiz64oHskxSMSDYI="
   },
-  "androidx/compose/ui/ui-geometry-android/1.10.3/ui-geometry-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/ui/ui-geometry-android/1.10.3/ui-geometry-android-1.10.3": {
    "aar": "sha256-z442JyBr9LinL1xJKCIpMrUsv61h3ycAVP2WiE5FSsY="
   },
-  "androidx/compose/ui/ui-graphics-android/1.10.2/ui-graphics-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/ui/ui-graphics-android/1.10.2/ui-graphics-android-1.10.2": {
    "aar": "sha256-lTfPYqF3Zuy1LMRlW5U9DaFLmDTgNkzdbuiAXNTVWPg="
   },
-  "androidx/compose/ui/ui-graphics-android/1.10.3/ui-graphics-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/ui/ui-graphics-android/1.10.3/ui-graphics-android-1.10.3": {
    "aar": "sha256-4czhXvQkTgX+PdM5v6i+KSe5n90xcneEJa2JGE/K0hI="
   },
-  "androidx/compose/ui/ui-text-android/1.10.2/ui-text-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/ui/ui-text-android/1.10.2/ui-text-android-1.10.2": {
    "aar": "sha256-RwdwkzX+aYUlwl8TZWSk6Zl6p49OGleYU+P+8naS0T0="
   },
-  "androidx/compose/ui/ui-text-android/1.10.3/ui-text-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/ui/ui-text-android/1.10.3/ui-text-android-1.10.3": {
    "aar": "sha256-2LqPeQ5E0eb+OWTwVtAAeoydKnZW6UdGln4h+6o2Lgc="
   },
-  "androidx/compose/ui/ui-tooling-preview-android/1.10.2/ui-tooling-preview-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/ui/ui-tooling-preview-android/1.10.2/ui-tooling-preview-android-1.10.2": {
    "aar": "sha256-cB9KcmbAI1rsDu7wJWFTKGC6XVOH/S1LZnl+F7vX1aM="
   },
-  "androidx/compose/ui/ui-tooling-preview-android/1.10.3/ui-tooling-preview-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/ui/ui-tooling-preview-android/1.10.3/ui-tooling-preview-android-1.10.3": {
    "aar": "sha256-o5I4x//JhdnWIYQ/S7P5qkFam9/rT1m5H6BHqlWCfO8="
   },
-  "androidx/compose/ui/ui-unit-android/1.10.2/ui-unit-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/ui/ui-unit-android/1.10.2/ui-unit-android-1.10.2": {
    "aar": "sha256-rMqOSkkQrMBuGAHlLWdzD+puqMEb5+wuGwPadDX+pbA="
   },
-  "androidx/compose/ui/ui-unit-android/1.10.3/ui-unit-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/ui/ui-unit-android/1.10.3/ui-unit-android-1.10.3": {
    "aar": "sha256-eWJ9OKBfKNBS+u0FguP2emqastoL7Ag3fwkGLre29MQ="
   },
-  "androidx/compose/ui/ui-util-android/1.10.2/ui-util-android-1.10.2": {
+  "dl/android/maven2/androidx/compose/ui/ui-util-android/1.10.2/ui-util-android-1.10.2": {
    "aar": "sha256-3O7qNHgmQb1+9d/PBrDIgOGME72P/T11mqYX7XHrzyk="
   },
-  "androidx/compose/ui/ui-util-android/1.10.3/ui-util-android-1.10.3": {
+  "dl/android/maven2/androidx/compose/ui/ui-util-android/1.10.3/ui-util-android-1.10.3": {
    "aar": "sha256-xnf1HFx9Y5ZMN0pehCuMuAUmr+5g9IqSc68c2/UbiZE="
   },
-  "androidx/concurrent#concurrent-futures/1.0.0": {
+  "dl/android/maven2/androidx/concurrent#concurrent-futures/1.0.0": {
    "jar": "sha256-VZWkDieKezn6eKCUkOPX8/qpXHsBRHFIvTi1reBgXDU=",
    "pom": "sha256-RQW5peMKlBi1mprWcCw+QZOupuaRo9A88iDHZArQg+I="
   },
-  "androidx/concurrent#concurrent-futures/1.1.0": {
+  "dl/android/maven2/androidx/concurrent#concurrent-futures/1.1.0": {
    "jar": "sha256-DOBnxRSg0QSdG+vfcJ40TtMmb+l0QnVoKTfNyxMzTp4=",
    "module": "sha256-d2OaCwUeIlELrZOv/OoOvXge8SS/m3YhqVdJk3vPzf0=",
    "pom": "sha256-dIo0610T0Z0Yet7K6oJmf97V8bC5imVeE+0uSos9iuY="
   },
-  "androidx/constraintlayout#constraintlayout-core/1.0.0": {
+  "dl/android/maven2/androidx/constraintlayout#constraintlayout-core/1.0.0": {
    "jar": "sha256-SWyMeWZL2XDGpr56lgog3RV9/Fqi8Y5bgzN2f/vFmRE=",
    "module": "sha256-Ge5Jb2b8BVlilFTdAdNJ89PJWVmAs3No/NkfFH7WBNs=",
    "pom": "sha256-k+AWIukLWHm7lQ/ttcQXyAJFVf3HeUgbzuIaO1l3y4w="
   },
-  "androidx/constraintlayout#constraintlayout/2.1.0": {
+  "dl/android/maven2/androidx/constraintlayout#constraintlayout/2.1.0": {
    "module": "sha256-FBrMbPAzDdTjYwcolcSyaMC1lfhNck4ukE685fK3Lkg=",
    "pom": "sha256-JRBK9a6R7+X+bJF47uNfawLjE0lQVzjM603y34OFtYU="
   },
-  "androidx/constraintlayout/constraintlayout/2.1.0/constraintlayout-2.1.0": {
+  "dl/android/maven2/androidx/constraintlayout/constraintlayout/2.1.0/constraintlayout-2.1.0": {
    "aar": "sha256-pFinViNjvVnCCafeqEcyag4rJrN6iD3D4pBlp5oceIs="
   },
-  "androidx/coordinatorlayout#coordinatorlayout/1.1.0": {
+  "dl/android/maven2/androidx/coordinatorlayout#coordinatorlayout/1.1.0": {
    "pom": "sha256-pnxSyd36/y/7L9S5fNlPo4LoN+qKWHTQKeCgT6Y+XK8="
   },
-  "androidx/coordinatorlayout/coordinatorlayout/1.1.0/coordinatorlayout-1.1.0": {
+  "dl/android/maven2/androidx/coordinatorlayout/coordinatorlayout/1.1.0/coordinatorlayout-1.1.0": {
    "aar": "sha256-RKnjCr9WrxAlxSoK9Qb+6cQTGqVe/aUvn9lFEhHF6Ms="
   },
-  "androidx/core#core-ktx/1.13.0": {
+  "dl/android/maven2/androidx/core#core-ktx/1.13.0": {
    "module": "sha256-o+agaS4F/VnmrDgHFe1ysyXGJaNidkbGnRCL3N3EJg8=",
    "pom": "sha256-fPbU+y9hq0kkIyuS1lgLZd+RA8BDfNrmDOFDiMNzEhA="
   },
-  "androidx/core#core-ktx/1.16.0": {
+  "dl/android/maven2/androidx/core#core-ktx/1.16.0": {
    "module": "sha256-ifuSyhJ1lM3NEcXvtasOjrI0ZrxBuN91eVFNL+9uEoE=",
    "pom": "sha256-RmDPtgbtiYKLo+EPebKYCf+2d+5dI0b+m8sD38S5tkU="
   },
-  "androidx/core#core-ktx/1.17.0": {
+  "dl/android/maven2/androidx/core#core-ktx/1.17.0": {
    "module": "sha256-7XvK3DnGLQDa7kT0p4ojyoP7w5nyL6kKzk6Fm0FckEg=",
    "pom": "sha256-AjPY0KLOj/ODUCyMZKQvwWcwFkAskjeVRltkROrNmTk="
   },
-  "androidx/core#core-ktx/1.2.0": {
+  "dl/android/maven2/androidx/core#core-ktx/1.2.0": {
    "pom": "sha256-Kerduk5qNeaKEo5ZTrrjty7352fxsnPvk9wu0Bn/l/Y="
   },
-  "androidx/core#core-viewtree/1.0.0": {
+  "dl/android/maven2/androidx/core#core-viewtree/1.0.0": {
    "module": "sha256-EThs+kbLv922pAWfFDVMAGkc9l09Y8NhiBioMybvPH8=",
    "pom": "sha256-1PLtEXb6jFYSuA90yVKoeZFCqe02AioaI4/eWxQFgNk="
   },
-  "androidx/core#core/1.13.0": {
+  "dl/android/maven2/androidx/core#core/1.13.0": {
    "module": "sha256-Lg5uXBIFt0YqDFw+MrWMLlJUNYEu2JlGx75nN0k7UeM=",
    "pom": "sha256-RQLk7YtZEiAhrJocExLiMm5LD0P37Lu8m1Dud0KVdNQ="
   },
-  "androidx/core#core/1.16.0": {
+  "dl/android/maven2/androidx/core#core/1.16.0": {
    "module": "sha256-SrSjsLwWZOOixg3saZr2NXeOFcbuNzlxaQlI8HPdch4=",
    "pom": "sha256-B0l0oVUCIa96qF3taQPD2Eyb3t+ea0/zsMtHEym1rHc="
   },
-  "androidx/core#core/1.17.0": {
+  "dl/android/maven2/androidx/core#core/1.17.0": {
    "module": "sha256-YAb96YxvqYqRgLlAu0SXGqXJJD45+UetbK3fOG/Jz+o=",
    "pom": "sha256-i2Oxj/TjR07x6UKO0CLXmU6eaa382u5+WcflLcPPdbA="
   },
-  "androidx/core#core/1.3.2": {
+  "dl/android/maven2/androidx/core#core/1.3.2": {
    "pom": "sha256-r7XqSU3Qg+1ATNUfWA0hjjc2L4rjJuiTvuUhKQ7TSSA="
   },
-  "androidx/core#core/1.8.0": {
+  "dl/android/maven2/androidx/core#core/1.8.0": {
    "module": "sha256-UF8YOIaWEVGdZex/62UOiIVuNoLjfkKioktz5lWpjXQ=",
    "pom": "sha256-eezHl6XSAMS+P2dW0su2+kb+WCGSMEN36KZBD2Bm6z4="
   },
-  "androidx/core/core-ktx/1.16.0/core-ktx-1.16.0": {
+  "dl/android/maven2/androidx/core/core-ktx/1.16.0/core-ktx-1.16.0": {
    "aar": "sha256-F2bb2C9koS3NNZ7LbxXzzzXbTWbSKWGnxRsv/GRoMUw="
   },
-  "androidx/core/core-ktx/1.17.0/core-ktx-1.17.0": {
+  "dl/android/maven2/androidx/core/core-ktx/1.17.0/core-ktx-1.17.0": {
    "aar": "sha256-TSMZC4YjuKuzxSR6Cncn7KNHBi0CYzXEJ6CegnEbFfg="
   },
-  "androidx/core/core-ktx/1.2.0/core-ktx-1.2.0": {
+  "dl/android/maven2/androidx/core/core-ktx/1.2.0/core-ktx-1.2.0": {
    "aar": "sha256-3LdNUQ1VKzXv9zsN0nuClklTXzkC5bWh8mBAODwQqUA="
   },
-  "androidx/core/core-viewtree/1.0.0/core-viewtree-1.0.0": {
+  "dl/android/maven2/androidx/core/core-viewtree/1.0.0/core-viewtree-1.0.0": {
    "aar": "sha256-3BtnjVjrzyv6FYe+aP+CZpTOPSISUbnvMNTUs2KX5t4="
   },
-  "androidx/core/core/1.16.0/core-1.16.0": {
+  "dl/android/maven2/androidx/core/core/1.16.0/core-1.16.0": {
    "aar": "sha256-a/A9OdvjdErM4ifTtpc3TDYlquECX77IrZ/XvVi85DE="
   },
-  "androidx/core/core/1.17.0/core-1.17.0": {
+  "dl/android/maven2/androidx/core/core/1.17.0/core-1.17.0": {
    "aar": "sha256-4b0iu89c7jqZLe230tPDsxyfdhwB5W0A6kQ8iqqYEYI="
   },
-  "androidx/core/core/1.8.0/core-1.8.0": {
+  "dl/android/maven2/androidx/core/core/1.8.0/core-1.8.0": {
    "aar": "sha256-SMZKFew+sRv7MzOeXOtw7H+CG9LfouuGdevVNTMX55I="
   },
-  "androidx/cursoradapter#cursoradapter/1.0.0": {
+  "dl/android/maven2/androidx/cursoradapter#cursoradapter/1.0.0": {
    "pom": "sha256-YtlciYUK8hAwsZ8U1ffs1ti8yaMBTFkALsmWJMqsgQA="
   },
-  "androidx/cursoradapter/cursoradapter/1.0.0/cursoradapter-1.0.0": {
+  "dl/android/maven2/androidx/cursoradapter/cursoradapter/1.0.0/cursoradapter-1.0.0": {
    "aar": "sha256-qByP54gV+kffW3Sd61JyetEfk5faWLFgF/TrLBHihWQ="
   },
-  "androidx/customview#customview-poolingcontainer/1.0.0": {
+  "dl/android/maven2/androidx/customview#customview-poolingcontainer/1.0.0": {
    "module": "sha256-kDA01RUt0uAWKxRo6iWiLhyjhABrPSgtWhQ8x2AyGgE=",
    "pom": "sha256-n6YhlsTE55tqWNuziowCK++NshmJ19ri2g9vW2Yompw="
   },
-  "androidx/customview#customview/1.0.0": {
+  "dl/android/maven2/androidx/customview#customview/1.0.0": {
    "pom": "sha256-zp5HuHGE9b1eE56b7NWyZHbULXjDG/L97cN6y0G5rUk="
   },
-  "androidx/customview#customview/1.1.0": {
+  "dl/android/maven2/androidx/customview#customview/1.1.0": {
    "pom": "sha256-yBTUNfc+nm0WmIbQ65a1xTYf60hEn7uzFckIwDxYjJQ="
   },
-  "androidx/customview/customview-poolingcontainer/1.0.0/customview-poolingcontainer-1.0.0": {
+  "dl/android/maven2/androidx/customview/customview-poolingcontainer/1.0.0/customview-poolingcontainer-1.0.0": {
    "aar": "sha256-NYQQL8Sb85nFbjt75L/hIADEYRIyDNjPhcwKj5Pz51I="
   },
-  "androidx/customview/customview/1.0.0/customview-1.0.0": {
+  "dl/android/maven2/androidx/customview/customview/1.0.0/customview-1.0.0": {
    "aar": "sha256-IOW49lJqNFlaYE9WcY2oEWfAtAp6lKV9qjVWY/JZTfI="
   },
-  "androidx/customview/customview/1.1.0/customview-1.1.0": {
+  "dl/android/maven2/androidx/customview/customview/1.1.0/customview-1.1.0": {
    "aar": "sha256-AfdqsEN3CpewVARvmBVxe4LOA1XAKWfRbGGYE1ncGJo="
   },
-  "androidx/databinding#databinding-common/8.9.1": {
+  "dl/android/maven2/androidx/databinding#databinding-common/8.9.1": {
    "jar": "sha256-Zsq4JjnawPbCQzRkwJOwdNYIxLuIfsOKm4vErJgSZzI=",
    "pom": "sha256-e9ydEuFXbMInCMr5wnSadICdrYJNQNja7w8VGUXyCoc="
   },
-  "androidx/databinding#databinding-compiler-common/8.9.1": {
+  "dl/android/maven2/androidx/databinding#databinding-compiler-common/8.9.1": {
    "jar": "sha256-WMMrzkw+bVI9MG0eOaGulGzWELbtBmYfRhlXvOw2x1M=",
    "pom": "sha256-K6Odlt0F//cLVzP9hu5l5zyT36oCNIjB2oBHo7uLHIs="
   },
-  "androidx/datastore#datastore-android/1.1.4": {
+  "dl/android/maven2/androidx/datastore#datastore-android/1.1.4": {
    "module": "sha256-4fHbe+MJBYtfGBvDCEiL3OxndGwRk68VEJvzT0XwFYY=",
    "pom": "sha256-keTkYFIU2YIKhNxNN+kvxx9Tt8io7PXwACezW2ALw44="
   },
-  "androidx/datastore#datastore-core-android/1.1.4": {
+  "dl/android/maven2/androidx/datastore#datastore-core-android/1.1.4": {
    "module": "sha256-Nwoau+/UmT2rm26UrZ7GenesUdkdIRTrWl+mpsmQCYA=",
    "pom": "sha256-urxaZH9PiSU/ZnwwndgQA0wyL9YjPSFXw8hZl2Pz8ao="
   },
-  "androidx/datastore#datastore-core-okio-jvm/1.1.4": {
+  "dl/android/maven2/androidx/datastore#datastore-core-okio-jvm/1.1.4": {
    "jar": "sha256-KRUGtPzjmCSXk+MnIHY1vU3yUYHZU5gI1xgaSr0IdfU=",
    "module": "sha256-KnHyI9qdQSYmXbMSHeahr20eBoINHm+/MAdi4IVJ/Ng=",
    "pom": "sha256-NYwLMEdWPFkZS3Yhmv1bofOqHCXM3SGTiRzjGo8eJwI="
   },
-  "androidx/datastore#datastore-core-okio/1.1.4": {
+  "dl/android/maven2/androidx/datastore#datastore-core-okio/1.1.4": {
    "module": "sha256-8GR9RRFdeNOZXeI35p40D2HY4HkZFD5CLEJw4WDnlKE=",
    "pom": "sha256-oRdG2gAABdY9gqhFyP9RynSNKD5knk1pI4MljfKMZfc="
   },
-  "androidx/datastore#datastore-core/1.1.4": {
+  "dl/android/maven2/androidx/datastore#datastore-core/1.1.4": {
    "module": "sha256-SFfFQyEu7v4ScWnkYZimIVKV10j7fRZpuo9Vay1P5EE=",
    "pom": "sha256-HJPz3cG7R8XVMRMIn5VNPY9oEpF2IXuKhgVX7F3/M/Y="
   },
-  "androidx/datastore#datastore-preferences-android/1.1.4": {
+  "dl/android/maven2/androidx/datastore#datastore-preferences-android/1.1.4": {
    "module": "sha256-bYlziMbUsOLpMgMWVoY+kTGASSdZOlAwyf5LfJVjoho=",
    "pom": "sha256-EBaEWBQ7cojz3gy52cf34kV72LfDrUJpVCYwicRLd30="
   },
-  "androidx/datastore#datastore-preferences-core-jvm/1.1.4": {
+  "dl/android/maven2/androidx/datastore#datastore-preferences-core-jvm/1.1.4": {
    "jar": "sha256-yznhIjtDJNcwxXOivOo6NTCevZNY++YwiZcFo/vKyvY=",
    "module": "sha256-7m2fn0s9lFX9jH8Tjld1kny4vBh/4GhoRs+vkWRSb2k=",
    "pom": "sha256-XDVmrcViZHWLMYBi67tLph27AXOeh995vkwXP3lfoSs="
   },
-  "androidx/datastore#datastore-preferences-core/1.1.4": {
+  "dl/android/maven2/androidx/datastore#datastore-preferences-core/1.1.4": {
    "module": "sha256-wTU+dcHQtDg5qVWRGkDptRXNVm6Sqrl6tbtMY5TFLxM=",
    "pom": "sha256-VtMHqFUGlyg+sl2NWl0uq52GEtq2/tYbi0AGBpo2CbE="
   },
-  "androidx/datastore#datastore-preferences-external-protobuf/1.1.4": {
+  "dl/android/maven2/androidx/datastore#datastore-preferences-external-protobuf/1.1.4": {
    "jar": "sha256-/LPzc890NCbIXrsNPMZErvrybzm3+lW7kCONQbaJ7Kc=",
    "module": "sha256-y6TR1OeKklfVl3SeGic8BXVZ5qju/Htx5zXZocpx8Pk=",
    "pom": "sha256-jCwzfG75F37JPgoLpKsVWH5MRvtV9/ciutLPrW1TQL4="
   },
-  "androidx/datastore#datastore-preferences-proto/1.1.4": {
+  "dl/android/maven2/androidx/datastore#datastore-preferences-proto/1.1.4": {
    "jar": "sha256-Y2hqYS85uMpgO+vjN21V+2ye4opKUXPvpJyJy8yooSc=",
    "module": "sha256-zz4afFBJlJfLlKMZgau3FtEAmyaGbxapD7nOXNsQyC4=",
    "pom": "sha256-y/Acu6jL+tylYR+USaCnA356NRJDprcQUho/moPw0o4="
   },
-  "androidx/datastore#datastore-preferences/1.1.4": {
+  "dl/android/maven2/androidx/datastore#datastore-preferences/1.1.4": {
    "module": "sha256-1YML1Kylc4a8f7t+vKvwEbUcKvDCo8UhFjqj7C9z+2g=",
    "pom": "sha256-r0+pfFkHqj3liZffeQS1DtUnX1CSDPahBPAY6+KSJrk="
   },
-  "androidx/datastore#datastore/1.1.4": {
+  "dl/android/maven2/androidx/datastore#datastore/1.1.4": {
    "module": "sha256-mAmQyysb45WmIyzPrqujabtDkC+fhuO8kdU3Ny+3xCg=",
    "pom": "sha256-Wa4MqV8Fd5a9yl4/pLdsySXYL5k6XUdETCz4sf35ARk="
   },
-  "androidx/datastore/datastore-android/1.1.4/datastore-android-1.1.4": {
+  "dl/android/maven2/androidx/datastore/datastore-android/1.1.4/datastore-android-1.1.4": {
    "aar": "sha256-tKfoqD4UPNLzDMD/75iwl95JK2jSNM0wxcPsYNURFmc="
   },
-  "androidx/datastore/datastore-core-android/1.1.4/datastore-core-android-1.1.4": {
+  "dl/android/maven2/androidx/datastore/datastore-core-android/1.1.4/datastore-core-android-1.1.4": {
    "aar": "sha256-mSSk4YAxssWWMVQGERndLEBSz1p6tnQfH8LM1QmwR/U="
   },
-  "androidx/datastore/datastore-preferences-android/1.1.4/datastore-preferences-android-1.1.4": {
+  "dl/android/maven2/androidx/datastore/datastore-preferences-android/1.1.4/datastore-preferences-android-1.1.4": {
    "aar": "sha256-SYr1ekMftmfOm3cXaE9gLT5Ckgzj6GY8TrdTBO3+4kI="
   },
-  "androidx/documentfile#documentfile/1.0.0": {
+  "dl/android/maven2/androidx/documentfile#documentfile/1.0.0": {
    "pom": "sha256-ATKIqTF6VScGzmJfskST6CIyiFKSI+xXjPhVpa6cFuU="
   },
-  "androidx/documentfile#documentfile/1.0.1": {
+  "dl/android/maven2/androidx/documentfile#documentfile/1.0.1": {
    "pom": "sha256-ehG/eCm5vK1cr5i5V/jsFWYuxdqwe6JDMzH3xHbGuqw="
   },
-  "androidx/documentfile/documentfile/1.0.0/documentfile-1.0.0": {
+  "dl/android/maven2/androidx/documentfile/documentfile/1.0.0/documentfile-1.0.0": {
    "aar": "sha256-hloGHvL60WUi+EM1NrjUcgjEb/fHdFGX36HutIGGlIc="
   },
-  "androidx/documentfile/documentfile/1.0.1/documentfile-1.0.1": {
+  "dl/android/maven2/androidx/documentfile/documentfile/1.0.1/documentfile-1.0.1": {
    "aar": "sha256-nFPSTOVeeDa0TlqFs/b6AG/fh0LUoagNjUMt7qZhCNE="
   },
-  "androidx/drawerlayout#drawerlayout/1.0.0": {
+  "dl/android/maven2/androidx/drawerlayout#drawerlayout/1.0.0": {
    "pom": "sha256-2mczQlqD9c6FCHj6cgEII0X+18Zo3VhVD90ZwDlsb6Q="
   },
-  "androidx/drawerlayout#drawerlayout/1.1.1": {
+  "dl/android/maven2/androidx/drawerlayout#drawerlayout/1.1.1": {
    "pom": "sha256-wS+pA7pTAFlipyQF83iWYIcY9BZz/EpiMS5FNhMvb0U="
   },
-  "androidx/drawerlayout/drawerlayout/1.0.0/drawerlayout-1.0.0": {
+  "dl/android/maven2/androidx/drawerlayout/drawerlayout/1.0.0/drawerlayout-1.0.0": {
    "aar": "sha256-lAJELNxaQ89i+xT4z5jGM0LU2dm4BcgDPGz36AJ0msE="
   },
-  "androidx/drawerlayout/drawerlayout/1.1.1/drawerlayout-1.1.1": {
+  "dl/android/maven2/androidx/drawerlayout/drawerlayout/1.1.1/drawerlayout-1.1.1": {
    "aar": "sha256-LF8NyjeOt4yixEA/mInHfaowWTAiYPJqB/6fY8CJJv4="
   },
-  "androidx/dynamicanimation#dynamicanimation/1.0.0": {
+  "dl/android/maven2/androidx/dynamicanimation#dynamicanimation/1.0.0": {
    "pom": "sha256-RM4i7mINKPFzAbzGCtSbabfQWWwqh7BUrR4/6se0qJg="
   },
-  "androidx/dynamicanimation#dynamicanimation/1.1.0": {
+  "dl/android/maven2/androidx/dynamicanimation#dynamicanimation/1.1.0": {
    "module": "sha256-n19EJUtexrF7SWW4tkGFHSiI29R0xsqBqcr1EnGPAmI=",
    "pom": "sha256-yuy3s3lYXY5AcOuvrjl0oTfGaJ3oB3+RZZNbNgV4SpM="
   },
-  "androidx/dynamicanimation/dynamicanimation/1.0.0/dynamicanimation-1.0.0": {
+  "dl/android/maven2/androidx/dynamicanimation/dynamicanimation/1.0.0/dynamicanimation-1.0.0": {
    "aar": "sha256-zgBRYsIpvzCNLVsS+2ytCHQGnLvqzO5jqBk70I1A3gQ="
   },
-  "androidx/dynamicanimation/dynamicanimation/1.1.0/dynamicanimation-1.1.0": {
+  "dl/android/maven2/androidx/dynamicanimation/dynamicanimation/1.1.0/dynamicanimation-1.1.0": {
    "aar": "sha256-kGLMZjcTakmtF/hgPHJRkFL/mlaeYX/BtttwhjBNqI8="
   },
-  "androidx/emoji2#emoji2-views-helper/1.2.0": {
+  "dl/android/maven2/androidx/emoji2#emoji2-views-helper/1.2.0": {
    "module": "sha256-o6nbWBq/F4ewH/FcQPBZUw6OZPOTfKoteI9C6zmJMmg=",
    "pom": "sha256-21kFLonRO3lGSwS9H4dNeX8dl9g/STf2aaU+H2ioAjc="
   },
-  "androidx/emoji2#emoji2-views-helper/1.3.0": {
+  "dl/android/maven2/androidx/emoji2#emoji2-views-helper/1.3.0": {
    "module": "sha256-CZdLte+XgN6dVnFdcRcaNcePsuF/2GV3OwyDo6ysA5w=",
    "pom": "sha256-JnOw9YWdQ2Gk6aMEV4UqZ0XQw8hbXgQSBwSD85Y+9SY="
   },
-  "androidx/emoji2#emoji2-views-helper/1.4.0": {
+  "dl/android/maven2/androidx/emoji2#emoji2-views-helper/1.4.0": {
    "module": "sha256-JIqidv26gRbmViM8rD8/1UFETfIwXek+aBN5X80Lomo=",
    "pom": "sha256-6bf5C018SpS7Vvdu5+K75426o7GN60aFi4aT/O4tcUs="
   },
-  "androidx/emoji2#emoji2/1.2.0": {
+  "dl/android/maven2/androidx/emoji2#emoji2/1.2.0": {
    "module": "sha256-nRmWzKA3d7qh8nzRVTHbmDpjPa43uQ+FvVNQGstWaZ0=",
    "pom": "sha256-+vWVXSybCbupLlFWnyuShBne0FtclknARTySXH2mI2A="
   },
-  "androidx/emoji2#emoji2/1.3.0": {
+  "dl/android/maven2/androidx/emoji2#emoji2/1.3.0": {
    "module": "sha256-3chR7bpl/RWnobw60YZI4vcy3VrY7zYCIkvOBkf1tNE=",
    "pom": "sha256-FOu+qCNPATIRll/dCLQu6QfOAHWvMhAYyMKGXC5dsOs="
   },
-  "androidx/emoji2#emoji2/1.4.0": {
+  "dl/android/maven2/androidx/emoji2#emoji2/1.4.0": {
    "module": "sha256-kr4WzMt1f4B73dkvH8qVoDioEMzKBRxBScEWgkeJVLg=",
    "pom": "sha256-H2ciFIT30SYOtuK0kM1OcEa/XLU2J215+XKtPxmLR00="
   },
-  "androidx/emoji2/emoji2-views-helper/1.4.0/emoji2-views-helper-1.4.0": {
+  "dl/android/maven2/androidx/emoji2/emoji2-views-helper/1.4.0/emoji2-views-helper-1.4.0": {
    "aar": "sha256-7V0+13Kl+/DVcPdSb1hc1hoYDmD5NyWEwyimjiz/M3U="
   },
-  "androidx/emoji2/emoji2/1.4.0/emoji2-1.4.0": {
+  "dl/android/maven2/androidx/emoji2/emoji2/1.4.0/emoji2-1.4.0": {
    "aar": "sha256-Qz/r00NKRWZxdsdqZPPyBcpjNaa1RMW11X8lo4o3UkI="
   },
-  "androidx/fragment#fragment/1.2.5": {
+  "dl/android/maven2/androidx/fragment#fragment/1.2.5": {
    "pom": "sha256-3wrKRrYrtHzGYsvO5jNy220qKFlHjuOLWU+6NDP+MKU="
   },
-  "androidx/fragment#fragment/1.5.1": {
+  "dl/android/maven2/androidx/fragment#fragment/1.5.1": {
    "module": "sha256-KmZeFmVTuZu3ic71F+ZBMQWd8qnuYMH9drU8un8LQTE=",
    "pom": "sha256-fLFPsnvlyKFA3kFoEvQIqHCgdPZa4q0/Iy09S5bfe1o="
   },
-  "androidx/fragment#fragment/1.5.4": {
+  "dl/android/maven2/androidx/fragment#fragment/1.5.4": {
    "module": "sha256-rzJggI3OtlMu/C1yFb5Fhywkppna2n13v/c4zjuFp/A=",
    "pom": "sha256-+MoYd8ZuZCxVSQfhzlpJOol8opJwyxniu21CS6Q7bJg="
   },
-  "androidx/fragment/fragment/1.5.1/fragment-1.5.1": {
+  "dl/android/maven2/androidx/fragment/fragment/1.5.1/fragment-1.5.1": {
    "aar": "sha256-grBHgO2iGwpe6gJHVBWIehyt+zaLNxIhrrQHA8Bn8zg="
   },
-  "androidx/fragment/fragment/1.5.4/fragment-1.5.4": {
+  "dl/android/maven2/androidx/fragment/fragment/1.5.4/fragment-1.5.4": {
    "aar": "sha256-vDwkMd2kLpS7lRHFh+rokNJ25Kr+OTqNp7ABaRhtr94="
   },
-  "androidx/graphics#graphics-path/1.0.1": {
+  "dl/android/maven2/androidx/graphics#graphics-path/1.0.1": {
    "module": "sha256-P2/H6W+KH9IQRdp/LjMq71KKofVrZFX7jyUEOq+g4bg=",
    "pom": "sha256-hm+zV8cUb192eK1E5LxsKCPVaN784e0oBbtsiZYGsig="
   },
-  "androidx/graphics#graphics-shapes-android/1.0.1": {
+  "dl/android/maven2/androidx/graphics#graphics-shapes-android/1.0.1": {
    "module": "sha256-mlUIyvAtePzycpOU6X57J6Q3hic+F8y2W/jhsApZgyQ=",
    "pom": "sha256-gd57zIVJCE0QTVrzOxIPk+ENRUJKFaRUz6HyQwSqTRE="
   },
-  "androidx/graphics#graphics-shapes/1.0.1": {
+  "dl/android/maven2/androidx/graphics#graphics-shapes/1.0.1": {
    "module": "sha256-LX9tVQQimfnE+EeKoJS8QJmjRpAnef8wkf7R38K2L1M=",
    "pom": "sha256-drUM5mT6RKSxZUIIHgiJkc8xaubnI6pM0BpicZ8aiic="
   },
-  "androidx/graphics/graphics-path/1.0.1/graphics-path-1.0.1": {
+  "dl/android/maven2/androidx/graphics/graphics-path/1.0.1/graphics-path-1.0.1": {
    "aar": "sha256-jKQDK215s1HwtZrUtYDt27lCPhZS98lYgwaH8e7i7AM="
   },
-  "androidx/graphics/graphics-shapes-android/1.0.1/graphics-shapes-android-1.0.1": {
+  "dl/android/maven2/androidx/graphics/graphics-shapes-android/1.0.1/graphics-shapes-android-1.0.1": {
    "aar": "sha256-cXEmmkEi/quwcXaN9G0Qs2Lkesdf0KqNvK+h9E9htAw="
   },
-  "androidx/hilt#hilt-navigation-compose/1.2.0": {
+  "dl/android/maven2/androidx/hilt#hilt-navigation-compose/1.2.0": {
    "module": "sha256-UehXJ7r/Hu30KewUF8mxh7HEhBlhe1dDIvSNEayXGpY=",
    "pom": "sha256-lElCfh9EBtMoJwB8C55/J3+PnYRlcVJ4uS85DIVDR2I="
   },
-  "androidx/hilt#hilt-navigation/1.2.0": {
+  "dl/android/maven2/androidx/hilt#hilt-navigation/1.2.0": {
    "module": "sha256-B6/R8onKE0NwRWfwp96nTy8Z70NZsLOLa6GQugups5k=",
    "pom": "sha256-HIjYfaCxdAmbeRoTK+wtj/uYQQvsEaK5tBr1OwfKoz4="
   },
-  "androidx/hilt/hilt-navigation-compose/1.2.0/hilt-navigation-compose-1.2.0": {
+  "dl/android/maven2/androidx/hilt/hilt-navigation-compose/1.2.0/hilt-navigation-compose-1.2.0": {
    "aar": "sha256-5pq7s/F3iTtXpZb9zF7h9NfyOFJBrDdlw9e5xQyduE4="
   },
-  "androidx/hilt/hilt-navigation/1.2.0/hilt-navigation-1.2.0": {
+  "dl/android/maven2/androidx/hilt/hilt-navigation/1.2.0/hilt-navigation-1.2.0": {
    "aar": "sha256-i6npluQMXDi8/qzbJ1KG06sQ/fdardoU2IQreIEO8Ns="
   },
-  "androidx/interpolator#interpolator/1.0.0": {
+  "dl/android/maven2/androidx/interpolator#interpolator/1.0.0": {
    "pom": "sha256-DdwHzDlpn0js2eyJS1gwwPCeIugpWSlO3zchciTIi3s="
   },
-  "androidx/interpolator/interpolator/1.0.0/interpolator-1.0.0": {
+  "dl/android/maven2/androidx/interpolator/interpolator/1.0.0/interpolator-1.0.0": {
    "aar": "sha256-MxkxNaZP4h+iw17sZojxp25RJgbA/IPcG2ieN63Xcyo="
   },
-  "androidx/legacy#legacy-support-core-utils/1.0.0": {
+  "dl/android/maven2/androidx/legacy#legacy-support-core-utils/1.0.0": {
    "pom": "sha256-j9CTAIs+58BuUseNoq+YCntHtpuWf6kdrXr0ZvegCjg="
   },
-  "androidx/legacy/legacy-support-core-utils/1.0.0/legacy-support-core-utils-1.0.0": {
+  "dl/android/maven2/androidx/legacy/legacy-support-core-utils/1.0.0/legacy-support-core-utils-1.0.0": {
    "aar": "sha256-p+3PAdW1KzA0BzAnvEd1t4pHZLtiAruR1hyCmt2N0cc="
   },
-  "androidx/lifecycle#lifecycle-common-java8/2.2.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common-java8/2.2.0": {
    "pom": "sha256-NyZ6JP2YegG1wbgB4ShnX2PAN/ItWfvoggw66qyRPuA="
   },
-  "androidx/lifecycle#lifecycle-common-java8/2.5.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common-java8/2.5.1": {
    "jar": "sha256-aeGmLldSyj9D+xYH8WE3m76Itkr4nBpUPBJhYK33zFM=",
    "module": "sha256-EbGt1Q5lxG5NeArflpfBb0eFqKmCsYQbfQk9Ogo9EPA=",
    "pom": "sha256-Qi17Dln84cz7lcWeMAjDHitTl0sAUIB1aAchcvv3IpE="
   },
-  "androidx/lifecycle#lifecycle-common-java8/2.6.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common-java8/2.6.1": {
    "module": "sha256-G+sLn/+2MKAF3sodNYPSrL7IaF1t6AmjpuDkM/QYtsM=",
    "pom": "sha256-HeG0opB9T5Oym6QzmvRluaJOHA/2p0ks8d/N+AJdRew="
   },
-  "androidx/lifecycle#lifecycle-common-java8/2.6.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common-java8/2.6.2": {
    "module": "sha256-PVOCB9aOuJqgFm7awJQiuTdIGVBto5vmLAHwwPY4T34=",
    "pom": "sha256-8te1zA64I4IJqXyQ5mKokFwYRZOBt6kNqI1DHynzz7E="
   },
-  "androidx/lifecycle#lifecycle-common-java8/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common-java8/2.9.0": {
    "module": "sha256-feONTBaXj9knbm1R5+hey0RlNimL5tV7sK7+Vr2PC+M=",
    "pom": "sha256-zznPY85m3eufOzB9YsEERles/uH9m/5DiVbPonlV7z0="
   },
-  "androidx/lifecycle#lifecycle-common-java8/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common-java8/2.9.2": {
    "module": "sha256-YcgczDfG6s+HKbzjijt/aZ6oGKfZy11YS9lOfeSz2+E=",
    "pom": "sha256-USvJ19mHj2hrgX8zds/CoN9ptCE1jsV/HrFhPcBZQ04="
   },
-  "androidx/lifecycle#lifecycle-common-java8/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common-java8/2.9.4": {
    "jar": "sha256-SX3YTeny/UYyTyX5o68DLToj0IfoevUVxLGUNfbWplE=",
    "module": "sha256-B7q1nQEryAbwPevRkvk+MS1yvKVrJReCNKIaaBLa8EE=",
    "pom": "sha256-96AHfysgMSww6nTJ/ndib74q0Ju0iSKFHN4gvNGjMmY="
   },
-  "androidx/lifecycle#lifecycle-common-jvm/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common-jvm/2.9.0": {
    "module": "sha256-c/rWwx2zuUYIrJCFRzYBLJwSzz9C+hQ4mXKAuqwFIKY=",
    "pom": "sha256-VL6txi2pD74DjcMOrQYFUis2l7YdkfduSWm2AgJIPME="
   },
-  "androidx/lifecycle#lifecycle-common-jvm/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common-jvm/2.9.2": {
    "module": "sha256-cjad+SZiA6QqezjE5J9n5ueWL55I4ihiftfvRmsFFIE=",
    "pom": "sha256-jQ3Ks2SXw0q09G3Hm+cCWsQDWdDUK/SL1pqaa6FzQnI="
   },
-  "androidx/lifecycle#lifecycle-common-jvm/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common-jvm/2.9.4": {
    "jar": "sha256-N9ibIQHwdKxsJgkX2rsYVgdkXuIAqjAYx8W95w7c8YQ=",
    "module": "sha256-HRg385QrM+owqiMB/c6iY5QIoP1v1DaMIkePqBU6678=",
    "pom": "sha256-MXNemVOq7qtOB/z/pMarNRn5CzMcSx2oFz35EWB9OQY="
   },
-  "androidx/lifecycle#lifecycle-common/2.5.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common/2.5.1": {
    "jar": "sha256-IK0VIPYlz0Veav1ykJiDBtOpiG76mT4IYPur9Ls/e9o=",
    "module": "sha256-fUvClhzVvTmeNiHUNPDEU91srfiR+RepRswpGr3ajxo=",
    "pom": "sha256-gtIZLj3p/df0W5CI4nMV59vsAtCUYy+qajklFpDSjMA="
   },
-  "androidx/lifecycle#lifecycle-common/2.6.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common/2.6.1": {
    "module": "sha256-k3R6kUXLNrxxAF9Zjt4y4rEUmt5aFuYrDklpNFvGLYU=",
    "pom": "sha256-PmaDDVn65S4QMLS+ckseV3rIFNJzNf34GnEoPcCCnxo="
   },
-  "androidx/lifecycle#lifecycle-common/2.6.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common/2.6.2": {
    "module": "sha256-D6fyj1z/ikBqT3hwskPLDW16fCD6p6K+yv9ZB64S+cw=",
    "pom": "sha256-VzBM2sTaKJpuzdBzjhax2IWPHvjp+r4tZaljcZ/YHbo="
   },
-  "androidx/lifecycle#lifecycle-common/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common/2.9.0": {
    "module": "sha256-Z6ie4WOJ1esxeS2M6szDzyAJAMFMILuUdTbjJsFs4K0=",
    "pom": "sha256-aGNfrLQTSbBrhpzo+yxjDt0lpXyX5f8Ji7rRX/zzH/Y="
   },
-  "androidx/lifecycle#lifecycle-common/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common/2.9.2": {
    "module": "sha256-SDP4jjmhvSZO1eoYciAj6+UedLGaBBEkaqPXQOFukIE=",
    "pom": "sha256-bLkiyxFc6PYeffjRkl4tHTDvPP0I2G7Tl66qc32V+S8="
   },
-  "androidx/lifecycle#lifecycle-common/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-common/2.9.4": {
    "module": "sha256-xXi9dV6kbXp3gRMJo1OVOOLX+4agX8KtgcZV7Pff96Q=",
    "pom": "sha256-DjoMh5jSb0kjhVCj3E1r1GXUm4K8t1nKPEY6MWAOchw="
   },
-  "androidx/lifecycle#lifecycle-livedata-core-ktx/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata-core-ktx/2.9.0": {
    "module": "sha256-UYkUrKzxEV3yfIgHwrz6qsowxD6N+jvxIXB9L28N4KA=",
    "pom": "sha256-I3fd0PRg6g/k0WZX6PKMtgBLNOVxMAT20LjWtFs2olk="
   },
-  "androidx/lifecycle#lifecycle-livedata-core-ktx/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata-core-ktx/2.9.2": {
    "module": "sha256-ZApi77nfhfLeAtdH86Xd/QAUO3aLsBpsystkaV/4+f0=",
    "pom": "sha256-0dHPDKaLTd9SZ/W84NSjmdrkw8NsWzscq2UPrqmloY4="
   },
-  "androidx/lifecycle#lifecycle-livedata-core-ktx/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata-core-ktx/2.9.4": {
    "module": "sha256-CpQOeeJWzH++xp2Os1NirHlZmrSyGrSEarpkuklgoZI=",
    "pom": "sha256-yiBzrEbTZBB/302DLFtynmEM3H0S5zbZFRtaURm+gLk="
   },
-  "androidx/lifecycle#lifecycle-livedata-core/2.2.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata-core/2.2.0": {
    "pom": "sha256-qlFiG+OBfR9dITNrDAUl/pauiZzsZWwT2OoYpR6jLC8="
   },
-  "androidx/lifecycle#lifecycle-livedata-core/2.5.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata-core/2.5.1": {
    "module": "sha256-PziOngeJAZcMK/z8Av7K6UjeS0a+UhGRmuB9ASyimA0=",
    "pom": "sha256-ZC8Oldo/OGux0TbvihFIHczThMKKCT2Utce82qLvpbM="
   },
-  "androidx/lifecycle#lifecycle-livedata-core/2.6.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata-core/2.6.1": {
    "module": "sha256-6cDcPwrFRBnAz+2P9c7LgpQ6fFj3pUFp8NhJssYKNVI=",
    "pom": "sha256-4PZ+Ky5hLxO8Dzzqck2u3vpdRJQFHrRfW+5tiKbaiFk="
   },
-  "androidx/lifecycle#lifecycle-livedata-core/2.6.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata-core/2.6.2": {
    "module": "sha256-Un0OGsRn0fR8wg7Xww2xcCFymfq7hoFUz10XZeTk2tk=",
    "pom": "sha256-H6+Ov1Pyiy8K4sIJU3GuZ9DKFqwyj85/FjYJpDIUtaQ="
   },
-  "androidx/lifecycle#lifecycle-livedata-core/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata-core/2.9.0": {
    "module": "sha256-DB+wsO3QB7AX6/XF3j9SFet3ReEnCJRVTr6Br0xLiZg=",
    "pom": "sha256-IDY6yYfHY+SIcCNKDtj8f9mgWXWD58izuEFt73NUonE="
   },
-  "androidx/lifecycle#lifecycle-livedata-core/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata-core/2.9.2": {
    "module": "sha256-2UWsrRwE0xqEYbIPipugShrUYHw0FNOvKrR3qdSB3QA=",
    "pom": "sha256-4cKZ/fWjnbpVX6Z3hRnMnQAXrsGfwVYKjKsCqzrmEsU="
   },
-  "androidx/lifecycle#lifecycle-livedata-core/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata-core/2.9.4": {
    "module": "sha256-3uYGVquxlNoCjZO5vWUrSxZM2rNaAAtHXWMwPF0AmUs=",
    "pom": "sha256-zsEWEUjj9sS31ROqmJcp6EqO6UcfDEfANHiz+zxJ6iE="
   },
-  "androidx/lifecycle#lifecycle-livedata/2.0.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata/2.0.0": {
    "pom": "sha256-qEhC/8DxTlGNt1wFzBEmgKikoWT6eDlb4y2IMEpDlCM="
   },
-  "androidx/lifecycle#lifecycle-livedata/2.6.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata/2.6.2": {
    "module": "sha256-GaKHtG0bH/4pe+4N997lGDrrqVYA7A3odCretbZ8i6s=",
    "pom": "sha256-18ngGc9od5OHSBh3h49sSZ0XhrhfLASA6SZN1Ql8UcA="
   },
-  "androidx/lifecycle#lifecycle-livedata/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata/2.9.0": {
    "module": "sha256-88jLMU56MenleuXCj8LUxDAjc1CwgG6HFD8VhV5Kqik=",
    "pom": "sha256-hwVtM8Ws3d3mG3tEWZhytbcnG+J+FAo5PKaI1Fau+Qg="
   },
-  "androidx/lifecycle#lifecycle-livedata/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata/2.9.2": {
    "module": "sha256-KXXzp121pVX+0Ku3o8ZgbjC+BZeEqHCyVLMqYqvZvpg=",
    "pom": "sha256-Br/AH3BfSw+aOxDUXSMD8/V++gNO37uRG6uACJK62Ps="
   },
-  "androidx/lifecycle#lifecycle-livedata/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-livedata/2.9.4": {
    "module": "sha256-moFToHri7di3kZo0rZGVhHAF6u1p+j5QYGNiCKcowxI=",
    "pom": "sha256-JPi5RFSZEqtoOqcOYdMrXhqoPC8fnULwno7aMjd2CrE="
   },
-  "androidx/lifecycle#lifecycle-process/2.4.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-process/2.4.1": {
    "module": "sha256-46rj7QS0dE/zFFLpj9KZ4639KNO1cjZh2WeLkvoJzrQ=",
    "pom": "sha256-2n4uEMrn12JaCuRUAXoSV0nheRoTnC13feka3YlBCvU="
   },
-  "androidx/lifecycle#lifecycle-process/2.6.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-process/2.6.1": {
    "module": "sha256-WMnic3HM96IqIz9Ekm00jJ0H54xBpWWIpCZf9q52ZFo=",
    "pom": "sha256-QR/JuQIWdanSvS1alUhSAR2KMXJjtuM5lGRJpgFdOoY="
   },
-  "androidx/lifecycle#lifecycle-process/2.6.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-process/2.6.2": {
    "module": "sha256-2SfUGQOi/wK6G5/vpMJctYGHsc46BUlF9DzmopkYo/M=",
    "pom": "sha256-HxQ5bsdktE03wUOtrO4B5baMtfNaIbzZzevXyD6n0uk="
   },
-  "androidx/lifecycle#lifecycle-process/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-process/2.9.0": {
    "module": "sha256-su12d6LE+1c1sD8UHrseIrLw++E6ye7vzo6SYrB0vMw=",
    "pom": "sha256-rYbwBkYVWFa4NFbtbwTDFlxPkgUIjVVbk8fn3q9WCRY="
   },
-  "androidx/lifecycle#lifecycle-process/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-process/2.9.2": {
    "module": "sha256-sLST7Nw14vme9f3lNAYMPQqe70YGocxMeMY+p5Nje0U=",
    "pom": "sha256-Q0y5BeqcHXkoyHKoXddkfoh0WfdYo+mPIoExXu8f0yk="
   },
-  "androidx/lifecycle#lifecycle-process/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-process/2.9.4": {
    "module": "sha256-981QUbrLP0uOx9xArGNCph7qEUdZLdqfNkokz4gsfds=",
    "pom": "sha256-XqxaCicThHf0Dwqg50nNB/v1WA1KmtxtLVnbZMrEmxA="
   },
-  "androidx/lifecycle#lifecycle-runtime-android/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-android/2.9.0": {
    "module": "sha256-t+2aXMh+7Bqx8dIw89Xo3u4lB8mKAIjTSdw1dsBXKSc=",
    "pom": "sha256-XbBYAs9UBRTcwupYGk9n+ZZUbLpWjZuxS/JzspzQIzw="
   },
-  "androidx/lifecycle#lifecycle-runtime-android/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-android/2.9.2": {
    "module": "sha256-Q6WFnbJfEuIKRFa3SRBCVFNV/iONfDbHqfvsQLK6Fdk=",
    "pom": "sha256-IjoKshxi6SEBQzSZFIWbh+131Zu0C9k5/wBf/8XTYSM="
   },
-  "androidx/lifecycle#lifecycle-runtime-android/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-android/2.9.4": {
    "module": "sha256-x4iOhQxA/QWfssHsW/RuiDE+m11RUhM8OFoar7hDP0c=",
    "pom": "sha256-Jx5UAJ/fOizVq0FOignmr0JRtj1ISkLFMKuGiXSl6h8="
   },
-  "androidx/lifecycle#lifecycle-runtime-compose-android/2.8.7": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-compose-android/2.8.7": {
    "module": "sha256-wCShZpTItcQeyO8O3iNl62Evij2iUBf98v80MCnzOQI=",
    "pom": "sha256-DMi8bSk7qjYAj3HfaNrMZWx2D/6y8CsxNKY23LlHBeU="
   },
-  "androidx/lifecycle#lifecycle-runtime-compose-android/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-compose-android/2.9.0": {
    "module": "sha256-f8bc7vUCwBMtjF9eyP8pAegO7EA4j31HPDwT+NBCfMs=",
    "pom": "sha256-49vxHRanhy+pit1ZFlIvSxees9X0/B4EdI049ZEN8GA="
   },
-  "androidx/lifecycle#lifecycle-runtime-compose-android/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-compose-android/2.9.2": {
    "module": "sha256-6qrHlY2rziZczYeMz36qD9k3fCg+eWfE/DQIWh24tjo=",
    "pom": "sha256-BGestEch6jhyHCPkTWKAipyUAGqt2++L1oGYgbo+2U8="
   },
-  "androidx/lifecycle#lifecycle-runtime-compose-android/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-compose-android/2.9.4": {
    "module": "sha256-4Ieiwr3+NgSXM5M1ulHbzdFQPAp8n0+ChdtwI+BClDk=",
    "pom": "sha256-p6Bzx9sQl0Ynuog/ZIo0/oBT9QwpTZGS4YPJAdrqjGU="
   },
-  "androidx/lifecycle#lifecycle-runtime-compose/2.8.7": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-compose/2.8.7": {
    "module": "sha256-zJiohJ2B2rMGS8n/hx5D6RtI4Lp9Uh98mbomr+wlZXw=",
    "pom": "sha256-zskvxmBNjuu5WJpsEdS75jYigPY62/hqns3GzD0UO6s="
   },
-  "androidx/lifecycle#lifecycle-runtime-compose/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-compose/2.9.0": {
    "module": "sha256-U5dGGcqSmB9Mk1y9scRsDH9kEI5mrePNCFpt+yIDpFg=",
    "pom": "sha256-XUi8bmLIB1s7MLyfEvwMN2ppqVOI9HpEIRe8axg5IJk="
   },
-  "androidx/lifecycle#lifecycle-runtime-compose/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-compose/2.9.2": {
    "module": "sha256-0ZcgheKUrMEJwvw0v72UQH/udqhIoaj3/im40+/VEx8=",
    "pom": "sha256-qCjG5xfj7AwANCLhYcEFQnk8wLvAVxxDrVy4Rg2Dnbk="
   },
-  "androidx/lifecycle#lifecycle-runtime-compose/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-compose/2.9.4": {
    "module": "sha256-J9hk9AyjC5Z7hdqsa5F7va6mN9Y+EjlIyVBFwhvlhIM=",
    "pom": "sha256-DvP7KPibgLkMeK1ro0UWTVWQiJ7jRZsCfyZpWTYpFXU="
   },
-  "androidx/lifecycle#lifecycle-runtime-ktx-android/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-ktx-android/2.9.0": {
    "module": "sha256-D+G8lJMLyuH7fbbMXDV24CWjauMYc1LBLUj+/gXZ1oA=",
    "pom": "sha256-jdgXqbZ2eyuek2mL2mtsndcjBqUwwCj4B7zfNrMcsRk="
   },
-  "androidx/lifecycle#lifecycle-runtime-ktx-android/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-ktx-android/2.9.2": {
    "module": "sha256-KPcpdIYWOB1J6Qm9oChWH6LRURMTUuXQ6YZM88+zhfU=",
    "pom": "sha256-iTPlGLVeqBwWux9fYnqnFy5VpCRmgfWM2U7x1/n1V7Y="
   },
-  "androidx/lifecycle#lifecycle-runtime-ktx-android/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-ktx-android/2.9.4": {
    "module": "sha256-aiBw6dkkO9O11aEIudtVg7zEx0KzLvtF/jP0lCnrcZM=",
    "pom": "sha256-eKrOefvO2OuMF+CwKy1VvpkG+92gU+amF+5uWV/KzhQ="
   },
-  "androidx/lifecycle#lifecycle-runtime-ktx/2.6.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-ktx/2.6.1": {
    "module": "sha256-OYVPMsmwEPZS9OUEHKTOBpgdy2lUEowejhzALmOrGF8=",
    "pom": "sha256-UF6EiRwSTXiwivfASJMOzc09FpDlBFNZoftGrmzybro="
   },
-  "androidx/lifecycle#lifecycle-runtime-ktx/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-ktx/2.9.0": {
    "module": "sha256-32ulbLm6LxgP4vl9aGOrrfn326Zer0JXV+C5uD2mFHk=",
    "pom": "sha256-tFRUAdvQVf0EkD1GmGI9W7QG3eLjKADYCmHlgk9Hfak="
   },
-  "androidx/lifecycle#lifecycle-runtime-ktx/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-ktx/2.9.2": {
    "module": "sha256-/edqfOymbbSbEwD6rX0iIHYGJAWSJpCeq7/tHvTNeKQ=",
    "pom": "sha256-d/i5UFhMLiAK1hUNRrLK8Cqu7CZuv172Xnzl0aa+FQc="
   },
-  "androidx/lifecycle#lifecycle-runtime-ktx/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime-ktx/2.9.4": {
    "module": "sha256-BeV4jgAF06oz4tZaXctRvasGCUolTBNbggMW1kkxq8c=",
    "pom": "sha256-CvaMzSgqP5jYMvORtmVQmNR28Z2R9A+QnTxpWBShHKs="
   },
-  "androidx/lifecycle#lifecycle-runtime/2.0.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime/2.0.0": {
    "pom": "sha256-qSpG+nrsisMmpdV4c0otW2MgaXaZa54GyuFxs1sKtt4="
   },
-  "androidx/lifecycle#lifecycle-runtime/2.5.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime/2.5.1": {
    "module": "sha256-ACfciH+jskPCPbQKsPdj/H76yq+hXfkj0jM0Ss/oGhY=",
    "pom": "sha256-ajkLp6wCyQBKCkVO/Cf5JZNswmUn6CvGLKr7T8sPDbI="
   },
-  "androidx/lifecycle#lifecycle-runtime/2.6.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime/2.6.1": {
    "module": "sha256-pMuwGkLQcEe9jYcAF8lqGwt7RnMyDoa2YxehO+LsEMc=",
    "pom": "sha256-QecdAD1DfxadToraWcsZgvG0e30lwjAQuPyB1SinQNU="
   },
-  "androidx/lifecycle#lifecycle-runtime/2.6.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime/2.6.2": {
    "module": "sha256-6gExhGq+H+nepZrG3+Hw+52LbWAMnv+aH9StXuXny8c=",
    "pom": "sha256-gXUlVUbipfUQhl+ErOaAZglUcwJAsZBdkXW0NFvtqXc="
   },
-  "androidx/lifecycle#lifecycle-runtime/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime/2.9.0": {
    "module": "sha256-8x4EZOddxzOZW6Utqns7FOrFlGzFy12HPIjxPZvabTM=",
    "pom": "sha256-0BQhmBheRJkpJKoOjGeweVsScTkgOryHFZV8VnVpV/g="
   },
-  "androidx/lifecycle#lifecycle-runtime/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime/2.9.2": {
    "module": "sha256-Tt2F+xoXbKfoOxW0dltc7hqTSqMX5BcQ+grBM0HXODo=",
    "pom": "sha256-C7WGx+arw98w0Xnqn72uhnREwnmoF6IQHAzJQ/ks79w="
   },
-  "androidx/lifecycle#lifecycle-runtime/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-runtime/2.9.4": {
    "module": "sha256-3LxbW1BmboQlinS/2OUUkYxZOk/87wwDWFYqAvvYDFg=",
    "pom": "sha256-1helGd2zajCCE/W5r5kWOwo6NznOA4G2yND6aBRhOgg="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-android/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-android/2.9.0": {
    "module": "sha256-h0uhDHuxrNlmJGisFeJ/y/JVbxwoL4dcbAetY8hnKwM=",
    "pom": "sha256-ddOo4UOqr0ibB0NMTjADCUKxqCppmyKb+Ic3e2A8P5E="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-android/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-android/2.9.2": {
    "module": "sha256-07Z5p/JqSFVh7VhXP/euCBD8YW7pVvie5I5JpQzNjdw=",
    "pom": "sha256-1d6EHGGIsb7oEBDd7qi2Z/1FhiCgbVka30CS/Opbvbg="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-android/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-android/2.9.4": {
    "module": "sha256-tjes3YqrU0iXRmGDCHSnRWusNB9DoLKBgnzGsPz8c8E=",
    "pom": "sha256-lmC1otgP/g8OW0+ZO1gdFZcqjBSq5ReEtgl7yXvgN54="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-compose-android/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-compose-android/2.9.0": {
    "module": "sha256-CrR6+urUiTIR0zIQvbVqKkllP375+0nr5Op2IeFZroo=",
    "pom": "sha256-9LBMsR4akhwJ6mc51KgM4VKYmENHcHcoRMZ9mZ2LXfw="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-compose-android/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-compose-android/2.9.2": {
    "module": "sha256-DvbZn5id1sssVwKjRSQQ9oj/Dp5b3VKUiAvS0Nuf8uE=",
    "pom": "sha256-or6l1+X5FT00mHN8EuqnCdzH0QZFJVcaDCgmgDQCor0="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-compose-android/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-compose-android/2.9.4": {
    "module": "sha256-61nmKTZbGwqkpjXeReebFlDGGKPlWs39h7Xp8FprnXk=",
    "pom": "sha256-s2QOOvN5ETqitL/5QDvpECrpiejIfa4EcRZ5vw6NdWg="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-compose/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-compose/2.9.0": {
    "module": "sha256-aQzUvXfawMmEc2yOCyVNIyGJg3onL6yfdwFxDbWcYws=",
    "pom": "sha256-0zde3gPZKy1PUT4esaYGBUXHjwaOdTh/eB3W9DuqAVs="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-compose/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-compose/2.9.2": {
    "module": "sha256-ra4r8rWWbZ3Tfrfaaa23BM3KNtIB6HL3Gz87SO0ML/E=",
    "pom": "sha256-UfAxmT7BC23vC526cq4DiRBXXebidk41hQRNfOAwHT0="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-compose/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-compose/2.9.4": {
    "module": "sha256-Pm4tsDgqBQ5hC/4CT8gScQ6byff8Vpv4+zGo5wAuN/Q=",
    "pom": "sha256-iJA6oviB/HW+sfBUgO2w11nW0LG6y194jg8TFhMF3Hk="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-ktx/2.6.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-ktx/2.6.1": {
    "module": "sha256-pREPhXiLwWffn+j74IAE3cXF3ZsVy3N2zurvAl/Mqvg=",
    "pom": "sha256-D0XiJCYK980beeN8VfnSPf+U/UExbtn2ACU/rM/0wc8="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-ktx/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-ktx/2.9.0": {
    "module": "sha256-PQNYQrxASAeu22nWtqimvLQrqOwcVBf39XN3zQFOGAA=",
    "pom": "sha256-mcSojVCfTEOmgdFNIJSBgmQWkbdPbdbE1plsqrvUxnc="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-ktx/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-ktx/2.9.2": {
    "module": "sha256-y4SLtnJXBWOSmoa6bINhgfSoqIQrE4+mdo6+AS9YJeY=",
    "pom": "sha256-kVzYQ90QvT1aPgrNUQ99tZN/8U9oHb6GrePjBORoMGU="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-ktx/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-ktx/2.9.4": {
    "module": "sha256-VjHv6reX95oa26XfZLLwzKVOCLQodW33YwyyO5AJimc=",
    "pom": "sha256-DM0OnTYa1ptqclOrTtISSjvU+/mzOONsFDGzxe57x5Q="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-savedstate-android/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-savedstate-android/2.9.0": {
    "module": "sha256-Qng9QNSUI8qfUcGoJvTEc3GFaFTIrTLuLpoWjQxhu0M=",
    "pom": "sha256-AvOD4UCt/CvVyU4V7JlNkGmk1FOKNwD1zzGyd08VZ2g="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-savedstate-android/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-savedstate-android/2.9.2": {
    "module": "sha256-Pdf7u7jbGuyG6pLzHDbU6/5R2HiMprZqb9pEGTad0P4=",
    "pom": "sha256-EFyoASTeqUKvw1W8uoQdMRsM4AytZLh85lcp98JIDE8="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-savedstate-android/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-savedstate-android/2.9.4": {
    "module": "sha256-v2TEw89a1f5db9Dgd4fsaAVMwib59nDgWvXvnaZ8JZM=",
    "pom": "sha256-NKuEkea2MRI85ffwrgbfojjCEdzz5xAz7WFlb51HcYw="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-savedstate/2.5.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-savedstate/2.5.1": {
    "module": "sha256-KazV/mFLP4kSPrg49ojWJeqotCLI0ZBbSK2OdgzXrYs=",
    "pom": "sha256-PXf6Ow4CbYa3I7vBNHQuIy6Pmc4YoR31t4lWLppsCm8="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-savedstate/2.6.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-savedstate/2.6.1": {
    "module": "sha256-2vuGSXY9KcKc2ie8IvzauanvxTwP/5rj3pCILquqiUQ=",
    "pom": "sha256-qjTLhYY4S44xTP1lsYExl/Mve6cdJSmhHAcerwJ0Hls="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-savedstate/2.6.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-savedstate/2.6.2": {
    "module": "sha256-efnZKIDC+3gnrGc563RyZCRa5Fb0wh93zzn9tqUKdq4=",
    "pom": "sha256-f8hURAZEz1LDWJTVjZRrII5Cdp6FF9caXvy6F4ZUMt4="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-savedstate/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-savedstate/2.9.0": {
    "module": "sha256-nnJNqiBF/ejCqssLoYphoQbILDwYMhCRW59+syhyDvE=",
    "pom": "sha256-dsqVnqEqM6PGCP0fJEikiQnTjpMNjzjFgDdOpg8aOMw="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-savedstate/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-savedstate/2.9.2": {
    "module": "sha256-wXhdcTP8/hFpz0tPbxgER3wdpv/XmtVg9M7brfFsHo4=",
    "pom": "sha256-8no6SPJjUb0t4pEq7j9zarJufDfXj4fz9VR18piHIKc="
   },
-  "androidx/lifecycle#lifecycle-viewmodel-savedstate/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel-savedstate/2.9.4": {
    "module": "sha256-Q4nMoKmoAace/664j4nwoD2Zwivgk8U5qcD5w5YpVBY=",
    "pom": "sha256-aRK1XHRcV57G/L6wBl1aF9i18G3QpYeIA31B5A21AgI="
   },
-  "androidx/lifecycle#lifecycle-viewmodel/2.2.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel/2.2.0": {
    "pom": "sha256-qqOvqkn/R+K8myOJ+TnT6BN2FsRhZoTi37U7qDZqoR0="
   },
-  "androidx/lifecycle#lifecycle-viewmodel/2.5.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel/2.5.1": {
    "module": "sha256-AeQTtzy+OMtxTcW9shvYYJMRJMjl8jaYA/SqzEkIHJ8=",
    "pom": "sha256-k+XPzLyf0vihCS7AawdXvYNOY9zSqAAbWUI5qx5KbeE="
   },
-  "androidx/lifecycle#lifecycle-viewmodel/2.6.1": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel/2.6.1": {
    "module": "sha256-K0BvrqXBLyuN9LemCTH4RmSPLh9NeDYeGY0RhPGaR5c=",
    "pom": "sha256-3C6OZdtT0hZZon7ZO5Zt7jNsHC6OhyhhZ3OJqZuLkTQ="
   },
-  "androidx/lifecycle#lifecycle-viewmodel/2.9.0": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel/2.9.0": {
    "module": "sha256-6KkPNkL3HW2wNFmMd7zfw/dufF9tsruYaWLdQsQM2Ig=",
    "pom": "sha256-9J1LaLaFQRHk0ZPJDJpLdYQK0vNzsu0YQstWrFC2qEY="
   },
-  "androidx/lifecycle#lifecycle-viewmodel/2.9.2": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel/2.9.2": {
    "module": "sha256-uBT8ApPfHqN+GfIGrRg3A/+bslTdbarvXl59H4V/4Yw=",
    "pom": "sha256-qsFQVEEJtWQoOeo5u2P7e5B6jSK3wXEWmD7YpaI0unw="
   },
-  "androidx/lifecycle#lifecycle-viewmodel/2.9.4": {
+  "dl/android/maven2/androidx/lifecycle#lifecycle-viewmodel/2.9.4": {
    "module": "sha256-lk1p1rh3KW6Lead7uCbvX7GGrsqnoaf/d2+yJQyZMAY=",
    "pom": "sha256-BU22+S2SMBA7OsqLDavMDWPeJuRA/5jrWxmiVV0+sDc="
   },
-  "androidx/lifecycle/lifecycle-livedata-core-ktx/2.9.4/lifecycle-livedata-core-ktx-2.9.4": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-livedata-core-ktx/2.9.4/lifecycle-livedata-core-ktx-2.9.4": {
    "aar": "sha256-9Vt6jUM+m4FjFUzKpC+ivlXHDNHt5e7qUhpLS4hN1P4="
   },
-  "androidx/lifecycle/lifecycle-livedata-core/2.5.1/lifecycle-livedata-core-2.5.1": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-livedata-core/2.5.1/lifecycle-livedata-core-2.5.1": {
    "aar": "sha256-7nkhA8oki/rxUMRak4ceTPfozrq5kOD2L33l1P8vIJ8="
   },
-  "androidx/lifecycle/lifecycle-livedata-core/2.9.4/lifecycle-livedata-core-2.9.4": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-livedata-core/2.9.4/lifecycle-livedata-core-2.9.4": {
    "aar": "sha256-6oZvDDedH5KDeZQBCrWsCl1UmdurUh78cbO8K0l9a6Q="
   },
-  "androidx/lifecycle/lifecycle-livedata/2.0.0/lifecycle-livedata-2.0.0": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-livedata/2.0.0/lifecycle-livedata-2.0.0": {
    "aar": "sha256-yCYJztjEmPCnAaMPtncbt0gIYNruhNguCoHuhu33ujk="
   },
-  "androidx/lifecycle/lifecycle-livedata/2.9.4/lifecycle-livedata-2.9.4": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-livedata/2.9.4/lifecycle-livedata-2.9.4": {
    "aar": "sha256-8kDCyUqW1KXq5dN5wqhYnUJqM7mJ2Drp8OAfaVAsAYE="
   },
-  "androidx/lifecycle/lifecycle-process/2.9.4/lifecycle-process-2.9.4": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-process/2.9.4/lifecycle-process-2.9.4": {
    "aar": "sha256-R4S40IPCEeB22RFb+hc39+D2K1U+gBz1DKpEAONKldY="
   },
-  "androidx/lifecycle/lifecycle-runtime-android/2.9.4/lifecycle-runtime-android-2.9.4": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-runtime-android/2.9.4/lifecycle-runtime-android-2.9.4": {
    "aar": "sha256-hvFqEzDrI2ALqQ0DNLPh2zjTowyLHvzZLKIaqFr6gXM="
   },
-  "androidx/lifecycle/lifecycle-runtime-compose-android/2.9.4/lifecycle-runtime-compose-android-2.9.4": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-runtime-compose-android/2.9.4/lifecycle-runtime-compose-android-2.9.4": {
    "aar": "sha256-toA/kGqJ/YXHffND3Urus0kSXKeeEtVdaNTPQvQiMfY="
   },
-  "androidx/lifecycle/lifecycle-runtime-ktx-android/2.9.4/lifecycle-runtime-ktx-android-2.9.4": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-runtime-ktx-android/2.9.4/lifecycle-runtime-ktx-android-2.9.4": {
    "aar": "sha256-lwGZye0awT1iCqjef4q7wozoBlPDzjKNCsLxUnK1bhs="
   },
-  "androidx/lifecycle/lifecycle-runtime/2.5.1/lifecycle-runtime-2.5.1": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-runtime/2.5.1/lifecycle-runtime-2.5.1": {
    "aar": "sha256-M7DXPcLwKPzrNZm6yr5WPD220m81E9iJWVhjU2pKyMA="
   },
-  "androidx/lifecycle/lifecycle-viewmodel-android/2.9.4/lifecycle-viewmodel-android-2.9.4": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-viewmodel-android/2.9.4/lifecycle-viewmodel-android-2.9.4": {
    "aar": "sha256-SyNrLlBNtcpdCTNP7wWqjNwx7jWkM8OqTQQg76lhMzI="
   },
-  "androidx/lifecycle/lifecycle-viewmodel-compose-android/2.9.4/lifecycle-viewmodel-compose-android-2.9.4": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-viewmodel-compose-android/2.9.4/lifecycle-viewmodel-compose-android-2.9.4": {
    "aar": "sha256-94JaCMpmHehARLaJEpMIS+qPvMhKoI2ME6PFWPxZVsk="
   },
-  "androidx/lifecycle/lifecycle-viewmodel-ktx/2.9.4/lifecycle-viewmodel-ktx-2.9.4": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-viewmodel-ktx/2.9.4/lifecycle-viewmodel-ktx-2.9.4": {
    "aar": "sha256-t9WLuGu44szGB9H4Vw5xSBD3z7P+ujfTdf8WRjg0NaE="
   },
-  "androidx/lifecycle/lifecycle-viewmodel-savedstate-android/2.9.4/lifecycle-viewmodel-savedstate-android-2.9.4": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-viewmodel-savedstate-android/2.9.4/lifecycle-viewmodel-savedstate-android-2.9.4": {
    "aar": "sha256-B5RBxD+j/46noC3zsS7sSDw+V1g/gyz6/2Y3UFJ8FCE="
   },
-  "androidx/lifecycle/lifecycle-viewmodel-savedstate/2.5.1/lifecycle-viewmodel-savedstate-2.5.1": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-viewmodel-savedstate/2.5.1/lifecycle-viewmodel-savedstate-2.5.1": {
    "aar": "sha256-hIEUH5fw5iE90z/MiaeExL0Rpv99R3mhz2oOn72/JOA="
   },
-  "androidx/lifecycle/lifecycle-viewmodel-savedstate/2.9.4/lifecycle-viewmodel-savedstate-2.9.4": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-viewmodel-savedstate/2.9.4/lifecycle-viewmodel-savedstate-2.9.4": {
    "aar": "sha256-rnCwI4bAczsZNkTFikJgitPk+OdzHtqFn3iIQFtfNrk="
   },
-  "androidx/lifecycle/lifecycle-viewmodel/2.5.1/lifecycle-viewmodel-2.5.1": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-viewmodel/2.5.1/lifecycle-viewmodel-2.5.1": {
    "aar": "sha256-FKJ9X7ihQ2sbfewYvrqmbIMM27yOKKgc5fhbfDOzrp0="
   },
-  "androidx/lifecycle/lifecycle-viewmodel/2.9.4/lifecycle-viewmodel-2.9.4": {
+  "dl/android/maven2/androidx/lifecycle/lifecycle-viewmodel/2.9.4/lifecycle-viewmodel-2.9.4": {
    "aar": "sha256-yrQEsF1frtIJEEoq7xTAy7MWq5+r5KjwN7BD5dL0NDU="
   },
-  "androidx/loader#loader/1.0.0": {
+  "dl/android/maven2/androidx/loader#loader/1.0.0": {
    "pom": "sha256-yXjVUICLR0NKpJpjFkEQpQtVsLzGFgqTouN9URDfjF4="
   },
-  "androidx/loader/loader/1.0.0/loader-1.0.0": {
+  "dl/android/maven2/androidx/loader/loader/1.0.0/loader-1.0.0": {
    "aar": "sha256-Efc1yztVxFjUcL7Z4lJUN1tRi0sbrWkmeDpwJtsPUCU="
   },
-  "androidx/localbroadcastmanager#localbroadcastmanager/1.0.0": {
+  "dl/android/maven2/androidx/localbroadcastmanager#localbroadcastmanager/1.0.0": {
    "pom": "sha256-oAAEH1ofeSg8UXXhu2DPNoN4D0Acap00++l1ElP6b/k="
   },
-  "androidx/localbroadcastmanager/localbroadcastmanager/1.0.0/localbroadcastmanager-1.0.0": {
+  "dl/android/maven2/androidx/localbroadcastmanager/localbroadcastmanager/1.0.0/localbroadcastmanager-1.0.0": {
    "aar": "sha256-5xwyjO71xKfXby2G3xtl1l/irPhosaTv2Eo/NDNhhtg="
   },
-  "androidx/navigation#navigation-common-android/2.9.0": {
+  "dl/android/maven2/androidx/navigation#navigation-common-android/2.9.0": {
    "module": "sha256-aK7CJnV/G7087JP7cQjNmx3w0YKeVSg3gNh/rGsM05Y=",
    "pom": "sha256-z1K0wvt4+i+zROdGYVkq6To2Od7tuFhA4qGhV3Hcz68="
   },
-  "androidx/navigation#navigation-common-ktx/2.5.1": {
+  "dl/android/maven2/androidx/navigation#navigation-common-ktx/2.5.1": {
    "module": "sha256-r0Esu9RaGQxo0JJCXl3/V1vJF7nCMSOUBrK7NtJRnSg=",
    "pom": "sha256-Tw6/gyY/QDNbwd/wyUjHMVHB9PqbkJNd6U8M3siZ6OE="
   },
-  "androidx/navigation#navigation-common/2.5.1": {
+  "dl/android/maven2/androidx/navigation#navigation-common/2.5.1": {
    "module": "sha256-yhvp78kJLGdjtBbxaWdTx4HcsvabHOiL+BWyRn0xIAI=",
    "pom": "sha256-qYzzN4K4u+EUHiOKS9LeV1ez+nTQmo9AJXVYQjXdQHI="
   },
-  "androidx/navigation#navigation-common/2.9.0": {
+  "dl/android/maven2/androidx/navigation#navigation-common/2.9.0": {
    "module": "sha256-gUbT+a0Zf6yUMte7B6ZHzzBxyGQ7GjJpAZtoKYo009c=",
    "pom": "sha256-fppM0tQGRsmTD2aFhBbC9VfUO6Bm+CumjrfQn+oCBA0="
   },
-  "androidx/navigation#navigation-compose-android/2.9.0": {
+  "dl/android/maven2/androidx/navigation#navigation-compose-android/2.9.0": {
    "module": "sha256-aFxXQGyYHTFoNDuRTKKh5yI8XrfZNucmqWHNZIcSWec=",
    "pom": "sha256-FHP8EQKQe02h00F7CWehJlrv1k9kwwh928RWY9ZZ8gM="
   },
-  "androidx/navigation#navigation-compose/2.5.1": {
+  "dl/android/maven2/androidx/navigation#navigation-compose/2.5.1": {
    "module": "sha256-ycxAGfQOuQwfnINvFNyO/kW1PKI3Y/7jGVBkIuOKsbk=",
    "pom": "sha256-BfmyRey78XgZ1scLoc1Jt4uu7DW0+22TYPSuZBUGhh8="
   },
-  "androidx/navigation#navigation-compose/2.9.0": {
+  "dl/android/maven2/androidx/navigation#navigation-compose/2.9.0": {
    "module": "sha256-jf8b8HD2YekPgUSRKUu2JD58wnpTJlwpe4H6YR052YU=",
    "pom": "sha256-1zi3OugXZnFewlsGmii92cZLr1irO7XrbjTil/2BhwA="
   },
-  "androidx/navigation#navigation-runtime-android/2.9.0": {
+  "dl/android/maven2/androidx/navigation#navigation-runtime-android/2.9.0": {
    "module": "sha256-EU/MtezbsFdp1/VcbFyo8yEO3GR8p7LlOHF0LWzuLZ0=",
    "pom": "sha256-BYsKHjPC+zvR06lW/ljro/sl5bFmpyXEHnWhLlea21g="
   },
-  "androidx/navigation#navigation-runtime-ktx/2.5.1": {
+  "dl/android/maven2/androidx/navigation#navigation-runtime-ktx/2.5.1": {
    "module": "sha256-+bYuirR6HebJytkwZT5ZkgArFfJrv83zME3G6+u5EMI=",
    "pom": "sha256-bnyq+TDDM7P6YZzSLRXoR1x8g+CkVeimalYoJq0Moco="
   },
-  "androidx/navigation#navigation-runtime/2.5.1": {
+  "dl/android/maven2/androidx/navigation#navigation-runtime/2.5.1": {
    "module": "sha256-1nk8TxwxRX9gLcgYik4IZrSHeG1b/WloHIzygrIK3/8=",
    "pom": "sha256-stNqtsyEgR3+Xclr2ewjbID9qkhnCWdKsg2dyf7C0VQ="
   },
-  "androidx/navigation#navigation-runtime/2.9.0": {
+  "dl/android/maven2/androidx/navigation#navigation-runtime/2.9.0": {
    "module": "sha256-R5V/RNWykdZeOHFkBABUL7gWtdO1xKi4oFVWcfnj0SI=",
    "pom": "sha256-ELmLfNaThFiM20izXlRHz8l5s14jqRz+bCS/tPHKcC4="
   },
-  "androidx/navigation/navigation-common-android/2.9.0/navigation-common-android-2.9.0": {
+  "dl/android/maven2/androidx/navigation/navigation-common-android/2.9.0/navigation-common-android-2.9.0": {
    "aar": "sha256-Xa9V4gcFoEcedtoSiHDDMTUcWhI8zvSkskd+uS032Xs="
   },
-  "androidx/navigation/navigation-common-ktx/2.5.1/navigation-common-ktx-2.5.1": {
+  "dl/android/maven2/androidx/navigation/navigation-common-ktx/2.5.1/navigation-common-ktx-2.5.1": {
    "aar": "sha256-90b+TLjuI3DSvn9QMjPf0ZSPX+3+e+fGxQw3Ou/fG1E="
   },
-  "androidx/navigation/navigation-common/2.5.1/navigation-common-2.5.1": {
+  "dl/android/maven2/androidx/navigation/navigation-common/2.5.1/navigation-common-2.5.1": {
    "aar": "sha256-aWCo4J4LL8xffw0aMpn5OPqtGKtGVlBgOOJ1J9BOsIo="
   },
-  "androidx/navigation/navigation-compose-android/2.9.0/navigation-compose-android-2.9.0": {
+  "dl/android/maven2/androidx/navigation/navigation-compose-android/2.9.0/navigation-compose-android-2.9.0": {
    "aar": "sha256-V4TckJI5+ZiC8R66ZT8j9IYp4hIIKMybRq6JJruyIlE="
   },
-  "androidx/navigation/navigation-compose/2.5.1/navigation-compose-2.5.1": {
+  "dl/android/maven2/androidx/navigation/navigation-compose/2.5.1/navigation-compose-2.5.1": {
    "aar": "sha256-aM6m0Y0e8bfL/PY25LeD12yFfrOwdGOWrrDg1njJCzA="
   },
-  "androidx/navigation/navigation-runtime-android/2.9.0/navigation-runtime-android-2.9.0": {
+  "dl/android/maven2/androidx/navigation/navigation-runtime-android/2.9.0/navigation-runtime-android-2.9.0": {
    "aar": "sha256-928EuE/Im3QAE7qBywwd6RQFPdVc8tjwxmnE1vK46+A="
   },
-  "androidx/navigation/navigation-runtime-ktx/2.5.1/navigation-runtime-ktx-2.5.1": {
+  "dl/android/maven2/androidx/navigation/navigation-runtime-ktx/2.5.1/navigation-runtime-ktx-2.5.1": {
    "aar": "sha256-5x1sn6geJErNVd9+PhasTqFa7K/TDoDmRdcvX+/5NZE="
   },
-  "androidx/navigation/navigation-runtime/2.5.1/navigation-runtime-2.5.1": {
+  "dl/android/maven2/androidx/navigation/navigation-runtime/2.5.1/navigation-runtime-2.5.1": {
    "aar": "sha256-PoFxuW4+3ws8R5bSgO6Uvz69ZK7sBxI7FYx5ZMuUXBw="
   },
-  "androidx/print#print/1.0.0": {
+  "dl/android/maven2/androidx/print#print/1.0.0": {
    "pom": "sha256-YkgsBZSEG+4ku5lqu2y3syCmo7d9yp8KC6T+O+VTCqc="
   },
-  "androidx/print/print/1.0.0/print-1.0.0": {
+  "dl/android/maven2/androidx/print/print/1.0.0/print-1.0.0": {
    "aar": "sha256-HVx/MTWhu6Zh/Dc/1y4R6wpK27M5Z4eCbdjkGQ1dnt0="
   },
-  "androidx/profileinstaller#profileinstaller/1.3.0": {
+  "dl/android/maven2/androidx/profileinstaller#profileinstaller/1.3.0": {
    "module": "sha256-oW/lEeWZwgQtoSK+CVaa7NP0+QytN+8IvQu8ORGMksg=",
    "pom": "sha256-EsvAHIpa5LQSyvPFoGYszSgALe3P8dvmwqs2Zb6fdYw="
   },
-  "androidx/profileinstaller#profileinstaller/1.3.1": {
+  "dl/android/maven2/androidx/profileinstaller#profileinstaller/1.3.1": {
    "module": "sha256-zH7tDtS2ad6EuFL3h5elABik8wAC4eOKqmaK8iyltGA=",
    "pom": "sha256-CCY+twqBSnyybRHTqDgl+Ewp8+S1n5E0ck4OAuK712g="
   },
-  "androidx/profileinstaller#profileinstaller/1.4.0": {
+  "dl/android/maven2/androidx/profileinstaller#profileinstaller/1.4.0": {
    "module": "sha256-Ob+ZeijY7tLLMZgZ9vNSobo6eLnJeQBPvgXia499Fgs=",
    "pom": "sha256-1f45mBo7S3w5WFEw2gv8k4NQVMg0pDjT5j4GXl94vlU="
   },
-  "androidx/profileinstaller/profileinstaller/1.4.0/profileinstaller-1.4.0": {
+  "dl/android/maven2/androidx/profileinstaller/profileinstaller/1.4.0/profileinstaller-1.4.0": {
    "aar": "sha256-1QIUH8zpAkMPYrZ0wyrs0PdSYufuLNFcdK22F80TEwo="
   },
-  "androidx/recyclerview#recyclerview/1.2.1": {
+  "dl/android/maven2/androidx/recyclerview#recyclerview/1.2.1": {
    "module": "sha256-I1QsjIXMWPr+CujLogHmyeAbTGeZIjNAotalHXeEgow=",
    "pom": "sha256-2xYvz8Ayy3N7oH+vLRk2ye42K3Tgw48xzNLGoszXkJA="
   },
-  "androidx/recyclerview/recyclerview/1.2.1/recyclerview-1.2.1": {
+  "dl/android/maven2/androidx/recyclerview/recyclerview/1.2.1/recyclerview-1.2.1": {
    "aar": "sha256-oeoDKe5tk4MF39D4zlxI3qKqwU5WBtI+f7YK/PtlXW4="
   },
-  "androidx/resourceinspection#resourceinspection-annotation/1.0.1": {
+  "dl/android/maven2/androidx/resourceinspection#resourceinspection-annotation/1.0.1": {
    "jar": "sha256-jP+HDsb7MdtIpS9KeSM1tL+N4H4DvTeCMYFSZDPM1cs=",
    "module": "sha256-NSoRqNikwb1s0sL+//nJTKlU17UgKgZWlZ25Upf2orc=",
    "pom": "sha256-uOtJOO2V1/zaonEuvKNj5GoPkii4vn8jFU3vVoRoFdw="
   },
-  "androidx/room#room-common-jvm/2.7.1": {
+  "dl/android/maven2/androidx/room#room-common-jvm/2.7.1": {
    "jar": "sha256-sqALiMi42BDQfsvfkv3/R9t/DqiE7+XDHNp6UmybGuU=",
    "module": "sha256-jM7UOynWvF0IWZxT1/R9hK3HV3oRc0m4/epGID2IhHk=",
    "pom": "sha256-u8cvVVmRlceXcXKp3fGZ/d5OwxslhQITrCnutUMm4dw="
   },
-  "androidx/room#room-common/2.7.1": {
+  "dl/android/maven2/androidx/room#room-common/2.7.1": {
    "module": "sha256-VYuFMAMujgA+oIldJ5ISHmdrGp46DDOu5GDQD5J1eNk=",
    "pom": "sha256-Fv46v9l2e++3L1HU28+xWAMYpu1z8OMYQCoCP26KFQI="
   },
-  "androidx/room#room-compiler-processing/2.7.1": {
+  "dl/android/maven2/androidx/room#room-compiler-processing/2.7.1": {
    "jar": "sha256-uWCePhQVdZWKAhfe54YQqx5xVwm3XvOD6Fn7lu+wDfA=",
    "module": "sha256-z8zl8HUBhDKr5WCdT/b0B1c+iSdgwnToVpUqVvPy2Ok=",
    "pom": "sha256-IPQQ8ZNy2BVuzo7k8hdyEPw1dMTA1wkbXlBGY6uH6zk="
   },
-  "androidx/room#room-compiler/2.7.1": {
+  "dl/android/maven2/androidx/room#room-compiler/2.7.1": {
    "jar": "sha256-2QjokrEGOdKTIOpNZL6hxAPgVYKhY1mFVtXqI+sEsM0=",
    "module": "sha256-Q0Sz/PIKLq41DDfhDzHybhQodcbhZLT28NIHkPTo88M=",
    "pom": "sha256-RM4J0BIcbgHYt0txvFuv4xT93SZzmBKeapCbby3P3ec="
   },
-  "androidx/room#room-external-antlr/2.7.1": {
+  "dl/android/maven2/androidx/room#room-external-antlr/2.7.1": {
    "jar": "sha256-a/eUv/6N4mOCZQJRG0x98FcDErbMmTEsp/xr2wiAyh4=",
    "module": "sha256-t4QQjwQnT3Xuxx+dfcOKDEHxC1sX74/JfMgcFEeFB4M=",
    "pom": "sha256-rl3F23kBLamXUURQJ1bU3f3qAm8umTQk9JT6kickIfw="
   },
-  "androidx/room#room-ktx/2.7.1": {
+  "dl/android/maven2/androidx/room#room-ktx/2.7.1": {
    "module": "sha256-p+vr7imzWlJp502oaXvdc7ZPvpmwxivwjGYbD1bUIws=",
    "pom": "sha256-UJudK2gVAOELii9CHCY2u8cvrJUbJ0KGqMo7cGi1FLY="
   },
-  "androidx/room#room-migration-jvm/2.7.1": {
+  "dl/android/maven2/androidx/room#room-migration-jvm/2.7.1": {
    "jar": "sha256-jFzsjy1docuf3pYP3SJTu/xr50+aSgPs24LaF2YiMaw=",
    "module": "sha256-HFixuNcIlfhh/ZExlI25r3T7ia22gpQFEjxLC/CWjyQ=",
    "pom": "sha256-xvpy82Dlfp3a5HdNs3QcZoazY/21DjXyY8c8ZVAgKdc="
   },
-  "androidx/room#room-migration/2.7.1": {
+  "dl/android/maven2/androidx/room#room-migration/2.7.1": {
    "module": "sha256-mZtTP3SbkiCaIsyUMkR8IKPPJj/VAfyzoxoCAWohSwA=",
    "pom": "sha256-mGi65DJz9Y/GgzxrhmvkTt7VpSGRFFqiGIxABeV0F80="
   },
-  "androidx/room#room-runtime-android/2.7.1": {
+  "dl/android/maven2/androidx/room#room-runtime-android/2.7.1": {
    "module": "sha256-hPhDCzkDPsf80Gf7ZgU5jV6I/c377GXl6t5o8VoCNj8=",
    "pom": "sha256-VSwbRdkV5UK6rbPYQptpQoy4+BrPLfBhYOcLrxbxK4w="
   },
-  "androidx/room#room-runtime/2.7.1": {
+  "dl/android/maven2/androidx/room#room-runtime/2.7.1": {
    "module": "sha256-t22KSPR2jqefWMhPLgIFjGzsgYFTjujHcswd7zpwWzA=",
    "pom": "sha256-O/BknKjAsoPd3Z4glG8Cr8IZWoUkW31AdCC3ADhztrE="
   },
-  "androidx/room/room-ktx/2.7.1/room-ktx-2.7.1": {
+  "dl/android/maven2/androidx/room/room-ktx/2.7.1/room-ktx-2.7.1": {
    "aar": "sha256-Ut3jx6V0ZiGFSqL9QEcxXP0avG+WIllBDQJIpUGmzJs="
   },
-  "androidx/room/room-runtime-android/2.7.1/room-runtime-android-2.7.1": {
+  "dl/android/maven2/androidx/room/room-runtime-android/2.7.1/room-runtime-android-2.7.1": {
    "aar": "sha256-hjKe1xkIYI83I07ZCSSMaY4yDGgFyK/o9C591ldEUCY="
   },
-  "androidx/savedstate#savedstate-android/1.3.0": {
+  "dl/android/maven2/androidx/savedstate#savedstate-android/1.3.0": {
    "module": "sha256-sdbxCpRCrTJD7n1LoQdNSrcBnhnXIiKiZU6BWL98BuY=",
    "pom": "sha256-IuvT2LHiyL+g3tI/4vAXmWFoPaoltHbeuZE1DGypTDg="
   },
-  "androidx/savedstate#savedstate-android/1.3.1": {
+  "dl/android/maven2/androidx/savedstate#savedstate-android/1.3.1": {
    "module": "sha256-6ZSZTH3vYMBxFxko7cRaAeOwfjaSYcZp9QgtMGobiF8=",
    "pom": "sha256-jZu80vbC0Z5MSBeOubvqX/IAk8gjY/uyUQtx/q+OUNE="
   },
-  "androidx/savedstate#savedstate-android/1.3.2": {
+  "dl/android/maven2/androidx/savedstate#savedstate-android/1.3.2": {
    "module": "sha256-XZYrjWpLxShEkqQAA8mGf9OSrGl5q0QL3s3UJ4mXQbs=",
    "pom": "sha256-3wl1hyHi/o1XFKIQHcwJQayCSkJLCEZuKBiHaFHNuCY="
   },
-  "androidx/savedstate#savedstate-compose-android/1.3.0": {
+  "dl/android/maven2/androidx/savedstate#savedstate-compose-android/1.3.0": {
    "module": "sha256-gjqVAGQT/B/XZ2JB3zpg4OcQLt47c6ChUU37grSm8Bg=",
    "pom": "sha256-TaF/vR2zb6kx+9v4c62nk6FtdhOP1ERlF9gXKqIerzE="
   },
-  "androidx/savedstate#savedstate-compose-android/1.3.1": {
+  "dl/android/maven2/androidx/savedstate#savedstate-compose-android/1.3.1": {
    "module": "sha256-QLtNjciEeURymieqZobXzmWrIzfc8hpazdhj9wwoN9U=",
    "pom": "sha256-KP4ZGZ3GkZARvUxidRiRhn5pFx5f8QQfLQDzdA08YDM="
   },
-  "androidx/savedstate#savedstate-compose-android/1.3.2": {
+  "dl/android/maven2/androidx/savedstate#savedstate-compose-android/1.3.2": {
    "module": "sha256-g3buMtZU+XcS+BcnXnhYgNrvHkREjzgnKnc07Akc5AE=",
    "pom": "sha256-cBxaZl+PPSm9fGIkgfbjR4Uzhzjomd48RMPONi8D2Qo="
   },
-  "androidx/savedstate#savedstate-compose/1.3.0": {
+  "dl/android/maven2/androidx/savedstate#savedstate-compose/1.3.0": {
    "module": "sha256-FaB6D9uO1YpIyiHpgdOKtysrv9lkY8M6cFDfHCdpmnU=",
    "pom": "sha256-3g1au6p2vBLitADSqFaxVl7mo8L/242umV5fDYgTIpY="
   },
-  "androidx/savedstate#savedstate-compose/1.3.1": {
+  "dl/android/maven2/androidx/savedstate#savedstate-compose/1.3.1": {
    "module": "sha256-I8H6RVmg/LWb6rZOTnCte+RZMGB+Di9PJ1FSm40zccc=",
    "pom": "sha256-BluruKWnLNBLPemiuGZ5p9VYRQpJ+SN5sYZh9C69CbU="
   },
-  "androidx/savedstate#savedstate-compose/1.3.2": {
+  "dl/android/maven2/androidx/savedstate#savedstate-compose/1.3.2": {
    "module": "sha256-PkuDU/i3OOe/SXuKFWMb9f32q9CdzRJcE661BI+mvBM=",
    "pom": "sha256-lf/CK1kew3rquMdzj0NNDs2IMdoghPIHOWg5p/ccAIM="
   },
-  "androidx/savedstate#savedstate-ktx/1.2.1": {
+  "dl/android/maven2/androidx/savedstate#savedstate-ktx/1.2.1": {
    "module": "sha256-lDWRhLK6UcD0mKK5BV03s3IjHvm8xUpJcqyZ8DA6//E=",
    "pom": "sha256-0JVTIR9nA7Ga79YI1gB8dxMtJ6KBVWqOaJ2Sdk7CfTs="
   },
-  "androidx/savedstate#savedstate-ktx/1.3.1": {
+  "dl/android/maven2/androidx/savedstate#savedstate-ktx/1.3.1": {
    "module": "sha256-WQB9jTPPFm/f0am/Vsz9IS6YIsBLOnQZZvrOWRhhBlU=",
    "pom": "sha256-FM7JH3Pd5NTHoR7GYLbF0IPd3zDvQSz2oXQ9wQpipbg="
   },
-  "androidx/savedstate#savedstate-ktx/1.3.2": {
+  "dl/android/maven2/androidx/savedstate#savedstate-ktx/1.3.2": {
    "module": "sha256-9/yKE/n75c8JISgpmv9Sk5Lz7uVObT/l8KL4L8bF89s=",
    "pom": "sha256-fA1RkLPqZOFHgrz5PZqPM2oCb1YJvaofNfY/9CYBUIE="
   },
-  "androidx/savedstate#savedstate/1.2.0": {
+  "dl/android/maven2/androidx/savedstate#savedstate/1.2.0": {
    "module": "sha256-QkfCMwiry10P+M2vff1YPzwqEBb2jRPxpBwhYAtvr9c=",
    "pom": "sha256-PhHAGf/mBTs7mHmiMQfW1vEFnpIzm6Uk4ZZ0cg+n3b4="
   },
-  "androidx/savedstate#savedstate/1.2.1": {
+  "dl/android/maven2/androidx/savedstate#savedstate/1.2.1": {
    "module": "sha256-W7ZW/HYNnjmWtTUWDLtBBgM8n3NukInm706wxml4UGY=",
    "pom": "sha256-DTO8KF3x4S8ieA8WJKbws46iphgbCVXsZkHK9iDFDL8="
   },
-  "androidx/savedstate#savedstate/1.3.0": {
+  "dl/android/maven2/androidx/savedstate#savedstate/1.3.0": {
    "module": "sha256-GdJQHgRMYfIk4k/sWGnLydvyAQkg9kdlkF700ZQaXms=",
    "pom": "sha256-3FpsQvP07NN0f23+zgzfaLZ4QscJRWhq8Xx0Aw355RU="
   },
-  "androidx/savedstate#savedstate/1.3.1": {
+  "dl/android/maven2/androidx/savedstate#savedstate/1.3.1": {
    "module": "sha256-f0RPZf6XnogYNnLa1arxvTn5HYDKyXFtPYTgZkyVkz4=",
    "pom": "sha256-GhLo7FM8a1UtSX37R/rRo5zQuZY5e3S5YDeo4breW1k="
   },
-  "androidx/savedstate#savedstate/1.3.2": {
+  "dl/android/maven2/androidx/savedstate#savedstate/1.3.2": {
    "module": "sha256-Mg6NCtL+dHbyJCrijZI/x0yPeFt4+mWHB0l7mayVD0o=",
    "pom": "sha256-lQyJfcoHwlZ0XaVbhhueilf+ekF1i6CYo8MIIdlB5/g="
   },
-  "androidx/savedstate/savedstate-android/1.3.2/savedstate-android-1.3.2": {
+  "dl/android/maven2/androidx/savedstate/savedstate-android/1.3.2/savedstate-android-1.3.2": {
    "aar": "sha256-HibxN3BVltCdP09SVZopAm2aGmaIvn8alIMWpPHjmyA="
   },
-  "androidx/savedstate/savedstate-compose-android/1.3.2/savedstate-compose-android-1.3.2": {
+  "dl/android/maven2/androidx/savedstate/savedstate-compose-android/1.3.2/savedstate-compose-android-1.3.2": {
    "aar": "sha256-k0JmkfJUQcwxeUlLJfQBqKRoqrvuTEC5DAMnQT/WVSM="
   },
-  "androidx/savedstate/savedstate-ktx/1.3.2/savedstate-ktx-1.3.2": {
+  "dl/android/maven2/androidx/savedstate/savedstate-ktx/1.3.2/savedstate-ktx-1.3.2": {
    "aar": "sha256-HDAHMuzo6dAAH7GcxpOw938Z53zfkMpcTNVtXmlR0Cs="
   },
-  "androidx/savedstate/savedstate/1.2.0/savedstate-1.2.0": {
+  "dl/android/maven2/androidx/savedstate/savedstate/1.2.0/savedstate-1.2.0": {
    "aar": "sha256-LeUo1omOle8CDSLZ/9+dH3fL3ZP5LTnfql1cQ7DDEcg="
   },
-  "androidx/savedstate/savedstate/1.3.2/savedstate-1.3.2": {
+  "dl/android/maven2/androidx/savedstate/savedstate/1.3.2/savedstate-1.3.2": {
    "aar": "sha256-heo28YozxKz27WJ0ehtMvvGR8hgSGrN6URddgsW+ia0="
   },
-  "androidx/sqlite#sqlite-android/2.5.0": {
+  "dl/android/maven2/androidx/sqlite#sqlite-android/2.5.0": {
    "module": "sha256-3T7AtF1CHQC0h87a0NpYpd41XlvMxb9ZOKFHTRpeBsQ=",
    "pom": "sha256-5dwHzhozW80SfD0EtZTdKoP2GIel6TMyc3OGbMTtvzA="
   },
-  "androidx/sqlite#sqlite-framework-android/2.5.0": {
+  "dl/android/maven2/androidx/sqlite#sqlite-framework-android/2.5.0": {
    "module": "sha256-Rno9DYYOC8sBatT8cat+iztgwTczY9uVtik+x060HMA=",
    "pom": "sha256-jR8mVzR+BdcUWZC9yE0JGilqLOHszAB8Jeceuu8Czuw="
   },
-  "androidx/sqlite#sqlite-framework/2.5.0": {
+  "dl/android/maven2/androidx/sqlite#sqlite-framework/2.5.0": {
    "module": "sha256-FW6lVi3zQaBj3L4+hANkFe6Bt8kCOlimk1iIfl3rBL8=",
    "pom": "sha256-Ufzy9ZRxmPxzhScwHU1ImmU3+4lH7vR5mNmByeEF8Zc="
   },
-  "androidx/sqlite#sqlite/2.5.0": {
+  "dl/android/maven2/androidx/sqlite#sqlite/2.5.0": {
    "module": "sha256-NplIHJ/Fh59CvG9fIv/8tuXSP3WGLmbwB+/2MdcWl3k=",
    "pom": "sha256-rT9uj0qsJCjS/sbcmYdgBKmLeI0EEKj0sWmrV4JtVj8="
   },
-  "androidx/sqlite/sqlite-android/2.5.0/sqlite-android-2.5.0": {
+  "dl/android/maven2/androidx/sqlite/sqlite-android/2.5.0/sqlite-android-2.5.0": {
    "aar": "sha256-KwK+Ou2NKZQCGv4HIYWvlOKUIv/oBm34iGjvrKEWHvA="
   },
-  "androidx/sqlite/sqlite-framework-android/2.5.0/sqlite-framework-android-2.5.0": {
+  "dl/android/maven2/androidx/sqlite/sqlite-framework-android/2.5.0/sqlite-framework-android-2.5.0": {
    "aar": "sha256-hQ3nA9lbkfUEd0mBqQ+oKXmc38nqsgNpLSSgxA1+cec="
   },
-  "androidx/startup#startup-runtime/1.0.0": {
+  "dl/android/maven2/androidx/startup#startup-runtime/1.0.0": {
    "module": "sha256-QO/8oNbuH94yvClol+VOu8xM9KopsMUxA2y9KoJKPCQ=",
    "pom": "sha256-GQtlQlHxEEUvZ/ahPXZuj+4IEfB+bwsPd9WJBiJqy6g="
   },
-  "androidx/startup#startup-runtime/1.1.1": {
+  "dl/android/maven2/androidx/startup#startup-runtime/1.1.1": {
    "module": "sha256-z9ls9kUMbitpdZiSRymtmgSVxaT89Ovufi+BsH5BWGU=",
    "pom": "sha256-9BFLXGhZuxvDyvKBy21vJZmPp/cpLGTOrqdKkyEOdGs="
   },
-  "androidx/startup/startup-runtime/1.1.1/startup-runtime-1.1.1": {
+  "dl/android/maven2/androidx/startup/startup-runtime/1.1.1/startup-runtime-1.1.1": {
    "aar": "sha256-4KYymjcSYv5MRQNytw/a8zt2nvaRcJRyN4fPzolrHdM="
   },
-  "androidx/tracing#tracing/1.0.0": {
+  "dl/android/maven2/androidx/tracing#tracing/1.0.0": {
    "module": "sha256-/Ish6+X6OnyW7gmLzc0A8HfrznPyQ/qFjisGcWFfddg=",
    "pom": "sha256-zQKZqQ1HINePHPtf91BfTbwacNBf4j/Z9NS3fqWcoF4="
   },
-  "androidx/tracing#tracing/1.2.0": {
+  "dl/android/maven2/androidx/tracing#tracing/1.2.0": {
    "module": "sha256-0NjUhra9MyBtvz8abRZ+m0PCaOpjwzIciGsVQ60F7OM=",
    "pom": "sha256-80vsTrWIcdMQApATdxCKqh6/53+m2IK4uGIAsVjibqE="
   },
-  "androidx/tracing/tracing/1.0.0/tracing-1.0.0": {
+  "dl/android/maven2/androidx/tracing/tracing/1.0.0/tracing-1.0.0": {
    "aar": "sha256-B7i2E5ZluIShYuzPl4kcpQ9/VoMSM78lForgT3tWhhI="
   },
-  "androidx/tracing/tracing/1.2.0/tracing-1.2.0": {
+  "dl/android/maven2/androidx/tracing/tracing/1.2.0/tracing-1.2.0": {
    "aar": "sha256-b6qQOQ0f2/Ctuamb+Z3me5TGxvNa6pUQWTqdF5c3NqI="
   },
-  "androidx/transition#transition/1.5.0": {
+  "dl/android/maven2/androidx/transition#transition/1.5.0": {
    "module": "sha256-rUM0Z/Xt6HrSs8Wff+BjmEzwcgzazRBZH12PhOOk4JU=",
    "pom": "sha256-22x0l/DwlP8u7PsynhcAZY8NbFb7CISC9+m3dN6a1T8="
   },
-  "androidx/transition#transition/1.6.0": {
+  "dl/android/maven2/androidx/transition#transition/1.6.0": {
    "module": "sha256-x2PDdv1tOeUUd8kCsxXljKKh9H1LCZy5n0mhSL1hxWA=",
    "pom": "sha256-Bw13lQEAce3vvvlLjJ1aLKxctfOxosXlWFRkOBd8jvg="
   },
-  "androidx/transition/transition/1.6.0/transition-1.6.0": {
+  "dl/android/maven2/androidx/transition/transition/1.6.0/transition-1.6.0": {
    "aar": "sha256-JIxF4SVNMRgdIEewsBOU8JouU5pdnom3c9U8YsloYPY="
   },
-  "androidx/vectordrawable#vectordrawable-animated/1.1.0": {
+  "dl/android/maven2/androidx/vectordrawable#vectordrawable-animated/1.1.0": {
    "pom": "sha256-J2ogEWtwX7dbkAPulJbFb2/TsyN1+yMkcoEeumCgQL0="
   },
-  "androidx/vectordrawable#vectordrawable/1.1.0": {
+  "dl/android/maven2/androidx/vectordrawable#vectordrawable/1.1.0": {
    "pom": "sha256-Ww4tWyF55UgEeFy8Ic5fRzteHd1VpX2kgulNzTlJK7I="
   },
-  "androidx/vectordrawable/vectordrawable-animated/1.1.0/vectordrawable-animated-1.1.0": {
+  "dl/android/maven2/androidx/vectordrawable/vectordrawable-animated/1.1.0/vectordrawable-animated-1.1.0": {
    "aar": "sha256-dtosUCNx2cOAVN9eKySNANqHgJ7QWPM2Pq6Hzl4kA/g="
   },
-  "androidx/vectordrawable/vectordrawable/1.1.0/vectordrawable-1.1.0": {
+  "dl/android/maven2/androidx/vectordrawable/vectordrawable/1.1.0/vectordrawable-1.1.0": {
    "aar": "sha256-Rv1jOsAbSbf8q8JjvwmMWouemml3TSNO3MoE+wLfjiY="
   },
-  "androidx/versionedparcelable#versionedparcelable/1.1.0": {
+  "dl/android/maven2/androidx/versionedparcelable#versionedparcelable/1.1.0": {
    "pom": "sha256-xynHvgzAYyO9qCnUYGZuedvUO3maIQiaRL07KT3CU7U="
   },
-  "androidx/versionedparcelable#versionedparcelable/1.1.1": {
+  "dl/android/maven2/androidx/versionedparcelable#versionedparcelable/1.1.1": {
    "pom": "sha256-X1HmWHPKYS3jg4+pDS7pW40EDv0xucOQoZv5TWFc2y8="
   },
-  "androidx/versionedparcelable/versionedparcelable/1.1.1/versionedparcelable-1.1.1": {
+  "dl/android/maven2/androidx/versionedparcelable/versionedparcelable/1.1.1/versionedparcelable-1.1.1": {
    "aar": "sha256-V+jZMmDRjVuQB8nu08ZK0VnekMhgnr/HSjR8vVFFNaQ="
   },
-  "androidx/viewpager#viewpager/1.0.0": {
+  "dl/android/maven2/androidx/viewpager#viewpager/1.0.0": {
    "pom": "sha256-H3L4NjOdA8brAT9lB152yocHWld1eOtPlfdKOl0lMSg="
   },
-  "androidx/viewpager/viewpager/1.0.0/viewpager-1.0.0": {
+  "dl/android/maven2/androidx/viewpager/viewpager/1.0.0/viewpager-1.0.0": {
    "aar": "sha256-FHr04UoZhAENjxVeXhnXgfA8HXDf7QKo4NGEKLj8hoI="
   },
-  "androidx/viewpager2#viewpager2/1.0.0": {
+  "dl/android/maven2/androidx/viewpager2#viewpager2/1.0.0": {
    "pom": "sha256-QGO8p/6U/mXJj0Fo+XrhDgLaAkhZitOsIcQyx/YIoXo="
   },
-  "androidx/viewpager2/viewpager2/1.0.0/viewpager2-1.0.0": {
+  "dl/android/maven2/androidx/viewpager2/viewpager2/1.0.0/viewpager2-1.0.0": {
    "aar": "sha256-6VwAMdTMJHzUgZbGKH5Y0s7lTZx5uFr+p8kJIDMCda8="
   },
-  "androidx/window#window-core-android/1.5.0": {
+  "dl/android/maven2/androidx/window#window-core-android/1.5.0": {
    "module": "sha256-W9gYaGgDvzwDf2Gg6Wr0RB6ISqik2RBi0q1Xh2+Re1A=",
    "pom": "sha256-RjxQsiqWnGJ069t7X1a6HqHd41LpZ58KC6kPOXHbzVc="
   },
-  "androidx/window#window-core/1.5.0": {
+  "dl/android/maven2/androidx/window#window-core/1.5.0": {
    "module": "sha256-WVYE8FWhJQjsPHdPLZDF5WQUumJGx1QXLZyVyKAOwE8=",
    "pom": "sha256-44ow/pqcy1dVMbJl/sjiMge9qYGJd6rklfP+dLnJ4fM="
   },
-  "androidx/window#window/1.5.0": {
+  "dl/android/maven2/androidx/window#window/1.5.0": {
    "module": "sha256-isXSdy6XyVfd3LyxwRmCKdSv5XzfXs1es81DagUZB0M=",
    "pom": "sha256-1PIrmRppYA4v/Da0KsGZYm/ZbV8WSMO+7M013gb8w1E="
   },
-  "androidx/window/window-core-android/1.5.0/window-core-android-1.5.0": {
+  "dl/android/maven2/androidx/window/window-core-android/1.5.0/window-core-android-1.5.0": {
    "aar": "sha256-0NUNsHVhlKbUmmatja/ReyS0xfvYN5N1BW4uub3+ryI="
   },
-  "androidx/window/window/1.5.0/window-1.5.0": {
+  "dl/android/maven2/androidx/window/window/1.5.0/window-1.5.0": {
    "aar": "sha256-XeLUiqV4QC9G3rUpSpVc7mLwx9jBhA72Jvx6+4q+Ivk="
   },
-  "com/android#signflinger/8.9.1": {
+  "dl/android/maven2/com/android#signflinger/8.9.1": {
    "jar": "sha256-wdyixoNjTuGilCmPnHF5V4r2qG4IC9xA+WGRW8XIFC8=",
    "pom": "sha256-sTmJPVeGrkHTAdKFeka/1/vwJfjHUb2umKhDEykHBdE="
   },
-  "com/android#zipflinger/8.9.1": {
+  "dl/android/maven2/com/android#zipflinger/8.9.1": {
    "jar": "sha256-gd1IVhilCaMjWSm56xMJHYhEUmYd5s5aRcw4scVVQhw=",
    "pom": "sha256-jlPMp78KuAAETEEBecTQigFY0bs14VLjKfYy+B7BVw0="
   },
-  "com/android/application#com.android.application.gradle.plugin/8.9.1": {
+  "dl/android/maven2/com/android/application#com.android.application.gradle.plugin/8.9.1": {
    "pom": "sha256-O7e52P3gcmzxCFyZG9BPpgdf/CGVTq6XTtHufX/yisc="
   },
-  "com/android/databinding#baseLibrary/8.9.1": {
+  "dl/android/maven2/com/android/databinding#baseLibrary/8.9.1": {
    "jar": "sha256-eUETcJ2rIbBsJis3lec8twj7rK5hcV80Nh4a9iN6GHA=",
    "pom": "sha256-2tBY9mkpBdkH8ys9rPYWhWZrdrUNl5cj0Tv3ttrYUwM="
   },
-  "com/android/library#com.android.library.gradle.plugin/8.9.1": {
+  "dl/android/maven2/com/android/library#com.android.library.gradle.plugin/8.9.1": {
    "pom": "sha256-ztXHD2DJ+opdxJFTEWHrUVmuZkpJbWAescxrce1BrLg="
   },
-  "com/android/tools#annotations/31.9.1": {
+  "dl/android/maven2/com/android/tools#annotations/31.9.1": {
    "jar": "sha256-slmV+nsiDTX7uOMl3wcfgpFpG/uv+XNMmOOPRewqc+4=",
    "pom": "sha256-6aljdJthDosaawvxN2IsxAocjOgBbRU/5ni0uvsUoSc="
   },
-  "com/android/tools#common/31.9.1": {
+  "dl/android/maven2/com/android/tools#common/31.9.1": {
    "jar": "sha256-I9PaP100HXxmDNJBphmer8229I6J1zDe9LeNolaTBBY=",
    "pom": "sha256-fJYFVmKbXyWACcF/zYsHk+8i9s6glAfMa7SaMVj/Ims="
   },
-  "com/android/tools#dvlib/31.9.1": {
+  "dl/android/maven2/com/android/tools#dvlib/31.9.1": {
    "jar": "sha256-488/3JR3iN7o1bqnbLcqZlcRdLxHQe3w47q5enypDhs=",
    "pom": "sha256-zbq1p4auEcac5HFJeGXb4IazIbJWXbemuDQYmbm8mj8="
   },
-  "com/android/tools#repository/31.9.1": {
+  "dl/android/maven2/com/android/tools#play-sdk-proto/31.9.1": {
+   "jar": "sha256-xvwVpcIDBkz9LIoXb96scq4KLXQ+xHouZqAjjY2HC2s=",
+   "pom": "sha256-ktb60tm8EEY51uqffazZMkMRhRYphIqWCGKGe0YH/Q4="
+  },
+  "dl/android/maven2/com/android/tools#repository/31.9.1": {
    "jar": "sha256-7nMxExttgNyD6n14+2YAhHMAcz8pZNGIYXCcTSMHXgg=",
    "pom": "sha256-GyZeLEbVEFUgjp5/TBPQGQgh4SdQOtKEinHIHn4d6/o="
   },
-  "com/android/tools#sdk-common/31.9.1": {
+  "dl/android/maven2/com/android/tools#sdk-common/31.9.1": {
    "jar": "sha256-iUOli2esf7GgMh56Uqh8+q7CSNORJTbD1yio3Acf/yQ=",
    "pom": "sha256-1LNoBOMOjetOc+yBEZUXtmqALPLbBVan0jfG+iWNCAw="
   },
-  "com/android/tools#sdklib/31.9.1": {
+  "dl/android/maven2/com/android/tools#sdklib/31.9.1": {
    "jar": "sha256-7p2BGH2rl5AGQMQeKuMMDrr0Vy3Van1+NER8k9eUwv0=",
    "pom": "sha256-y05M04oXxTAsymkrTvEqOdy8puw02cbOeZFFXAqkqCA="
   },
-  "com/android/tools/analytics-library#crash/31.9.1": {
+  "dl/android/maven2/com/android/tools/analytics-library#crash/31.9.1": {
    "jar": "sha256-zKl6wpoTKb0xCj6DK25X9GIn5QGqUpwApj3yF8XX30E=",
    "pom": "sha256-Oa7PBsX7RN6v2fsjeOTH7AhZ5eVVIlC5QEDYnfrQc8w="
   },
-  "com/android/tools/analytics-library#protos/31.9.1": {
+  "dl/android/maven2/com/android/tools/analytics-library#protos/31.9.1": {
    "jar": "sha256-3SDU5HyokLfDUvb3PIfCLxTCGAg/Hl662cAT6Lp+SvA=",
    "pom": "sha256-Lj8Fwvi1R3P3YUpJnkmVg24fsegq9WRhWvIq9h03wwA="
   },
-  "com/android/tools/analytics-library#shared/31.9.1": {
+  "dl/android/maven2/com/android/tools/analytics-library#shared/31.9.1": {
    "jar": "sha256-ONP9oaxMsPiXSkho2hNhoDz6uTDlLlcp2Zut5AOCRZw=",
    "pom": "sha256-kE6dmTuqt/EDOi1kntr30LrDOE70kyQnECl2S9B3KUE="
   },
-  "com/android/tools/analytics-library#tracker/31.9.1": {
+  "dl/android/maven2/com/android/tools/analytics-library#tracker/31.9.1": {
    "jar": "sha256-D8VeTSFfSwIdiBFyrO+CRkBh2WLf67EToFQNxwRZKOU=",
    "pom": "sha256-BOjBwmpYuSQh4zjlSLJ5qgwOc4O6UIN+t3dBOWBFHp8="
   },
-  "com/android/tools/build#aapt2-proto/8.9.1-12782657": {
+  "dl/android/maven2/com/android/tools/build#aapt2-proto/8.9.1-12782657": {
    "jar": "sha256-B3nfEafIQOKFe5blCds8vac86yWCV1iHrWRxM5hKZoM=",
    "module": "sha256-58h4YbShpLdRpSAh05Ktm9R7YGvNyW6/ZAOyKC24BkU=",
    "pom": "sha256-CZcJOP/6uWDLq2Wz6vrxrQjKQs4WbEo4wHb3AgelUNE="
   },
-  "com/android/tools/build#aaptcompiler/8.9.1": {
+  "dl/android/maven2/com/android/tools/build#aaptcompiler/8.9.1": {
    "jar": "sha256-HgqbE/04/bCP2+YJ6d7w2XHeAkRxRXNghA6YSGvBYp8=",
    "module": "sha256-oKnVhj79vRIszYd1WRJ9yECf6W1iDorqJZ1Xv+/XyIg=",
    "pom": "sha256-Wk8TelDFIPfRrexNnpVTN9FcbzE9pnjhA7gO+GWGWPQ="
   },
-  "com/android/tools/build#apksig/8.9.1": {
+  "dl/android/maven2/com/android/tools/build#apksig/8.9.1": {
    "jar": "sha256-wHDtE5RinXRkGqCQb2Cy/6Hud+Y2ah+TQ39ZcXsa64k=",
    "pom": "sha256-VnEchGHLZfrcag7GnwBQGBrmRJz9p+HzyEsBW4+bCTo="
   },
-  "com/android/tools/build#apkzlib/8.9.1": {
+  "dl/android/maven2/com/android/tools/build#apkzlib/8.9.1": {
    "jar": "sha256-HBpn1vTxhkJ6wWbrqg3YZ/WV1RRPySUlKwX/udGhVrc=",
    "pom": "sha256-nB5KtoQYjbHwju8cZCJSerw4LQ2l4GZwqvBi7i2AgO0="
   },
-  "com/android/tools/build#builder-model/8.9.1": {
+  "dl/android/maven2/com/android/tools/build#builder-model/8.9.1": {
    "jar": "sha256-ko60Y4ewXT7gDipNhzOcBlcFmUevJJ39cfc/2LgkU+8=",
    "module": "sha256-VUpPabT+YXywXPQo0nhJCwlXLhC318ELQ9+UC511XeM=",
    "pom": "sha256-nDqZv3p3Xemdj+trwxRPMFyIeETvakVVgPkIwxqgxH0="
   },
-  "com/android/tools/build#builder-test-api/8.9.1": {
+  "dl/android/maven2/com/android/tools/build#builder-test-api/8.9.1": {
    "jar": "sha256-PNi7ZmtWumAhx+PooSr5NI3y4QmkLsSm1uh1eKRpNsM=",
    "module": "sha256-TpQBt0EdNxLHLaV0dEik0u6qhntibmzGnP3ReZNff88=",
    "pom": "sha256-w8JoZUclwkLdy5GQY2TKrY29Y9cypcNuv84qVi0Fu/s="
   },
-  "com/android/tools/build#builder/8.9.1": {
+  "dl/android/maven2/com/android/tools/build#builder/8.9.1": {
    "jar": "sha256-BmdjyQsU+4LpsY3Yyt1DKYH90vz/knOT1SMMRK1O4lI=",
    "module": "sha256-dfQFQVjPR23091+/Zrm6ZRSbceUw97TkCoFYKfkfNNc=",
    "pom": "sha256-v/myHwMdHoRoHa9I0pnkHu/94qGQ/9dQCy944wat14w="
   },
-  "com/android/tools/build#bundletool/1.17.2": {
+  "dl/android/maven2/com/android/tools/build#bundletool/1.17.2": {
    "jar": "sha256-FmhVy4HhDyMoopMQBvSAH0Itj03l1xfsD38W/CBJoIk=",
    "pom": "sha256-80LQa1GA5uq6B2oqGKjn/Waum18EiWSvtu9CoCP6N1I="
   },
-  "com/android/tools/build#gradle-api/8.9.1": {
+  "dl/android/maven2/com/android/tools/build#gradle-api/8.9.1": {
    "jar": "sha256-K++nuzL/wtg6JL2OrA7fVXb4ozz1HK93UjMrcOwcJdE=",
    "module": "sha256-GPkKG5g1vB0Kxv+abd02QSBSkFbejP6TE4rRCTu/icE=",
    "pom": "sha256-KywUd9lNeU509BLJ+LJl6tB2sB8MZ1mvb6XcuGOhDg0="
   },
-  "com/android/tools/build#gradle-settings-api/8.9.1": {
+  "dl/android/maven2/com/android/tools/build#gradle-settings-api/8.9.1": {
    "jar": "sha256-XnSh1ZtQObZcNE7B5aivqHghfZojOMxIbEe+eGtZFdk=",
    "module": "sha256-cwARAvKPntg6OO/fRcL7P/MJ0ziv/TfTSA9sX0sCbA4=",
    "pom": "sha256-GO8X0B29aEphwB63HMJmY9t35dg2eVbw1Hdi4W9PYrs="
   },
-  "com/android/tools/build#gradle/8.9.1": {
+  "dl/android/maven2/com/android/tools/build#gradle/8.9.1": {
    "jar": "sha256-iuqn+nv7ya3ndG64bTfdWZARj77eQAyeutxj0TzGyIA=",
    "module": "sha256-b/T/SXuPB4kTIlJ4HCzUyruPvwoe9hP4qxM7pi76oeY=",
    "pom": "sha256-kbT8SK2lqQInYx/RHIP26Z1LVebtKgqT2f7cyCWN+O8="
   },
-  "com/android/tools/build#manifest-merger/31.9.1": {
+  "dl/android/maven2/com/android/tools/build#manifest-merger/31.9.1": {
    "jar": "sha256-9CHSMlFsSJ80MA4hINGMZqYjpct6njoe6DYyTG6bYSg=",
    "module": "sha256-bcoSxfYHumPBVY0v1zMTJvU8UUxP3qy0/glhlEaGygY=",
    "pom": "sha256-Jwh+loS+/3I56K6soHiD8l3MrOLdzMgEGLh6O4d2j0Q="
   },
-  "com/android/tools/build#transform-api/2.0.0-deprecated-use-gradle-api": {
+  "dl/android/maven2/com/android/tools/build#transform-api/2.0.0-deprecated-use-gradle-api": {
    "jar": "sha256-TeSj0F4cU0wtueRYi/NAgrsr0jLYq7lyfEMCkM4iV0A=",
    "pom": "sha256-fGLzhW6KvKHXkleSXybBJmhpP12VkEBWu6yIYFz9hXU="
   },
-  "com/android/tools/build/jetifier#jetifier-core/1.0.0-beta10": {
+  "dl/android/maven2/com/android/tools/build/jetifier#jetifier-core/1.0.0-beta10": {
    "jar": "sha256-Jqu0oTkn2QYhacUEyelP6A6a46T3tauIdasAdTapH14=",
    "module": "sha256-8JF1iaQtJ2Fj8QBAq1hC6RiD3L2x1Iv9Hx/Kpywcp7c=",
    "pom": "sha256-XJ1C5rfjXU2NAuCjIs8maTs+w2QrEHyPC+WnIdRaDG0="
   },
-  "com/android/tools/build/jetifier#jetifier-processor/1.0.0-beta10": {
+  "dl/android/maven2/com/android/tools/build/jetifier#jetifier-processor/1.0.0-beta10": {
    "jar": "sha256-xQZ6e5KCN6EnGl6ctXEOn4C0lzKTlFvFHjpMhk6kv+0=",
    "module": "sha256-NsJVdrGZk982AXBSjMYrckbDd3bWFYFUpnzfj8LVjhM=",
    "pom": "sha256-M7F/OWmJQEpJF0dIVpvI7fTjmmKkKjXOk9ylwOS6CEI="
   },
-  "com/android/tools/ddms#ddmlib/31.9.1": {
+  "dl/android/maven2/com/android/tools/ddms#ddmlib/31.9.1": {
    "jar": "sha256-nNyiBuCPvB8B2qGg1k6tKmK4zMWUFWn1GB4n5Kb1+6A=",
    "pom": "sha256-fPzMtuFUKsVo4t5Ug4OxafRRIlqY6jN4cKeuVwIJw+M="
   },
-  "com/android/tools/layoutlib#layoutlib-api/31.9.1": {
+  "dl/android/maven2/com/android/tools/external/com-intellij#intellij-core/31.9.1": {
+   "jar": "sha256-irjK34QO+iBavvIpE/M4kuZEI0ynBkGAvfe29VnYXno=",
+   "pom": "sha256-DEaMAQq2j1XPljQvUXYauz0TG19TY/HlO/BkngsxXXs="
+  },
+  "dl/android/maven2/com/android/tools/external/com-intellij#kotlin-compiler/31.9.1": {
+   "jar": "sha256-NKQYPO0Xl+u8+tke682dpGTI8U0/vPfCiJ4/Z/drZfI=",
+   "pom": "sha256-G0ucExW9DrhyJvU0llKxzIqqmczcq83ZEHZedtYkZL0="
+  },
+  "dl/android/maven2/com/android/tools/external/org-jetbrains#uast/31.9.1": {
+   "jar": "sha256-l+XcKw4J7M00wSfyF31oMF3cH/tABVdu/ejoSrWRrGw=",
+   "pom": "sha256-B8C/cv4UBoYEERELbIY/LxzVE4Kgig7/9q7O8Vptymk="
+  },
+  "dl/android/maven2/com/android/tools/layoutlib#layoutlib-api/31.9.1": {
    "jar": "sha256-KSMuYAdiW1aegnmNLY9VnYlB7OYw/iduhCzYGOv5Sxc=",
    "pom": "sha256-yDGMFx0aGDK6vfu83G/SexkWuDOs4vWPw135/MgFijk="
   },
-  "com/android/tools/lint#lint-model/31.9.1": {
+  "dl/android/maven2/com/android/tools/lint#lint-api/31.9.1": {
+   "jar": "sha256-HMYq839FS7JInB2xx31KObONR+v3ijh7u/Zw7OxyNEc=",
+   "pom": "sha256-hlSMOji5DKAKuN80MxkXbPFfs0xNfaMyc8vvRhmP22I="
+  },
+  "dl/android/maven2/com/android/tools/lint#lint-checks/31.9.1": {
+   "jar": "sha256-Hb7CB3sKwznFWXU9gLRSicSDH0ntKlF61qlLtahGWX4=",
+   "pom": "sha256-hAza0ZTgIVYvcPYHhyetAUSvsDuJ00dpLoDKmLcTyoM="
+  },
+  "dl/android/maven2/com/android/tools/lint#lint-gradle/31.9.1": {
+   "jar": "sha256-uIS9pjxUr0I2JAu1W0gNyfRUFGnJRCrae3aQ9tII/mY=",
+   "pom": "sha256-m6I2EcEfEwDt+ZDXEjqSg+4CL59r43vF+0Q/e6FHH0w="
+  },
+  "dl/android/maven2/com/android/tools/lint#lint-model/31.9.1": {
    "jar": "sha256-/Vx9Zgnqot9h3uIN/tRkByg44G0vsugvQ0qOC5eGM3Q=",
    "pom": "sha256-iD1RcC3AgYuy2kj4y7qiT93XiMShgZSsmcCQNR0ZhtY="
   },
-  "com/android/tools/lint#lint-typedef-remover/31.9.1": {
+  "dl/android/maven2/com/android/tools/lint#lint-typedef-remover/31.9.1": {
    "jar": "sha256-Sjujur/Xnm/Ge872R/tOz+r1m0gbEI98LrpNHFxt6o4=",
    "pom": "sha256-5gweztnyrWFiZCyAh8fi9YLx5EBRb+TclSf2rqLkyyw="
   },
-  "com/android/tools/utp#android-device-provider-ddmlib-proto/31.9.1": {
+  "dl/android/maven2/com/android/tools/lint#lint/31.9.1": {
+   "jar": "sha256-j5AuQvR6act36zIMqQmXvAB0BXWBuZN67ZDuyFucIcs=",
+   "pom": "sha256-Tw0bQN7iu7ttSnLshATcMLBahZXggC1SKUvXL+H6mGo="
+  },
+  "dl/android/maven2/com/android/tools/utp#android-device-provider-ddmlib-proto/31.9.1": {
    "jar": "sha256-BHrs3WbhBhN/d6UsRC8bg9t9boSWiZgAJR8gbH853mU=",
    "pom": "sha256-C09Y4v8UTsmzCBM8pjbRJQa1hfFug1MeWLzfZOjqY7U="
   },
-  "com/android/tools/utp#android-device-provider-gradle-proto/31.9.1": {
+  "dl/android/maven2/com/android/tools/utp#android-device-provider-gradle-proto/31.9.1": {
    "jar": "sha256-ZagpFgS/3h9vdcqFMqOBQ57IH9lY8yeCqwBH+2HZp6E=",
    "pom": "sha256-A2QfX+MGv3c0MHo4n2C/aIc7Etqq6IwVrK2XKtwi/GM="
   },
-  "com/android/tools/utp#android-device-provider-profile-proto/31.9.1": {
+  "dl/android/maven2/com/android/tools/utp#android-device-provider-profile-proto/31.9.1": {
    "jar": "sha256-PnsJj24+yuMbb3kJw0O07AmqGNion0G/kgd7pLBW9FM=",
    "pom": "sha256-j3VSEOyF/LqBaKJmthP0eMPw1+USaEre+G/5LJb4aCo="
   },
-  "com/android/tools/utp#android-test-plugin-host-additional-test-output-proto/31.9.1": {
+  "dl/android/maven2/com/android/tools/utp#android-test-plugin-host-additional-test-output-proto/31.9.1": {
    "jar": "sha256-a6fmrCII10wbtfHRRkq6/GpF2HELIEVaLcAq34cmvIM=",
    "pom": "sha256-jGOn41QLHQGDHcukjkVWAfDN7janiNhgurBBF7aE20E="
   },
-  "com/android/tools/utp#android-test-plugin-host-apk-installer-proto/31.9.1": {
+  "dl/android/maven2/com/android/tools/utp#android-test-plugin-host-apk-installer-proto/31.9.1": {
    "jar": "sha256-RXBdYbIQBuhTPmz4q3lYp95t7KzmjtbAnbit4SFthZw=",
    "pom": "sha256-ZTMhuiU7Jk67ktJdtK2j9wN6tJugXluQryRIKvgFcDU="
   },
-  "com/android/tools/utp#android-test-plugin-host-coverage-proto/31.9.1": {
+  "dl/android/maven2/com/android/tools/utp#android-test-plugin-host-coverage-proto/31.9.1": {
    "jar": "sha256-+oZxmj3F3kZffgwCMYRBTCf4/VOjT9VXKJwL9t80AkQ=",
    "pom": "sha256-m5ryinJJSUgDwPXWDRWcvkC61Qze3jz/GbZs7WTl8HA="
   },
-  "com/android/tools/utp#android-test-plugin-host-emulator-control-proto/31.9.1": {
+  "dl/android/maven2/com/android/tools/utp#android-test-plugin-host-emulator-control-proto/31.9.1": {
    "jar": "sha256-pPNKrg+f+gJtv3FRQ23XrlO+y3JiK0DyxHnKyJQ9kxk=",
    "pom": "sha256-t4N5aHRR0dq9whKpSTRqjOakCWbPTiPdteIJ4+FWnX0="
   },
-  "com/android/tools/utp#android-test-plugin-host-logcat-proto/31.9.1": {
+  "dl/android/maven2/com/android/tools/utp#android-test-plugin-host-logcat-proto/31.9.1": {
    "jar": "sha256-wfbrus2tVZtu/k6qKVYVUrMxVjlfBpzZcD/aCcRi3qY=",
    "pom": "sha256-G3NObsaOTSD80vM9Cx4PEczfRhR6HutF0Es/wqgS3Ss="
   },
-  "com/android/tools/utp#android-test-plugin-host-retention-proto/31.9.1": {
+  "dl/android/maven2/com/android/tools/utp#android-test-plugin-host-retention-proto/31.9.1": {
    "jar": "sha256-CPGvlhFbK9As1LaE4ZT1xcJ2PwHI9Z4BHZrsyz/vGGM=",
    "pom": "sha256-LqAz51tiUVXq7Pw2ehIgnyvfFN8QrThVSlKOyW720t4="
   },
-  "com/android/tools/utp#android-test-plugin-result-listener-gradle-proto/31.9.1": {
+  "dl/android/maven2/com/android/tools/utp#android-test-plugin-result-listener-gradle-proto/31.9.1": {
    "jar": "sha256-1Cm5MS3/oFAzgdHuGxipmb2QHnRWYSsvtIxqXVosr4g=",
    "pom": "sha256-dDCrI1VyZKH52UgNpV4Xd9KiilUtKFWQWXGHFHaG1hk="
   },
-  "com/google/android/material#material/1.13.0": {
+  "dl/android/maven2/com/google/android/material#material/1.13.0": {
    "module": "sha256-TBPV6U9KtPp8NazFJBGCvyWYWZRYPNTWK1+rvve8J3I=",
    "pom": "sha256-nB88RgApXMXX9taIauoW1JfxP5r0Z1RCrScefC/r93I="
   },
-  "com/google/android/material/material/1.13.0/material-1.13.0": {
+  "dl/android/maven2/com/google/android/material/material/1.13.0/material-1.13.0": {
    "aar": "sha256-bV4cu2fAW83Lv4QAV4fa/TVKFV9ZpNOAD9Rfp+s2ifU="
   },
-  "com/google/testing/platform#core-proto/0.0.9-alpha03": {
+  "dl/android/maven2/com/google/testing/platform#core-proto/0.0.9-alpha03": {
    "jar": "sha256-0AHrDMu/yMueqhk6NY5jcSl0Y5d1ZHvpSasjLCsptAc=",
    "pom": "sha256-O7RSgN8d0clrmgFySmFFZrfWDTNFP81SwsdB+ZmcOk4="
+  },
+  "play-sdk/index/snapshot": {
+   "gz": "sha256-ACfdVkNvU34uYUebF2FeUij9AFzWqmYt//Iol2KJkfM="
+  }
+ },
+ "https://maven.google.com": {
+  "androidx/activity/group-index": {
+   "xml": "sha256-pOXdVTd8w6bAsTCm8Lsi+8ojwg4Hi3VMqh0XrYxFHdE="
+  },
+  "androidx/appcompat/group-index": {
+   "xml": "sha256-OBsioeIcPd02kdvoDMr4ayHcDd8tfsCc2KYqOervzc8="
+  },
+  "androidx/biometric/group-index": {
+   "xml": "sha256-iLPqvUSdxphPKFFW2QS+J5xyBVsYuka7BcPMmU0jZsI="
+  },
+  "androidx/compose/foundation/group-index": {
+   "xml": "sha256-ZbNE/J/bZmDEm/z2N+HCulKFczVLqgTS312bpJzlE3Y="
+  },
+  "androidx/compose/group-index": {
+   "xml": "sha256-hrhe2/QE6cvgiEw/FrILPutLEgc0BuZqAsMSGN0oqV0="
+  },
+  "androidx/compose/runtime/group-index": {
+   "xml": "sha256-B511qvTPGkAYMNisSUWaapXu4b0YKEuj484nLHgBhUQ="
+  },
+  "androidx/compose/ui/group-index": {
+   "xml": "sha256-J8AhGTbnqYO+HNFS4CoAt7WiQjggo1e3tmQ+qeleLMA="
+  },
+  "androidx/core/group-index": {
+   "xml": "sha256-0up1LgzVHviDbtySeBYTyFe9TFYL1uzOzX1Jny+2vIk="
+  },
+  "androidx/datastore/group-index": {
+   "xml": "sha256-hzwYfR0vmrWQrkspQoqhIcJ/vkrQthPVnaLP/Oz1xPA="
+  },
+  "androidx/hilt/group-index": {
+   "xml": "sha256-68L1xZknjOBxlX2e5sAdK+929U41wGZNs2PFkzWZ9TQ="
+  },
+  "androidx/lifecycle/group-index": {
+   "xml": "sha256-1NzFJOMdmR0AheDgk5+xXMlTXkhhR5DEWfqav3Z4g4o="
+  },
+  "androidx/navigation/group-index": {
+   "xml": "sha256-vaWAmBpFrBIZqTYIlO5YyhBY4UTLtf0zjmplHNOwb68="
+  },
+  "androidx/room/group-index": {
+   "xml": "sha256-Mv2S/Em7dGHj7aAK54sdZUc/61d/DkF3aqabhK+8ub8="
+  },
+  "androidx/test/espresso/group-index": {
+   "xml": "sha256-VH9IdTDYv2xU/oHOJSdsm+Gezglak/89uyuPnN93FPs="
+  },
+  "androidx/test/ext/group-index": {
+   "xml": "sha256-38frJzVfH+SLmRTjmy4jx/L+as/ycSNbiwbxKlbyZts="
+  },
+  "androidx/test/group-index": {
+   "xml": "sha256-VSoy8vLkKQbEvOj2D8qmZ7FKFAbRsGmpEStNhIZkwO0="
+  },
+  "com/android/application/group-index": {
+   "xml": "sha256-fFaldfx34UVWywJGEc3g0nyw9Pxvzne9W6tRnXWe7bk="
+  },
+  "com/android/library/group-index": {
+   "xml": "sha256-1w8N/Xf6YbxrV9oub6cEYNPQVl7qlrXr1a8/mNJz+/s="
+  },
+  "com/google/android/material/group-index": {
+   "xml": "sha256-8PPPc+I/An8nCJeeU7EMCmgczxoLvRkQdCHKrPuKLhE="
+  },
+  "com/google/devtools/ksp/group-index": {
+   "xml": "sha256-SUBKarupA62e6sdt8Dnqor/hDpDkpIaVzFdj0ZSiPmI="
+  },
+  "master-index": {
+   "xml": "sha256-GMvHzaVjBduBz6yHdKDoEDNW9gTE775v95Mkpj46sgA="
   }
  },
  "https://plugins.gradle.org/m2": {
@@ -2258,9 +2358,11 @@
    "pom": "sha256-AmHKAfLS6awq4uznXULFYyOzhfspS2vJQ/Yu9Okt3wg="
   },
   "com/google/errorprone#error_prone_annotations/2.15.0": {
+   "jar": "sha256-BnBHcUNJ53iaW9v62dHAr586HrKMVaDuP2jmgvkFxOs=",
    "pom": "sha256-e65hfjJoHruyicIDyQX2RsKgOXWYr3htlhpUqqPSseY="
   },
   "com/google/errorprone#error_prone_annotations/2.18.0": {
+   "jar": "sha256-nmgUy3GBaYik/RsHqZOo8hu3BY1SLBYrHehJ4ZvqVK4=",
    "pom": "sha256-kgE1eX3MpZF7WlwBdkKljTQKTNG80S9W+JKlZjvXvdw="
   },
   "com/google/errorprone#error_prone_annotations/2.22.0": {
@@ -2523,6 +2625,10 @@
   "com/yubico/yubikit/android/2.8.1/android-2.8.1": {
    "aar": "sha256-yutVJsQ+Ux5Mx+gq4gX2cQNNyKVTf2vlFXKXHD9KFrc="
   },
+  "commons-codec#commons-codec/1.10": {
+   "jar": "sha256-QkHfqU5xHUNfKaRgSj4t5cSqPBZeI70Ga+b8H8QwlWk=",
+   "pom": "sha256-vbjbcBLREqbj6o/bfFELMA2Z7/CBnSfd26nEM5fqTPs="
+  },
   "commons-codec#commons-codec/1.11": {
    "jar": "sha256-5ZnVMY6Xqkj0ITaikn5t+k6Igd/w5sjjEJ3bv/Ude30=",
    "pom": "sha256-wecUDR3qj981KLwePFRErAtUEpcxH0X5gGwhPsPumhA="
@@ -2694,6 +2800,9 @@
   "org/apache#apache/13": {
    "pom": "sha256-/1E9sDYf1BI3vvR4SWi8FarkeNTsCpSW+BEHLMrzhB0="
   },
+  "org/apache#apache/15": {
+   "pom": "sha256-NsLy+XmsZ7RQwMtIDk6br2tA86aB8iupaSKH0ROa1JQ="
+  },
   "org/apache#apache/18": {
    "pom": "sha256-eDEwcoX9R1u8NrIK4454gvEcMVOx1ZMPhS1E7ajzPBc="
   },
@@ -2719,6 +2828,9 @@
   "org/apache/commons#commons-parent/34": {
    "pom": "sha256-Oi5p0G1kHR87KTEm3J4uTqZWO/jDbIfgq2+kKS0Et5w="
   },
+  "org/apache/commons#commons-parent/35": {
+   "pom": "sha256-cJihq4M27NTJ3CHLvKyGn4LGb2S4rE95iNQbT8tE5Jo="
+  },
   "org/apache/commons#commons-parent/42": {
    "pom": "sha256-zTE0lMZwtIPsJWlyrxaYszDlmPgHACNU63ZUefYEsJw="
   },
@@ -2734,6 +2846,10 @@
   "org/apache/httpcomponents#httpclient/4.5.14": {
    "jar": "sha256-yLx+HFGm1M5y9A0uu6vxxLaL/nbnMhBLBDgbSTR46dY=",
    "pom": "sha256-8YNVr0z4CopO8E69dCpH6Qp+rwgMclsgldvE/F2977c="
+  },
+  "org/apache/httpcomponents#httpclient/4.5.6": {
+   "jar": "sha256-wD+BMZXnqA42CNDd2NqAshaWpMkqaiKYhlvxSQcVUcc=",
+   "pom": "sha256-fvwSQec+f7smi/0zJC0R69PKBwYdfYXyli3DKg8LiFU="
   },
   "org/apache/httpcomponents#httpcomponents-client/4.5.14": {
    "pom": "sha256-W60d5PEBRHZZ+J0ImGjMutZKaMxQPS1lQQtR9pBKoGE="
@@ -2799,6 +2915,10 @@
    "jar": "sha256-zK7dM68LeJTZ8vO2RPTRnkOSjjKQLmGsTRB3eDD1qsc=",
    "module": "sha256-4PpiK33mPq4RBH726RtMKtDx8OE8uQP/UggKR/V6V0Y=",
    "pom": "sha256-v1/KqycvVMvPG753w72WPIIcmrrSBYcIvwvtPIdUlMo="
+  },
+  "org/codehaus/groovy#groovy/3.0.22": {
+   "jar": "sha256-ySySxLmxg/mYG6c5nzZZLl461vTNrHEBtaIswXmY0T8=",
+   "pom": "sha256-Ubcx5c/xIe/W0yD0qAHNYWhpxb7U6cDjU7KQYLHSNV8="
   },
   "org/codehaus/mojo#animal-sniffer-annotations/1.23": {
    "jar": "sha256-n/5Sa/Q6Y0jp2LM7nNb1gKf17tDPBVkTAH7aJj3pdNA=",
@@ -3016,6 +3136,10 @@
   "org/jetbrains/kotlin#kotlin-reflect/2.0.20": {
    "jar": "sha256-GPRR5rS3vR0fnWCEnDy/Fg4RUwL5eiAIwZDVBcQ5xnA=",
    "pom": "sha256-Y+Y4sFbdRJ5vUtcenCxdxdsNFkRDI5cOFtf8DWWDk9s="
+  },
+  "org/jetbrains/kotlin#kotlin-reflect/2.1.0": {
+   "jar": "sha256-tfYI7fqYqM+iNyzBLRitqXS+HFbBCT7/BswGH0/AiLI=",
+   "pom": "sha256-nNhLPU9xfJYjXkujtydolcz/1V3kEcfOCz97q1Yu/kI="
   },
   "org/jetbrains/kotlin#kotlin-script-runtime/2.0.21": {
    "jar": "sha256-nBEfjQit5FVWYnLVYZIa3CsstrekzO442YKcXjocpqM=",

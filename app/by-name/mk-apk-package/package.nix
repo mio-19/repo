@@ -20,11 +20,6 @@ appPackage.overrideAttrs (
       || old ? gradleBuildFlagsArray
       || old ? gradleFlags;
 
-    # Centralize Gradle lint disabling for APK packages here instead of
-    # repeating package-local -xlintVitalRelease flags. This avoids fetching
-    # SDK index endpoints such as play-sdk/index/snapshot and group-index for
-    # projects where those requests come from lint. Context:
-    # https://github.com/NixOS/nixpkgs/issues/501643#issuecomment-4122356032
     disableLintHook = ''
       disableGradleLintTasks() {
         if [[ -n "''${disableGradleLintTasksDone:-}" ]]; then
