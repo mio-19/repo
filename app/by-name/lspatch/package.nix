@@ -10,7 +10,7 @@
   runCommand,
 }:
 let
-  version = "0.8";
+  version = "0.8-unstable-20260330";
 
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
