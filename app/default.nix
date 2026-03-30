@@ -125,7 +125,7 @@
     in
     {
       packages =
-        lib.removeAttrs byName [ "mk-apk-package" ]
+        lib.getAttrs [ "fdroid-repo" "sign-fdroid-repo" ] byName
         // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk;
     };
 }
