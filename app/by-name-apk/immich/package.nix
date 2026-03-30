@@ -262,7 +262,6 @@ let
             data = json.load(f)
 
         wanted = {
-            "bonsoir_android": "BONSOIR_ANDROID_DIR",
             "geolocator_android": "GEOLOCATOR_ANDROID_DIR",
             "native_video_player": "NATIVE_VIDEO_PLAYER_DIR",
             "home_widget": "HOME_WIDGET_DIR",
@@ -278,20 +277,6 @@ let
             print(f"export {env_name}={shlex.quote(path)}")
         PY
         . ./dart_package_dirs.sh
-
-        if [ -n "$BONSOIR_ANDROID_DIR" ]; then
-          patched_bonsoir_android_dir="$(clone_dart_package "$BONSOIR_ANDROID_DIR" bonsoir_android)"
-
-          substituteInPlace "$patched_bonsoir_android_dir/android/build.gradle" \
-            --replace-fail "    ext.kotlin_version = '1.7.10'" "    ext.kotlin_version = '2.2.20'" \
-            --replace-fail "        classpath 'com.android.tools.build:gradle:7.3.0'" \
-              "        classpath 'com.android.tools.build:gradle:8.11.2'" \
-            --replace-fail '        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"' \
-              '        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"'
-
-          replace_dart_package_root "$BONSOIR_ANDROID_DIR" "$patched_bonsoir_android_dir"
-          replace_flutter_plugin_root "$BONSOIR_ANDROID_DIR" "$patched_bonsoir_android_dir"
-        fi
 
         if [ -n "$GEOLOCATOR_ANDROID_DIR" ]; then
           patched_geolocator_android_dir="$(clone_dart_package "$GEOLOCATOR_ANDROID_DIR" geolocator_android)"
