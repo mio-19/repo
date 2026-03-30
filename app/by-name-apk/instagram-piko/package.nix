@@ -17,45 +17,44 @@ let
   pikoPatches = "${piko-patches}/patches-${piko-patches.version}.mpp";
 in
 let
-  appPackage =
-    stdenv.mkDerivation {
-      pname = "instagram-piko";
-      version = "423.0.0.26.66-patches-${piko-patches.version}";
+  appPackage = stdenv.mkDerivation {
+    pname = "instagram-piko";
+    version = "423.0.0.26.66-patches-${piko-patches.version}";
 
-      dontUnpack = true;
+    dontUnpack = true;
 
-      nativeBuildInputs = [ morphe-cli ];
+    nativeBuildInputs = [ morphe-cli ];
 
-      buildPhase = ''
-        runHook preBuild
+    buildPhase = ''
+      runHook preBuild
 
-        workdir="$TMPDIR/instagram-piko"
-        mkdir -p "$workdir"
-        cp ${instagramApk} "$workdir/input.apk"
-        chmod u+w "$workdir/input.apk"
+      workdir="$TMPDIR/instagram-piko"
+      mkdir -p "$workdir"
+      cp ${instagramApk} "$workdir/input.apk"
+      chmod u+w "$workdir/input.apk"
 
-        morphe-cli patch \
-          --patches=${pikoPatches} \
-          --unsigned \
-          --temporary-files-path "$workdir/tmp" \
-          --out "$workdir/instagram-piko.apk" \
-          "$workdir/input.apk"
+      morphe-cli patch \
+        --patches=${pikoPatches} \
+        --unsigned \
+        --temporary-files-path "$workdir/tmp" \
+        --out "$workdir/instagram-piko.apk" \
+        "$workdir/input.apk"
 
-        runHook postBuild
-      '';
+      runHook postBuild
+    '';
 
-      installPhase = ''
-        runHook preInstall
-        install -Dm644 "$TMPDIR/instagram-piko/instagram-piko.apk" "$out/instagram-piko.apk"
-        runHook postInstall
-      '';
+    installPhase = ''
+      runHook preInstall
+      install -Dm644 "$TMPDIR/instagram-piko/instagram-piko.apk" "$out/instagram-piko.apk"
+      runHook postInstall
+    '';
 
-      meta = with lib; {
-        description = "Instagram patched with the Piko feature set";
-        homepage = "https://github.com/crimera/piko";
-        platforms = platforms.unix;
-      };
+    meta = with lib; {
+      description = "Instagram patched with the Piko feature set";
+      homepage = "https://github.com/crimera/piko";
+      platforms = platforms.unix;
     };
+  };
 in
 mk-apk-package {
   inherit appPackage;
