@@ -34,8 +34,8 @@ let
   morphe-patcher-src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patcher";
-    rev = "v1.3.2";
-    hash = "sha256-KxWdkgiRN4mFb4auibSpMKUydE7ZaAMPGhow7Pq5Y1A=";
+    rev = "v1.3.3";
+    hash = "sha256-ehKW9/jlhhz2eGYEnioB6etq1gvH7eNroLw+yW8h3l0=";
   };
 
   arsclib-src = fetchFromGitHub {
@@ -48,13 +48,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-cli";
-  version = "1.6.2";
+  version = "1.6.3";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-cli";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-ifUGLzQvUHPCJ1lWAKTTscK/80ecqwnoBR5ncvIokp0=";
+    hash = "sha256-tUQoJORLzvVdHIoj8dJFOgTGFfo77S1VexGrkydxXsg=";
   };
 
   gradleBuildTask = "shadowJar";

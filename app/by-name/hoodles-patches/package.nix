@@ -32,8 +32,8 @@ let
   morphe-patcher-src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patcher";
-    rev = "v1.3.2";
-    hash = "sha256-KxWdkgiRN4mFb4auibSpMKUydE7ZaAMPGhow7Pq5Y1A=";
+    rev = "v1.3.3";
+    hash = "sha256-ehKW9/jlhhz2eGYEnioB6etq1gvH7eNroLw+yW8h3l0=";
   };
 
   arsclib-src = fetchFromGitHub {
