@@ -124,6 +124,8 @@
       };
     in
     {
-      packages = byName // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk;
+      packages =
+        lib.removeAttrs byName [ "mk-apk-package" ]
+        // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk;
     };
 }
