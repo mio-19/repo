@@ -86,8 +86,6 @@ nix build .#apk_forkgram -o forkgram
 # APK at forkgram/forkgram.apk
 ```
 
-note on nix+gradle: always need "-xlintVitalRelease" in gradleFlags unless `Task 'lintVitalRelease' not found in root project`; with this flag added gradle should not fetch "play-sdk/index/snapshot" "group-index" files - see <https://github.com/NixOS/nixpkgs/issues/501643#issuecomment-4122356032>
-
 ### Generate a signing key
 
 ```zsh
