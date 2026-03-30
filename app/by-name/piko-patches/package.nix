@@ -29,6 +29,7 @@ let
       defaultJava = jdk21;
     }).wrapped;
 
+  # https://github.com/crimera/piko/blob/e0d2a7be9bb92173825bb7043cd9ed92986132b9/gradle/libs.versions.toml#L2
   morphe-patcher-src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patcher";
