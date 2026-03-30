@@ -4,6 +4,7 @@
   jdk17_headless,
   gradle-packages,
   stdenv,
+  stdenvNoCC,
   fetchFromGitHub,
   fetchurl,
   rustPlatform,
@@ -14,7 +15,9 @@
   androidSdkBuilder,
   git,
   cargo-ndk,
+  go_1_26,
   python313,
+  unzip,
 }:
 let
   appPackage = stdenv.mkDerivation (
@@ -36,6 +39,13 @@ let
           hash = "sha256-85eyhwI6zboen2/F6nLSLdY2adWe1KKJopsadu7hUcY=";
           defaultJava = jdk17_headless;
         }).wrapped;
+
+      xMobileSrc = fetchFromGitHub {
+        owner = "golang";
+        repo = "mobile";
+        rev = "81488f6aeb60";
+        hash = "sha256-LIFK+KQPgpzZqh7U92fEnCSHBSVF8HPv9lIVhWy5xBo=";
+      };
 
       rustStdAarch64Android = fetchurl {
         url = "https://static.rust-lang.org/dist/rust-std-1.94.0-aarch64-linux-android.tar.xz";
@@ -161,17 +171,155 @@ let
           runHook postInstall
         '';
       });
+
+      rcloneGoModCache = stdenvNoCC.mkDerivation {
+        pname = "haven-rclone-go-mod-cache";
+        inherit (finalAttrs0) version src;
+
+        nativeBuildInputs = [ go_1_26 ];
+
+        outputHashMode = "recursive";
+        outputHashAlgo = "sha256";
+        outputHash = "sha256-yJet8/jmPyD1YlJzF+78nZo5fMhSbgB8HWBiYr8AuwQ=";
+
+        dontConfigure = true;
+        dontFixup = true;
+
+        buildPhase = ''
+          runHook preBuild
+
+          export HOME="$TMPDIR/home"
+          mkdir -p "$HOME"
+          export GOPATH="$TMPDIR/go"
+          export GOCACHE="$TMPDIR/go-build-cache"
+          export GOMODCACHE="$TMPDIR/go-mod-cache"
+          export GOPROXY=https://proxy.golang.org,direct
+          export GOSUMDB=sum.golang.org
+
+          cp -R "$src" source
+          chmod -R u+w source
+          cd source/rclone-android
+
+          cp -R ${xMobileSrc} x-mobile
+          chmod -R u+w x-mobile
+          substituteInPlace x-mobile/cmd/gomobile/init.go \
+            --replace-fail 'if err := goInstall([]string{"golang.org/x/mobile/cmd/gobind@latest"}, nil); err != nil {' \
+                           'if _, err := exec.LookPath("gobind"); err != nil {'
+          patch -d x-mobile -p1 < ${../tailscale/gomobile-avoid-empty-go-mod.patch}
+
+          cd go
+          go mod edit -replace=golang.org/x/mobile=../x-mobile
+          go mod download
+
+          runHook postBuild
+        '';
+
+        installPhase = ''
+          runHook preInstall
+          cp -R "$TMPDIR/go-mod-cache" "$out"
+          runHook postInstall
+        '';
+      };
+
+      rcloneTransportJniLibs = stdenv.mkDerivation {
+        pname = "haven-rclone-transport-jni-libs";
+        inherit (finalAttrs0) version src;
+
+        nativeBuildInputs = [
+          go_1_26
+          jdk17_headless
+          unzip
+        ];
+
+        dontConfigure = true;
+
+        env = {
+          JAVA_HOME = if stdenv.isDarwin then "${jdk17_headless}" else "${jdk17_headless}/lib/openjdk";
+          ANDROID_HOME = "${androidSdk}/share/android-sdk";
+          ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+          ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
+          ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
+        };
+
+        preBuild = ''
+          export HOME="$TMPDIR/home"
+          mkdir -p "$HOME"
+
+          export GOCACHE="$TMPDIR/go-cache"
+          export GOPATH="$TMPDIR/go"
+          export GOMODCACHE="$PWD/.gomodcache"
+          mkdir -p "$GOCACHE" "$GOPATH"
+          cp -R ${rcloneGoModCache} "$GOMODCACHE"
+          chmod -R u+w "$GOMODCACHE"
+          export GOPROXY=off
+          export GOSUMDB=off
+        '';
+
+        buildPhase = ''
+          runHook preBuild
+
+          cp -R ${xMobileSrc} x-mobile
+          chmod -R u+w x-mobile
+          substituteInPlace x-mobile/cmd/gomobile/init.go \
+            --replace-fail 'if err := goInstall([]string{"golang.org/x/mobile/cmd/gobind@latest"}, nil); err != nil {' \
+                           'if _, err := exec.LookPath("gobind"); err != nil {'
+          patch -d x-mobile -p1 < ${../tailscale/gomobile-avoid-empty-go-mod.patch}
+
+          export GOBIN="$TMPDIR/go-bin"
+          mkdir -p "$GOBIN"
+          export PATH="$GOBIN:${go_1_26}/bin:$PATH"
+
+          cd rclone-android/go
+          go mod edit -replace=golang.org/x/mobile=../../x-mobile
+          go install golang.org/x/mobile/cmd/gobind
+          go install golang.org/x/mobile/cmd/gomobile
+          go mod vendor
+          cd ../..
+
+          mkdir -p "$GOPATH/src/sh.haven" "$GOPATH/src/golang.org/x"
+          ln -s "$PWD/rclone-android/go" "$GOPATH/src/sh.haven/rcbridge"
+          ln -s "$PWD/x-mobile" "$GOPATH/src/golang.org/x/mobile"
+          cp -R rclone-android/go/vendor/. "$GOPATH/src/"
+
+          mkdir -p rclone-android/jniLibs rclone-android/build
+          cd rclone-android/go
+
+          export GO111MODULE=off
+          gomobile init
+          gomobile bind \
+            -target=android/arm64,android/amd64 \
+            -javapkg=sh.haven.rclone.binding \
+            -androidapi=26 \
+            -o ../build/rcbridge.aar \
+            sh.haven/rcbridge
+
+          cd ..
+          unzip -o build/rcbridge.aar "jni/*" -d build/extracted
+
+          install -Dm755 build/extracted/jni/arm64-v8a/libgojni.so jniLibs/arm64-v8a/libgojni.so
+          install -Dm755 build/extracted/jni/x86_64/libgojni.so jniLibs/x86_64/libgojni.so
+
+          runHook postBuild
+        '';
+
+        installPhase = ''
+          runHook preInstall
+          install -Dm755 build/extracted/jni/arm64-v8a/libgojni.so "$out/arm64-v8a/libgojni.so"
+          install -Dm755 build/extracted/jni/x86_64/libgojni.so "$out/x86_64/libgojni.so"
+          runHook postInstall
+        '';
+      };
     in
     {
       pname = "haven";
-      version = "3.28.0";
+      version = "4.9.0";
 
       src = fetchFromGitHub {
         owner = "GlassOnTin";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-eMEFubFeok8R9rLQk8xYdLnldumXJBpazxKAOndFhI0=";
+        hash = "sha256-oobDMO/ZhMrMVCYkgxQ5UFOXx1AmSFsdV+I7otrFY2U=";
       };
 
       patches = [
@@ -207,6 +355,8 @@ let
         writableTmpDirAsHomeHook
         git
         python313
+        go_1_26
+        unzip
       ];
 
       env = {
@@ -225,6 +375,9 @@ let
 
         mkdir -p rdp-kotlin/jniLibs
         cp -r ${rdpTransportJniLibs}/. rdp-kotlin/jniLibs/
+
+        mkdir -p rclone-android/jniLibs
+        cp -r ${rcloneTransportJniLibs}/. rclone-android/jniLibs/
 
         # When running in mitmCache dependency-fetch mode, configure pip (used by
         # Chaquopy) to trust the mitm proxy certificate so PyPI downloads are captured.
