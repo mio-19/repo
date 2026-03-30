@@ -278,72 +278,93 @@ let
           local gradle_file="$1"
           local target_agp='8.9.1'
           local target_kotlin='1.9.20'
+          local old_value
 
           [ -f "$gradle_file" ] || return 0
 
-          for major in 7 8 9; do
-            for minor in $(seq 0 20); do
-              for patch in 0 1 2; do
-                old_agp="$major.$minor.$patch"
-                if [ "$old_agp" != "$target_agp" ] && grep -Fq "com.android.tools.build:gradle:$old_agp" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "com.android.tools.build:gradle:$old_agp" "com.android.tools.build:gradle:$target_agp"
-                fi
-                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id(\"com.android.application\") version \"$old_agp\"" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "id(\"com.android.application\") version \"$old_agp\"" "id(\"com.android.application\") version \"$target_agp\""
-                fi
-                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id(\"com.android.library\") version \"$old_agp\"" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "id(\"com.android.library\") version \"$old_agp\"" "id(\"com.android.library\") version \"$target_agp\""
-                fi
-                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id(\"com.android.test\") version \"$old_agp\"" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "id(\"com.android.test\") version \"$old_agp\"" "id(\"com.android.test\") version \"$target_agp\""
-                fi
-                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id \"com.android.application\" version \"$old_agp\"" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "id \"com.android.application\" version \"$old_agp\"" "id \"com.android.application\" version \"$target_agp\""
-                fi
-                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id \"com.android.library\" version \"$old_agp\"" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "id \"com.android.library\" version \"$old_agp\"" "id \"com.android.library\" version \"$target_agp\""
-                fi
-                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id \"com.android.test\" version \"$old_agp\"" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "id \"com.android.test\" version \"$old_agp\"" "id \"com.android.test\" version \"$target_agp\""
-                fi
-                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id 'com.android.application' version '$old_agp'" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "id 'com.android.application' version '$old_agp'" "id 'com.android.application' version '$target_agp'"
-                fi
-                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id 'com.android.library' version '$old_agp'" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "id 'com.android.library' version '$old_agp'" "id 'com.android.library' version '$target_agp'"
-                fi
-                if [ "$old_agp" != "$target_agp" ] && grep -Fq "id 'com.android.test' version '$old_agp'" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "id 'com.android.test' version '$old_agp'" "id 'com.android.test' version '$target_agp'"
-                fi
-              done
-            done
-          done
+          while IFS= read -r old_value; do
+            [ "$old_value" = "com.android.tools.build:gradle:$target_agp" ] && continue
+            substituteInPlace "$gradle_file" \
+              --replace-fail "$old_value" "com.android.tools.build:gradle:$target_agp"
+          done < <(grep -oE 'com\.android\.tools\.build:gradle:[0-9.]+' "$gradle_file" | sort -u)
 
-          for major in 1 2; do
-            for minor in $(seq 0 9); do
-              for patch in $(seq 0 30); do
-                old_kotlin="$major.$minor.$patch"
-                if [ "$old_kotlin" != "$target_kotlin" ] && grep -Fq "ext.kotlin_version = '$old_kotlin'" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "ext.kotlin_version = '$old_kotlin'" "ext.kotlin_version = '$target_kotlin'"
-                fi
-                if [ "$old_kotlin" != "$target_kotlin" ] && grep -Fq "org.jetbrains.kotlin:kotlin-gradle-plugin:$old_kotlin" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "org.jetbrains.kotlin:kotlin-gradle-plugin:$old_kotlin" "org.jetbrains.kotlin:kotlin-gradle-plugin:$target_kotlin"
-                fi
-              done
-            done
-          done
+          while IFS= read -r old_value; do
+            [ "$old_value" = "org.jetbrains.kotlin:kotlin-gradle-plugin:$target_kotlin" ] && continue
+            substituteInPlace "$gradle_file" \
+              --replace-fail "$old_value" "org.jetbrains.kotlin:kotlin-gradle-plugin:$target_kotlin"
+          done < <(grep -oE 'org\.jetbrains\.kotlin:kotlin-gradle-plugin:[0-9.]+' "$gradle_file" | sort -u)
+
+          while IFS= read -r old_value; do
+            [ -n "$old_value" ] || continue
+            substituteInPlace "$gradle_file" \
+              --replace-fail "$old_value" "ext.kotlin_version = '$target_kotlin'"
+          done < <(grep -oE "ext\\.kotlin_version = '[0-9.]+'" "$gradle_file" | sort -u)
+
+          while IFS= read -r old_value; do
+            case "$old_value" in
+              "id(\"com.android.application\") version \"$target_agp\"" | "id(\"com.android.library\") version \"$target_agp\"" | "id(\"com.android.test\") version \"$target_agp\"" )
+                continue
+                ;;
+            esac
+            substituteInPlace "$gradle_file" \
+              --replace-fail "$old_value" "''${old_value% version *} version \"$target_agp\""
+          done < <(grep -oE 'id\("com\.android\.(application|library|test)"\) version "[0-9.]+"' "$gradle_file" | sort -u)
+
+          while IFS= read -r old_value; do
+            case "$old_value" in
+              "id \"com.android.application\" version \"$target_agp\"" | "id \"com.android.library\" version \"$target_agp\"" | "id \"com.android.test\" version \"$target_agp\"" )
+                continue
+                ;;
+            esac
+            substituteInPlace "$gradle_file" \
+              --replace-fail "$old_value" "''${old_value% version *} version \"$target_agp\""
+          done < <(grep -oE 'id "com\.android\.(application|library|test)" version "[0-9.]+"' "$gradle_file" | sort -u)
+
+          while IFS= read -r old_value; do
+            case "$old_value" in
+              "id 'com.android.application' version '$target_agp'" | "id 'com.android.library' version '$target_agp'" | "id 'com.android.test' version '$target_agp'" )
+                continue
+                ;;
+            esac
+            substituteInPlace "$gradle_file" \
+              --replace-fail "$old_value" "''${old_value% version *} version '$target_agp'"
+          done < <(grep -oE "id 'com\\.android\\.(application|library|test)' version '[0-9.]+'" "$gradle_file" | sort -u)
+
+          while IFS= read -r old_value; do
+            case "$old_value" in
+              "id(\"org.jetbrains.kotlin.android\") version \"$target_kotlin\"" | "id(\"org.jetbrains.kotlin.jvm\") version \"$target_kotlin\"" )
+                continue
+                ;;
+            esac
+            substituteInPlace "$gradle_file" \
+              --replace-fail "$old_value" "''${old_value% version *} version \"$target_kotlin\""
+          done < <(grep -oE 'id\("org\.jetbrains\.kotlin\.(android|jvm)"\) version "[0-9.]+"' "$gradle_file" | sort -u)
+
+          while IFS= read -r old_value; do
+            case "$old_value" in
+              "id \"org.jetbrains.kotlin.android\" version \"$target_kotlin\"" | "id \"org.jetbrains.kotlin.jvm\" version \"$target_kotlin\"" )
+                continue
+                ;;
+            esac
+            substituteInPlace "$gradle_file" \
+              --replace-fail "$old_value" "''${old_value% version *} version \"$target_kotlin\""
+          done < <(grep -oE 'id "org\.jetbrains\.kotlin\.(android|jvm)" version "[0-9.]+"' "$gradle_file" | sort -u)
+
+          while IFS= read -r old_value; do
+            case "$old_value" in
+              "id 'org.jetbrains.kotlin.android' version '$target_kotlin'" | "id 'org.jetbrains.kotlin.jvm' version '$target_kotlin'" )
+                continue
+                ;;
+            esac
+            substituteInPlace "$gradle_file" \
+              --replace-fail "$old_value" "''${old_value% version *} version '$target_kotlin'"
+          done < <(grep -oE "id 'org\\.jetbrains\\.kotlin\\.(android|jvm)' version '[0-9.]+'" "$gradle_file" | sort -u)
+
+          while IFS= read -r old_value; do
+            [ "$old_value" = "kotlin_version = '$target_kotlin'" ] && continue
+            substituteInPlace "$gradle_file" \
+              --replace-fail "$old_value" "kotlin_version = '$target_kotlin'"
+          done < <(grep -oE "kotlin_version = '[0-9.]+'" "$gradle_file" | sort -u)
 
           if grep -Fq '27.0.12077973' "$gradle_file"; then
             substituteInPlace "$gradle_file" \
@@ -402,49 +423,6 @@ let
         }
 
         declare -A patched_pkg_dirs
-
-        while IFS= read -r pkg_dir; do
-          work_pkg_dir="$pkg_dir"
-          if [ -f "$work_pkg_dir/gradle.properties" ] || [ -n "$(find "$work_pkg_dir/android" -maxdepth 2 -type f \( -name '*.gradle' -o -name '*.gradle.kts' \) -print -quit 2>/dev/null)" ]; then
-            if [[ "$pkg_dir" == /nix/store/* ]]; then
-              if [ -z "''${patched_pkg_dirs[$pkg_dir]:-}" ]; then
-                patched_pkg_dirs[$pkg_dir]="$(clone_dart_package "$pkg_dir" "$(basename "$pkg_dir")")"
-                replace_dart_package_root "$pkg_dir" "''${patched_pkg_dirs[$pkg_dir]}"
-              fi
-              work_pkg_dir="''${patched_pkg_dirs[$pkg_dir]}"
-            fi
-          fi
-          if [ -d "$work_pkg_dir/android" ]; then
-            while IFS= read -r gradle_file; do
-              patch_plugin_gradle_file "$gradle_file"
-            done < <(find "$work_pkg_dir/android" -type f \( -name '*.gradle' -o -name '*.gradle.kts' \))
-          fi
-          if [ -f "$work_pkg_dir/gradle.properties" ]; then
-            patch_ndk_version_file "$work_pkg_dir/gradle.properties"
-          fi
-          if [ -d "$work_pkg_dir/android" ]; then
-            while IFS= read -r ndk_file; do
-              patch_ndk_version_file "$ndk_file"
-            done < <(find "$work_pkg_dir/android" -type f \( -name '*.gradle' -o -name '*.gradle.kts' -o -name '*.properties' \))
-          fi
-        done < <(${python3}/bin/python3 - <<'PY'
-        import json
-        import urllib.parse
-
-        with open(".dart_tool/package_config.json") as f:
-            data = json.load(f)
-
-        seen = set()
-        for pkg in data["packages"]:
-            uri = pkg.get("rootUri", "")
-            if not uri.startswith("file://"):
-                continue
-            path = urllib.parse.urlparse(uri).path.removesuffix("/.")
-            if path and path not in seen:
-                seen.add(path)
-                print(path)
-        PY
-        )
 
         ${pythonWithYaml}/bin/python3 ${../_shared/generate-flutter-plugins.py}
 
