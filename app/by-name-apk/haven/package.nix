@@ -180,7 +180,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-QZaEdzHXFopngH3xGg2zA1e264QTUkcupF2J3PmlD7U=";
+        outputHash = "sha256-PEmycbHZTxpmJR8+NOzjHdsr998VutuXnuP3e4dipm4=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -194,7 +194,7 @@ let
           export GOCACHE="$TMPDIR/go-build-cache"
           export GOMODCACHE="$TMPDIR/go-mod-cache"
           export GOPROXY=https://proxy.golang.org,direct
-          export GOSUMDB=sum.golang.org
+          export GOSUMDB=off
 
           cp -R "$src" source
           chmod -R u+w source
@@ -216,6 +216,7 @@ let
 
         installPhase = ''
           runHook preInstall
+          rm -rf "$TMPDIR/go-mod-cache/cache/download/sumdb"
           cp -R "$TMPDIR/go-mod-cache" "$out"
           runHook postInstall
         '';
