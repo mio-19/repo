@@ -264,6 +264,10 @@ let
             maven { url = uri("${finalAttrs.mitmCache}/https/maven.google.com") }
             maven { url = uri("${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2") }
             google()'
+        substituteInPlace platform/android/luajit-launcher/app/build.gradle \
+          --replace-fail \
+            "ndkVersion '23.2.8568313'" \
+            "ndkVersion '26.1.10909125'"
         echo >> platform/android/luajit-launcher/gradle.properties
         echo 'org.gradle.jvmargs=-Xmx4g' >> platform/android/luajit-launcher/gradle.properties
         # Also add --offline to GRADLE_FLAGS so gradle won't try the network
@@ -334,11 +338,6 @@ let
         #include <strings.h>
         #endif' \
             '#include <strings.h>'
-
-        # Guard reader menu container and tab-index accesses to avoid top-menu taps
-        # crashing there. The analogous filemanager patch did not fix the reported
-        # issue and has been removed.
-        patch -p1 --input ${./readermenu-topbar-crash-guard.patch}
 
       '';
 
