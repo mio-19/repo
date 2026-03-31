@@ -8,17 +8,17 @@
 {
   axp_build = {
     pname = "axp_build";
-    version = "77eb0b9a57e5d16b2addf73a85de08d8057a2a47";
+    version = "d6b42792d5000bf4c83953f75aeb9c1153bc2ef0";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/build.git";
-      rev = "77eb0b9a57e5d16b2addf73a85de08d8057a2a47";
+      rev = "d6b42792d5000bf4c83953f75aeb9c1153bc2ef0";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-nbYm4UuM8NknfhqO2kyaQexu8c5x7+j9uZWGaxHWnlc=";
+      sha256 = "sha256-7kBafiegIBn4q2W/5Xm2hszFPqWzXEOB0rx2M6O/IL8=";
     };
-    date = "2026-03-29";
+    date = "2026-03-30";
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
