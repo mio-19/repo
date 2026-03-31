@@ -7,6 +7,7 @@ broken but can compile:
 + koreader crash when tapping top area
 + emacs crash when launching
 + kernelsu cannot communicate with the kernel because of the need to change KSU_EXPECTED_HASH
++ immich white screen
 + rednote crashed
 + twitter cannot login
 
