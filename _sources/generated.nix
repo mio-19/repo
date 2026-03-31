@@ -8,59 +8,59 @@
 {
   axp_build = {
     pname = "axp_build";
-    version = "d6b42792d5000bf4c83953f75aeb9c1153bc2ef0";
+    version = "501d3d007f3230179a3ae98a409f04ee3b470822";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/build.git";
-      rev = "d6b42792d5000bf4c83953f75aeb9c1153bc2ef0";
+      rev = "501d3d007f3230179a3ae98a409f04ee3b470822";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-7kBafiegIBn4q2W/5Xm2hszFPqWzXEOB0rx2M6O/IL8=";
+      sha256 = "sha256-cyzgbVTGIRKzeJLdB+QDlUdn26h0Z+LSbZ2ZQcXY6js=";
     };
-    date = "2026-03-30";
+    date = "2026-03-31";
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
-    version = "4dadc04f8b90195b52faaf91b9d258fccf3dde34";
+    version = "f2b722aa96aaf432bae4033687a1408da994cb6e";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
-      rev = "4dadc04f8b90195b52faaf91b9d258fccf3dde34";
+      rev = "f2b722aa96aaf432bae4033687a1408da994cb6e";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-rcVx76IAUeZO3J7SgRBMqvdp33X7VrQLZv/JEVHmLms=";
+      sha256 = "sha256-UkZK68X3tfrv5yUWRtZC2NjmbKVTWLUJeJnlqk06t7g=";
     };
-    date = "2026-03-26";
+    date = "2026-03-31";
   };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
-    version = "32bed24dee11671bf34b1e60aad5230f493b576f";
+    version = "00cafa1954f7bece4b3cc1ac6a3ab9254f8b326f";
     src = fetchgit {
       url = "https://github.com/samsung-sm8550-cola2261/android_device_samsung_dm3q.git";
-      rev = "32bed24dee11671bf34b1e60aad5230f493b576f";
+      rev = "00cafa1954f7bece4b3cc1ac6a3ab9254f8b326f";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-ePFYcqi8inH9Mvg50nVEa4bZHBvCOyr0vSFhoU61fSA=";
+      sha256 = "sha256-GicG2o927tF06e8wn5MrESIEUzCQBjXIoNiqxWDjXUI=";
     };
-    date = "2026-03-17";
+    date = "2026-03-28";
   };
   cola2261_device_sm8550_common = {
     pname = "cola2261_device_sm8550_common";
-    version = "d7d95dbe2e1ccf7549fe27d45e8cb1764e2112f9";
+    version = "e07db7b5ca6e6b4bfc46a0b783de4091596f4424";
     src = fetchgit {
       url = "https://github.com/samsung-sm8550-cola2261/android_device_samsung_sm8550-common.git";
-      rev = "d7d95dbe2e1ccf7549fe27d45e8cb1764e2112f9";
+      rev = "e07db7b5ca6e6b4bfc46a0b783de4091596f4424";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-N8fwGzgjXEsHZz+eymPk7bjxB8gOFzulL880Ud7LJsY=";
+      sha256 = "sha256-QwfKhvF4WQDuN5SbEkhrJRJ2MtwQD4SufmhSPFVZSyY=";
     };
-    date = "2026-03-18";
+    date = "2026-03-31";
   };
   cola2261_hardware_samsung = {
     pname = "cola2261_hardware_samsung";
