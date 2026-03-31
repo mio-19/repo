@@ -56,6 +56,11 @@ let
           url = "https://github.com/termux/termux-app/commit/7d87ed762901f3498847cc6e78a7600c4b26416a.patch";
           hash = "sha256-kQfQcgMQiJClAia+mIB7kZO8gR5k66jI4+tYavT4X9s=";
         })
+        (fetchpatch {
+          name = "feat: multi window support";
+          url = "https://github.com/termux/termux-app/pull/4961.diff";
+          hash = "sha256-N/Elb1VT54aLSgWxPbvEWoEUtkTsVoYKRSWZyt3L5/E=";
+        })
       ];
 
       gradleBuildTask = ":app:assembleRelease";
