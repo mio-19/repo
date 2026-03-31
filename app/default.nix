@@ -125,7 +125,7 @@
     in
     {
       packages =
-        lib.getAttrs [ "fdroid-repo" "sign-fdroid-repo" "morphe-patcher-src" ] byName
+        lib.getAttrs [ "fdroid-repo" "sign-fdroid-repo" "morphe-patcher-src" "revanced-patches" ] byName
         // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk;
     };
 }
