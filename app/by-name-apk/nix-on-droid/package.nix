@@ -46,6 +46,16 @@ let
           url = "https://github.com/termux/termux-app/pull/4775.diff";
           hash = "sha256-xaqizEKirWPYlNFwpF37o1OGDph21nBh+hsw/Loov1Q=";
         })
+        (fetchpatch {
+          name = "Increase read buffer size from 4KB to 64KB";
+          url = "https://github.com/termux/termux-app/commit/ef4775b651c752d5876991a403ecad58bc1fb118.patch";
+          hash = "sha256-y9h4NkKKCy3ciK4S3/pSIncE397xNz3XKQvQMQegr9k=";
+        })
+        (fetchpatch {
+          name = "Fixed: Allow language switch key on external keyboards (#4923)";
+          url = "https://github.com/termux/termux-app/commit/7d87ed762901f3498847cc6e78a7600c4b26416a.patch";
+          hash = "sha256-kQfQcgMQiJClAia+mIB7kZO8gR5k66jI4+tYavT4X9s=";
+        })
       ];
 
       gradleBuildTask = ":app:assembleRelease";
