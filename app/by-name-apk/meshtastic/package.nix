@@ -41,6 +41,7 @@ let
       };
 
       patches = [
+        ./0001-checkReleaseBuilds-false.patch
         # Remove foojay JDK auto-provisioner (prevents network access in sandbox).
         # Must be first: later patches assume this line is already gone.
         ./remove-foojay.patch
@@ -102,7 +103,6 @@ let
       '';
 
       gradleFlags = [
-        "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk17_headless},${jdk21}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
