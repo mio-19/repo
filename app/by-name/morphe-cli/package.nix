@@ -11,6 +11,7 @@
   morphe-library-m2,
   apktool-src,
   multidexlib2-src,
+  morphe-patcher-src,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -28,13 +29,6 @@ let
       hash = "sha256-vXEQIhNJMGCVbsIp2Ua+7lcVjb2J0OYrkbyg+ixfNTE=";
       defaultJava = jdk21;
     }).wrapped;
-
-  morphe-patcher-src = fetchFromGitHub {
-    owner = "MorpheApp";
-    repo = "morphe-patcher";
-    rev = "v1.3.3";
-    hash = "sha256-ehKW9/jlhhz2eGYEnioB6etq1gvH7eNroLw+yW8h3l0=";
-  };
 
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
@@ -113,35 +107,6 @@ stdenv.mkDerivation (finalAttrs: {
                      '        url = uri("file://" + rootProject.projectDir.resolve("../.m2/repository").absolutePath)'
     substituteInPlace "$sourceRoot/build.gradle.kts" --replace-fail "$gh_credentials" ""
 
-    # morphe-patcher: replace GitHub Packages with local maven repo
-    substituteInPlace "$root/morphe-patcher/build.gradle.kts" \
-      --replace-fail '        url = uri("https://maven.pkg.github.com/MorpheApp/registry")' \
-                     '        url = uri("file://" + rootProject.projectDir.resolve("../.m2/repository").absolutePath)'
-    substituteInPlace "$root/morphe-patcher/build.gradle.kts" --replace-fail "$gh_credentials" ""
-
-    # ---- Fix morphe-patcher composite build for multidexlib2 ----
-    substituteInPlace "$root/morphe-patcher/settings.gradle.kts" \
-      --replace-fail '"multidexlib2" to "app.morphe:multidexlib"' \
-                     '"multidexlib2" to "app.morphe:multidexlib2"'
-
-    # ---- Add Apktool as composite build in morphe-patcher ----
-    cat >> "$root/morphe-patcher/settings.gradle.kts" << 'APKTOOL_EOF'
-
-    // Added by Nix build: include Apktool as composite build
-    val apktoolDir = file("../Apktool")
-    if (apktoolDir.exists()) {
-        includeBuild(apktoolDir) {
-            dependencySubstitution {
-                substitute(module("app.morphe:apktool-lib")).using(project(":brut.apktool:apktool-lib"))
-                substitute(module("app.morphe:brut.j.common")).using(project(":brut.j.common"))
-                substitute(module("app.morphe:brut.j.util")).using(project(":brut.j.util"))
-                substitute(module("app.morphe:brut.j.dir")).using(project(":brut.j.dir"))
-                substitute(module("app.morphe:brut.j.xml")).using(project(":brut.j.xml"))
-            }
-        }
-    }
-    APKTOOL_EOF
-
     # ---- Remove morphe-library from composite builds (use pre-built m2 instead) ----
     # morphe-cli settings tries to include morphe-library as composite but KMP
     # JVM variant can't be substituted that way. Remove it.
@@ -165,7 +130,6 @@ stdenv.mkDerivation (finalAttrs: {
 
     # ---- Disable signing tasks (no GPG in sandbox) ----
     echo 'tasks.withType<Sign> { enabled = false }' >> "$sourceRoot/build.gradle.kts"
-    echo 'tasks.withType<Sign> { enabled = false }' >> "$root/morphe-patcher/build.gradle.kts"
   '';
 
   gradleFlags = [

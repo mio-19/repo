@@ -10,6 +10,7 @@
   morphe-library-m2,
   apktool-src,
   multidexlib2-src,
+  morphe-patcher-src,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -28,13 +29,6 @@ let
       hash = "sha256-8XcSmKcPbbWina9iN4xOGKF/wzybprFDYuDN9AYQOA0=";
       defaultJava = jdk21;
     }).wrapped;
-
-  morphe-patcher-src = fetchFromGitHub {
-    owner = "MorpheApp";
-    repo = "morphe-patcher";
-    rev = "v1.3.3";
-    hash = "sha256-ehKW9/jlhhz2eGYEnioB6etq1gvH7eNroLw+yW8h3l0=";
-  };
 
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
@@ -58,6 +52,8 @@ stdenv.mkDerivation (finalAttrs: {
   gradleBuildTask = "generatePatchesList";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 
+  patches = [ ./morphe-patches-settings.patch ];
+
   postUnpack = ''
     root="$PWD"
     cp -a ${morphe-patcher-src} "$root/morphe-patcher"
@@ -69,13 +65,6 @@ stdenv.mkDerivation (finalAttrs: {
 
     cp -a ${multidexlib2-src} "$root/multidexlib2"
     chmod -R u+w "$root/multidexlib2"
-
-    # Copy deps file to source directory for fetchDeps
-    cp "${./morphe-patches_deps.json}" "$sourceRoot/"
-
-    patch -d "$sourceRoot" -p0 < ${./morphe-patches-settings.patch}
-    patch -d "$root/morphe-patcher" -p0 < ${./morphe-patcher.patch}
-    patch -d "$root/morphe-patcher" -p0 < ${./morphe-patcher-settings.patch}
 
     cat >> "$sourceRoot/settings.gradle.kts" << 'EOF'
 
