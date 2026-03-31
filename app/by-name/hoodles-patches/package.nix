@@ -173,8 +173,8 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   meta = with lib; {
-    description = "Morphe Patches built from source";
-    homepage = "https://github.com/MorpheApp/morphe-patches";
+    description = "hoo-dles Patches built from source";
+    homepage = "https://github.com/hoo-dles/morphe-patches";
     license = licenses.gpl3Only;
     platforms = platforms.unix;
   };
