@@ -61,6 +61,19 @@ let
           url = "https://github.com/termux/termux-app/pull/4961.diff";
           hash = "sha256-N/Elb1VT54aLSgWxPbvEWoEUtkTsVoYKRSWZyt3L5/E=";
         })
+        /*
+          # TODO:
+          (fetchpatch {
+            name = "Changed: Update gradle, android gradle plugin and dependencies";
+            url = "https://github.com/salmon-21/termux-app/commit/53f75a8da3b823c18a8244b298da50e87382984d.patch";
+            hash = "sha256-Gm+NTU2PQBLsvI3fPgIzNzrE/uDB8Zo5uFxlyBr1ANA=";
+          })
+          (fetchpatch {
+            name = "Fixed: Improve dark mode support for settings and shared activities";
+            url = "https://github.com/termux/termux-app/pull/5025.patch";
+            hash = "sha256-07jVCLJX96jZDoWcMlBLtjh2K9dLC1ciVOBzfC1kTpU=";
+          })
+        */
       ];
 
       gradleBuildTask = ":app:assembleRelease";
