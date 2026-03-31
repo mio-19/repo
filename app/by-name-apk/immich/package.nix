@@ -285,8 +285,9 @@ let
             --replace-fail "    implementation 'com.google.android.gms:play-services-location:21.2.0'" ""
 
           rm "$patched_geolocator_android_dir/android/src/main/java/com/baseflow/geolocator/location/FusedLocationClient.java"
-          install -m644 ${./GeolocationManager.java} \
-            "$patched_geolocator_android_dir/android/src/main/java/com/baseflow/geolocator/location/GeolocationManager.java"
+          patch \
+            -d "$patched_geolocator_android_dir/android/src/main/java/com/baseflow/geolocator/location" \
+            -p1 < ${./geolocator-force-locationmanager.patch}
 
           replace_dart_package_root "$GEOLOCATOR_ANDROID_DIR" "$patched_geolocator_android_dir"
           replace_flutter_plugin_root "$GEOLOCATOR_ANDROID_DIR" "$patched_geolocator_android_dir"
