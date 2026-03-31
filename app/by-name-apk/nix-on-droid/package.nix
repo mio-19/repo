@@ -7,6 +7,7 @@
   fetchFromGitHub,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  fetchpatch,
 }:
 let
   appPackage =
@@ -38,6 +39,14 @@ let
         rev = "e87b6091bffa7b6eafb1b59cc7824f5692441cd0";
         hash = "sha256-E1f5zcSkfiVa71uuvRxQ+FveXGPD81K68U2N9QAhpro=";
       };
+
+      patches = [
+        (fetchpatch {
+          name = "feat(view): Enable mouse cursor movement in shell readline";
+          url = "https://github.com/termux/termux-app/pull/4775.diff";
+          hash = "sha256-xaqizEKirWPYlNFwpF37o1OGDph21nBh+hsw/Loov1Q=";
+        })
+      ];
 
       gradleBuildTask = ":app:assembleRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
