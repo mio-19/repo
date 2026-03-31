@@ -26,42 +26,44 @@ appPackage.overrideAttrs (
     # projects where those requests come from lint. Context:
     # https://github.com/NixOS/nixpkgs/issues/501643#issuecomment-4122356032
     disableLintHook = ''
+      disableGradleLintTasks() {
+        if [[ -n "''${disableGradleLintTasksDone:-}" ]]; then
+          return
+        fi
 
-      if [[ -n "''${disableGradleLintTasksDone:-}" ]]; then
-        return
-      fi
+        if ! type gradle >/dev/null 2>&1; then
+          return
+        fi
 
-      if ! type gradle >/dev/null 2>&1; then
-        return
-      fi
+        local task
+        local leaf
+        local -a lintTasks=()
 
-      local task
-      local leaf
-      local -a lintTasks=()
+        while IFS= read -r task; do
+          leaf="''${task##*:}"
+          case "$leaf" in
+            lint|lint[A-Z]*)
+              lintTasks+=("$task")
+              ;;
+          esac
+        done < <(
+          gradle -q tasks --all 2>/dev/null \
+            | awk '/^[[:space:]]*[:[:alnum:]_.-]+[[:space:]]+- / { print $1 }' \
+            | sort -u
+        )
 
-      while IFS= read -r task; do
-        leaf="''${task##*:}"
-        case "$leaf" in
-          lint|lint[A-Z]*)
-            lintTasks+=("$task")
-            ;;
-        esac
-      done < <(
-        gradle -q tasks --all 2>/dev/null \
-          | awk '/^[[:space:]]*[:[:alnum:]_.-]+[[:space:]]+- / { print $1 }' \
-          | sort -u
-      )
+        if [[ "''${#lintTasks[@]}" -eq 0 ]]; then
+          return
+        fi
 
-      if [[ "''${#lintTasks[@]}" -eq 0 ]]; then
-        return
-      fi
+        for task in "''${lintTasks[@]}"; do
+          gradleFlagsArray+=("-x$task")
+        done
 
-      for task in "''${lintTasks[@]}"; do
-        gradleFlagsArray+=("-x$task")
-      done
+        disableGradleLintTasksDone=1
+      }
 
-      disableGradleLintTasksDone=1
-
+      disableGradleLintTasks
     '';
   in
   {
