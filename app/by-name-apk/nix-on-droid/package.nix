@@ -17,11 +17,9 @@ let
         s.platform-tools
         s.platforms-android-28
         s.platforms-android-30
-        s.platforms-android-36
         s.build-tools-30-0-3
         s.build-tools-33-0-2
         s.ndk-27-3-13750724
-        s.ndk-29-0-14206865
       ]);
 
       gradle =
@@ -41,18 +39,6 @@ let
         rev = "e87b6091bffa7b6eafb1b59cc7824f5692441cd0";
         hash = "sha256-E1f5zcSkfiVa71uuvRxQ+FveXGPD81K68U2N9QAhpro=";
       };
-
-      prePatch = ''
-        # just apply those can apply, ignore the rest
-        patch -p1 < ${
-          (fetchpatch {
-            name = "Changed: Update gradle, android gradle plugin and dependencies";
-            url = "https://github.com/salmon-21/termux-app/commit/53f75a8da3b823c18a8244b298da50e87382984d.patch";
-            hash = "sha256-Gm+NTU2PQBLsvI3fPgIzNzrE/uDB8Zo5uFxlyBr1ANA=";
-          })
-        } || true
-        echo prePatch done
-      '';
 
       patches = [
         (fetchpatch {
@@ -75,11 +61,19 @@ let
           url = "https://github.com/termux/termux-app/pull/4961.diff";
           hash = "sha256-N/Elb1VT54aLSgWxPbvEWoEUtkTsVoYKRSWZyt3L5/E=";
         })
-        (fetchpatch {
-          name = "Fixed: Improve dark mode support for settings and shared activities";
-          url = "https://github.com/termux/termux-app/pull/5025.patch";
-          hash = "sha256-07jVCLJX96jZDoWcMlBLtjh2K9dLC1ciVOBzfC1kTpU=";
-        })
+        /*
+          # TODO:
+          (fetchpatch {
+            name = "Changed: Update gradle, android gradle plugin and dependencies";
+            url = "https://github.com/salmon-21/termux-app/commit/53f75a8da3b823c18a8244b298da50e87382984d.patch";
+            hash = "sha256-Gm+NTU2PQBLsvI3fPgIzNzrE/uDB8Zo5uFxlyBr1ANA=";
+          })
+          (fetchpatch {
+            name = "Fixed: Improve dark mode support for settings and shared activities";
+            url = "https://github.com/termux/termux-app/pull/5025.patch";
+            hash = "sha256-07jVCLJX96jZDoWcMlBLtjh2K9dLC1ciVOBzfC1kTpU=";
+          })
+        */
       ];
 
       gradleBuildTask = ":app:assembleRelease";
