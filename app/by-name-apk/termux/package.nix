@@ -92,7 +92,7 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
-        data = "termux_deps.json";
+        data = ./termux_deps.json;
         silent = false;
         useBwrap = false;
       };
