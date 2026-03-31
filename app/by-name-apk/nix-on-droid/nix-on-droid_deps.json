@@ -344,10 +344,6 @@
    "jar": "sha256-2UatOaQLZnyC2odyRSeBVTbeYtDbDo6jM0Sf25BQkAE=",
    "pom": "sha256-DqW8FwL6vKKLWHOpAfNJuWeilvSzscw+yYvXjAlp79E="
   },
-  "com/android/tools#play-sdk-proto/30.4.2": {
-   "jar": "sha256-sjNd+lk1XL3eXhtV2v5TmAHnFiRB/a9r1Z13aKKEL08=",
-   "pom": "sha256-mlBwQC0SMmKdIjJUP9PwzSim80m3tepA7YSksp9FWuQ="
-  },
   "com/android/tools#repository/30.4.2": {
    "jar": "sha256-bDlUnRiHosfgi3PWbAxPEDZXsGRxdg+2WFjJQ3VsyUA=",
    "pom": "sha256-ePZamukF2lJ3vtiqPQfxtf7hr2dcm8RLn78hHSufxYo="
@@ -447,33 +443,9 @@
    "jar": "sha256-cVf6/Uky3p54c3lyy9Veree6Fehf4/UiypOa90tcxIk=",
    "pom": "sha256-WreMA2M9my0RKbfZu0BLPynU++9wPDAVu4nwk85hXS0="
   },
-  "com/android/tools/external/com-intellij#intellij-core/30.4.2": {
-   "jar": "sha256-Hi08Ggj5wD81sDDAzybIT3HaDmiceARq/H/AsQkkZbc=",
-   "pom": "sha256-ph0CQxQyFZhjbWUlFAq9LCFhCV4cGpNGXiCJ6iLSJIc="
-  },
-  "com/android/tools/external/com-intellij#kotlin-compiler/30.4.2": {
-   "jar": "sha256-W0NR8oiZzwHCtSA7CQSHONgrBrOpYTDAd2AFMds5zro=",
-   "pom": "sha256-jmZRx8HzD6hLlKyPB9rvX2ind8sJQEsmu2NQ3cR269o="
-  },
-  "com/android/tools/external/org-jetbrains#uast/30.4.2": {
-   "jar": "sha256-JgVGhthFqHbk6795oM2cv2LbjEXlMlVXmTy2mz+kUqg=",
-   "pom": "sha256-C44qW84+NOLiz1dymqw3xed2BOtcxgqjEJj7EfL5WbU="
-  },
   "com/android/tools/layoutlib#layoutlib-api/30.4.2": {
    "jar": "sha256-a2aOsYdUYtVY1RMAYTIbUEOFppxMEwMDbaR5N2jtWSs=",
    "pom": "sha256-rGm/J4D0xgO+Bi9e9n5w9Y8E5xYNQRqmSMDOEW7h39s="
-  },
-  "com/android/tools/lint#lint-api/30.4.2": {
-   "jar": "sha256-ZWfjUFHbvOTlEZgvJuyxcfMxvpNAgV68XOS+5TqeLi8=",
-   "pom": "sha256-FQ/pCrZZKaSwOssC2StjcOevlPbZ55peGy8cWmgs83E="
-  },
-  "com/android/tools/lint#lint-checks/30.4.2": {
-   "jar": "sha256-TsheVd4PSty8eHUXqeqHk7pqvqX9sq4rQAhRaEqRp40=",
-   "pom": "sha256-IALVf5riu6EBpCvUPsDPu/e2m3IKK2bX/fySfSeQkFs="
-  },
-  "com/android/tools/lint#lint-gradle/30.4.2": {
-   "jar": "sha256-DTS8rV40brtjJP+O7nnY/EGPqad4kv/hfUjqdndlSm0=",
-   "pom": "sha256-fdNneutTykzIVckYoiHgMKXX/cuJCRDlX7jTyyQW8Zk="
   },
   "com/android/tools/lint#lint-model/30.4.2": {
    "jar": "sha256-MVok9HzHuY1YxYLl4btJBnMwHs32uQbXFwKEw59GLBs=",
@@ -482,10 +454,6 @@
   "com/android/tools/lint#lint-typedef-remover/30.4.2": {
    "jar": "sha256-Jsk4TNDMcnwJhQl7r0+82Q1Vbga7D1hsF1ypkS+8Zv8=",
    "pom": "sha256-WyryHlCuu24Et7C2ryYcKsyGanmcZFU9QMyqEmKebu4="
-  },
-  "com/android/tools/lint#lint/30.4.2": {
-   "jar": "sha256-v5eY/coUKa5ZKkzphJOB5fdALjFvay3Zc7Wh65zW96A=",
-   "pom": "sha256-RjRHECCL+5SEkHMkcaRTse2sAzyvcNM8pvZEtGFPK2o="
   },
   "com/android/tools/utp#android-device-provider-ddmlib-proto/30.4.2": {
    "jar": "sha256-MyeU2x53AslonIB1Uy8jXMy/V9cKuinL19N454G6038=",
@@ -609,7 +577,6 @@
    "pom": "sha256-PtzmtxG6No7+Frm3qssCFPvWSEFMublllTouftiagZo="
   },
   "com/google/errorprone#error_prone_annotations/2.3.4": {
-   "jar": "sha256-uvfW6pfOYGxT4RtoVLpfLOfvXCTd3wr6GNEmC9JbACw=",
    "pom": "sha256-EyZziktPfMrPYHuGahH7hRk+9g9qWUYRh85yZfm+W+0="
   },
   "com/google/errorprone#error_prone_annotations/2.4.0": {
@@ -735,7 +702,6 @@
    "pom": "sha256-kFgkJa3B9AtBNi2vuVFzkxIlrKpeeWINXmvVL2Rikro="
   },
   "commons-codec#commons-codec/1.10": {
-   "jar": "sha256-QkHfqU5xHUNfKaRgSj4t5cSqPBZeI70Ga+b8H8QwlWk=",
    "pom": "sha256-vbjbcBLREqbj6o/bfFELMA2Z7/CBnSfd26nEM5fqTPs="
   },
   "commons-codec#commons-codec/1.11": {
@@ -939,10 +905,6 @@
    "jar": "sha256-b+kCalZsalABYIzz/DIZZkH2weXhmG0QN8zb1fMe90M=",
    "pom": "sha256-eOua2nSSn81j0HrcT0kjaEGkXMKdX4F79FgB9RP9fmw="
   },
-  "org/apache/httpcomponents#httpclient/4.5.6": {
-   "jar": "sha256-wD+BMZXnqA42CNDd2NqAshaWpMkqaiKYhlvxSQcVUcc=",
-   "pom": "sha256-fvwSQec+f7smi/0zJC0R69PKBwYdfYXyli3DKg8LiFU="
-  },
   "org/apache/httpcomponents#httpcomponents-client/4.5.13": {
    "pom": "sha256-nLpZTAjbcnHQwg6YRdYiuznmlYORC0Xn1d+C9gWNTdk="
   },
@@ -991,10 +953,6 @@
   },
   "org/codehaus#codehaus-parent/4": {
    "pom": "sha256-a4cjfejC4XQM+AYnx/POPhXeGTC7JQxVoeypT6PgFN8="
-  },
-  "org/codehaus/groovy#groovy/3.0.10": {
-   "jar": "sha256-3/762oKUhlvlA1UVwDIPtnlEPShfSl+K2tzwDBEw6Ew=",
-   "pom": "sha256-SYKt9KbGxQVnsL489JSCXmwqJ9izhx2eGIIqdCcreao="
   },
   "org/codehaus/mojo#animal-sniffer-annotations/1.14": {
    "jar": "sha256-IGgyC9a610TDZzqwSPZ+ML749RiZb6OAAzVWYAZpkF0=",
