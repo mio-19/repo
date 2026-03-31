@@ -13,6 +13,7 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   fetchpatch,
+  applyPatches,
 }:
 let
   appPackage =
@@ -41,15 +42,24 @@ let
       pname = "immich";
       version = "2.6.3+3041";
 
-      src = fetchFromGitHub {
-        owner = "immich-app";
-        repo = "immich";
-        tag = "v2.6.3";
-        fetchSubmodules = true;
-        hash = "sha256-2vkHeTUPezEf6Qz4bVmln7unTIVuGdzXPTjr6vnW0NE=";
+      src = applyPatches {
+        src = fetchFromGitHub {
+          owner = "immich-app";
+          repo = "immich";
+          tag = "v2.6.3";
+          fetchSubmodules = true;
+          hash = "sha256-2vkHeTUPezEf6Qz4bVmln7unTIVuGdzXPTjr6vnW0NE=";
+        };
+        patches = [
+          (fetchpatch {
+            name = "feat: show notification and battery optimization warning";
+            url = "https://github.com/immich-app/immich/pull/26610.patch";
+            hash = "sha256-TBXPSuikeq0S2o/+sl6F+twfMxJBkCuiwpdK88mn6L8=";
+          })
+        ];
       };
 
-      sourceRoot = "source/mobile";
+      sourceRoot = "${finalAttrs.src.name}/mobile";
       packageRoot = "mobile";
       patches = [
         ./disable-release-lint.patch
