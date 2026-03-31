@@ -40,38 +40,39 @@ let
     in
     buildDartApplication.override { dart = flutter335; } (finalAttrs: {
       pname = "immich";
-      version = "2.6.3+3041";
+      version = "2.6.3-unstable-20260331";
 
       src = applyPatches {
         src = fetchFromGitHub {
           owner = "immich-app";
           repo = "immich";
-          tag = "v2.6.3";
+          #tag = "v2.6.3";
+          rev = "6b1dd6f680ce49bc6a3acafa7287816171ef240f";
           fetchSubmodules = true;
-          hash = "sha256-2vkHeTUPezEf6Qz4bVmln7unTIVuGdzXPTjr6vnW0NE=";
+          hash = "sha256-nK2DL2KQaEjxh9iGa24gtYibkviqdHzZZN8CbC7oL6Y=";
         };
         patches = [
+          /*
+          # TODO:
           (fetchpatch {
             name = "feat: show notification and battery optimization warning";
             url = "https://github.com/immich-app/immich/pull/26610.diff";
             hash = "sha256-TBXPSuikeq0S2o/+sl6F+twfMxJBkCuiwpdK88mn6L8=";
           })
+          */
           /*
-                # TODO:
+            # TODO:
             (fetchpatch {
               name = "feat(mobile): Android. Immich as a gallery / image viewer app";
               url = "https://github.com/immich-app/immich/pull/26109.diff";
               hash = "sha256-+RyJYGO4YYs/xDHIfpi1dHXW11avny7gLZ2Ew15gJY0=";
             })
           */
-          /*
-              # TODO:
             (fetchpatch {
               name = "feat(mobile): increased tap area on video player overlay";
               url = "https://github.com/immich-app/immich/pull/27269.diff";
               hash = "sha256-/Sc+Z6K23QgKjVUemI4TkD0MqXdfzeTFl4hZHuSW7Ng=";
             })
-          */
         ];
       };
 
