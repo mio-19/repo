@@ -5,9 +5,9 @@
   gradle-packages,
   androidSdkBuilder,
   jdk21,
-  ninja,
   writableTmpDirAsHomeHook,
   runCommand,
+  fetchpatch,
 }:
 let
   version = "0.8-unstable-20260330";
@@ -46,6 +46,11 @@ let
     patches = [
       ./build-gradle-fixed-version.patch
       ./build-gradle-disable-cxx-modules.patch
+      (fetchpatch {
+        name = "[translation] Update translation from Crowdin";
+        url = "https://github.com/JingMatrix/LSPatch/pull/57.patch";
+        hash = "sha256-9j4d+mtZrnRSs6wkqYixbfRXhmpMwenyfa4MARKRM8M=";
+      })
     ];
 
     gradleBuildTask = "buildRelease";
