@@ -66,7 +66,7 @@ stdenv.mkDerivation (finalAttrs: {
   mitmCache = gradle.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
-    data = "grapheneos_info_deps.json";
+    data = ./grapheneos_info_deps.json;
     silent = false;
     useBwrap = false;
   };

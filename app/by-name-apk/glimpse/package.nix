@@ -42,7 +42,7 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
-        data = "glimpse_deps.json";
+        data = ./glimpse_deps.json;
         silent = false;
         useBwrap = false;
       };

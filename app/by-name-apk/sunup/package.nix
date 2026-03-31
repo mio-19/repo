@@ -46,7 +46,7 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
-        data = "sunup_deps.json";
+        data = ./sunup_deps.json;
         silent = false;
         useBwrap = false;
       };

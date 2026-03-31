@@ -70,7 +70,7 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
-        data = "meshtastic_deps.json";
+        data = ./meshtastic_deps.json;
         silent = false;
         useBwrap = false;
       };

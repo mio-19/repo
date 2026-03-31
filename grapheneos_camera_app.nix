@@ -76,7 +76,7 @@ stdenv.mkDerivation (finalAttrs: {
   mitmCache = gradle.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
-    data = "grapheneos_camera_deps.json";
+    data = ./grapheneos_camera_deps.json;
     silent = false;
     useBwrap = false;
   };

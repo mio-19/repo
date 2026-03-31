@@ -145,7 +145,7 @@ let
           gradle.fetchDeps {
             inherit (finalAttrs) pname;
             pkg = finalAttrs.finalPackage;
-            data = "koreader_gradle_deps.json";
+            data = ./koreader_gradle_deps.json;
             silent = false;
             useBwrap = false;
           }

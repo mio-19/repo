@@ -42,7 +42,7 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
-        data = "fdroid-basic_deps.json";
+        data = ./fdroid-basic_deps.json;
         silent = false;
         useBwrap = false;
       };

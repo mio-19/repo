@@ -46,7 +46,7 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
-        data = "archivetune_deps.json";
+        data = ./archivetune_deps.json;
         silent = false;
         useBwrap = false;
       };

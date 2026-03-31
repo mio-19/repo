@@ -73,7 +73,7 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
-        data = "thunderbird_deps.json";
+        data = ./thunderbird_deps.json;
         silent = false;
         useBwrap = false;
       };

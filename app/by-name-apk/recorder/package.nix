@@ -41,7 +41,7 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
-        data = "recorder_deps.json";
+        data = ./recorder_deps.json;
         silent = false;
         useBwrap = false;
       };

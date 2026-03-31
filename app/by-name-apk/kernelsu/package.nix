@@ -121,7 +121,7 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
-        data = "kernelsu_deps.json";
+        data = ./kernelsu_deps.json;
         silent = false;
         useBwrap = false;
       };

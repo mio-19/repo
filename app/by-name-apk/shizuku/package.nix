@@ -123,7 +123,7 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
-        data = "shizuku_deps.json";
+        data = ./shizuku_deps.json;
         silent = false;
         useBwrap = false;
       };

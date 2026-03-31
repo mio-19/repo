@@ -45,7 +45,7 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
-        data = "nix-on-droid_deps.json";
+        data = ./nix-on-droid_deps.json;
         silent = false;
         useBwrap = false;
       };

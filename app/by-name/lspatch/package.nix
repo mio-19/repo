@@ -54,7 +54,7 @@ let
     mitmCache = gradle.fetchDeps {
       inherit (finalAttrs) pname;
       pkg = finalAttrs.finalPackage;
-      data = "lspatch_deps.json";
+      data = ./lspatch_deps.json;
       silent = false;
       useBwrap = false;
     };
