@@ -53,11 +53,15 @@ let
       packageRoot = "mobile";
       patches = [
         ./disable-release-lint.patch
-        (fetchpatch {
-          name = "feat(mobile): Android. Immich as a gallery / image viewer app";
-          url = "https://github.com/immich-app/immich/pull/26109.diff";
-          hash = "sha256-+RyJYGO4YYs/xDHIfpi1dHXW11avny7gLZ2Ew15gJY0=";
-        })
+        /*
+          # TODO:
+          (fetchpatch {
+            name = "feat(mobile): Android. Immich as a gallery / image viewer app";
+            url = "https://github.com/immich-app/immich/pull/26109.patch";
+            hash = "sha256-8VOXDkYMxp3OAcXOpi2AAx1T4NBXbjt5xxzp2ZVZSUs=";
+            stripLen = 1;
+          })
+        */
       ];
 
       pubspecLock = lib.importJSON ./pubspec.lock.json;
