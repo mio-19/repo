@@ -39,20 +39,20 @@ let
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "ARSCLib";
-    rev = "9696ffecda";
-    hash = "sha256-DOMVxqbp9B11BhhJZ209oTLcSJv04uj2aMkK41TVFGQ=";
+    rev = "d003b5ff1ca91fb8c5105619cf1108b450387061";
+    hash = "sha256-2UO6zDAFeURrt9U9f7gNDA8J5X3o8Ct96/rItUq644g=";
   };
 
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "brosssh-patches";
-  version = "2.1.0";
+  version = "2.2.0-dev.3";
 
   src = fetchFromGitHub {
     owner = "brosssh";
     repo = "morphe-patches";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-GJk+jppuF57DvVAJeyaFudsvUs+LLDWXu5IURUvAjs4=";
+    hash = "sha256-Q51MM67UEfZ9lhzcgONIZ/G5vSqKmGqFFq2qNwBP/N4=";
   };
 
   gradleBuildTask = "generatePatchesList";
