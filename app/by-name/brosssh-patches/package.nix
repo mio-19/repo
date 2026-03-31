@@ -52,8 +52,6 @@ stdenv.mkDerivation (finalAttrs: {
   gradleBuildTask = "generatePatchesList";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 
-  patches = [ ./morphe-patches-settings.patch ];
-
   postUnpack = ''
     root="$PWD"
     cp -a ${morphe-patcher-src} "$root/morphe-patcher"
@@ -65,6 +63,8 @@ stdenv.mkDerivation (finalAttrs: {
 
     cp -a ${multidexlib2-src} "$root/multidexlib2"
     chmod -R u+w "$root/multidexlib2"
+
+    patch -d "$sourceRoot" -p0 < ${./morphe-patches-settings.patch}
 
     cat >> "$sourceRoot/settings.gradle.kts" << 'EOF'
 
