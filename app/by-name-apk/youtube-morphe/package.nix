@@ -40,6 +40,7 @@ let
           --patches=${morphePatches} \
           --enable="Hide ads" \
           --enable="Change package name" \
+          --enable="Disable Play Store updates" \
           --unsigned \
           --temporary-files-path "$workdir/tmp" \
           --out "$workdir/youtube-morphe.apk" \
