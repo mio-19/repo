@@ -53,9 +53,17 @@ let
         patches = [
           (fetchpatch {
             name = "feat: show notification and battery optimization warning";
-            url = "https://github.com/immich-app/immich/pull/26610.patch";
+            url = "https://github.com/immich-app/immich/pull/26610.diff";
             hash = "sha256-TBXPSuikeq0S2o/+sl6F+twfMxJBkCuiwpdK88mn6L8=";
           })
+          /*
+              # TODO:
+            (fetchpatch {
+              name = "feat(mobile): increased tap area on video player overlay";
+              url = "https://github.com/immich-app/immich/pull/27269.diff";
+              hash = "sha256-/Sc+Z6K23QgKjVUemI4TkD0MqXdfzeTFl4hZHuSW7Ng=";
+            })
+          */
         ];
       };
 
@@ -72,12 +80,6 @@ let
             stripLen = 1;
           })
         */
-        (fetchpatch {
-          name = "feat(mobile): increased tap area on video player overlay";
-          url = "https://github.com/immich-app/immich/pull/27269.patch";
-          hash = "sha256-pgYLqY73TpS67at9jMFOThYgI33DMUv2X47MZYzJih0=";
-          stripLen = 1;
-        })
       ];
 
       pubspecLock = lib.importJSON ./pubspec.lock.json;
