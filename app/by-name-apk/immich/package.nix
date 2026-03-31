@@ -12,6 +12,7 @@
   gradle-packages,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  fetchpatch,
 }:
 let
   appPackage =
@@ -50,7 +51,14 @@ let
 
       sourceRoot = "source/mobile";
       packageRoot = "mobile";
-      patches = [ ./disable-release-lint.patch ];
+      patches = [
+        ./disable-release-lint.patch
+        (fetchpatch {
+          name = "feat(mobile): Android. Immich as a gallery / image viewer app";
+          url = "https://github.com/immich-app/immich/pull/26109.diff";
+          hash = "sha256-+RyJYGO4YYs/xDHIfpi1dHXW11avny7gLZ2Ew15gJY0=";
+        })
+      ];
 
       pubspecLock = lib.importJSON ./pubspec.lock.json;
       gitHashes = lib.importJSON ./git-hashes.json;
