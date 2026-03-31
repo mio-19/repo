@@ -1,6 +1,7 @@
 # Repo Rules
 
 - Do not manually edit generated source files such as `_sources/generated.nix` or `_sources/generated.json`.
+- Do not manually edit generated Gradle MITM lockfiles such as `*_deps.json` / `immich_deps.json`; regenerate them only via the package's `mitmCache.updateScript`.
 - When source metadata needs to be refreshed, run `nix run nixpkgs#nvfetcher` from the repo root and let it update generated files.
 - Use `nurl`, or run `nix run nixpkgs#nurl <url to patch>`, to get a `fetchpatch` expression for patch URLs.
 - Never use `sed -i` to patch source files in Nix derivations. Use `substituteInPlace --replace-fail` for single-line substitutions. For multi-line or structural changes, generate a proper patch with `diff -u` against the real upstream source file; never write patch hunks by hand.
