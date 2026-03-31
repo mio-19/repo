@@ -59,28 +59,28 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   postUnpack = ''
-        mkdir -p "$sourceRoot/.m2/repository"
-        cp -a ${revanced-jadb-m2}/* "$sourceRoot/.m2/repository/"
-        chmod -R u+w "$sourceRoot/.m2/repository"
-        cp -a ${revanced-patcher-m2}/* "$sourceRoot/.m2/repository/"
-        chmod -R u+w "$sourceRoot/.m2/repository"
+    mkdir -p "$sourceRoot/.m2/repository"
+    cp -a ${revanced-jadb-m2}/* "$sourceRoot/.m2/repository/"
+    chmod -R u+w "$sourceRoot/.m2/repository"
+    cp -a ${revanced-patcher-m2}/* "$sourceRoot/.m2/repository/"
+    chmod -R u+w "$sourceRoot/.m2/repository"
 
-        substituteInPlace "$sourceRoot/settings.gradle.kts" \
-          --replace-fail '        maven {
+    substituteInPlace "$sourceRoot/settings.gradle.kts" \
+      --replace-fail '        maven {
                 name = "githubPackages"
                 url = uri("https://maven.pkg.github.com/revanced/revanced-library")
                 credentials(PasswordCredentials::class)
             }' '        maven { url = uri("file://" + rootProject.projectDir.resolve(".m2/repository").absolutePath) }'
 
-        substituteInPlace "$sourceRoot/library/build.gradle.kts" \
-          --replace-fail '            maven {
+    substituteInPlace "$sourceRoot/library/build.gradle.kts" \
+      --replace-fail '            maven {
                     name = "githubPackages"
                     url = uri("https://maven.pkg.github.com/revanced/revanced-library")
                     credentials(PasswordCredentials::class)
                 }' '            maven { url = uri("file://" + rootProject.projectDir.resolve("build/m2").absolutePath) }'
 
-        substituteInPlace "$sourceRoot/library/build.gradle.kts" \
-          --replace-fail '    signAllPublications()
+    substituteInPlace "$sourceRoot/library/build.gradle.kts" \
+      --replace-fail '    signAllPublications()
         extensions.getByType<SigningExtension>().useGpgCmd()
     ' ""
   '';
