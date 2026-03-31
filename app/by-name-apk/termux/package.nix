@@ -62,6 +62,11 @@ let
           url = "https://github.com/termux/termux-app/pull/4961.diff";
           hash = "sha256-N/Elb1VT54aLSgWxPbvEWoEUtkTsVoYKRSWZyt3L5/E=";
         })
+        (fetchpatch {
+          name = "feat(view): Enable mouse cursor movement in shell readline";
+          url = "https://github.com/termux/termux-app/pull/4775.diff";
+          hash = "sha256-xaqizEKirWPYlNFwpF37o1OGDph21nBh+hsw/Loov1Q=";
+        })
       ];
 
       bootstrapAarch64 = fetchurl {
