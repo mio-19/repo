@@ -28,12 +28,12 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "fdroid-basic";
-      version = "2.0-alpha5";
+      version = "2.0-alpha6";
 
       src = fetchgit {
         url = "https://gitlab.com/fdroid/fdroidclient.git";
         tag = finalAttrs.version;
-        hash = "sha256-dYKgf81nHPkL1lVFms2quG8OkaJpY+/y0PDyEznsp40=";
+        hash = "sha256-HQcvzBX/ofVxsu22eNsvhQDYH+0Zw/EQR/Trcvqr4j0=";
       };
 
       gradleBuildTask = ":app:assembleBasicDefaultRelease";
