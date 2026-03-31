@@ -7,6 +7,7 @@
   flutter335,
   git,
   jdk17_headless,
+  curl,
   python3,
   gradle-packages,
   writableTmpDirAsHomeHook,
@@ -87,6 +88,7 @@ let
       dontDartInstall = true;
 
       nativeBuildInputs = [
+        curl
         gradle
         git
         jdk17_headless
@@ -127,10 +129,6 @@ let
             }
           }
           configurations.configureEach {
-            exclude group: "androidx.room", module: "room-runtime"
-            exclude group: "androidx.room", module: "room-ktx"
-            exclude group: "androidx.sqlite", module: "sqlite"
-            exclude group: "androidx.sqlite", module: "sqlite-framework"
             resolutionStrategy.eachDependency { details ->
               if (details.requested.group == "androidx.appcompat" && details.requested.name == "appcompat") {
                 details.useVersion("1.7.0")
@@ -213,6 +211,22 @@ let
         fi
         export FLUTTER_ROOT="$PWD/flutter-sdk"
         export GRADLE_OPTS
+
+        if [[ -n "''${MITM_CACHE_HOST:-}" && -n "''${MITM_CACHE_PORT:-}" && -n "''${MITM_CACHE_CA:-}" ]]; then
+          for artifact_url in \
+            https://dl.google.com/dl/android/maven2/androidx/room/room-ktx/2.5.0/room-ktx-2.5.0.aar \
+            https://dl.google.com/dl/android/maven2/androidx/room/room-runtime/2.5.0/room-runtime-2.5.0.aar \
+            https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite-framework/2.3.0/sqlite-framework-2.3.0.aar \
+            https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite/2.3.0/sqlite-2.3.0.aar
+          do
+            https_proxy="http://$MITM_CACHE_HOST:$MITM_CACHE_PORT" \
+              ${curl}/bin/curl --silent --show-error --fail --location \
+              --proxy "http://$MITM_CACHE_HOST:$MITM_CACHE_PORT" \
+              --cacert "$MITM_CACHE_CA" \
+              --output /dev/null \
+              "$artifact_url"
+          done
+        fi
 
         packageRun easy_localization -e generate -S ../i18n
         dart --packages=.dart_tool/package_config.json bin/generate_keys.dart
@@ -385,29 +399,6 @@ let
             done
           done
 
-          if grep -Fq 'androidx.biometric:biometric' "$gradle_file" && ! grep -Fq 'nixExcludeRoomSqliteForBiometric' "$gradle_file"; then
-            if [[ "$gradle_file" == *.gradle.kts ]]; then
-              cat >> "$gradle_file" <<'EOF'
-        // nixExcludeRoomSqliteForBiometric
-        configurations.configureEach {
-          exclude(group = "androidx.room", module = "room-runtime")
-          exclude(group = "androidx.room", module = "room-ktx")
-          exclude(group = "androidx.sqlite", module = "sqlite")
-          exclude(group = "androidx.sqlite", module = "sqlite-framework")
-        }
-        EOF
-            else
-              cat >> "$gradle_file" <<'EOF'
-        // nixExcludeRoomSqliteForBiometric
-        configurations.all {
-          exclude group: 'androidx.room', module: 'room-runtime'
-          exclude group: 'androidx.room', module: 'room-ktx'
-          exclude group: 'androidx.sqlite', module: 'sqlite'
-          exclude group: 'androidx.sqlite', module: 'sqlite-framework'
-        }
-        EOF
-            fi
-          fi
         }
 
         patch_ndk_version_file() {
