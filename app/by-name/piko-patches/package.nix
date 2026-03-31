@@ -53,20 +53,20 @@ stdenv.mkDerivation (finalAttrs: {
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 
   postUnpack = ''
-        root="$PWD"
-        cp -a ${morphe-patcher-src} "$root/morphe-patcher"
-        chmod -R u+w "$root/morphe-patcher"
-        cp -a ${arsclib-src} "$root/ARSCLib"
-        chmod -R u+w "$root/ARSCLib"
-        cp -a ${apktool-src} "$root/Apktool"
-        chmod -R u+w "$root/Apktool"
+    root="$PWD"
+    cp -a ${morphe-patcher-src} "$root/morphe-patcher"
+    chmod -R u+w "$root/morphe-patcher"
+    cp -a ${arsclib-src} "$root/ARSCLib"
+    chmod -R u+w "$root/ARSCLib"
+    cp -a ${apktool-src} "$root/Apktool"
+    chmod -R u+w "$root/Apktool"
 
-        cp -a ${multidexlib2-src} "$root/multidexlib2"
-        chmod -R u+w "$root/multidexlib2"
+    cp -a ${multidexlib2-src} "$root/multidexlib2"
+    chmod -R u+w "$root/multidexlib2"
 
-        substituteInPlace "$sourceRoot/settings.gradle.kts" \
-          --replace-fail 'id("app.morphe.patches") version "1.1.1"' 'id("app.morphe.patches") version "1.2.0"' \
-          --replace-fail '
+    substituteInPlace "$sourceRoot/settings.gradle.kts" \
+      --replace-fail 'id("app.morphe.patches") version "1.1.1"' 'id("app.morphe.patches") version "1.2.0"' \
+      --replace-fail '
             maven {
                 name = "GitHubPackages"
                 url = uri("https://maven.pkg.github.com/MorpheApp/registry")
@@ -80,7 +80,7 @@ stdenv.mkDerivation (finalAttrs: {
             maven { url = uri("file://" + System.getenv("MORPHE_LIBRARY_M2")) }
     '
 
-        printf '%s\n' \
+    printf '%s\n' \
           "" \
           '    // Added by Nix build: include ARSCLib as composite build.' \
           '    val arsclibDir = file("../ARSCLib")' \
