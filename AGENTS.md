@@ -13,4 +13,4 @@
 - Always set hash to fakeHash or empty or AAAAAA before needing to get new hash like changed fetch options updated tag rev!
 - for `''` in nix, prefixing common spaces will be removed. please format nix files corectly that is bash heredoc within double quotes block in nix can have similar indentation as the rest of the file. if unsure run nixfmt on the file and check what did nixfmt do!
 - if any group-index hash mismatch, update the hash (replace old hash with new hash) in all json deps files!
-- update mitm: `$(nix build .\#tailscale.mitmCache.updateScript --no-link --print-out-paths)` note on nix: always use ./ instead of double quote string for data path! otherwise the outPath in mitmCache update script is not what we want `mitmCache = gradle.fetchDeps {  data = ./tailscale_deps.json;`
+- update mitm: `$(nix build .\#apk_tailscale.mitmCache.updateScript --no-link --print-out-paths)` note on nix: always use ./ instead of double quote string for data path! otherwise the outPath in mitmCache update script is not what we want `mitmCache = gradle.fetchDeps {  data = ./tailscale_deps.json;`
