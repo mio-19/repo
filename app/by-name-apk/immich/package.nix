@@ -62,6 +62,12 @@ let
             stripLen = 1;
           })
         */
+        (fetchpatch {
+          name = "feat(mobile): increased tap area on video player overlay";
+          url = "https://github.com/immich-app/immich/pull/27269.patch";
+          hash = "sha256-pgYLqY73TpS67at9jMFOThYgI33DMUv2X47MZYzJih0=";
+          stripLen = 1;
+        })
       ];
 
       pubspecLock = lib.importJSON ./pubspec.lock.json;
