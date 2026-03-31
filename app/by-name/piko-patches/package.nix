@@ -10,6 +10,7 @@
   morphe-library-m2,
   apktool-src,
   multidexlib2-src,
+  morphe-patcher-src,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -28,14 +29,6 @@ let
       hash = "sha256-8XcSmKcPbbWina9iN4xOGKF/wzybprFDYuDN9AYQOA0=";
       defaultJava = jdk21;
     }).wrapped;
-
-  # https://github.com/crimera/piko/blob/e0d2a7be9bb92173825bb7043cd9ed92986132b9/gradle/libs.versions.toml#L2
-  morphe-patcher-src = fetchFromGitHub {
-    owner = "MorpheApp";
-    repo = "morphe-patcher";
-    rev = "v1.3.2";
-    hash = "sha256-KxWdkgiRN4mFb4auibSpMKUydE7ZaAMPGhow7Pq5Y1A=";
-  };
 
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
@@ -86,8 +79,6 @@ stdenv.mkDerivation (finalAttrs: {
             maven { url = uri("file://" + System.getenv("MORPHE_PLUGIN_M2")) }
             maven { url = uri("file://" + System.getenv("MORPHE_LIBRARY_M2")) }
     '
-        patch -d "$root/morphe-patcher" -p0 < ${./morphe-patcher.patch}
-        patch -d "$root/morphe-patcher" -p0 < ${./morphe-patcher-settings.patch}
 
         printf '%s\n' \
           "" \
