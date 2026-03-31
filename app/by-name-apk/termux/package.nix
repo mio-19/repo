@@ -57,6 +57,11 @@ let
             hash = "sha256-RYxFj06h4Zm46Rlu2plKXGLS2rqAxegbkcR164yON6c=";
           })
         */
+        (fetchpatch {
+          name = "feat: multi window support";
+          url = "https://github.com/termux/termux-app/pull/4961.diff";
+          hash = "sha256-N/Elb1VT54aLSgWxPbvEWoEUtkTsVoYKRSWZyt3L5/E=";
+        })
       ];
 
       bootstrapAarch64 = fetchurl {
