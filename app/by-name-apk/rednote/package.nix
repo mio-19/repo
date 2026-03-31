@@ -42,7 +42,7 @@ let
 
         cp "${rednoteApk}" "$workdir/rednote.apk"
 
-        "${jdk21}/bin/java" -jar ${lspatch-cli}/lspatch.jar \
+        ${lib.getExe lspatch-cli} \
           --force \
           --output "$workdir/out" \
           --embed "${rednoteHelper}" \

@@ -45,7 +45,7 @@ let
 
         APKEditor m -i "$workdir/bilibili.xapk" -o "$workdir/bilibili-base.apk"
 
-        "${jdk21}/bin/java" -jar ${lspatch-cli}/lspatch.jar \
+        ${lib.getExe lspatch-cli} \
           --force \
           --output "$workdir/out" \
           --embed "${biliroaming}/biliroaming.apk" \

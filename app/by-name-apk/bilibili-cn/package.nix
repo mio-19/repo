@@ -39,7 +39,7 @@ let
 
         cp "${bilibiliApk}" "$workdir/bilibili.apk"
 
-        "${jdk21}/bin/java" -jar ${lspatch-cli}/lspatch.jar \
+        ${lib.getExe lspatch-cli} \
           --force \
           --output "$workdir/out" \
           --embed "${biliroaming}/biliroaming.apk" \

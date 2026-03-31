@@ -5,11 +5,11 @@
   gradle-packages,
   androidSdkBuilder,
   jdk21,
-  makeWrapper,
-  jre,
   writableTmpDirAsHomeHook,
   runCommand,
+  jre,
   fetchpatch,
+  makeWrapper,
 }:
 let
   version = "0.8-unstable-20260330";
@@ -34,15 +34,15 @@ let
     }).wrapped;
 
   common = stdenv.mkDerivation (finalAttrs: {
-    pname = "lspatch";
+    pname = "npatch";
     inherit version;
 
     src = fetchFromGitHub {
-      owner = "JingMatrix";
-      repo = "LSPatch";
-      rev = "ae8b908305a348ec80f7900599c2dab30d56f901";
+      owner = "7723mod";
+      repo = "NPatch";
+      rev = "41872d8261a956a8bde1b51cf29914bb2e9f36df";
       fetchSubmodules = true;
-      hash = "sha256-pM2E5Rgjrj1/ajGeCghCsnTaeEErjx+ExjCRSfeFjCk=";
+      hash = "sha256-S/0jfMwZEETnuQ5lkKD1I0rFVqVe3zsTb8/rdwMsim8=";
     };
 
     patches = [
