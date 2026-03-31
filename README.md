@@ -6,6 +6,8 @@ Note that distributing binaries built from this repository might be disallowed b
 
 Using this repository may result in data loss, boot loops, bricked devices, injuries due to exploded devices, dead SD cards, thermonuclear war, lawsuit, banned account, money loss, or you getting fired because the alarm app failed. By proceeding, you accept full responsibility for any issues that may arise.
 
+Some nix files in this repository produce fully broken or mostly broken results.
+
 android devices rom configurations
 
 command examples:
