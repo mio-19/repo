@@ -1,0 +1,202 @@
+--- a/platform/android/luajit-launcher/app/src/main/java/org/koreader/launcher/EventReceiver.kt
++++ b/platform/android/luajit-launcher/app/src/main/java/org/koreader/launcher/EventReceiver.kt
+@@ -1,4 +1,4 @@
+-// A broadcast receiver that writes event codes to a named pipe, so they can be consumed from lua
++// A broadcast receiver that writes event codes to a Unix domain socket, so they can be consumed from lua
+ 
+ package org.koreader.launcher
+ 
+@@ -8,14 +8,11 @@
+ import android.content.Intent
+ import android.content.IntentFilter
+ import android.util.Log
+-import java.io.File
+-import java.io.FileWriter
+ import kotlin.collections.HashMap
+ 
+ class EventReceiver : BroadcastReceiver() {
+     private val tag = this::class.java.simpleName
+     private val eventMap = HashMap<String, Int>()
+-    private val fifoPath: String = File(MainApp.assets_path, "alooper.fifo").path
+ 
+     init {
+         eventMap[Intent.ACTION_POWER_CONNECTED] = 100
+@@ -37,21 +34,19 @@
+         }
+ 
+     private fun write(code: Int?) {
+-        code?.let {
+-            try {
+-                // 32-bit event code, low byte first
+-                val msg = CharArray(4)
+-                msg[0] = (it and 0xFF).toChar()
+-                msg[1] = ((it ushr 8) and 0xFF).toChar()
+-                msg[2] = ((it ushr 16) and 0xFF).toChar()
+-                msg[3] = ((it ushr 24) and 0xFF).toChar()
+-                val writer = FileWriter(fifoPath, true)
+-                writer.write(msg, 0, 4)
+-                writer.close()
+-            } catch (e: Exception) {
+-                Log.e(tag, "Cannot write to file $fifoPath: \n$e")
++        if (code == null) {
++            Log.e(tag, "Invalid code: must be a 32-bit integer")
++            return
++        }
++
++        try {
++            val rc = nativeSendEvent(code)
++            if (rc != 0) {
++                Log.e(tag, "nativeSendEvent failed with code $rc")
+             }
+-        } ?: Log.e(tag, "Invalid code: must be a 32-bit integer")
++        } catch (e: Throwable) {
++            Log.e(tag, "Cannot send event to native socket: $e")
++        }
+     }
+ 
+     override fun onReceive(context: Context?, intent: Intent?) {
+@@ -62,4 +57,9 @@
+             }
+         }
+     }
++
++    companion object {
++        @JvmStatic
++        private external fun nativeSendEvent(code: Int): Int
++    }
+ }
+--- a/platform/android/luajit-launcher/app/src/main/java/org/koreader/launcher/MainActivity.kt
++++ b/platform/android/luajit-launcher/app/src/main/java/org/koreader/launcher/MainActivity.kt
+@@ -91,6 +91,8 @@
+     }
+ 
+     init {
++        Log.i(tag, "loading libluajit-launcher")
++        System.loadLibrary("luajit-launcher")
+         Log.i(tag, "loading libluajit")
+         System.loadLibrary("luajit")
+     }
+--- a/platform/android/luajit-launcher/jni/android_native_app_glue/android_native_app_glue.c
++++ b/platform/android/luajit-launcher/jni/android_native_app_glue/android_native_app_glue.c
+@@ -19,9 +19,11 @@
+ 
+ #include <errno.h>
+ #include <fcntl.h>
++#include <stdint.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #include <unistd.h>
++#include <sys/socket.h>
+ #include <sys/stat.h>
+ 
+ #include <android/log.h>
+@@ -30,7 +32,7 @@
+ 
+ #define  TAG "NativeGlue"
+ 
+-#define FIFO_NAME "alooper.fifo"
++static int g_event_write_fd = -1;
+ 
+ #define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__))
+ #define LOGV(...) ((void)__android_log_print(ANDROID_LOG_VERBOSE, TAG, __VA_ARGS__))
+@@ -234,41 +236,41 @@
+     pthread_cond_broadcast(&android_app->cond);
+     pthread_mutex_unlock(&android_app->mutex);
+ 
+-    /* from https://github.com/koreader/android-luajit-launcher/pull/294
+-
+-    We use a named pipe to push events to our main loop running in LuaJIT.
+-    Here we create the file, open it and register it as a poll source if everything went well.
+-
+-    Its state is available as part of the android ffi module.
++    /*
++    We use a Unix domain socketpair to push events to our main loop running in LuaJIT.
++    The read end is registered with ALooper and the write end is exposed to Java via JNI.
+     */
+-    const char* fifo_path = android_app->activity->internalDataPath;
+-    size_t len = strlen(fifo_path) + strlen(FIFO_NAME) + 2U; // +1 for "/" and +1 for NULL
+-    char fifo_file[len];
+-    snprintf(fifo_file, len, "%s/%s", fifo_path, FIFO_NAME);
+-
+-    if (mkfifo(fifo_file, 0666) == -1) {
+-        if (errno == EEXIST) {
+-            LOGV("User FIFO already exists at `%s`", fifo_file);
+-        } else {
+-            LOGE("Failed to create user FIFO at `%s`: %s", fifo_file, strerror(errno));
+-        }
++    int event_read_fd = -1;
++    int event_write_fd = -1;
++    int event_fds[2] = { -1, -1 };
++    if (socketpair(AF_UNIX, SOCK_DGRAM, 0, event_fds) == -1) {
++        LOGE("Failed to create event socketpair: %s", strerror(errno));
+     } else {
+-        LOGV("User FIFO created at `%s`", fifo_file);
+-    }
++        event_read_fd = event_fds[0];
++        event_write_fd = event_fds[1];
+ 
+-    int fifo_fd = open(fifo_file, O_RDWR | O_NONBLOCK | O_CLOEXEC);
+-    if (fifo_fd  == -1) {
+-        LOGE("Failed to open user FIFO at `%s`: %s", fifo_file, strerror(errno));
+-    } else {
+-        ALooper_addFd(looper, fifo_fd, LOOPER_ID_USER, ALOOPER_EVENT_INPUT, NULL, &android_app->cmdPollSource);
++        for (size_t i = 0U; i < 2U; i++) {
++            int flflags = fcntl(event_fds[i], F_GETFL);
++            fcntl(event_fds[i], F_SETFL, flflags | O_NONBLOCK);
++            int fdflags = fcntl(event_fds[i], F_GETFD);
++            fcntl(event_fds[i], F_SETFD, fdflags | FD_CLOEXEC);
++        }
++
++        g_event_write_fd = event_write_fd;
++        ALooper_addFd(looper, event_read_fd, LOOPER_ID_USER, ALOOPER_EVENT_INPUT, NULL,
++                      &android_app->cmdPollSource);
+     }
+ 
+     android_main(android_app);
+ 
+-    // clean up fifo
+-    if (fifo_fd != -1) {
+-        ALooper_removeFd(looper, fifo_fd);
+-        close(fifo_fd);
++    // clean up event socket
++    if (event_read_fd != -1) {
++        ALooper_removeFd(looper, event_read_fd);
++        close(event_read_fd);
++    }
++    if (event_write_fd != -1) {
++        close(event_write_fd);
++        g_event_write_fd = -1;
+     }
+ 
+     android_app_destroy(android_app);
+@@ -510,3 +512,30 @@
+ 
+     activity->instance = android_app_create(activity, savedState, savedStateSize);
+ }
++
++JNIEXPORT jint JNICALL
++Java_org_koreader_launcher_EventReceiver_nativeSendEvent(JNIEnv* env, jclass clazz, jint code) {
++    (void)env;
++    (void)clazz;
++
++    if (g_event_write_fd < 0) {
++        LOGE("Event socket fd is not available");
++        return -1;
++    }
++
++    // 32-bit event code, low byte first
++    uint8_t msg[4];
++    msg[0] = (uint8_t)(code & 0xFF);
++    msg[1] = (uint8_t)((code >> 8) & 0xFF);
++    msg[2] = (uint8_t)((code >> 16) & 0xFF);
++    msg[3] = (uint8_t)((code >> 24) & 0xFF);
++
++    ssize_t written = send(g_event_write_fd, msg, sizeof(msg), MSG_NOSIGNAL);
++    if (written != (ssize_t)sizeof(msg)) {
++        int err = errno;
++        LOGE("Failed to write event socket: %s", strerror(err));
++        return -err;
++    }
++
++    return 0;
++}
