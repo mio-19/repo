@@ -54,7 +54,7 @@ let
             ;;
           com.termux|com.termux.styling|com.termux.x11|org.gnu.emacs)
             # Keep termux family on one shared alias.
-            echo "releasekey"
+            echo "com.termux"
             ;;
           *)
             # Default: per-app alias by appId/package name.

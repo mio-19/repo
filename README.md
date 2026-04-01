@@ -156,7 +156,7 @@ Signed repo output is in `fdroid-repo-signed/repo`.
 Alias behavior is automatic (no `--alias` flag):
 
 - Default: each APK is signed with key alias = its appId/package name.
-- Termux family (`com.termux`, `com.termux.styling`, `com.termux.x11`, `org.gnu.emacs`) uses shared alias `releasekey`.
+- Termux family (`com.termux`, `com.termux.styling`, `com.termux.x11`, `org.gnu.emacs`) uses shared alias `com.termux`.
 - `nix-on-droid` (`com.termux.nix`) keeps old alias `releasekey`.
 
 ### Add missing key aliases to an existing keystore
@@ -173,7 +173,7 @@ You can pass multiple `--alias` flags.
 If `--alias` is omitted, it auto-discovers APK package names from `.#fdroid-repo` and ensures all required aliases automatically using the same mapping as `sign-fdroid-repo`:
 
 - `com.termux.nix` -> `releasekey`
-- `com.termux`, `com.termux.styling`, `com.termux.x11`, `org.gnu.emacs` -> `releasekey`
+- `com.termux`, `com.termux.styling`, `com.termux.x11`, `org.gnu.emacs` -> `com.termux`
 - all others -> appId/package name
 
 ```zsh
