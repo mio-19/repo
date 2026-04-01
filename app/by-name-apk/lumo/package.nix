@@ -19,17 +19,6 @@ let
     hash = "sha256-sacD8lv6D1WP4aXEVGC+CymjgD0wgEQ6zpmxTo3Tx28=";
   };
 
-  depsFile =
-    if builtins.pathExists ./lumo_deps.json then
-      ./lumo_deps.json
-    else
-      builtins.toFile "lumo_deps.json" ''
-        {
-          "!comment": "Bootstrap lockfile. Regenerate with lumo.mitmCache.updateScript.",
-          "!version": 1
-        }
-      '';
-
   appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
@@ -57,7 +46,7 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
-        data = depsFile;
+        data = ./lumo_deps.json;
         silent = false;
         useBwrap = false;
       };
