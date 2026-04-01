@@ -8,7 +8,6 @@
   writableTmpDirAsHomeHook,
   runCommand,
   jre,
-  fetchpatch,
   makeWrapper,
 }:
 let
@@ -18,10 +17,7 @@ let
     s.cmdline-tools-latest
     s.platform-tools
     s.platforms-android-36
-    s.build-tools-36-0-0
-    # Tried NDK 29.0.14206865 here, but LSPatch then failed in native x86
-    # lsplant builds with duplicate SSE intrinsic definitions under Clang 21,
-    # so this stays on the baseline NDK for now.
+    s.build-tools-36-1-0
     s.ndk-29-0-13113456
     s.cmake-3-31-6
   ]);
@@ -48,12 +44,36 @@ let
     patches = [
       ./build-gradle-fixed-version.patch
       ./build-gradle-disable-cxx-modules.patch
-      (fetchpatch {
-        name = "[translation] Update translation from Crowdin";
-        url = "https://github.com/JingMatrix/LSPatch/pull/57.patch";
-        hash = "sha256-9j4d+mtZrnRSs6wkqYixbfRXhmpMwenyfa4MARKRM8M=";
-      })
     ];
+
+    postPatch = ''
+      substituteInPlace build.gradle.kts \
+        --replace-fail 'val androidCompileNdkVersion by extra("29.0.13599879")' \
+          'val androidCompileNdkVersion by extra("29.0.13113456")'
+      substituteInPlace gradle/lspatch.versions.toml \
+        --replace-fail 'compose-bom = "2025.12.01"' \
+          'compose-bom = "2025.11.00"' \
+        --replace-fail 'core-ktx = "1.17.0"' \
+          'core-ktx = "1.16.0"' \
+        --replace-fail 'androidx-lifecycle-viewmodel-compose = "androidx.lifecycle:lifecycle-viewmodel-compose:2.9.2"' \
+          'androidx-lifecycle-viewmodel-compose = "androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4"'
+      printf '\n' >> build.gradle.kts
+      cat >> build.gradle.kts <<'EOF'
+      allprojects {
+          configurations.configureEach {
+              resolutionStrategy.eachDependency {
+                  if (requested.group == "androidx.savedstate"
+                      && (requested.name == "savedstate-android" || requested.name == "savedstate-compose-android")
+                      && (requested.version == "1.3.0" || requested.version == "1.3.1")
+                  ) {
+                      useVersion("1.3.3")
+                      because("pin savedstate artifacts to versions present in offline lockfile")
+                  }
+              }
+          }
+      }
+      EOF
+    '';
 
     gradleBuildTask = "buildRelease";
     gradleUpdateTask = finalAttrs.gradleBuildTask;
@@ -77,7 +97,7 @@ let
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
       ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.13113456";
-      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
     };
 
     preConfigure = ''
@@ -86,10 +106,11 @@ let
       mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"
 
       echo "sdk.dir=$ANDROID_HOME" > local.properties
+      echo "ndk.dir=$ANDROID_NDK_ROOT" >> local.properties
       cat >> gradle.properties <<EOF
       org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g
-      android.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/36.0.0/aapt2
-      org.gradle.project.android.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/36.0.0/aapt2
+      android.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/36.1.0/aapt2
+      org.gradle.project.android.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/36.1.0/aapt2
       EOF
     '';
 
@@ -98,15 +119,20 @@ let
       "--no-daemon"
       "-Dorg.gradle.java.installations.auto-download=false"
       "-Dorg.gradle.java.installations.paths=${jdk21}"
-      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
     ];
 
     installPhase = ''
       runHook preInstall
 
-      jar_path="$(echo out/release/jar-v*-release.jar | awk '{print $1}')"
-      apk_path="$(echo out/release/manager-v*-release.apk | awk '{print $1}')"
+      jar_path="$(find out/release -maxdepth 1 -type f -name '*jar*.jar' | head -n1)"
+      apk_path="$(find out/release -maxdepth 1 -type f -name '*.apk' | head -n1)"
+      if [[ -z "$jar_path" || -z "$apk_path" ]]; then
+        echo "Failed to locate built artifacts in out/release" >&2
+        ls -la out/release >&2 || true
+        exit 1
+      fi
 
       install -Dm644 "$jar_path" "$out/lspatch.jar"
       install -Dm644 "$apk_path" "$out/lspatch-manager.apk"

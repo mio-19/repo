@@ -1,6 +1,6 @@
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -23,26 +23,9 @@
+@@ -23,24 +23,7 @@
      }
  }
  
@@ -17,16 +17,14 @@
 -            val coreCommitCount =
 -                git.log()
 -                    .add(repo.refDatabase.exactRef("HEAD").objectId)
--                    .call().count() + 4200
+-                    .call().count()
 -            val ver = git.describe()
 -                .setTags(true)
 -                .setAbbrev(0).call().removePrefix("v")
 -            coreCommitCount to ver
 -        }
--    }.getOrNull() ?: (1 to "1.0")
+-    }.getOrNull() ?: (1145 to "1.0")
 +val commitCount = 20260315
 +val coreCommitCount = 7213
 +val coreLatestTag = "1.11.0"
  
- // sync from https://github.com/JingMatrix/LSPosed/blob/master/build.gradle.kts
- val defaultManagerPackageName by extra("org.lsposed.lspatch")
