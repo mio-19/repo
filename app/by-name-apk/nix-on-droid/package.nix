@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  jdk17_headless,
+  jdk21,
   gradle-packages,
   stdenv,
   fetchFromGitHub,
@@ -15,18 +15,17 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
-        s.platforms-android-28
-        s.platforms-android-30
-        s.build-tools-30-0-3
-        s.build-tools-33-0-2
-        s.ndk-27-3-13750724
+        s.platforms-android-36
+        s.build-tools-35-0-0
+        s.build-tools-36-0-0
+        s.ndk-29-0-14206865
       ]);
 
       gradle =
         (gradle-packages.mkGradle {
-          version = "7.5";
-          hash = "sha256-y4fyIsVYW9RoOK1Nt4RjpcXz0zbl4rmNx8DFhlJzUcI=";
-          defaultJava = jdk17_headless;
+          version = "8.13";
+          hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
+          defaultJava = jdk21;
         }).wrapped;
     in
     stdenv.mkDerivation (finalAttrs: {
@@ -61,19 +60,7 @@ let
           url = "https://github.com/termux/termux-app/pull/4961.diff";
           hash = "sha256-N/Elb1VT54aLSgWxPbvEWoEUtkTsVoYKRSWZyt3L5/E=";
         })
-        /*
-          # TODO:
-          (fetchpatch {
-            name = "Changed: Update gradle, android gradle plugin and dependencies";
-            url = "https://github.com/salmon-21/termux-app/commit/53f75a8da3b823c18a8244b298da50e87382984d.patch";
-            hash = "sha256-Gm+NTU2PQBLsvI3fPgIzNzrE/uDB8Zo5uFxlyBr1ANA=";
-          })
-          (fetchpatch {
-            name = "Fixed: Improve dark mode support for settings and shared activities";
-            url = "https://github.com/termux/termux-app/pull/5025.patch";
-            hash = "sha256-07jVCLJX96jZDoWcMlBLtjh2K9dLC1ciVOBzfC1kTpU=";
-          })
-        */
+        ./0001-nix-on-droid-adjust-gradle-agp-deps.patch
       ];
 
       gradleBuildTask = ":app:assembleRelease";
@@ -89,19 +76,19 @@ let
 
       nativeBuildInputs = [
         gradle
-        jdk17_headless
+        jdk21
         writableTmpDirAsHomeHook
       ];
 
       env = {
-        JAVA_HOME = jdk17_headless;
+        JAVA_HOME = jdk21;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/33.0.2/aapt2";
+        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
         TERMUX_PACKAGE_VARIANT = "apt-android-7";
         TERMUX_SPLIT_APKS_FOR_RELEASE_BUILDS = "0";
-        JITPACK_NDK_VERSION = "27.3.13750724";
+        JITPACK_NDK_VERSION = "29.0.14206865";
       };
 
       preConfigure = ''
@@ -114,9 +101,9 @@ let
         "-xlintVitalRelease"
         "--no-daemon"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/33.0.2/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/33.0.2/aapt2"
+        "-Dorg.gradle.java.installations.paths=${jdk21}"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
 
       installPhase = ''

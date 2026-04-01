@@ -1,0 +1,296 @@
+diff --git a/app/build.gradle b/app/build.gradle
+index e8d6f205..6d992285 100644
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -13,6 +13,8 @@ ext {
+ }
+ 
+ android {
++    namespace "com.termux"
++
+     compileSdkVersion project.properties.compileSdkVersion.toInteger()
+     ndkVersion = System.getenv("JITPACK_NDK_VERSION") ?: project.properties.ndkVersion
+     def appVersionName = System.getenv("TERMUX_APP_VERSION_NAME") ?: ""
+@@ -21,13 +23,14 @@ android {
+     def splitAPKsForReleaseBuilds = System.getenv("TERMUX_SPLIT_APKS_FOR_RELEASE_BUILDS") ?: "0" // F-Droid does not support split APKs #1904
+ 
+     dependencies {
+-        implementation "androidx.annotation:annotation:1.3.0"
+-        implementation "androidx.core:core:1.6.0"
+-        implementation "androidx.drawerlayout:drawerlayout:1.1.1"
+-        implementation "androidx.preference:preference:1.1.1"
++        implementation "androidx.annotation:annotation:1.9.0"
++        implementation "androidx.core:core:1.13.1"
++        implementation "androidx.drawerlayout:drawerlayout:1.2.0"
++        implementation "androidx.preference:preference:1.2.1"
+         implementation "androidx.viewpager:viewpager:1.0.0"
+-        implementation "com.google.android.material:material:1.4.0"
++        implementation "com.google.android.material:material:1.12.0"
+         implementation "com.google.guava:guava:24.1-jre"
++        implementation "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava"
+         implementation "io.noties.markwon:core:$markwonVersion"
+         implementation "io.noties.markwon:ext-strikethrough:$markwonVersion"
+         implementation "io.noties.markwon:linkify:$markwonVersion"
+@@ -129,10 +132,14 @@ android {
+     }
+     */
+ 
+-    lintOptions {
++    lint {
+         disable 'ProtectedPermissions'
+     }
+ 
++    buildFeatures {
++        buildConfig true
++    }
++
+     testOptions {
+         unitTests {
+             includeAndroidResources = true
+@@ -162,7 +169,7 @@ android {
+ dependencies {
+     testImplementation "junit:junit:4.13.2"
+     testImplementation "org.robolectric:robolectric:4.10"
+-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.1.5"
++    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.2"
+ }
+ 
+ task versionName {
+diff --git a/app/src/main/java/com/termux/app/activities/HelpActivity.java b/app/src/main/java/com/termux/app/activities/HelpActivity.java
+index a2e4d6a9..7609659e 100644
+--- a/app/src/main/java/com/termux/app/activities/HelpActivity.java
++++ b/app/src/main/java/com/termux/app/activities/HelpActivity.java
+@@ -35,7 +35,6 @@ public final class HelpActivity extends AppCompatActivity {
+         mWebView = new WebView(this);
+         WebSettings settings = mWebView.getSettings();
+         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+-        settings.setAppCacheEnabled(false);
+         setContentView(progressLayout);
+         mWebView.clearCache(true);
+ 
+diff --git a/app/src/main/java/com/termux/app/terminal/TermuxTerminalSessionActivityClient.java b/app/src/main/java/com/termux/app/terminal/TermuxTerminalSessionActivityClient.java
+index cd381631..bd789145 100644
+--- a/app/src/main/java/com/termux/app/terminal/TermuxTerminalSessionActivityClient.java
++++ b/app/src/main/java/com/termux/app/terminal/TermuxTerminalSessionActivityClient.java
+@@ -271,7 +271,7 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
+                     .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION).build()).build();
+ 
+             try {
+-                mBellSoundId = mBellSoundPool.load(mActivity, R.raw.bell, 1);
++                mBellSoundId = mBellSoundPool.load(mActivity, com.termux.shared.R.raw.bell, 1);
+             } catch (Exception e){
+                 // Catch java.lang.RuntimeException: Unable to resume activity {com.termux/com.termux.app.TermuxActivity}: android.content.res.Resources$NotFoundException: File res/raw/bell.ogg from drawable resource ID
+                 Logger.logStackTraceWithMessage(LOG_TAG, "Failed to load bell sound pool", e);
+diff --git a/app/src/main/java/com/termux/app/terminal/TermuxTerminalViewClient.java b/app/src/main/java/com/termux/app/terminal/TermuxTerminalViewClient.java
+index a3d09d3d..700c5e50 100644
+--- a/app/src/main/java/com/termux/app/terminal/TermuxTerminalViewClient.java
++++ b/app/src/main/java/com/termux/app/terminal/TermuxTerminalViewClient.java
+@@ -735,8 +735,8 @@ public class TermuxTerminalViewClient extends TermuxTerminalViewClientBase {
+ 
+         MessageDialogUtils.showMessage(mActivity, TermuxConstants.TERMUX_APP_NAME + " Report Issue",
+             mActivity.getString(R.string.msg_add_termux_debug_info),
+-            mActivity.getString(R.string.action_yes), (dialog, which) -> reportIssueFromTranscript(transcriptText, true),
+-            mActivity.getString(R.string.action_no), (dialog, which) -> reportIssueFromTranscript(transcriptText, false),
++            mActivity.getString(com.termux.shared.R.string.action_yes), (dialog, which) -> reportIssueFromTranscript(transcriptText, true),
++            mActivity.getString(com.termux.shared.R.string.action_no), (dialog, which) -> reportIssueFromTranscript(transcriptText, false),
+             null);
+     }
+ 
+diff --git a/build.gradle b/build.gradle
+index fd00105a..0def3386 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -4,7 +4,7 @@ buildscript {
+         google()
+     }
+     dependencies {
+-        classpath 'com.android.tools.build:gradle:7.4.2'
++        classpath "com.android.tools.build:gradle:8.13.0"
+     }
+ }
+ 
+@@ -15,7 +15,3 @@ allprojects {
+         maven { url "https://jitpack.io" }
+     }
+ }
+-
+-task clean(type: Delete) {
+-    delete rootProject.buildDir
+-}
+diff --git a/gradle.properties b/gradle.properties
+index 90de1221..55727fb4 100644
+--- a/gradle.properties
++++ b/gradle.properties
+@@ -22,8 +22,8 @@ android.useAndroidX=true
+ 
+ minSdkVersion=21
+ targetSdkVersion=28
+-ndkVersion=22.1.7171670
+-compileSdkVersion=30
++ndkVersion=29.0.14206865
++compileSdkVersion=36
+ 
+ markwonVersion=4.6.2
+ 
+diff --git a/gradle/wrapper/gradle-wrapper.properties b/gradle/wrapper/gradle-wrapper.properties
+index 2ec77e51..2733ed5d 100644
+--- a/gradle/wrapper/gradle-wrapper.properties
++++ b/gradle/wrapper/gradle-wrapper.properties
+@@ -1,5 +1,5 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-7.5-all.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+diff --git a/terminal-emulator/build.gradle b/terminal-emulator/build.gradle
+index afc57e9f..aec8777c 100644
+--- a/terminal-emulator/build.gradle
++++ b/terminal-emulator/build.gradle
+@@ -1,7 +1,7 @@
+ apply plugin: 'com.android.library'
+-apply plugin: 'maven-publish'
+ 
+ android {
++    namespace "com.termux.terminal"
+     compileSdkVersion project.properties.compileSdkVersion.toInteger()
+     ndkVersion = System.getenv("JITPACK_NDK_VERSION") ?: project.properties.ndkVersion
+ 
+@@ -53,23 +53,3 @@ dependencies {
+     implementation "androidx.annotation:annotation:1.3.0"
+     testImplementation "junit:junit:4.13.2"
+ }
+-
+-task sourceJar(type: Jar) {
+-    from android.sourceSets.main.java.srcDirs
+-    classifier "sources"
+-}
+-
+-afterEvaluate {
+-    publishing {
+-        publications {
+-            // Creates a Maven publication called "release".
+-            release(MavenPublication) {
+-                from components.release
+-                groupId = 'com.termux'
+-                artifactId = 'terminal-emulator'
+-                version = '0.118.0'
+-                artifact(sourceJar)
+-            }
+-        }
+-    }
+-}
+diff --git a/terminal-emulator/src/main/AndroidManifest.xml b/terminal-emulator/src/main/AndroidManifest.xml
+index a293cb64..bdae66c8 100644
+--- a/terminal-emulator/src/main/AndroidManifest.xml
++++ b/terminal-emulator/src/main/AndroidManifest.xml
+@@ -1,2 +1,2 @@
+-<manifest package="com.termux.terminal">
++<manifest>
+ </manifest>
+diff --git a/terminal-view/build.gradle b/terminal-view/build.gradle
+index d603da28..55361a0c 100644
+--- a/terminal-view/build.gradle
++++ b/terminal-view/build.gradle
+@@ -1,7 +1,7 @@
+ apply plugin: 'com.android.library'
+-apply plugin: 'maven-publish'
+ 
+ android {
++    namespace "com.termux.view"
+     compileSdkVersion project.properties.compileSdkVersion.toInteger()
+ 
+     dependencies {
+@@ -31,23 +31,3 @@ android {
+ dependencies {
+     testImplementation "junit:junit:4.13.2"
+ }
+-
+-task sourceJar(type: Jar) {
+-    from android.sourceSets.main.java.srcDirs
+-    classifier "sources"
+-}
+-
+-afterEvaluate {
+-    publishing {
+-        publications {
+-            // Creates a Maven publication called "release".
+-            release(MavenPublication) {
+-                from components.release
+-                groupId = 'com.termux'
+-                artifactId = 'terminal-view'
+-                version = '0.118.0'
+-                artifact(sourceJar)
+-            }
+-        }
+-    }
+-}
+diff --git a/terminal-view/src/main/AndroidManifest.xml b/terminal-view/src/main/AndroidManifest.xml
+index f2b0725d..bdae66c8 100644
+--- a/terminal-view/src/main/AndroidManifest.xml
++++ b/terminal-view/src/main/AndroidManifest.xml
+@@ -1,2 +1,2 @@
+-<manifest package="com.termux.view">
++<manifest>
+ </manifest>
+diff --git a/termux-shared/build.gradle b/termux-shared/build.gradle
+index 30e95362..1662c68c 100644
+--- a/termux-shared/build.gradle
++++ b/termux-shared/build.gradle
+@@ -1,7 +1,7 @@
+ apply plugin: 'com.android.library'
+-apply plugin: 'maven-publish'
+ 
+ android {
++    namespace "com.termux.shared"
+     compileSdkVersion project.properties.compileSdkVersion.toInteger()
+     ndkVersion = System.getenv("JITPACK_NDK_VERSION") ?: project.properties.ndkVersion
+ 
+@@ -69,23 +69,3 @@ dependencies {
+     androidTestImplementation "androidx.test.espresso:espresso-core:3.4.0"
+     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.1.5"
+ }
+-
+-task sourceJar(type: Jar) {
+-    from android.sourceSets.main.java.srcDirs
+-    classifier "sources"
+-}
+-
+-afterEvaluate {
+-    publishing {
+-        publications {
+-            // Creates a Maven publication called "release".
+-            release(MavenPublication) {
+-                from components.release
+-                groupId = 'com.termux'
+-                artifactId = 'termux-shared'
+-                version = '0.118.0'
+-                artifact(sourceJar)
+-            }
+-        }
+-    }
+-}
+diff --git a/termux-shared/src/main/AndroidManifest.xml b/termux-shared/src/main/AndroidManifest.xml
+index 81789f39..b90a74cf 100644
+--- a/termux-shared/src/main/AndroidManifest.xml
++++ b/termux-shared/src/main/AndroidManifest.xml
+@@ -1,5 +1,5 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+-    package="com.termux.shared">
++   >
+     <uses-permission android:name="android.permission.VIBRATE" />
+ </manifest>
+diff --git a/termux-shared/src/main/java/com/termux/shared/interact/MessageDialogUtils.java b/termux-shared/src/main/java/com/termux/shared/interact/MessageDialogUtils.java
+index d7543fc7..9ecb4400 100644
+--- a/termux-shared/src/main/java/com/termux/shared/interact/MessageDialogUtils.java
++++ b/termux-shared/src/main/java/com/termux/shared/interact/MessageDialogUtils.java
+@@ -51,7 +51,7 @@ public class MessageDialogUtils {
+                                    final DialogInterface.OnClickListener onNegativeButton,
+                                    final DialogInterface.OnDismissListener onDismiss) {
+ 
+-        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.Theme_AppCompat_Light_Dialog);
++        AlertDialog.Builder builder = new AlertDialog.Builder(context, androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog);
+ 
+         LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+         View view = inflater.inflate(R.layout.dialog_show_message, null);
