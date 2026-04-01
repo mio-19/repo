@@ -9,6 +9,7 @@ broken but can compile:
 + kernelsu cannot communicate with the kernel because of the need to change KSU_EXPECTED_HASH
 + rednote crashed
 + twitter cannot login
++ onlyoffice-documents crashing after welcome page
 
 slightly broken:
 
