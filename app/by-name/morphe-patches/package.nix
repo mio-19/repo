@@ -11,7 +11,6 @@
   apktool-src,
   multidexlib2-src,
   morphe-patcher-src,
-  fetchpatch,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -41,22 +40,14 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches";
-  version = "1.23.0-dev.2";
+  version = "1.22.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-pMB6lkmQpPk1xJU4J23lz6FfU1P2OZNcXaM1SngvZdA=";
+    hash = "sha256-2bqK7GhKcvJ1nSBTvl9MOadlfk5kKgap6hNUQLqDdt4=";
   };
-
-  patches = [
-    (fetchpatch {
-      name = "feat(YouTube): Add `Play all` patch";
-      url = "https://github.com/MorpheApp/morphe-patches/pull/1012.diff";
-      hash = "sha256-021YET++RfHOfHbV6QIDXGIe39T1yhmoJaG9f+1e+go=";
-    })
-  ];
 
   gradleBuildTask = "generatePatchesList";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
