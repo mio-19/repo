@@ -47,7 +47,12 @@ pkgs.stdenvNoCC.mkDerivation {
             echo "Failed to parse package name/versionCode from $apk" >&2
             exit 1
           fi
-          ln -s "$apk" "unsigned/''${pkg}_''${ver}.apk"
+          apk_abs="$(readlink -f "$apk")"
+          if [[ -z "$apk_abs" ]]; then
+            echo "Failed to resolve absolute path for $apk" >&2
+            exit 1
+          fi
+          ln -s "$apk_abs" "unsigned/''${pkg}_''${ver}.apk"
           apk_count=$((apk_count + 1))
         done < <(find "$src" -maxdepth 1 -type f -name '*.apk')
       elif [[ -f "$src" ]]; then
@@ -58,7 +63,12 @@ pkgs.stdenvNoCC.mkDerivation {
           echo "Failed to parse package name/versionCode from $src" >&2
           exit 1
         fi
-        ln -s "$src" "unsigned/''${pkg}_''${ver}.apk"
+        src_abs="$(readlink -f "$src")"
+        if [[ -z "$src_abs" ]]; then
+          echo "Failed to resolve absolute path for $src" >&2
+          exit 1
+        fi
+        ln -s "$src_abs" "unsigned/''${pkg}_''${ver}.apk"
         apk_count=$((apk_count + 1))
       else
         echo "APK source does not exist: $src" >&2
