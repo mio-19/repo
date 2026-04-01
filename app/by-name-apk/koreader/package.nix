@@ -268,6 +268,16 @@ let
           --replace-fail \
             "ndkVersion '23.2.8568313'" \
             "ndkVersion '26.1.10909125'"
+        # Work around top-edge tap crash reports on newer Android builds:
+        # avoid subtracting display-cutout inset from reported dimensions.
+        substituteInPlace platform/android/luajit-launcher/app/src/main/java/org/koreader/launcher/MainActivity.kt \
+          --replace-fail \
+            'getHeight() - topInsetHeight' \
+            'getHeight()'
+        substituteInPlace platform/android/luajit-launcher/app/src/main/java/org/koreader/launcher/MainActivity.kt \
+          --replace-fail \
+            'getWidth() - topInsetHeight' \
+            'getWidth()'
         echo >> platform/android/luajit-launcher/gradle.properties
         echo 'org.gradle.jvmargs=-Xmx4g' >> platform/android/luajit-launcher/gradle.properties
         # Also add --offline to GRADLE_FLAGS so gradle won't try the network
