@@ -39,8 +39,9 @@ let
     # cannot build on darwin due to fhs
     "koreader"
 
-    # can build locally but not on garnix
+    # can build locally but not on garnix - Operation not permitted
     "recorder"
+    "archivetune"
 
     # gradle lock platform dependent issue. need update lock for darwin:
     "youtube-morphe"
