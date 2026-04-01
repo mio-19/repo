@@ -81,7 +81,7 @@ let
         useBwrap = false;
       };
 
-      gradleUpdateTask = ":app:assembleRelease :connectivity_plus:extractReleaseAnnotations :dynamic_color:checkReleaseAarMetadata";
+      gradleUpdateTask = ":app:checkReleaseAarMetadata :app:assembleRelease :connectivity_plus:extractReleaseAnnotations :dynamic_color:checkReleaseAarMetadata :workmanager_android:checkReleaseAarMetadata";
 
       dontDartBuild = true;
       dontDartInstall = true;
