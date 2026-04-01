@@ -60,7 +60,7 @@ let
           url = "https://github.com/termux/termux-app/pull/4961.diff";
           hash = "sha256-N/Elb1VT54aLSgWxPbvEWoEUtkTsVoYKRSWZyt3L5/E=";
         })
-        ./0001-nix-on-droid-adjust-gradle-agp-deps.patch
+        ./0001-nix-on-droid-adjust-gradle-agp-deps.patch # based on https://github.com/salmon-21/termux-app/commit/53f75a8da3b823c18a8244b298da50e87382984d
         (fetchpatch {
           name = "Fixed: Improve dark mode support for settings and shared activities";
           url = "https://github.com/termux/termux-app/pull/5025.patch";
