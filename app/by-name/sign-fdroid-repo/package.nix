@@ -52,7 +52,7 @@ let
             # Keep nix-on-droid on the historical alias.
             echo "releasekey"
             ;;
-          com.termux|com.termux.styling|com.termux.x11)
+          com.termux|com.termux.styling|com.termux.x11|org.gnu.emacs)
             # Keep termux family on one shared alias.
             echo "com.termux"
             ;;
