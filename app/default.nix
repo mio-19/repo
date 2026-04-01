@@ -126,6 +126,7 @@
     {
       packages =
         lib.getAttrs [
+          "fdroid-keystore-update"
           "fdroid-repo"
           "sign-fdroid-repo"
           "morphe-patcher-src"

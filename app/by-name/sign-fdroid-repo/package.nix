@@ -14,13 +14,11 @@ let
   #   name         – script binary name (e.g. "sign-fdroid-repo")
   #   repoPath     – store path to unsigned repo root containing unsigned/
   #   defaultOut   – default output directory
-  #   defaultAlias – default key alias in keystore
   mkFdroidRepoSignScript =
     {
       name,
       repoPath,
       defaultOut,
-      defaultAlias,
     }:
     let
       androidSdk = androidSdkBuilder (s: [
@@ -36,16 +34,33 @@ let
     writeShellScriptBin name ''
       set -euo pipefail
       usage() {
-        echo "Usage: ${name} <keystore> [--ks-pass <pass>] [--key-pass <pass>] [--alias <keyalias>] [--out <output-dir>] [--repo-url <url>]"
+        echo "Usage: ${name} <keystore> [--ks-pass <pass>] [--key-pass <pass>] [--out <output-dir>] [--repo-url <url>]"
         echo ""
         echo "Signs APKs from ${repoPath}/unsigned and builds a signed F-Droid repo."
         echo "Options:"
         echo "  --ks-pass   Keystore password (default: env KS_PASS, else prompts)"
         echo "  --key-pass  Key password (default: env KEY_PASS, else same as --ks-pass)"
-        echo "  --alias     Key alias in keystore (default: ${defaultAlias})"
         echo "  --out       Output directory (default: ${defaultOut})"
         echo "  --repo-url  Final published repo URL written to repo metadata"
         exit 1
+      }
+
+      keyalias_for_pkg() {
+        local pkg="$1"
+        case "$pkg" in
+          com.termux.nix)
+            # Keep nix-on-droid on the historical alias.
+            echo "releasekey"
+            ;;
+          com.termux|com.termux.styling|com.termux.x11)
+            # Keep termux family on one shared alias.
+            echo "com.termux"
+            ;;
+          *)
+            # Default: per-app alias by appId/package name.
+            echo "$pkg"
+            ;;
+        esac
       }
 
       KEYSTORE="''${1:?$(usage)}"
@@ -60,15 +75,14 @@ let
 
       KS_PASS="''${KS_PASS:-}"
       KEY_PASS="''${KEY_PASS:-}"
-      ALIAS="${defaultAlias}"
       OUT="${defaultOut}"
       REPO_URL=""
+      REPO_ALIAS=""
 
       while [[ $# -gt 0 ]]; do
         case "$1" in
           --ks-pass)  KS_PASS="$2";  shift 2 ;;
           --key-pass) KEY_PASS="$2"; shift 2 ;;
-          --alias)    ALIAS="$2";    shift 2 ;;
           --out)      OUT="$2";      shift 2 ;;
           --repo-url) REPO_URL="$2"; shift 2 ;;
           *) echo "Unknown option: $1"; usage ;;
@@ -116,11 +130,20 @@ let
           echo "Failed to parse package name from $apk" >&2
           exit 1
         fi
-        keyaliases_yaml+="  ''${pkg}: ''${ALIAS}"$'\n'
+        alias="$(keyalias_for_pkg "$pkg")"
+        keyaliases_yaml+="  ''${pkg}: ''${alias}"$'\n'
+        if [[ -z "$REPO_ALIAS" ]]; then
+          REPO_ALIAS="$alias"
+        fi
       done
 
+      if [[ -z "$REPO_ALIAS" ]]; then
+        echo "Failed to determine repo signing alias" >&2
+        exit 1
+      fi
+
       printf '%s\n' \
-        "repo_keyalias: $ALIAS" \
+        "repo_keyalias: $REPO_ALIAS" \
         "keystore: $KEYSTORE" \
         "keystorepass: $KS_PASS" \
         "keypass: $KEY_PASS" \
@@ -162,5 +185,4 @@ mkFdroidRepoSignScript {
   name = "sign-fdroid-repo";
   repoPath = "${fdroid-repo}";
   defaultOut = "fdroid-repo-signed";
-  defaultAlias = "releasekey";
 }

@@ -139,7 +139,6 @@ nix build .#fdroid-repo -o fdroid-repo
 nix build .#sign-fdroid-repo -o sign-fdroid-repo
 ./sign-fdroid-repo/bin/sign-fdroid-repo my-release-key.jks \
   --ks-pass password \
-  --alias releasekey \
   --out fdroid-repo-signed
 ```
 
@@ -149,11 +148,37 @@ Or with `nix run`:
 NIXPKGS_ALLOW_UNFREE=1 nix run --impure .#sign-fdroid-repo -- \
   my-release-key.jks \
   --ks-pass password \
-  --alias releasekey \
   --out fdroid-repo-signed
 ```
 
 Signed repo output is in `fdroid-repo-signed/repo`.
+
+Alias behavior is automatic (no `--alias` flag):
+
+- Default: each APK is signed with key alias = its appId/package name.
+- Termux family (`com.termux`, `com.termux.styling`, `com.termux.x11`) uses shared alias `com.termux`.
+- `nix-on-droid` (`com.termux.nix`) keeps old alias `releasekey`.
+
+### Add missing key aliases to an existing keystore
+
+Use the helper script to create aliases for newly added APKs in the same keystore:
+
+```zsh
+nix run .#fdroid-keystore-update -- my-release-key.jks --ks-pass password --alias org.joinmastodon.android
+nix run .#fdroid-keystore-update -- my-release-key.jks --ks-pass password --alias me.proton.android.lumo
+```
+
+You can pass multiple `--alias` flags.
+
+If `--alias` is omitted, it auto-discovers APK package names from `.#fdroid-repo` and ensures all required aliases automatically using the same mapping as `sign-fdroid-repo`:
+
+- `com.termux.nix` -> `releasekey`
+- `com.termux`, `com.termux.styling`, `com.termux.x11` -> `com.termux`
+- all others -> appId/package name
+
+```zsh
+nix run .#fdroid-keystore-update -- my-release-key.jks --ks-pass password
+```
 
 ## update
 
