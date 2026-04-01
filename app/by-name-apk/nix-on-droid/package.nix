@@ -61,6 +61,11 @@ let
           hash = "sha256-N/Elb1VT54aLSgWxPbvEWoEUtkTsVoYKRSWZyt3L5/E=";
         })
         ./0001-nix-on-droid-adjust-gradle-agp-deps.patch
+        (fetchpatch {
+          name = "Fixed: Improve dark mode support for settings and shared activities";
+          url = "https://github.com/termux/termux-app/pull/5025.patch";
+          hash = "sha256-07jVCLJX96jZDoWcMlBLtjh2K9dLC1ciVOBzfC1kTpU=";
+        })
       ];
 
       gradleBuildTask = ":app:assembleRelease";
