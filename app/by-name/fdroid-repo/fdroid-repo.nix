@@ -47,7 +47,7 @@ pkgs.stdenvNoCC.mkDerivation {
             echo "Failed to parse package name/versionCode from $apk" >&2
             exit 1
           fi
-          cp "$apk" "unsigned/''${pkg}_''${ver}.apk"
+          ln -s "$apk" "unsigned/''${pkg}_''${ver}.apk"
           apk_count=$((apk_count + 1))
         done < <(find "$src" -maxdepth 1 -type f -name '*.apk')
       elif [[ -f "$src" ]]; then
@@ -58,7 +58,7 @@ pkgs.stdenvNoCC.mkDerivation {
           echo "Failed to parse package name/versionCode from $src" >&2
           exit 1
         fi
-        cp "$src" "unsigned/''${pkg}_''${ver}.apk"
+        ln -s "$src" "unsigned/''${pkg}_''${ver}.apk"
         apk_count=$((apk_count + 1))
       else
         echo "APK source does not exist: $src" >&2
