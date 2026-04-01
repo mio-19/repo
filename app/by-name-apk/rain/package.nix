@@ -47,6 +47,10 @@ let
         hash = "sha256-MHn71xBdb5YRVl+BmirGB7jFQaPEfpd87GWzJaFZZgE=";
       };
 
+      patches = [
+        ./0001-nolint.patch
+      ];
+
       pubspecLock = lib.importJSON ./pubspec.lock.json;
       gitHashes = lib.importJSON ./git-hashes.json;
 
@@ -77,7 +81,7 @@ let
         useBwrap = false;
       };
 
-      gradleUpdateTask = ":app:assembleRelease";
+      gradleUpdateTask = ":app:assembleRelease :connectivity_plus:extractReleaseAnnotations";
 
       dontDartBuild = true;
       dontDartInstall = true;

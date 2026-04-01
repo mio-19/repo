@@ -1,0 +1,28 @@
+From 586ae90c27a6e58d123ca42d0b87b8141eefa435 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Wed, 1 Apr 2026 20:19:04 +1100
+Subject: [PATCH] nolint
+
+---
+ android/app/build.gradle | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/android/app/build.gradle b/android/app/build.gradle
+index 7c22b04..2304b8d 100644
+--- a/android/app/build.gradle
++++ b/android/app/build.gradle
+@@ -36,6 +36,11 @@ android {
+         includeInBundle = false
+     }
+ 
++    lint {
++        checkReleaseBuilds false
++        abortOnError false
++    }
++
+     defaultConfig {
+         applicationId = 'com.yoshi.rain'
+         minSdkVersion = flutter.minSdkVersion
+-- 
+2.53.0
+
