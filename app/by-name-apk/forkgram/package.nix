@@ -3,6 +3,7 @@
   androidSdkBuilder,
   gradle2nixBuilders,
   mkSignScript,
+  fetchpatch,
 }:
 
 let
@@ -53,6 +54,11 @@ gradle2nixBuilders.buildGradlePackage rec {
   ];
 
   patches = [
+    (fetchpatch {
+      name = "Fix audio focus";
+      url = "https://github.com/DrKLO/Telegram/pull/1896.patch";
+      hash = "sha256-AhLdwlPvHNMEriZ+npona4/TV+SbsJnOtTH4tHaA40g=";
+    })
     ./0001-Killergram.patch
     # Skip git submodule management (submodules pre-fetched by Nix)
     # and skip rm -rf of submodule dirs
