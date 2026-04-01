@@ -79,9 +79,9 @@ let
 
       installPhase = ''
         runHook preInstall
-        install -Dm644 \
-          mastodon/build/outputs/apk/githubRelease/release/mastodon-githubRelease-release-unsigned.apk \
-          "$out/mastodon-android.apk"
+        apk_path="$(find mastodon/build/outputs/apk -type f -name '*-unsigned.apk' | head -n1)"
+        test -n "$apk_path"
+        install -Dm644 "$apk_path" "$out/mastodon-android.apk"
         runHook postInstall
       '';
 
