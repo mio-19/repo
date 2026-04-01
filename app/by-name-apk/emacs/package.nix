@@ -57,6 +57,9 @@ let
       postPatch = ''
         substituteInPlace java/AndroidManifest.xml.in \
           --replace-fail 'android:versionCode="30"' 'android:versionCode="${versionCode}"'
+        substituteInPlace java/Makefile.in \
+          --replace-fail '{ hostname; date +%s; } > install_temp/assets/build_info' \
+            '{ hostname; printf "\\n"; date +%s; printf "\\n"; } > install_temp/assets/build_info'
       '';
 
       preConfigure = ''
