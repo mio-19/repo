@@ -49,6 +49,11 @@ let
           url = "https://github.com/zotero/zotero-android/pull/291.patch";
           hash = "sha256-gdDpOwy5PUeDksqxz0B1DMHSSgH3nyj0vdQGSd0oNG4=";
         })
+        (fetchpatch {
+          name = "Add volume buttons zoom";
+          url = "https://github.com/zotero/zotero-android/pull/298.diff";
+          hash = "sha256-I3BU1rkTx2YiQnRh/7vjv2k8ahCHeVSS8jT3XAgEklI=";
+        })
       ];
 
       gradleBuildTask = ":app:assembleInternalRelease";
