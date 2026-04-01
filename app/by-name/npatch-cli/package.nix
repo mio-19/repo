@@ -1,1 +1,1 @@
-{ lspatch }: lspatch.cli
+{ npatch }: npatch.cli
