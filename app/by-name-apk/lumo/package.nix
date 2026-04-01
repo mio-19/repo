@@ -36,6 +36,7 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
+        s.build-tools-35-0-0
         s.build-tools-36-1-0
       ]);
 
@@ -73,6 +74,7 @@ let
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
+        SENTRY_DISABLE_TELEMETRY = "1";
       };
 
       postPatch = ''
@@ -90,6 +92,9 @@ let
       gradleFlags = [
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk21}"
+        "-Dandroid.builder.sdkDownload=false"
+        "-Dio.sentry.telemetry.enabled=false"
+        "-Dsentry.telemetry.enabled=false"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
       ];
