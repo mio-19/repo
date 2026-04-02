@@ -52,6 +52,11 @@ let
           url = "https://github.com/termux/termux-styling/pull/256.diff";
           hash = "sha256-VqWS1IcogmcMdzv+O3nLPuZiwMr49HjbtCmjU/0aMIU=";
         })
+        (fetchpatch {
+          name = "Add Tokyo Night Moon and Storm variants";
+          url = "https://github.com/termux/termux-styling/pull/222.diff";
+          hash = "sha256-7bSSGkkmIpuBY54OS+DylRj1lSh7xU5BWMcHz38rAas=";
+        })
       ];
 
       gradleBuildTask = ":app:assembleRelease";
