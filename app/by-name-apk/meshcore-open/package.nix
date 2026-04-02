@@ -243,29 +243,6 @@ let
           fi
         }
 
-        ${python3}/bin/python3 - <<'PY' > dart_package_dirs.sh
-        import json
-        import shlex
-        import urllib.parse
-
-        with open(".dart_tool/package_config.json") as f:
-            data = json.load(f)
-
-        wanted = {
-            "flserial": "FLSERIAL_DIR",
-        }
-
-        found = {env_name: "" for env_name in wanted.values()}
-        for pkg in data["packages"]:
-            env_name = wanted.get(pkg["name"])
-            if env_name:
-                found[env_name] = urllib.parse.urlparse(pkg["rootUri"]).path.removesuffix("/.")
-
-        for env_name, path in found.items():
-            print(f"export {env_name}={shlex.quote(path)}")
-        PY
-        . ./dart_package_dirs.sh
-
         patch_plugin_gradle_file() {
           local gradle_file="$1"
           local target_agp='8.9.1'
