@@ -41,7 +41,7 @@ let
 
       patches = [
         (fetchpatch {
-          name = "Enable more comprehensive R8 optimizations";
+          name = "Enable more comprehensive R8 optimizations (#1079)";
           url = "https://github.com/mastodon/mastodon-android/pull/1079.diff";
           hash = "sha256-8pcIg8Qmv30WCQJsrJOqvP20pCcfov4F9XZbOZVOS+Y=";
         })
