@@ -8,6 +8,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  fetchpatch,
 }:
 let
   version = "unstable-2026-03-28";
@@ -50,6 +51,14 @@ let
         silent = false;
         useBwrap = false;
       };
+
+      patches = [
+        (fetchpatch {
+          name = "Enable synchronous memory tagging";
+          url = "https://github.com/deniscerri/ytdlnis/pull/1157.diff";
+          hash = "sha256-Vj69EgOWZ7DbU3xNC1ytVn1xOthq2j25ktdEfn7ic3k=";
+        })
+      ];
 
       nativeBuildInputs = [
         gradle
