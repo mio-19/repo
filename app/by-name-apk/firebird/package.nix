@@ -159,10 +159,17 @@ let
     };
 
     patches = [
+      /*
+        (fetchpatch {
+          name = "I make a svg keypad，can i merge it to this project";
+          url = "https://github.com/nspire-emus/firebird/pull/305.diff";
+          hash = "sha256-mZUDSZE2hPR78ZLzRpKahsxhmwOenErQaeG7obreKG4=";
+        })
+      */
       (fetchpatch {
-        name = "I make a svg keypad，can i merge it to this project";
-        url = "https://github.com/nspire-emus/firebird/pull/305.diff";
-        hash = "sha256-mZUDSZE2hPR78ZLzRpKahsxhmwOenErQaeG7obreKG4=";
+        name = "[Mobile UI] Introduce separate keypad fill modes (#297)";
+        url = "https://github.com/nspire-emus/firebird/pull/298.diff";
+        hash = "sha256-pJf3nUJ3BbbCOx+yvUtchfzts0dbCMaa3essTDcbB4o=";
       })
     ];
 
