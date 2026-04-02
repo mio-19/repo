@@ -12,7 +12,6 @@
   gradle-packages,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  fetchpatch,
   applyPatches,
 }:
 let
@@ -37,6 +36,14 @@ let
         }).wrapped;
 
       pythonWithYaml = python3.withPackages (ps: [ ps.pyyaml ]);
+      androidSdkRoot = "${androidSdk}/share/android-sdk";
+      aapt2Path = "${androidSdkRoot}/build-tools/36.1.0/aapt2";
+      gradleCommonOpts = [
+        "-Dorg.gradle.java.installations.auto-download=false"
+        "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
+        "-Dandroid.aapt2FromMavenOverride=${aapt2Path}"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2Path}"
+      ];
     in
     buildDartApplication.override { dart = flutter335; } (finalAttrs: {
       pname = "immich";
@@ -130,20 +137,17 @@ let
 
       env = {
         JAVA_HOME = jdk17_headless;
-        ANDROID_HOME = "${androidSdk}/share/android-sdk";
-        ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
+        ANDROID_HOME = androidSdkRoot;
+        ANDROID_SDK_ROOT = androidSdkRoot;
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = aapt2Path;
       };
 
       gradleFlags = [
         "-xlintVitalRelease"
         "--project-dir"
         "android"
-        "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-      ];
+      ]
+      ++ gradleCommonOpts;
 
       postPatch = ''
         cp -LR ${flutter335} flutter-sdk
@@ -204,8 +208,8 @@ let
         mkdir -p "$ANDROID_USER_HOME"
         export PUB_CACHE="$PWD/.pub-cache"
 
-        echo "sdk.dir=${androidSdk}/share/android-sdk" > android/local.properties
-        echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6" >> android/local.properties
+        echo "sdk.dir=${androidSdkRoot}" > android/local.properties
+        echo "cmake.dir=${androidSdkRoot}/cmake/3.31.6" >> android/local.properties
         echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
         echo "flutter.versionName=2.6.1" >> android/local.properties
         echo "flutter.versionCode=3039" >> android/local.properties
@@ -213,10 +217,9 @@ let
 
       preBuild = ''
         GRADLE_OPTS="''${GRADLE_OPTS:-}"
-        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.auto-download=false"
-        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        GRADLE_OPTS="$GRADLE_OPTS -Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+        for gradle_opt in ${lib.escapeShellArgs gradleCommonOpts}; do
+          GRADLE_OPTS="$GRADLE_OPTS $gradle_opt"
+        done
         if [[ -n "''${MITM_CACHE_KEYSTORE:-}" ]]; then
           GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyHost=$MITM_CACHE_HOST"
           GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyPort=$MITM_CACHE_PORT"
@@ -373,45 +376,16 @@ let
           fi
         fi
 
-        patch_plugin_gradle_file() {
-          local gradle_file="$1"
-          [ -f "$gradle_file" ] || return 0
-          
-          # Most plugins work fine with their specified versions, no need to force normalize
-          return 0
-        }
-
-        patch_ndk_version_file() {
-          local file="$1"
-          [ -f "$file" ] || return 0
-          return 0
-        }
-
         declare -A patched_pkg_dirs
-
         while IFS= read -r pkg_dir; do
-          work_pkg_dir="$pkg_dir"
-          if [ -f "$work_pkg_dir/android/build.gradle" ] || [ -f "$work_pkg_dir/android/build.gradle.kts" ]; then
-            if [[ "$pkg_dir" == /nix/store/* ]]; then
-              if [ -z "''${patched_pkg_dirs[$pkg_dir]:-}" ]; then
-                patched_pkg_dirs[$pkg_dir]="$(clone_dart_package "$pkg_dir" "$(basename "$pkg_dir")")"
-                replace_dart_package_root "$pkg_dir" "''${patched_pkg_dirs[$pkg_dir]}"
-                replace_flutter_plugin_root "$pkg_dir" "''${patched_pkg_dirs[$pkg_dir]}"
-              fi
-              work_pkg_dir="''${patched_pkg_dirs[$pkg_dir]}"
-            fi
+          [ -n "$pkg_dir" ] || continue
+          [ -d "$pkg_dir/android" ] || continue
+          [[ "$pkg_dir" == /nix/store/* ]] || continue
+          if [ -z "''${patched_pkg_dirs[$pkg_dir]:-}" ]; then
+            patched_pkg_dirs[$pkg_dir]="$(clone_dart_package "$pkg_dir" "$(basename "$pkg_dir")")"
           fi
-          for gradle_rel in android/build.gradle android/build.gradle.kts; do
-            gradle_file="$work_pkg_dir/$gradle_rel"
-            if [ -f "$gradle_file" ]; then
-              patch_plugin_gradle_file "$gradle_file"
-            fi
-          done
-          if [ -d "$work_pkg_dir/android" ]; then
-            while IFS= read -r ndk_file; do
-              patch_ndk_version_file "$ndk_file"
-            done < <(find "$work_pkg_dir/android" -type f \( -name '*.gradle' -o -name '*.gradle.kts' -o -name '*.properties' \))
-          fi
+          replace_dart_package_root "$pkg_dir" "''${patched_pkg_dirs[$pkg_dir]}"
+          replace_flutter_plugin_root "$pkg_dir" "''${patched_pkg_dirs[$pkg_dir]}"
         done < <(${python3}/bin/python3 - <<'PY'
         import json
         import urllib.parse
@@ -432,38 +406,6 @@ let
         )
 
         ${pythonWithYaml}/bin/python3 ${../_shared/generate-flutter-plugins.py}
-
-        while IFS= read -r plugin_dir; do
-          [ -n "$plugin_dir" ] || continue
-          work_plugin_dir="$plugin_dir"
-          if [[ "$plugin_dir" == /nix/store/* ]]; then
-            if [ -z "''${patched_pkg_dirs[$plugin_dir]:-}" ]; then
-              patched_pkg_dirs[$plugin_dir]="$(clone_dart_package "$plugin_dir" "$(basename "$plugin_dir")")"
-              if grep -Fq "$plugin_dir" .dart_tool/package_config.json; then
-                replace_dart_package_root "$plugin_dir" "''${patched_pkg_dirs[$plugin_dir]}"
-              fi
-              replace_flutter_plugin_root "$plugin_dir" "''${patched_pkg_dirs[$plugin_dir]}"
-            fi
-            work_plugin_dir="''${patched_pkg_dirs[$plugin_dir]}"
-          fi
-          patch_plugin_gradle_file "$work_plugin_dir/android/build.gradle"
-          patch_plugin_gradle_file "$work_plugin_dir/android/build.gradle.kts"
-          if [ -d "$work_plugin_dir/android" ]; then
-            while IFS= read -r ndk_file; do
-              patch_ndk_version_file "$ndk_file"
-            done < <(find "$work_plugin_dir/android" -type f \( -name '*.gradle' -o -name '*.gradle.kts' -o -name '*.properties' \))
-          fi
-        done < <(${python3}/bin/python3 - <<'PY'
-        import json
-
-        with open(".flutter-plugins-dependencies") as f:
-            data = json.load(f)
-        for plugin in data.get("plugins", {}).get("android", []):
-            path = plugin.get("path", "")
-            if path:
-                print(path)
-        PY
-        )
       '';
 
       buildPhase = ''
