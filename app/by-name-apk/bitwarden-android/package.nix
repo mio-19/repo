@@ -11,7 +11,8 @@
   androidSdkBuilder,
   git,
   rustPlatform,
-  cargo-ndk,
+  cargo,
+  rustc,
 }:
 let
   appPackage =
@@ -148,8 +149,8 @@ let
         };
         nativeBuildInputs = [
           rustPlatform.cargoSetupHook
-          rustPlatform.rust.cargo
-          rustPlatform.rust.rustc
+          cargo
+          rustc
           uniffiBindgen
         ];
         dontConfigure = true;
