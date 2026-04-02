@@ -27,16 +27,17 @@ let
       versionCode = "310050029";
       androidAbi = "arm64-v8a";
       minSdk = "29";
+      internalVersion = "31.0.50";
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "emacs";
-      version = "31.0.50";
+      version = "31-unstable-20250402";
 
       src = fetchFromGitHub {
         owner = "emacs-mirror";
         repo = "emacs";
-        rev = "c852297037cbf5fad63dc548530491e2d9fa3b48";
-        hash = "sha256-PNeXgSZ1zYVDyiIw6Wi1Kn7o0vM7VUty0+xCmkoHNAg=";
+        rev = "b93591551eba854967c3484481f6ff21ddfde793";
+        hash = "sha256-OmpP0zipkxO8vJ/ZKRBy7FQNBvcGSSPFMCay8nDcsrM=";
       };
 
       nativeBuildInputs = [
@@ -98,7 +99,7 @@ let
       installPhase = ''
         runHook preInstall
 
-        install -Dm644 "java/emacs-${finalAttrs.version}-${minSdk}-${androidAbi}.apk" "$out/emacs.apk"
+        install -Dm644 "java/emacs-${internalVersion}-${minSdk}-${androidAbi}.apk" "$out/emacs.apk"
 
         runHook postInstall
       '';
