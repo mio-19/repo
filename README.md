@@ -188,6 +188,16 @@ nix run .#fdroid-keystore-update -- my-release-key.jks --ks-pass password
 
 use update-nix-fetchgit and nvfetcher
 
+## lock
+
+see <https://github.com/nix-community/robotnix/blob/a2c5626074199e6b990fdeb8107f43b73d0be17d/docs/src/installation.md?plain=1#L50>
+
+```zsh
+    $ fastboot erase avb_custom_key
+    $ fastboot flash avb_custom_key ./avb_pkmd.bin
+    $ fastboot reboot bootloader
+```
+
 ## todo
 
 + <https://github.com/nix-community/robotnix/commit/2b5be1b40170aff4a9841d291b2c3303e6e04154#commitcomment-181052651>
@@ -198,3 +208,4 @@ read
 + <https://github.com/osbm/nixapks>
 + <https://github.com/tiann/KernelSU/issues/2942#issuecomment-4078266560>
 + <https://www.reddit.com/r/LineageOS/comments/1oaw2hj/comment/nkisxra/>
+
