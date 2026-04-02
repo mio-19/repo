@@ -46,7 +46,7 @@ let
 
       src = fetchgit {
         url = "https://codeberg.org/comaps/comaps.git";
-        rev = "d4c01a769d3fa7f57c9aad2959d4b14163cd506f";
+        tag = "v${finalAttrs.version}";
         fetchSubmodules = true;
         hash = "sha256-1bD0QiEZu6nB7wwBpfpEf+WypqbOd9XuXbq7FDTL7bw=";
       };
