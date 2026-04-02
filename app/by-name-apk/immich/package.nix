@@ -151,15 +151,6 @@ let
 
         cat > android/gradle-version-normalize.init.gradle << 'INIT_SCRIPT'
         allprojects {
-          buildscript {
-            configurations.matching { it.name == "classpath" }.all {
-              resolutionStrategy.eachDependency { details ->
-                if (details.requested.group == "com.android.tools.build" && details.requested.name == "gradle") {
-                  details.useVersion("8.11.2")
-                }
-              }
-            }
-          }
           configurations.configureEach {
             resolutionStrategy.eachDependency { details ->
               if (details.requested.group == "androidx.appcompat" && details.requested.name == "appcompat") {
@@ -168,17 +159,14 @@ let
               if (details.requested.group == "androidx.appcompat" && details.requested.name == "appcompat-resources") {
                 details.useVersion("1.7.0")
               }
-              if (details.requested.group == "androidx.media" && details.requested.name == "media") {
-                details.useVersion("1.1.0")
-              }
               if (details.requested.group == "androidx.transition" && details.requested.name == "transition") {
                 details.useVersion("1.5.0")
               }
+              if (details.requested.group == "androidx.media" && details.requested.name == "media") {
+                details.useVersion("1.1.0")
+              }
               if (details.requested.group == "androidx.slidingpanelayout" && details.requested.name == "slidingpanelayout") {
                 details.useVersion("1.2.0")
-              }
-              if (details.requested.group == "androidx.constraintlayout" && details.requested.name == "constraintlayout") {
-                details.useVersion("2.0.1")
               }
               if (details.requested.group == "androidx.exifinterface" && details.requested.name == "exifinterface") {
                 details.useVersion("1.3.7")
@@ -196,10 +184,6 @@ let
         exec ${gradle}/bin/gradle -I "$PWD/gradle-version-normalize.init.gradle" "$@"
         GRADLEW_SCRIPT
         chmod +x android/gradlew
-
-        pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application") {\n                def agpVersion = requested.version ?: "8.11.2"\n                useModule("com.android.tools.build:gradle:''${agpVersion}")\n            }\n        }\n    }\n'
-        substituteInPlace android/settings.gradle \
-          --replace-fail "pluginManagement {" "$pluginResolutionBlock"
 
         substituteInPlace android/build.gradle \
           --replace-fail 'buildToolsVersion "36.0.0"' 'buildToolsVersion "36.1.0"'
@@ -344,9 +328,6 @@ let
           if [ -n "$NATIVE_VIDEO_PLAYER_DIR" ]; then
             patched_native_video_player_dir="$(clone_dart_package "$NATIVE_VIDEO_PLAYER_DIR" native_video_player)"
             substituteInPlace "$patched_native_video_player_dir/android/build.gradle" \
-              --replace-fail "    ext.kotlin_version = '2.2.20'" "    ext.kotlin_version = '2.0.20'" \
-              --replace-fail '        classpath("com.android.tools.build:gradle:8.13.2")' \
-                '        classpath("com.android.tools.build:gradle:8.1.2")' \
               --replace-fail '     implementation("androidx.media3:media3-ui:1.9.2")' \
                 "     implementation(\"androidx.media3:media3-ui:1.9.2\")
          implementation \"androidx.annotation:annotation:1.8.0\"
@@ -359,10 +340,6 @@ let
           if [ -n "$HOME_WIDGET_DIR" ]; then
             patched_home_widget_dir="$(clone_dart_package "$HOME_WIDGET_DIR" home_widget)"
             substituteInPlace "$patched_home_widget_dir/android/build.gradle" \
-              --replace-fail '    implementation "androidx.glance:glance-appwidget:1.+"' \
-                '    implementation "androidx.glance:glance-appwidget:1.2.0-rc01"' \
-              --replace-fail '    implementation "androidx.work:work-runtime-ktx:2.+"' \
-                '    implementation "androidx.work:work-runtime-ktx:2.11.2"' \
               --replace-fail '    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+"' \
                 "    implementation \"org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+\"
         compileOnly \"io.flutter:flutter_embedding_release:1.0.0-$flutter_engine_version\""
@@ -398,39 +375,10 @@ let
 
         patch_plugin_gradle_file() {
           local gradle_file="$1"
-          local target_agp='8.11.2'
-          local target_kotlin='2.2.20'
-
           [ -f "$gradle_file" ] || return 0
-
-          for major in 7 8; do
-            for minor in $(seq 0 20); do
-              for patch in 0 1 2; do
-                old_agp="$major.$minor.$patch"
-                if [ "$old_agp" != "$target_agp" ] && grep -Fq "com.android.tools.build:gradle:$old_agp" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "com.android.tools.build:gradle:$old_agp" "com.android.tools.build:gradle:$target_agp"
-                fi
-              done
-            done
-          done
-
-          for major in 1 2; do
-            for minor in $(seq 0 9); do
-              for patch in $(seq 0 30); do
-                old_kotlin="$major.$minor.$patch"
-                if [ "$old_kotlin" != "$target_kotlin" ] && grep -Fq "ext.kotlin_version = '$old_kotlin'" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "ext.kotlin_version = '$old_kotlin'" "ext.kotlin_version = '$target_kotlin'"
-                fi
-                if [ "$old_kotlin" != "$target_kotlin" ] && grep -Fq "org.jetbrains.kotlin:kotlin-gradle-plugin:$old_kotlin" "$gradle_file"; then
-                  substituteInPlace "$gradle_file" \
-                    --replace-fail "org.jetbrains.kotlin:kotlin-gradle-plugin:$old_kotlin" "org.jetbrains.kotlin:kotlin-gradle-plugin:$target_kotlin"
-                fi
-              done
-            done
-          done
-
+          
+          # Most plugins work fine with their specified versions, no need to force normalize
+          return 0
         }
 
         patch_ndk_version_file() {
