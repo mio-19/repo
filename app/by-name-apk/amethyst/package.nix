@@ -62,8 +62,8 @@ let
       src = fetchFromGitHub {
         owner = "AngelAuraMC";
         repo = "Amethyst-Android";
-        rev = "258a8488b62a19313a8def8eaaaa6ade7d6982fc";
-        hash = "sha256-hYuwzEjMg7K0QJsYDTeZ+MIAczENYZXmxyLg+2MS6pg=";
+        rev = "055d2989cbce9d812fdd7bf6abb03135d414cb9b";
+        hash = "sha256-J/rjyKJSb26S+axZrbeAFskQqiMD7ed9rAyySm+BceU=";
         fetchSubmodules = true;
       };
 
