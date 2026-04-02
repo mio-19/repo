@@ -9,6 +9,8 @@ broken but can compile:
 + rednote crashed
 + twitter cannot login
 + onlyoffice-documents crashing after welcome page
++ lumo
++ bitwarden
 
 slightly broken:
 
