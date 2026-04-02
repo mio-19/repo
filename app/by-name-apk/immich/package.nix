@@ -238,8 +238,7 @@ let
             https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite-framework/2.3.0/sqlite-framework-2.3.0.aar \
             https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite/2.3.0/sqlite-2.3.0.aar
           do
-            https_proxy="http://$MITM_CACHE_HOST:$MITM_CACHE_PORT" \
-              ${curl}/bin/curl --silent --show-error --fail --location \
+            ${curl}/bin/curl --silent --show-error --fail --location \
               --proxy "http://$MITM_CACHE_HOST:$MITM_CACHE_PORT" \
               --cacert "$MITM_CACHE_CA" \
               --output /dev/null \
@@ -286,6 +285,14 @@ let
           fi
         }
 
+        remap_dart_package_root() {
+          local original_dir="$1"
+          local patched_dir="$2"
+
+          replace_dart_package_root "$original_dir" "$patched_dir"
+          replace_flutter_plugin_root "$original_dir" "$patched_dir"
+        }
+
         ${python3}/bin/python3 - <<'PY' > dart_package_dirs.sh
         import json
         import shlex
@@ -322,8 +329,7 @@ let
             -d "$patched_geolocator_android_dir/android/src/main/java/com/baseflow/geolocator/location" \
             -p1 < ${./geolocator-force-locationmanager.patch}
 
-          replace_dart_package_root "$GEOLOCATOR_ANDROID_DIR" "$patched_geolocator_android_dir"
-          replace_flutter_plugin_root "$GEOLOCATOR_ANDROID_DIR" "$patched_geolocator_android_dir"
+          remap_dart_package_root "$GEOLOCATOR_ANDROID_DIR" "$patched_geolocator_android_dir"
         fi
 
         flutter_engine_version="$(cat flutter-sdk/bin/internal/engine.version)"
@@ -335,8 +341,7 @@ let
                 "     implementation(\"androidx.media3:media3-ui:1.9.2\")
          implementation \"androidx.annotation:annotation:1.8.0\"
          compileOnly \"io.flutter:flutter_embedding_release:1.0.0-$flutter_engine_version\""
-            replace_dart_package_root "$NATIVE_VIDEO_PLAYER_DIR" "$patched_native_video_player_dir"
-            replace_flutter_plugin_root "$NATIVE_VIDEO_PLAYER_DIR" "$patched_native_video_player_dir"
+            remap_dart_package_root "$NATIVE_VIDEO_PLAYER_DIR" "$patched_native_video_player_dir"
             NATIVE_VIDEO_PLAYER_DIR="$patched_native_video_player_dir"
           fi
 
@@ -346,8 +351,7 @@ let
               --replace-fail '    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+"' \
                 "    implementation \"org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+\"
         compileOnly \"io.flutter:flutter_embedding_release:1.0.0-$flutter_engine_version\""
-            replace_dart_package_root "$HOME_WIDGET_DIR" "$patched_home_widget_dir"
-            replace_flutter_plugin_root "$HOME_WIDGET_DIR" "$patched_home_widget_dir"
+            remap_dart_package_root "$HOME_WIDGET_DIR" "$patched_home_widget_dir"
             HOME_WIDGET_DIR="$patched_home_widget_dir"
           fi
 
@@ -378,14 +382,12 @@ let
 
         declare -A patched_pkg_dirs
         while IFS= read -r pkg_dir; do
-          [ -n "$pkg_dir" ] || continue
           [ -d "$pkg_dir/android" ] || continue
           [[ "$pkg_dir" == /nix/store/* ]] || continue
           if [ -z "''${patched_pkg_dirs[$pkg_dir]:-}" ]; then
             patched_pkg_dirs[$pkg_dir]="$(clone_dart_package "$pkg_dir" "$(basename "$pkg_dir")")"
           fi
-          replace_dart_package_root "$pkg_dir" "''${patched_pkg_dirs[$pkg_dir]}"
-          replace_flutter_plugin_root "$pkg_dir" "''${patched_pkg_dirs[$pkg_dir]}"
+          remap_dart_package_root "$pkg_dir" "''${patched_pkg_dirs[$pkg_dir]}"
         done < <(${python3}/bin/python3 - <<'PY'
         import json
         import urllib.parse
