@@ -83,7 +83,7 @@ nix build -L .#grapheneos-tangorpro-kernel -o tangorpro-kernel-dist
 nix build -L .#grapheneos-mustang-kernel -o mustang-kernel-dist
 ```
 
-## ForkGram
+## ForkGram and other android applications
 
 Build the APK (unsigned):
 
