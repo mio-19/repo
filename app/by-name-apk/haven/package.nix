@@ -10,7 +10,6 @@
   rustPlatform,
   patchelf,
   zlib,
-  apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   git,
@@ -313,18 +312,18 @@ let
     in
     {
       pname = "haven";
-      version = "4.16.0";
+      version = "4.24.0";
 
       src = fetchFromGitHub {
         owner = "GlassOnTin";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-DqKjAiL99ztwTX6SLPzPI62Zv+CZvCfiuiXFwm0OAf8=";
+        hash = "sha256-YcYOetOlsVwiVKhbF4S53y9UppQVf22jEBpa/8xpbJ8=";
       };
 
       patches = [
-        # Build unsigned APK (no keystore in sandbox); apksigner re-signs in installPhase.
+        # Build unsigned APK (no keystore in sandbox)
         ./remove-signing-config.patch
         # Allow skipping Chaquopy pip requirements in reproducible/offline builds.
         ./skip-python-requirements.patch
@@ -352,7 +351,6 @@ let
       nativeBuildInputs = [
         gradle
         jdk17_headless
-        apksigner
         writableTmpDirAsHomeHook
         git
         python313
