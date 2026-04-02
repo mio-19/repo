@@ -47,6 +47,11 @@ let
           url = "https://web.archive.org/web/20260328023017if_/https://patch-diff.githubusercontent.com/raw/termux/termux-styling/pull/263.patch";
           hash = "sha256-S40xTaUrnE7jAo+PNveVMp0S9NOvHbAi5ubVv0yxvmU=";
         })
+        (fetchpatch {
+          name = "Add konsole breeze color scheme";
+          url = "https://github.com/termux/termux-styling/pull/256.diff";
+          hash = "sha256-VqWS1IcogmcMdzv+O3nLPuZiwMr49HjbtCmjU/0aMIU=";
+        })
       ];
 
       gradleBuildTask = ":app:assembleRelease";
