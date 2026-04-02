@@ -11,7 +11,7 @@ broken but can compile:
 + onlyoffice-documents crashing after welcome page
 + lumo
 + bitwarden
-+ weathermaster: needs api key
++ weathermaster: needs better api key
 
 slightly broken:
 
