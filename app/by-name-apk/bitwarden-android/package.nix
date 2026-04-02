@@ -34,6 +34,9 @@ let
           defaultJava = jdk21;
         }).wrapped;
 
+      # Pin picked from upstream Bitwarden Android 2026.3.0 SDK compatibility:
+      # this sdk-internal revision matches the app's expected InitUserCrypto APIs.
+      # We derived it while removing local API-drift shims and validating build/runtime path.
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
