@@ -8,6 +8,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  fetchpatch,
 }:
 let
   appPackage =
@@ -47,6 +48,14 @@ let
         silent = false;
         useBwrap = false;
       };
+
+      patches = [
+        (fetchpatch {
+          name = "Fix CJK (Japanese/Chinese/Korean) text scrambling by using clipboard + Ctrl+V instead of keystrokes";
+          url = "https://github.com/KDE/kdeconnect-android/pull/32.diff";
+          hash = "sha256-V94ITfq++zaTKHVxPOXCaQhEcbFgFjKLJia23Pf+x/4=";
+        })
+      ];
 
       nativeBuildInputs = [
         gradle
