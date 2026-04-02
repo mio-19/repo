@@ -8,6 +8,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  fetchpatch,
 }:
 let
   appPackage =
@@ -61,6 +62,14 @@ let
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
       };
+
+      patches = [
+        (fetchpatch {
+          name = "YTDL support";
+          url = "https://github.com/mpv-android/mpv-android/pull/58.diff";
+          hash = "sha256-1e/VhH1G59b9hgK6EV80DOUQStTlApAKsB6YspA1jPI=";
+        })
+      ];
 
       postPatch = ''
         cat > local.properties <<LOCALPROPS
