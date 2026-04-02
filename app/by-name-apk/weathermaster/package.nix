@@ -161,9 +161,9 @@ let
         chmod +x android/gradlew
 
         cat > .env <<APIKEYS
-        API_KEY_WEATHERAPI=$(echo MGM5NTVjMjhiYWZhNGIxYmE0ODEzMTU0MjIzMTExMQo= | base64 -d)
-        API_TOKEN=crowdin_token
-        API_KEY_OPENROUTER=https://openrouter.ai/
+        API_KEY_WEATHERAPI=$(echo ZjFkZDE3MTFjNzgxNGE3NmFiNjQxODQ4MjUyMjA3Cg== | base64 -d)
+        API_TOKEN=$(echo MWI1MDEyMGU4OWY4ZjExNjlkZGM1NWVmOGE5MzFmNzUxYjIwZDhmODRlMzc2OTlkODU4ZTdlY2M3YmI2MGNkMTA2MmY4ODViYmQ2Yzc3YjUK | base64 -d)
+        API_KEY_OPENROUTER=$(echo c2stb3ItdjEtODQwY2Q2NmRiMThkNzU0NjQ0YjBiZTFhZDY5YzBiZDlmYjQxNmI2ZjY2OTk0NjBjZjczMDg3Y2Y2NmNiZWZhZQo= | base64 -d)
         APIKEYS
       '';
 
