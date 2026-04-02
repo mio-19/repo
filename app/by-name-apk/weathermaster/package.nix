@@ -63,6 +63,7 @@ let
         rev = "0a29c55c7aed3112f9807b00bac038c8d375d7c2";
         hash = "sha256-36yE4AdpSFm5AcXfko2cMXplkSxKIHhd5sAjd8YTki8=";
       };
+      patches = [ ./disable-release-lint-and-signing.patch ];
 
       pubspecLock = lib.importJSON ./pubspec.lock.json;
       gitHashes = { };
@@ -128,25 +129,19 @@ let
       ];
 
       postPatch = ''
-                cp -LR ${patchedFlutter} flutter-sdk
-                chmod -R u+w flutter-sdk
+        cp -LR ${patchedFlutter} flutter-sdk
+        chmod -R u+w flutter-sdk
 
-                python3 - <<'PY'
-        from pathlib import Path
-        import re
-        path = Path("flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts")
-        text = path.read_text()
-        text = re.sub(
-            r'id\("org\.gradle\.kotlin\.kotlin-dsl"\)\s+version\s+"[^"]+"',
-            'id("org.gradle.kotlin.kotlin-dsl") version "6.4.2"',
-            text,
-        )
-        path.write_text(text)
-        PY
+        if grep -Fq 'id("org.gradle.kotlin.kotlin-dsl") version "5.1.2"' flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts; then
+          substituteInPlace flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts \
+            --replace-fail 'id("org.gradle.kotlin.kotlin-dsl") version "5.1.2"' 'id("org.gradle.kotlin.kotlin-dsl") version "6.4.2"'
+        elif grep -Fq 'id("org.gradle.kotlin.kotlin-dsl") version "5.2.0"' flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts; then
+          substituteInPlace flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts \
+            --replace-fail 'id("org.gradle.kotlin.kotlin-dsl") version "5.2.0"' 'id("org.gradle.kotlin.kotlin-dsl") version "6.4.2"'
+        fi
 
-                python3 - <<'PY'
-        from pathlib import Path
-        Path("android/gradle-version-normalize.init.gradle").write_text("""allprojects {
+        cat > android/gradle-version-normalize.init.gradle << 'INIT_SCRIPT'
+        allprojects {
           buildscript {
             configurations.matching { it.name == "classpath" }.all {
               resolutionStrategy.eachDependency { details ->
@@ -157,33 +152,13 @@ let
             }
           }
         }
-        """)
-        Path("android/gradlew").write_text("""#!/bin/sh
+        INIT_SCRIPT
+
+        cat > android/gradlew << 'GRADLEW_SCRIPT'
+        #!/bin/sh
         exec ${gradle}/bin/gradle -I "$PWD/gradle-version-normalize.init.gradle" "$@"
-        """)
-        PY
-                chmod +x android/gradlew
-
-                python3 - <<'PY'
-        from pathlib import Path
-        path = Path("android/app/build.gradle.kts")
-        text = path.read_text()
-        text = text.replace(
-            'signingConfig = signingConfigs.getByName("release")',
-            'signingConfig = signingConfigs.getByName("debug")',
-        )
-        if "checkReleaseBuilds = false" not in text:
-            text += """
-
-        android {
-            lint {
-                checkReleaseBuilds = false
-                abortOnError = false
-            }
-        }
-        """
-        path.write_text(text)
-        PY
+        GRADLEW_SCRIPT
+        chmod +x android/gradlew
 
       '';
 
@@ -196,73 +171,59 @@ let
       '';
 
       preBuild = ''
-                cp .env.example .env
-                if grep -Fq 'id("org.gradle.kotlin.kotlin-dsl") version "5.1.2"' flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts; then
-                  substituteInPlace flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts \
-                    --replace-fail 'id("org.gradle.kotlin.kotlin-dsl") version "5.1.2"' 'id("org.gradle.kotlin.kotlin-dsl") version "6.4.2"'
-                elif grep -Fq 'id("org.gradle.kotlin.kotlin-dsl") version "5.2.0"' flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts; then
-                  substituteInPlace flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts \
-                    --replace-fail 'id("org.gradle.kotlin.kotlin-dsl") version "5.2.0"' 'id("org.gradle.kotlin.kotlin-dsl") version "6.4.2"'
-                fi
-                if [ -n "''${PUB_CACHE:-}" ] && [ -d "$PUB_CACHE" ]; then
-                  chmod -R u+w "$PUB_CACHE" || true
-                  vm_pkg_dir="$(find "$PUB_CACHE" -maxdepth 5 -type d -name 'vector_math-2.1.4' | head -n 1 || true)"
-                  if [ -n "$vm_pkg_dir" ] && [ -f "$vm_pkg_dir/lib/vector_math_64.dart" ]; then
-                    python3 - "$vm_pkg_dir/lib/vector_math_64.dart" <<'PY'
-        from pathlib import Path
-        import sys
-        path = Path(sys.argv[1])
-        needle = 'part "src/vector_math_64/matrix4.dart";\n'
-        ext = '''
+        cp .env.example .env
+        if grep -Fq 'id("org.gradle.kotlin.kotlin-dsl") version "5.1.2"' flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts; then
+          substituteInPlace flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts \
+            --replace-fail 'id("org.gradle.kotlin.kotlin-dsl") version "5.1.2"' 'id("org.gradle.kotlin.kotlin-dsl") version "6.4.2"'
+        elif grep -Fq 'id("org.gradle.kotlin.kotlin-dsl") version "5.2.0"' flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts; then
+          substituteInPlace flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts \
+            --replace-fail 'id("org.gradle.kotlin.kotlin-dsl") version "5.2.0"' 'id("org.gradle.kotlin.kotlin-dsl") version "6.4.2"'
+        fi
+        if [ -n "''${PUB_CACHE:-}" ] && [ -d "$PUB_CACHE" ]; then
+          chmod -R u+w "$PUB_CACHE" || true
+          vm_pkg_dir="$(find "$PUB_CACHE" -maxdepth 5 -type d -name 'vector_math-2.1.4' | head -n 1 || true)"
+          if [ -n "$vm_pkg_dir" ] && [ -f "$vm_pkg_dir/lib/vector_math_64.dart" ]; then
+            if ! grep -Fq 'extension Matrix4CompatMethods on Matrix4' "$vm_pkg_dir/lib/vector_math_64.dart"; then
+              patch -d "$vm_pkg_dir" -p1 < ${./vector-math-compat.patch}
+            fi
+          fi
+        fi
 
-        extension Matrix4CompatMethods on Matrix4 {
-          Matrix4 scaleByDouble(double x, double y, double z, double w) => scale(x, y, z);
-          Matrix4 translateByDouble(double x, double y, double z, double w) => translate(x, y, z);
-          Matrix4 leftTranslateByDouble(double x, double y, double z, double w) => leftTranslate(x, y, z);
-        }
-        '''
-        text = path.read_text()
-        if "extension Matrix4CompatMethods on Matrix4" not in text and needle in text:
-            path.write_text(text.replace(needle, needle + ext, 1))
-        PY
-                  fi
-                fi
+        printf '%s\n' \
+          'storePassword=android' \
+          'keyPassword=android' \
+          'keyAlias=androiddebugkey' \
+          'storeFile=debug.keystore' > android/key.properties
 
-                printf '%s\n' \
-                  'storePassword=android' \
-                  'keyPassword=android' \
-                  'keyAlias=androiddebugkey' \
-                  'storeFile=debug.keystore' > android/key.properties
+        rm -f android/debug.keystore
+        keytool -genkeypair -noprompt \
+          -keystore android/debug.keystore \
+          -storepass android \
+          -keypass android \
+          -alias androiddebugkey \
+          -keyalg RSA \
+          -keysize 2048 \
+          -validity 10000 \
+          -dname "CN=Android Debug,O=Android,C=US"
 
-                rm -f android/debug.keystore
-                keytool -genkeypair -noprompt \
-                  -keystore android/debug.keystore \
-                  -storepass android \
-                  -keypass android \
-                  -alias androiddebugkey \
-                  -keyalg RSA \
-                  -keysize 2048 \
-                  -validity 10000 \
-                  -dname "CN=Android Debug,O=Android,C=US"
+        GRADLE_OPTS="''${GRADLE_OPTS:-}"
+        GRADLE_OPTS="$GRADLE_OPTS -Dandroid.builder.sdkDownload=false"
+        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.auto-download=false"
+        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.paths=${jdk17_headless}"
+        GRADLE_OPTS="$GRADLE_OPTS -Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+        if [[ -n "''${MITM_CACHE_KEYSTORE:-}" ]]; then
+          GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyHost=$MITM_CACHE_HOST"
+          GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyPort=$MITM_CACHE_PORT"
+          GRADLE_OPTS="$GRADLE_OPTS -Dhttps.proxyHost=$MITM_CACHE_HOST"
+          GRADLE_OPTS="$GRADLE_OPTS -Dhttps.proxyPort=$MITM_CACHE_PORT"
+          GRADLE_OPTS="$GRADLE_OPTS -Djavax.net.ssl.trustStore=$MITM_CACHE_KEYSTORE"
+          GRADLE_OPTS="$GRADLE_OPTS -Djavax.net.ssl.trustStorePassword=$MITM_CACHE_KS_PWD"
+        fi
+        export FLUTTER_ROOT="$PWD/flutter-sdk"
+        export GRADLE_OPTS
 
-                GRADLE_OPTS="''${GRADLE_OPTS:-}"
-                GRADLE_OPTS="$GRADLE_OPTS -Dandroid.builder.sdkDownload=false"
-                GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.auto-download=false"
-                GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.paths=${jdk17_headless}"
-                GRADLE_OPTS="$GRADLE_OPTS -Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-                GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-                if [[ -n "''${MITM_CACHE_KEYSTORE:-}" ]]; then
-                  GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyHost=$MITM_CACHE_HOST"
-                  GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyPort=$MITM_CACHE_PORT"
-                  GRADLE_OPTS="$GRADLE_OPTS -Dhttps.proxyHost=$MITM_CACHE_HOST"
-                  GRADLE_OPTS="$GRADLE_OPTS -Dhttps.proxyPort=$MITM_CACHE_PORT"
-                  GRADLE_OPTS="$GRADLE_OPTS -Djavax.net.ssl.trustStore=$MITM_CACHE_KEYSTORE"
-                  GRADLE_OPTS="$GRADLE_OPTS -Djavax.net.ssl.trustStorePassword=$MITM_CACHE_KS_PWD"
-                fi
-                export FLUTTER_ROOT="$PWD/flutter-sdk"
-                export GRADLE_OPTS
-
-                ${pythonWithYaml}/bin/python3 ${../_shared/generate-flutter-plugins.py}
+        ${pythonWithYaml}/bin/python3 ${../_shared/generate-flutter-plugins.py}
       '';
 
       buildPhase = ''
