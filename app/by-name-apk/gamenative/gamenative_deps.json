@@ -2,27 +2,15 @@
  "!comment": "This is a nixpkgs Gradle dependency lockfile. For more details, refer to the Gradle section in the nixpkgs manual.",
  "!version": 1,
  "https://central.sonatype.com/repository/maven-snapshots/io/github": {
-  "joshuatam#javasteam-depotdownloader/1.8.0.1-16-20260401.005003-1/SNAPSHOT": {
-   "jar": "sha256-HXwGGOEVbRkzG/Z470Gq6xYUT9mklQVTygTQuYuDDHw=",
-   "module": "sha256-pLcy4jNdW4yhUZ+TrZNdeO9tDYVhMlJ6QrR40kJ/FVg=",
-   "pom": "sha256-A0OCrO38WqyzcfMJ3qN5qO9cktCeuiuILDZKzmyGZ04="
+  "joshuatam#javasteam-depotdownloader/1.8.0.1-13-20260308.075210-1/SNAPSHOT": {
+   "jar": "sha256-GibX2pa9/Rq7udanc5sGP0qtUnKdYKnCgfUMd9+QV+M=",
+   "module": "sha256-nHbf0+jO1EYESpe6xOK00Lx46MvYbcxdI9PqTNtuiro=",
+   "pom": "sha256-IdgJ0vqToBMrpj2Zsjtl7IgjWKCAeCnW9BXz7gHxkmk="
   },
-  "joshuatam#javasteam/1.8.0.1-16-20260401.005003-1/SNAPSHOT": {
-   "jar": "sha256-j8QWI9eq0CdAR4ajIrLtd/pvJdVfcTPapSDLXOybh6U=",
-   "module": "sha256-W7NELeEtCJf6bTv6t+TUukJW0nb0H1J5LXUXKXI8JN8=",
-   "pom": "sha256-aJk09Lmq0EXLZfh7WtEtbVUvkKMzbih+6RuADueS68U="
-  },
-  "joshuatam/javasteam-depotdownloader/1.8.0.1-16-SNAPSHOT/maven-metadata": {
-   "xml": {
-    "groupId": "io.github.joshuatam",
-    "lastUpdated": "20260401125033"
-   }
-  },
-  "joshuatam/javasteam/1.8.0.1-16-SNAPSHOT/maven-metadata": {
-   "xml": {
-    "groupId": "io.github.joshuatam",
-    "lastUpdated": "20260401125028"
-   }
+  "joshuatam#javasteam/1.8.0.1-13-20260308.075210-1/SNAPSHOT": {
+   "jar": "sha256-1BliYENxEabtgdUzdsOMgzS08e9WYNmhERUAysAGMo4=",
+   "module": "sha256-fh5Y6eV1+9M1NzAFDXQ9j5dbtoIkS7yN2VjplIF9Cjw=",
+   "pom": "sha256-prskHr9LXRNqr98zB532cV1TrHdGiZxKyYMeTKUUeLQ="
   }
  },
  "https://dl.google.com/dl/android/maven2": {
@@ -2704,8 +2692,8 @@
    "module": "sha256-WPwNZk/Dpn5+a+n9vq7b0hLfo+Un90T4YeeSzacsDkc=",
    "pom": "sha256-U3q0BzqEelm6dtmaZFqGCbU4L/pdJZGjVLL6MR9JlzM="
   },
-  "org/jetbrains/kotlin#kotlin-stdlib-jdk7/1.8.22": {
-   "pom": "sha256-T5WKqZPVmE+PXr7UFGVipfOp9pW2BJyfKHOBN5ytqzM="
+  "org/jetbrains/kotlin#kotlin-stdlib-jdk7/1.3.72": {
+   "pom": "sha256-nVoT2avDNEXhNm0livCnfkLwGUWs73wJF7nVOYVOL84="
   },
   "org/jetbrains/kotlin#kotlin-stdlib-jdk7/2.0.21": {
    "jar": "sha256-cS9IB2Dt7uSKhDaea+ifarUjdUCLsso74U72Y/cr7jE=",
@@ -2788,9 +2776,6 @@
    "module": "sha256-8Arwkgy33EYRIF/1ku7FqgBxvJWbN5cCar/kPPFL+tQ=",
    "pom": "sha256-iOjH7eTSm4AnotpuqePOVQxVakITYz+PbeKLufsgHJA="
   },
-  "org/jetbrains/kotlinx#kotlinx-coroutines-bom/1.10.1": {
-   "pom": "sha256-nL0EumPnOZhWdFcT4xLS8hYaHUTtpQbe1HyNVtr4Rh8="
-  },
   "org/jetbrains/kotlinx#kotlinx-coroutines-bom/1.10.2": {
    "pom": "sha256-+vDGU45T3cBJmmNmTY52PCFlgLLhjnIsy98bQxpq/iY="
   },
@@ -2817,10 +2802,6 @@
    "jar": "sha256-mGCQahk3SQv187BtLw4Q70UeZblbJp8i2vaKPR9QZcU=",
    "module": "sha256-/2oi2kAECTh1HbCuIRd+dlF9vxJqdnlvVCZye/dsEig=",
    "pom": "sha256-pWM6vVNGfOuRYi2B8umCCAh3FF4LduG3V4hxVDSIXQs="
-  },
-  "org/jetbrains/kotlinx#kotlinx-coroutines-core/1.10.1": {
-   "module": "sha256-y/1tFz4KXCmGr5U/ixzPKYAqrQnqympOkRQQj4rKyLE=",
-   "pom": "sha256-Ip7SIxgcPK8nt6wwHIFp3KLYYxkbcQ5hNVGlh5XANlU="
   },
   "org/jetbrains/kotlinx#kotlinx-coroutines-core/1.10.2": {
    "module": "sha256-j+JUF35xGnzRijwG2CQvzpRfQcLMoT3BmzOuQqVDUBY=",
@@ -2851,9 +2832,6 @@
   },
   "org/jetbrains/kotlinx#kotlinx-serialization-bom/1.6.3": {
    "pom": "sha256-KdaYQrt9RJviqkreakp85qpVgn0KsT0Wh0X+bZVzkzI="
-  },
-  "org/jetbrains/kotlinx#kotlinx-serialization-bom/1.8.0": {
-   "pom": "sha256-xD5IdSnM/RIJ66hlOrjolZggNGSq+/5fBEje2ZKHFQk="
   },
   "org/jetbrains/kotlinx#kotlinx-serialization-bom/1.8.1": {
    "pom": "sha256-APNVWudiSFHGfbEsMIvJziauMnzw1yR2akAeW6AGCMc="
@@ -2906,10 +2884,6 @@
   "org/jetbrains/kotlinx#kotlinx-serialization-json/1.6.3": {
    "module": "sha256-gNHYf6CmO/+Dleo5EL2oDQnw9YNQTd6o7QB7x6hrTNQ=",
    "pom": "sha256-KcIhdhjlMdfYMsyICupu0aj0B3PkN/WkHXC9FUaNPOM="
-  },
-  "org/jetbrains/kotlinx#kotlinx-serialization-json/1.8.0": {
-   "module": "sha256-lK/eU8GRw+Hge5+AiqF3f4YryKlbxQtGYozQkhnVaFg=",
-   "pom": "sha256-WAgq+Zc0Ah1bjbKcQ1sR1FyhGxwP14bHhFIsnSxxeVg="
   },
   "org/jetbrains/kotlinx#kotlinx-serialization-json/1.8.1": {
    "module": "sha256-f33wBUM932BPUqq9avsh65YJMZfLS90Hk8SEydPEtnU=",

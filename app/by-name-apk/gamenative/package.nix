@@ -28,17 +28,18 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gamenative";
-      version = "0.9.0-prerelease";
+      version = "0.8.1";
 
       src = fetchFromGitHub {
         owner = "utkarshdalal";
         repo = "GameNative";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-fLTnX+psfCJG3BmEUK+r6A0bzH+LTQkH3Z0hII/uqRU=";
+        hash = "sha256-JvzIjfKqL/7Tqb0vqNhF5nS8FGawqJIc20wWuff1qJE=";
       };
 
       patches = [
         ./disable-release-lint.patch
+        ./fix-dependency-resolution.patch
       ];
 
       postPatch = ''
