@@ -4,7 +4,7 @@
   buildDartApplication,
   runCommand,
   fetchFromGitHub,
-  flutter335,
+  flutter332,
   jdk17_headless,
   python3,
   gradle-packages,
@@ -38,8 +38,8 @@ let
           defaultJava = jdk17_headless;
         }).wrapped;
 
-      patchedFlutter = runCommand "flutter335-kotlin-dsl-patched" { } ''
-        cp -LR ${flutter335} "$out"
+      patchedFlutter = runCommand "flutter332-kotlin-dsl-patched" { } ''
+        cp -LR ${flutter332} "$out"
         chmod -R u+w "$out"
         flutter_gradle_kts="$out/packages/flutter_tools/gradle/build.gradle.kts"
         if grep -Fq 'id("org.gradle.kotlin.kotlin-dsl") version "5.1.2"' "$flutter_gradle_kts"; then
@@ -183,16 +183,6 @@ let
           substituteInPlace flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts \
             --replace-fail 'id("org.gradle.kotlin.kotlin-dsl") version "5.2.0"' 'id("org.gradle.kotlin.kotlin-dsl") version "6.4.2"'
         fi
-        if [ -n "''${PUB_CACHE:-}" ] && [ -d "$PUB_CACHE" ]; then
-          chmod -R u+w "$PUB_CACHE" || true
-          vm_pkg_dir="$(find "$PUB_CACHE" -maxdepth 5 -type d -name 'vector_math-2.1.4' | head -n 1 || true)"
-          if [ -n "$vm_pkg_dir" ] && [ -f "$vm_pkg_dir/lib/vector_math_64.dart" ]; then
-            if ! grep -Fq 'extension Matrix4CompatMethods on Matrix4' "$vm_pkg_dir/lib/vector_math_64.dart"; then
-              patch -d "$vm_pkg_dir" -p1 < ${./vector-math-compat.patch}
-            fi
-          fi
-        fi
-
         printf '%s\n' \
           'storePassword=android' \
           'keyPassword=android' \
