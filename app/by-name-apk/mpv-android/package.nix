@@ -106,7 +106,7 @@ mk-apk-package {
   mainApk = "mpv-android.apk";
   signScriptName = "sign-mpv-android";
   fdroid = {
-    appId = "is.xyz.mpv";
+    appId = "is.xyz.mpv.ytdl";
     metadataYml = ''
       Categories:
         - Multimedia
