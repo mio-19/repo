@@ -171,6 +171,11 @@ let
         url = "https://github.com/nspire-emus/firebird/pull/298.diff";
         hash = "sha256-pJf3nUJ3BbbCOx+yvUtchfzts0dbCMaa3essTDcbB4o=";
       })
+      (fetchpatch {
+        name = "[Android] Simple haptic feedback";
+        url = "https://github.com/nspire-emus/firebird/pull/362.diff";
+        hash = "sha256-ls/cC0dVetjYrMAi1HHGZBiz4b9R4kk+98ak6v2c6kU=";
+      })
     ];
 
     nativeBuildInputs = [
