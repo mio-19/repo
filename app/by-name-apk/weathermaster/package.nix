@@ -4,7 +4,7 @@
   buildDartApplication,
   runCommand,
   fetchFromGitHub,
-  flutter335,
+  flutter332,
   jdk17_headless,
   python3,
   gradle-packages,
@@ -38,8 +38,8 @@ let
           defaultJava = jdk17_headless;
         }).wrapped;
 
-      patchedFlutter = runCommand "flutter335-kotlin-dsl-patched" { } ''
-        cp -LR ${flutter335} "$out"
+      patchedFlutter = runCommand "flutter332-kotlin-dsl-patched" { } ''
+        cp -LR ${flutter332} "$out"
         chmod -R u+w "$out"
         flutter_gradle_kts="$out/packages/flutter_tools/gradle/build.gradle.kts"
         if grep -Fq 'id("org.gradle.kotlin.kotlin-dsl") version "5.1.2"' "$flutter_gradle_kts"; then
@@ -55,7 +55,7 @@ let
     in
     buildDartApplication.override { dart = patchedFlutter; } (finalAttrs: {
       pname = "weathermaster";
-      version = "2.7.1+29";
+      version = "2.7.1-unstable-20260403";
 
       src = fetchFromGitHub {
         owner = "PranshulGG";
@@ -160,6 +160,11 @@ let
         GRADLEW_SCRIPT
         chmod +x android/gradlew
 
+        cat > .env <<APIKEYS
+        API_KEY_WEATHERAPI=$(echo ZjFkZDE3MTFjNzgxNGE3NmFiNjQxODQ4MjUyMjA3Cg== | base64 -d)
+        API_TOKEN=$(echo MWI1MDEyMGU4OWY4ZjExNjlkZGM1NWVmOGE5MzFmNzUxYjIwZDhmODRlMzc2OTlkODU4ZTdlY2M3YmI2MGNkMTA2MmY4ODViYmQ2Yzc3YjUK | base64 -d)
+        API_KEY_OPENROUTER=$(echo c2stb3ItdjEtODQwY2Q2NmRiMThkNzU0NjQ0YjBiZTFhZDY5YzBiZDlmYjQxNmI2ZjY2OTk0NjBjZjczMDg3Y2Y2NmNiZWZhZQo= | base64 -d)
+        APIKEYS
       '';
 
       preConfigure = ''
@@ -171,7 +176,6 @@ let
       '';
 
       preBuild = ''
-        cp .env.example .env
         if grep -Fq 'id("org.gradle.kotlin.kotlin-dsl") version "5.1.2"' flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts; then
           substituteInPlace flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts \
             --replace-fail 'id("org.gradle.kotlin.kotlin-dsl") version "5.1.2"' 'id("org.gradle.kotlin.kotlin-dsl") version "6.4.2"'
@@ -179,16 +183,6 @@ let
           substituteInPlace flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts \
             --replace-fail 'id("org.gradle.kotlin.kotlin-dsl") version "5.2.0"' 'id("org.gradle.kotlin.kotlin-dsl") version "6.4.2"'
         fi
-        if [ -n "''${PUB_CACHE:-}" ] && [ -d "$PUB_CACHE" ]; then
-          chmod -R u+w "$PUB_CACHE" || true
-          vm_pkg_dir="$(find "$PUB_CACHE" -maxdepth 5 -type d -name 'vector_math-2.1.4' | head -n 1 || true)"
-          if [ -n "$vm_pkg_dir" ] && [ -f "$vm_pkg_dir/lib/vector_math_64.dart" ]; then
-            if ! grep -Fq 'extension Matrix4CompatMethods on Matrix4' "$vm_pkg_dir/lib/vector_math_64.dart"; then
-              patch -d "$vm_pkg_dir" -p1 < ${./vector-math-compat.patch}
-            fi
-          fi
-        fi
-
         printf '%s\n' \
           'storePassword=android' \
           'keyPassword=android' \

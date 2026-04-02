@@ -243,37 +243,6 @@ let
           fi
         }
 
-        ${python3}/bin/python3 - <<'PY' > dart_package_dirs.sh
-        import json
-        import shlex
-        import urllib.parse
-
-        with open(".dart_tool/package_config.json") as f:
-            data = json.load(f)
-
-        wanted = {
-            "flserial": "FLSERIAL_DIR",
-        }
-
-        found = {env_name: "" for env_name in wanted.values()}
-        for pkg in data["packages"]:
-            env_name = wanted.get(pkg["name"])
-            if env_name:
-                found[env_name] = urllib.parse.urlparse(pkg["rootUri"]).path.removesuffix("/.")
-
-        for env_name, path in found.items():
-            print(f"export {env_name}={shlex.quote(path)}")
-        PY
-        . ./dart_package_dirs.sh
-
-        if [ -n "$FLSERIAL_DIR" ]; then
-          patched_flserial_dir="$(clone_dart_package "$FLSERIAL_DIR" flserial)"
-          substituteInPlace "$patched_flserial_dir/android/build.gradle" \
-            --replace-fail 'classpath("com.android.tools.build:gradle:8.13.0")' \
-              'classpath("com.android.tools.build:gradle:8.9.1")'
-          replace_dart_package_root "$FLSERIAL_DIR" "$patched_flserial_dir"
-        fi
-
         patch_plugin_gradle_file() {
           local gradle_file="$1"
           local target_agp='8.9.1'
@@ -409,7 +378,7 @@ let
           if [ -d "$work_plugin_dir/android" ]; then
             while IFS= read -r ndk_file; do
               patch_ndk_version_file "$ndk_file"
-            done < <(find "$work_plugin_dir/android" -type f \( -name '*.gradle' -o -name '*.gradle.kts' -o -name '*.properties' \))
+            done < <(find "$work_plugin_dir/android" -type f -name '*.properties')
           fi
         done < <(${python3}/bin/python3 - <<'PY'
         import json

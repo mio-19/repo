@@ -28,12 +28,12 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "mpv-android";
-      version = "2026-03-22-release";
+      version = "2026-03-22";
 
       src = fetchFromGitHub {
         owner = "mpv-android";
         repo = "mpv-android";
-        rev = "7059a764b1f30fb24d9170289463446de0e6046e";
+        tag = finalAttrs.version;
         hash = "sha256-eYqJiDhIWafcrVzQFrpf8WvRjGQtNMfYINBg8u4S/xE=";
       };
 
