@@ -37,8 +37,8 @@ let
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
-        rev = "14521973668ec4f5e3de86e474637cc68bd70ac3";
-        hash = "sha256-EZZa3Cv7HdQKy9JCqqrn6s/CQJ1LECvl5UIWSztvIKE=";
+        rev = "a6f4a23322c72d00b9ed7999441da66035ce7048";
+        hash = "sha256-m+FCqTwTLJr+Z39uoTDFpgTsF4cod9h57X3PhVIi/ig=";
       };
 
       androidCrossConfig = {
@@ -145,7 +145,7 @@ let
           version = "2.0.0";
           src = sdkSrc;
           cargoRoot = ".";
-          hash = "sha256-ILDl8qR0luBep87KVh8xyEDsWNNda4CPm95+qB/u2TQ=";
+          hash = "sha256-tb6sJOvmJ5Jni4AZUXX9TT+N3/sw3XKfpe1ggMkJV0w=";
         };
         nativeBuildInputs = [
           rustPlatform.cargoSetupHook
@@ -311,41 +311,6 @@ let
                 ${gradle}/bin/gradle --no-daemon sdk:publishToMavenLocal -Pversion=LOCAL
 
                 cd "$repoRoot"
-                if grep -qF ") : CipherRepository {" app/src/main/kotlin/com/x8bit/bitwarden/data/platform/manager/sdk/repository/SdkCipherRepository.kt; then
-                  substituteInPlace app/src/main/kotlin/com/x8bit/bitwarden/data/platform/manager/sdk/repository/SdkCipherRepository.kt \
-                    --replace-fail ") : CipherRepository {" ") : CipherRepository {
-            override suspend fun setBulk(values: Map<String, Cipher>) {
-                values.forEach { (id, cipher) -> set(id = id, value = cipher) }
-            }
-
-            override suspend fun removeBulk(keys: List<String>) {
-                keys.forEach { key -> remove(id = key) }
-            }
-
-            override suspend fun removeAll() {
-                list().forEach { cipher -> cipher.id?.let { remove(id = it) } }
-            }"
-                fi
-                if grep -qF "method = InitUserCryptoMethod.DecryptedKey(" app/src/main/kotlin/com/x8bit/bitwarden/data/platform/repository/AuthenticatorBridgeRepositoryImpl.kt; then
-                  substituteInPlace app/src/main/kotlin/com/x8bit/bitwarden/data/platform/repository/AuthenticatorBridgeRepositoryImpl.kt \
-                    --replace-fail "                    method = InitUserCryptoMethod.DecryptedKey(" "                    upgradeToken = null,
-                            method = InitUserCryptoMethod.DecryptedKey("
-                fi
-                if grep -qF "method = initUserCryptoMethod," app/src/main/kotlin/com/x8bit/bitwarden/data/vault/manager/VaultLockManagerImpl.kt; then
-                  substituteInPlace app/src/main/kotlin/com/x8bit/bitwarden/data/vault/manager/VaultLockManagerImpl.kt \
-                    --replace-fail "method = initUserCryptoMethod," "method = initUserCryptoMethod,
-                                    upgradeToken = null,"
-                fi
-                if grep -qF "is InitUserCryptoMethod.KeyConnector," app/src/main/kotlin/com/x8bit/bitwarden/data/vault/manager/VaultLockManagerImpl.kt; then
-                  substituteInPlace app/src/main/kotlin/com/x8bit/bitwarden/data/vault/manager/VaultLockManagerImpl.kt \
-                    --replace-fail "is InitUserCryptoMethod.KeyConnector," "is InitUserCryptoMethod.KeyConnector,
-                    is InitUserCryptoMethod.KeyConnectorUrl,"
-                fi
-                if grep -qF "is InitUserCryptoMethod.MasterPasswordUnlock -> \"Master Password Unlock\"" app/src/main/kotlin/com/x8bit/bitwarden/data/vault/repository/util/InitUserCryptoMethodExtensions.kt; then
-                  substituteInPlace app/src/main/kotlin/com/x8bit/bitwarden/data/vault/repository/util/InitUserCryptoMethodExtensions.kt \
-                    --replace-fail "is InitUserCryptoMethod.MasterPasswordUnlock -> \"Master Password Unlock\"" "is InitUserCryptoMethod.MasterPasswordUnlock -> \"Master Password Unlock\"
-                is InitUserCryptoMethod.KeyConnectorUrl -> \"Key Connector URL\""
-                fi
       '';
 
       gradleFlags = [
