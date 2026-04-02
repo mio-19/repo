@@ -1,0 +1,21 @@
+--- a/android/app/build.gradle.kts
++++ b/android/app/build.gradle.kts
+@@ -54,12 +54,17 @@
+ 
+     buildTypes {
+         getByName("release") {
+-            signingConfig = signingConfigs.getByName("release")
++            signingConfig = signingConfigs.getByName("debug")
+             isMinifyEnabled = false
+             isShrinkResources = false
+         }
+     }
+ 
++    lint {
++        checkReleaseBuilds = false
++        abortOnError = false
++    }
++
+     dependenciesInfo {
+         includeInApk = false
+         includeInBundle = false
