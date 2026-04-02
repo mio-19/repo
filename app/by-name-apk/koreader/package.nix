@@ -206,8 +206,6 @@ let
       # The task wrapper calls ./gradlew inside luajit-launcher/Makefile.
       # We should patch it to call gradle directly.
       postPatch = ''
-        patch -p1 < ${./0001-koreader-launcher-use-event-socket.patch}
-
         # Many thirdparty build scripts use #!/usr/bin/env python3 shebangs.
         # buildFHSEnv in buildPhase provides /usr/bin/env for those scripts.
         mkdir -p offline-tarballs

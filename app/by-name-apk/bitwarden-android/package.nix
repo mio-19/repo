@@ -93,6 +93,9 @@ let
           doCheck = false;
           cargoBuildFlags = [ "-p bitwarden-uniffi" ];
           CARGO_BUILD_TARGET = rustTarget;
+          preBuild = ''
+            export RUST_LOG=info
+          '';
 
           installPhase = ''
             runHook preInstall
@@ -126,6 +129,9 @@ let
         };
         cargoBuildFlags = [ "-p uniffi-bindgen" ];
         doCheck = false;
+        preBuild = ''
+          export RUST_LOG=info
+        '';
       };
 
       sdkGeneratedJava = stdenv.mkDerivation {
