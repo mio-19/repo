@@ -29,13 +29,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "mastodon-android";
-      version = "2.9.7";
+      version = "2.11.11";
 
       src = fetchFromGitHub {
         owner = "mastodon";
         repo = "mastodon-android";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-t4J9C6tT5cLqDmbO8drjNwk4ThQ+ibTQcb/oUwvMDSY=";
+        hash = "sha256-ySy+KZrJYr4W4woSzXId6qJVzm//v542ROSHDaDtcSA=";
       };
 
       gradleBuildTask = ":mastodon:assembleGithubRelease";
