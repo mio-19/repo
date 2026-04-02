@@ -8,6 +8,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  fetchpatch,
 }:
 let
   appPackage =
@@ -37,6 +38,14 @@ let
         tag = "v${finalAttrs.version}";
         hash = "sha256-ySy+KZrJYr4W4woSzXId6qJVzm//v542ROSHDaDtcSA=";
       };
+
+      patches = [
+        (fetchpatch {
+          name = "Enable more comprehensive R8 optimizations";
+          url = "https://github.com/mastodon/mastodon-android/pull/1079.diff";
+          hash = "sha256-8pcIg8Qmv30WCQJsrJOqvP20pCcfov4F9XZbOZVOS+Y=";
+        })
+      ];
 
       gradleBuildTask = ":mastodon:assembleGithubRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
