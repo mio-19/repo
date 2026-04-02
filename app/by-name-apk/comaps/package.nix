@@ -125,10 +125,29 @@ let
 
       preBuild = ''
         pushd ..
+        export PATH="${(python3.withPackages (ps: [ ps.protobuf4 ]))}/bin:$PATH"
         rm -rf 3party/boost/boost
         ln -s ${boost.dev}/include/boost 3party/boost/boost
         ${python3}/bin/python3 ./tools/python/categories/json_to_txt.py data/categories-strings data/categories.txt
         ${python3}/bin/python3 ./tools/python/generate_desktop_ui_strings.py
+        bash ./tools/unix/generate_drules.sh
+        for required in \
+          data/classificator.txt \
+          data/types.txt \
+          data/visibility.txt \
+          data/colors.txt \
+          data/patterns.txt \
+          data/drules_proto_default_dark.bin \
+          data/drules_proto_default_light.bin \
+          data/drules_proto_outdoors_dark.bin \
+          data/drules_proto_outdoors_light.bin \
+          data/drules_proto_vehicle_dark.bin \
+          data/drules_proto_vehicle_light.bin \
+          data/categories.txt \
+          data/countries.txt
+        do
+          test -f "$required"
+        done
         popd
       '';
 
