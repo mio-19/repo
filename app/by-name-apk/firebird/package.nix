@@ -13,6 +13,7 @@
   apksigner,
   p7zip,
   writableTmpDirAsHomeHook,
+  fetchpatch,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -156,6 +157,14 @@ let
       silent = false;
       useBwrap = false;
     };
+
+    patches = [
+      (fetchpatch {
+        name = "I make a svg keypad，can i merge it to this project";
+        url = "https://github.com/nspire-emus/firebird/pull/305.diff";
+        hash = "sha256-mZUDSZE2hPR78ZLzRpKahsxhmwOenErQaeG7obreKG4=";
+      })
+    ];
 
     nativeBuildInputs = [
       gradle
