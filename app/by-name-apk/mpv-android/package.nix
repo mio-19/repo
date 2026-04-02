@@ -114,7 +114,7 @@ mk-apk-package {
       SourceCode: https://github.com/mpv-android/mpv-android
       IssueTracker: https://github.com/mpv-android/mpv-android/issues
       Changelog: https://github.com/mpv-android/mpv-android/releases
-      AutoName: mpv-android
+      AutoName: mpv-android (YTDL support)
       Summary: Video player based on libmpv
       Description: |-
         mpv-android is a video player for Android based on libmpv.
