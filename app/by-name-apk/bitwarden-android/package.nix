@@ -34,14 +34,7 @@ let
           defaultJava = jdk21;
         }).wrapped;
 
-      # Pin derivation process (explicit):
-      # 1) In bitwarden/android `gradle/libs.versions.toml`, app version `2026.3.0` points to
-      #    `bitwardenSdk = "2.0.0-5676-14521973"`.
-      # 2) We treated trailing `14521973` as the sdk-internal commit prefix and first pinned
-      #    sdk-internal to `14521973668ec4f5e3de86e474637cc68bd70ac3`.
-      # 3) With that pin, we hit app/sdk API drift around InitUserCryptoMethod and a runtime
-      #    LocalUserDataKeyInitFailed path; after removing local shims, we pinned to
-      #    `a6f4a23322c72d00b9ed7999441da66035ce7048`, which is the validated compatible rev.
+      # https://github.com/bitwarden/android/blob/d8a9c596b27c9a68b63304d49784117bbebc6683/gradle/libs.versions.toml#L33 bitwardenSdk = "2.0.0-5425-a6f4a233"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
