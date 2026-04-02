@@ -176,7 +176,6 @@ let
       '';
 
       preBuild = ''
-        cp .env.example .env
         if grep -Fq 'id("org.gradle.kotlin.kotlin-dsl") version "5.1.2"' flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts; then
           substituteInPlace flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts \
             --replace-fail 'id("org.gradle.kotlin.kotlin-dsl") version "5.1.2"' 'id("org.gradle.kotlin.kotlin-dsl") version "6.4.2"'
