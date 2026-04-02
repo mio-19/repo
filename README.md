@@ -4,6 +4,8 @@ This repository contains many llm generated glue code.
 
 Help Wanted: publish a pre-built repository for apk of distributable android applications in this repository
 
+Help Wanted: publish pre-built rom for this modified grapheneos that is not grapheneos. modifications include kernelsu and more.
+
 Note that distributing binaries built from this repository might be disallowed by copyright/trademark holders. This repository is only available as source code only.
 
 Using this repository may result in data loss, boot loops, bricked devices, injuries due to exploded devices, dead SD cards, thermonuclear war, lawsuit, banned account, money loss, or you getting fired because the alarm app failed. By proceeding, you accept full responsibility for any issues that may arise.
