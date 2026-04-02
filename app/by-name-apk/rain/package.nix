@@ -38,7 +38,7 @@ let
     in
     buildDartApplication.override { dart = flutter338; } (finalAttrs: {
       pname = "rain";
-      version = "1.3.9+42";
+      version = "1.3.9-unstable-20260402";
 
       src = fetchFromGitHub {
         owner = "darkmoonight";
