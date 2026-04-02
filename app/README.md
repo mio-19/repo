@@ -11,10 +11,10 @@ broken but can compile:
 + onlyoffice-documents crashing after welcome page
 + lumo
 + bitwarden
-+ weathermaster: needs better api key
 
 slightly broken:
 
 + facebook: patches don't apply
 + com.bilibili.app.in: no reliable music controller on android 16 qpr2. or is this a feature?
 + microsoft-lens-revanced: sometimes crash
++ weathermaster: needs better api key
