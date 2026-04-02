@@ -55,7 +55,7 @@ let
     in
     buildDartApplication.override { dart = patchedFlutter; } (finalAttrs: {
       pname = "weathermaster";
-      version = "2.7.1+29";
+      version = "2.7.1-unstable-20260403";
 
       src = fetchFromGitHub {
         owner = "PranshulGG";
