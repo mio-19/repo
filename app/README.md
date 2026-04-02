@@ -11,6 +11,7 @@ broken but can compile:
 + onlyoffice-documents crashing after welcome page
 + lumo
 + bitwarden
++ weathermaster. 401
 
 slightly broken:
 
