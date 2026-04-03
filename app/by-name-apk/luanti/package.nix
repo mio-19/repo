@@ -96,6 +96,7 @@ let
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
         "-Pandroid.injected.build.abi=arm64-v8a"
+        "-Pandroid.injected.testOnly=false"
       ];
 
       installPhase = ''
