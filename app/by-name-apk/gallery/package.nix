@@ -74,9 +74,10 @@ let
 
       postPatch = ''
         substituteInPlace app/build.gradle.kts \
-          --replace-fail "REPLACE_WITH_YOUR_REDIRECT_SCHEME_IN_HUGGINGFACE_APP" "com.google.ai.edge.gallery.oauthredirect"
+          --replace-fail "REPLACE_WITH_YOUR_REDIRECT_SCHEME_IN_HUGGINGFACE_APP" "com.google.ai.edge.gallery.oauthredirect" \
+          --replace-fail 'applicationId = "com.google.aiedge.gallery"' 'applicationId = "com.google.ai.edge.gallery"'
         substituteInPlace app/src/main/java/com/google/ai/edge/gallery/common/ProjectConfig.kt \
-          --replace-fail "REPLACE_WITH_YOUR_CLIENT_ID_IN_HUGGINGFACE_APP" "1f0507c0-5db2-4179-aaa1-b5fe4c48fb59" \
+          --replace-fail "REPLACE_WITH_YOUR_CLIENT_ID_IN_HUGGINGFACE_APP" "$(echo MWYwNTA3YzAtNWRiMi00MTc5LWFhYTEtYjVmZTRjNDhmYjU5Cg== | base64 -d)" \
           --replace-fail "REPLACE_WITH_YOUR_REDIRECT_URI_IN_HUGGINGFACE_APP" "com.google.ai.edge.gallery.oauthredirect://oauth_redirect" \
       '';
 
@@ -111,7 +112,7 @@ mk-apk-package {
   mainApk = "gallery.apk";
   signScriptName = "sign-gallery";
   fdroid = {
-    appId = "com.google.aiedge.gallery";
+    appId = "com.google.ai.edge.gallery";
     metadataYml = ''
       Categories:
         - Multimedia
