@@ -95,11 +95,19 @@ let
         "-Dorg.gradle.java.installations.paths=${jdk21}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Pandroid.injected.build.abi=arm64-v8a"
       ];
 
       installPhase = ''
         runHook preInstall
-        apk_path="$(find app/build/outputs/apk -type f -name '*debug*.apk' | head -n 1)"
+        apk_path="$(
+          find . -type f -name '*.apk' \
+            | grep -E 'arm64-v8a.*debug|debug.*arm64-v8a' \
+            | head -n 1
+        )"
+        if [ -z "$apk_path" ]; then
+          apk_path="$(find . -type f -name '*debug*.apk' | head -n 1)"
+        fi
         test -n "$apk_path"
         install -Dm644 "$apk_path" "$out/luanti.apk"
         runHook postInstall
