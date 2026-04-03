@@ -249,11 +249,6 @@ let
                     fi
                   done
                 fi
-                find packages/app-mobile/node_modules/expo-modules-autolinking/android -type f \( -name "*.kts" -o -name "*.gradle" -o -name "*.toml" \) -print0 | while IFS= read -r -d "" f; do
-                  if grep -q "2.0.21" "$f"; then
-                    substituteInPlace "$f" --replace-fail "2.0.21" "1.9.24"
-                  fi
-                done
                 find packages/app-mobile -type f \( -name "*.kts" -o -name "*.gradle" -o -name "*.toml" \) -print0 | while IFS= read -r -d "" f; do
                   if grep -q "2.0.21" "$f"; then
                     substituteInPlace "$f" --replace-fail "2.0.21" "1.9.24"
