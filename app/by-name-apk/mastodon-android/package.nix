@@ -45,11 +45,6 @@ let
           url = "https://github.com/mastodon/mastodon-android/pull/1079.diff";
           hash = "sha256-8pcIg8Qmv30WCQJsrJOqvP20pCcfov4F9XZbOZVOS+Y=";
         })
-        (fetchpatch {
-          name = "Detect hashtag links just like the web UI does";
-          url = "https://github.com/mastodon/mastodon-android/pull/960.diff";
-          hash = "sha256-uMIWEO3/STqHsd/ooyDNWak14uuQwYt85uRdS1Ji9R8=";
-        })
       ];
 
       gradleBuildTask = ":mastodon:assembleGithubRelease";
