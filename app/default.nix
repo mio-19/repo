@@ -107,11 +107,6 @@
         directory = ./by-name-apk;
       };
 
-      apkWip = lib.filesystem.packagesFromDirectoryRecursive {
-        inherit (apkScope) callPackage newScope;
-        directory = ./by-name-apk-wip;
-      };
-
       byNameScope = lib.makeScope pkgs.newScope (
         _:
         helperScope
@@ -139,6 +134,6 @@
           "npatch-cli"
           "lspatch-cli"
         ] byName
-        // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) (apk // apkWip);
+        // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk;
     };
 }
