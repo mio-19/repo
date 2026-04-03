@@ -1,16 +1,21 @@
 {
   mk-apk-package,
+  sources,
   lib,
   jdk21,
   gradle-packages,
   stdenv,
-  fetchFromGitHub,
   fetchurl,
   unzip,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
 let
+  inherit (sources.amethyst_android)
+    src
+    version
+    ;
+
   appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
@@ -27,8 +32,6 @@ let
           hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
           defaultJava = jdk21;
         }).wrapped;
-
-      version = "v3_openjdk-258a8488";
 
       # https://github.com/AngelAuraMC/angelauramc-openjdk-build/actions
       jre8Pojav = fetchurl {
@@ -57,15 +60,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "amethyst";
-      inherit version;
-
-      src = fetchFromGitHub {
-        owner = "AngelAuraMC";
-        repo = "Amethyst-Android";
-        rev = "055d2989cbce9d812fdd7bf6abb03135d414cb9b";
-        hash = "sha256-J/rjyKJSb26S+axZrbeAFskQqiMD7ed9rAyySm+BceU=";
-        fetchSubmodules = true;
-      };
+      inherit version src;
 
       gradleBuildTask = ":app_pojavlauncher:assembleRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;

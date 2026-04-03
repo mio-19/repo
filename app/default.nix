@@ -128,6 +128,7 @@
         lib.getAttrs [
           "fdroid-keystore-update"
           "fdroid-repo"
+          "morphe-patches"
           "sign-fdroid-repo"
           "morphe-patcher-src"
           "revanced-patches"
