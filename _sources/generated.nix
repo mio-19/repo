@@ -8,16 +8,17 @@
 {
   amethyst_android = {
     pname = "amethyst_android";
-    version = "055d2989cbce9d812fdd7bf6abb03135d414cb9b";
+    version = "32d987c1b0f29990477ebc13b172e6ccc2bdd1f1";
     src = fetchgit {
       url = "https://github.com/AngelAuraMC/Amethyst-Android.git";
-      rev = "055d2989cbce9d812fdd7bf6abb03135d414cb9b";
+      rev = "32d987c1b0f29990477ebc13b172e6ccc2bdd1f1";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-J/rjyKJSb26S+axZrbeAFskQqiMD7ed9rAyySm+BceU=";
+      sha256 = "sha256-5x1g8QMoVHp0vlONXdTqiXkGRZWx6ONRhWA2zxR2G/k=";
     };
+    date = "2026-04-02";
   };
   axp_build = {
     pname = "axp_build";
