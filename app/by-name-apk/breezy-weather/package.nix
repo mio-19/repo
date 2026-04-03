@@ -73,12 +73,15 @@ let
         substituteInPlace app/src/main/java/org/breezyweather/ui/main/MainActivity.kt \
           --replace-fail '        if (BreezyWeather.instance.isImpersonatingBreezyWeather) {' '        if (false) {' \
           --replace-fail '            LicenseComplianceDialog.show(this)' '            viewModel.checkToUpdate()'
+        echo "breezy.openweather.key=$(echo ZDljOTEwM2E3NGE0MzhlYWMwOTUyYTM0ZDFiNTgwZTYK | base64 -d)" >> local.properties
+        echo "breezy.mf.key=$(echo X19XajdkVlNUalY5WUd1MWd1dmVMeURxMGc3UzdUZlRqYUhCVFBUcE8wa2o4X18K | base64 -d)" >> local.properties
+        echo "breezy.mf.jwtKey=$(echo ODRhMzhkYjhjZGQ2NjJhMjY0MmY1MjZmMTE1ODhlN2UK | base64 -d)" >> local.properties
       '';
 
       preConfigure = ''
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
-        echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+        echo "sdk.dir=${androidSdk}/share/android-sdk" >> local.properties
       '';
 
       gradleFlags = [
