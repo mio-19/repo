@@ -135,6 +135,8 @@
           "npatch-cli"
           "lspatch-cli"
         ] byName
-        // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk;
+        // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) (
+          lib.filterAttrs (_: lib.isDerivation) apk
+        );
     };
 }
