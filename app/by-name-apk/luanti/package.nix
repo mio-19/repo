@@ -48,7 +48,7 @@ let
       sourceRoot = "${finalAttrs.src.name}/android";
       dontFixup = true;
 
-      gradleBuildTask = ":app:assembleDebug";
+      gradleBuildTask = ":app:assembleRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
 
       mitmCache = gradle.fetchDeps {
@@ -102,11 +102,11 @@ let
         runHook preInstall
         apk_path="$(
           find . -type f -name '*.apk' \
-            | grep -E 'arm64-v8a.*debug|debug.*arm64-v8a' \
+            | grep -E 'arm64-v8a.*release|release.*arm64-v8a' \
             | head -n 1
         )"
         if [ -z "$apk_path" ]; then
-          apk_path="$(find . -type f -name '*debug*.apk' | head -n 1)"
+          apk_path="$(find . -type f -name '*release*.apk' | head -n 1)"
         fi
         test -n "$apk_path"
         install -Dm644 "$apk_path" "$out/luanti.apk"
