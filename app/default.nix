@@ -124,19 +124,8 @@
       };
     in
     {
-      packages =
-        lib.getAttrs [
-          "fdroid-keystore-update"
-          "fdroid-repo"
-          "morphe-patches"
-          "sign-fdroid-repo"
-          "morphe-patcher-src"
-          "revanced-patches"
-          "npatch-cli"
-          "lspatch-cli"
-        ] byName
-        // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) (
-          lib.filterAttrs (_: lib.isDerivation) apk
-        );
+      packages = lib.filterAttrs (_: lib.isDerivation) (
+        byName // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk
+      );
     };
 }
