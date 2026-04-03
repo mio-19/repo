@@ -90,8 +90,11 @@ let
 
       installPhase = ''
         runHook preInstall
-        apk_path="$(find app/build/outputs/apk -type f -name 'lumo-v*-productionNoGms-release.apk' | head -n 1)"
-        test -n "$apk_path"
+        apk_dir="app/build/outputs/apk/productionNoGms/release"
+        apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apk_dir/output-metadata.json" | head -n 1)"
+        test -n "$apk_name"
+        apk_path="$apk_dir/$apk_name"
+        test -f "$apk_path"
         install -Dm644 "$apk_path" "$out/lumo.apk"
         runHook postInstall
       '';

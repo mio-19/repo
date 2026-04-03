@@ -126,13 +126,10 @@ let
     installPhase = ''
       runHook preInstall
 
-      jar_path="$(find out/release -maxdepth 1 -type f -name '*jar*.jar' | head -n1)"
-      apk_path="$(find out/release -maxdepth 1 -type f -name '*.apk' | head -n1)"
-      if [[ -z "$jar_path" || -z "$apk_path" ]]; then
-        echo "Failed to locate built artifacts in out/release" >&2
-        ls -la out/release >&2 || true
-        exit 1
-      fi
+      jar_path="out/release/jar-v0.7.4-20260315-release.jar"
+      apk_path="out/release/NPatch-v0.7.4-20260315-release.apk"
+      test -f "$jar_path"
+      test -f "$apk_path"
 
       install -Dm644 "$jar_path" "$out/lspatch.jar"
       install -Dm644 "$apk_path" "$out/lspatch-manager.apk"

@@ -293,7 +293,7 @@ let
         substituteInPlace make/android.mk \
           --replace-fail \
             'cp $(ANDROID_LAUNCHER_BUILD)/outputs/apk/$(ANDROID_ARCH)$(ANDROID_FLAVOR)/$(if $(KODEBUG),debug,release)/NativeActivity.apk $(ANDROID_APK)' \
-            'apk_path="$$(find $(ANDROID_LAUNCHER_BUILD)/outputs/apk -type f -path "*/arm64*/fdroid*/release/NativeActivity.apk" | head -n 1)"; if [ -z "$$apk_path" ]; then apk_path="$$(find $(ANDROID_LAUNCHER_BUILD)/outputs/apk -type f -name NativeActivity.apk | head -n 1)"; fi; test -n "$$apk_path"; cp "$$apk_path" $(ANDROID_APK)'
+            'cp $(ANDROID_LAUNCHER_BUILD)/outputs/apk/arm64Fdroid/release/NativeActivity.apk $(ANDROID_APK)'
 
         # Prevent koenv.sh from actually running git clone or checkout.
         cat ${./koenv-git.sh} >> base/thirdparty/cmake_modules/koenv.sh

@@ -85,8 +85,8 @@ let
 
       installPhase = ''
         runHook preInstall
-        apk_path="$(find app/build/outputs/apk -type f -name '*basic*release*.apk' | head -n 1)"
-        test -n "$apk_path" && test -f "$apk_path"
+        apk_path="app/build/outputs/apk/basicDefault/release/app-basic-default-release-unsigned.apk"
+        test -f "$apk_path"
         install -Dm644 "$apk_path" "$out/fdroid-basic.apk"
         runHook postInstall
       '';

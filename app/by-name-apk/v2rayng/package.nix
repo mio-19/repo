@@ -215,11 +215,11 @@ let
 
       installPhase = ''
         runHook preInstall
-        apk_path="$(find app/build/outputs/apk/fdroid/release -type f -name '*fdroid_universal.apk' | head -n1)"
-        if [ -z "$apk_path" ]; then
-          apk_path="$(find app/build/outputs/apk/fdroid/release -type f -name '*.apk' | head -n1)"
-        fi
-        test -n "$apk_path"
+        apk_dir="app/build/outputs/apk/fdroid/release"
+        apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apk_dir/output-metadata.json" | head -n 1)"
+        test -n "$apk_name"
+        apk_path="$apk_dir/$apk_name"
+        test -f "$apk_path"
         install -Dm644 "$apk_path" "$out/v2rayng.apk"
         runHook postInstall
       '';

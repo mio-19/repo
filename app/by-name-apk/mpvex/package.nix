@@ -88,19 +88,10 @@ let
       installPhase = ''
         runHook preInstall
         apkDir="app/build/outputs/apk/fdroid/release"
-        apkPath=""
-        for candidate in \
-          "$apkDir"/app-fdroid-universal-release.apk \
-          "$apkDir"/app-fdroid-arm64-v8a-release.apk \
-          "$apkDir"/app-fdroid-release.apk; do
-          if [ -f "$candidate" ]; then
-            apkPath="$candidate"
-            break
-          fi
-        done
-        if [ -z "$apkPath" ]; then
-          apkPath="$(find "$apkDir" -maxdepth 1 -type f -name '*.apk' | head -n1)"
-        fi
+        apkName="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apkDir/output-metadata.json" | head -n 1)"
+        test -n "$apkName"
+        apkPath="$apkDir/$apkName"
+        test -f "$apkPath"
         install -Dm644 "$apkPath" "$out/mpvex.apk"
         runHook postInstall
       '';

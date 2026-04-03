@@ -255,8 +255,11 @@ let
 
     installPhase = ''
       runHook preInstall
-      apk_path="$(find "$NIX_BUILD_TOP/$sourceRoot/build/android-build" -type f -name '*.apk' | head -n 1)"
-      test -n "$apk_path"
+      apk_dir="$NIX_BUILD_TOP/$sourceRoot/build/android-build/build/outputs/apk/debug"
+      apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apk_dir/output-metadata.json" | head -n 1)"
+      test -n "$apk_name"
+      apk_path="$apk_dir/$apk_name"
+      test -f "$apk_path"
       install -Dm644 "$apk_path" "$out/firebird.apk"
       runHook postInstall
     '';
