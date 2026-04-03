@@ -1,11 +1,12 @@
 {
   mk-apk-package,
   lib,
+  stdenvNoCC,
   jdk21,
+  go_1_26,
   gradle-packages,
   stdenv,
   fetchFromGitHub,
-  fetchurl,
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -18,6 +19,9 @@ let
         s.platform-tools
         s.platforms-android-36
         s.build-tools-36-0-0
+        s.platforms-android-35
+        s.build-tools-35-0-0
+        s.ndk-28-2-13676358
       ]);
 
       gradle =
@@ -27,9 +31,126 @@ let
           defaultJava = jdk21;
         }).wrapped;
 
-      libv2rayAar = fetchurl {
-        url = "https://github.com/2dust/AndroidLibXrayLite/releases/download/v26.3.27/libv2ray.aar";
-        hash = "sha256-qsRd/DHoyF/OFGQa+smhdH/IiTi89LyqXeAFFHiAuqk=";
+      androidLibXrayLiteSrc = fetchFromGitHub {
+        owner = "2dust";
+        repo = "AndroidLibXrayLite";
+        rev = "880725442c1d4023a973ccbcdbf527c89ef83a32";
+        hash = "sha256-TLKqh2/mPagul4Lgmx+kKCQw7TAKaZnBJJlq55a9no0=";
+      };
+
+      androidLibXrayLiteGoModCache = stdenvNoCC.mkDerivation {
+        pname = "android-lib-xray-lite-go-mod-cache";
+        version = "26.3.27";
+        src = androidLibXrayLiteSrc;
+
+        nativeBuildInputs = [ go_1_26 ];
+
+        outputHashMode = "recursive";
+        outputHashAlgo = "sha256";
+        outputHash = "sha256-c0W+2Sxn9PDv2ZGEwDoASp8wl1h9l0ydooLlBwFyTHQ=";
+
+        dontConfigure = true;
+        dontFixup = true;
+
+        buildPhase = ''
+          runHook preBuild
+
+          export HOME="$TMPDIR/home"
+          mkdir -p "$HOME"
+          export GOPATH="$TMPDIR/go"
+          export GOCACHE="$TMPDIR/go-build-cache"
+          export GOMODCACHE="$TMPDIR/go-mod-cache"
+          export GOPROXY=https://proxy.golang.org,direct
+          export GOSUMDB=sum.golang.org
+
+          cp -R "$src" source
+          chmod -R u+w source
+          cd source
+          go mod download
+
+          runHook postBuild
+        '';
+
+        installPhase = ''
+          runHook preInstall
+          cp -R "$TMPDIR/go-mod-cache" "$out"
+          runHook postInstall
+        '';
+      };
+
+      libv2rayAar = stdenv.mkDerivation {
+        pname = "android-lib-xray-lite-aar";
+        version = "26.3.27";
+        src = androidLibXrayLiteSrc;
+
+        nativeBuildInputs = [
+          go_1_26
+          jdk21
+          writableTmpDirAsHomeHook
+        ];
+
+        env = {
+          JAVA_HOME = jdk21;
+          ANDROID_HOME = "${androidSdk}/share/android-sdk";
+          ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+          ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
+        };
+
+        buildPhase = ''
+          runHook preBuild
+
+          export HOME="$TMPDIR/home"
+          mkdir -p "$HOME/.android"
+          export GOPATH="$TMPDIR/go"
+          export GOCACHE="$TMPDIR/go-cache"
+          export GOMODCACHE="$PWD/.gomodcache"
+          cp -R ${androidLibXrayLiteGoModCache} "$GOMODCACHE"
+          chmod -R u+w "$GOMODCACHE"
+          export GOPROXY=off
+          export GOSUMDB=off
+          export GOFLAGS="-mod=mod"
+
+          xMobileDir="$(find "$GOMODCACHE" -type d -path '*/golang.org/x/mobile@*' -print -quit)"
+          test -n "$xMobileDir"
+          cp -R "$xMobileDir" ./x-mobile
+          chmod -R u+w ./x-mobile
+          substituteInPlace x-mobile/cmd/gomobile/init.go \
+            --replace-fail 'if err := goInstall([]string{"golang.org/x/mobile/cmd/gobind@latest"}, nil); err != nil {' \
+                           'if _, err := exec.LookPath("gobind"); err != nil {'
+          patch -d x-mobile -p1 < ${../tailscale/gomobile-avoid-empty-go-mod.patch}
+          go mod edit -replace=golang.org/x/mobile=./x-mobile
+          go mod vendor
+
+          gomobileBin="$PWD/gomobile-bin"
+          gobindBin="$PWD/gobind-bin"
+          (cd ./x-mobile && go build -o "$gomobileBin" ./cmd/gomobile)
+          (cd ./x-mobile && go build -o "$gobindBin" ./cmd/gobind)
+          mkdir -p "$GOPATH/bin" "$GOPATH/pkg/gomobile" "$GOPATH/src/github.com/2dust" "$GOPATH/src/golang.org/x"
+          install -m755 "$gobindBin" "$GOPATH/bin/gobind"
+          ln -s "$PWD" "$GOPATH/src/github.com/2dust/AndroidLibXrayLite"
+          ln -s "$PWD/x-mobile" "$GOPATH/src/golang.org/x/mobile"
+          rm -rf vendor/golang.org/x/mobile
+          cp -R vendor/. "$GOPATH/src/"
+          find "$GOMODCACHE" -name go.mod -print | while read -r gomod; do
+            module_dir="$(dirname "$gomod")"
+            rel_path="''${module_dir#$GOMODCACHE/}"
+            module_path="''${rel_path%@*}"
+            mkdir -p "$GOPATH/src/$(dirname "$module_path")"
+            if [ ! -e "$GOPATH/src/$module_path" ]; then
+              ln -s "$module_dir" "$GOPATH/src/$module_path"
+            fi
+          done
+          export PATH="$GOPATH/bin:$PATH"
+          "$gomobileBin" bind -x -v -androidapi 24 -trimpath -ldflags='-s -w -buildid=' ./
+
+          runHook postBuild
+        '';
+
+        installPhase = ''
+          runHook preInstall
+          install -Dm644 libv2ray.aar "$out/libv2ray.aar"
+          runHook postInstall
+        '';
       };
     in
     stdenv.mkDerivation (finalAttrs: {
@@ -76,7 +197,7 @@ let
         mkdir -p "$ANDROID_USER_HOME"
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
         mkdir -p app/libs
-        cp ${libv2rayAar} app/libs/libv2ray.aar
+        cp ${libv2rayAar}/libv2ray.aar app/libs/libv2ray.aar
       '';
 
       postPatch = ''
