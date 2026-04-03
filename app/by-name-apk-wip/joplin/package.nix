@@ -108,12 +108,18 @@ let
       '';
 
       preBuild = ''
-                substituteInPlace packages/app-mobile/android/app/build.gradle \
-                  --replace-fail "            version '3.22.1'" "            version '3.31.6'"
-                substituteInPlace packages/app-mobile/android/app/build.gradle \
-                  --replace-fail "            signingConfig signingConfigs.release" "            signingConfig signingConfigs.debug"
-                substituteInPlace packages/app-mobile/node_modules/@react-native/gradle-plugin/settings.gradle.kts \
-                  --replace-fail 'id("org.gradle.toolchains.foojay-resolver-convention").version("0.5.0")' ""
+                if grep -q "version '3.22.1'" packages/app-mobile/android/app/build.gradle; then
+                  substituteInPlace packages/app-mobile/android/app/build.gradle \
+                    --replace-fail "            version '3.22.1'" "            version '3.31.6'"
+                fi
+                if grep -q "signingConfig signingConfigs.release" packages/app-mobile/android/app/build.gradle; then
+                  substituteInPlace packages/app-mobile/android/app/build.gradle \
+                    --replace-fail "            signingConfig signingConfigs.release" "            signingConfig signingConfigs.debug"
+                fi
+                if grep -q 'id("org.gradle.toolchains.foojay-resolver-convention").version("0.5.0")' packages/app-mobile/node_modules/@react-native/gradle-plugin/settings.gradle.kts; then
+                  substituteInPlace packages/app-mobile/node_modules/@react-native/gradle-plugin/settings.gradle.kts \
+                    --replace-fail 'id("org.gradle.toolchains.foojay-resolver-convention").version("0.5.0")' ""
+                fi
                 if [[ -z "''${IN_GRADLE_UPDATE_DEPS:-}" && -d "${finalAttrs.mitmCache}" ]]; then
                   if grep -q "google()" packages/app-mobile/android/settings.gradle; then
                     substituteInPlace packages/app-mobile/android/settings.gradle \
@@ -285,10 +291,14 @@ let
                     substituteInPlace "$f" --replace-fail "2.0.21" "1.9.24"
                   fi
                 done
-                substituteInPlace packages/turndown-plugin-gfm/config/rollup.config.cjs.js \
-                  --replace-fail "from './rollup.config';" "from './rollup.config.js';"
-                substituteInPlace packages/turndown-plugin-gfm/config/rollup.config.browser.cjs.js \
-                  --replace-fail "from './rollup.config';" "from './rollup.config.js';"
+                if grep -q "from './rollup.config';" packages/turndown-plugin-gfm/config/rollup.config.cjs.js; then
+                  substituteInPlace packages/turndown-plugin-gfm/config/rollup.config.cjs.js \
+                    --replace-fail "from './rollup.config';" "from './rollup.config.js';"
+                fi
+                if grep -q "from './rollup.config';" packages/turndown-plugin-gfm/config/rollup.config.browser.cjs.js; then
+                  substituteInPlace packages/turndown-plugin-gfm/config/rollup.config.browser.cjs.js \
+                    --replace-fail "from './rollup.config';" "from './rollup.config.js';"
+                fi
                 ${nodejs}/bin/node -e "const fs=require('fs'); const path=require('path'); let d=process.cwd(); while (d !== path.dirname(d) && !fs.existsSync(path.join(d,'packages','app-mobile','package.json'))) d = path.dirname(d); const f=require(path.join(d,'packages','tools','compilePackageInfo.js')); Promise.resolve(f(path.join(d,'packages','app-mobile','package.json'), path.join(d,'packages','app-mobile','packageInfo.js'))).catch(e=>{console.error(e); process.exit(1);});"
                 patchShebangs packages/turndown/node_modules/rollup/dist/bin
                 patchShebangs packages/turndown-plugin-gfm/node_modules/.bin
@@ -331,8 +341,9 @@ let
         EOF
                   ${gradle}/bin/gradle --no-daemon -p "$bootstrapDir" resolveBootstrap
                 fi
-                cd packages/app-mobile/android
       '';
+
+      preGradleUpdate = finalAttrs.preBuild;
 
       buildPhase = ''
         runHook preBuild
@@ -350,6 +361,8 @@ let
       dontYarnBuild = true;
 
       gradleFlags = [
+        "--project-dir"
+        "packages/app-mobile/android"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk17_headless},${jdk21}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
@@ -359,7 +372,7 @@ let
       installPhase = ''
         runHook preInstall
         install -Dm644 \
-          app/build/outputs/apk/release/app-release.apk \
+          packages/app-mobile/android/app/build/outputs/apk/release/app-release.apk \
           "$out/joplin.apk"
         runHook postInstall
       '';
