@@ -100,13 +100,24 @@ let
 
       installPhase = ''
         runHook preInstall
-        apk_path="$(
-          find . -type f -name '*.apk' \
-            | grep -E 'arm64-v8a.*release|release.*arm64-v8a' \
-            | head -n 1
-        )"
+        apk_path=""
+        apk_dir="app/build/outputs/apk/release"
+        metadata="$apk_dir/output-metadata.json"
+        if [ -f "$metadata" ]; then
+          apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$metadata" | head -n 1)"
+          if [ -n "$apk_name" ] && [ -f "$apk_dir/$apk_name" ]; then
+            apk_path="$apk_dir/$apk_name"
+          fi
+        fi
+
         if [ -z "$apk_path" ]; then
-          apk_path="$(find . -type f -name '*release*.apk' | head -n 1)"
+          apk_path="$(
+            find . -type f -name '*release*.apk' \
+              ! -name '*androidTest*' \
+              ! -name '*test*.apk' \
+              ! -name '*debug*' \
+              | head -n 1
+          )"
         fi
         test -n "$apk_path"
         install -Dm644 "$apk_path" "$out/luanti.apk"
