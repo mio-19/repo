@@ -40,7 +40,7 @@ let
         hash = "sha256-c0gmlvg/4ONPYhWSJopX29wgjZdvSsxpR31WkRKIQ8A=";
       };
 
-      gradleBuildTask = ":app:assembleFreenetRelease";
+      gradleBuildTask = ":app:assembleBasicRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
 
       mitmCache = gradle.fetchDeps {
@@ -69,6 +69,10 @@ let
         substituteInPlace buildSrc/src/main/kotlin/breezy/buildlogic/Commands.kt \
           --replace-fail 'return runCommand("git rev-list --count HEAD")' 'return "60104"' \
           --replace-fail 'return runCommand("git rev-parse --short=8 HEAD")' 'return "${lib.substring 0 8 rev}"'
+
+        substituteInPlace app/src/main/java/org/breezyweather/ui/main/MainActivity.kt \
+          --replace-fail '        if (BreezyWeather.instance.isImpersonatingBreezyWeather) {' '        if (false) {' \
+          --replace-fail '            LicenseComplianceDialog.show(this)' '            viewModel.checkToUpdate()'
       '';
 
       preConfigure = ''
@@ -78,7 +82,6 @@ let
       '';
 
       gradleFlags = [
-        "-Pbreezy"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk21}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.1/aapt2"
@@ -88,13 +91,13 @@ let
       installPhase = ''
         runHook preInstall
         install -Dm644 \
-          app/build/outputs/apk/freenet/release/app-freenet-universal-release-unsigned.apk \
+          app/build/outputs/apk/basic/release/app-basic-universal-release-unsigned.apk \
           "$out/breezy-weather.apk"
         runHook postInstall
       '';
 
       meta = with lib; {
-        description = "Breezy Weather app built from source (freenet flavor)";
+        description = "Breezy Weather app built from source (basic flavor)";
         homepage = "https://github.com/breezy-weather/breezy-weather";
         license = licenses.lgpl3Only;
         platforms = platforms.unix;
@@ -122,7 +125,7 @@ mk-apk-package {
       Description: |-
         Breezy Weather is a free/libre weather app with many forecast sources,
         air quality, widgets, and live wallpaper support.
-        This package builds the upstream freenet flavor from source.
+        This package builds the upstream basic flavor from source.
     '';
   };
 }
