@@ -40,13 +40,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "piko-patches";
-  version = "3.1.0-dev.4";
+  version = "3.2.0-dev.2";
 
   src = fetchFromGitHub {
     owner = "crimera";
     repo = "piko";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-oyg1AitCu8su2bsyAzUH9+w4zzMuwY9OMgm6IsK0XAY=";
+    hash = "sha256-DqEtPSoCp9eLEKpYUOgzP/jF5vkYDjSZWFdDqtXibiU=";
   };
 
   gradleBuildTask = "generatePatchesList";
