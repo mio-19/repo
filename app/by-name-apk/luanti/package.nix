@@ -1,110 +1,144 @@
 {
-  stdenv,
+  mk-apk-package,
   lib,
+  jdk21,
+  gradle-packages,
+  stdenv,
   fetchFromGitHub,
-  androidenv,
-  jdk17,
-  gradle_8,
-  git,
-  makeWrapper,
-  writeShellScript,
-  gradle,
-  cacert,
+  apksigner,
+  writableTmpDirAsHomeHook,
+  androidSdkBuilder,
+  gettext,
 }:
 let
-  version = "unstable-2026-04-01";
+  appPackage =
+    let
+      version = "unstable-2026-04-01";
+      rev = "c432281ac0be5100d1eec33374c90b38407c7646";
 
-  src = fetchFromGitHub {
-    owner = "luanti-org";
-    repo = "luanti";
-    rev = "f5d92d8ea5f4497b2142a7b04860f96cf5916c35";
-    hash = "sha256-EYImy7Dz8DjoQv8ec/mV9WjAgl6y8sQn1e12vbzRsxo=";
-    fetchSubmodules = true;
-  };
+      androidSdk = androidSdkBuilder (s: [
+        s.cmdline-tools-latest
+        s.platform-tools
+        s.platforms-android-34
+        s.platforms-android-35
+        s.build-tools-34-0-0
+        s.build-tools-35-0-0
+        s.ndk-29-0-14206865
+        s.cmake-3-22-1
+      ]);
 
-  androidComposition = androidenv.composeAndroidPackages {
-    toolsVersion = "26.1.1";
-    platformVersions = [ "35" ];
-    abiVersions = [ "arm64-v8a" ];
-    includeNDK = true;
-    ndkVersions = [ "29.0.14206865" ];
-    cmakeVersions = [ "3.31.7" ];
-    includeEmulator = false;
-    includeSystemImages = false;
-    useGoogleAPIs = false;
-    useGoogleTVAddOns = false;
-  };
+      gradle =
+        (gradle-packages.mkGradle {
+          version = "8.13";
+          hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
+          defaultJava = jdk21;
+        }).wrapped;
+    in
+    stdenv.mkDerivation (finalAttrs: {
+      pname = "luanti";
+      inherit version;
 
-  androidSdk = androidComposition.androidsdk;
+      src = fetchFromGitHub {
+        owner = "luanti-org";
+        repo = "luanti";
+        inherit rev;
+        hash = "sha256-4D6zIAOZOsw6R+0v1GNDaHHlVOkulrmCzx1nZyWbGow=";
+      };
+
+      sourceRoot = "${finalAttrs.src.name}/android";
+      dontFixup = true;
+
+      gradleBuildTask = ":app:assembleRelease";
+      gradleUpdateTask = finalAttrs.gradleBuildTask;
+
+      mitmCache = gradle.fetchDeps {
+        inherit (finalAttrs) pname;
+        pkg = finalAttrs.finalPackage;
+        data = ./luanti_deps.json;
+        silent = false;
+        useBwrap = false;
+      };
+
+      nativeBuildInputs = [
+        gradle
+        jdk21
+        apksigner
+        writableTmpDirAsHomeHook
+        gettext
+      ];
+
+      env = {
+        JAVA_HOME = jdk21;
+        ANDROID_HOME = "${androidSdk}/share/android-sdk";
+        ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
+        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+      };
+
+      postUnpack = ''
+        chmod -R u+w .
+      '';
+
+      preConfigure = ''
+        export ANDROID_USER_HOME="$HOME/.android"
+        mkdir -p "$ANDROID_USER_HOME"
+        chmod -R u+w "$PWD/.."
+        cat > local.properties <<EOF
+        sdk.dir=${androidSdk}/share/android-sdk
+        ndk.dir=${androidSdk}/share/android-sdk/ndk/29.0.14206865
+        EOF
+      '';
+
+      gradleFlags = [
+        "-Dorg.gradle.java.installations.auto-download=false"
+        "-Dorg.gradle.java.installations.paths=${jdk21}"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Pandroid.injected.build.abi=arm64-v8a"
+      ];
+
+      installPhase = ''
+        runHook preInstall
+        apk_path="$(
+          find . -type f -name '*.apk' \
+            | grep -E 'arm64-v8a.*release|release.*arm64-v8a' \
+            | head -n 1
+        )"
+        if [ -z "$apk_path" ]; then
+          apk_path="$(find . -type f -name '*release*.apk' | head -n 1)"
+        fi
+        test -n "$apk_path"
+        install -Dm644 "$apk_path" "$out/luanti.apk"
+        runHook postInstall
+      '';
+
+      meta = with lib; {
+        description = "Luanti Android client built from source";
+        homepage = "https://github.com/luanti-org/luanti";
+        license = licenses.lgpl21Plus;
+        platforms = platforms.unix;
+      };
+    });
 in
-stdenv.mkDerivation (finalAttrs: {
-  pname = "luanti";
-  inherit version src;
-
-  nativeBuildInputs = [
-    jdk17
-    androidSdk
-    gradle_8
-    makeWrapper
-    git
-    gradle
-    cacert
-  ];
-
-  dontUseCmakeConfigure = true;
-
-  sourceRoot = "source/android";
-
-  postPatch = ''
-    cat > gradle.properties <<EOF
-    android.builder.sdkDownload=false
-    org.gradle.java.home=${jdk17}
-    android.aapt2FromMavenOverride=${androidSdk}/libexec/android-sdk/build-tools/35.0.0/aapt2
-    org.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/libexec/android-sdk/build-tools/35.0.0/aapt2
-    EOF
-
-    cat > local.properties <<EOF
-    sdk.dir=${androidSdk}/libexec/android-sdk
-    ndk.dir=${androidSdk}/libexec/android-sdk/ndk-bundle
-    cmake.dir=${androidSdk}/libexec/android-sdk/cmake/3.31.7
-    EOF
-
-    substituteInPlace gradlew --replace-fail '/usr/bin/env sh' '${stdenv.shell}'
-  '';
-
-  configurePhase = ''
-    runHook preConfigure
-    export JAVA_HOME=${jdk17}
-    export ANDROID_HOME=${androidSdk}/libexec/android-sdk
-    export ANDROID_SDK_ROOT=$ANDROID_HOME
-    export ANDROID_NDK_HOME=$ANDROID_HOME/ndk-bundle
-    export ANDROID_NDK_ROOT=$ANDROID_HOME/ndk-bundle
-    export PATH=${lib.makeBinPath [ jdk17 gradle_8 ]}:$PATH
-    runHook postConfigure
-  '';
-
-  buildPhase = ''
-    runHook preBuild
-    chmod +x ./gradlew
-    ./gradlew --no-daemon --offline --stacktrace --info \
-      -Dorg.gradle.java.home=${jdk17} \
-      -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g" \
-      :app:assembleDebug
-    runHook postBuild
-  '';
-
-  installPhase = ''
-    runHook preInstall
-    apk_path="app/build/intermediates/apk/debug/app-arm64-v8a-debug.apk"
-    test -f "$apk_path"
-    install -Dm644 "$apk_path" "$out/luanti.apk"
-    runHook postInstall
-  '';
-
-  meta = {
-    description = "Luanti (formerly Minetest) Android APK";
-    homepage = "https://www.luanti.org/";
-    license = lib.licenses.lgpl21Plus;
-    platforms = [ "aarch64-linux" "x86_64-linux" ];
+mk-apk-package {
+  inherit appPackage;
+  mainApk = "luanti.apk";
+  signScriptName = "sign-luanti";
+  fdroid = {
+    appId = "net.minetest.minetest";
+    metadataYml = ''
+      Categories:
+        - Games
+      License: LGPL-2.1-or-later
+      SourceCode: https://github.com/luanti-org/luanti
+      IssueTracker: https://github.com/luanti-org/luanti/issues
+      AutoName: Luanti
+      Summary: Open-source voxel game engine and client
+      Description: |-
+        Luanti (formerly Minetest) is a free and open-source voxel game
+        engine with modding and game creation support.
+        This package is built from source.
+    '';
   };
-})
+}
