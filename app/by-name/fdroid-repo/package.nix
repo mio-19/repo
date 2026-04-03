@@ -26,6 +26,7 @@ let
     "termux-styling"
     "termux-x11"
     "emacs"
+    "comaps"
 
     # need different gradle lockfile on darwin
     "haven"
@@ -59,6 +60,7 @@ let
 
     # cannot build on darwin due to nixpkgs didn't package android toolchain for darwin aarch64
     "kernelsu"
+    "bitwarden-android"
 
     # build tool "qmake" runs on linux only
     "firebird"
