@@ -116,6 +116,10 @@ let
                   substituteInPlace packages/app-mobile/android/app/build.gradle \
                     --replace-fail "            signingConfig signingConfigs.release" "            signingConfig signingConfigs.debug"
                 fi
+                if grep -q 'id("org.gradle.toolchains.foojay-resolver-convention").version("0.5.0")' packages/app-mobile/node_modules/@react-native/gradle-plugin/settings.gradle.kts; then
+                  substituteInPlace packages/app-mobile/node_modules/@react-native/gradle-plugin/settings.gradle.kts \
+                    --replace-fail 'id("org.gradle.toolchains.foojay-resolver-convention").version("0.5.0")' ""
+                fi
                 if [[ -z "''${IN_GRADLE_UPDATE_DEPS:-}" && -d "${finalAttrs.mitmCache}" ]]; then
                   if grep -q "google()" packages/app-mobile/android/settings.gradle; then
                     substituteInPlace packages/app-mobile/android/settings.gradle \
