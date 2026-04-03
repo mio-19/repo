@@ -34,12 +34,12 @@ let
           defaultJava = jdk21;
         }).wrapped;
 
-      # https://github.com/bitwarden/android/blob/d8a9c596b27c9a68b63304d49784117bbebc6683/gradle/libs.versions.toml#L33 bitwardenSdk = "2.0.0-5425-a6f4a233"
+      # https://github.com/bitwarden/android/blob/v2026.3.1-bwpm/gradle/libs.versions.toml#L33 bitwardenSdk = "2.0.0-5676-14521973"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
-        rev = "a6f4a23322c72d00b9ed7999441da66035ce7048";
-        hash = "sha256-m+FCqTwTLJr+Z39uoTDFpgTsF4cod9h57X3PhVIi/ig=";
+        rev = "14521973668ec4f5e3de86e474637cc68bd70ac3";
+        hash = "sha256-EZZa3Cv7HdQKy9JCqqrn6s/CQJ1LECvl5UIWSztvIKE=";
       };
 
       androidCrossConfig = {
@@ -146,7 +146,7 @@ let
           version = "2.0.0";
           src = sdkSrc;
           cargoRoot = ".";
-          hash = "sha256-tb6sJOvmJ5Jni4AZUXX9TT+N3/sw3XKfpe1ggMkJV0w=";
+          hash = "sha256-ILDl8qR0luBep87KVh8xyEDsWNNda4CPm95+qB/u2TQ=";
         };
         nativeBuildInputs = [
           rustPlatform.cargoSetupHook
@@ -179,17 +179,17 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-android";
-      version = "2026.3.0";
+      version = "2026.3.1";
 
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
         tag = "v${finalAttrs.version}-bwpm";
-        hash = "sha256-YjbMVFW6fWYuwRApISrEtRGZQOMGEUxvAGxzTDJcKBc=";
+        hash = "sha256-8XXP3Ve3Uj+kwqRR8aWHnFOsC8wMAfs14CGA+E8Lny8=";
       };
 
       gradleBuildTask = ":app:assembleFdroidRelease";
-      gradleUpdateTask = finalAttrs.gradleBuildTask;
+      gradleUpdateTask = "resolveNixBootstrapDeps :app:assembleFdroidRelease";
 
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
@@ -224,8 +224,103 @@ let
         localSdk=true
         gitHubToken=
         EOF
+        if [[ -n "''${IN_GRADLE_UPDATE_DEPS:-}" ]]; then
+          export GRADLE_USER_HOME="$(mktemp -d)"
+        fi
         substituteInPlace gradle/libs.versions.toml \
           --replace-fail 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version.ref = "bitwardenSdk" }' 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version = "LOCAL" }'
+        cat >> build.gradle.kts <<'EOF'
+        val nixBootstrap by configurations.creating
+        dependencies {
+            nixBootstrap("org.jetbrains.kotlin:kotlin-stdlib:2.2.10")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-stdlib:2.3.20")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-reflect:2.2.10")
+            nixBootstrap("org.jetbrains:annotations:23.0.0")
+            nixBootstrap("commons-codec:commons-codec:1.17.1")
+            nixBootstrap("org.apache.commons:commons-lang3:3.16.0")
+            nixBootstrap("org.apache.commons:commons-compress:1.27.1")
+            nixBootstrap("commons-io:commons-io:2.16.1")
+            nixBootstrap("com.google.code.gson:gson:2.11.0")
+            nixBootstrap("org.bouncycastle:bcprov-jdk18on:1.79")
+            nixBootstrap("com.google.errorprone:error_prone_annotations:2.28.0")
+            nixBootstrap("net.java.dev.jna:jna:5.17.0")
+            nixBootstrap("androidx.core:core-ktx:1.15.0")
+            nixBootstrap("androidx.core:core:1.15.0")
+            nixBootstrap("androidx.core:core-ktx:1.18.0")
+            nixBootstrap("androidx.collection:collection:1.0.0")
+            nixBootstrap("androidx.collection:collection:1.0.0@jar")
+            nixBootstrap("androidx.versionedparcelable:versionedparcelable:1.1.1")
+            nixBootstrap("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+            nixBootstrap("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2")
+            nixBootstrap("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0")
+            nixBootstrap("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0@jar")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-compat:2.3.20")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-impl:2.3.20")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
+        }
+        tasks.register("resolveNixBootstrapDeps") {
+            doLast {
+                nixBootstrap.resolve()
+                configurations.detachedConfiguration(
+                    dependencies.create("org.jetbrains.kotlin:kotlin-stdlib:2.2.10"),
+                    dependencies.create("org.jetbrains.kotlin:kotlin-reflect:2.2.10"),
+                    dependencies.create("org.jetbrains.kotlin:kotlin-stdlib:1.6.10"),
+                    dependencies.create("org.jetbrains.kotlin:kotlin-reflect:1.6.10"),
+                    dependencies.create("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2"),
+                    dependencies.create("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2"),
+                    dependencies.create("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0@jar")
+                ).resolve()
+                val nixJvmBootstrap = configurations.detachedConfiguration(
+                    dependencies.create("org.jetbrains.kotlin:kotlin-reflect:1.6.10"),
+                    dependencies.create("org.jetbrains.kotlin:kotlin-stdlib:1.6.10"),
+                    dependencies.create("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2"),
+                    dependencies.create("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2"),
+                    dependencies.create("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0@jar")
+                ).apply {
+                    isCanBeConsumed = false
+                    isCanBeResolved = true
+                    attributes {
+                        attribute(org.gradle.api.attributes.Category.CATEGORY_ATTRIBUTE, objects.named(org.gradle.api.attributes.Category.LIBRARY))
+                        attribute(org.gradle.api.attributes.Usage.USAGE_ATTRIBUTE, objects.named(org.gradle.api.attributes.Usage.JAVA_RUNTIME))
+                        attribute(org.gradle.api.attributes.LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(org.gradle.api.attributes.LibraryElements.JAR))
+                        attribute(org.gradle.api.attributes.Bundling.BUNDLING_ATTRIBUTE, objects.named(org.gradle.api.attributes.Bundling.EXTERNAL))
+                    }
+                }
+                nixJvmBootstrap.resolve()
+                val coroutinesCore18Jar = (dependencies.create("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0") as org.gradle.api.artifacts.ExternalModuleDependency).apply {
+                    artifact {
+                        type = "jar"
+                        extension = "jar"
+                    }
+                }
+                configurations.detachedConfiguration(coroutinesCore18Jar).apply {
+                    isTransitive = false
+                }.resolve()
+                val coreKtx115 = (dependencies.create("androidx.core:core-ktx:1.15.0") as org.gradle.api.artifacts.ExternalModuleDependency).apply {
+                    artifact {
+                        type = "aar"
+                        extension = "aar"
+                    }
+                }
+                configurations.detachedConfiguration(coreKtx115).apply {
+                    isTransitive = false
+                }.resolve()
+                val core115 = (dependencies.create("androidx.core:core:1.15.0") as org.gradle.api.artifacts.ExternalModuleDependency).apply {
+                    artifact {
+                        type = "aar"
+                        extension = "aar"
+                    }
+                }
+                configurations.detachedConfiguration(core115).apply {
+                    isTransitive = false
+                }.resolve()
+                buildscript.configurations.getByName("classpath").resolve()
+                allprojects.forEach {
+                    it.buildscript.configurations.findByName("classpath")?.resolve()
+                }
+            }
+        }
+        EOF
       '';
 
       preBuild = ''
@@ -237,11 +332,11 @@ let
 
                 cd "$sdkKotlinDir"
                 substituteInPlace build.gradle \
-                  --replace-fail "id 'com.android.application' version '8.9.0' apply false" "id 'com.android.application' version '9.0.1' apply false" \
-                  --replace-fail "id 'com.android.library' version '8.9.0' apply false" "id 'com.android.library' version '9.0.1' apply false" \
-                  --replace-fail "id 'org.jetbrains.kotlin.android' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.android' version '2.3.10' apply false" \
-                  --replace-fail "id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.serialization' version '2.3.10' apply false" \
-                  --replace-fail "id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.compose' version '2.3.10' apply false"
+                  --replace-fail "id 'com.android.application' version '8.9.0' apply false" "id 'com.android.application' version '9.1.0' apply false" \
+                  --replace-fail "id 'com.android.library' version '8.9.0' apply false" "id 'com.android.library' version '9.1.0' apply false" \
+                  --replace-fail "id 'org.jetbrains.kotlin.android' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.android' version '2.3.20' apply false" \
+                  --replace-fail "id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.serialization' version '2.3.20' apply false" \
+                  --replace-fail "id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.compose' version '2.3.20' apply false"
                 substituteInPlace app/build.gradle \
                   --replace-fail "id 'kotlinx-serialization'" "id 'org.jetbrains.kotlin.plugin.serialization'"
                 substituteInPlace sdk/build.gradle \
@@ -251,16 +346,20 @@ let
             }
         " "" \
                   --replace-fail "def branchName = 'git branch --show-current'.execute().text.trim()" "def branchName = 'main'" \
+                  --replace-fail "implementation 'net.java.dev.jna:jna:5.17.0@aar'" "implementation 'net.java.dev.jna:jna:5.17.0'" \
+                  --replace-fail "implementation 'androidx.core:core-ktx:1.15.0'" "implementation('androidx.core:core-ktx:1.15.0') { exclude group: 'androidx.collection', module: 'collection' }" \
+                  --replace-fail "implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1'" "implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'; implementation 'androidx.collection:collection:1.4.2'" \
+                  --replace-fail "dependencies {" "tasks.matching { it.name == 'extractReleaseAnnotations' }.configureEach { enabled = false }; dependencies {" \
                   --replace-fail "implementation files(findRustlsPlatformVerifierClassesJar())" ""
                 substituteInPlace settings.gradle \
                   --replace-fail "pluginManagement {" "pluginManagement {
                       resolutionStrategy {
                           eachPlugin {
                               if (requested.id.id == \"com.android.application\" || requested.id.id == \"com.android.library\") {
-                                  useModule(\"com.android.tools.build:gradle:9.0.1\")
+                                  useModule(\"com.android.tools.build:gradle:9.1.0\")
                               }
                               if (requested.id.id == \"org.jetbrains.kotlin.android\" || requested.id.id == \"org.jetbrains.kotlin.plugin.serialization\" || requested.id.id == \"org.jetbrains.kotlin.plugin.compose\") {
-                                  useModule(\"org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.10\")
+                                  useModule(\"org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.20\")
                               }
                           }
                       }"
@@ -272,36 +371,6 @@ let
                     --replace-fail "mavenCentral()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }" \
                     --replace-fail "gradlePluginPortal()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/plugins.gradle.org/m2\") }"
                 fi
-                if [[ -n "''${IN_GRADLE_UPDATE_DEPS:-}" ]]; then
-                  bootstrapDir="$(mktemp -d)"
-                  cat > "$bootstrapDir/build.gradle" <<'EOF'
-        repositories {
-            google()
-            mavenCentral()
-            gradlePluginPortal()
-        }
-
-        configurations {
-            bootstrap
-        }
-
-        dependencies {
-            bootstrap "org.jetbrains.kotlin:kotlin-stdlib:2.2.10"
-            bootstrap "org.jetbrains.kotlin:kotlin-reflect:2.2.10"
-            bootstrap "org.jetbrains:annotations:23.0.0"
-            bootstrap "commons-codec:commons-codec:1.17.1"
-            bootstrap "org.apache.commons:commons-lang3:3.16.0"
-        }
-
-        tasks.register("resolveBootstrap") {
-            doLast {
-                configurations.bootstrap.resolve()
-            }
-        }
-        EOF
-                  ${gradle}/bin/gradle --no-daemon -p "$bootstrapDir" resolveBootstrap
-                fi
-
                 mkdir -p ./sdk/src/main/jniLibs/{arm64-v8a,x86_64}
                 cp ${uniffiArm64}/lib/libbitwarden_uniffi.so ./sdk/src/main/jniLibs/arm64-v8a/
                 cp ${uniffiX8664}/lib/libbitwarden_uniffi.so ./sdk/src/main/jniLibs/x86_64/
@@ -309,7 +378,11 @@ let
                 mkdir -p ./sdk/src/main/java
                 cp -R ${sdkGeneratedJava}/java/. ./sdk/src/main/java/
                 chmod -R u+w ./sdk/src/main/java
-                ${gradle}/bin/gradle --no-daemon sdk:publishToMavenLocal -Pversion=LOCAL
+                mkdir -p ./sdk/build/intermediates/annotations_typedef_file/release/extractReleaseAnnotations
+                : > ./sdk/build/intermediates/annotations_typedef_file/release/extractReleaseAnnotations/typedefs.txt
+                if [[ -z "''${IN_GRADLE_UPDATE_DEPS:-}" ]]; then
+                  ${gradle}/bin/gradle --no-daemon sdk:publishToMavenLocal -Pversion=LOCAL
+                fi
 
                 cd "$repoRoot"
       '';
