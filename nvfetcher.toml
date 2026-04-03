@@ -245,3 +245,8 @@ fetch.git = "https://github.com/MorpheApp/Apktool.git"
 src.git = "https://github.com/MorpheApp/multidexlib2.git"
 src.branch = "main"
 fetch.git = "https://github.com/MorpheApp/multidexlib2.git"
+
+[amethyst_android]
+src.manual = "055d2989cbce9d812fdd7bf6abb03135d414cb9b" # pinned rev
+fetch.git = "https://github.com/AngelAuraMC/Amethyst-Android.git"
+git.fetchSubmodules = true

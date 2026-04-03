@@ -6,6 +6,19 @@
   dockerTools,
 }:
 {
+  amethyst_android = {
+    pname = "amethyst_android";
+    version = "055d2989cbce9d812fdd7bf6abb03135d414cb9b";
+    src = fetchgit {
+      url = "https://github.com/AngelAuraMC/Amethyst-Android.git";
+      rev = "055d2989cbce9d812fdd7bf6abb03135d414cb9b";
+      fetchSubmodules = true;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-J/rjyKJSb26S+axZrbeAFskQqiMD7ed9rAyySm+BceU=";
+    };
+  };
   axp_build = {
     pname = "axp_build";
     version = "5d5342d7e95b40b70000d82ee121850751ec3b8a";
