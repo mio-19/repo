@@ -12,6 +12,10 @@ Using this repository may result in data loss, boot loops, bricked devices, inju
 
 Some nix files in this repository produce fully broken or mostly broken results.
 
+I want the following freedom on my devices: The freedom to study how the program works, and change it so it does your computing as you wish (freedom 1). Access to the source code is a precondition for this.
+
+However it is always false on certain operating systems. Certain operating systems in principle discourage users from modifying any application.
+
 android devices rom configurations
 
 command examples:
