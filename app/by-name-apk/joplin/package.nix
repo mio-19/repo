@@ -182,38 +182,6 @@ let
                     fi
                   fi
                 fi
-                if grep -q "2.0.21" packages/app-mobile/node_modules/@react-native/gradle-plugin/build.gradle.kts; then
-                  substituteInPlace packages/app-mobile/node_modules/@react-native/gradle-plugin/build.gradle.kts \
-                    --replace-fail "2.0.21" "1.9.24"
-                fi
-                if grep -q '"1.9.24"' packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts; then
-                  substituteInPlace packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts \
-                    --replace-fail '"1.9.24"' 'embeddedKotlinVersion'
-                fi
-                if grep -q 'kotlin("jvm") version embeddedKotlinVersion apply false' packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts; then
-                  substituteInPlace packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts \
-                    --replace-fail 'kotlin("jvm") version embeddedKotlinVersion apply false' 'kotlin("jvm") version "1.9.24" apply false'
-                fi
-                if grep -q 'kotlin("jvm") apply false' packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts; then
-                  substituteInPlace packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts \
-                    --replace-fail 'kotlin("jvm") apply false' 'kotlin("jvm") version "1.9.24" apply false'
-                fi
-                if grep -q '"2.0.21"' packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts; then
-                  substituteInPlace packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts \
-                    --replace-fail '"2.0.21"' 'embeddedKotlinVersion'
-                fi
-                if grep -q "2.0.21" packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts; then
-                  substituteInPlace packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts \
-                    --replace-fail "2.0.21" "1.9.24"
-                fi
-                if [ -f packages/app-mobile/node_modules/expo-modules-autolinking/android/gradle/libs.versions.toml ] && grep -q "2.0.21" packages/app-mobile/node_modules/expo-modules-autolinking/android/gradle/libs.versions.toml; then
-                  substituteInPlace packages/app-mobile/node_modules/expo-modules-autolinking/android/gradle/libs.versions.toml \
-                    --replace-fail "2.0.21" "1.9.24"
-                fi
-                if [ -f packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/gradle/libs.versions.toml ] && grep -q "2.0.21" packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/gradle/libs.versions.toml; then
-                  substituteInPlace packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/gradle/libs.versions.toml \
-                    --replace-fail "2.0.21" "1.9.24"
-                fi
                 if [ -f packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/settings.gradle.kts ] && grep -q "pluginManagement {" packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/settings.gradle.kts; then
                   substituteInPlace packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/settings.gradle.kts \
                     --replace-fail "pluginManagement {" "pluginManagement {
@@ -347,12 +315,6 @@ let
 
       buildPhase = ''
         runHook preBuild
-        expoPluginGradle="packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/build.gradle.kts"
-        if [ -f "$expoPluginGradle" ]; then
-          substituteInPlace "$expoPluginGradle" --replace-warn "2.0.21" "1.9.24"
-          echo "Expo plugin kotlin lines after patch:"
-          grep -n "org.jetbrains.kotlin.jvm\\|2.0.21\\|1.9.24" "$expoPluginGradle" || true
-        fi
         gradle --no-daemon $gradleBuildTask
         runHook postBuild
       '';
