@@ -2,7 +2,7 @@
 
 note: lspatch patched app might need cleaning cache after updating
 
-broken but can compile:
+broken but can compile and install:
 
 + koreader crash when tapping top area
 + kernelsu cannot communicate with the kernel because of the need to change KSU_EXPECTED_HASH
@@ -10,7 +10,7 @@ broken but can compile:
 + twitter cannot login
 + onlyoffice-documents crashing after welcome page
 + lumo
-+ bitwarden
++ bitwarden-authenticator: need firebase?
 
 slightly broken:
 
