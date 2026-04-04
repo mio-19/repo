@@ -31,13 +31,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "archivetune";
-      version = "13.0.0";
+      version = "13.1.0";
 
       src = fetchFromGitHub {
         owner = "koiverse";
         repo = "ArchiveTune";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-x4Q9KwnAWLTTRAtKtKblo0IjYFLatyK37vYAtp4pdS0=";
+        hash = "sha256-rA3hB/snF70Oourx9ub2gXfAkWsfsxSI7X6ZOIo+Wkk=";
       };
 
       gradleBuildTask = ":app:assembleArm64Release";
