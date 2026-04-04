@@ -16,9 +16,7 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
-        s.platforms-android-35
         s.platforms-android-36
-        s.build-tools-34-0-0
         s.build-tools-35-0-0
       ]);
 
@@ -78,7 +76,7 @@ let
         JAVA_HOME = jdk21;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
       };
 
       preConfigure = ''
@@ -90,15 +88,14 @@ let
       gradleFlags = [
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk21}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
         "-Dandroid.suppressUnsupportedCompileSdk=35"
       ];
 
       installPhase = ''
         runHook preInstall
-        apk_path="mastodon/build/outputs/apk/githubRelease/mastodon-githubRelease-unsigned.apk"
-        test -f "$apk_path"
+        apk_path="mastodon/build/outputs/apk/githubRelease/mastodon-githubRelease.apk"
         install -Dm644 "$apk_path" "$out/mastodon-android.apk"
         runHook postInstall
       '';
