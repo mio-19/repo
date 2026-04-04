@@ -346,22 +346,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-nixfmt-old": {
-      "locked": {
-        "lastModified": 1750622754,
-        "narHash": "sha256-kMhs+YzV4vPGfuTpD3mwzibWUE6jotw5Al2wczI0Pv8=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "c7ab75210cb8cb16ddd8f290755d9558edde7ee1",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "c7ab75210cb8cb16ddd8f290755d9558edde7ee1",
-        "type": "github"
-      }
-    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1775126147,
@@ -464,7 +448,9 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "nixpkgs-nixfmt-old": "nixpkgs-nixfmt-old",
+        "nixpkgs-nixfmt-old": [
+          "nixpkgs"
+        ],
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
@@ -587,7 +573,6 @@
     "treefmt-nix_3": {
       "inputs": {
         "nixpkgs": [
-          "robotnix",
           "nixpkgs"
         ]
       },

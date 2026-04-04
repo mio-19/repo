@@ -11,6 +11,8 @@
     #robotnix.url = "github:mio-19/robotnix";
     robotnix.inputs.nixpkgs.follows = "nixpkgs";
     robotnix.inputs.androidPkgs.follows = "android-nixpkgs";
+    robotnix.inputs.nixpkgs-nixfmt-old.follows = "nixpkgs";
+    robotnix.inputs.treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
     # https://github.com/xddxdd/nix-kernelsu-builder
     nix-kernelsu-builder.url = "github:xddxdd/nix-kernelsu-builder/cc0fce340e330ad07331692b7c3673d9974be377";
