@@ -216,11 +216,14 @@ in
       url = "https://github.com/LineageOS/android_bootable_recovery/commit/0e5fd009ce1f8bcb681f6bfb2590ebc70734ea6a.patch";
       hash = "sha256-BZuXJ9xhp70TUbS5/bt6ihvLfmezc6tazDM9uM9Ahe0=";
     })
-    (fetchpatch {
-      name = "recovery: Expose reboot to recovery option";
-      url = "https://github.com/LineageOS/android_bootable_recovery/commit/a27249584cbc29b6c2d1444ffa62f6377d9546bc.patch";
-      hash = "sha256-/S3jLQ0LcXwQzuD5G9iskf9Qtmm7ICsDA+QIcUJo30M=";
-    })
+    /*
+      # not useful for grapheneos
+      (fetchpatch {
+        name = "recovery: Expose reboot to recovery option";
+        url = "https://github.com/LineageOS/android_bootable_recovery/commit/a27249584cbc29b6c2d1444ffa62f6377d9546bc.patch";
+        hash = "sha256-/S3jLQ0LcXwQzuD5G9iskf9Qtmm7ICsDA+QIcUJo30M=";
+      })
+    */
     ./spl_downgrade.patch
   ];
 
