@@ -349,7 +349,7 @@ let
             }
         " "" \
                   --replace-fail "def branchName = 'git branch --show-current'.execute().text.trim()" "def branchName = 'main'" \
-                  --replace-fail "implementation 'net.java.dev.jna:jna:5.17.0@aar'" "implementation 'net.java.dev.jna:jna:5.17.0'" \
+                  --replace-fail "implementation 'net.java.dev.jna:jna:5.17.0@aar'" "api 'net.java.dev.jna:jna:5.17.0'" \
                   --replace-fail "implementation 'androidx.core:core-ktx:1.15.0'" "implementation('androidx.core:core-ktx:1.15.0') { exclude group: 'androidx.collection', module: 'collection' }" \
                   --replace-fail "implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1'" "implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'; implementation 'androidx.collection:collection:1.4.2'" \
                   --replace-fail "dependencies {" "tasks.matching { it.name == 'extractReleaseAnnotations' }.configureEach { enabled = false }; dependencies {" \
