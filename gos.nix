@@ -15,7 +15,8 @@ let
       ;
   };
   replace_app = name: attribute: ''
-    rm prebuilt/${name}.apk prebuilt/${name}.apk.idsig
+    rm prebuilt/${name}.apk
+    rm -f prebuilt/${name}.apk.idsig # maybe not exist
     keystore="$TMPDIR/grapheneos-appstore-signing-key.jks"
 
     # We don't expect out of band upgrade so use a key generated every time.
