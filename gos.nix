@@ -40,7 +40,7 @@ in
     ./gos_noleakdns.nix
     ./gos-apple.nix
   ];
-  buildDateTime = 1774181771;
+  buildDateTime = 1775310433;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   source.dirs."frameworks/base".patches = with pkgs; [
