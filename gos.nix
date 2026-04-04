@@ -218,4 +218,12 @@ in
     })
     ./spl_downgrade.patch
   ];
+
+  source.dirs."packages/apps/GmsCompat".patches = with pkgs; [
+    (fetchpatch {
+      name = "gmscompat: Make missing play games notification blockable";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_GmsCompat/pull/274.diff";
+      hash = "sha256-+UXX1FjtlWCCXgt0qC2QDJ5xqTFYME5NGefaLBvD/ls=";
+    })
+  ];
 }
