@@ -60,6 +60,7 @@
         ./openwrt.nix
         ./robotnix.nix
         ./app
+        ./mc
       ];
       perSystem =
         args@{ pkgs, system, ... }:
