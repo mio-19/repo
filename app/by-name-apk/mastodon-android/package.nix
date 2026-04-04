@@ -17,39 +17,43 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-35
-        # AGP 8.2.2 resolves aapt2 from build-tools 34.0.0.
+        s.platforms-android-36
         s.build-tools-34-0-0
+        s.build-tools-35-0-0
       ]);
 
       gradle =
         (gradle-packages.mkGradle {
-          version = "8.5";
-          hash = "sha256-nZJnhwZqCBc56CAIWDOLSmnoN8OoIaM6yp2wndSkECY=";
+          version = "8.13";
+          hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
           defaultJava = jdk21;
         }).wrapped;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "mastodon-android";
-      version = "2.11.11";
+      version = "2.11.11-unstable-2026-04-04";
 
       src = fetchFromGitHub {
         owner = "mastodon";
         repo = "mastodon-android";
-        tag = "v${finalAttrs.version}";
-        hash = "sha256-ySy+KZrJYr4W4woSzXId6qJVzm//v542ROSHDaDtcSA=";
+        #tag = "v${finalAttrs.version}";
+        rev = "92478fa81dec9b6a8a272ffa55500e5526dcec74";
+        hash = "sha256-gGDVNaGU/uMibPYB1+EcFBsYz5A/GIi+0gN6D1vbtRk=";
       };
 
       patches = [
-        (fetchpatch {
-          name = "Enable more comprehensive R8 optimizations (#1079)";
-          url = "https://github.com/mastodon/mastodon-android/pull/1079.diff";
-          hash = "sha256-8pcIg8Qmv30WCQJsrJOqvP20pCcfov4F9XZbOZVOS+Y=";
-        })
         (fetchpatch {
           name = "Furigana implementation for japanese messages";
           url = "https://github.com/mastodon/mastodon-android/pull/1039.diff";
           hash = "sha256-QLD5iT2CXhiTVjXSLTqMtJ59rZ0GL7cKqvbytqxXs8A=";
         })
+        /*
+          (fetchpatch {
+            name = "Enable more comprehensive R8 optimizations (#1079)";
+            url = "https://github.com/mastodon/mastodon-android/pull/1079.diff";
+            hash = "sha256-8pcIg8Qmv30WCQJsrJOqvP20pCcfov4F9XZbOZVOS+Y=";
+          })
+        */
       ];
 
       gradleBuildTask = ":mastodon:assembleGithubRelease";
