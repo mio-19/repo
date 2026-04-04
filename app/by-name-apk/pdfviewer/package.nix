@@ -43,6 +43,11 @@ let
           url = "https://github.com/GrapheneOS/PdfViewer/pull/598.diff";
           hash = "sha256-xE8bc5u2IoRhfay8eJo+vUzzQEr4jGTWNEuciNT5W1U=";
         })
+        (fetchpatch {
+          name = "feat: Search (Fixes #4)";
+          url = "https://github.com/GrapheneOS/PdfViewer/pull/579.diff";
+          hash = "sha256-COVebkjyEIrQf7Q1VBLaRwthO2bG+/Uy/tBqoLueqwY=";
+        })
       ];
 
       gradleBuildTask = ":app:assembleRelease";
@@ -85,30 +90,31 @@ let
       '';
 
       postPatch = ''
+        rm app/src/main/res/values/strings.xml.orig
         substituteInPlace app/build.gradle.kts \
-          --replace-fail \
-          'commandLine(getCommand("npm"), "ci", "--ignore-scripts")' \
-          'environment("npm_config_audit", "false")
-    environment("NPM_CONFIG_AUDIT", "false")
-    environment("npm_config_update_notifier", "false")
-    environment("NPM_CONFIG_UPDATE_NOTIFIER", "false")
-    environment("npm_config_production", "false")
-    environment("NPM_CONFIG_PRODUCTION", "false")
-    environment("npm_config_omit", "")
-    environment("NPM_CONFIG_OMIT", "")
-    val normalizeProxy: (String) -> String? = { key ->
-        System.getenv(key)?.let { if (it.contains("://")) it else "http://$it" }
-    }
-    normalizeProxy("http_proxy")?.let { environment("http_proxy", it) }
-    normalizeProxy("https_proxy")?.let { environment("https_proxy", it) }
-    normalizeProxy("HTTP_PROXY")?.let { environment("HTTP_PROXY", it) }
-    normalizeProxy("HTTPS_PROXY")?.let { environment("HTTPS_PROXY", it) }
-    commandLine(getCommand("npm"), "ci", "--ignore-scripts", "--no-audit", "--include=dev", "--cache", ".npm-cache")'
+              --replace-fail \
+              'commandLine(getCommand("npm"), "ci", "--ignore-scripts")' \
+              'environment("npm_config_audit", "false")
+        environment("NPM_CONFIG_AUDIT", "false")
+        environment("npm_config_update_notifier", "false")
+        environment("NPM_CONFIG_UPDATE_NOTIFIER", "false")
+        environment("npm_config_production", "false")
+        environment("NPM_CONFIG_PRODUCTION", "false")
+        environment("npm_config_omit", "")
+        environment("NPM_CONFIG_OMIT", "")
+        val normalizeProxy: (String) -> String? = { key ->
+            System.getenv(key)?.let { if (it.contains("://")) it else "http://$it" }
+        }
+        normalizeProxy("http_proxy")?.let { environment("http_proxy", it) }
+        normalizeProxy("https_proxy")?.let { environment("https_proxy", it) }
+        normalizeProxy("HTTP_PROXY")?.let { environment("HTTP_PROXY", it) }
+        normalizeProxy("HTTPS_PROXY")?.let { environment("HTTPS_PROXY", it) }
+        commandLine(getCommand("npm"), "ci", "--ignore-scripts", "--no-audit", "--include=dev", "--cache", ".npm-cache")'
 
         substituteInPlace process_static.js \
-          --replace-fail \
-          'await commandLine(getCommand("node_modules/.bin/eslint"), ".");' \
-          'void 0;'
+              --replace-fail \
+              'await commandLine(getCommand("node_modules/.bin/eslint"), ".");' \
+              'void 0;'
       '';
 
       gradleFlags =
