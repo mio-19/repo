@@ -29,7 +29,7 @@
           defaultOut,
         }:
         let
-          androidSdk = inputs.android-nixpkgs.sdk.${system} (s: [
+          androidSdk = helperScope.androidSdkBuilder (s: [
             s.cmdline-tools-latest
             s.build-tools-36-1-0
           ]);
