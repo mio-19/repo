@@ -189,7 +189,7 @@ in
     src = pkgs-unstable.callPackage ./grapheneos_camera_app.nix { };
   };
   source.dirs."external/AppStore".postPatch = replace_app "app-release" "apk_appstore";
-  source.dirs."external/PdfViewer" = replace_app "PdfViewer" "apk_pdfviewer";
+  source.dirs."external/PdfViewer".postPatch = replace_app "PdfViewer" "apk_pdfviewer";
   source.dirs."packages/modules/Connectivity".patches = with pkgs; [
     (fetchpatch {
       name = "Connectivity: Add capability to allow tethering to use VPN upstreams";
