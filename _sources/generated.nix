@@ -216,6 +216,20 @@
     };
     date = "2026-03-24";
   };
+  grapheneos_pdfviewer = {
+    pname = "grapheneos_pdfviewer";
+    version = "10eb5b2aab0f193e8547ca8d9df49e8f9bcaedc2";
+    src = fetchgit {
+      url = "https://github.com/GrapheneOS/PdfViewer.git";
+      rev = "10eb5b2aab0f193e8547ca8d9df49e8f9bcaedc2";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-PqNn5JOyqTCzCvnmDFZz9/sz8TxYesaRi2n3yHMy2QY=";
+    };
+    date = "2026-04-02";
+  };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
     version = "2c276961bbd7e6b8cad97219431182049bfc5e1c";

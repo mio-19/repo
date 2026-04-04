@@ -14,6 +14,26 @@ let
       dockerTools
       ;
   };
+  replace_app = name: attribute: ''
+    rm prebuilt/${name}.apk prebuilt/${name}.idsig
+    keystore="$TMPDIR/grapheneos-appstore-signing-key.jks"
+
+    # We don't expect out of band upgrade so use a key generated every time.
+    ${lib.getExe' pkgs.jdk "keytool"} -genkeypair \
+      -keystore "$keystore" \
+      -storepass android \
+      -keypass android \
+      -alias androiddebugkey \
+      -keyalg RSA \
+      -keysize 4096 \
+      -validity 10000 \
+      -dname "CN=GrapheneOS AppStore,O=GrapheneOS,C=US"
+
+    ${lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.${attribute}.signScript} \
+      "$keystore" \
+      --ks-pass android \
+      --out prebuilt/${name}.apk
+  '';
 in
 {
   imports = [
@@ -24,6 +44,11 @@ in
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   source.dirs."frameworks/base".patches = with pkgs; [
+    (fetchpatch {
+      name = "Make App restart required Notification not deletable";
+      url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/263.diff";
+      hash = "sha256-Hw3BLHwJsXmu5482QWZC+DsqBDxaV0F1fCDgwna5AVQ=";
+    })
     #./No-gestural-navigation-hint-bar.patch
 
     #./Disable-FLAG_SECURE.patch
@@ -91,6 +116,11 @@ in
     })
   ];
   source.dirs."packages/apps/Launcher3".patches = with pkgs; [
+    (fetchpatch {
+      name = "allapps: remove search bar content overlap since no prediction service";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_Launcher3/pull/69.diff";
+      hash = "sha256-rXVrXtImnS5oYmtuHjA8sYWOLxRGeoS1IxmuWjbvUzE=";
+    })
     # cannot find symbol ENABLE_TASKBAR/NAVIGATION_BAR_HINT
     /*
       (fetchpatch {
@@ -158,26 +188,8 @@ in
   source.dirs."external/Camera" = lib.mkForce {
     src = pkgs-unstable.callPackage ./grapheneos_camera_app.nix { };
   };
-  source.dirs."external/AppStore".postPatch = ''
-    rm prebuilt/app-release.apk prebuilt/app-release.apk.idsig
-    keystore="$TMPDIR/grapheneos-appstore-signing-key.jks"
-
-    # We don't expect out of band upgrade so use a key generated every time.
-    ${lib.getExe' pkgs.jdk "keytool"} -genkeypair \
-      -keystore "$keystore" \
-      -storepass android \
-      -keypass android \
-      -alias androiddebugkey \
-      -keyalg RSA \
-      -keysize 4096 \
-      -validity 10000 \
-      -dname "CN=GrapheneOS AppStore,O=GrapheneOS,C=US"
-
-    ${lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.apk_appstore.signScript} \
-      "$keystore" \
-      --ks-pass android \
-      --out prebuilt/app-release.apk
-  '';
+  source.dirs."external/AppStore".postPatch = replace_app "app-release" "apk_appstore";
+  source.dirs."external/PdfViewer" = replace_app "PdfViewer" "apk_pdfviewer";
   source.dirs."packages/modules/Connectivity".patches = with pkgs; [
     (fetchpatch {
       name = "Connectivity: Add capability to allow tethering to use VPN upstreams";
@@ -211,11 +223,22 @@ in
       url = "https://github.com/LineageOS/android_bootable_recovery/commit/0e5fd009ce1f8bcb681f6bfb2590ebc70734ea6a.patch";
       hash = "sha256-BZuXJ9xhp70TUbS5/bt6ihvLfmezc6tazDM9uM9Ahe0=";
     })
-    (fetchpatch {
-      name = "recovery: Expose reboot to recovery option";
-      url = "https://github.com/LineageOS/android_bootable_recovery/commit/a27249584cbc29b6c2d1444ffa62f6377d9546bc.patch";
-      hash = "sha256-/S3jLQ0LcXwQzuD5G9iskf9Qtmm7ICsDA+QIcUJo30M=";
-    })
+    /*
+      # not useful for grapheneos
+      (fetchpatch {
+        name = "recovery: Expose reboot to recovery option";
+        url = "https://github.com/LineageOS/android_bootable_recovery/commit/a27249584cbc29b6c2d1444ffa62f6377d9546bc.patch";
+        hash = "sha256-/S3jLQ0LcXwQzuD5G9iskf9Qtmm7ICsDA+QIcUJo30M=";
+      })
+    */
     ./spl_downgrade.patch
+  ];
+
+  source.dirs."packages/apps/GmsCompat".patches = with pkgs; [
+    (fetchpatch {
+      name = "gmscompat: Make missing play games notification blockable";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_GmsCompat/pull/274.diff";
+      hash = "sha256-+UXX1FjtlWCCXgt0qC2QDJ5xqTFYME5NGefaLBvD/ls=";
+    })
   ];
 }
