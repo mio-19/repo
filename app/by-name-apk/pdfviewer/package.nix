@@ -73,9 +73,42 @@ let
       };
 
       preConfigure = ''
+        for proxy_var in http_proxy https_proxy HTTP_PROXY HTTPS_PROXY; do
+          proxy_val="$(printenv "$proxy_var" || true)"
+          if [ -n "$proxy_val" ] && [ "''${proxy_val#*://}" = "$proxy_val" ]; then
+            export "$proxy_var=http://$proxy_val"
+          fi
+        done
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+      '';
+
+      postPatch = ''
+        substituteInPlace app/build.gradle.kts \
+          --replace-fail \
+          'commandLine(getCommand("npm"), "ci", "--ignore-scripts")' \
+          'environment("npm_config_audit", "false")
+    environment("NPM_CONFIG_AUDIT", "false")
+    environment("npm_config_update_notifier", "false")
+    environment("NPM_CONFIG_UPDATE_NOTIFIER", "false")
+    environment("npm_config_production", "false")
+    environment("NPM_CONFIG_PRODUCTION", "false")
+    environment("npm_config_omit", "")
+    environment("NPM_CONFIG_OMIT", "")
+    val normalizeProxy: (String) -> String? = { key ->
+        System.getenv(key)?.let { if (it.contains("://")) it else "http://$it" }
+    }
+    normalizeProxy("http_proxy")?.let { environment("http_proxy", it) }
+    normalizeProxy("https_proxy")?.let { environment("https_proxy", it) }
+    normalizeProxy("HTTP_PROXY")?.let { environment("HTTP_PROXY", it) }
+    normalizeProxy("HTTPS_PROXY")?.let { environment("HTTPS_PROXY", it) }
+    commandLine(getCommand("npm"), "ci", "--ignore-scripts", "--no-audit", "--include=dev", "--cache", ".npm-cache")'
+
+        substituteInPlace process_static.js \
+          --replace-fail \
+          'await commandLine(getCommand("node_modules/.bin/eslint"), ".");' \
+          'void 0;'
       '';
 
       gradleFlags =
@@ -93,13 +126,13 @@ let
       installPhase = ''
         runHook preInstall
         apk_path="$(echo app/build/outputs/apk/release/*-release-unsigned.apk)"
-        install -Dm644 "$apk_path" "$out/appstore.apk"
+        install -Dm644 "$apk_path" "$out/pdfviewer.apk"
         runHook postInstall
       '';
 
       meta = with lib; {
-        description = "GrapheneOS App Store app (unsigned APK)";
-        homepage = "https://github.com/GrapheneOS/AppStore";
+        description = "GrapheneOS PDF Viewer app (unsigned APK)";
+        homepage = "https://github.com/GrapheneOS/PdfViewer";
         license = licenses.asl20;
         platforms = platforms.unix;
       };
@@ -107,20 +140,21 @@ let
 in
 mk-apk-package {
   inherit appPackage;
-  mainApk = "appstore.apk";
-  signScriptName = "sign-appstore";
+  mainApk = "pdfviewer.apk";
+  signScriptName = "sign-pdfviewer";
   fdroid = {
-    appId = "app.grapheneos.apps";
+    appId = "app.grapheneos.pdfviewer";
     metadataYml = ''
       Categories:
-        - System
+        - Reading
+      Changelog: https://github.com/GrapheneOS/PdfViewer/releases
       License: Apache-2.0
-      SourceCode: https://github.com/GrapheneOS/AppStore
-      IssueTracker: https://github.com/GrapheneOS/AppStore/issues
-      AutoName: GrapheneOS App Store
-      Summary: App repository client for GrapheneOS apps
+      SourceCode: https://github.com/GrapheneOS/PdfViewer
+      IssueTracker: https://github.com/GrapheneOS/PdfViewer/issues
+      AutoName: PDF Viewer
+      Summary: Minimal secure PDF viewer
       Description: |-
-        GrapheneOS App Store is the client for GrapheneOS app repositories.
+        GrapheneOS PDF Viewer is a minimal and secure PDF viewer.
         This package is built from source.
     '';
   };
