@@ -91,6 +91,11 @@ in
     })
   ];
   source.dirs."packages/apps/Launcher3".patches = with pkgs; [
+    (fetchpatch {
+      name = "allapps: remove search bar content overlap since no prediction service";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_Launcher3/pull/69.diff";
+      hash = "sha256-rXVrXtImnS5oYmtuHjA8sYWOLxRGeoS1IxmuWjbvUzE=";
+    })
     # cannot find symbol ENABLE_TASKBAR/NAVIGATION_BAR_HINT
     /*
       (fetchpatch {
