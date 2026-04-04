@@ -45,6 +45,11 @@ let
           url = "https://github.com/mastodon/mastodon-android/pull/1079.diff";
           hash = "sha256-8pcIg8Qmv30WCQJsrJOqvP20pCcfov4F9XZbOZVOS+Y=";
         })
+        (fetchpatch {
+          name = "Furigana implementation for japanese messages";
+          url = "https://github.com/mastodon/mastodon-android/pull/1039.diff";
+          hash = "sha256-QLD5iT2CXhiTVjXSLTqMtJ59rZ0GL7cKqvbytqxXs8A=";
+        })
       ];
 
       gradleBuildTask = ":mastodon:assembleGithubRelease";
