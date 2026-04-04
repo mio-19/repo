@@ -57,6 +57,7 @@ let
     "rednote"
     "instagram-revanced"
     "duolingo-hoodles"
+    "instagram-brosssh"
 
     # cannot build on darwin due to nixpkgs didn't package android toolchain for darwin aarch64
     "kernelsu"
