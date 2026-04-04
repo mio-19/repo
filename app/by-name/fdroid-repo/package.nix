@@ -58,6 +58,7 @@ let
     "instagram-revanced"
     "duolingo-hoodles"
     "instagram-brosssh"
+    "twitter-piko"
 
     # cannot build on darwin due to nixpkgs didn't package android toolchain for darwin aarch64
     "kernelsu"
