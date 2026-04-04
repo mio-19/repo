@@ -2,16 +2,15 @@
   mk-apk-package,
   lib,
   stdenv,
-  fetchFromGitHub,
   androidSdkBuilder,
   gradle-packages,
   jdk21,
   writableTmpDirAsHomeHook,
+  sources,
 }:
 let
   appPackage =
     let
-      version = "unstable-2026-04-03";
 
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -29,14 +28,8 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gallery";
-      inherit version;
-
-      src = fetchFromGitHub {
-        owner = "google-ai-edge";
-        repo = "gallery";
-        rev = "65e794bf2f247d0eee21a79ac0595f24fd3ac4cc";
-        hash = "sha256-CmhbD7nMBDanXy7t82G3HSr8IHAfJZCh7yIQyKj9JH4=";
-      };
+      inherit (sources.google_gallery) src;
+      version = sources.google_gallery.date;
 
       sourceRoot = "${finalAttrs.src.name}/Android/src";
 

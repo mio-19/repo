@@ -160,6 +160,20 @@
     };
     date = "2024-11-24";
   };
+  google_gallery = {
+    pname = "google_gallery";
+    version = "65e794bf2f247d0eee21a79ac0595f24fd3ac4cc";
+    src = fetchgit {
+      url = "https://github.com/google-ai-edge/gallery.git";
+      rev = "65e794bf2f247d0eee21a79ac0595f24fd3ac4cc";
+      fetchSubmodules = true;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-CmhbD7nMBDanXy7t82G3HSr8IHAfJZCh7yIQyKj9JH4=";
+    };
+    date = "2026-04-02";
+  };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
     version = "163db8f1deee73d3583abcef869c8f10c6907f27";
