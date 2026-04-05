@@ -93,14 +93,8 @@ in
     })
   ];
   source.dirs."packages/modules/Permission".patches = [
-    /*
-      # TODO: update for 2026040300
-      (fetchpatch {
-        name = "Add toggle to hide location access indicator on a per-app basis.patch";
-        url = "https://github.com/GrapheneOS/platform_packages_modules_Permission/pull/83.patch";
-        hash = "sha256-zyZS6vHgp2hHTGn7BUcaJcqkAo7SbbJmZmcPQN0kGOM=";
-      })
-    */
+    # adapted from https://github.com/GrapheneOS/platform_packages_modules_Permission/pull/83
+    ./location-indicator-per-app.patch
   ];
   source.dirs."packages/apps/Dialer".patches = [
     # https://github.com/GrapheneOS/platform_packages_apps_Dialer/pull/48
