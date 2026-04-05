@@ -188,7 +188,7 @@ new file mode 100644
 index 0000000..b70fe05
 --- /dev/null
 +++ b/src/com/android/settings/gestures/TaskbarSettingsUtils.java
-@@ -0,0 +1,45 @@
+@@ -0,0 +1,42 @@
 +/*
 + * Copyright (C) 2026 The Android Open Source Project
 + *
@@ -213,8 +213,6 @@ index 0000000..b70fe05
 +final class TaskbarSettingsUtils {
 +    static final int ON = 1;
 +    static final int OFF = 0;
-+    static final int MIN_LARGE_SCREEN_WIDTH_DP = 600;
-+
 +    static final String SETTING_ENABLE_TASKBAR = "enable_taskbar";
 +    static final String SETTING_NAVIGATION_BAR_HINT = "navigation_bar_hint";
 +
@@ -222,8 +220,7 @@ index 0000000..b70fe05
 +    }
 +
 +    static boolean isTaskbarSettingAvailable(Context context) {
-+        return context.getResources().getConfiguration().smallestScreenWidthDp
-+                >= MIN_LARGE_SCREEN_WIDTH_DP;
++        return true;
 +    }
 +
 +    static boolean isChecked(Context context, String key) {
