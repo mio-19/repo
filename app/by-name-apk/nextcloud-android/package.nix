@@ -29,13 +29,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "nextcloud-android";
-      version = "3.35.2";
+      version = "33.0.1";
 
       src = fetchFromGitHub {
         owner = "nextcloud";
         repo = "android";
         tag = "stable-${finalAttrs.version}";
-        hash = "sha256-6vORfBLs5YPssKXFNe0U8gUzyQfFOXl0zH5KMrwaTgE=";
+        hash = "sha256-NAWeYEHIGMxoOpF6t/VhTRxjX1n2RTJ2AjZ8v8z3+2g=";
       };
 
       gradleBuildTask = ":app:assembleGenericRelease";
