@@ -99,8 +99,6 @@ in
       packages.grapheneos-husky-kernel = pkgs.callPackage ./grapheneos_husky_kernel.nix { };
       packages.grapheneos-mustang-kernel = pkgs.callPackage ./grapheneos_mustang_kernel.nix { };
       packages.grapheneos-tangorpro-kernel = pkgs.callPackage ./grapheneos_tangorpro_kernel.nix { };
-      packages.grapheneos-camera = pkgs.callPackage ./grapheneos_camera_app.nix { };
-      packages.grapheneos-info = pkgs.callPackage ./grapheneos_info_app.nix { };
       # followings are for garnix:
       packages.grapheneos-husky-key-script = self.gosNoCcache.husky.generateKeysScript;
       packages.grapheneos-husky-factory-img = self.gosNoCcache.husky.factoryImg;

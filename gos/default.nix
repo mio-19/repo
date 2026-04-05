@@ -19,7 +19,8 @@ let
   replace_app = name: attribute: ''
     rm prebuilt/${name}.apk
     rm -f prebuilt/${name}.apk.idsig # maybe not exist
-    keystore="$TMPDIR/grapheneos-appstore-signing-key.jks"
+    lower_name="${lib.toLower name}"
+    keystore="$TMPDIR/grapheneos-''${lower_name}-signing-key.jks"
 
     # We don't expect out of band upgrade so use a key generated every time.
     ${lib.getExe' pkgs.jdk "keytool"} -genkeypair \
@@ -30,7 +31,7 @@ let
       -keyalg RSA \
       -keysize 4096 \
       -validity 10000 \
-      -dname "CN=GrapheneOS AppStore,O=GrapheneOS,C=US"
+      -dname "CN=GrapheneOS ${name},O=GrapheneOS,C=US"
 
     ${lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.${attribute}.signScript} \
       "$keystore" \
@@ -145,12 +146,8 @@ in
   source.dirs."packages/inputmethods/LatinIME" = lib.mkForce {
     src = sources.lineage_latinime.src;
   };
-  source.dirs."external/Info" = lib.mkForce {
-    src = pkgs-unstable.callPackage ./grapheneos_info_app.nix { };
-  };
-  source.dirs."external/Camera" = lib.mkForce {
-    src = pkgs-unstable.callPackage ./grapheneos_camera_app.nix { };
-  };
+  source.dirs."external/Info".postPatch = replace_app "Info" "apk_grapheneos-info";
+  source.dirs."external/Camera".postPatch = replace_app "Camera" "apk_grapheneos-camera";
   source.dirs."external/AppStore".postPatch = replace_app "app-release" "apk_appstore";
   source.dirs."external/PdfViewer".postPatch = replace_app "PdfViewer" "apk_pdfviewer";
   source.dirs."packages/modules/Connectivity".patches = [
