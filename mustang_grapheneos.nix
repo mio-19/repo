@@ -6,7 +6,7 @@ args@{
 }:
 {
   imports = [
-    ./gos.nix
+    ./gos
   ];
   device = "mustang";
   source.dirs."device/google/laguna-kernels/6.6" = lib.mkForce {

@@ -9,7 +9,7 @@ let
 in
 {
   imports = [
-    ./gos.nix
+    ./gos
     #./gos_userdebug.nix
   ];
   enableLindroid = enableLindroid;

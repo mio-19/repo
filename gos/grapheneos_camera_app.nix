@@ -20,7 +20,7 @@ let
       hash = "sha256-YOpyM1bYEmPoAC/sD8+eKw7uDAhQx6PXqwpj8szGAfM=";
       defaultJava = jdk21;
     }).wrapped;
-  sources = (import ./_sources/generated.nix) {
+  sources = (import ../_sources/generated.nix) {
     inherit
       fetchurl
       fetchgit
@@ -29,8 +29,8 @@ let
       ;
   };
   androidBp = fetchurl {
-    url = "https://github.com/GrapheneOS/platform_external_Info/raw/refs/heads/16-qpr2/Android.bp";
-    hash = "sha256-jPCp6n0iifKJm1vHido/11xBFYloIxBSGzFSR47uP/A=";
+    url = "https://raw.githubusercontent.com/GrapheneOS/platform_external_Camera/80a4cbb19f5f6f6efb5c46deb7d5f4e1bde74a07/Android.bp";
+    hash = "sha256-2xXE4FZHQ28aZYdkjYQA4eqHX+W1QqsTjVgGBk1d9EY=";
   };
   androidSdk = (androidenv.override { licenseAccepted = true; }).composeAndroidPackages {
     platformVersions = [ "36" ];
@@ -42,15 +42,25 @@ let
   };
 in
 stdenv.mkDerivation (finalAttrs: {
-  pname = "grapheneos-info";
-  version = sources.grapheneos_info.version;
-  src = sources.grapheneos_info.src;
+  pname = "grapheneos-camera";
+  version = sources.grapheneos_camera.version;
+  src = sources.grapheneos_camera.src;
 
   patches = [
     (fetchpatch {
-      name = "added release state display to info app";
-      url = "https://github.com/GrapheneOS/Info/pull/56.diff";
-      hash = "sha256-qMMHV6426FHw1QCg+JfpvmjO/qUvul6T/2Le7A2YQXI=";
+      name = "Add swipe haptics";
+      url = "https://github.com/GrapheneOS/Camera/pull/351.patch";
+      hash = "sha256-H/mU1tF/GgIMwnEpF5OKbp3u1J+cFBK8cKbB3cb7nA4=";
+    })
+    (fetchpatch {
+      name = "Replace orientation API calls with sensor calculated orientation";
+      url = "https://github.com/GrapheneOS/Camera/pull/535.patch";
+      hash = "sha256-P4T5aKouSxAA0Q53vO6kJLputt3bSiPzR9EHwX8alSc=";
+    })
+    (fetchpatch {
+      name = "Support beginning a video recording with the microphone muted";
+      url = "https://github.com/GrapheneOS/Camera/pull/553.patch";
+      hash = "sha256-QU/69Ugl8BQhwoYcs1izA9reRqcUi0/6sX8YzPr9yMg=";
     })
   ];
 
@@ -60,13 +70,13 @@ stdenv.mkDerivation (finalAttrs: {
   # Lock refresh steps:
   # 1. If upstream bumps Gradle again, update `gradle.version` and `gradle.hash` here.
   # 2. Build the updater with:
-  #    NIXPKGS_ALLOW_UNFREE=1 nix build --impure .#grapheneos-info.mitmCache.updateScript
+  #    NIXPKGS_ALLOW_UNFREE=1 nix build --impure .#grapheneos-camera.mitmCache.updateScript
   # 3. Copy the resulting `fetch-deps.sh`, replace its `outPath=` with
-  #    `/home/dev/Documents/repo/grapheneos_info_deps.json`, and run it from the repo root.
+  #    `/home/dev/Documents/repo/grapheneos_camera_deps.json`, and run it from the repo root.
   mitmCache = gradle.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
-    data = ./grapheneos_info_deps.json;
+    data = ./grapheneos_camera_deps.json;
     silent = false;
     useBwrap = false;
   };
@@ -102,8 +112,8 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p "$out/prebuilt"
     unsigned_apk="$(echo app/build/outputs/apk/release/*-unsigned.apk)"
-    signed_apk="$out/prebuilt/Info.apk"
-    keystore="$TMPDIR/grapheneos-info-signing-key.jks"
+    signed_apk="$out/prebuilt/Camera.apk"
+    keystore="$TMPDIR/grapheneos-camera-signing-key.jks"
 
     # We don't expect out of band upgrade so use a key generated every time.
     keytool -genkeypair \
@@ -114,7 +124,7 @@ stdenv.mkDerivation (finalAttrs: {
       -keyalg RSA \
       -keysize 4096 \
       -validity 10000 \
-      -dname "CN=GrapheneOS Info,O=GrapheneOS,C=US"
+      -dname "CN=GrapheneOS Camera,O=GrapheneOS,C=US"
 
     apksigner sign \
       --v4-signing-enabled false \
@@ -135,9 +145,9 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   meta = with lib; {
-    description = "GrapheneOS Info app built from source";
-    homepage = "https://github.com/GrapheneOS/Info";
-    license = licenses.asl20;
+    description = "GrapheneOS Camera app built from source";
+    homepage = "https://github.com/GrapheneOS/Camera";
+    license = licenses.mit;
     sourceProvenance = with sourceTypes; [
       fromSource
       binaryBytecode

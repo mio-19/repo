@@ -6,7 +6,7 @@ args@{
 }:
 {
   imports = [
-    ./gos.nix
+    ./gos
     #./gos_userdebug.nix
   ];
   losLauncher = true;
