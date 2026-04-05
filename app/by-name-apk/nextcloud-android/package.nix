@@ -80,25 +80,13 @@ let
         runHook preInstall
 
         apk_dir="app/build/outputs/apk/generic/release"
-        apk_path=""
-        while IFS= read -r candidate; do
-          [ -f "$candidate" ] || continue
-          badging="$("${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt" dump badging "$candidate" 2>/dev/null || true)"
-          pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
-          if [ "$pkg" = "com.nextcloud.client" ]; then
-            apk_path="$candidate"
-            break
-          fi
-        done < <(for candidate in "$apk_dir"/*.apk; do
-          [ -e "$candidate" ] || continue
-          printf '%s\n' "$candidate"
-        done)
-
-        if [ -z "$apk_path" ]; then
-          echo "No parseable com.nextcloud.client APK found under $apk_dir" >&2
-          ls -1 "$apk_dir"/*.apk >&2 2>/dev/null || true
-          exit 1
-        fi
+        apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apk_dir/output-metadata.json" | head -n 1)"
+        test -n "$apk_name"
+        apk_path="$apk_dir/$apk_name"
+        test -f "$apk_path"
+        badging="$("${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt" dump badging "$apk_path")"
+        pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
+        [ "$pkg" = "com.nextcloud.client" ]
 
         install -Dm644 "$apk_path" "$out/nextcloud-android.apk"
         runHook postInstall
