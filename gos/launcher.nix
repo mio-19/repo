@@ -41,6 +41,7 @@ in
         url = "https://github.com/LineageOS/android_frameworks_base/commit/3ca5f9315f722436ef205291fc860c262b602c64.patch";
         hash = "sha256-lt/70GEfBjKbdGu2T3/6OLIRKVQnfwF1u/suMJEAn94=";
       })
+      # TODO: check https://github.com/LineageOS/android_frameworks_base/commit/310d180a3cb18d82dccce28c6757cb9427b1cd99
     ];
     source.dirs."packages/apps/Launcher3" =
       if (config.losLauncher) then
