@@ -7,7 +7,6 @@ args@{
 {
   imports = [
     ./gos.nix
-    ./gos_lindroid.nix
     #./gos_userdebug.nix
   ];
   enableLindroid = false; # basic stuff works. systemd units launched. sddm black screen.

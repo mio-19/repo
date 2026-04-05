@@ -41,6 +41,7 @@ in
   imports = [
     ./gos_noleakdns.nix
     ./gos-apple.nix
+    ./gos_lindroid.nix
   ];
   options = {
     losLauncher = lib.mkOption {
