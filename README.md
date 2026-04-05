@@ -55,6 +55,7 @@ nix build -L --max-jobs 4 .#gos.mustang.releaseScript -o release && ./release ./
 nix build -L --max-jobs 4 .#gos.cheetah.releaseScript -o release && ./release ./keys-cheetah
 nix build -L --max-jobs 4 .#gosNoCcache.cheetah.releaseScript -o release && ./release ./keys-cheetah
 nix build -L --max-jobs 4 .#gos.caiman.releaseScript -o release && ./release ./keys-caiman
+nix build -L --max-jobs 4 .#gosNoCcache.caiman.releaseScript -o release && ./release ./keys-caiman
 ```
 
 It is recommended to have OEM unlocking to be on in developer options when flashing new versions to avoid bricked devices.
