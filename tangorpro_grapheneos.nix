@@ -7,7 +7,6 @@ args@{
 {
   imports = [
     ./gos
-    #./gos_userdebug.nix
   ];
   losLauncher = true;
   enableLindroid = true;

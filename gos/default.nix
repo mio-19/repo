@@ -44,6 +44,7 @@ in
     ./gos-apple.nix
     ./gos_lindroid.nix
     ./launcher.nix
+    ./gos_userdebug.nix
   ];
   buildDateTime = 1775310433;
   flavor = "grapheneos";

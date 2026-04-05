@@ -10,7 +10,6 @@ in
 {
   imports = [
     ./gos
-    #./gos_userdebug.nix
   ];
   enableLindroid = enableLindroid;
   device = "cheetah";

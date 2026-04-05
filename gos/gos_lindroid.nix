@@ -19,12 +19,12 @@ in
   options = {
     enableLindroid = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      default = false;
       description = "Whether to build Lindroid";
     };
     enableDroidspaces = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      default = false;
       description = "Whether to build Droidspaces";
     };
   };
