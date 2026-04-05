@@ -9,6 +9,7 @@ args@{
     ./gos
   ];
   losLauncher = true;
+  allowAdbWirelessWithoutWifi = true;
   enableLindroid = true;
   enableDroidspaces = true;
   device = "tangorpro";

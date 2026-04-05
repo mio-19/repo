@@ -1,0 +1,46 @@
+--- a/services/core/java/com/android/server/adb/AdbDebuggingManager.java
++++ b/services/core/java/com/android/server/adb/AdbDebuggingManager.java
+@@ -813,22 +813,19 @@
+                     }
+ 
+                     AdbConnectionInfo currentInfo = getCurrentWifiApInfo();
+-                    if (currentInfo == null) {
+-                        Settings.Global.putInt(
+-                                mContentResolver, Settings.Global.ADB_WIFI_ENABLED, 0);
+-                        break;
+-                    }
+-
+-                    if (!verifyWifiNetwork(currentInfo.getBSSID(), currentInfo.getSSID())) {
+-                        // This means that the network is not in the list of trusted networks.
+-                        // We'll give user a prompt on whether to allow wireless debugging on
+-                        // the current wifi network.
+-                        Settings.Global.putInt(
+-                                mContentResolver, Settings.Global.ADB_WIFI_ENABLED, 0);
+-                        break;
++                    if (currentInfo != null) {
++                        if (!verifyWifiNetwork(currentInfo.getBSSID(), currentInfo.getSSID())) {
++                            // This means that the network is not in the list of trusted networks.
++                            // We'll give user a prompt on whether to allow wireless debugging on
++                            // the current wifi network.
++                            Settings.Global.putInt(
++                                    mContentResolver, Settings.Global.ADB_WIFI_ENABLED, 0);
++                            break;
++                        }
++                        mAdbConnectionInfo.copy(currentInfo);
++                    } else {
++                        mAdbConnectionInfo.clear();
+                     }
+-
+-                    mAdbConnectionInfo.copy(currentInfo);
+                     mAdbNetworkMonitor.register();
+                     ensureAdbDebuggingThreadAlive();
+                     startTLSPortPoller();
+@@ -1091,7 +1088,7 @@
+             WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+             if (wifiInfo == null || wifiInfo.getNetworkId() == -1) {
+-                Slog.i(TAG, "Not connected to any wireless network. Not enabling adbwifi.");
++                Slog.i(TAG, "No current Wi-Fi network information available for adbwifi.");
+                 return null;
+             }
+ 
