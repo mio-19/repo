@@ -11,7 +11,6 @@ args@{
   ];
   enableLindroid = true;
   enableDroidspaces = true;
-  losLauncher = true;
   device = "tangorpro";
   source.dirs."device/google/tangorpro-kernels/6.1" = lib.mkForce {
     src =
