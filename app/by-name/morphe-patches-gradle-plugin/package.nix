@@ -16,13 +16,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches-gradle-plugin";
-  version = "1.2.0";
+  version = "1.3.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches-gradle-plugin";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-pmw+qJcv/GTrNMdjaJjAhxJmgpVXlkY7wb6eawzNI0o=";
+    hash = "sha256-Xk8PonGrd4sHmzROxDmV6fM11dL6jbfNyP9W/056hP8=";
   };
 
   gradleBuildTask = "publish";
