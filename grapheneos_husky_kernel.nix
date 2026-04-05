@@ -9,6 +9,7 @@
   enableDroidspaces ? false,
   stdenv,
   lib,
+  runCommand,
 }:
 let
   panelPatch =
@@ -24,6 +25,16 @@ let
       ./kernel/pixel8pro-stock.patch
     else
       throw "invalid pwmmode: ${pwmmode}";
+  patchedPanelPatch =
+    if adbWritablePanelFreq then
+      runCommand "pixel8pro-panel-patch-${pwmmode}-adb-writable.patch" { } ''
+        cp ${panelPatch} "$out"
+        chmod u+w "$out"
+        substituteInPlace "$out" \
+          --replace-fail "module_param_array(freq_cmd, byte, NULL, 0644);" "module_param_array(freq_cmd, byte, NULL, 0664);"
+      ''
+    else
+      panelPatch;
 in
 callPackage ./grapheneos_kernel_common.nix { } {
   pname = "grapheneos-husky-kernel";
@@ -36,24 +47,7 @@ callPackage ./grapheneos_kernel_common.nix { } {
     enableDroidspaces
     ;
   extraBuildCommands = ''
-    panel_patch=${panelPatch}
-    ${lib.optionalString adbWritablePanelFreq ''
-      panel_patch="$TMPDIR/$(basename "$panel_patch")"
-      cp ${panelPatch} "$panel_patch"
-      chmod u+w "$panel_patch"
-      source "${stdenv}/setup"
-      substituteInPlace "$panel_patch" \
-        --replace-fail "module_param_array(freq_cmd, byte, NULL, 0644);" "module_param_array(freq_cmd, byte, NULL, 0666);" \
-        --replace-fail "module_param_array(freq_cmd_ns, byte, NULL, 0644);" "module_param_array(freq_cmd_ns, byte, NULL, 0666);" \
-        --replace-fail "module_param_array(freq_cmd_high_brightness, byte, NULL, 0644);" "module_param_array(freq_cmd_high_brightness, byte, NULL, 0666);" \
-        --replace-fail "module_param_array(freq_cmd_high_brightness_ns, byte, NULL, 0644);" "module_param_array(freq_cmd_high_brightness_ns, byte, NULL, 0666);" \
-        --replace-fail "module_param_array(freq_cmd_hbm, byte, NULL, 0644);" "module_param_array(freq_cmd_hbm, byte, NULL, 0666);" \
-        --replace-fail "module_param_array(freq_cmd_hbm_ns, byte, NULL, 0644);" "module_param_array(freq_cmd_hbm_ns, byte, NULL, 0666);" \
-        --replace-fail "module_param_array(freq_cmd_hbm_high_brightness, byte, NULL, 0644);" "module_param_array(freq_cmd_hbm_high_brightness, byte, NULL, 0666);" \
-        --replace-fail "module_param_array(freq_cmd_hbm_high_brightness_ns, byte, NULL, 0644);" "module_param_array(freq_cmd_hbm_high_brightness_ns, byte, NULL, 0666);"
-    ''}
-
-    apply_patch "$panel_patch"
+    apply_patch ${patchedPanelPatch}
     apply_patch ${./kernel/pixel8pro-stock-fix-attempt3.patch}
   '';
 }
