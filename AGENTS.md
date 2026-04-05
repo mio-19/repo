@@ -4,8 +4,8 @@
 - Do not manually edit generated Gradle MITM lockfiles such as `*_deps.json` / `immich_deps.json`; regenerate them only via the package's `mitmCache.updateScript`.
 - When source metadata needs to be refreshed, run `nix run nixpkgs#nvfetcher` from the repo root and let it update generated files.
 - Use `nurl`, or run `nix run nixpkgs#nurl <url to patch>`, to get a `fetchpatch` expression for patch URLs.
-- Never use `sed -i` to patch source files in Nix derivations. Use `substituteInPlace --replace-fail` for single-line substitutions. For multi-line or structural changes, generate a proper patch with `diff -u` against the real upstream source file; never write patch hunks by hand.
-- Never use `perl -i` / `perl -pe` or python source rewriting in Nix derivations; use `substituteInPlace --replace-fail` or a proper `diff -u` patch instead.
+- Never use `sed -i` to patch source files in Nix derivations. Use `substituteInPlace --replace-fail` for single-line substitutions. For multi-line or structural changes, generate a proper patch with diff/git diff against the real upstream source file; never write patch hunks by hand.
+- Never use `perl -i` / `perl -pe` or python source rewriting in Nix derivations; use `substituteInPlace --replace-fail` or a proper diff/git diff patch instead.
 - Follow patterns of exisiting code, learn from exisiting working code and nixpkgs
 - Make sure `nix build` actually can build before declaring completing a task!
 - Remember to `git add` when nix complaints about path does not exist!
