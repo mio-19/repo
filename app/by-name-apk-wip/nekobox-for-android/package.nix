@@ -88,7 +88,8 @@ let
             substituteInPlace cmd/gomobile/bind_androidapp.go \
               --replace-fail 'if err := goModTidyAt(srcDir, env); err != nil {' 'if false {'
             substituteInPlace cmd/gomobile/build.go \
-              --replace-fail 'env = append([]string{"GOMODCACHE=" + gmc}, env...)' 'env = append([]string{"GOMODCACHE=" + gmc}, env...)'
+              --replace-fail 'if gmc, err := goModCachePath(); err == nil {' 'if false {' \
+              --replace-fail 'env = append([]string{"GOMODCACHE=" + gmc}, env...)' 'env = append([]string{}, env...)'
             go mod edit \
               -require=golang.org/x/mod@v0.27.0 \
               -require=golang.org/x/sync@v0.16.0 \
@@ -96,7 +97,17 @@ let
               -require=golang.org/x/sys@v0.35.0 \
               -require=golang.org/x/image@v0.25.0
             go mod download
+            go get golang.org/x/tools/go/packages/packagestest
             go get ./cmd/gomobile ./cmd/gobind
+            go list -deps -test \
+              -f '{{if and .Module .Module.Path .Module.Version}}{{.Module.Path}}@{{.Module.Version}}{{end}}' \
+              ./cmd/gomobile ./cmd/gobind \
+              | sort -u \
+              | while read -r module; do
+                  if [ -n "$module" ]; then
+                    go mod download "$module"
+                  fi
+                done
             go install ./cmd/gomobile ./cmd/gobind
           )
           substituteInPlace libcore/go.mod \
@@ -134,6 +145,7 @@ let
             github.com/fsnotify/fsnotify@v1.4.7 \
             github.com/gliderlabs/ssh@v0.1.1 \
             github.com/ghodss/yaml@v1.0.0 \
+            github.com/gogo/protobuf@v1.1.1 \
             github.com/go-errors/errors@v1.0.1 \
             github.com/golang/mock@v1.2.0 \
             github.com/golang/protobuf@v1.2.0 \
@@ -142,6 +154,7 @@ let
             github.com/google/go-querystring@v1.0.0 \
             github.com/golang/glog@v0.0.0-20160126235308-23def4e6c14b \
             github.com/golang/mock@v1.1.1 \
+            github.com/golang/lint@v0.0.0-20180702182130-06c8688daad7 \
             github.com/json-iterator/go@v1.1.6 \
             github.com/lunixbochs/vtclean@v1.0.0 \
             github.com/mailru/easyjson@v0.0.0-20190312143242-1de009706dbe \
@@ -151,8 +164,10 @@ let
             github.com/grpc-ecosystem/grpc-gateway@v1.5.0 \
             github.com/gopherjs/gopherjs@v0.0.0-20181017120253-0766667cb4d1 \
             github.com/gregjones/httpcache@v0.0.0-20180305231024-9cad4c3443a7 \
+            github.com/kisielk/gotool@v1.0.0 \
             github.com/jellevandenhooff/dkim@v0.0.0-20150330215556-f50fe3d243e1 \
             github.com/kr/pty@v1.1.3 \
+            github.com/kr/pty@v1.1.1 \
             github.com/microcosm-cc/bluemonday@v1.0.1 \
             github.com/neelance/astrewrite@v0.0.0-20160511093645-99348263ae86 \
             github.com/neelance/sourcemap@v0.0.0-20151028013722-8c68805598ab \
@@ -176,12 +191,15 @@ let
             github.com/prometheus/common@v0.0.0-20180801064454-c7de2306084e \
             github.com/prometheus/procfs@v0.0.0-20180725123919-05ee40e3a273 \
             github.com/russross/blackfriday/v2@v2.1.0 \
+            github.com/russross/blackfriday@v1.5.2 \
             github.com/sergi/go-diff@v1.0.0 \
             github.com/shurcooL/component@v0.0.0-20170202220835-f88ec8f54cc4 \
             github.com/shurcooL/events@v0.0.0-20181021180414-410e4ca65f48 \
             github.com/shurcooL/github_flavored_markdown@v0.0.0-20181002035957-2122de532470 \
             github.com/shurcooL/gofontwoff@v0.0.0-20180329035133-29b52fc0a18d \
             github.com/shurcooL/gopherjslib@v0.0.0-20160914041154-feb6d3990c2c \
+            github.com/shurcooL/go@v0.0.0-20180423040247-9e1955d9fb6e \
+            github.com/shurcooL/go-goon@v0.0.0-20170922171312-37c2f522c041 \
             github.com/shurcooL/highlight_diff@v0.0.0-20170515013008-09bb4053de1b \
             github.com/shurcooL/highlight_go@v0.0.0-20181028180052-98c3abbbae20 \
             github.com/shurcooL/home@v0.0.0-20181020052607-80b7ffcb30f9 \
@@ -214,6 +232,7 @@ let
             golang.org/x/build@v0.0.0-20190111050920-041ab4dc3f9d \
             golang.org/x/lint@v0.0.0-20190227174305-5b3e6a55c961 \
             golang.org/x/lint@v0.0.0-20181026193005-c67002cb31c3 \
+            golang.org/x/lint@v0.0.0-20180702182130-06c8688daad7 \
             golang.org/x/crypto@v0.0.0-20190313024323-a1f597ede03a \
             golang.org/x/crypto@v0.0.0-20190308221718-c2843e01d9a2 \
             golang.org/x/crypto@v0.0.0-20181030102418-4d3f4d9ffa16 \
@@ -223,6 +242,7 @@ let
             golang.org/x/net@v0.0.0-20180826012351-8a410e7b638d \
             golang.org/x/net@v0.0.0-20180906233101-161cd47e91fd \
             golang.org/x/net@v0.0.0-20181029044818-c44066c5c816 \
+            golang.org/x/net@v0.0.0-20180724234803-3673e40ba225 \
             golang.org/x/net@v0.33.0 \
             golang.org/x/oauth2@v0.0.0-20190226205417-e64efc72b421 \
             golang.org/x/oauth2@v0.0.0-20181203162652-d668ce993890 \
@@ -248,6 +268,7 @@ let
             golang.org/x/time@v0.0.0-20181108054448-85acf8d2951c \
             golang.org/x/time@v0.0.0-20180412165947-fbb02b2291d2 \
             golang.org/x/tools@v0.0.0-20181030000716-a0a13e073c7b \
+            golang.org/x/tools@v0.0.0-20180828015842-6cd1fcedba52 \
             golang.org/x/tools@v0.0.0-20190114222345-bf090417da8b \
             golang.org/x/tools@v0.0.0-20190226205152-f727befe758c \
             google.golang.org/api@v0.1.0 \
@@ -270,6 +291,7 @@ let
             grpc.go4.org@v0.0.0-20170609214715-11d0a25b4919 \
             honnef.co/go/tools@v0.0.0-20190102054323-c2f93a96b099 \
             honnef.co/go/tools@v0.0.0-20190106161140-3f1c8253044a \
+            honnef.co/go/tools@v0.0.0-20180728063816-88497007e858 \
             gopkg.in/inf.v0@v0.9.1 \
             gopkg.in/yaml.v1@v1.0.0-20140924161607-9f9df34309c0 \
             gopkg.in/yaml.v2@v2.2.1 \
@@ -278,11 +300,11 @@ let
             sourcegraph.com/sourcegraph/go-diff@v0.5.0
           for arch in arm arm64 386 amd64; do
             GOOS=android GOARCH="$arch" CGO_ENABLED=1 \
-              go list -deps \
+              go list -deps -test \
                 -tags with_conntrack,with_gvisor,with_quic,with_wireguard,with_utls,with_clash_api \
                 -f '{{if and .Module .Module.Path .Module.Version}}{{.Module.Path}}@{{.Module.Version}}{{end}}' \
-                ./... \
-              | sort -u \
+                all \
+                | sort -u \
               | while read -r module; do
                 case "$module" in
                   ""|github.com/matsuridayo/libneko@*|github.com/sagernet/sing-box@*|golang.org/x/mobile@v0.0.0-00010101000000-000000000000)
@@ -383,7 +405,8 @@ let
           substituteInPlace cmd/gomobile/bind_androidapp.go \
             --replace-fail 'if err := goModTidyAt(srcDir, env); err != nil {' 'if false {'
           substituteInPlace cmd/gomobile/build.go \
-            --replace-fail 'env = append([]string{"GOMODCACHE=" + gmc}, env...)' 'env = append([]string{"GOMODCACHE=" + gmc}, env...)'
+            --replace-fail 'if gmc, err := goModCachePath(); err == nil {' 'if false {' \
+            --replace-fail 'env = append([]string{"GOMODCACHE=" + gmc}, env...)' 'env = append([]string{}, env...)'
           go mod edit \
             -require=golang.org/x/mod@v0.27.0 \
             -require=golang.org/x/sync@v0.16.0 \
