@@ -6,7 +6,7 @@
   jdk21,
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
-  morphe-patches-gradle-plugin,
+  morphe-patches-gradle-plugin_1_3_0,
   morphe-library-m2,
   apktool-src,
   multidexlib2-src,
@@ -71,7 +71,7 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
-    MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin}";
+    MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_0}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
   };
 

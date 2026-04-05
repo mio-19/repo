@@ -1,0 +1,31 @@
+--- build.gradle.kts.orig       2026-03-19 11:58:09.647219089 +1100
++++ build.gradle.kts    2026-03-19 11:58:35.581262743 +1100
+@@ -4,7 +4,6 @@
+     alias(libs.plugins.kotlin)
+     `java-gradle-plugin`
+     `maven-publish`
+-    signing
+ }
+ 
+ group = "app.morphe"
+@@ -56,19 +55,6 @@
+ 
+ publishing {
+     repositories {
+-        maven {
+-            name = "GitHubPackages"
+-            url = uri("https://maven.pkg.github.com/MorpheApp/morphe-patches-gradle-plugin")
+-            credentials {
+-                username = System.getenv("GITHUB_ACTOR")
+-                password = System.getenv("GITHUB_TOKEN")
+-            }
+-        }
++        maven { url = uri("file://" + rootProject.projectDir.resolve("build/m2").absolutePath) }
+     }
+ }
+-
+-signing {
+-    useGpgCmd()
+-
+-    sign(publishing.publications)
+-}
