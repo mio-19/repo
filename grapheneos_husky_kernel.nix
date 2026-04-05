@@ -3,10 +3,26 @@
   callPackage,
   enableKSU ? false,
   pwmmode ? "0x01", # 0x02 might be too dark under direct sunlight
+  adbWritablePanelFreq ? false,
   enableLindroid ? false,
   enableDaria ? enableLindroid,
   enableDroidspaces ? false,
 }:
+let
+  panelPatch =
+    if pwmmode == "0x01" then
+      ./kernel/pixel8pro-stock-0x01.patch
+    else if pwmmode == "0x02" then
+      ./kernel/pixel8pro-stock-0x02.patch
+    else if pwmmode == "0x05" then
+      ./kernel/pixel8pro-stock-0x05.patch
+    else if pwmmode == "3840Hz" then
+      ./kernel/pixel8pro-stock-3840Hz.patch
+    else if pwmmode == "stock" then
+      ./kernel/pixel8pro-stock.patch
+    else
+      throw "invalid pwmmode: ${pwmmode}";
+in
 callPackage ./grapheneos_kernel_common.nix { } {
   pname = "grapheneos-husky-kernel";
   buildScript = "build_shusky.sh";
@@ -18,20 +34,23 @@ callPackage ./grapheneos_kernel_common.nix { } {
     enableDroidspaces
     ;
   extraBuildCommands = ''
-    apply_patch ${
-      if pwmmode == "0x01" then
-        ./kernel/pixel8pro-stock-0x01.patch
-      else if pwmmode == "0x02" then
-        ./kernel/pixel8pro-stock-0x02.patch
-      else if pwmmode == "0x05" then
-        ./kernel/pixel8pro-stock-0x05.patch
-      else if pwmmode == "3840Hz" then
-        ./kernel/pixel8pro-stock-3840Hz.patch
-      else if pwmmode == "stock" then
-        ./kernel/pixel8pro-stock.patch
-      else
-        throw "invalid pwmmode: ${pwmmode}"
-    }
+    panel_patch=${panelPatch}
+    if [ "${if adbWritablePanelFreq then "1" else "0"}" = 1 ]; then
+      panel_patch="$TMPDIR/$(basename "$panel_patch")"
+      cp ${panelPatch} "$panel_patch"
+      chmod u+w "$panel_patch"
+      substituteInPlace "$panel_patch" \
+        --replace-fail "module_param_array(freq_cmd, byte, NULL, 0644);" "module_param_array(freq_cmd, byte, NULL, 0666);" \
+        --replace-fail "module_param_array(freq_cmd_ns, byte, NULL, 0644);" "module_param_array(freq_cmd_ns, byte, NULL, 0666);" \
+        --replace-fail "module_param_array(freq_cmd_high_brightness, byte, NULL, 0644);" "module_param_array(freq_cmd_high_brightness, byte, NULL, 0666);" \
+        --replace-fail "module_param_array(freq_cmd_high_brightness_ns, byte, NULL, 0644);" "module_param_array(freq_cmd_high_brightness_ns, byte, NULL, 0666);" \
+        --replace-fail "module_param_array(freq_cmd_hbm, byte, NULL, 0644);" "module_param_array(freq_cmd_hbm, byte, NULL, 0666);" \
+        --replace-fail "module_param_array(freq_cmd_hbm_ns, byte, NULL, 0644);" "module_param_array(freq_cmd_hbm_ns, byte, NULL, 0666);" \
+        --replace-fail "module_param_array(freq_cmd_hbm_high_brightness, byte, NULL, 0644);" "module_param_array(freq_cmd_hbm_high_brightness, byte, NULL, 0666);" \
+        --replace-fail "module_param_array(freq_cmd_hbm_high_brightness_ns, byte, NULL, 0644);" "module_param_array(freq_cmd_hbm_high_brightness_ns, byte, NULL, 0666);"
+    fi
+
+    apply_patch "$panel_patch"
     apply_patch ${./kernel/pixel8pro-stock-fix-attempt3.patch}
   '';
 }
