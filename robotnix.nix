@@ -29,6 +29,7 @@ let
       mustang = common ./mustang_grapheneos.nix;
       tangorpro = common ./tangorpro_grapheneos.nix;
       cheetah = common ./cheetah_grapheneos.nix;
+      caiman = common ./caiman_grapheneos.nix;
     };
   mkLos =
     { ccache }:

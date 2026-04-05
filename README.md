@@ -54,6 +54,7 @@ nix build -L --max-jobs 4 .#gosNoCcache.tangorpro.releaseScript -o release && ./
 nix build -L --max-jobs 4 .#gos.mustang.releaseScript -o release && ./release ./keys-mustang
 nix build -L --max-jobs 4 .#gos.cheetah.releaseScript -o release && ./release ./keys-cheetah
 nix build -L --max-jobs 4 .#gosNoCcache.cheetah.releaseScript -o release && ./release ./keys-cheetah
+nix build -L --max-jobs 4 .#gos.caiman.releaseScript -o release && ./release ./keys-caiman
 ```
 
 It is recommended to have OEM unlocking to be on in developer options when flashing new versions to avoid bricked devices.
@@ -67,6 +68,7 @@ nix build -L .#gos.tangorpro.generateKeysScript -o generate-keys && ./generate-k
 nix build -L .#gos.mustang.generateKeysScript -o generate-keys && ./generate-keys ./keys-mustang
 nix build -L .#gos.cheetah.generateKeysScript -o generate-keys && ./generate-keys ./keys-cheetah
 nix build -L .#gosNoCcache.cheetah.generateKeysScript -o generate-keys && ./generate-keys ./keys-cheetah
+nix build -L .#gos.caiman.generateKeysScript -o generate-keys && ./generate-keys ./keys-caiman
 nix build -L .#los.gta4xlwifi.generateKeysScript -o generate-keys && ./generate-keys ./keys-gta4xlwifi
 ```
 
