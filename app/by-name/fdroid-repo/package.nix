@@ -61,6 +61,9 @@ let
     "twitter-piko"
     "gallery"
 
+    # need to update npm lock for darwin:
+    "pdfviewer"
+
     # cannot build on darwin due to nixpkgs didn't package android toolchain for darwin aarch64
     "kernelsu"
     "bitwarden-android"
