@@ -1,7 +1,7 @@
 {
     "amethyst_android": {
         "cargoLock": null,
-        "date": "2026-04-02",
+        "date": "2026-04-05",
         "extract": null,
         "name": "amethyst_android",
         "passthru": null,
@@ -11,13 +11,13 @@
             "fetchSubmodules": true,
             "leaveDotGit": false,
             "name": null,
-            "rev": "32d987c1b0f29990477ebc13b172e6ccc2bdd1f1",
-            "sha256": "sha256-5x1g8QMoVHp0vlONXdTqiXkGRZWx6ONRhWA2zxR2G/k=",
+            "rev": "8e2269301333118f66dec09e545167bbc9e24750",
+            "sha256": "sha256-WAPRez84JvDP4bAQMA93yxl4IccAPVAApJdiyLvtqf4=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/AngelAuraMC/Amethyst-Android.git"
         },
-        "version": "32d987c1b0f29990477ebc13b172e6ccc2bdd1f1"
+        "version": "8e2269301333118f66dec09e545167bbc9e24750"
     },
     "axp_build": {
         "cargoLock": null,
@@ -718,6 +718,26 @@
             "url": "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git"
         },
         "version": "b6aaaeed599b60fec7efe2d6f7e0ce7f30b09906"
+    },
+    "lineage_launcher3": {
+        "cargoLock": null,
+        "date": "2026-04-01",
+        "extract": null,
+        "name": "lineage_launcher3",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "788d6c206b3e772b049904aa32f20abccee98256",
+            "sha256": "sha256-GIzBUbXi1tWKiW6sGNJ71G/6oXUA0Obphfhmha2zDi0=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/LineageOS/android_packages_apps_Launcher3.git"
+        },
+        "version": "788d6c206b3e772b049904aa32f20abccee98256"
     },
     "lineage_prebuilts_bootmgr": {
         "cargoLock": null,

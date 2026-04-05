@@ -8,17 +8,17 @@
 {
   amethyst_android = {
     pname = "amethyst_android";
-    version = "32d987c1b0f29990477ebc13b172e6ccc2bdd1f1";
+    version = "8e2269301333118f66dec09e545167bbc9e24750";
     src = fetchgit {
       url = "https://github.com/AngelAuraMC/Amethyst-Android.git";
-      rev = "32d987c1b0f29990477ebc13b172e6ccc2bdd1f1";
+      rev = "8e2269301333118f66dec09e545167bbc9e24750";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-5x1g8QMoVHp0vlONXdTqiXkGRZWx6ONRhWA2zxR2G/k=";
+      sha256 = "sha256-WAPRez84JvDP4bAQMA93yxl4IccAPVAApJdiyLvtqf4=";
     };
-    date = "2026-04-02";
+    date = "2026-04-05";
   };
   axp_build = {
     pname = "axp_build";
@@ -507,6 +507,20 @@
       leaveDotGit = false;
       sparseCheckout = [ ];
       sha256 = "sha256-POfy0Y4Arqzjt92XFV0f8dIsj+Bt4O/gJWRU00kBdO4=";
+    };
+    date = "2026-04-01";
+  };
+  lineage_launcher3 = {
+    pname = "lineage_launcher3";
+    version = "788d6c206b3e772b049904aa32f20abccee98256";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_packages_apps_Launcher3.git";
+      rev = "788d6c206b3e772b049904aa32f20abccee98256";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-GIzBUbXi1tWKiW6sGNJ71G/6oXUA0Obphfhmha2zDi0=";
     };
     date = "2026-04-01";
   };
