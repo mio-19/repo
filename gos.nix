@@ -15,6 +15,7 @@ let
       dockerTools
       ;
   };
+  inherit (pkgs) fetchpatch;
   replace_app = name: attribute: ''
     rm prebuilt/${name}.apk
     rm -f prebuilt/${name}.apk.idsig # maybe not exist
@@ -54,7 +55,7 @@ in
     buildDateTime = 1775310433;
     flavor = "grapheneos";
     grapheneos.channel = "alpha";
-    source.dirs."frameworks/base".patches = with pkgs; [
+    source.dirs."frameworks/base".patches = [
       (fetchpatch {
         name = "Make App restart required Notification not deletable";
         url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/263.diff";
@@ -89,7 +90,7 @@ in
         hash = "sha256-qNylnt+S2lIt30D9gwnbW7jcf+rb7zDV3c6tS877AuQ=";
       })
     ];
-    source.dirs."packages/apps/Settings".patches = with pkgs; [
+    source.dirs."packages/apps/Settings".patches = [
       # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
       (fetchpatch {
         name = "Add a toggle to disable FLAG SECURE";
@@ -97,7 +98,7 @@ in
         hash = "sha256-hcztYEyhfDlfkx04lKmsEOKr2puoM6GUb3bhRIgiCaM=";
       })
     ];
-    source.dirs."packages/modules/Permission".patches = with pkgs; [
+    source.dirs."packages/modules/Permission".patches = [
       /*
         # TODO: update for 2026040300
         (fetchpatch {
@@ -107,7 +108,7 @@ in
         })
       */
     ];
-    source.dirs."packages/apps/Dialer".patches = with pkgs; [
+    source.dirs."packages/apps/Dialer".patches = [
       # https://github.com/GrapheneOS/platform_packages_apps_Dialer/pull/48
       (fetchpatch {
         name = "Add automatic call recording.patch";
@@ -115,14 +116,14 @@ in
         hash = "sha256-ceo+c99iyYeaweks1Hk/VYXl8pa3PMGtcbHcxOLRM4k=";
       })
     ];
-    source.dirs."packages/apps/AppCompatConfig".patches = with pkgs; [
+    source.dirs."packages/apps/AppCompatConfig".patches = [
       (fetchpatch {
         name = "add configs for Brave beta and Brave nightly.patch";
         url = "https://github.com/GrapheneOS/platform_packages_apps_AppCompatConfig/pull/6.patch";
         hash = "sha256-QoabShVmthSA817+FrJ7GTc/VK2N6JSXu9KaVoDg4Sg=";
       })
     ];
-    source.dirs."packages/modules/Virtualization".patches = with pkgs; [
+    source.dirs."packages/modules/Virtualization".patches = [
       (fetchpatch {
         name = "ImageArchive: allow sdcard images even when os is not debuggable.patch";
         url = "https://github.com/GrapheneOS/platform_packages_modules_Virtualization/pull/5.patch";
@@ -136,7 +137,7 @@ in
         }
       else
         {
-          patches = with pkgs; [
+          patches = [
             (fetchpatch {
               name = "allapps: make search bar look good";
               url = "https://github.com/GrapheneOS/platform_packages_apps_Launcher3/pull/69.diff";
@@ -194,7 +195,7 @@ in
         };
       };
     */
-    source.dirs."packages/apps/Gallery2".patches = with pkgs; [
+    source.dirs."packages/apps/Gallery2".patches = [
       (fetchpatch {
         name = "Remove references to Google in some translations";
         url = "https://github.com/GrapheneOS/platform_packages_apps_Gallery2/pull/14.patch";
@@ -212,7 +213,7 @@ in
     };
     source.dirs."external/AppStore".postPatch = replace_app "app-release" "apk_appstore";
     source.dirs."external/PdfViewer".postPatch = replace_app "PdfViewer" "apk_pdfviewer";
-    source.dirs."packages/modules/Connectivity".patches = with pkgs; [
+    source.dirs."packages/modules/Connectivity".patches = [
       (fetchpatch {
         name = "Connectivity: Add capability to allow tethering to use VPN upstreams";
         url = "https://github.com/LineageOS/android_packages_modules_Connectivity/commit/a365cfb8b6919aaa5ca99dafbc79ad95098ae218.patch";
@@ -239,7 +240,7 @@ in
       '';
     */
 
-    source.dirs."bootable/recovery".patches = with pkgs; [
+    source.dirs."bootable/recovery".patches = [
       (fetchpatch {
         name = "recovery: Enable the menu for User builds";
         url = "https://github.com/LineageOS/android_bootable_recovery/commit/0e5fd009ce1f8bcb681f6bfb2590ebc70734ea6a.patch";
@@ -256,7 +257,7 @@ in
       ./spl_downgrade.patch
     ];
 
-    source.dirs."packages/apps/GmsCompat".patches = with pkgs; [
+    source.dirs."packages/apps/GmsCompat".patches = [
       (fetchpatch {
         name = "gmscompat: Make missing play games notification blockable";
         url = "https://github.com/GrapheneOS/platform_packages_apps_GmsCompat/pull/274.diff";

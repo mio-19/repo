@@ -13,6 +13,7 @@ let
       dockerTools
       ;
   };
+  inherit (pkgs) fetchpatch;
 in
 {
   options = {
@@ -42,7 +43,7 @@ in
         postPatch = ''
           sed -i 's|android.hardware.graphics.common-V5|android.hardware.graphics.common-V7|' interfaces/composer/Android.bp
         '';
-        patches = with pkgs; [
+        patches = [
           (fetchpatch {
             # https://t.me/linux_on_droid/26461
             name = "perspectived: exempt from init dir mutation";
@@ -53,7 +54,7 @@ in
       };
       source.dirs."external/lxc".src = sources.external_lxc.src;
       source.dirs."libhybris".src = sources.libhybris.src;
-      source.dirs."system/sepolicy".patches = with pkgs; [
+      source.dirs."system/sepolicy".patches = [
         (fetchpatch {
           # https://t.me/linux_on_droid/26461
           name = "private/domain: add new attr for relaxing a dir init neverallow";
@@ -66,7 +67,7 @@ in
       ];
     }
     // lib.mkIf (config.enableLindroid || config.enableDroidspaces) {
-      source.dirs."build/make".patches = with pkgs; [
+      source.dirs."build/make".patches = [
         # VINTF check doesn't like CONFIG_SYSVIPC=y
         ./skip-VINTF-check-for-CONFIG_SYSVIPC.patch # alternatively: sed -i '/# CONFIG_SYSVIPC is not set/d'  */*/android-base.config
       ];

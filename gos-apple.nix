@@ -5,22 +5,25 @@ args@{
   self,
   ...
 }:
+let
+  inherit (pkgs) fetchpatch;
+in
 {
-  source.dirs."frameworks/base".patches = with pkgs; [
+  source.dirs."frameworks/base".patches = [
     (fetchpatch {
       name = "platform_frameworks_base: Allow Apple's servers for captive portal check";
       url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/329.patch";
       hash = "sha256-Ti9+k2+q0qjxS6xbeXw/WEKBXKsheCYpvVi8tAYly5Y=";
     })
   ];
-  source.dirs."packages/modules/NetworkStack".patches = with pkgs; [
+  source.dirs."packages/modules/NetworkStack".patches = [
     (fetchpatch {
       name = "platform_packages_modules_NetworkStack: Allow Apple's servers for captive portal check";
       url = "https://github.com/GrapheneOS/platform_packages_modules_NetworkStack/pull/18.patch";
       hash = "sha256-TViWdVRnM1Q1L0W7827/vdodrS+Z3icYX0DtP96iiuU=";
     })
   ];
-  source.dirs."packages/apps/Settings".patches = with pkgs; [
+  source.dirs."packages/apps/Settings".patches = [
     (fetchpatch {
       name = "platform_packages_apps_Settings: Allow Apple's servers for captive portal check";
       url = "https://github.com/GrapheneOS/platform_packages_apps_Settings/pull/420.patch";
