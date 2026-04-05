@@ -18,7 +18,6 @@ let
   inherit (pkgs) fetchpatch;
 in
 {
-
   options = {
     losLauncher = lib.mkOption {
       type = lib.types.bool;
@@ -30,6 +29,13 @@ in
     source.dirs."vendor/lineage-compat".src = lib.mkIf config.losLauncher ./vendor/lineage-compat;
     source.dirs."packages/apps/Settings".patches = lib.mkIf config.losLauncher [
       ./settings-add-taskbar-navigation-options.patch
+    ];
+    source.dirs."frameworks/base".patches = lib.mkIf config.losLauncher [
+      (fetchpatch {
+        name = "SystemUIProxy: Add onLongPressKeyEvent()";
+        url = "https://github.com/LineageOS/android_frameworks_base/commit/bc48bf59e0a30111ffb6001689490cc939290693.patch";
+        hash = "sha256-Y/7BV1jJfnAYIWaw387DpQzE8h5lK4S0TRlLRNmNG1Y=";
+      })
     ];
     source.dirs."packages/apps/Launcher3" =
       if (config.losLauncher) then
