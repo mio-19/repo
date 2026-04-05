@@ -79,6 +79,7 @@ let
       installPhase = ''
         runHook preInstall
 
+        apk_dir="app/build/outputs/apk/generic/release"
         apk_path=""
         while IFS= read -r candidate; do
           [ -f "$candidate" ] || continue
@@ -88,11 +89,14 @@ let
             apk_path="$candidate"
             break
           fi
-        done < <(find app/build -type f -name '*.apk' | sort)
+        done < <(for candidate in "$apk_dir"/*.apk; do
+          [ -e "$candidate" ] || continue
+          printf '%s\n' "$candidate"
+        done)
 
         if [ -z "$apk_path" ]; then
-          echo "No parseable com.nextcloud.client APK found under app/build" >&2
-          find app/build -type f -name '*.apk' | sort >&2 || true
+          echo "No parseable com.nextcloud.client APK found under $apk_dir" >&2
+          ls -1 "$apk_dir"/*.apk >&2 2>/dev/null || true
           exit 1
         fi
 
