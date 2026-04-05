@@ -70,6 +70,7 @@ nix build -L .#gos.mustang.generateKeysScript -o generate-keys && ./generate-key
 nix build -L .#gos.cheetah.generateKeysScript -o generate-keys && ./generate-keys ./keys-cheetah
 nix build -L .#gosNoCcache.cheetah.generateKeysScript -o generate-keys && ./generate-keys ./keys-cheetah
 nix build -L .#gos.caiman.generateKeysScript -o generate-keys && ./generate-keys ./keys-caiman
+nix build -L .#gosNoCcache.caiman.generateKeysScript -o generate-keys && ./generate-keys ./keys-caiman
 nix build -L .#los.gta4xlwifi.generateKeysScript -o generate-keys && ./generate-keys ./keys-gta4xlwifi
 ```
 
