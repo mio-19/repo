@@ -3,7 +3,7 @@
   callPackage,
   enableKSU ? false,
   pwmmode ? "0x01", # 0x02 might be too dark under direct sunlight
-  adbWritablePanelFreq ? false,
+  adbWritablePanelFreq ? true,
   enableLindroid ? false,
   enableDaria ? enableLindroid,
   enableDroidspaces ? false,
