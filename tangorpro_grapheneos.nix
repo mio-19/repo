@@ -9,6 +9,7 @@ args@{
     ./gos.nix
     #./gos_userdebug.nix
   ];
+  losLauncher = true;
   enableLindroid = true;
   enableDroidspaces = true;
   device = "tangorpro";

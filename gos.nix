@@ -97,6 +97,7 @@ in
         url = "https://github.com/GrapheneOS/platform_packages_apps_Settings/pull/411.patch";
         hash = "sha256-hcztYEyhfDlfkx04lKmsEOKr2puoM6GUb3bhRIgiCaM=";
       })
+      ./settings-add-taskbar-navigation-options.patch
     ];
     source.dirs."packages/modules/Permission".patches = [
       /*
@@ -178,6 +179,7 @@ in
             })
           ];
         };
+    source.dirs."vendor/lineage-compat".src = lib.mkIf config.losLauncher ./vendor/lineage-compat;
     source.dirs."packages/apps/ExactCalculator" = lib.mkForce {
       src = sources.lineage_exactcalculator.src;
     };

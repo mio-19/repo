@@ -1,0 +1,236 @@
+diff --git a/res/values/strings.xml b/res/values/strings.xml
+index 1d76e61..3c07387 100644
+--- a/res/values/strings.xml
++++ b/res/values/strings.xml
+@@ -12090,6 +12090,11 @@
+ 
+     <!-- Title for the screen to show all the 2- and 3-button navigation settings. [CHAR LIMIT=80] -->
+     <string name="button_navigation_settings_activity_title">Button navigation</string>
++    <string name="taskbar_category_title">Taskbar</string>
++    <string name="taskbar_show_title">Show taskbar</string>
++    <string name="taskbar_show_summary">Use the tablet taskbar instead of phone-style navigation</string>
++    <string name="taskbar_show_navbar_hint_title">Show navigation handle</string>
++    <string name="taskbar_show_navbar_hint_summary">Keep the gesture navigation handle visible when the taskbar is hidden</string>
+ 
+     <!-- Title text for changing the order of the navbar buttons -->
+     <string name="button_navigation_settings_order_title">Button order</string>
+diff --git a/res/xml/button_navigation_settings.xml b/res/xml/button_navigation_settings.xml
+index 1f89539..fc73081 100644
+--- a/res/xml/button_navigation_settings.xml
++++ b/res/xml/button_navigation_settings.xml
+@@ -38,5 +38,16 @@
+         settings:controller="com.android.settings.gestures.ButtonNavigationSettingsAssistController"
+     />
+ 
+-</PreferenceScreen>
++    <PreferenceCategory
++        android:key="taskbar_category"
++        android:persistent="false"
++        android:title="@string/taskbar_category_title">
++
++        <SwitchPreferenceCompat
++            android:key="button_navigation_show_taskbar"
++            android:title="@string/taskbar_show_title"
++            android:summary="@string/taskbar_show_summary"
++            settings:controller="com.android.settings.gestures.TaskbarEnabledPreferenceController" />
++    </PreferenceCategory>
+ 
++</PreferenceScreen>
+diff --git a/res/xml/gesture_navigation_settings.xml b/res/xml/gesture_navigation_settings.xml
+index d271985..7696125 100644
+--- a/res/xml/gesture_navigation_settings.xml
++++ b/res/xml/gesture_navigation_settings.xml
+@@ -70,9 +70,26 @@
+             settings:textEnd="@string/high_label"/>
+     </PreferenceCategory>
+ 
++    <PreferenceCategory
++        android:key="taskbar_category"
++        android:persistent="false"
++        android:title="@string/taskbar_category_title">
++
++        <SwitchPreferenceCompat
++            android:key="gesture_navigation_show_taskbar"
++            android:title="@string/taskbar_show_title"
++            android:summary="@string/taskbar_show_summary"
++            settings:controller="com.android.settings.gestures.TaskbarEnabledPreferenceController" />
++
++        <SwitchPreferenceCompat
++            android:key="gesture_navigation_show_navbar_hint"
++            android:title="@string/taskbar_show_navbar_hint_title"
++            android:summary="@string/taskbar_show_navbar_hint_summary"
++            settings:controller="com.android.settings.gestures.NavigationBarHintPreferenceController" />
++    </PreferenceCategory>
++
+     <com.android.settingslib.widget.FooterPreference
+         android:key="gesture_navigation_settings_footer"
+         android:title="@string/back_sensitivity_dialog_message"
+         settings:searchable="false"/>
+ </PreferenceScreen>
+-
+diff --git a/src/com/android/settings/gestures/NavigationBarHintPreferenceController.java b/src/com/android/settings/gestures/NavigationBarHintPreferenceController.java
+new file mode 100644
+index 0000000..c75de4d
+--- /dev/null
++++ b/src/com/android/settings/gestures/NavigationBarHintPreferenceController.java
+@@ -0,0 +1,52 @@
++/*
++ * Copyright (C) 2026 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package com.android.settings.gestures;
++
++import android.content.Context;
++
++import com.android.settings.R;
++import com.android.settings.core.TogglePreferenceController;
++
++public class NavigationBarHintPreferenceController extends TogglePreferenceController {
++
++    public NavigationBarHintPreferenceController(Context context, String preferenceKey) {
++        super(context, preferenceKey);
++    }
++
++    @Override
++    public boolean isChecked() {
++        return TaskbarSettingsUtils.isChecked(
++                mContext, TaskbarSettingsUtils.SETTING_NAVIGATION_BAR_HINT);
++    }
++
++    @Override
++    public boolean setChecked(boolean isChecked) {
++        return TaskbarSettingsUtils.setChecked(
++                mContext, TaskbarSettingsUtils.SETTING_NAVIGATION_BAR_HINT, isChecked);
++    }
++
++    @Override
++    public int getAvailabilityStatus() {
++        return TaskbarSettingsUtils.isTaskbarSettingAvailable(mContext)
++                ? AVAILABLE : UNSUPPORTED_ON_DEVICE;
++    }
++
++    @Override
++    public int getSliceHighlightMenuRes() {
++        return R.string.menu_key_system;
++    }
++}
+diff --git a/src/com/android/settings/gestures/TaskbarEnabledPreferenceController.java b/src/com/android/settings/gestures/TaskbarEnabledPreferenceController.java
+new file mode 100644
+index 0000000..2e9bdf1
+--- /dev/null
++++ b/src/com/android/settings/gestures/TaskbarEnabledPreferenceController.java
+@@ -0,0 +1,51 @@
++/*
++ * Copyright (C) 2026 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package com.android.settings.gestures;
++
++import android.content.Context;
++
++import com.android.settings.R;
++import com.android.settings.core.TogglePreferenceController;
++
++public class TaskbarEnabledPreferenceController extends TogglePreferenceController {
++
++    public TaskbarEnabledPreferenceController(Context context, String preferenceKey) {
++        super(context, preferenceKey);
++    }
++
++    @Override
++    public boolean isChecked() {
++        return TaskbarSettingsUtils.isChecked(mContext, TaskbarSettingsUtils.SETTING_ENABLE_TASKBAR);
++    }
++
++    @Override
++    public boolean setChecked(boolean isChecked) {
++        return TaskbarSettingsUtils.setChecked(
++                mContext, TaskbarSettingsUtils.SETTING_ENABLE_TASKBAR, isChecked);
++    }
++
++    @Override
++    public int getAvailabilityStatus() {
++        return TaskbarSettingsUtils.isTaskbarSettingAvailable(mContext)
++                ? AVAILABLE : UNSUPPORTED_ON_DEVICE;
++    }
++
++    @Override
++    public int getSliceHighlightMenuRes() {
++        return R.string.menu_key_system;
++    }
++}
+diff --git a/src/com/android/settings/gestures/TaskbarSettingsUtils.java b/src/com/android/settings/gestures/TaskbarSettingsUtils.java
+new file mode 100644
+index 0000000..b70fe05
+--- /dev/null
++++ b/src/com/android/settings/gestures/TaskbarSettingsUtils.java
+@@ -0,0 +1,45 @@
++/*
++ * Copyright (C) 2026 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package com.android.settings.gestures;
++
++import android.content.Context;
++import android.provider.Settings;
++
++final class TaskbarSettingsUtils {
++    static final int ON = 1;
++    static final int OFF = 0;
++    static final int MIN_LARGE_SCREEN_WIDTH_DP = 600;
++
++    static final String SETTING_ENABLE_TASKBAR = "enable_taskbar";
++    static final String SETTING_NAVIGATION_BAR_HINT = "navigation_bar_hint";
++
++    private TaskbarSettingsUtils() {
++    }
++
++    static boolean isTaskbarSettingAvailable(Context context) {
++        return context.getResources().getConfiguration().smallestScreenWidthDp
++                >= MIN_LARGE_SCREEN_WIDTH_DP;
++    }
++
++    static boolean isChecked(Context context, String key) {
++        return Settings.System.getInt(context.getContentResolver(), key, ON) == ON;
++    }
++
++    static boolean setChecked(Context context, String key, boolean enabled) {
++        return Settings.System.putInt(context.getContentResolver(), key, enabled ? ON : OFF);
++    }
++}
