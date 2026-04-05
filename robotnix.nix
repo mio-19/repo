@@ -97,7 +97,7 @@ in
       };
     in
     {
-      packages.grapheneos-husky-kernel = pkgs.callPackage ./grapheneos_husky_kernel.nix { };
+      packages.grapheneos-husky-kernel = pkgs.callPackage ./gos_kernel_shusky.nix { };
       packages.grapheneos-mustang-kernel = pkgs.callPackage ./grapheneos_mustang_kernel.nix { };
       packages.grapheneos-tangorpro-kernel = pkgs.callPackage ./grapheneos_tangorpro_kernel.nix { };
       # followings are for garnix:

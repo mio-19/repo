@@ -7,8 +7,6 @@
   enableLindroid ? false,
   enableDaria ? enableLindroid,
   enableDroidspaces ? false,
-  stdenv,
-  lib,
   runCommand,
 }:
 let
@@ -37,7 +35,7 @@ let
       panelPatch;
 in
 callPackage ./grapheneos_kernel_common.nix { } {
-  pname = "grapheneos-husky-kernel";
+  pname = "grapheneos-shusky-kernel";
   buildScript = "build_shusky.sh";
   distDir = "shusky";
   inherit
