@@ -9,7 +9,7 @@ args@{
     ./gos
   ];
   losLauncher = true;
-  enableLindroid = true;
+  enableLindroid = false;
   enableDroidspaces = true;
   device = "caiman";
   source.dirs."device/google/caimito-kernels/6.1" = lib.mkForce {
