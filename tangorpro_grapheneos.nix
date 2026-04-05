@@ -4,16 +4,14 @@ args@{
   lib,
   ...
 }:
-let
-  enableLindroid = true;
-in
 {
   imports = [
     ./gos.nix
     ./gos_lindroid.nix
     #./gos_userdebug.nix
   ];
-  enableLindroid = enableLindroid;
+  enableLindroid = true;
+  enableDroidspaces = true;
   device = "tangorpro";
   source.dirs."device/google/tangorpro-kernels/6.1" = lib.mkForce {
     src =
