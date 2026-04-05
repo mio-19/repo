@@ -6,8 +6,8 @@
     android-nixpkgs.url = "github:tadfisher/android-nixpkgs/stable";
     android-nixpkgs.inputs.nixpkgs.follows = "nixpkgs";
     #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
-    #robotnix.url = "git+https://github.com/nix-community/robotnix.git?shallow=1";
-    robotnix.url = "github:nix-community/robotnix/grapheneos_2026-04-04";
+    robotnix.url = "git+https://github.com/nix-community/robotnix.git?shallow=1";
+    #robotnix.url = "github:nix-community/robotnix/grapheneos_2026-04-04";
     #robotnix.url = "github:mio-19/robotnix";
     robotnix.inputs.nixpkgs.follows = "nixpkgs";
     robotnix.inputs.androidPkgs.follows = "android-nixpkgs";
