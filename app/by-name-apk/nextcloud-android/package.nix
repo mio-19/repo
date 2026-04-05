@@ -29,13 +29,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "nextcloud-android";
-      version = "3.35.2";
+      version = "33.0.1";
 
       src = fetchFromGitHub {
         owner = "nextcloud";
         repo = "android";
         tag = "stable-${finalAttrs.version}";
-        hash = "sha256-6vORfBLs5YPssKXFNe0U8gUzyQfFOXl0zH5KMrwaTgE=";
+        hash = "sha256-NAWeYEHIGMxoOpF6t/VhTRxjX1n2RTJ2AjZ8v8z3+2g=";
       };
 
       gradleBuildTask = ":app:assembleGenericRelease";
@@ -60,7 +60,7 @@ let
         JAVA_HOME = jdk21;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
       };
 
       preConfigure = ''
@@ -72,17 +72,30 @@ let
       gradleFlags = [
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk21}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
 
       installPhase = ''
         runHook preInstall
-        apk_dir="app/build/outputs/apk/generic/release"
-        apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apk_dir/output-metadata.json" | head -n 1)"
-        test -n "$apk_name"
-        apk_path="$apk_dir/$apk_name"
-        test -f "$apk_path"
+
+        apk_path=""
+        while IFS= read -r candidate; do
+          [ -f "$candidate" ] || continue
+          badging="$("${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt" dump badging "$candidate" 2>/dev/null || true)"
+          pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
+          if [ "$pkg" = "com.nextcloud.client" ]; then
+            apk_path="$candidate"
+            break
+          fi
+        done < <(find app/build -type f -name '*.apk' | sort)
+
+        if [ -z "$apk_path" ]; then
+          echo "No parseable com.nextcloud.client APK found under app/build" >&2
+          find app/build -type f -name '*.apk' | sort >&2 || true
+          exit 1
+        fi
+
         install -Dm644 "$apk_path" "$out/nextcloud-android.apk"
         runHook postInstall
       '';
