@@ -7,6 +7,8 @@
   enableLindroid ? false,
   enableDaria ? enableLindroid,
   enableDroidspaces ? false,
+  stdenv,
+  lib,
 }:
 let
   panelPatch =
@@ -35,10 +37,11 @@ callPackage ./grapheneos_kernel_common.nix { } {
     ;
   extraBuildCommands = ''
     panel_patch=${panelPatch}
-    if [ "${if adbWritablePanelFreq then "1" else "0"}" = 1 ]; then
+    ${lib.optionalString adbWritablePanelFreq ''
       panel_patch="$TMPDIR/$(basename "$panel_patch")"
       cp ${panelPatch} "$panel_patch"
       chmod u+w "$panel_patch"
+      source "${stdenv}/setup"
       substituteInPlace "$panel_patch" \
         --replace-fail "module_param_array(freq_cmd, byte, NULL, 0644);" "module_param_array(freq_cmd, byte, NULL, 0666);" \
         --replace-fail "module_param_array(freq_cmd_ns, byte, NULL, 0644);" "module_param_array(freq_cmd_ns, byte, NULL, 0666);" \
@@ -48,7 +51,7 @@ callPackage ./grapheneos_kernel_common.nix { } {
         --replace-fail "module_param_array(freq_cmd_hbm_ns, byte, NULL, 0644);" "module_param_array(freq_cmd_hbm_ns, byte, NULL, 0666);" \
         --replace-fail "module_param_array(freq_cmd_hbm_high_brightness, byte, NULL, 0644);" "module_param_array(freq_cmd_hbm_high_brightness, byte, NULL, 0666);" \
         --replace-fail "module_param_array(freq_cmd_hbm_high_brightness_ns, byte, NULL, 0644);" "module_param_array(freq_cmd_hbm_high_brightness_ns, byte, NULL, 0666);"
-    fi
+    ''}
 
     apply_patch "$panel_patch"
     apply_patch ${./kernel/pixel8pro-stock-fix-attempt3.patch}
