@@ -124,6 +124,7 @@ let
         # packages/flutter_tools/gradle can compile and write outputs.
         cp -LR ${flutter338} flutter-sdk
         chmod -R u+w flutter-sdk
+        : > flutter-sdk/bin/cache/engine.realm
 
         cat > android/gradle-version-normalize.init.gradle << 'INIT_SCRIPT'
         allprojects {
