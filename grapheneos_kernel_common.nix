@@ -36,10 +36,10 @@
   src ? fetchgit {
     url = "https://gitlab.com/grapheneos/kernel_pixel.git";
     tag = "2026040300";
-    hash = "sha256-ZYKQ1sPMg+Wd+1wQCOfNGbEqYI5ndpRXvAaBkAqwOp8=";
+    hash = "sha256-iioKR1q0Zju08R1FT3etQ8FqLVQukJoLW87/+MjkaIg=";
     fetchSubmodules = true;
     deepClone = false;
-    leaveDotGit = true; # seems like something wants .git # needed with and after 20260307 # fatal: not a git repository (or any parent up to mount point /) in the log
+    # NO # HASH UNSTABLE # leaveDotGit = true; # seems like something wants .git # needed with and after 20260307 # fatal: not a git repository (or any parent up to mount point /) in the log
     sparseCheckout = [ ];
   },
   buildScript,
