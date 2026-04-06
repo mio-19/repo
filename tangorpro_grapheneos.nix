@@ -8,7 +8,7 @@ args@{
   imports = [
     ./gos
   ];
-  launcherVariant = "los";
+  launcherVariant = "derpfest";
   allowAdbWirelessWithoutWifi = true;
   enableLindroid = true;
   enableDroidspaces = true;
