@@ -15,4 +15,4 @@
 - update mitm: `$(nix build .\#apk_tailscale.mitmCache.updateScript --no-link --print-out-paths)` note on nix: always use ./ instead of double quote string for data path! otherwise the outPath in mitmCache update script is not what we want. use `mitmCache = gradle.fetchDeps {  data = ./tailscale_deps.json;`; never use `data = "tailscale_deps.json";` It is common to see cleanup errors. Cleanup errors should not affect the main functionality of the mitmCache update script. Maybe need to put multiple tasks in gradleUpdateTask, seperated by space, if needed, when a specific task failed to build due to dependencies not in mitmCache
 - fetchFromGitHub and fetching from git in nix: prefer tag over rev, use tag = "tag name" when fetching tag!
 - DON"T EVER find grep or anything SEARCH ON EVERY FILES ON WHOLE nix store!!!! nix store is big and that takes forever.
-- When working on patches. you try build for example gos.husky.source.dirs."path here".src to see if patch apply.
+- When working on patches. you try build for example gos.husky.config.source.dirs."path here".src to see if patch apply.
