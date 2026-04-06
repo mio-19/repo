@@ -61,6 +61,7 @@ in
             else if (config.launcherVariant == "derpfest") then
               sources.derpfest_launcher3.src
             else
+              assert config.launcherVariant == "evox";
               sources.evox_launcher3.src;
         }
       else
