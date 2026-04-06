@@ -8,6 +8,7 @@ args@{
   imports = [
     ./gos
   ];
+  advancedPowerMenu = true;
   launcherVariant = "los";
   enableLindroid = false; # basic stuff works. systemd units launched. sddm black screen.
   enableDroidspaces = false;
