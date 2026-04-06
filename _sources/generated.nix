@@ -468,6 +468,20 @@
     };
     date = "2026-01-19";
   };
+  lineage_gallery2 = {
+    pname = "lineage_gallery2";
+    version = "cce97b43244c7089839d710aa45dd2e64a94586e";
+    src = fetchgit {
+      url = "https://github.com/LineageOS/android_packages_apps_Gallery2.git";
+      rev = "cce97b43244c7089839d710aa45dd2e64a94586e";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-QylzofyyciaoK2xHbSLZH7QdJOHVjzeH3vi35u3RD7g=";
+    };
+    date = "2025-12-11";
+  };
   lineage_glimpse = {
     pname = "lineage_glimpse";
     version = "88a16b1d01329d3733801762cba0a5f7162971b0";

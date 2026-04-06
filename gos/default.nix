@@ -127,24 +127,22 @@ in
   source.dirs."packages/apps/DeskClock" = lib.mkForce {
     src = sources.lineage_deskclock.src;
   };
-  # cannot see Gallery from home screen with this:
-  /*
-    source.dirs."packages/apps/Gallery2" = lib.mkForce {
-      src = pkgs.fetchFromGitHub {
-        owner = "LineageOS";
-        repo = "android_packages_apps_Gallery2";
-        rev = "cce97b43244c7089839d710aa45dd2e64a94586e";
-        hash = "sha256-QylzofyyciaoK2xHbSLZH7QdJOHVjzeH3vi35u3RD7g=";
-      };
-    };
-  */
-  source.dirs."packages/apps/Gallery2".patches = [
-    (fetchpatch {
-      name = "Remove references to Google in some translations";
-      url = "https://github.com/GrapheneOS/platform_packages_apps_Gallery2/pull/14.patch";
-      hash = "sha256-aO41dAmULosxYoas0ZwLTBShpfMBIKhLBKKCHkcAxNg=";
-    })
-  ];
+  source.dirs."packages/apps/Gallery2" = lib.mkForce {
+    src = sources.lineage_gallery2.src;
+    patches = [
+      (fetchpatch {
+        name = "Gallery2: restore launcher exposure";
+        url = "https://github.com/LineageOS/android_packages_apps_Gallery2/commit/a83aff7653c706f425e90b35696c0db941661cf5.patch";
+        hash = "sha256-u88lzlX3cw/YKVZ54ER+A/N7Wrmxj0VH/J7ccDxs/zA=";
+        revert = true;
+      })
+      (fetchpatch {
+        name = "Remove references to Google in some translations";
+        url = "https://github.com/GrapheneOS/platform_packages_apps_Gallery2/pull/14.patch";
+        hash = "sha256-aO41dAmULosxYoas0ZwLTBShpfMBIKhLBKKCHkcAxNg=";
+      })
+    ];
+  };
   source.dirs."packages/inputmethods/LatinIME" = lib.mkForce {
     src = sources.lineage_latinime.src;
   };
