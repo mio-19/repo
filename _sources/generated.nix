@@ -160,6 +160,20 @@
     };
     date = "2026-03-16";
   };
+  evox_launcher3 = {
+    pname = "evox_launcher3";
+    version = "6f469e925d61c856360ee067cd29d5e136457151";
+    src = fetchgit {
+      url = "https://github.com/Evolution-X/packages_apps_Launcher3.git";
+      rev = "6f469e925d61c856360ee067cd29d5e136457151";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-/ol/RbOUByAWOZ/II+4D6cFOloEUd96jg3bdT0dEr7o=";
+    };
+    date = "2026-02-03";
+  };
   external_lxc = {
     pname = "external_lxc";
     version = "4e3a3630fff3dc04e0d4a761309f87f248e40b17";

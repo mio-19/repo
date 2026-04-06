@@ -16,6 +16,10 @@ let
       ;
   };
   inherit (pkgs) fetchpatch;
+  los_fork =
+    config.launcherVariant == "los"
+    || config.launcherVariant == "derpfest"
+    || config.launcherVariant == "evox";
 in
 {
   options = {
@@ -24,45 +28,43 @@ in
         "stock"
         "los"
         "derpfest"
+        "evox"
       ];
       default = "stock";
       description = "launcher variant to build";
     };
   };
   config = {
-    source.dirs."vendor/lineage-compat".src = lib.mkIf (
-      config.launcherVariant == "los" || config.launcherVariant == "derpfest"
-    ) ./vendor/lineage-compat;
-    source.dirs."packages/apps/Settings".patches =
-      lib.mkIf (config.launcherVariant == "los" || config.launcherVariant == "derpfest")
-        [
-          ./settings-add-taskbar-navigation-options.patch
-        ];
-    source.dirs."frameworks/base".patches =
-      lib.mkIf (config.launcherVariant == "los" || config.launcherVariant == "derpfest")
-        [
-          (fetchpatch {
-            name = "SystemUIProxy: Add onLongPressKeyEvent()";
-            url = "https://github.com/LineageOS/android_frameworks_base/commit/bc48bf59e0a30111ffb6001689490cc939290693.patch";
-            hash = "sha256-Y/7BV1jJfnAYIWaw387DpQzE8h5lK4S0TRlLRNmNG1Y=";
-          })
-          (fetchpatch {
-            name = "SystemUIProxy: Add onSleepEvent";
-            url = "https://github.com/LineageOS/android_frameworks_base/commit/3ca5f9315f722436ef205291fc860c262b602c64.patch";
-            hash = "sha256-lt/70GEfBjKbdGu2T3/6OLIRKVQnfwF1u/suMJEAn94=";
-          })
-          # TODO: check https://github.com/LineageOS/android_frameworks_base/commit/310d180a3cb18d82dccce28c6757cb9427b1cd99
-        ];
+    source.dirs."vendor/lineage-compat".src = lib.mkIf los_fork ./vendor/lineage-compat;
+    source.dirs."packages/apps/Settings".patches = lib.mkIf los_fork [
+      ./settings-add-taskbar-navigation-options.patch
+    ];
+    source.dirs."frameworks/base".patches = lib.mkIf los_fork [
+      (fetchpatch {
+        name = "SystemUIProxy: Add onLongPressKeyEvent()";
+        url = "https://github.com/LineageOS/android_frameworks_base/commit/bc48bf59e0a30111ffb6001689490cc939290693.patch";
+        hash = "sha256-Y/7BV1jJfnAYIWaw387DpQzE8h5lK4S0TRlLRNmNG1Y=";
+      })
+      (fetchpatch {
+        name = "SystemUIProxy: Add onSleepEvent";
+        url = "https://github.com/LineageOS/android_frameworks_base/commit/3ca5f9315f722436ef205291fc860c262b602c64.patch";
+        hash = "sha256-lt/70GEfBjKbdGu2T3/6OLIRKVQnfwF1u/suMJEAn94=";
+      })
+      # TODO: check https://github.com/LineageOS/android_frameworks_base/commit/310d180a3cb18d82dccce28c6757cb9427b1cd99
+    ];
     source.dirs."packages/apps/Launcher3" =
-      if (config.launcherVariant == "los") then
+      if los_fork then
         lib.mkForce {
-          src = sources.lineage_launcher3.src;
-        }
-      else if (config.launcherVariant == "derpfest") then
-        lib.mkForce {
-          src = sources.derpfest_launcher3.src;
+          src =
+            if (config.launcherVariant == "los") then
+              sources.lineage_launcher3.src
+            else if (config.launcherVariant == "derpfest") then
+              sources.derpfest_launcher3.src
+            else
+              sources.evox_launcher3.src;
         }
       else
+        assert config.launcherVariant == "stock";
         {
           patches = [
             (fetchpatch {
