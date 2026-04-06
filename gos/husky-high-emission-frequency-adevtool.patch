@@ -1,5 +1,5 @@
---- a/config/mk/google_devices/device/husky/conf/Android.bp
-+++ b/config/mk/google_devices/device/husky/conf/Android.bp
+--- a/vendor-skels/google_devices/husky/grapheneos/Android.bp
++++ b/vendor-skels/google_devices/husky/grapheneos/Android.bp
 @@ -0,0 +1,6 @@
 +prebuilt_etc {
 +    name: "init.husky.grapheneos.rc",
@@ -7,8 +7,8 @@
 +    sub_dir: "init",
 +    vendor: true,
 +}
---- a/config/mk/google_devices/device/husky/conf/init.husky.grapheneos.rc
-+++ b/config/mk/google_devices/device/husky/conf/init.husky.grapheneos.rc
+--- a/vendor-skels/google_devices/husky/grapheneos/init.husky.grapheneos.rc
++++ b/vendor-skels/google_devices/husky/grapheneos/init.husky.grapheneos.rc
 @@ -0,0 +1,47 @@
 +on property:persist.sys.husky_high_emission_frequency_mode=0x00 && property:sys.state_of_default_display=on
 +    write /sys/module/panel_google_hk3/parameters/freq_cmd 0x00,0x43,0x43,0x03
@@ -57,11 +57,17 @@
 +
 +on property:sys.state_of_default_display=on && property:persist.sys.husky_high_emission_frequency_mode=0x07
 +    write /sys/module/panel_google_hk3/parameters/freq_cmd 0x07,0x43,0x43,0x03
---- a/config/mk/google_devices/device/husky/device.mk
-+++ b/config/mk/google_devices/device/husky/device.mk
-@@ -11,3 +11,5 @@
-
- PRODUCT_VENDOR_PROPERTIES += \
-     persist.vendor.boot.zram.size=100p
+--- a/vendor-skels/google_devices/husky/husky.mk
++++ b/vendor-skels/google_devices/husky/husky.mk
+@@ -12,7 +12,10 @@ PRODUCT_SOONG_NAMESPACES += \
+     vendor/google_devices/husky/overlays \
+     vendor/google_devices/husky/proprietary \
+     vendor/google_devices/husky/sysconfig \
+-    vendor/google_devices/husky/vintf
++    vendor/google_devices/husky/vintf \
++    vendor/google_devices/husky/grapheneos
 +
 +PRODUCT_PACKAGES += init.husky.grapheneos.rc
+ 
+ PRODUCT_NAME := husky
+ PRODUCT_DEVICE := husky

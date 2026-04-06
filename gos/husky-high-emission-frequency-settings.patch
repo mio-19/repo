@@ -8,9 +8,9 @@
 +            android:key="husky_high_emission_frequency_mode"
 +            android:icon="@drawable/ic_high_emission_frequency"
 +            android:persistent="false"
-+            android:title="@string/emission_frequency_title"
++            android:title="@string/husky_pwm_multiplier_title"
 +            android:summary="@string/summary_placeholder"
-+            android:dialogTitle="@string/emission_frequency_title"
++            android:dialogTitle="@string/husky_pwm_multiplier_title"
 +            android:entries="@array/husky_high_emission_frequency_entries"
 +            android:entryValues="@array/husky_high_emission_frequency_values"
 +            settings:controller="com.google.android.settings.display.HuskyHighEmissionFrequencyPreferenceController"/>
@@ -44,6 +44,13 @@
 +        <item>0x06</item>
 +        <item>0x07</item>
 +    </string-array>
++</resources>
+--- a/res/values/strings_gos_husky_high_emission_frequency.xml
++++ b/res/values/strings_gos_husky_high_emission_frequency.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="husky_pwm_multiplier_title">Adjust PWM multiplier for sensitive eyes</string>
 +</resources>
 --- a/src/com/google/android/settings/display/HighEmissionFrequencyController.kt
 +++ b/src/com/google/android/settings/display/HighEmissionFrequencyController.kt
@@ -109,7 +116,10 @@
 +        }
 +
 +        return try {
++            Log.i(TAG, "Setting $PROPERTY to $value")
 +            SystemProperties.set(PROPERTY, value)
++            val appliedValue = SystemProperties.get(PROPERTY, DEFAULT_VALUE)
++            Log.i(TAG, "Read back $PROPERTY as $appliedValue")
 +            listPreference.value = value
 +            listPreference.summary = listPreference.entry
 +            true
