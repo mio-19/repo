@@ -19,19 +19,16 @@ let
   };
   inherit (pkgs) fetchpatch;
   originalGrapheneosConfig =
-    if useOriginalGrapheneosAppSources then
-      config
-    else
-      (robotnix.lib.robotnixSystem (
-        innerArgs@{ ... }:
-        {
-          inherit (config)
-            flavor
-            grapheneos
-            ;
-          ccache.enable = false;
-        }
-      )).config;
+    (robotnix.lib.robotnixSystem (
+      innerArgs@{ ... }:
+      {
+        inherit (config)
+          flavor
+          grapheneos
+          ;
+        ccache.enable = false;
+      }
+    )).config;
   originalGrapheneosSource = path: originalGrapheneosConfig.source.dirs.${path}.src;
   restoreGrapheneosIconResources = path: ''
     cp ${originalGrapheneosSource path}/res/drawable/ic_launcher_foreground.xml res/drawable/ic_launcher_foreground.xml
