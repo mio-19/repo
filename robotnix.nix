@@ -17,7 +17,9 @@ let
             system = pkgs.stdenv.hostPlatform.system;
             config.allowUnfree = true;
           };
+          _module.args.robotnix = robotnix;
           _module.args.self = self;
+          _module.args.useOriginalGrapheneosAppSources = false;
           imports = [ f ];
           ccache.enable = ccache;
         };
@@ -42,7 +44,9 @@ let
             system = pkgs.stdenv.hostPlatform.system;
             config.allowUnfree = true;
           };
+          _module.args.robotnix = robotnix;
           _module.args.self = self;
+          _module.args.useOriginalGrapheneosAppSources = false;
           imports = [ f ];
           ccache.enable = ccache;
         };

@@ -3,7 +3,9 @@ args@{
   pkgs-unstable,
   lib,
   config,
+  robotnix,
   self,
+  useOriginalGrapheneosAppSources ? false,
   ...
 }:
 let
@@ -16,6 +18,42 @@ let
       ;
   };
   inherit (pkgs) fetchpatch;
+  deviceModule =
+    {
+      akita = ../akita_grapheneos.nix;
+      caiman = ../caiman_grapheneos.nix;
+      cheetah = ../cheetah_grapheneos.nix;
+      husky = ../husky_grapheneos.nix;
+      mustang = ../mustang_grapheneos.nix;
+      tangorpro = ../tangorpro_grapheneos.nix;
+    }
+    .${config.device};
+  originalGrapheneosConfig =
+    if useOriginalGrapheneosAppSources then
+      config
+    else
+      (robotnix.lib.robotnixSystem (
+        innerArgs@{ ... }:
+        {
+          _module.args.pkgs-unstable = pkgs-unstable;
+          _module.args.robotnix = robotnix;
+          _module.args.self = self;
+          _module.args.useOriginalGrapheneosAppSources = true;
+          imports = [ deviceModule ];
+          inherit (config)
+            flavor
+            grapheneos
+            ;
+          ccache.enable = false;
+        }
+      )).config;
+  originalGrapheneosSource = path: originalGrapheneosConfig.source.dirs.${path}.src;
+  restoreGrapheneosIconResources = path: ''
+    cp ${originalGrapheneosSource path}/res/drawable/ic_launcher_foreground.xml res/drawable/ic_launcher_foreground.xml
+    cp ${originalGrapheneosSource path}/res/mipmap-anydpi/ic_launcher.xml res/mipmap-anydpi/ic_launcher.xml
+    cp ${originalGrapheneosSource path}/res/mipmap-anydpi/ic_launcher_round.xml res/mipmap-anydpi/ic_launcher_round.xml
+    cp ${originalGrapheneosSource path}/res/values/ic_launcher_background.xml res/values/ic_launcher_background.xml
+  '';
   replace_app = name: attribute: ''
     rm prebuilt/${name}.apk
     rm -f prebuilt/${name}.apk.idsig # maybe not exist
@@ -122,28 +160,37 @@ in
       hash = "sha256-hru78WppRuNKWIbqrRQdm86Y8fuuZcPmM6MYXfS6Lmw=";
     })
   ];
-  source.dirs."packages/apps/ExactCalculator" = lib.mkForce {
-    src = sources.lineage_exactcalculator.src;
-  };
-  source.dirs."packages/apps/DeskClock" = lib.mkForce {
-    src = sources.lineage_deskclock.src;
-  };
-  source.dirs."packages/apps/Gallery2" = lib.mkForce {
-    src = sources.lineage_gallery2.src;
-    patches = [
-      (fetchpatch {
-        name = "Gallery2: restore launcher exposure";
-        url = "https://github.com/LineageOS/android_packages_apps_Gallery2/commit/a83aff7653c706f425e90b35696c0db941661cf5.patch";
-        hash = "sha256-u88lzlX3cw/YKVZ54ER+A/N7Wrmxj0VH/J7ccDxs/zA=";
-        revert = true;
-      })
-      (fetchpatch {
-        name = "Remove references to Google in some translations";
-        url = "https://github.com/GrapheneOS/platform_packages_apps_Gallery2/pull/14.patch";
-        hash = "sha256-aO41dAmULosxYoas0ZwLTBShpfMBIKhLBKKCHkcAxNg=";
-      })
-    ];
-  };
+  source.dirs."packages/apps/ExactCalculator" = lib.mkIf (!useOriginalGrapheneosAppSources) (
+    lib.mkForce {
+      src = sources.lineage_exactcalculator.src;
+      postPatch = restoreGrapheneosIconResources "packages/apps/ExactCalculator";
+    }
+  );
+  source.dirs."packages/apps/DeskClock" = lib.mkIf (!useOriginalGrapheneosAppSources) (
+    lib.mkForce {
+      src = sources.lineage_deskclock.src;
+      postPatch = restoreGrapheneosIconResources "packages/apps/DeskClock";
+    }
+  );
+  source.dirs."packages/apps/Gallery2" = lib.mkIf (!useOriginalGrapheneosAppSources) (
+    lib.mkForce {
+      src = sources.lineage_gallery2.src;
+      patches = [
+        (fetchpatch {
+          name = "Gallery2: restore launcher exposure";
+          url = "https://github.com/LineageOS/android_packages_apps_Gallery2/commit/a83aff7653c706f425e90b35696c0db941661cf5.patch";
+          hash = "sha256-u88lzlX3cw/YKVZ54ER+A/N7Wrmxj0VH/J7ccDxs/zA=";
+          revert = true;
+        })
+        (fetchpatch {
+          name = "Remove references to Google in some translations";
+          url = "https://github.com/GrapheneOS/platform_packages_apps_Gallery2/pull/14.patch";
+          hash = "sha256-aO41dAmULosxYoas0ZwLTBShpfMBIKhLBKKCHkcAxNg=";
+        })
+      ];
+      postPatch = restoreGrapheneosIconResources "packages/apps/Gallery2";
+    }
+  );
   source.dirs."packages/inputmethods/LatinIME" = lib.mkForce {
     src = sources.lineage_latinime.src;
   };
