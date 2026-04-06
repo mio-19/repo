@@ -32,8 +32,8 @@
       flake = false;
     };
     openwrt-imagebuilder = {
-      url = "github:astro/nix-openwrt-imagebuilder";
-      #url = "github:mio-19/nix-openwrt-imagebuilder";
+      #url = "github:astro/nix-openwrt-imagebuilder";
+      url = "github:mio-19/nix-openwrt-imagebuilder";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
     };
