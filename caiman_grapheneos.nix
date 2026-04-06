@@ -8,7 +8,7 @@ args@{
   imports = [
     ./gos
   ];
-  losLauncher = true;
+  launcherVariant = "los";
   enableLindroid = false;
   enableDroidspaces = false;
   device = "caiman";

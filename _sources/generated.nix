@@ -146,6 +146,20 @@
     };
     date = "2026-03-18";
   };
+  derpfest_launcher3 = {
+    pname = "derpfest_launcher3";
+    version = "21fc063308cd20425f2283593497385fff7f9297";
+    src = fetchgit {
+      url = "https://github.com/DerpFest-AOSP/android_packages_apps_DerpLauncher.git";
+      rev = "21fc063308cd20425f2283593497385fff7f9297";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-eRV4Gsnho2aXoqA6RRHJJptSkN5v9LAG0raJa5X4q90=";
+    };
+    date = "2026-03-16";
+  };
   external_lxc = {
     pname = "external_lxc";
     version = "4e3a3630fff3dc04e0d4a761309f87f248e40b17";

@@ -8,7 +8,7 @@ args@{
   imports = [
     ./gos
   ];
-  losLauncher = true;
+  launcherVariant = "los";
   allowAdbWirelessWithoutWifi = true;
   enableLindroid = true;
   enableDroidspaces = true;

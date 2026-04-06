@@ -8,7 +8,7 @@ args@{
   imports = [
     ./gos
   ];
-  losLauncher = true;
+  launcherVariant = "los";
   enableLindroid = false; # basic stuff works. systemd units launched. sddm black screen.
   enableDroidspaces = false;
   huskyHighEmissionFrequency = true;
