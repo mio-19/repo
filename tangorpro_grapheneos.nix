@@ -9,7 +9,7 @@ args@{
     ./gos
   ];
   advancedPowerMenu = true;
-  launcherVariant = "derpfest";
+  launcherVariant = "los";
   allowAdbWirelessWithoutWifi = true;
   enableLindroid = true;
   enableDroidspaces = true;

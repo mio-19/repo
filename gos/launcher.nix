@@ -90,3 +90,18 @@ in
         };
   };
 }
+# derpfest compile failed:
+/*
+  packages/apps/Launcher3/src/com/android/launcher3/graphics/DrawableFactory.java:42: error: symbol not found com.android.launcher3.util.override.ResourceBasedOverride
+  import com.android.launcher3.util.override.ResourceBasedOverride;
+         ^
+  packages/apps/Launcher3/src/com/android/launcher3/graphics/DrawableFactory.java:47: error: could not resolve ResourceBasedOverride
+  public class DrawableFactory implements ResourceBasedOverride {
+                                          ^
+  packages/apps/Launcher3/src/com/android/launcher3/graphics/DrawableFactory.java:41: error: symbol not found com.android.launcher3.util.override.MainThreadInitializedObject
+  import com.android.launcher3.util.override.MainThreadInitializedObject;
+         ^
+  packages/apps/Launcher3/src/com/android/launcher3/graphics/DrawableFactory.java:49: error: could not resolve MainThreadInitializedObject
+      public static final MainThreadInitializedObject<DrawableFactory> INSTANCE =
+                          ^
+*/

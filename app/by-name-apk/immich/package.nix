@@ -152,6 +152,7 @@ let
       postPatch = ''
         cp -LR ${flutter335} flutter-sdk
         chmod -R u+w flutter-sdk
+        : > flutter-sdk/bin/cache/engine.realm
 
         cat > android/gradle-version-normalize.init.gradle << 'INIT_SCRIPT'
         allprojects {

@@ -116,6 +116,7 @@ let
       postPatch = ''
         cp -LR ${flutter338} flutter-sdk
         chmod -R u+w flutter-sdk
+        : > flutter-sdk/bin/cache/engine.realm
 
         cat > android/gradlew << 'GRADLEW_SCRIPT'
         #!/bin/sh
