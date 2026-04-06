@@ -11,6 +11,7 @@ args@{
   losLauncher = true;
   enableLindroid = false; # basic stuff works. systemd units launched. sddm black screen.
   enableDroidspaces = false;
+  huskyHighEmissionFrequency = true;
   device = "husky";
   # check in nix repl (import ./.).gosSign.husky.config.source.dirs."device/google/shusky-kernels/6.1"
   source.dirs."device/google/shusky-kernels/6.1" = lib.mkForce {

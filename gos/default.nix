@@ -44,6 +44,7 @@ in
     ./gos_noleakdns.nix
     ./gos-apple.nix
     ./gos_adb_wireless_no_wifi.nix
+    ./gos_husky_high_emission_frequency.nix
     ./gos_lindroid.nix
     ./launcher.nix
     ./gos_userdebug.nix

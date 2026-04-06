@@ -1,0 +1,133 @@
+--- a/res/xml/accessibility_settings.xml
++++ b/res/xml/accessibility_settings.xml
+@@ -80,6 +80,17 @@
+             android:summary="@string/emission_frequency_summary"
+             settings:controller="com.google.android.settings.display.HighEmissionFrequencyController"/>
+
++        <ListPreference
++            android:key="husky_high_emission_frequency_mode"
++            android:icon="@drawable/ic_high_emission_frequency"
++            android:persistent="false"
++            android:title="@string/emission_frequency_title"
++            android:summary="@string/summary_placeholder"
++            android:dialogTitle="@string/emission_frequency_title"
++            android:entries="@array/husky_high_emission_frequency_entries"
++            android:entryValues="@array/husky_high_emission_frequency_values"
++            settings:controller="com.google.android.settings.display.HuskyHighEmissionFrequencyPreferenceController"/>
++
+     </PreferenceCategory>
+
+     <PreferenceCategory
+--- a/res/values/arrays_gos_husky_high_emission_frequency.xml
++++ b/res/values/arrays_gos_husky_high_emission_frequency.xml
+@@ -0,0 +1,24 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string-array name="husky_high_emission_frequency_entries">
++        <item>0x00</item>
++        <item>0x01</item>
++        <item>0x02</item>
++        <item>0x03</item>
++        <item>0x04</item>
++        <item>0x05</item>
++        <item>0x06</item>
++        <item>0x07</item>
++    </string-array>
++
++    <string-array name="husky_high_emission_frequency_values">
++        <item>0x00</item>
++        <item>0x01</item>
++        <item>0x02</item>
++        <item>0x03</item>
++        <item>0x04</item>
++        <item>0x05</item>
++        <item>0x06</item>
++        <item>0x07</item>
++    </string-array>
++</resources>
+--- a/src/com/google/android/settings/display/HighEmissionFrequencyController.kt
++++ b/src/com/google/android/settings/display/HighEmissionFrequencyController.kt
+@@ -10,6 +10,10 @@
+ class HighEmissionFrequencyController(context: Context, prefKey: String) :
+     TogglePreferenceController(context, prefKey) {
+     override fun getAvailabilityStatus(): Int {
++        if (Build.DEVICE == "husky") {
++            return UNSUPPORTED_ON_DEVICE
++        }
++
+         // SettingsGoogle and PixelDisplayService both seem to assume that the array might not exist
+         // and perform a dynamic lookup. However, this array actually exists in AOSP and there's no
+         // reason we can't just use the static identifier.
+--- a/src/com/google/android/settings/display/HuskyHighEmissionFrequencyPreferenceController.kt
++++ b/src/com/google/android/settings/display/HuskyHighEmissionFrequencyPreferenceController.kt
+@@ -0,0 +1,70 @@
++package com.google.android.settings.display
++
++import android.content.Context
++import android.os.Build
++import android.os.SystemProperties
++import android.text.TextUtils
++import android.util.Log
++import androidx.preference.ListPreference
++import androidx.preference.Preference
++import androidx.preference.PreferenceScreen
++import com.android.settings.R
++import com.android.settings.core.BasePreferenceController
++
++class HuskyHighEmissionFrequencyPreferenceController(context: Context, prefKey: String) :
++    BasePreferenceController(context, prefKey), Preference.OnPreferenceChangeListener {
++    private companion object {
++        const val TAG = "HuskyHighEmissionFrequencyPreferenceController"
++        const val PROPERTY = "persist.sys.husky_high_emission_frequency_mode"
++        const val DEFAULT_VALUE = "0x00"
++    }
++
++    private val entryValues =
++        mContext.resources.getStringArray(R.array.husky_high_emission_frequency_values)
++
++    override fun getAvailabilityStatus(): Int =
++        if (Build.DEVICE == "husky") AVAILABLE else UNSUPPORTED_ON_DEVICE
++
++    override fun displayPreference(screen: PreferenceScreen) {
++        super.displayPreference(screen)
++        screen.findPreference<ListPreference>(preferenceKey)?.onPreferenceChangeListener = this
++    }
++
++    override fun updateState(preference: Preference) {
++        val listPreference = preference as ListPreference
++        val value = getCurrentValue()
++        listPreference.value = value
++        listPreference.summary = listPreference.entry
++    }
++
++    override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
++        val listPreference = preference as ListPreference
++        val value = newValue.toString()
++
++        if (!entryValues.contains(value)) {
++            return false
++        }
++
++        return try {
++            SystemProperties.set(PROPERTY, value)
++            listPreference.value = value
++            listPreference.summary = listPreference.entry
++            true
++        } catch (e: RuntimeException) {
++            Log.e(TAG, "Failed to update husky high emission frequency mode", e)
++            false
++        }
++    }
++
++    private fun getCurrentValue(): String {
++        return try {
++            val value = SystemProperties.get(PROPERTY, DEFAULT_VALUE)
++            if (entryValues.any { TextUtils.equals(it, value) }) value else DEFAULT_VALUE
++        } catch (e: RuntimeException) {
++            Log.e(TAG, "Failed to read husky high emission frequency mode", e)
++            DEFAULT_VALUE
++        }
++    }
++
++    override fun getSliceHighlightMenuRes(): Int = R.string.menu_key_display
++}
