@@ -8,6 +8,7 @@ args@{
   imports = [
     ./gos
   ];
+  advancedPowerMenu = true;
   launcherVariant = "derpfest";
   allowAdbWirelessWithoutWifi = true;
   enableLindroid = true;
