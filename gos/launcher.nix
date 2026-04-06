@@ -36,6 +36,9 @@ in
   };
   config = {
     source.dirs."vendor/lineage-compat".src = lib.mkIf los_fork ./vendor/lineage-compat;
+    source.dirs."vendor/derpfest-compat".src = lib.mkIf (
+      config.launcherVariant == "derpfest"
+    ) ./vendor/derpfest-compat;
     source.dirs."packages/apps/Settings".patches = lib.mkIf los_fork [
       ./settings-add-taskbar-navigation-options.patch
     ];
