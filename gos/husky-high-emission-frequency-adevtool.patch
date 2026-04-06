@@ -1,5 +1,14 @@
---- a/config/mk/google_devices/device/husky/conf/init.husky.grapheneos.rc
-+++ b/config/mk/google_devices/device/husky/conf/init.husky.grapheneos.rc
+--- a/config/mk/google_devices/device/husky/conf/Android.bp
++++ b/config/mk/google_devices/device/husky/conf/Android.bp
+@@ -0,0 +1,6 @@
++prebuilt_etc {
++    name: "init.husky.pwm.rc",
++    src: "init.husky.pwm.rc",
++    sub_dir: "init",
++    vendor: true,
++}
+--- a/config/mk/google_devices/device/husky/conf/init.husky.pwm.rc
++++ b/config/mk/google_devices/device/husky/conf/init.husky.pwm.rc
 @@ -0,0 +1,23 @@
 +on property:persist.sys.husky_high_emission_frequency_mode=zero
 +    write /sys/module/panel_google_hk3/parameters/freq_cmd 0x00,0x43,0x43,0x03
@@ -26,10 +35,9 @@
 +    write /sys/module/panel_google_hk3/parameters/freq_cmd 0x07,0x43,0x43,0x03
 --- a/config/mk/google_devices/device/husky/device.mk
 +++ b/config/mk/google_devices/device/husky/device.mk
-@@ -11,3 +11,6 @@
+@@ -11,3 +11,5 @@
  
  PRODUCT_VENDOR_PROPERTIES += \
      persist.vendor.boot.zram.size=100p
 +
-+PRODUCT_COPY_FILES += \
-+    vendor/adevtool/config/mk/google_devices/device/husky/conf/init.husky.grapheneos.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.husky.grapheneos.rc
++PRODUCT_PACKAGES += init.husky.pwm.rc
