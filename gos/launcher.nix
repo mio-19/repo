@@ -66,6 +66,9 @@ in
             else
               assert config.launcherVariant == "evox";
               sources.evox_launcher3.src;
+          patches = lib.mkIf (config.launcherVariant == "evox") [
+            ./evox-launcher3-add-current-aconfig-flags.patch
+          ];
         }
       else
         assert config.launcherVariant == "stock";
