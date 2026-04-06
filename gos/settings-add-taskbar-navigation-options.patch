@@ -1,76 +1,71 @@
 diff --git a/res/values/strings.xml b/res/values/strings.xml
-index 1d76e61..3c07387 100644
+index 1d76e61..ee89ae0 100644
 --- a/res/values/strings.xml
 +++ b/res/values/strings.xml
-@@ -12090,6 +12090,11 @@
+@@ -12090,6 +12090,10 @@
  
      <!-- Title for the screen to show all the 2- and 3-button navigation settings. [CHAR LIMIT=80] -->
      <string name="button_navigation_settings_activity_title">Button navigation</string>
-+    <string name="taskbar_category_title">Taskbar</string>
-+    <string name="taskbar_show_title">Show taskbar</string>
-+    <string name="taskbar_show_summary">Use the tablet taskbar instead of phone-style navigation</string>
-+    <string name="taskbar_show_navbar_hint_title">Show navigation handle</string>
-+    <string name="taskbar_show_navbar_hint_summary">Keep the gesture navigation handle visible when the taskbar is hidden</string>
++    <string name="show_taskbar_title">Show taskbar</string>
++    <string name="show_taskbar_summary">Use the tablet taskbar instead of phone-style navigation</string>
++    <string name="show_navbar_hint_title">Show navigation handle</string>
++    <string name="show_navbar_hint_summary">Keep the gesture navigation handle visible when the taskbar is hidden</string>
  
      <!-- Title text for changing the order of the navbar buttons -->
      <string name="button_navigation_settings_order_title">Button order</string>
 diff --git a/res/xml/button_navigation_settings.xml b/res/xml/button_navigation_settings.xml
-index 1f89539..fc73081 100644
+index 1f89539..b4bf82a 100644
 --- a/res/xml/button_navigation_settings.xml
 +++ b/res/xml/button_navigation_settings.xml
-@@ -38,5 +38,16 @@
-         settings:controller="com.android.settings.gestures.ButtonNavigationSettingsAssistController"
+@@ -31,6 +31,12 @@
+         settings:lottie_rawRes="@raw/lottie_button_nav_menu"
+         settings:controller="com.android.settings.gestures.ButtonNavigationSettingsAssistController"/>
+ 
++    <SwitchPreferenceCompat
++        android:key="button_navigation_show_taskbar"
++        android:title="@string/show_taskbar_title"
++        android:summary="@string/show_taskbar_summary"
++        settings:controller="com.android.settings.gestures.TaskbarEnabledPreferenceController" />
++
+     <SwitchPreferenceCompat
+         android:key="assistant_long_press_home_gesture"
+         android:title="@string/assistant_long_press_home_gesture_title"
+@@ -39,4 +45,3 @@
      />
  
--</PreferenceScreen>
-+    <PreferenceCategory
-+        android:key="taskbar_category"
-+        android:persistent="false"
-+        android:title="@string/taskbar_category_title">
-+
-+        <SwitchPreferenceCompat
-+            android:key="button_navigation_show_taskbar"
-+            android:title="@string/taskbar_show_title"
-+            android:summary="@string/taskbar_show_summary"
-+            settings:controller="com.android.settings.gestures.TaskbarEnabledPreferenceController" />
-+    </PreferenceCategory>
- 
-+</PreferenceScreen>
+ </PreferenceScreen>
+-
 diff --git a/res/xml/gesture_navigation_settings.xml b/res/xml/gesture_navigation_settings.xml
-index d271985..7696125 100644
+index d271985..46f2d2f 100644
 --- a/res/xml/gesture_navigation_settings.xml
 +++ b/res/xml/gesture_navigation_settings.xml
-@@ -70,9 +70,26 @@
-             settings:textEnd="@string/high_label"/>
+@@ -34,6 +34,18 @@
+             settings:buttonPreferenceType="filled" />
      </PreferenceCategory>
  
-+    <PreferenceCategory
-+        android:key="taskbar_category"
-+        android:persistent="false"
-+        android:title="@string/taskbar_category_title">
++    <SwitchPreferenceCompat
++        android:key="gesture_navigation_show_taskbar"
++        android:title="@string/show_taskbar_title"
++        android:summary="@string/show_taskbar_summary"
++        settings:controller="com.android.settings.gestures.TaskbarEnabledPreferenceController" />
 +
-+        <SwitchPreferenceCompat
-+            android:key="gesture_navigation_show_taskbar"
-+            android:title="@string/taskbar_show_title"
-+            android:summary="@string/taskbar_show_summary"
-+            settings:controller="com.android.settings.gestures.TaskbarEnabledPreferenceController" />
++    <SwitchPreferenceCompat
++        android:key="gesture_navigation_show_navbar_hint"
++        android:title="@string/show_navbar_hint_title"
++        android:summary="@string/show_navbar_hint_summary"
++        settings:controller="com.android.settings.gestures.NavigationBarHintPreferenceController" />
 +
-+        <SwitchPreferenceCompat
-+            android:key="gesture_navigation_show_navbar_hint"
-+            android:title="@string/taskbar_show_navbar_hint_title"
-+            android:summary="@string/taskbar_show_navbar_hint_summary"
-+            settings:controller="com.android.settings.gestures.NavigationBarHintPreferenceController" />
-+    </PreferenceCategory>
-+
-     <com.android.settingslib.widget.FooterPreference
-         android:key="gesture_navigation_settings_footer"
+     <PreferenceCategory
+         android:key="assistant_gesture_category"
+         android:persistent="false"
+@@ -75,4 +87,3 @@
          android:title="@string/back_sensitivity_dialog_message"
          settings:searchable="false"/>
  </PreferenceScreen>
 -
 diff --git a/src/com/android/settings/gestures/NavigationBarHintPreferenceController.java b/src/com/android/settings/gestures/NavigationBarHintPreferenceController.java
 new file mode 100644
-index 0000000..c75de4d
+index 0000000..464b1b8
 --- /dev/null
 +++ b/src/com/android/settings/gestures/NavigationBarHintPreferenceController.java
 @@ -0,0 +1,52 @@
@@ -117,7 +112,7 @@ index 0000000..c75de4d
 +
 +    @Override
 +    public int getAvailabilityStatus() {
-+        return TaskbarSettingsUtils.isTaskbarSettingAvailable(mContext)
++        return TaskbarSettingsUtils.isNavigationBarHintSettingAvailable(mContext)
 +                ? AVAILABLE : UNSUPPORTED_ON_DEVICE;
 +    }
 +
@@ -185,10 +180,10 @@ index 0000000..2e9bdf1
 +}
 diff --git a/src/com/android/settings/gestures/TaskbarSettingsUtils.java b/src/com/android/settings/gestures/TaskbarSettingsUtils.java
 new file mode 100644
-index 0000000..b70fe05
+index 0000000..2bb88b0
 --- /dev/null
 +++ b/src/com/android/settings/gestures/TaskbarSettingsUtils.java
-@@ -0,0 +1,42 @@
+@@ -0,0 +1,49 @@
 +/*
 + * Copyright (C) 2026 The Android Open Source Project
 + *
@@ -211,6 +206,8 @@ index 0000000..b70fe05
 +import android.provider.Settings;
 +
 +final class TaskbarSettingsUtils {
++    private static final int MIN_LARGE_SCREEN_WIDTH_DP = 600;
++
 +    static final int ON = 1;
 +    static final int OFF = 0;
 +    static final String SETTING_ENABLE_TASKBAR = "enable_taskbar";
@@ -220,6 +217,11 @@ index 0000000..b70fe05
 +    }
 +
 +    static boolean isTaskbarSettingAvailable(Context context) {
++        return context.getResources().getConfiguration().smallestScreenWidthDp
++                >= MIN_LARGE_SCREEN_WIDTH_DP;
++    }
++
++    static boolean isNavigationBarHintSettingAvailable(Context context) {
 +        return true;
 +    }
 +
