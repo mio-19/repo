@@ -1,28 +1,28 @@
 --- a/config/mk/google_devices/device/husky/conf/init.husky.grapheneos.rc
 +++ b/config/mk/google_devices/device/husky/conf/init.husky.grapheneos.rc
 @@ -0,0 +1,23 @@
-+on property:persist.sys.husky_high_emission_frequency_mode=0x00
++on property:persist.sys.husky_high_emission_frequency_mode=zero
 +    write /sys/module/panel_google_hk3/parameters/freq_cmd 0x00,0x43,0x43,0x03
 +
-+on property:persist.sys.husky_high_emission_frequency_mode=0x01
++on property:persist.sys.husky_high_emission_frequency_mode=one
 +    write /sys/module/panel_google_hk3/parameters/freq_cmd 0x01,0x43,0x43,0x03
 +
-+on property:persist.sys.husky_high_emission_frequency_mode=0x02
++on property:persist.sys.husky_high_emission_frequency_mode=two
 +    write /sys/module/panel_google_hk3/parameters/freq_cmd 0x02,0x43,0x43,0x03
 +
-+on property:persist.sys.husky_high_emission_frequency_mode=0x03
++on property:persist.sys.husky_high_emission_frequency_mode=three
 +    write /sys/module/panel_google_hk3/parameters/freq_cmd 0x03,0x43,0x43,0x03
 +
-+on property:persist.sys.husky_high_emission_frequency_mode=0x04
++on property:persist.sys.husky_high_emission_frequency_mode=four
 +    write /sys/module/panel_google_hk3/parameters/freq_cmd 0x04,0x43,0x43,0x03
 +
-+on property:persist.sys.husky_high_emission_frequency_mode=0x05
++on property:persist.sys.husky_high_emission_frequency_mode=five
 +    write /sys/module/panel_google_hk3/parameters/freq_cmd 0x05,0x43,0x43,0x03
 +
-+on property:persist.sys.husky_high_emission_frequency_mode=0x06
++on property:persist.sys.husky_high_emission_frequency_mode=six
 +    write /sys/module/panel_google_hk3/parameters/freq_cmd 0x06,0x43,0x43,0x03
 +
-+on property:persist.sys.husky_high_emission_frequency_mode=0x07
++on property:persist.sys.husky_high_emission_frequency_mode=seven
 +    write /sys/module/panel_google_hk3/parameters/freq_cmd 0x07,0x43,0x43,0x03
 --- a/config/mk/google_devices/device/husky/device.mk
 +++ b/config/mk/google_devices/device/husky/device.mk
