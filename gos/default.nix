@@ -8,7 +8,7 @@ args@{
   ...
 }:
 let
-  useOriginalGrapheneosAppSources = true;
+  useOriginalGrapheneosAppSources = false;
   sources = (import ../_sources/generated.nix) {
     inherit (pkgs)
       fetchurl
