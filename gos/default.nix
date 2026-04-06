@@ -24,10 +24,10 @@ let
       {
         inherit (config)
           flavor
-          grapheneos
           stateVersion
+          device
           ;
-        ccache.enable = false;
+        grapheneos.channel = config.grapheneos.channel;
       }
     )).config;
   originalGrapheneosSource = path: originalGrapheneosConfig.source.dirs.${path}.src;
