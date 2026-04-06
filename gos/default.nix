@@ -25,6 +25,7 @@ let
         inherit (config)
           flavor
           grapheneos
+          stateVersion
           ;
         ccache.enable = false;
       }
