@@ -20,5 +20,9 @@ args@{
     source.dirs."vendor/adevtool".patches = [
       ./husky-high-emission-frequency-adevtool.patch
     ];
+
+    source.dirs."system/sepolicy".patches = [
+      ./husky-high-emission-frequency-sepolicy.patch
+    ];
   };
 }
