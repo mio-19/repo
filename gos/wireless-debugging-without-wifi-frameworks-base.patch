@@ -44,3 +44,38 @@
                  return null;
              }
  
+
+diff --git a/services/core/java/com/android/server/adb/AdbBroadcastReceiver.java b/services/core/java/com/android/server/adb/AdbBroadcastReceiver.java
+index 7949080..12a6dda 100644
+--- a/services/core/java/com/android/server/adb/AdbBroadcastReceiver.java
++++ b/services/core/java/com/android/server/adb/AdbBroadcastReceiver.java
+@@ -73,6 +73,10 @@ public class AdbBroadcastReceiver extends BroadcastReceiver implements AdbNetwor
+         Settings.Global.putInt(mContentResolver, Settings.Global.ADB_WIFI_ENABLED, 0);
+     }
+ 
++    private boolean shouldIgnoreMissingWifiContext() {
++        return TextUtils.isEmpty(mAdbConnectionInfo.getBSSID());
++    }
++
+     @Override
+     public void onReceive(Context context, Intent intent) {
+         String action = intent.getAction();
+@@ -84,9 +88,18 @@ public class AdbBroadcastReceiver extends BroadcastReceiver implements AdbNetwor
+                             WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_DISABLED);
+ 
+             if (state == WifiManager.WIFI_STATE_DISABLED) {
++                if (shouldIgnoreMissingWifiContext()) {
++                    Slog.i(TAG, "Wifi disabled with no remembered AP context. Keeping adbwifi.");
++                    return;
++                }
+                 disableWifi("Wifi disabled. Disabling adbwifi.");
+             }
+         } else if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action)) {
++            if (shouldIgnoreMissingWifiContext()) {
++                Slog.i(TAG, "Network change with no remembered AP context. Keeping adbwifi.");
++                return;
++            }
++
+             // We only care about wifi type connections
+             NetworkInfo networkInfo =
+                     (NetworkInfo)
