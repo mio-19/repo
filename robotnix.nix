@@ -19,7 +19,6 @@ let
           };
           _module.args.robotnix = robotnix;
           _module.args.self = self;
-          _module.args.useOriginalGrapheneosAppSources = false;
           imports = [ f ];
           ccache.enable = ccache;
         };
@@ -46,7 +45,6 @@ let
           };
           _module.args.robotnix = robotnix;
           _module.args.self = self;
-          _module.args.useOriginalGrapheneosAppSources = false;
           imports = [ f ];
           ccache.enable = ccache;
         };

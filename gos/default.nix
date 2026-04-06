@@ -5,10 +5,10 @@ args@{
   config,
   robotnix,
   self,
-  useOriginalGrapheneosAppSources ? false,
   ...
 }:
 let
+  useOriginalGrapheneosAppSources = true;
   sources = (import ../_sources/generated.nix) {
     inherit (pkgs)
       fetchurl
