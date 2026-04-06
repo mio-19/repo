@@ -9,7 +9,7 @@ args@{
     ./gos
   ];
   advancedPowerMenu = true;
-  launcherVariant = "los";
+  launcherVariant = "evox";
   allowAdbWirelessWithoutWifi = true;
   enableLindroid = true;
   enableDroidspaces = true;
