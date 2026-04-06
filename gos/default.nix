@@ -18,16 +18,6 @@ let
       ;
   };
   inherit (pkgs) fetchpatch;
-  deviceModule =
-    {
-      akita = ../akita_grapheneos.nix;
-      caiman = ../caiman_grapheneos.nix;
-      cheetah = ../cheetah_grapheneos.nix;
-      husky = ../husky_grapheneos.nix;
-      mustang = ../mustang_grapheneos.nix;
-      tangorpro = ../tangorpro_grapheneos.nix;
-    }
-    .${config.device};
   originalGrapheneosConfig =
     if useOriginalGrapheneosAppSources then
       config
@@ -35,11 +25,6 @@ let
       (robotnix.lib.robotnixSystem (
         innerArgs@{ ... }:
         {
-          _module.args.pkgs-unstable = pkgs-unstable;
-          _module.args.robotnix = robotnix;
-          _module.args.self = self;
-          _module.args.useOriginalGrapheneosAppSources = true;
-          imports = [ deviceModule ];
           inherit (config)
             flavor
             grapheneos
