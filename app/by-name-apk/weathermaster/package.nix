@@ -131,7 +131,7 @@ let
       postPatch = ''
         cp -LR ${patchedFlutter} flutter-sdk
         chmod -R u+w flutter-sdk
-        : > flutter-sdk/bin/cache/engine.realm
+        touch flutter-sdk/bin/cache/engine.realm # https://github.com/NixOS/nixpkgs/pull/500309#issuecomment-4192628176
 
         if grep -Fq 'id("org.gradle.kotlin.kotlin-dsl") version "5.1.2"' flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts; then
           substituteInPlace flutter-sdk/packages/flutter_tools/gradle/build.gradle.kts \
