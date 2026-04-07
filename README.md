@@ -6,7 +6,7 @@ Help Wanted: publish a pre-built repository for apk of distributable android app
 
 Help Wanted: publish pre-built rom for this modified grapheneos that is not grapheneos. modifications include kernelsu and more.
 
-Note that distributing binaries built from this repository might be disallowed by copyright/trademark holders. Although many projects are distributed with a free software license, building a project from source code to create a working binary with minimal changes to be as close as possible with the prebuilt version might be explicitly disallowed or a gray area. Let alone introducing patches to the projects. A project might explicitly demand icon change and logo change for modified versions. This repository is only available as source code only.
+Note that distributing binaries built from this repository might be disallowed by copyright/trademark holders. Although many projects are distributed with a free software license, building a project from source code to create a working binary and distrubuting the binary with minimal changes to be as close as possible with the prebuilt version might be explicitly disallowed or a gray area. Let alone introducing patches to the projects. A project might explicitly demand icon change and logo change for modified versions. This repository is only available as source code only.
 
 Using this repository may result in data loss, boot loops, bricked devices, injuries due to exploded devices, dead SD cards, thermonuclear war, lawsuit, banned account, money loss, or you getting fired because the alarm app failed. By proceeding, you accept full responsibility for any issues that may arise.
 
