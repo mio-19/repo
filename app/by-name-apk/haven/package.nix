@@ -1,19 +1,16 @@
 {
   mk-apk-package,
   lib,
+  pkgs,
   jdk17_headless,
   gradle-packages,
   stdenv,
   stdenvNoCC,
   fetchFromGitHub,
-  fetchurl,
   rustPlatform,
-  patchelf,
-  zlib,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   git,
-  cargo-ndk,
   go_1_26,
   python313,
   unzip,
@@ -31,6 +28,9 @@ let
         s.ndk-27-3-13750724
         s.cmake-3-31-6
       ]);
+      androidSdkRoot = "${androidSdk}/share/android-sdk";
+      androidNdkRoot = "${androidSdkRoot}/ndk/27.3.13750724";
+      aapt2 = "${androidSdkRoot}/build-tools/36.0.0/aapt2";
 
       gradle =
         (gradle-packages.mkGradle {
@@ -46,130 +46,102 @@ let
         hash = "sha256-LIFK+KQPgpzZqh7U92fEnCSHBSVF8HPv9lIVhWy5xBo=";
       };
 
-      rustStdAarch64Android = fetchurl {
-        url = "https://static.rust-lang.org/dist/rust-std-1.94.0-aarch64-linux-android.tar.xz";
-        hash = "sha256-QCyA32cqS5/JSLbci94hpj4Qk+sciiwr1CIhwwnZ66I=";
+      androidCrossConfig = {
+        config.allowUnfree = true;
+        localSystem = pkgs.stdenv.buildPlatform.system;
       };
 
-      rustStdHost = fetchurl {
-        url = "https://static.rust-lang.org/dist/rust-std-1.94.0-x86_64-unknown-linux-gnu.tar.xz";
-        hash = "sha256-3TNlMQfDbgQAggUNnlR+ZNrFtFa6dAaUMNg4wAwYmgU=";
+      mkAndroidPkgs =
+        {
+          config,
+          rustTarget,
+        }:
+        import pkgs.path (
+          androidCrossConfig
+          // {
+            crossSystem = {
+              inherit config;
+              androidSdkVersion = "35";
+              androidNdkVersion = "27";
+              useAndroidPrebuilt = true;
+              rust.rustcTarget = rustTarget;
+            };
+          }
+        );
+
+      aarch64AndroidPkgs = mkAndroidPkgs {
+        config = "aarch64-unknown-linux-android";
+        rustTarget = "aarch64-linux-android";
       };
 
-      rustStdX8664Android = fetchurl {
-        url = "https://static.rust-lang.org/dist/rust-std-1.94.0-x86_64-linux-android.tar.xz";
-        hash = "sha256-SIyKWBYSrEd5oF8Flnt2qW4P8L3Rq42ZwTqFnBkFawE=";
+      x86_64AndroidPkgs = mkAndroidPkgs {
+        config = "x86_64-unknown-linux-android";
+        rustTarget = "x86_64-linux-android";
       };
 
-      rustcOfficial = fetchurl {
-        url = "https://static.rust-lang.org/dist/rustc-1.94.0-x86_64-unknown-linux-gnu.tar.xz";
-        hash = "sha256-MaDTrJOD3960/Ohu7tWt4yMBMcY1JkwOq3JS2/I18o4=";
-      };
-
-      cargoOfficial = fetchurl {
-        url = "https://static.rust-lang.org/dist/cargo-1.94.0-x86_64-unknown-linux-gnu.tar.xz";
-        hash = "sha256-jhdiTz3jngeYRb+yXtFaBC9LUM7KeON8VsS5sVlJufc=";
-      };
-
-      setupOfficialRustToolchain = ''
-        rustToolchain="$TMPDIR/rust-toolchain"
-        mkdir -p "$rustToolchain"
-
-        mkdir -p "$TMPDIR/rustc-official" "$TMPDIR/cargo-official" "$TMPDIR/rust-std-host" "$TMPDIR/rust-std-aarch64" "$TMPDIR/rust-std-x86_64"
-        tar -xJf ${rustcOfficial} -C "$TMPDIR/rustc-official"
-        tar -xJf ${cargoOfficial} -C "$TMPDIR/cargo-official"
-        tar -xJf ${rustStdHost} -C "$TMPDIR/rust-std-host"
-        tar -xJf ${rustStdAarch64Android} -C "$TMPDIR/rust-std-aarch64"
-        tar -xJf ${rustStdX8664Android} -C "$TMPDIR/rust-std-x86_64"
-
-        bash "$TMPDIR/rustc-official"/rustc-1.94.0-x86_64-unknown-linux-gnu/install.sh \
-          --prefix="$rustToolchain" \
-          --disable-ldconfig
-        bash "$TMPDIR/cargo-official"/cargo-1.94.0-x86_64-unknown-linux-gnu/install.sh \
-          --prefix="$rustToolchain" \
-          --disable-ldconfig
-        bash "$TMPDIR/rust-std-host"/rust-std-1.94.0-x86_64-unknown-linux-gnu/install.sh \
-          --prefix="$rustToolchain" \
-          --disable-ldconfig
-        bash "$TMPDIR/rust-std-aarch64"/rust-std-1.94.0-aarch64-linux-android/install.sh \
-          --prefix="$rustToolchain" \
-          --disable-ldconfig
-        bash "$TMPDIR/rust-std-x86_64"/rust-std-1.94.0-x86_64-linux-android/install.sh \
-          --prefix="$rustToolchain" \
-          --disable-ldconfig
-
-        for rustBinary in \
-          "$rustToolchain/bin/cargo" \
-          "$rustToolchain/bin/rustc" \
-          "$rustToolchain/bin/rustdoc"
-        do
-          patchelf --set-interpreter ${stdenv.cc.bintools.dynamicLinker} "$rustBinary"
-        done
-        while IFS= read -r -d "" rustBinary; do
-          patchelf --set-interpreter ${stdenv.cc.bintools.dynamicLinker} "$rustBinary"
-        done < <(find "$rustToolchain/lib/rustlib/x86_64-unknown-linux-gnu/bin" -type f -perm -0100 -print0)
-
-        export PATH="$rustToolchain/bin:$PATH"
-        export LD_LIBRARY_PATH="${
-          lib.makeLibraryPath [
-            stdenv.cc.cc.lib
-            zlib
-          ]
-        }:''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-        export CARGO="$rustToolchain/bin/cargo"
-        export RUSTC="$rustToolchain/bin/rustc"
-      '';
-
-      rdpTransportJniLibs = stdenv.mkDerivation (finalAttrs: {
+      rdpCargoDeps = rustPlatform.fetchCargoVendor {
         pname = "haven-rdp-transport-jni-libs";
         inherit (finalAttrs0) version src;
-
         cargoRoot = "rdp-kotlin/rust";
-        cargoDeps = rustPlatform.fetchCargoVendor {
-          inherit (finalAttrs)
-            pname
-            version
-            src
-            cargoRoot
-            ;
-          hash = "sha256-EIAn9ooDfj0MTRe+fV3ZkMvAZvuMeP3Nf5Vvfb56aD4=";
+        hash = "sha256-EIAn9ooDfj0MTRe+fV3ZkMvAZvuMeP3Nf5Vvfb56aD4=";
+      };
+
+      mkRdpTransportJniLib =
+        {
+          crossPkgs,
+          rustTarget,
+          abi,
+        }:
+        crossPkgs.rustPlatform.buildRustPackage {
+          pname = "haven-rdp-transport-jni-lib-${abi}";
+          inherit (finalAttrs0) version src;
+
+          sourceRoot = "${finalAttrs0.src.name}/rdp-kotlin/rust";
+          cargoDeps = rdpCargoDeps;
+
+          CARGO_BUILD_TARGET = rustTarget;
+          doCheck = false;
+
+          env = {
+            ANDROID_HOME = androidSdkRoot;
+            ANDROID_SDK_ROOT = androidSdkRoot;
+            ANDROID_NDK_ROOT = androidNdkRoot;
+            ANDROID_NDK_HOME = androidNdkRoot;
+          };
+
+          installPhase = ''
+            runHook preInstall
+            install -Dm755 target/${rustTarget}/release/librdp_transport.so \
+              "$out/${abi}/librdp_transport.so"
+            runHook postInstall
+          '';
         };
 
-        nativeBuildInputs = [
-          patchelf
-          cargo-ndk
-          rustPlatform.cargoSetupHook
+      rdpTransportJniLibs = pkgs.symlinkJoin {
+        name = "haven-rdp-transport-jni-libs";
+        paths = [
+          (mkRdpTransportJniLib {
+            crossPkgs = aarch64AndroidPkgs;
+            rustTarget = "aarch64-linux-android";
+            abi = "arm64-v8a";
+          })
+          (mkRdpTransportJniLib {
+            crossPkgs = x86_64AndroidPkgs;
+            rustTarget = "x86_64-linux-android";
+            abi = "x86_64";
+          })
         ];
+      };
 
-        dontConfigure = true;
-
-        env = {
-          ANDROID_HOME = "${androidSdk}/share/android-sdk";
-          ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-          ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
-          ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
-        };
-
-        preBuild = setupOfficialRustToolchain;
-
-        buildPhase = ''
-          runHook preBuild
-          cd rdp-kotlin/rust
-
-          outDir="$TMPDIR/jniLibs"
-          cargo ndk -t arm64-v8a -o "$outDir" build --release
-          cargo ndk -t x86_64 -o "$outDir" build --release
-
-          runHook postBuild
-        '';
-
-        installPhase = ''
-          runHook preInstall
-          install -Dm755 "$TMPDIR/jniLibs/arm64-v8a/librdp_transport.so" "$out/arm64-v8a/librdp_transport.so"
-          install -Dm755 "$TMPDIR/jniLibs/x86_64/librdp_transport.so" "$out/x86_64/librdp_transport.so"
-          runHook postInstall
-        '';
-      });
+      prepareXMobile = replacement: ''
+        cp -R ${xMobileSrc} x-mobile
+        chmod -R u+w x-mobile
+        substituteInPlace x-mobile/cmd/gomobile/init.go \
+          --replace-fail 'if err := goInstall([]string{"golang.org/x/mobile/cmd/gobind@latest"}, nil); err != nil {' \
+                         'if _, err := exec.LookPath("gobind"); err != nil {'
+        patch -d x-mobile -p1 < ${../tailscale/gomobile-avoid-empty-go-mod.patch}
+        (cd go && go mod edit -replace=golang.org/x/mobile=${replacement})
+      '';
 
       rcloneGoModCache = stdenvNoCC.mkDerivation {
         pname = "haven-rclone-go-mod-cache";
@@ -199,15 +171,8 @@ let
           chmod -R u+w source
           cd source/rclone-android
 
-          cp -R ${xMobileSrc} x-mobile
-          chmod -R u+w x-mobile
-          substituteInPlace x-mobile/cmd/gomobile/init.go \
-            --replace-fail 'if err := goInstall([]string{"golang.org/x/mobile/cmd/gobind@latest"}, nil); err != nil {' \
-                           'if _, err := exec.LookPath("gobind"); err != nil {'
-          patch -d x-mobile -p1 < ${../tailscale/gomobile-avoid-empty-go-mod.patch}
-
+          ${prepareXMobile "../x-mobile"}
           cd go
-          go mod edit -replace=golang.org/x/mobile=../x-mobile
           go mod download
 
           runHook postBuild
@@ -235,10 +200,10 @@ let
 
         env = {
           JAVA_HOME = if stdenv.isDarwin then "${jdk17_headless}" else "${jdk17_headless}/lib/openjdk";
-          ANDROID_HOME = "${androidSdk}/share/android-sdk";
-          ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-          ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
-          ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
+          ANDROID_HOME = androidSdkRoot;
+          ANDROID_SDK_ROOT = androidSdkRoot;
+          ANDROID_NDK_ROOT = androidNdkRoot;
+          ANDROID_NDK_HOME = androidNdkRoot;
         };
 
         preBuild = ''
@@ -258,19 +223,13 @@ let
         buildPhase = ''
           runHook preBuild
 
-          cp -R ${xMobileSrc} x-mobile
-          chmod -R u+w x-mobile
-          substituteInPlace x-mobile/cmd/gomobile/init.go \
-            --replace-fail 'if err := goInstall([]string{"golang.org/x/mobile/cmd/gobind@latest"}, nil); err != nil {' \
-                           'if _, err := exec.LookPath("gobind"); err != nil {'
-          patch -d x-mobile -p1 < ${../tailscale/gomobile-avoid-empty-go-mod.patch}
-
           export GOBIN="$TMPDIR/go-bin"
           mkdir -p "$GOBIN"
           export PATH="$GOBIN:${go_1_26}/bin:$PATH"
 
-          cd rclone-android/go
-          go mod edit -replace=golang.org/x/mobile=../../x-mobile
+          cd rclone-android
+          ${prepareXMobile "../x-mobile"}
+          cd go
           go install golang.org/x/mobile/cmd/gobind
           go install golang.org/x/mobile/cmd/gomobile
           go mod vendor
@@ -278,7 +237,7 @@ let
 
           mkdir -p "$GOPATH/src/sh.haven" "$GOPATH/src/golang.org/x"
           ln -s "$PWD/rclone-android/go" "$GOPATH/src/sh.haven/rcbridge"
-          ln -s "$PWD/x-mobile" "$GOPATH/src/golang.org/x/mobile"
+          ln -s "$PWD/rclone-android/x-mobile" "$GOPATH/src/golang.org/x/mobile"
           cp -R rclone-android/go/vendor/. "$GOPATH/src/"
 
           mkdir -p rclone-android/jniLibs rclone-android/build
@@ -360,17 +319,17 @@ let
 
       env = {
         JAVA_HOME = jdk17_headless;
-        ANDROID_HOME = "${androidSdk}/share/android-sdk";
-        ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+        ANDROID_HOME = androidSdkRoot;
+        ANDROID_SDK_ROOT = androidSdkRoot;
+        ANDROID_NDK_ROOT = androidNdkRoot;
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = aapt2;
         HAVEN_SKIP_PYTHON_REQUIREMENTS = "1";
       };
 
       preConfigure = ''
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
-        echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+        echo "sdk.dir=${androidSdkRoot}" > local.properties
 
         mkdir -p rdp-kotlin/jniLibs
         cp -r ${rdpTransportJniLibs}/. rdp-kotlin/jniLibs/
@@ -410,8 +369,8 @@ let
         "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${aapt2}"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2}"
       ];
 
       installPhase = ''
