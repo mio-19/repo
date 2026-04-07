@@ -55,6 +55,7 @@ gradle2nixBuilders.buildGradlePackage rec {
   patches = [
     # TODO: consider https://github.com/DrKLO/Telegram/pull/1854
     ./0001-Killergram.patch
+    ./0002-max-account-count.patch
     # Skip git submodule management (submodules pre-fetched by Nix)
     # and skip rm -rf of submodule dirs
     ./prepare.patch

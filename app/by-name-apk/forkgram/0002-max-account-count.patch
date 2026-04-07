@@ -1,0 +1,26 @@
+diff --git a/TMessagesProj/jni/tgnet/Defines.h b/TMessagesProj/jni/tgnet/Defines.h
+index 79a5896a..81052744 100644
+--- a/TMessagesProj/jni/tgnet/Defines.h
++++ b/TMessagesProj/jni/tgnet/Defines.h
+@@ -27,7 +27,7 @@
+ #define DOWNLOAD_CONNECTIONS_COUNT 2
+ #define UPLOAD_CONNECTIONS_COUNT 4
+ #define CONNECTION_BACKGROUND_KEEP_TIME 10000
+-#define MAX_ACCOUNT_COUNT 90
++#define MAX_ACCOUNT_COUNT 999
+ #define USE_DELEGATE_HOST_RESOLVE
+
+ #define USE_IPV4_ONLY 0
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java b/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java
+index e9412f86..a08a75f3 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java
+@@ -25,7 +25,7 @@ public class UserConfig extends BaseController {
+
+     public static int selectedAccount;
+     public final static int MAX_ACCOUNT_DEFAULT_COUNT = 90;
+-    public final static int MAX_ACCOUNT_COUNT = 90;
++    public final static int MAX_ACCOUNT_COUNT = 999;
+
+     private final Object sync = new Object();
+     private volatile boolean configLoaded;
