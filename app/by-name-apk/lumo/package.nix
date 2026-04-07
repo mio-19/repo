@@ -15,7 +15,7 @@ let
   src = fetchFromGitHub {
     owner = "ProtonLumo";
     repo = "android-lumo";
-    rev = "7ba846b05db2d72714a99d3de23d84ea4746a608";
+    tag = version;
     hash = "sha256-sacD8lv6D1WP4aXEVGC+CymjgD0wgEQ6zpmxTo3Tx28=";
   };
 

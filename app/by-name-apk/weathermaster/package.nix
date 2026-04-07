@@ -55,13 +55,13 @@ let
     in
     buildDartApplication.override { dart = patchedFlutter; } (finalAttrs: {
       pname = "weathermaster";
-      version = "2.7.1-unstable-20260403";
+      version = "2.7.1";
 
       src = fetchFromGitHub {
         owner = "PranshulGG";
         repo = "WeatherMaster";
-        rev = "0a29c55c7aed3112f9807b00bac038c8d375d7c2";
-        hash = "sha256-36yE4AdpSFm5AcXfko2cMXplkSxKIHhd5sAjd8YTki8=";
+        tag = "v${finalAttrs.version}";
+        hash = "sha256-oER5gPW4Hc+jH3cFTIRMhT54H5vKWsaur7/uY+21E4w=";
       };
       patches = [ ./disable-release-lint-and-signing.patch ];
 

@@ -13,6 +13,8 @@
 let
   appPackage =
     let
+      # Keep KernelSU Manager at v1.0.5 intentionally; newer KernelSU tags
+      # are not compatible with this package's current userspace build setup.
       version = "1.0.5";
 
       androidSdk = androidSdkBuilder (s: [

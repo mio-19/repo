@@ -42,13 +42,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "comaps";
-      version = "2026.03.23-5";
+      version = "2026.04.07-8";
 
       src = fetchgit {
         url = "https://codeberg.org/comaps/comaps.git";
         tag = "v${finalAttrs.version}";
         fetchSubmodules = true;
-        hash = "sha256-1bD0QiEZu6nB7wwBpfpEf+WypqbOd9XuXbq7FDTL7bw=";
+        hash = "sha256-FV73hkvAIivwHld7S6yEtAhNOwdnhGmAoN1m3JUB6m0=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/android";
@@ -100,8 +100,12 @@ let
       prePatch = ''
         export PATH="${(python3.withPackages (ps: [ ps.protobuf4 ]))}/bin:$PATH"
         substituteInPlace ../CMakeLists.txt \
-          --replace-fail 'if(PROTOBUF_VERSION VERSION_LESS "4.0.0")' \
-            'if(PROTOBUF_VERSION VERSION_LESS "5.0.0")'
+          --replace-fail 'if(PROTOBUF_VERSION VERSION_LESS "3.20.0" OR PROTOBUF_VERSION VERSION_GREATER_EQUAL "4.0.0")' \
+            'if(PROTOBUF_VERSION VERSION_LESS "3.20.0" OR PROTOBUF_VERSION VERSION_GREATER_EQUAL "5.0.0")' \
+          --replace-fail 'version (>=3.20, <4.0) is required' \
+            'version (>=3.20, <5.0) is required' \
+          --replace-fail 'found (>=3.20, <4.0)' \
+            'found (>=3.20, <5.0)'
       '';
 
       postUnpack = ''

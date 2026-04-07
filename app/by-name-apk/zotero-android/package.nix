@@ -36,6 +36,8 @@ let
       src = fetchFromGitHub {
         owner = "zotero";
         repo = "zotero-android";
+        # 1.0.19-32_3 sorts newer than 1.0.0-237, but it is from an older
+        # upstream release series. Keep 1.0.0-* unless a newer same-series tag appears.
         # Upstream has multiple tag naming schemes. Check the tags page for the
         # latest 1.0.0-* tag by time, not raw version ordering:
         # https://github.com/zotero/zotero-android/tags
