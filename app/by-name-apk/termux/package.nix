@@ -14,7 +14,7 @@
 let
   appPackage =
     let
-      rev = "3f0dec3574a6617ff7ff0b78d30b29cfffd71b20";
+      rev = "30ebb2dee381d292ade0f2868cfde0f9f20b89fe";
 
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -34,13 +34,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "termux-app";
-      version = "unstable-2026-02-21";
+      version = "unstable-2026-04-07";
 
       src = fetchFromGitHub {
         owner = "termux";
         repo = "termux-app";
         rev = rev;
-        hash = "sha256-a81+LZaJPdofknb1aGkzyowoGCYzNlcwU1H8k2+sEwY=";
+        hash = "sha256-igiCW9T6/zmKUKdDA+XeovhKfbwpk1HbhVUadJWkcLg=";
       };
 
       patches = [

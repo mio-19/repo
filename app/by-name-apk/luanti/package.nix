@@ -13,8 +13,8 @@
 let
   appPackage =
     let
-      version = "unstable-2026-04-01";
-      rev = "c432281ac0be5100d1eec33374c90b38407c7646";
+      version = "unstable-2026-04-06";
+      rev = "2a9430961330eabfcba7cec266e8ab4a965048e6";
 
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -42,7 +42,7 @@ let
         owner = "luanti-org";
         repo = "luanti";
         inherit rev;
-        hash = "sha256-4D6zIAOZOsw6R+0v1GNDaHHlVOkulrmCzx1nZyWbGow=";
+        hash = "sha256-OHKZ0GFuxw22KYTeE45tBbcpC+jrYZdB0sGl/Nt8aF0=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/android";
