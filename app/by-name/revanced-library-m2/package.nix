@@ -36,7 +36,9 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   gradleBuildTask = "publish";
-  gradleUpdateTask = finalAttrs.gradleBuildTask;
+  gradleCheckTask = "check";
+  doCheck = true;
+  gradleUpdateTask = "${finalAttrs.gradleBuildTask} ${finalAttrs.gradleCheckTask}";
 
   mitmCache = gradle.fetchDeps {
     pname = "revanced-library";

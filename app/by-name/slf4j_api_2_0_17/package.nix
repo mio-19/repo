@@ -15,9 +15,9 @@ maven.buildMavenPackage rec {
     hash = "sha256-MOAIvzVPxFv9Nfov4Ych774urZ0v9emscKqwIGI/3Ik=";
   };
 
-  mvnHash = "sha256-Th6qbDizotbZZBMCMuG8X0GLVIc9++NXRyYjIXa0BsE=";
+  mvnHash = "sha256-L3tg3OvkDHfAZCOWWscBOaBrwuf5g16j7GF6c1puLpk=";
 
-  mvnParameters = "-pl slf4j-api -am -DskipTests -Dmaven.javadoc.skip=true package";
+  mvnParameters = "-pl slf4j-api -am -Dmaven.javadoc.skip=true package";
 
   installPhase = ''
     runHook preInstall
