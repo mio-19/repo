@@ -30,6 +30,7 @@ nix build -L --max-jobs 4 .#los.gts9wifi.ota -o gts9wifi.zip
 
 nix build -L --max-jobs 4 .#los.enchilada.ota -o enchilada.zip
 nix build -L --max-jobs 4 .#los.enchilada.img -o enchilada-img.zip
+nix build -L --max-jobs 4 .#los.enchilada_derpfest16.img -o enchilada-img.zip
 nix build -L --max-jobs 4 .#losNoCcache.enchilada.img -o enchilada-img.zip
 nix build -L --max-jobs 4 .#los.enchilada_mainline.img -o enchilada_mainline-img.zip
 nix build -L --max-jobs 4 .#los.utm.img -o utm-img.zip
