@@ -168,7 +168,8 @@ Signed repo output is in `fdroid-repo-signed/repo`.
 Alias behavior is automatic (no `--alias` flag):
 
 - Default: each APK is signed with key alias = its appId/package name.
-- Termux family (`com.termux`, `com.termux.styling`, `com.termux.x11`, `org.gnu.emacs`) uses shared alias `com.termux`.
+- Termux family apps that require the shared Termux signature (`com.termux`, `com.termux.styling`, `org.gnu.emacs`) use shared alias `com.termux`.
+- Termux:X11 (`com.termux.x11`) uses its own `com.termux.x11` alias.
 - `nix-on-droid` (`com.termux.nix`) keeps old alias `releasekey`.
 
 ### Add missing key aliases to an existing keystore
@@ -185,7 +186,8 @@ You can pass multiple `--alias` flags.
 If `--alias` is omitted, it auto-discovers APK package names from `.#fdroid-repo` and ensures all required aliases automatically using the same mapping as `sign-fdroid-repo`:
 
 - `com.termux.nix` -> `releasekey`
-- `com.termux`, `com.termux.styling`, `com.termux.x11`, `org.gnu.emacs` -> `com.termux`
+- `com.termux`, `com.termux.styling`, `org.gnu.emacs` -> `com.termux`
+- `com.termux.x11` -> `com.termux.x11`
 - all others -> appId/package name
 
 ```zsh
@@ -216,4 +218,3 @@ read
 + <https://github.com/osbm/nixapks>
 + <https://github.com/tiann/KernelSU/issues/2942#issuecomment-4078266560>
 + <https://www.reddit.com/r/LineageOS/comments/1oaw2hj/comment/nkisxra/>
-
