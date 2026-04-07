@@ -9,7 +9,7 @@
   fetchpatch,
 }:
 let
-  version = "1.6.13";
+  version = "unstable-2026-03-17";
 
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest

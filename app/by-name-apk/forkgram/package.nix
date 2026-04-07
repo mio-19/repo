@@ -20,13 +20,13 @@ let
 in
 gradle2nixBuilders.buildGradlePackage rec {
   pname = "forkgram";
-  version = "12.5.2.0";
+  version = "12.6.4.0";
 
   src = pkgs.fetchFromGitHub {
     owner = "forkgram";
     repo = "TelegramAndroid";
     rev = version;
-    hash = "sha256-HQ2vpSawHls68cztoTB+dkGGIOqx/MwVDrKFnsgm2lU=";
+    hash = "sha256-zsRAIxf257lvcsAGyjAg0BqICOQZpDhVS0B9AhOuHcw=";
     fetchSubmodules = true;
   };
 
