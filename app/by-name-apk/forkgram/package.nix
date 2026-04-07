@@ -35,14 +35,8 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   overrides = {
     "com.google.guava:guava:31.1-android" = {
-      "guava-31.1-android.jar" = _:
-        pkgs.runCommandLocal "guava-31.1-android.jar" {} ''
-          cp ${guava_31_1_android}/guava-31.1-android.jar $out
-        '';
-      "guava-31.1-android.pom" = _:
-        pkgs.runCommandLocal "guava-31.1-android.pom" {} ''
-          cp ${guava_31_1_android}/guava-31.1-android.pom $out
-        '';
+      "guava-31.1-android.jar" = _: "${guava_31_1_android}/guava-31.1-android.jar";
+      "guava-31.1-android.pom" = _: "${guava_31_1_android}/guava-31.1-android.pom";
     };
   };
 

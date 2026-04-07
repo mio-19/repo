@@ -23,7 +23,7 @@ let
     else
       throw "invalid pwmmode: ${pwmmode}";
 in
-callPackage ./grapheneos_kernel_common.nix { } {
+callPackage ./gos_kernel_common.nix { } {
   pname = "grapheneos-shusky-kernel";
   buildScript = "build_shusky.sh";
   distDir = "shusky";
