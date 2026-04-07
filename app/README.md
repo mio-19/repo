@@ -11,7 +11,6 @@ broken but can compile and install:
 + onlyoffice-documents crashing after welcome page
 + lumo
 + bitwarden-authenticator: need firebase?
-+ breezy-weather: need api key
 
 slightly broken:
 
