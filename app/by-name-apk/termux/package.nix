@@ -4,18 +4,16 @@
   jdk21,
   gradle-packages,
   stdenv,
-  fetchFromGitHub,
   fetchurl,
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   fetchpatch,
+  sources,
 }:
 let
   appPackage =
     let
-      rev = "30ebb2dee381d292ade0f2868cfde0f9f20b89fe";
-
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
@@ -34,14 +32,8 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "termux-app";
-      version = "unstable-2026-04-07";
-
-      src = fetchFromGitHub {
-        owner = "termux";
-        repo = "termux-app";
-        rev = rev;
-        hash = "sha256-igiCW9T6/zmKUKdDA+XeovhKfbwpk1HbhVUadJWkcLg=";
-      };
+      version = "unstable-${sources.termux_app.date}";
+      src = sources.termux_app.src;
 
       patches = [
         (fetchpatch {

@@ -41,7 +41,7 @@
     },
     "axp_kernel_patches": {
         "cargoLock": null,
-        "date": "2026-04-02",
+        "date": "2026-04-07",
         "extract": null,
         "name": "axp_kernel_patches",
         "passthru": null,
@@ -51,13 +51,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "4cedf2c515e129a657c600450993dc40c9a8e874",
-            "sha256": "sha256-LZuyrKQetdXOJm6rtSuSQIc23yy5HPjcbFdL7WgXwvM=",
+            "rev": "dae673016040646b9ad0778ca86b91b8cbd06dc8",
+            "sha256": "sha256-MOAy5tl1jIb9m2QOPgOrT6wOg060/mgKAkfc/6WnKxY=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://git.disroot.org/AXP.OS/kernel_patches.git"
         },
-        "version": "4cedf2c515e129a657c600450993dc40c9a8e874"
+        "version": "dae673016040646b9ad0778ca86b91b8cbd06dc8"
     },
     "cola2261_device_dm3q": {
         "cargoLock": null,
@@ -1058,6 +1058,26 @@
             "url": "https://gitlab.com/simonpunk/susfs4ksu.git"
         },
         "version": "001e69919c6271f690fd00b17e4c721c9e599152"
+    },
+    "termux_app": {
+        "cargoLock": null,
+        "date": "2026-04-07",
+        "extract": null,
+        "name": "termux_app",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "30ebb2dee381d292ade0f2868cfde0f9f20b89fe",
+            "sha256": "sha256-igiCW9T6/zmKUKdDA+XeovhKfbwpk1HbhVUadJWkcLg=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/termux/termux-app.git"
+        },
+        "version": "30ebb2dee381d292ade0f2868cfde0f9f20b89fe"
     },
     "vendor_gapps15": {
         "cargoLock": null,

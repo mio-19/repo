@@ -36,17 +36,17 @@
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
-    version = "4cedf2c515e129a657c600450993dc40c9a8e874";
+    version = "dae673016040646b9ad0778ca86b91b8cbd06dc8";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
-      rev = "4cedf2c515e129a657c600450993dc40c9a8e874";
+      rev = "dae673016040646b9ad0778ca86b91b8cbd06dc8";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-LZuyrKQetdXOJm6rtSuSQIc23yy5HPjcbFdL7WgXwvM=";
+      sha256 = "sha256-MOAy5tl1jIb9m2QOPgOrT6wOg060/mgKAkfc/6WnKxY=";
     };
-    date = "2026-04-02";
+    date = "2026-04-07";
   };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
@@ -747,6 +747,20 @@
       sha256 = "sha256-j4OIvgOE64nm67NyGsEnSRNygVVZaF5uhMx8ju+p6fQ=";
     };
     date = "2025-02-23";
+  };
+  termux_app = {
+    pname = "termux_app";
+    version = "30ebb2dee381d292ade0f2868cfde0f9f20b89fe";
+    src = fetchgit {
+      url = "https://github.com/termux/termux-app.git";
+      rev = "30ebb2dee381d292ade0f2868cfde0f9f20b89fe";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-igiCW9T6/zmKUKdDA+XeovhKfbwpk1HbhVUadJWkcLg=";
+    };
+    date = "2026-04-07";
   };
   vendor_gapps15 = {
     pname = "vendor_gapps15";
