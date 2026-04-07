@@ -26,7 +26,7 @@ let
     # https://github.com/MatthewCroughan/nixcfg/blob/afab322e6da20cc038d8577dd4a365673702d183/flake.nix#L57
     nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
       akita = common ./akita_grapheneos.nix;
-      husky = common ./husky_grapheneos.nix;
+      husky = common ./gos_husky.nix;
       mustang = common ./mustang_grapheneos.nix;
       tangorpro = common ./tangorpro_grapheneos.nix;
       cheetah = common ./cheetah_grapheneos.nix;
