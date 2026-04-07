@@ -10,7 +10,7 @@
   androidSdkBuilder,
 }:
 let
-  rev = "2841817b95579e26d80f9a99179b6115e7b01802";
+  rev = "e076c26092496f3d16eeb4026daae5957658fddc";
   gradleFlavor = "Basic";
   releaseFlavor = "standard";
 
@@ -33,13 +33,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "breezy-weather";
-      version = "unstable-2026-03-29";
+      version = "unstable-2026-04-06";
 
       src = fetchFromGitHub {
         owner = "breezy-weather";
         repo = "breezy-weather";
         inherit rev;
-        hash = "sha256-c0gmlvg/4ONPYhWSJopX29wgjZdvSsxpR31WkRKIQ8A=";
+        hash = "sha256-13PNSrbdc+CFG9KKQmeXrnbE4K+tFGFVxRIpKoYEdK0=";
       };
 
       patches = [
