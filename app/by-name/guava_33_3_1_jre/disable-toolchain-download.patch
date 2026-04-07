@@ -1,8 +1,8 @@
 diff --git a/guava/pom.xml b/guava/pom.xml
-index 8d31e64..5f5eab6 100644
+index 8d31e64..9dbe18e 100644
 --- a/guava/pom.xml
 +++ b/guava/pom.xml
-@@ -57,13 +57,6 @@
+@@ -57,13 +57,7 @@
        </resource>
      </resources>
      <plugins>
@@ -13,14 +13,15 @@ index 8d31e64..5f5eab6 100644
 -      <plugin>
 -        <artifactId>maven-toolchains-plugin</artifactId>
 -      </plugin>
++
        <plugin>
          <artifactId>maven-jar-plugin</artifactId>
          <configuration>
 diff --git a/pom.xml b/pom.xml
-index 12c82a0..f481452 100644
+index 12c82a0..37f4cee 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -181,70 +181,6 @@
+@@ -181,70 +181,7 @@
              <fork>true</fork>
            </configuration>
          </plugin>
@@ -88,6 +89,31 @@ index 12c82a0..f481452 100644
 -            </toolchains>
 -          </configuration>
 -        </plugin>
++
          <plugin>
            <artifactId>maven-jar-plugin</artifactId>
            <version>3.2.0</version>
+@@ -304,10 +241,7 @@
+           <version>3.8.0</version>
+           <configuration>
+             <!-- TODO: b/286965322 - Use a newer version (probably the default toolchain we set up?) if it doesn't break Javadoc (including causing trouble for our later run of JDiff, which we do outside Maven, during snapshots/releases). -->
+-            <jdkToolchain>
+-              <version>11</version>
+-              <vendor>zulu</vendor>
+-            </jdkToolchain>
++
+             <quiet>true</quiet>
+             <notimestamp>true</notimestamp>
+             <encoding>UTF-8</encoding>
+@@ -340,10 +274,7 @@
+           <artifactId>maven-surefire-plugin</artifactId>
+           <version>3.3.1</version>
+           <configuration>
+-            <jdkToolchain>
+-              <version>${surefire.toolchain.version}</version>
+-              <vendor>zulu</vendor>
+-            </jdkToolchain>
++
+             <includes>
+               <include>${test.include}</include>
+             </includes>

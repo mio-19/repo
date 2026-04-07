@@ -2,13 +2,12 @@
   apksigner,
   androidSdkBuilder,
   fetchgit,
+  gradle2nix_overrides,
   gradle-packages,
   gradle2nixBuilders,
-  guava_33_3_1_jre,
   jdk21,
   lib,
   mkSignScript,
-  slf4j_api_2_0_17,
   writableTmpDirAsHomeHook,
 }:
 
@@ -41,26 +40,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   inherit gradle;
 
-  overrides = {
-    "com.google.guava:guava:33.3.1-jre" = {
-      "guava-33.3.1-jre.jar" = _: "${guava_33_3_1_jre}/guava-33.3.1-jre.jar";
-      "guava-33.3.1-jre.module" = _: "${guava_33_3_1_jre}/guava-33.3.1-jre.module";
-      "guava-33.3.1-jre.pom" = _: "${guava_33_3_1_jre}/guava-33.3.1-jre.pom";
-    };
-    "com.google.guava:guava-parent:33.3.1-jre" = {
-      "guava-parent-33.3.1-jre.pom" = _: "${guava_33_3_1_jre}/guava-parent-33.3.1-jre.pom";
-    };
-    "org.slf4j:slf4j-api:2.0.17" = {
-      "slf4j-api-2.0.17.jar" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.jar";
-      "slf4j-api-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.pom";
-    };
-    "org.slf4j:slf4j-bom:2.0.17" = {
-      "slf4j-bom-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-bom-2.0.17.pom";
-    };
-    "org.slf4j:slf4j-parent:2.0.17" = {
-      "slf4j-parent-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-parent-2.0.17.pom";
-    };
-  };
+  overrides = gradle2nix_overrides;
 
   buildJdk = jdk21;
 

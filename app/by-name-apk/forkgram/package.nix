@@ -5,13 +5,12 @@
   darwin,
   fetchFromGitHub,
   go,
+  gradle2nix_overrides,
   gradle2nixBuilders,
   gperf,
-  mkSignScript,
-  gson_2_11_0,
-  guava_31_1_android,
   jdk21,
   lib,
+  mkSignScript,
   meson,
   ninja,
   perl,
@@ -49,16 +48,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   lockFile = ./gradle.lock;
 
-  overrides = {
-    "com.google.code.gson:gson:2.11.0" = {
-      "gson-2.11.0.jar" = _: "${gson_2_11_0}/gson-2.11.0.jar";
-      "gson-2.11.0.pom" = _: "${gson_2_11_0}/gson-2.11.0.pom";
-    };
-    "com.google.guava:guava:31.1-android" = {
-      "guava-31.1-android.jar" = _: "${guava_31_1_android}/guava-31.1-android.jar";
-      "guava-31.1-android.pom" = _: "${guava_31_1_android}/guava-31.1-android.pom";
-    };
-  };
+  overrides = gradle2nix_overrides;
 
   buildJdk = jdk21;
 
