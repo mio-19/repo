@@ -23,12 +23,12 @@ let
 in
 gradle2nixBuilders.buildGradlePackage rec {
   pname = "fdroid-basic";
-  version = "2.0-alpha6";
+  version = "2.0-alpha7";
 
   src = pkgs.fetchgit {
     url = "https://gitlab.com/fdroid/fdroidclient.git";
     tag = version;
-    hash = "sha256-HQcvzBX/ofVxsu22eNsvhQDYH+0Zw/EQR/Trcvqr4j0=";
+    hash = "sha256-2aKQAz8vEJjauhHGVt7ZhmqkbYuK/c4ztYLHNQIjZZ0=";
   };
 
   lockFile = ./gradle.lock;
