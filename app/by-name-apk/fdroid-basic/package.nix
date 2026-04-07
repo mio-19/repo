@@ -1,10 +1,15 @@
 {
-  pkgs,
+  apksigner,
   androidSdkBuilder,
+  fetchgit,
   gradle-packages,
   gradle2nixBuilders,
   guava_33_3_1_jre,
+  jdk21,
+  lib,
   mkSignScript,
+  slf4j_api_2_0_17,
+  writableTmpDirAsHomeHook,
 }:
 
 let
@@ -19,14 +24,14 @@ let
     (gradle-packages.mkGradle {
       version = "9.3.1";
       hash = "sha256-smbV/2uQ6tptw7IMsJDjcxMC5VOifF0+TfHw12vq/wY=";
-      defaultJava = pkgs.jdk21;
+      defaultJava = jdk21;
     }).wrapped;
 in
 gradle2nixBuilders.buildGradlePackage rec {
   pname = "fdroid-basic";
   version = "2.0-alpha7";
 
-  src = pkgs.fetchgit {
+  src = fetchgit {
     url = "https://gitlab.com/fdroid/fdroidclient.git";
     tag = version;
     hash = "sha256-2aKQAz8vEJjauhHGVt7ZhmqkbYuK/c4ztYLHNQIjZZ0=";
@@ -45,15 +50,25 @@ gradle2nixBuilders.buildGradlePackage rec {
     "com.google.guava:guava-parent:33.3.1-jre" = {
       "guava-parent-33.3.1-jre.pom" = _: "${guava_33_3_1_jre}/guava-parent-33.3.1-jre.pom";
     };
+    "org.slf4j:slf4j-api:2.0.17" = {
+      "slf4j-api-2.0.17.jar" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.jar";
+      "slf4j-api-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.pom";
+    };
+    "org.slf4j:slf4j-bom:2.0.17" = {
+      "slf4j-bom-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-bom-2.0.17.pom";
+    };
+    "org.slf4j:slf4j-parent:2.0.17" = {
+      "slf4j-parent-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-parent-2.0.17.pom";
+    };
   };
 
-  buildJdk = pkgs.jdk21;
+  buildJdk = jdk21;
 
   nativeBuildInputs = [
     androidSdk
-    pkgs.jdk21
-    pkgs.apksigner
-    pkgs.writableTmpDirAsHomeHook
+    jdk21
+    apksigner
+    writableTmpDirAsHomeHook
   ];
 
   postPatch = ''
@@ -82,9 +97,9 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   gradleFlags = [
     "--console=plain"
-    "-Dorg.gradle.java.home=${pkgs.jdk21.home}"
+    "-Dorg.gradle.java.home=${jdk21.home}"
     "-Dorg.gradle.java.installations.auto-download=false"
-    "-Dorg.gradle.java.installations.paths=${pkgs.jdk21}"
+    "-Dorg.gradle.java.installations.paths=${jdk21}"
     "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
     "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
   ];
@@ -105,7 +120,7 @@ gradle2nixBuilders.buildGradlePackage rec {
     defaultOut = "fdroid-basic-signed.apk";
   };
 
-  meta = with pkgs.lib; {
+  meta = with lib; {
     description = "F-Droid Basic app built from source (unsigned)";
     homepage = "https://gitlab.com/fdroid/fdroidclient";
     license = licenses.gpl3Plus;

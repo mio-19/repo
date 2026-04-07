@@ -1,10 +1,25 @@
 {
-  pkgs,
   androidSdkBuilder,
+  bash,
+  cmake,
+  darwin,
+  fetchFromGitHub,
+  go,
   gradle2nixBuilders,
+  gperf,
   mkSignScript,
   gson_2_11_0,
   guava_31_1_android,
+  jdk21,
+  lib,
+  meson,
+  ninja,
+  perl,
+  python3,
+  stdenv,
+  unzip,
+  which,
+  writableTmpDirAsHomeHook,
 }:
 
 let
@@ -24,7 +39,7 @@ gradle2nixBuilders.buildGradlePackage rec {
   pname = "forkgram";
   version = "12.6.4.0";
 
-  src = pkgs.fetchFromGitHub {
+  src = fetchFromGitHub {
     owner = "forkgram";
     repo = "TelegramAndroid";
     rev = version;
@@ -45,24 +60,24 @@ gradle2nixBuilders.buildGradlePackage rec {
     };
   };
 
-  buildJdk = pkgs.jdk21;
+  buildJdk = jdk21;
 
   nativeBuildInputs = [
     androidSdk
-    pkgs.cmake
-    pkgs.gperf
-    pkgs.go
-    pkgs.jdk21
-    pkgs.meson
-    pkgs.ninja
-    pkgs.perl
-    pkgs.python3
-    pkgs.unzip
-    pkgs.which
-    pkgs.writableTmpDirAsHomeHook
+    cmake
+    gperf
+    go
+    jdk21
+    meson
+    ninja
+    perl
+    python3
+    unzip
+    which
+    writableTmpDirAsHomeHook
   ]
-  ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
-    pkgs.darwin.system_cmds
+  ++ lib.optionals stdenv.isDarwin [
+    darwin.system_cmds
   ];
 
   patches = [
@@ -99,7 +114,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
     # Fix hardcoded /bin/bash in subprocess call (no /bin/bash in Nix sandbox)
     substituteInPlace TMessagesProj/jni/prepare.py \
-      --replace-fail 'executable="/bin/bash"' 'executable="${pkgs.bash}/bin/bash"'
+      --replace-fail 'executable="/bin/bash"' 'executable="${bash}/bin/bash"'
 
     # Inject Telegram API credentials and enable F-Droid mode — taken from the F-Droid build recipe:
     # https://gitlab.com/fdroid/fdroiddata/-/blob/master/metadata/org.forkgram.messenger.yml
@@ -113,7 +128,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
 
     # Tell AGP where to find cmake (it looks for version 3.22.1 in the SDK by default)
-    echo "cmake.dir=${pkgs.cmake}" >> local.properties
+    echo "cmake.dir=${cmake}" >> local.properties
 
     # Use aapt2 from the installed SDK instead of downloading from Maven
     echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2" >> gradle.properties
@@ -149,7 +164,7 @@ gradle2nixBuilders.buildGradlePackage rec {
     GOFLAGS = "-mod=vendor";
   };
 
-  preBuild = pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
+  preBuild = lib.optionalString stdenv.isDarwin ''
     # AGP writes SDK metadata under ~/.android; /var/empty is read-only on Darwin sandboxes.
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME"
@@ -172,7 +187,7 @@ gradle2nixBuilders.buildGradlePackage rec {
     apkPath = "${placeholder "out"}/forkgram.apk";
     defaultOut = "forkgram-signed.apk";
   };
-  meta = with pkgs.lib; {
+  meta = with lib; {
     description = "Telegram Android client fork (ForkGram)";
     homepage = "https://github.com/forkgram/TelegramAndroid";
     license = licenses.gpl2Plus;
