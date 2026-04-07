@@ -11,6 +11,8 @@
 }:
 let
   rev = "2841817b95579e26d80f9a99179b6115e7b01802";
+  gradleFlavor = "Basic";
+  releaseFlavor = "standard";
 
   appPackage =
     let
@@ -40,7 +42,12 @@ let
         hash = "sha256-c0gmlvg/4ONPYhWSJopX29wgjZdvSsxpR31WkRKIQ8A=";
       };
 
-      gradleBuildTask = ":app:assembleBasicRelease";
+      patches = [
+        ./0001-disable-official-signature-checks.patch
+      ];
+
+      # Upstream's user-facing Standard release is the internal Gradle "basic" flavor.
+      gradleBuildTask = ":app:assemble${gradleFlavor}Release";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
 
       mitmCache = gradle.fetchDeps {
@@ -70,9 +77,6 @@ let
           --replace-fail 'return runCommand("git rev-list --count HEAD")' 'return "60104"' \
           --replace-fail 'return runCommand("git rev-parse --short=8 HEAD")' 'return "${lib.substring 0 8 rev}"'
 
-        substituteInPlace app/src/main/java/org/breezyweather/ui/main/MainActivity.kt \
-          --replace-fail '        if (BreezyWeather.instance.isImpersonatingBreezyWeather) {' '        if (false) {' \
-          --replace-fail '            LicenseComplianceDialog.show(this)' '            viewModel.checkToUpdate()'
         echo "breezy.openweather.key=$(echo ZDljOTEwM2E3NGE0MzhlYWMwOTUyYTM0ZDFiNTgwZTYK | base64 -d)" >> local.properties
         echo "breezy.mf.key=$(echo X19XajdkVlNUalY5WUd1MWd1dmVMeURxMGc3UzdUZlRqYUhCVFBUcE8wa2o4X18K | base64 -d)" >> local.properties
         echo "breezy.mf.jwtKey=$(echo ODRhMzhkYjhjZGQ2NjJhMjY0MmY1MjZmMTE1ODhlN2UK | base64 -d)" >> local.properties
@@ -98,6 +102,7 @@ let
       '';
 
       gradleFlags = [
+        # Select upstream's official Breezy branding resources instead of res_fork.
         "-Pbreezy"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk21}"
@@ -108,13 +113,13 @@ let
       installPhase = ''
         runHook preInstall
         install -Dm644 \
-          app/build/outputs/apk/basic/release/app-basic-universal-release-unsigned.apk \
-          "$out/breezy-weather.apk"
+          app/build/outputs/apk/${lib.toLower gradleFlavor}/release/app-${lib.toLower gradleFlavor}-universal-release-unsigned.apk \
+          "$out/breezy-weather-${releaseFlavor}.apk"
         runHook postInstall
       '';
 
       meta = with lib; {
-        description = "Breezy Weather app built from source (basic flavor)";
+        description = "Breezy Weather app built from source (standard flavor)";
         homepage = "https://github.com/breezy-weather/breezy-weather";
         license = licenses.lgpl3Only;
         platforms = platforms.unix;
@@ -123,7 +128,7 @@ let
 in
 mk-apk-package {
   inherit appPackage;
-  mainApk = "breezy-weather.apk";
+  mainApk = "breezy-weather-${releaseFlavor}.apk";
   signScriptName = "sign-breezy-weather";
   fdroid = {
     appId = "org.breezyweather";
@@ -142,7 +147,7 @@ mk-apk-package {
       Description: |-
         Breezy Weather is a free/libre weather app with many forecast sources,
         air quality, widgets, and live wallpaper support.
-        This package builds the upstream basic flavor from source.
+        This package builds the upstream Standard flavor from source.
     '';
   };
 }
