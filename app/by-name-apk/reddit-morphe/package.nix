@@ -22,7 +22,7 @@ let
       redditXapk = fetchurl {
         # APKPure page: https://apkpure.com/reddit-app/com.reddit.frontpage/download/2026.04.0
         name = "reddit-2026.04.0.xapk";
-        url = "https://web.archive.org/web/20260321001122if_/https://d-14.winudf.com/b/XAPK/Y29tLnJlZGRpdC5mcm9udHBhZ2VfMjYwNDA0MV8zYTZiNjQxMg?_fn=UmVkZGl0XzIwMjYuMDQuMF9BUEtQdXJlLnhhcGs&_p=Y29tLnJlZGRpdC5mcm9udHBhZ2U%3D&download_id=otr_1945302452763944&is_hot=true&k=5a05c58f7ddcb913b586d3ab3e9ebac869bf3364";
+        url = "https://web.archive.org/web/20260407145944if_/https://d-14.winudf.com/b/XAPK/Y29tLnJlZGRpdC5mcm9udHBhZ2VfMjYwNDA0MV8zYTZiNjQxMg?_fn=UmVkZGl0XzIwMjYuMDQuMF9BUEtQdXJlLnhhcGs&_p=Y29tLnJlZGRpdC5mcm9udHBhZ2U%3D&download_id=otr_1559604511559923&is_hot=true&k=5fdfbf8d6daa67af899596a95d08eabf69d66ce6";
         hash = "sha256-8bSHG+zZXj/pWiDztoQR+5PpzrecXHiP9QTty9BOlfA=";
       };
 
