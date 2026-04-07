@@ -40,7 +40,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   inherit gradle;
 
-  overrides = gradle2nix_overrides.fdroidBasic;
+  overrides = gradle2nix_overrides;
 
   buildJdk = jdk21;
 
