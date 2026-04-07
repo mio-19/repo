@@ -40,6 +40,8 @@ let
       pname = "lumo";
       inherit version src;
 
+      # F-Droid metadata builds subdir `app` with Gradle flavors
+      # `production` and `noGms`.
       gradleBuildTask = ":app:assembleProductionNoGmsRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
 
@@ -100,8 +102,8 @@ let
       '';
 
       meta = with lib; {
-        description = "Proton Lumo Android app (unsigned APK)";
-        homepage = "https://github.com/ProtonLumo/android-lumo";
+        description = "Proton Lumo Android app (production noGms flavor)";
+        homepage = "https://lumo.proton.me/";
         license = licenses.gpl3Only;
         platforms = platforms.unix;
       };
@@ -114,16 +116,24 @@ mk-apk-package {
   fdroid = {
     appId = "me.proton.android.lumo";
     metadataYml = ''
+      AntiFeatures:
+        NonFreeNet:
+          en-US: Rely on lumo.proton.me
       Categories:
+        - AI Chat
         - Internet
       License: GPL-3.0-only
+      AuthorName: Proton
+      WebSite: https://lumo.proton.me/
       SourceCode: https://github.com/ProtonLumo/android-lumo
       IssueTracker: https://github.com/ProtonLumo/android-lumo/issues
+      Changelog: https://github.com/ProtonLumo/android-lumo/releases
       AutoName: Lumo
       Summary: Native Android client for Proton Lumo
       Description: |-
         Lumo is Proton's native Android client for its AI assistant service.
-        This package builds the production noGms release APK from source.
+        This package builds the production noGms release APK from source, matching
+        F-Droid's flavor selection for the same upstream tag.
     '';
   };
 }
