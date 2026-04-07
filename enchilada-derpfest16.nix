@@ -6,6 +6,22 @@ args@{
 {
   imports = [ ./los.nix ];
 
+  /*
+    Source trail used to locate the DerpFest OnePlus 6 Android 16 repos:
+
+    1. DerpFest upstream manifest shows active Android 16 / 16.2 branches:
+       https://github.com/DerpFest-AOSP/android_manifest/branches
+    2. The old official XDA thread for OnePlus 6 / 6T points kernel sources to
+       ppanzenboeck and says the other required sources are in the same account:
+       https://xdaforums.com/t/closed-moved-to-telegram-derpfest-14-official-for-oneplus-6-enchilada-oneplus-6t-fajita.4633973/
+    3. From that maintainer account, the Android 16-era branches used here are:
+       - device_oneplus_enchilada: derp16.2
+       - device_oneplus_sdm845-common: derp16.2
+       - kernel_oneplus_sdm845: derp16.2-4.9
+       - hardware_oneplus: derp16.2
+       Vendor repos for sdm845 stayed on older Lineage branches, so this file
+       keeps the vendor pins separate from the Derp 16.2 device/kernel branches.
+  */
   manufactor = "oneplus";
   kernel-short = "sdm845";
   defconfig = "arch/arm64/configs/enchilada_defconfig";
