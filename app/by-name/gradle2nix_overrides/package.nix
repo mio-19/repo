@@ -40,18 +40,24 @@
     "guava-parent-26.0-android.pom" = _: "${failureaccess_1_0_1}/guava-parent-26.0-android.pom";
   };
   "com.google.errorprone:error_prone_annotations:2.27.0" = {
-    "error_prone_annotations-2.27.0.jar" = _: "${error_prone_annotations_2_27_0}/error_prone_annotations-2.27.0.jar";
-    "error_prone_annotations-2.27.0.pom" = _: "${error_prone_annotations_2_27_0}/error_prone_annotations-2.27.0.pom";
+    "error_prone_annotations-2.27.0.jar" =
+      _: "${error_prone_annotations_2_27_0}/error_prone_annotations-2.27.0.jar";
+    "error_prone_annotations-2.27.0.pom" =
+      _: "${error_prone_annotations_2_27_0}/error_prone_annotations-2.27.0.pom";
   };
   "com.google.errorprone:error_prone_annotations:2.28.0" = {
-    "error_prone_annotations-2.28.0.jar" = _: "${error_prone_annotations_2_28_0}/error_prone_annotations-2.28.0.jar";
-    "error_prone_annotations-2.28.0.pom" = _: "${error_prone_annotations_2_28_0}/error_prone_annotations-2.28.0.pom";
+    "error_prone_annotations-2.28.0.jar" =
+      _: "${error_prone_annotations_2_28_0}/error_prone_annotations-2.28.0.jar";
+    "error_prone_annotations-2.28.0.pom" =
+      _: "${error_prone_annotations_2_28_0}/error_prone_annotations-2.28.0.pom";
   };
   "com.google.errorprone:error_prone_parent:2.27.0" = {
-    "error_prone_parent-2.27.0.pom" = _: "${error_prone_annotations_2_27_0}/error_prone_parent-2.27.0.pom";
+    "error_prone_parent-2.27.0.pom" =
+      _: "${error_prone_annotations_2_27_0}/error_prone_parent-2.27.0.pom";
   };
   "com.google.errorprone:error_prone_parent:2.28.0" = {
-    "error_prone_parent-2.28.0.pom" = _: "${error_prone_annotations_2_28_0}/error_prone_parent-2.28.0.pom";
+    "error_prone_parent-2.28.0.pom" =
+      _: "${error_prone_annotations_2_28_0}/error_prone_parent-2.28.0.pom";
   };
   "com.google.j2objc:j2objc-annotations:2.8" = {
     "j2objc-annotations-2.8.jar" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.jar";
