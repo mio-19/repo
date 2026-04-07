@@ -51,6 +51,14 @@ let
           defaultJava = jdk17;
         }).wrapped;
 
+      androidArch = "arm64";
+      androidFlavor = "Fdroid";
+      androidNdkVersion = "26.1.10909125";
+      androidVersionCode = "202603";
+      androidReleaseEpoch = "2026-03-17 12:03:27 +0100";
+      androidLauncherDir = "platform/android/luajit-launcher";
+      androidGradleTask = "app:assemble${androidArch}${androidFlavor}Release";
+
       depsJson = builtins.fromJSON (builtins.readFile ./koreader_deps.json);
 
       fetchedDeps = lib.mapAttrs (
@@ -119,7 +127,7 @@ let
       # Source refresh steps:
       # 1. Keep `tag = "v${finalAttrs.version}"`.
       # 2. Set `hash = lib.fakeHash`, run:
-      #      nix build .#packages.x86_64-linux.koreader
+      #      nix build .#apk_koreader.src
       #    then copy the reported "got:" hash here.
       src = fetchFromGitHub {
         repo = "koreader";
@@ -130,15 +138,15 @@ let
       };
 
       # Gradle lock refresh:
-      #   nix build --impure .#packages.x86_64-linux.koreader.mitmCache.updateScript
+      #   nix build --impure .#apk_koreader.mitmCache.updateScript
       # then run the produced fetch-deps.sh with `outPath` set to:
-      #   /home/dev/Documents/repo/app/koreader/koreader_gradle_deps.json
+      #   /home/dev/Documents/repo/app/by-name-apk/koreader/koreader_gradle_deps.json
       #
       # Thirdparty lock refresh:
       # - refresh URLs + hashes from current KOReader source:
-      #     python app/koreader/refresh-thirdparty-lock.py \
+      #     python app/by-name-apk/koreader/refresh-thirdparty-lock.py \
       #       --create-if-missing \
-      #       --source "$(nix eval --raw .#packages.x86_64-linux.koreader.src.outPath)"
+      #       --source "$(nix build .#apk_koreader.src --no-link --print-out-paths)"
       # - for git deps (depsJson.git), bump rev/hash entries manually as needed.
       mitmCache =
         if builtins.pathExists ./koreader_gradle_deps.json then
@@ -182,7 +190,7 @@ let
       env = {
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/26.1.10909125";
+        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/${androidNdkVersion}";
         JAVA_HOME = jdk17;
         CC_FOR_BUILD = "${buildPackages.stdenv.cc}/bin/cc";
         CXX_FOR_BUILD = "${buildPackages.stdenv.cc}/bin/c++";
@@ -197,14 +205,12 @@ let
         "-Dorg.gradle.java.installations.paths=${jdk17}"
         "-Dorg.gradle.jvmargs=-Xmx4g"
         "-p"
-        "platform/android/luajit-launcher"
+        androidLauncherDir
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
       ];
 
-      gradleUpdateTask = "assemble";
+      gradleUpdateTask = androidGradleTask;
 
-      # The task wrapper calls ./gradlew inside luajit-launcher/Makefile.
-      # We should patch it to call gradle directly.
       postPatch = ''
         # Many thirdparty build scripts use #!/usr/bin/env python3 shebangs.
         # buildFHSEnv in buildPhase provides /usr/bin/env for those scripts.
@@ -250,26 +256,26 @@ let
 
         # Inject offline mitmCache local maven repos into gradle build files
         # so that gradle resolves all dependencies from the nix store.
-        substituteInPlace platform/android/luajit-launcher/build.gradle \
+        substituteInPlace ${androidLauncherDir}/build.gradle \
           --replace-fail \
             'google()' \
             'maven { url = uri("${finalAttrs.mitmCache}/https/dl.google.com/dl/android/maven2") }
             maven { url = uri("${finalAttrs.mitmCache}/https/maven.google.com") }
             maven { url = uri("${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2") }
             google()'
-        substituteInPlace platform/android/luajit-launcher/app/build.gradle \
+        substituteInPlace ${androidLauncherDir}/app/build.gradle \
           --replace-fail \
             'google()' \
             'maven { url = uri("${finalAttrs.mitmCache}/https/dl.google.com/dl/android/maven2") }
             maven { url = uri("${finalAttrs.mitmCache}/https/maven.google.com") }
             maven { url = uri("${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2") }
             google()'
-        substituteInPlace platform/android/luajit-launcher/app/build.gradle \
+        substituteInPlace ${androidLauncherDir}/app/build.gradle \
           --replace-fail \
             "ndkVersion '23.2.8568313'" \
-            "ndkVersion '26.1.10909125'"
-        echo >> platform/android/luajit-launcher/gradle.properties
-        echo 'org.gradle.jvmargs=-Xmx4g' >> platform/android/luajit-launcher/gradle.properties
+            "ndkVersion '${androidNdkVersion}'"
+        echo >> ${androidLauncherDir}/gradle.properties
+        echo 'org.gradle.jvmargs=-Xmx4g' >> ${androidLauncherDir}/gradle.properties
         # Also add --offline to GRADLE_FLAGS so gradle won't try the network
         substituteInPlace make/android.mk \
           --replace-fail \
@@ -285,15 +291,11 @@ let
         substituteInPlace make/android.mk \
           --replace-fail \
             'ANDROID_VERSION ?= $(shell git rev-list --count HEAD)' \
-            'ANDROID_VERSION ?= 202603'
+            'ANDROID_VERSION ?= ${androidVersionCode}'
         substituteInPlace make/android.mk \
           --replace-fail \
             "--epoch=\"\$\$(git show -s --format='%ci')\" " \
-            '--epoch="2026-03-17 12:03:27 +0100" '
-        substituteInPlace make/android.mk \
-          --replace-fail \
-            'cp $(ANDROID_LAUNCHER_BUILD)/outputs/apk/$(ANDROID_ARCH)$(ANDROID_FLAVOR)/$(if $(KODEBUG),debug,release)/NativeActivity.apk $(ANDROID_APK)' \
-            'cp $(ANDROID_LAUNCHER_BUILD)/outputs/apk/arm64Fdroid/release/NativeActivity.apk $(ANDROID_APK)'
+            '--epoch="${androidReleaseEpoch}" '
 
         # Prevent koenv.sh from actually running git clone or checkout.
         cat ${./koenv-git.sh} >> base/thirdparty/cmake_modules/koenv.sh
@@ -341,7 +343,6 @@ let
 
       '';
 
-      # Wait, koreader Android build is 'ANDROID_FLAVOR=fdroid ./kodev release android-arm64'.
       # Keep `-i` here because `kodev release` otherwise updates the l10n
       # submodule over the network, which is not allowed in the Nix build.
       buildPhase = ''
@@ -349,21 +350,21 @@ let
         ${fhsEnv}/bin/koreader-build-env -c "
           set -e
           export TARGET=android
-          export ANDROID_ARCH=arm64
-          export ANDROID_FLAVOR=Fdroid
+          export ANDROID_ARCH=${androidArch}
+          export ANDROID_FLAVOR=${androidFlavor}
           export GIT_DEPS=${gitDepsDir}
           export ANDROID_HOME=${androidSdk}/share/android-sdk
           export ANDROID_SDK_ROOT=${androidSdk}/share/android-sdk
-          export ANDROID_NDK_HOME=${androidSdk}/share/android-sdk/ndk/26.1.10909125
+          export ANDROID_NDK_HOME=${androidSdk}/share/android-sdk/ndk/${androidNdkVersion}
           export JAVA_HOME=${jdk17}
           export CC_FOR_BUILD=${buildPackages.stdenv.cc}/bin/cc
           export CXX_FOR_BUILD=${buildPackages.stdenv.cc}/bin/c++
           export LD_FOR_BUILD=${buildPackages.stdenv.cc}/bin/ld
           export AR_FOR_BUILD=${buildPackages.stdenv.cc.bintools.bintools}/bin/ar
           export PKG_CONFIG_FOR_BUILD=${buildPackages.pkg-config}/bin/pkg-config
-          export PATH=${androidSdk}/share/android-sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/linux-x86_64/bin:\$PATH
+          export PATH=${androidSdk}/share/android-sdk/ndk/${androidNdkVersion}/toolchains/llvm/prebuilt/linux-x86_64/bin:\$PATH
           cd $PWD
-          bash ./kodev release -i android-arm64
+          bash ./kodev release -i android-${androidArch}
         "
         runHook postBuild
       '';
