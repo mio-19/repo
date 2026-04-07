@@ -1,8 +1,13 @@
 {
   checker_qual_3_33_0,
   checker_qual_3_43_0,
+  commons_codec_1_10,
+  commons_codec_1_11,
+  commons_codec_1_15,
+  commons_codec_1_17_1,
   commons_io_2_13_0,
   commons_io_2_16_1,
+  commons_logging_1_2,
   error_prone_annotations_2_27_0,
   error_prone_annotations_2_28_0,
   failureaccess_1_0_1,
@@ -32,6 +37,26 @@
   "commons-io:commons-io:2.16.1" = {
     "commons-io-2.16.1.jar" = _: "${commons_io_2_16_1}/commons-io-2.16.1.jar";
     "commons-io-2.16.1.pom" = _: "${commons_io_2_16_1}/commons-io-2.16.1.pom";
+  };
+  "commons-codec:commons-codec:1.10" = {
+    "commons-codec-1.10.jar" = _: "${commons_codec_1_10}/commons-codec-1.10.jar";
+    "commons-codec-1.10.pom" = _: "${commons_codec_1_10}/commons-codec-1.10.pom";
+  };
+  "commons-codec:commons-codec:1.11" = {
+    "commons-codec-1.11.jar" = _: "${commons_codec_1_11}/commons-codec-1.11.jar";
+    "commons-codec-1.11.pom" = _: "${commons_codec_1_11}/commons-codec-1.11.pom";
+  };
+  "commons-codec:commons-codec:1.15" = {
+    "commons-codec-1.15.jar" = _: "${commons_codec_1_15}/commons-codec-1.15.jar";
+    "commons-codec-1.15.pom" = _: "${commons_codec_1_15}/commons-codec-1.15.pom";
+  };
+  "commons-codec:commons-codec:1.17.1" = {
+    "commons-codec-1.17.1.jar" = _: "${commons_codec_1_17_1}/commons-codec-1.17.1.jar";
+    "commons-codec-1.17.1.pom" = _: "${commons_codec_1_17_1}/commons-codec-1.17.1.pom";
+  };
+  "commons-logging:commons-logging:1.2" = {
+    "commons-logging-1.2.jar" = _: "${commons_logging_1_2}/commons-logging-1.2.jar";
+    "commons-logging-1.2.pom" = _: "${commons_logging_1_2}/commons-logging-1.2.pom";
   };
   "com.google.guava:guava:31.1-android" = {
     "guava-31.1-android.jar" = _: "${guava_31_1_android}/guava-31.1-android.jar";
