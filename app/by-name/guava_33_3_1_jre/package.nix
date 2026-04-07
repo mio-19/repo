@@ -19,7 +19,7 @@ maven.buildMavenPackage rec {
 
   mvnHash = "sha256-HRbcNpA0aGk78l2sWGxDrM6k0KQe+XIiWgX5kt5J/tg=";
 
-  mvnParameters = "-pl guava -am -Dmaven.test.skip=true -DskipTests -Dmaven.javadoc.skip=true -Dmaven.source.skip=true package";
+  mvnParameters = "-pl guava -am -Dmaven.javadoc.skip=true -Dmaven.source.skip=true package";
 
   installPhase = ''
     runHook preInstall
