@@ -53,6 +53,7 @@ let
     nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
       gta4xlwifi = common ./gta4xlwifi.nix;
       enchilada = common ./enchilada.nix;
+      enchilada_derpfest16 = common ./enchilada-derpfest16.nix;
       enchilada_mainline = common ./enchilada-mainline.nix;
       nx_tab = common ./nx_tab.nix;
       utm = common ./utm.nix;
