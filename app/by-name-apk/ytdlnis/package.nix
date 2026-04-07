@@ -11,13 +11,13 @@
   fetchpatch,
 }:
 let
-  version = "unstable-2026-03-28";
+  version = "1.8.8";
 
   src = fetchFromGitHub {
     owner = "deniscerri";
     repo = "ytdlnis";
-    rev = "87f9cf3f80a873e81da0252df18b1d8e7f84e099";
-    hash = "sha256-PNK4O+bJmfXPndUB7SJiINuQ8upgW75t3qe0CmSDgAE=";
+    tag = "v${version}";
+    hash = "sha256-fDvi6MFPxSRyIULtqIJq2MSpDFKoH0aRM2zGPaD6f0A=";
   };
 
   appPackage =
