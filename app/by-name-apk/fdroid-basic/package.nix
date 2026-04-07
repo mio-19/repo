@@ -1,10 +1,16 @@
 {
   apksigner,
   androidSdkBuilder,
+  error_prone_annotations_2_27_0,
+  error_prone_annotations_2_28_0,
   fetchgit,
+  failureaccess_1_0_1,
+  failureaccess_1_0_2,
   gradle-packages,
   gradle2nixBuilders,
   guava_33_3_1_jre,
+  j2objc_annotations_2_8,
+  j2objc_annotations_3_0_0,
   jdk21,
   lib,
   mkSignScript,
@@ -49,6 +55,45 @@ gradle2nixBuilders.buildGradlePackage rec {
     };
     "com.google.guava:guava-parent:33.3.1-jre" = {
       "guava-parent-33.3.1-jre.pom" = _: "${guava_33_3_1_jre}/guava-parent-33.3.1-jre.pom";
+    };
+    "com.google.guava:failureaccess:1.0.1" = {
+      "failureaccess-1.0.1.jar" = _: "${failureaccess_1_0_1}/failureaccess-1.0.1.jar";
+      "failureaccess-1.0.1.pom" = _: "${failureaccess_1_0_1}/failureaccess-1.0.1.pom";
+    };
+    "com.google.guava:failureaccess:1.0.2" = {
+      "failureaccess-1.0.2.jar" = _: "${failureaccess_1_0_2}/failureaccess-1.0.2.jar";
+      "failureaccess-1.0.2.pom" = _: "${failureaccess_1_0_2}/failureaccess-1.0.2.pom";
+    };
+    "com.google.guava:guava-parent:26.0-android" = {
+      "guava-parent-26.0-android.pom" = _: "${failureaccess_1_0_2}/guava-parent-26.0-android.pom";
+    };
+    "com.google.errorprone:error_prone_annotations:2.27.0" = {
+      "error_prone_annotations-2.27.0.jar" =
+        _: "${error_prone_annotations_2_27_0}/error_prone_annotations-2.27.0.jar";
+      "error_prone_annotations-2.27.0.pom" =
+        _: "${error_prone_annotations_2_27_0}/error_prone_annotations-2.27.0.pom";
+    };
+    "com.google.errorprone:error_prone_annotations:2.28.0" = {
+      "error_prone_annotations-2.28.0.jar" =
+        _: "${error_prone_annotations_2_28_0}/error_prone_annotations-2.28.0.jar";
+      "error_prone_annotations-2.28.0.pom" =
+        _: "${error_prone_annotations_2_28_0}/error_prone_annotations-2.28.0.pom";
+    };
+    "com.google.errorprone:error_prone_parent:2.27.0" = {
+      "error_prone_parent-2.27.0.pom" =
+        _: "${error_prone_annotations_2_27_0}/error_prone_parent-2.27.0.pom";
+    };
+    "com.google.errorprone:error_prone_parent:2.28.0" = {
+      "error_prone_parent-2.28.0.pom" =
+        _: "${error_prone_annotations_2_28_0}/error_prone_parent-2.28.0.pom";
+    };
+    "com.google.j2objc:j2objc-annotations:2.8" = {
+      "j2objc-annotations-2.8.jar" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.jar";
+      "j2objc-annotations-2.8.pom" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.pom";
+    };
+    "com.google.j2objc:j2objc-annotations:3.0.0" = {
+      "j2objc-annotations-3.0.0.jar" = _: "${j2objc_annotations_3_0_0}/j2objc-annotations-3.0.0.jar";
+      "j2objc-annotations-3.0.0.pom" = _: "${j2objc_annotations_3_0_0}/j2objc-annotations-3.0.0.pom";
     };
     "org.slf4j:slf4j-api:2.0.17" = {
       "slf4j-api-2.0.17.jar" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.jar";
