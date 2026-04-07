@@ -3,6 +3,7 @@
   androidSdkBuilder,
   gradle-packages,
   gradle2nixBuilders,
+  guava_33_3_1_jre,
   mkSignScript,
 }:
 
@@ -23,17 +24,28 @@ let
 in
 gradle2nixBuilders.buildGradlePackage rec {
   pname = "fdroid-basic";
-  version = "2.0-alpha6";
+  version = "2.0-alpha7";
 
   src = pkgs.fetchgit {
     url = "https://gitlab.com/fdroid/fdroidclient.git";
     tag = version;
-    hash = "sha256-HQcvzBX/ofVxsu22eNsvhQDYH+0Zw/EQR/Trcvqr4j0=";
+    hash = "sha256-2aKQAz8vEJjauhHGVt7ZhmqkbYuK/c4ztYLHNQIjZZ0=";
   };
 
   lockFile = ./gradle.lock;
 
   inherit gradle;
+
+  overrides = {
+    "com.google.guava:guava:33.3.1-jre" = {
+      "guava-33.3.1-jre.jar" = _: "${guava_33_3_1_jre}/guava-33.3.1-jre.jar";
+      "guava-33.3.1-jre.module" = _: "${guava_33_3_1_jre}/guava-33.3.1-jre.module";
+      "guava-33.3.1-jre.pom" = _: "${guava_33_3_1_jre}/guava-33.3.1-jre.pom";
+    };
+    "com.google.guava:guava-parent:33.3.1-jre" = {
+      "guava-parent-33.3.1-jre.pom" = _: "${guava_33_3_1_jre}/guava-parent-33.3.1-jre.pom";
+    };
+  };
 
   buildJdk = pkgs.jdk21;
 
@@ -45,6 +57,9 @@ gradle2nixBuilders.buildGradlePackage rec {
   ];
 
   postPatch = ''
+    rm -f gradle/verification-metadata.xml
+    echo "Removed gradle/verification-metadata.xml so the source-built Guava override is not rejected by upstream checksum verification."
+
     pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                def agpVersion = requested.version ?: "9.1.0"\n                useModule("com.android.tools.build:gradle:''${agpVersion}")\n            }\n        }\n    }\n'
     substituteInPlace settings.gradle \
       --replace-fail "pluginManagement {" "$pluginResolutionBlock"

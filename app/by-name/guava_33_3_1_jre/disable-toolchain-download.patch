@@ -1,0 +1,93 @@
+diff --git a/guava/pom.xml b/guava/pom.xml
+index 8d31e64..5f5eab6 100644
+--- a/guava/pom.xml
++++ b/guava/pom.xml
+@@ -57,13 +57,6 @@
+       </resource>
+     </resources>
+     <plugins>
+-      <plugin>
+-        <groupId>org.mvnsearch</groupId>
+-        <artifactId>toolchains-maven-plugin</artifactId>
+-      </plugin>
+-      <plugin>
+-        <artifactId>maven-toolchains-plugin</artifactId>
+-      </plugin>
+       <plugin>
+         <artifactId>maven-jar-plugin</artifactId>
+         <configuration>
+diff --git a/pom.xml b/pom.xml
+index 12c82a0..f481452 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -181,70 +181,6 @@
+             <fork>true</fork>
+           </configuration>
+         </plugin>
+-        <plugin>
+-          <groupId>org.mvnsearch</groupId>
+-          <artifactId>toolchains-maven-plugin</artifactId>
+-          <version>4.5.0</version>
+-          <executions>
+-            <!--
+-            We can apparently have only one <jdk> per execution: Others are silently ignored :(
+-            To properly test this, you need to remove existing toolchains:
+-            rm -rf ~/.m2/jdks/ ~/.m2/toolchains.xml
+-            (But don't run that if you have put something into ~/.m2/toolchains.xml yourself.)
+-            -->
+-            <execution>
+-              <id>download-11</id>
+-              <goals>
+-                <goal>toolchain</goal>
+-              </goals>
+-              <configuration>
+-                <toolchains>
+-                  <jdk>
+-                    <version>11</version>
+-                    <vendor>zulu</vendor>
+-                  </jdk>
+-                </toolchains>
+-              </configuration>
+-            </execution>
+-            <execution>
+-              <id>download-22-and-surefire-version</id>
+-              <goals>
+-                <goal>toolchain</goal>
+-              </goals>
+-              <configuration>
+-                <toolchains>
+-                  <jdk>
+-                    <version>22</version>
+-                    <vendor>zulu</vendor>
+-                  </jdk>
+-                  <testJdk>
+-                    <version>${surefire.toolchain.version}</version>
+-                    <vendor>zulu</vendor>
+-                  </testJdk>
+-                </toolchains>
+-              </configuration>
+-            </execution>
+-          </executions>
+-        </plugin>
+-        <plugin>
+-          <artifactId>maven-toolchains-plugin</artifactId>
+-          <version>3.2.0</version>
+-          <executions>
+-            <execution>
+-              <goals>
+-                <goal>toolchain</goal>
+-              </goals>
+-            </execution>
+-          </executions>
+-          <configuration>
+-            <toolchains>
+-              <jdk>
+-                <version>22</version>
+-                <vendor>zulu</vendor>
+-              </jdk>
+-            </toolchains>
+-          </configuration>
+-        </plugin>
+         <plugin>
+           <artifactId>maven-jar-plugin</artifactId>
+           <version>3.2.0</version>
