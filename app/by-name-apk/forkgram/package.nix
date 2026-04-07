@@ -5,16 +5,12 @@
   darwin,
   fetchFromGitHub,
   go,
+  gradle2nix_overrides,
   gradle2nixBuilders,
   gperf,
-  error_prone_annotations_2_27_0,
-  failureaccess_1_0_1,
-  j2objc_annotations_2_8,
-  mkSignScript,
-  gson_2_11_0,
-  guava_31_1_android,
   jdk21,
   lib,
+  mkSignScript,
   meson,
   ninja,
   perl,
@@ -52,37 +48,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   lockFile = ./gradle.lock;
 
-  overrides = {
-    "com.google.code.gson:gson:2.11.0" = {
-      "gson-2.11.0.jar" = _: "${gson_2_11_0}/gson-2.11.0.jar";
-      "gson-2.11.0.pom" = _: "${gson_2_11_0}/gson-2.11.0.pom";
-    };
-    "com.google.guava:guava:31.1-android" = {
-      "guava-31.1-android.jar" = _: "${guava_31_1_android}/guava-31.1-android.jar";
-      "guava-31.1-android.pom" = _: "${guava_31_1_android}/guava-31.1-android.pom";
-    };
-    "com.google.guava:failureaccess:1.0.1" = {
-      "failureaccess-1.0.1.jar" = _: "${failureaccess_1_0_1}/failureaccess-1.0.1.jar";
-      "failureaccess-1.0.1.pom" = _: "${failureaccess_1_0_1}/failureaccess-1.0.1.pom";
-    };
-    "com.google.guava:guava-parent:26.0-android" = {
-      "guava-parent-26.0-android.pom" = _: "${failureaccess_1_0_1}/guava-parent-26.0-android.pom";
-    };
-    "com.google.errorprone:error_prone_annotations:2.27.0" = {
-      "error_prone_annotations-2.27.0.jar" =
-        _: "${error_prone_annotations_2_27_0}/error_prone_annotations-2.27.0.jar";
-      "error_prone_annotations-2.27.0.pom" =
-        _: "${error_prone_annotations_2_27_0}/error_prone_annotations-2.27.0.pom";
-    };
-    "com.google.errorprone:error_prone_parent:2.27.0" = {
-      "error_prone_parent-2.27.0.pom" =
-        _: "${error_prone_annotations_2_27_0}/error_prone_parent-2.27.0.pom";
-    };
-    "com.google.j2objc:j2objc-annotations:2.8" = {
-      "j2objc-annotations-2.8.jar" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.jar";
-      "j2objc-annotations-2.8.pom" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.pom";
-    };
-  };
+  overrides = gradle2nix_overrides.forkgram;
 
   buildJdk = jdk21;
 
