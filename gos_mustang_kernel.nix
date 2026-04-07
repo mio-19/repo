@@ -14,7 +14,7 @@ let
     hash = "";
   };
 in
-callPackage ./grapheneos_kernel_common.nix { } {
+callPackage ./gos_kernel_common.nix { } {
   pname = "grapheneos-mustang-kernel";
   inherit src;
   buildScript = "build_muzel.sh";

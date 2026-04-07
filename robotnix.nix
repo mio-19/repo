@@ -25,12 +25,12 @@ let
     in
     # https://github.com/MatthewCroughan/nixcfg/blob/afab322e6da20cc038d8577dd4a365673702d183/flake.nix#L57
     nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
-      akita = common ./akita_grapheneos.nix;
+      akita = common ./gos_akita.nix;
       husky = common ./gos_husky.nix;
-      mustang = common ./mustang_grapheneos.nix;
-      tangorpro = common ./tangorpro_grapheneos.nix;
-      cheetah = common ./cheetah_grapheneos.nix;
-      caiman = common ./caiman_grapheneos.nix;
+      mustang = common ./gos_mustang.nix;
+      tangorpro = common ./gos_tangorpro.nix;
+      cheetah = common ./gos_cheetah.nix;
+      caiman = common ./gos_caiman.nix;
     };
   mkLos =
     { ccache }:
@@ -100,8 +100,8 @@ in
     in
     {
       packages.grapheneos-husky-kernel = pkgs.callPackage ./gos_kernel_shusky.nix { };
-      packages.grapheneos-mustang-kernel = pkgs.callPackage ./grapheneos_mustang_kernel.nix { };
-      packages.grapheneos-tangorpro-kernel = pkgs.callPackage ./grapheneos_tangorpro_kernel.nix { };
+      packages.grapheneos-mustang-kernel = pkgs.callPackage ./gos_mustang_kernel.nix { };
+      packages.grapheneos-tangorpro-kernel = pkgs.callPackage ./gos_tangorpro_kernel.nix { };
       # followings are for garnix:
       packages.grapheneos-husky-key-script = self.gosNoCcache.husky.generateKeysScript;
       packages.grapheneos-husky-factory-img = self.gosNoCcache.husky.factoryImg;
