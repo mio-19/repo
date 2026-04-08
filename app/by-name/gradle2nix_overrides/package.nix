@@ -8,8 +8,12 @@
   commons_io_2_13_0,
   commons_io_2_16_1,
   commons_logging_1_2,
+  error_prone_annotations_2_15_0,
+  error_prone_annotations_2_18_0,
+  error_prone_annotations_2_3_1,
   error_prone_annotations_2_27_0,
   error_prone_annotations_2_28_0,
+  error_prone_annotations_2_30_0,
   failureaccess_1_0_1,
   failureaccess_1_0_2,
   gson_2_11_0,
@@ -18,6 +22,7 @@
   j2objc_annotations_2_8,
   j2objc_annotations_3_0_0,
   jsr305_3_0_2,
+  slf4j_api_1_7_30,
   slf4j_api_2_0_17,
 }:
 
@@ -107,6 +112,45 @@
     "error_prone_parent-2.28.0.pom" =
       _: "${error_prone_annotations_2_28_0}/error_prone_parent-2.28.0.pom";
   };
+  "com.google.errorprone:error_prone_annotations:2.3.1" = {
+    "error_prone_annotations-2.3.1.jar" =
+      _: "${error_prone_annotations_2_3_1}/error_prone_annotations-2.3.1.jar";
+    "error_prone_annotations-2.3.1.pom" =
+      _: "${error_prone_annotations_2_3_1}/error_prone_annotations-2.3.1.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.3.1" = {
+    "error_prone_parent-2.3.1.pom" = _: "${error_prone_annotations_2_3_1}/error_prone_parent-2.3.1.pom";
+  };
+  "com.google.errorprone:error_prone_annotations:2.15.0" = {
+    "error_prone_annotations-2.15.0.jar" =
+      _: "${error_prone_annotations_2_15_0}/error_prone_annotations-2.15.0.jar";
+    "error_prone_annotations-2.15.0.pom" =
+      _: "${error_prone_annotations_2_15_0}/error_prone_annotations-2.15.0.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.15.0" = {
+    "error_prone_parent-2.15.0.pom" =
+      _: "${error_prone_annotations_2_15_0}/error_prone_parent-2.15.0.pom";
+  };
+  "com.google.errorprone:error_prone_annotations:2.18.0" = {
+    "error_prone_annotations-2.18.0.jar" =
+      _: "${error_prone_annotations_2_18_0}/error_prone_annotations-2.18.0.jar";
+    "error_prone_annotations-2.18.0.pom" =
+      _: "${error_prone_annotations_2_18_0}/error_prone_annotations-2.18.0.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.18.0" = {
+    "error_prone_parent-2.18.0.pom" =
+      _: "${error_prone_annotations_2_18_0}/error_prone_parent-2.18.0.pom";
+  };
+  "com.google.errorprone:error_prone_annotations:2.30.0" = {
+    "error_prone_annotations-2.30.0.jar" =
+      _: "${error_prone_annotations_2_30_0}/error_prone_annotations-2.30.0.jar";
+    "error_prone_annotations-2.30.0.pom" =
+      _: "${error_prone_annotations_2_30_0}/error_prone_annotations-2.30.0.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.30.0" = {
+    "error_prone_parent-2.30.0.pom" =
+      _: "${error_prone_annotations_2_30_0}/error_prone_parent-2.30.0.pom";
+  };
   "com.google.j2objc:j2objc-annotations:2.8" = {
     "j2objc-annotations-2.8.jar" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.jar";
     "j2objc-annotations-2.8.pom" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.pom";
@@ -118,6 +162,13 @@
   "org.slf4j:slf4j-api:2.0.17" = {
     "slf4j-api-2.0.17.jar" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.jar";
     "slf4j-api-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.pom";
+  };
+  "org.slf4j:slf4j-api:1.7.30" = {
+    "slf4j-api-1.7.30.jar" = _: "${slf4j_api_1_7_30}/slf4j-api-1.7.30.jar";
+    "slf4j-api-1.7.30.pom" = _: "${slf4j_api_1_7_30}/slf4j-api-1.7.30.pom";
+  };
+  "org.slf4j:slf4j-parent:1.7.30" = {
+    "slf4j-parent-1.7.30.pom" = _: "${slf4j_api_1_7_30}/slf4j-parent-1.7.30.pom";
   };
   "org.slf4j:slf4j-bom:2.0.17" = {
     "slf4j-bom-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-bom-2.0.17.pom";
