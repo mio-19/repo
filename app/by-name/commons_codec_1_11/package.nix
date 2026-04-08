@@ -1,5 +1,5 @@
 {
-  fetchurl,
+  fetchFromGitHub,
   jdk21,
   lib,
   stdenv,
@@ -9,14 +9,11 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "commons-codec";
   version = "1.11";
 
-  src = fetchurl {
-    url = "https://repo.maven.apache.org/maven2/commons-codec/commons-codec/${finalAttrs.version}/commons-codec-${finalAttrs.version}-sources.jar";
-    hash = "sha256-kBy10ffCh3AXyV08Xv1aSXc40BYu9yzfWOnLE/ULLpw=";
-  };
-
-  pom = fetchurl {
-    url = "https://repo.maven.apache.org/maven2/commons-codec/commons-codec/${finalAttrs.version}/commons-codec-${finalAttrs.version}.pom";
-    hash = "sha256-wecUDR3qj981KLwePFRErAtUEpcxH0X5gGwhPsPumhA=";
+  src = fetchFromGitHub {
+    owner = "apache";
+    repo = "commons-codec";
+    tag = "commons-codec-${finalAttrs.version}";
+    hash = "sha256-IoIKNUr48MFu400rnKZ215pN1DegTBhuWl0Xo1Jzp4U=";
   };
 
   nativeBuildInputs = [ jdk21 ];
@@ -30,15 +27,15 @@ stdenv.mkDerivation (finalAttrs: {
     tmp="$(mktemp -d)"
     trap 'rm -rf "$tmp"' EXIT
     cd "$tmp"
-    ${jdk21}/bin/jar xf "$src"
 
     mkdir -p classes
-    find . -name '*.java' | sort > sources.txt
+    find "${finalAttrs.src}/src/main/java" -name '*.java' | sort > sources.txt
     ${jdk21}/bin/javac --release 8 -d classes @sources.txt
 
     while IFS= read -r path; do
-      install -Dm644 "$path" "classes/$path"
-    done < <(find . -type f ! -name '*.java' ! -name 'sources.txt' ! -path './META-INF/maven/*' | sort)
+      rel_path="$(realpath --relative-to="${finalAttrs.src}/src/main/resources" "$path")"
+      install -Dm644 "$path" "classes/$rel_path"
+    done < <(find "${finalAttrs.src}/src/main/resources" -type f | sort)
 
     (
       cd classes
@@ -47,7 +44,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p "$out"
     install -Dm644 "$tmp/commons-codec-${finalAttrs.version}.jar" "$out/commons-codec-${finalAttrs.version}.jar"
-    install -Dm644 "$pom" "$out/commons-codec-${finalAttrs.version}.pom"
+    install -Dm644 "${finalAttrs.src}/pom.xml" "$out/commons-codec-${finalAttrs.version}.pom"
 
     runHook postInstall
   '';
