@@ -1,104 +1,110 @@
 {
   mk-apk-package,
+  overrides-from-source,
+  gradle2nixBuilders,
   lib,
   jdk21,
   gradle-packages,
-  stdenv,
   fetchFromGitHub,
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
 let
-  appPackage =
-    let
-      androidSdk = androidSdkBuilder (s: [
-        s.cmdline-tools-latest
-        s.platform-tools
-        s.platforms-android-36
-        s.build-tools-35-0-0
-        s.build-tools-36-0-0
-      ]);
+  androidSdk = androidSdkBuilder (s: [
+    s.cmdline-tools-latest
+    s.platform-tools
+    s.platforms-android-36
+    s.build-tools-35-0-0
+    s.build-tools-36-0-0
+  ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "9.4.1";
-          hash = "sha256-KrKVjyoeURIMMmytbzhRU7sR7pOzwhbF/M6/37t+xss=";
-          defaultJava = jdk21;
-        }).wrapped;
-    in
-    stdenv.mkDerivation (finalAttrs: {
-      pname = "nextcloud-android";
-      version = "33.0.1";
+  gradle =
+    (gradle-packages.mkGradle {
+      version = "9.4.1";
+      hash = "sha256-KrKVjyoeURIMMmytbzhRU7sR7pOzwhbF/M6/37t+xss=";
+      defaultJava = jdk21;
+    }).wrapped;
 
-      src = fetchFromGitHub {
-        owner = "nextcloud";
-        repo = "android";
-        tag = "stable-${finalAttrs.version}";
-        hash = "sha256-NAWeYEHIGMxoOpF6t/VhTRxjX1n2RTJ2AjZ8v8z3+2g=";
-      };
+  appPackage = gradle2nixBuilders.buildGradlePackage rec {
+    pname = "nextcloud-android";
+    version = "33.0.1";
+    inherit gradle;
 
-      gradleBuildTask = ":app:assembleGenericRelease";
-      gradleUpdateTask = finalAttrs.gradleBuildTask;
+    src = fetchFromGitHub {
+      owner = "nextcloud";
+      repo = "android";
+      tag = "stable-${version}";
+      hash = "sha256-NAWeYEHIGMxoOpF6t/VhTRxjX1n2RTJ2AjZ8v8z3+2g=";
+    };
 
-      mitmCache = gradle.fetchDeps {
-        inherit (finalAttrs) pname;
-        pkg = finalAttrs.finalPackage;
-        data = ./nextcloud_android_deps.json;
-        silent = false;
-        useBwrap = false;
-      };
+    lockFile = ./gradle.lock;
+    overrides = overrides-from-source;
+    buildJdk = jdk21;
 
-      nativeBuildInputs = [
-        gradle
-        jdk21
-        apksigner
-        writableTmpDirAsHomeHook
-      ];
+    postPatch = ''
+      rm -f gradle/verification-metadata.xml
+    '';
 
-      env = {
-        JAVA_HOME = jdk21;
-        ANDROID_HOME = "${androidSdk}/share/android-sdk";
-        ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
-      };
+    nativeBuildInputs = [
+      androidSdk
+      gradle
+      jdk21
+      apksigner
+      writableTmpDirAsHomeHook
+    ];
 
-      preConfigure = ''
-        export ANDROID_USER_HOME="$HOME/.android"
-        mkdir -p "$ANDROID_USER_HOME"
-        echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
-      '';
+    dontUseGradleConfigure = true;
 
-      gradleFlags = [
-        "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-      ];
+    env = {
+      JAVA_HOME = jdk21;
+      ANDROID_HOME = "${androidSdk}/share/android-sdk";
+      ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+    };
 
-      installPhase = ''
-        runHook preInstall
+    preConfigure = ''
+      export ANDROID_USER_HOME="$HOME/.android"
+      export GRADLE_USER_HOME="$(mktemp -d)"
+      export TERM=dumb
+      mkdir -p "$ANDROID_USER_HOME"
+      echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+      gradleFlagsArray+=(--no-daemon --init-script "$gradleInitScript" --offline)
+    '';
 
-        apk_dir="app/build/outputs/apk/generic/release"
-        apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apk_dir/output-metadata.json" | head -n 1)"
-        test -n "$apk_name"
-        apk_path="$apk_dir/$apk_name"
-        test -f "$apk_path"
-        badging="$("${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt" dump badging "$apk_path")"
-        pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
-        [ "$pkg" = "com.nextcloud.client" ]
+    gradleFlags = [
+      "-Dorg.gradle.java.home=${jdk21.home}"
+      "-Dorg.gradle.java.installations.auto-download=false"
+      "-Dorg.gradle.java.installations.paths=${jdk21}"
+      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+    ];
 
-        install -Dm644 "$apk_path" "$out/nextcloud-android.apk"
-        runHook postInstall
-      '';
+    gradleBuildFlags = ":app:assembleGenericRelease";
 
-      meta = with lib; {
-        description = "Nextcloud Android app built from source";
-        homepage = "https://github.com/nextcloud/android";
-        license = licenses.agpl3Plus;
-        platforms = platforms.unix;
-      };
-    });
+    installPhase = ''
+      runHook preInstall
+
+      apk_dir="app/build/outputs/apk/generic/release"
+      apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apk_dir/output-metadata.json" | head -n 1)"
+      test -n "$apk_name"
+      apk_path="$apk_dir/$apk_name"
+      test -f "$apk_path"
+      badging="$("${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt" dump badging "$apk_path")"
+      pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
+      [ "$pkg" = "com.nextcloud.client" ]
+
+      install -Dm644 "$apk_path" "$out/nextcloud-android.apk"
+      runHook postInstall
+    '';
+
+    meta = with lib; {
+      description = "Nextcloud Android app built from source";
+      homepage = "https://github.com/nextcloud/android";
+      license = licenses.agpl3Plus;
+      platforms = platforms.unix;
+    };
+  };
 in
 mk-apk-package {
   inherit appPackage;
