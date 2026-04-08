@@ -1,0 +1,53 @@
+From 7f7f390e67cccc621f98e282241f5cbaa3fa1ac3 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Wed, 8 Apr 2026 19:27:37 +1000
+Subject: [PATCH] allapps: make search bar look good
+ https://github.com/GrapheneOS/platform_packages_apps_Launcher3/pull/69
+
+---
+ res/values/dimens.xml                               |  4 ++--
+ .../allapps/search/AppsSearchContainerLayout.java   | 13 ++++++++++++-
+ 2 files changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/res/values/dimens.xml b/res/values/dimens.xml
+index 4aaf95e..f4875c7 100644
+--- a/res/values/dimens.xml
++++ b/res/values/dimens.xml
+@@ -111,8 +111,8 @@
+     <!-- All Apps -->
+     <dimen name="all_apps_starting_vertical_translate">300dp</dimen>
+     <dimen name="all_apps_search_bar_field_height">52dp</dimen>
+-    <!-- all_apps_search_bar_field_height / 2 -->
+-    <dimen name="all_apps_search_bar_content_overlap">26dp</dimen>
++    <!-- Revert commit to restore to 26dp if a prediction service exists -->
++    <dimen name="all_apps_search_bar_content_overlap">0dp</dimen>
+     <!-- affects padding above apps lists when tabs and floating header rows are not visible -->
+     <!-- (always affects padding above search results) -->
+     <dimen name="all_apps_search_bar_bottom_padding">42dp</dimen>
+diff --git a/src/com/android/launcher3/allapps/search/AppsSearchContainerLayout.java b/src/com/android/launcher3/allapps/search/AppsSearchContainerLayout.java
+index 84855f0..d5b529d 100644
+--- a/src/com/android/launcher3/allapps/search/AppsSearchContainerLayout.java
++++ b/src/com/android/launcher3/allapps/search/AppsSearchContainerLayout.java
+@@ -195,7 +195,18 @@ public class AppsSearchContainerLayout extends ExtendedEditText
+     @Override
+     public void setInsets(Rect insets) {
+         MarginLayoutParams mlp = (MarginLayoutParams) getLayoutParams();
+-        mlp.topMargin = insets.top;
++        DeviceProfile dp = mLauncher.getDeviceProfile();
++        if (dp.shouldShowAllAppsOnSheet()) {
++            // Use bottom_sheet_handle_area_height instead which is what NexusLauncher's
++            // UniversalSearchInputView does. This puts it closer to the bottom sheet handle, as it
++            // makes it flush against the handle area.
++            mlp.topMargin = getResources().getDimensionPixelSize(
++                    R.dimen.bottom_sheet_handle_area_height);
++        } else {
++            // insets.top originates from SystemWindowManagerProxy.normalizeWindowInsets:
++            // max(statusBars.top, android:dimen/status_bar_height_portrait, displayCutout.top)
++            mlp.topMargin = insets.top;
++        }
+         requestLayout();
+     }
+ 
+-- 
+2.53.0
+

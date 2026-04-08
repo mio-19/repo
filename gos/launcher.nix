@@ -67,11 +67,7 @@ in
               assert config.launcherVariant == "evox";
               sources.evox_launcher3.src;
           patches = [
-            (fetchpatch {
-              name = "allapps: make search bar look good";
-              url = "https://github.com/GrapheneOS/platform_packages_apps_Launcher3/pull/69.diff";
-              hash = "sha256-sDwsfex93ZiQcVWZ/4GCL69XV/F0p1vONqL8Dy+Tr7I=";
-            })
+            ./los-allapps-make-search-bar-look-good-https-github.com-G.patch
           ]
           ++ lib.optionals (config.launcherVariant == "evox") [
             ./evox-launcher3-add-current-aconfig-flags.patch
