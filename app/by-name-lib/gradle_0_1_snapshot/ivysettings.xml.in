@@ -1,0 +1,20 @@
+<ivysettings>
+    <property name="ibiblio-maven2-root"
+              value="file://@mavenRepo@/" override="false"/>
+
+    <include url="${ivy.default.conf.dir}/ivyconf-local.xml"/>
+
+    <settings defaultResolver="default" checkUpToDate="false"/>
+    <resolvers>
+        <ibiblio name="maven2"
+                 root="${ibiblio-maven2-root}"
+                 m2compatible="true"
+                 usepoms="true"
+                 validate="false"
+                />
+        <chain name="default">
+            <resolver ref="local"/>
+            <resolver ref="maven2"/>
+        </chain>
+    </resolvers>
+</ivysettings>
