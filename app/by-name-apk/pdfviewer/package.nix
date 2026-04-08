@@ -1,12 +1,15 @@
 {
   mk-apk-package,
+  overrides-from-source,
+  gradle2nixBuilders,
   sources,
   lib,
   jdk21,
   jdk17,
   gradle-packages,
-  stdenv,
   fetchpatch,
+  fetchNpmDeps,
+  npmHooks,
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -30,12 +33,24 @@ let
           defaultJava = jdk21;
         }).wrapped;
     in
-    stdenv.mkDerivation (finalAttrs: {
+    gradle2nixBuilders.buildGradlePackage rec {
       pname = "pdfviewer";
       inherit (sources.grapheneos_pdfviewer)
         src
         version
         ;
+
+      inherit gradle;
+
+      lockFile = ./gradle.lock;
+      overrides = overrides-from-source;
+      buildJdk = jdk21;
+
+      npmDeps = fetchNpmDeps {
+        pname = "npm-deps-${pname}";
+        inherit version src;
+        hash = "sha256-XbFZycYjXiX9AV4cwwvcMuQk82wlExh8bVkVQFOZ/es=";
+      };
 
       patches = [
         (fetchpatch {
@@ -50,28 +65,20 @@ let
         })
       ];
 
-      gradleBuildTask = ":app:assembleRelease";
-      gradleUpdateTask = finalAttrs.gradleBuildTask;
-
-      mitmCache = gradle.fetchDeps {
-        inherit (finalAttrs) pname;
-        pkg = finalAttrs.finalPackage;
-        data = ./pdfviewer_deps.json;
-        silent = false;
-        useBwrap = false;
-      };
-
       nativeBuildInputs = [
+        androidSdk
         gradle
         jdk21
         jdk17
         apksigner
         writableTmpDirAsHomeHook
+        npmHooks.npmConfigHook
         nodejs
       ];
 
+      dontUseGradleConfigure = true;
+
       env = {
-        JAVA_HOME = if stdenv.isDarwin then "${jdk21}" else "${jdk21}/lib/openjdk";
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
@@ -85,31 +92,25 @@ let
           fi
         done
         export ANDROID_USER_HOME="$HOME/.android"
+        export GRADLE_USER_HOME="$(mktemp -d)"
+        export TERM=dumb
         mkdir -p "$ANDROID_USER_HOME"
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+        gradleFlagsArray+=(--no-daemon --init-script "$gradleInitScript" --offline)
       '';
 
       postPatch = ''
+        rm -f gradle/verification-metadata.xml
+
+        pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                val agpVersion = requested.version ?: "9.0.0"\n                useModule("com.android.tools.build:gradle:$agpVersion")\n            }\n        }\n    }\n'
+        substituteInPlace settings.gradle.kts \
+          --replace-fail "pluginManagement {" "$pluginResolutionBlock"
+
         rm app/src/main/res/values/strings.xml.orig
         substituteInPlace app/build.gradle.kts \
               --replace-fail \
               'commandLine(getCommand("npm"), "ci", "--ignore-scripts")' \
-              'environment("npm_config_audit", "false")
-        environment("NPM_CONFIG_AUDIT", "false")
-        environment("npm_config_update_notifier", "false")
-        environment("NPM_CONFIG_UPDATE_NOTIFIER", "false")
-        environment("npm_config_production", "false")
-        environment("NPM_CONFIG_PRODUCTION", "false")
-        environment("npm_config_omit", "")
-        environment("NPM_CONFIG_OMIT", "")
-        val normalizeProxy: (String) -> String? = { key ->
-            System.getenv(key)?.let { if (it.contains("://")) it else "http://$it" }
-        }
-        normalizeProxy("http_proxy")?.let { environment("http_proxy", it) }
-        normalizeProxy("https_proxy")?.let { environment("https_proxy", it) }
-        normalizeProxy("HTTP_PROXY")?.let { environment("HTTP_PROXY", it) }
-        normalizeProxy("HTTPS_PROXY")?.let { environment("HTTPS_PROXY", it) }
-        commandLine(getCommand("npm"), "ci", "--ignore-scripts", "--no-audit", "--include=dev", "--cache", ".npm-cache")'
+              'commandLine("true")'
 
         substituteInPlace process_static.js \
               --replace-fail \
@@ -117,17 +118,15 @@ let
               'void 0;'
       '';
 
-      gradleFlags =
-        let
-          postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
-        in
-        [
-          "-xlintVitalRelease"
-          "-Dorg.gradle.java.installations.auto-download=false"
-          "-Dorg.gradle.java.installations.paths=${jdk17}${postfix},${jdk21}${postfix}"
-          "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-          "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-        ];
+      gradleFlags = [
+        "-Dorg.gradle.java.home=${jdk21.home}"
+        "-Dorg.gradle.java.installations.auto-download=false"
+        "-Dorg.gradle.java.installations.paths=${jdk17}/lib/openjdk,${jdk21}/lib/openjdk"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+      ];
+
+      gradleBuildFlags = ":app:assembleRelease";
 
       installPhase = ''
         runHook preInstall
@@ -142,7 +141,7 @@ let
         license = licenses.asl20;
         platforms = platforms.unix;
       };
-    });
+    };
 in
 mk-apk-package {
   inherit appPackage;
