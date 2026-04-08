@@ -81,7 +81,6 @@ in
       url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/263.diff";
       hash = "sha256-Hw3BLHwJsXmu5482QWZC+DsqBDxaV0F1fCDgwna5AVQ=";
     })
-    #./No-gestural-navigation-hint-bar.patch
 
     #./Disable-FLAG_SECURE.patch
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
