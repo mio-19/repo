@@ -1,6 +1,8 @@
 {
   androidSdkBuilder,
   fetchFromGitHub,
+  gradle2nixBuilders,
+  gradle2nix_overrides,
   gradle-packages,
   jdk17,
   lib,
@@ -22,30 +24,26 @@ let
       defaultJava = jdk17;
     }).wrapped;
 in
-stdenv.mkDerivation (finalAttrs: {
+gradle2nixBuilders.buildGradlePackage rec {
   pname = "zoomimage";
   version = "1.0.2";
 
   src = fetchFromGitHub {
     owner = "panpf";
     repo = "zoomimage";
-    tag = finalAttrs.version;
+    tag = version;
     hash = "sha256-MoQujZhZLReE9vSwiCOq/u/2g9sSeNX96vPwXcQcj0E=";
   };
 
-  gradleBuildTask = ":zoomimage-core:publishToMavenLocal :zoomimage-core-glide:publishToMavenLocal :zoomimage-view:publishToMavenLocal :zoomimage-view-glide:publishToMavenLocal";
-  gradleUpdateTask = finalAttrs.gradleBuildTask;
+  lockFile = ./gradle.lock;
 
-  mitmCache = gradle.fetchDeps {
-    pname = "zoomimage";
-    pkg = finalAttrs.finalPackage;
-    data = ./zoomimage_deps.json;
-    silent = false;
-    useBwrap = false;
-  };
+  inherit gradle;
+
+  overrides = gradle2nix_overrides;
+
+  buildJdk = jdk17;
 
   nativeBuildInputs = [
-    gradle
     jdk17
     writableTmpDirAsHomeHook
   ];
@@ -84,8 +82,18 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   gradleFlags = [
+    "--console=plain"
     "-Dorg.gradle.java.installations.auto-download=false"
-    "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
+    "-Dorg.gradle.java.installations.paths=${
+      if stdenv.isDarwin then "${jdk17}" else "${jdk17}/lib/openjdk"
+    }"
+  ];
+
+  gradleBuildFlags = [
+    ":zoomimage-core:publishToMavenLocal"
+    ":zoomimage-core-glide:publishToMavenLocal"
+    ":zoomimage-view:publishToMavenLocal"
+    ":zoomimage-view-glide:publishToMavenLocal"
   ];
 
   installPhase = ''
@@ -93,18 +101,18 @@ stdenv.mkDerivation (finalAttrs: {
 
     repoBase="$NIX_BUILD_TOP/.m2/repository/io/github/panpf/zoomimage"
     mkdir -p "$out"
-    install -Dm644 "$repoBase/zoomimage-core-android/${finalAttrs.version}/zoomimage-core-android-${finalAttrs.version}.aar" "$out/zoomimage-core-android-${finalAttrs.version}.aar"
-    install -Dm644 "$repoBase/zoomimage-core-android/${finalAttrs.version}/zoomimage-core-android-${finalAttrs.version}.module" "$out/zoomimage-core-android-${finalAttrs.version}.module"
-    install -Dm644 "$repoBase/zoomimage-core-android/${finalAttrs.version}/zoomimage-core-android-${finalAttrs.version}.pom" "$out/zoomimage-core-android-${finalAttrs.version}.pom"
-    install -Dm644 "$repoBase/zoomimage-core-glide/${finalAttrs.version}/zoomimage-core-glide-${finalAttrs.version}.aar" "$out/zoomimage-core-glide-${finalAttrs.version}.aar"
-    install -Dm644 "$repoBase/zoomimage-core-glide/${finalAttrs.version}/zoomimage-core-glide-${finalAttrs.version}.module" "$out/zoomimage-core-glide-${finalAttrs.version}.module"
-    install -Dm644 "$repoBase/zoomimage-core-glide/${finalAttrs.version}/zoomimage-core-glide-${finalAttrs.version}.pom" "$out/zoomimage-core-glide-${finalAttrs.version}.pom"
-    install -Dm644 "$repoBase/zoomimage-view/${finalAttrs.version}/zoomimage-view-${finalAttrs.version}.aar" "$out/zoomimage-view-${finalAttrs.version}.aar"
-    install -Dm644 "$repoBase/zoomimage-view/${finalAttrs.version}/zoomimage-view-${finalAttrs.version}.module" "$out/zoomimage-view-${finalAttrs.version}.module"
-    install -Dm644 "$repoBase/zoomimage-view/${finalAttrs.version}/zoomimage-view-${finalAttrs.version}.pom" "$out/zoomimage-view-${finalAttrs.version}.pom"
-    install -Dm644 "$repoBase/zoomimage-view-glide/${finalAttrs.version}/zoomimage-view-glide-${finalAttrs.version}.aar" "$out/zoomimage-view-glide-${finalAttrs.version}.aar"
-    install -Dm644 "$repoBase/zoomimage-view-glide/${finalAttrs.version}/zoomimage-view-glide-${finalAttrs.version}.module" "$out/zoomimage-view-glide-${finalAttrs.version}.module"
-    install -Dm644 "$repoBase/zoomimage-view-glide/${finalAttrs.version}/zoomimage-view-glide-${finalAttrs.version}.pom" "$out/zoomimage-view-glide-${finalAttrs.version}.pom"
+    install -Dm644 "$repoBase/zoomimage-core-android/${version}/zoomimage-core-android-${version}.aar" "$out/zoomimage-core-android-${version}.aar"
+    install -Dm644 "$repoBase/zoomimage-core-android/${version}/zoomimage-core-android-${version}.module" "$out/zoomimage-core-android-${version}.module"
+    install -Dm644 "$repoBase/zoomimage-core-android/${version}/zoomimage-core-android-${version}.pom" "$out/zoomimage-core-android-${version}.pom"
+    install -Dm644 "$repoBase/zoomimage-core-glide/${version}/zoomimage-core-glide-${version}.aar" "$out/zoomimage-core-glide-${version}.aar"
+    install -Dm644 "$repoBase/zoomimage-core-glide/${version}/zoomimage-core-glide-${version}.module" "$out/zoomimage-core-glide-${version}.module"
+    install -Dm644 "$repoBase/zoomimage-core-glide/${version}/zoomimage-core-glide-${version}.pom" "$out/zoomimage-core-glide-${version}.pom"
+    install -Dm644 "$repoBase/zoomimage-view/${version}/zoomimage-view-${version}.aar" "$out/zoomimage-view-${version}.aar"
+    install -Dm644 "$repoBase/zoomimage-view/${version}/zoomimage-view-${version}.module" "$out/zoomimage-view-${version}.module"
+    install -Dm644 "$repoBase/zoomimage-view/${version}/zoomimage-view-${version}.pom" "$out/zoomimage-view-${version}.pom"
+    install -Dm644 "$repoBase/zoomimage-view-glide/${version}/zoomimage-view-glide-${version}.aar" "$out/zoomimage-view-glide-${version}.aar"
+    install -Dm644 "$repoBase/zoomimage-view-glide/${version}/zoomimage-view-glide-${version}.module" "$out/zoomimage-view-glide-${version}.module"
+    install -Dm644 "$repoBase/zoomimage-view-glide/${version}/zoomimage-view-glide-${version}.pom" "$out/zoomimage-view-glide-${version}.pom"
 
     runHook postInstall
   '';
@@ -115,4 +123,4 @@ stdenv.mkDerivation (finalAttrs: {
     license = licenses.asl20;
     platforms = platforms.unix;
   };
-})
+}
