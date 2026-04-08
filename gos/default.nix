@@ -62,6 +62,7 @@ let
 in
 {
   imports = [
+    ./source-built-toolchain.nix
     ./gos_noleakdns.nix
     ./gos-apple.nix
     ./gos_adb_wireless_no_wifi.nix
