@@ -1,9 +1,10 @@
 {
   mk-apk-package,
+  gradle2nix_overrides,
+  gradle2nixBuilders,
   lib,
   jdk21,
   gradle-packages,
-  stdenv,
   fetchFromGitHub,
   apksigner,
   zip,
@@ -12,120 +13,128 @@
   androidSdkBuilder,
 }:
 let
-  appPackage =
-    let
-      androidSdk = androidSdkBuilder (s: [
-        s.cmdline-tools-latest
-        s.platform-tools
-        s.platforms-android-36
-        s.build-tools-35-0-0
-        s.build-tools-36-0-0
-      ]);
+  version = "13.1.0";
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "9.3.1";
-          hash = "sha256-smbV/2uQ6tptw7IMsJDjcxMC5VOifF0+TfHw12vq/wY=";
-          defaultJava = jdk21;
-        }).wrapped;
-    in
-    stdenv.mkDerivation (finalAttrs: {
-      pname = "archivetune";
-      version = "13.1.0";
+  src = fetchFromGitHub {
+    owner = "koiverse";
+    repo = "ArchiveTune";
+    tag = "v${version}";
+    hash = "sha256-rA3hB/snF70Oourx9ub2gXfAkWsfsxSI7X6ZOIo+Wkk=";
+  };
 
-      src = fetchFromGitHub {
-        owner = "koiverse";
-        repo = "ArchiveTune";
-        tag = "v${finalAttrs.version}";
-        hash = "sha256-rA3hB/snF70Oourx9ub2gXfAkWsfsxSI7X6ZOIo+Wkk=";
-      };
+  androidSdk = androidSdkBuilder (s: [
+    s.cmdline-tools-latest
+    s.platform-tools
+    s.platforms-android-36
+    s.build-tools-35-0-0
+    s.build-tools-36-0-0
+  ]);
 
-      gradleBuildTask = ":app:assembleArm64Release";
-      gradleUpdateTask = finalAttrs.gradleBuildTask;
+  gradle =
+    (gradle-packages.mkGradle {
+      version = "9.3.1";
+      hash = "sha256-smbV/2uQ6tptw7IMsJDjcxMC5VOifF0+TfHw12vq/wY=";
+      defaultJava = jdk21;
+    }).wrapped;
 
-      mitmCache = gradle.fetchDeps {
-        inherit (finalAttrs) pname;
-        pkg = finalAttrs.finalPackage;
-        data = ./archivetune_deps.json;
-        silent = false;
-        useBwrap = false;
-      };
+  appPackage = gradle2nixBuilders.buildGradlePackage rec {
+    pname = "archivetune";
+    inherit version src gradle;
 
-      nativeBuildInputs = [
-        gradle
-        jdk21
-        apksigner
-        zip
-        unzip
-        writableTmpDirAsHomeHook
-      ];
+    lockFile = ./gradle.lock;
+    overrides = gradle2nix_overrides;
+    buildJdk = jdk21;
 
-      env = {
-        JAVA_HOME = jdk21;
-        ANDROID_HOME = "${androidSdk}/share/android-sdk";
-        ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
-      };
+    postPatch = ''
+      pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                val agpVersion = requested.version ?: "9.1.0"\n                useModule("com.android.tools.build:gradle:$agpVersion")\n            }\n        }\n    }\n'
+      substituteInPlace settings.gradle.kts \
+        --replace-fail "pluginManagement {" "$pluginResolutionBlock"
+    '';
 
-      preConfigure = ''
-        export ANDROID_USER_HOME="$HOME/.android"
-        mkdir -p "$ANDROID_USER_HOME"
-        echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
-      '';
+    nativeBuildInputs = [
+      androidSdk
+      gradle
+      jdk21
+      apksigner
+      zip
+      unzip
+      writableTmpDirAsHomeHook
+    ];
 
-      gradleFlags = [
-        "-xlintVitalUniversalRelease"
-        "-xlintVitalArmeabiRelease"
-        "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-      ];
+    dontUseGradleConfigure = true;
 
-      installPhase = ''
-        runHook preInstall
+    env = {
+      JAVA_HOME = jdk21;
+      ANDROID_HOME = "${androidSdk}/share/android-sdk";
+      ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+    };
 
-        apk_path="app/build/outputs/apk/arm64/release/app-arm64-release-unsigned.apk"
-        res_archive="app/build/intermediates/shrunk_resources_binary_format/arm64Release/convertShrunkResourcesToBinaryArm64Release/shrunk-resources-binary-format-arm64-release.ap_"
+    preConfigure = ''
+      export ANDROID_USER_HOME="$HOME/.android"
+      export GRADLE_USER_HOME="$(mktemp -d)"
+      export TERM=dumb
+      mkdir -p "$ANDROID_USER_HOME"
+      echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+      gradleFlagsArray+=(--no-daemon --init-script "$gradleInitScript" --offline)
+    '';
 
-        if [[ ! -f "$apk_path" ]]; then
-          echo "ArchiveTune APK not found at $apk_path" >&2
-          exit 1
-        fi
+    gradleFlags = [
+      "-xlintVitalUniversalRelease"
+      "-xlintVitalArmeabiRelease"
+      "-Dorg.gradle.java.home=${jdk21.home}"
+      "-Dorg.gradle.java.installations.auto-download=false"
+      "-Dorg.gradle.java.installations.paths=${jdk21}"
+      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+    ];
 
-        if [[ ! -f "$res_archive" ]]; then
-          echo "ArchiveTune resource archive not found at $res_archive" >&2
-          exit 1
-        fi
+    gradleBuildFlags = ":app:assembleArm64Release";
 
-        # AGP 9 currently leaves code and packaged resources in separate artifacts here.
-        # Merge the packaged resources into the original APK while preserving how AGP
-        # stored native libraries in the code artifact.
-        tmp_res_dir="$(mktemp -d)"
-        tmp_apk_raw="$(mktemp --suffix=.apk)"
-        mkdir -p "$out"
-        cp "$apk_path" "$tmp_apk_raw"
-        unzip -q "$res_archive" -d "$tmp_res_dir"
-        (
-          cd "$tmp_res_dir"
-          zip -qurX9 "$tmp_apk_raw" res
-          zip -qurX0 "$tmp_apk_raw" AndroidManifest.xml resources.arsc
-        )
+    installPhase = ''
+      runHook preInstall
 
-        ${androidSdk}/share/android-sdk/build-tools/35.0.0/zipalign -P 16 -f 4 \
-          "$tmp_apk_raw" "$out/archivetune.apk"
+      apk_path="app/build/outputs/apk/arm64/release/app-arm64-release-unsigned.apk"
+      res_archive="app/build/intermediates/shrunk_resources_binary_format/arm64Release/convertShrunkResourcesToBinaryArm64Release/shrunk-resources-binary-format-arm64-release.ap_"
 
-        ${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt dump badging "$out/archivetune.apk" >/dev/null
-        runHook postInstall
-      '';
+      if [[ ! -f "$apk_path" ]]; then
+        echo "ArchiveTune APK not found at $apk_path" >&2
+        exit 1
+      fi
 
-      meta = with lib; {
-        description = "ArchiveTune YouTube Music client for Android";
-        homepage = "https://github.com/koiverse/ArchiveTune";
-        license = licenses.gpl3Only;
-        platforms = platforms.unix;
-      };
-    });
+      if [[ ! -f "$res_archive" ]]; then
+        echo "ArchiveTune resource archive not found at $res_archive" >&2
+        exit 1
+      fi
+
+      # AGP 9 currently leaves code and packaged resources in separate artifacts here.
+      # Merge the packaged resources into the original APK while preserving how AGP
+      # stored native libraries in the code artifact.
+      tmp_res_dir="$(mktemp -d)"
+      tmp_apk_raw="$(mktemp --suffix=.apk)"
+      mkdir -p "$out"
+      cp "$apk_path" "$tmp_apk_raw"
+      unzip -q "$res_archive" -d "$tmp_res_dir"
+      (
+        cd "$tmp_res_dir"
+        zip -qurX9 "$tmp_apk_raw" res
+        zip -qurX0 "$tmp_apk_raw" AndroidManifest.xml resources.arsc
+      )
+
+      ${androidSdk}/share/android-sdk/build-tools/35.0.0/zipalign -P 16 -f 4 \
+        "$tmp_apk_raw" "$out/archivetune.apk"
+
+      ${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt dump badging "$out/archivetune.apk" >/dev/null
+      runHook postInstall
+    '';
+
+    meta = with lib; {
+      description = "ArchiveTune YouTube Music client for Android";
+      homepage = "https://github.com/koiverse/ArchiveTune";
+      license = licenses.gpl3Only;
+      platforms = platforms.unix;
+    };
+  };
 in
 mk-apk-package {
   inherit appPackage;
