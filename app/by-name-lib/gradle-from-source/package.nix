@@ -28,6 +28,7 @@
   hash,
   lockFile,
   defaultJava,
+  gradleBuilders ? gradle2nixBuilders,
   buildJdk ? jdk17,
   javaToolchains ? [ ],
   bootstrapGradle,
@@ -50,7 +51,7 @@ let
       java ? defaultJava,
       ...
     }:
-    gradle2nixBuilders.buildGradlePackage rec {
+    gradleBuilders.buildGradlePackage rec {
       pname = "gradle";
       inherit version lockFile;
 

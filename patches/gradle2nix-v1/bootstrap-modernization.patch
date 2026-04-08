@@ -1,0 +1,251 @@
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+index 6efa4c6..f28c692 100644
+--- a/app/build.gradle.kts
++++ b/app/build.gradle.kts
+@@ -17,11 +17,6 @@ dependencies {
+     implementation("com.squareup.moshi:moshi-kotlin:latest.release")
+     kapt("com.squareup.moshi:moshi-kotlin-codegen:latest.release")
+     implementation("com.squareup.okio:okio:latest.release")
+-
+-    testRuntimeOnly(kotlin("reflect"))
+-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:latest.release")
+-    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:latest.release")
+-    testImplementation("io.strikt:strikt-core:latest.release")
+ }
+ 
+ application {
+@@ -34,14 +29,6 @@ application {
+         .rename("plugin.*\\.jar", "plugin.jar")
+ }
+ 
+-sourceSets {
+-    test {
+-        resources {
+-            srcDir("$rootDir/fixtures")
+-        }
+-    }
+-}
+-
+ tasks {
+     (run) {
+         dependsOn(installDist)
+@@ -56,20 +43,6 @@ tasks {
+             windowsScript.writeText(windowsScript.readText().replace("@APP_HOME@", "%APP_HOME%"))
+         }
+     }
+-
+-    test {
+-        dependsOn(installDist)
+-        doFirst {
+-            systemProperties("org.nixos.gradle2nix.share" to installDist.get().destinationDir.resolve("share"))
+-        }
+-        useJUnitPlatform {
+-            includeEngines("spek2")
+-        }
+-        testLogging {
+-            events("passed", "skipped", "failed")
+-        }
+-    }
+-
+     withType<KotlinCompile> {
+         kotlinOptions {
+             jvmTarget = "1.8"
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 4d61a42..b6df40c 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -31,7 +31,13 @@ allprojects {
+                     file("gradle.lockfile").delete()
+                 }
+                 doLast {
+-                    configurations.matching { it.isCanBeResolved }.all { resolve() }
++                    configurations
++                        .matching {
++                            it.isCanBeResolved &&
++                            !it.name.startsWith("test", ignoreCase = true) &&
++                            !it.name.startsWith("compatTest", ignoreCase = true)
++                        }
++                        .all { resolve() }
+                 }
+             }
+         }
+diff --git a/gradle-env.json b/gradle-env.json
+index 6ff7a39..c44ed56 100644
+--- a/gradle-env.json
++++ b/gradle-env.json
+@@ -7,7 +7,7 @@
+       "version": "6.8.1",
+       "type": "all",
+       "url": "https://services.gradle.org/distributions/gradle-6.8.1-all.zip",
+-      "sha256": "3db89524a3981819ff28c3f979236c1274a726e146ced0c8a2020417f9bc0782",
++      "sha256": "sha256-/VkaNK9zhXMJcDmfRzr6vbiyjVf9l9ZiXDiNCQA51v0=",
+       "nativeVersion": "0.22-milestone-9"
+     },
+     "dependencies": {
+@@ -71,7 +71,7 @@
+           "urls": [
+             "https://plugins.gradle.org/m2/com/fasterxml/jackson/jackson-parent/2.12/jackson-parent-2.12.pom"
+           ],
+-          "sha256": "Z749r6r4zhcX56fefbkrpDPfkjtpekDJdDpUzJ/FNjc="
++          "sha256": "YqocFnmt4J8XPb8bbDLTXFXnWAAjj9XkjxOqQzfAh1s="
+         },
+         {
+           "id": {
+@@ -1906,38 +1906,6 @@
+       ],
+       "buildscript": [],
+       "project": [
+-        {
+-          "id": {
+-            "group": "com.christophsturm",
+-            "name": "filepeek",
+-            "version": "0.1.2",
+-            "type": "jar",
+-            "extension": "jar"
+-          },
+-          "name": "filepeek-0.1.2.jar",
+-          "path": "com/christophsturm/filepeek/0.1.2",
+-          "urls": [
+-            "https://jcenter.bintray.com/com/christophsturm/filepeek/0.1.2/filepeek-0.1.2.jar",
+-            "https://repo.gradle.org/gradle/libs-releases/com/christophsturm/filepeek/0.1.2/filepeek-0.1.2.jar"
+-          ],
+-          "sha256": "29a5735255bb1f3652a4e2592a2bd8ca754717f8d62eb4a65680c992b98af4b0"
+-        },
+-        {
+-          "id": {
+-            "group": "com.christophsturm",
+-            "name": "filepeek",
+-            "version": "0.1.2",
+-            "type": "pom",
+-            "extension": "pom"
+-          },
+-          "name": "filepeek-0.1.2.pom",
+-          "path": "com/christophsturm/filepeek/0.1.2",
+-          "urls": [
+-            "https://jcenter.bintray.com/com/christophsturm/filepeek/0.1.2/filepeek-0.1.2.pom",
+-            "https://repo.gradle.org/gradle/libs-releases/com/christophsturm/filepeek/0.1.2/filepeek-0.1.2.pom"
+-          ],
+-          "sha256": "a01fcc97303305918b3c8e943bc208c5a0d915b8f8fb9c963cddf27cd89e3e57"
+-        },
+         {
+           "id": {
+             "group": "com.github.ajalt",
+diff --git a/gradle-env.nix b/gradle-env.nix
+index b512f90..078d5ee 100644
+--- a/gradle-env.nix
++++ b/gradle-env.nix
+@@ -25,6 +25,9 @@
+ , fetchs3
+ , fetchurl
+ , gradleGen
++, callPackage
++, jdk11
++, path
+ , writeText
+ , writeTextDir
+ }:
+@@ -325,16 +328,10 @@ let
+       '';
+ 
+   mkGradle = gradleSpec:
+-    gradleGen.gradleGen {
+-      inherit (gradleSpec) nativeVersion;
+-
+-      name = "gradle-${gradleSpec.version}-${gradleSpec.type}";
+-
+-      src = fetchurl {
+-        inherit (gradleSpec) url sha256;
+-      };
+-    } // {
++    (callPackage "${path}/pkgs/development/tools/build-managers/gradle/default.nix" { }).mkGradle {
+       inherit (gradleSpec) version;
++      hash = gradleSpec.sha256;
++      defaultJava = jdk11;
+     };
+ 
+   mkProjectEnv = projectSpec: rec {
+diff --git a/ivy/build.gradle.kts b/ivy/build.gradle.kts
+index 1cc1168..e0dfd12 100644
+--- a/ivy/build.gradle.kts
++++ b/ivy/build.gradle.kts
+@@ -5,20 +5,4 @@ plugins {
+ dependencies {
+     api("org.apache.ivy:ivy:latest.release")
+     api("com.amazonaws:aws-java-sdk-s3:latest.release")
+-
+-    testImplementation("com.adobe.testing:s3mock-junit5:latest.release")
+-    testImplementation("io.strikt:strikt-core:latest.release")
+-    testImplementation("org.junit.jupiter:junit-jupiter-api:latest.release")
+-    testImplementation("org.junit.jupiter:junit-jupiter-params:latest.release")
+-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:latest.release")
+-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:latest.release")
+ }
+-
+-tasks {
+-    test {
+-        useJUnitPlatform {
+-            includeEngines("junit-jupiter")
+-        }
+-        systemProperty("fixtures", "$rootDir/fixtures")
+-    }
+-}
+\ No newline at end of file
+diff --git a/plugin/build.gradle.kts b/plugin/build.gradle.kts
+index c59e544..a1b9b9d 100644
+--- a/plugin/build.gradle.kts
++++ b/plugin/build.gradle.kts
+@@ -32,21 +32,6 @@ dependencies {
+     implementation(project(":ivy"))
+     implementation(project(":model"))
+     shadow(gradleApi())
+-
+-    compatTestImplementation("com.adobe.testing:s3mock-junit5:latest.release")
+-    compatTestImplementation("com.squareup.okio:okio:latest.release")
+-    compatTestImplementation("dev.minutest:minutest:latest.release")
+-    compatTestImplementation("io.javalin:javalin:latest.release")
+-    compatTestImplementation("io.strikt:strikt-core:latest.release")
+-    compatTestImplementation("org.junit.jupiter:junit-jupiter-api:latest.release")
+-    compatTestImplementation("org.junit.jupiter:junit-jupiter-params:latest.release")
+-    compatTestImplementation(embeddedKotlin("reflect"))
+-    compatTestImplementation(embeddedKotlin("stdlib-jdk8"))
+-    compatTestImplementation(embeddedKotlin("test-junit5"))
+-    compatTestImplementation(gradleTestKit())
+-    compatTestImplementation(project(":model"))
+-    compatTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:latest.release")
+-    compatTestRuntimeOnly("org.junit.platform:junit-platform-launcher:latest.release")
+ }
+ 
+ gradlePlugin {
+@@ -78,17 +63,4 @@ tasks {
+     pluginUnderTestMetadata {
+         pluginClasspath.setFrom(files(shadowJar))
+     }
+-
+-    withType<Test> {
+-        useJUnitPlatform {
+-            includeEngines("junit-jupiter")
+-        }
+-
+-        // Default logging config exposes a classpath conflict between
+-        // the Gradle API and SFL4J.
+-        // (Sprint Boot is used in S3Mock)
+-        systemProperty("org.springframework.boot.logging.LoggingSystem", "org.springframework.boot.logging.java.JavaLoggingSystem")
+-
+-        systemProperty("fixtures", "$rootDir/fixtures")
+-    }
+ }
+diff --git a/settings.gradle.kts b/settings.gradle.kts
+index 4376732..8f91032 100644
+--- a/settings.gradle.kts
++++ b/settings.gradle.kts
+@@ -29,8 +29,8 @@ plugins {
+ 
+ dependencyResolutionManagement {
+     repositories {
+-        jcenter()
+-        maven { url = uri("https://repo.gradle.org/gradle/libs-releases") }
++        gradlePluginPortal()
++        mavenCentral()
+     }
+     repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+ }
