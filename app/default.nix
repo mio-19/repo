@@ -99,9 +99,7 @@
         apktool-src = sources.morphe_apktool.src;
         multidexlib2-src = sources.morphe_multidexlib2.src;
       };
-      apkScope = lib.makeScope pkgs.newScope (
-        _: byName // helpers // libs
-      );
+      apkScope = lib.makeScope pkgs.newScope (_: byName // helpers // libs);
       apk = lib.filesystem.packagesFromDirectoryRecursive {
         inherit (apkScope) callPackage newScope;
         directory = ./by-name-apk;
