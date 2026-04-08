@@ -19,6 +19,7 @@
   failureaccess_1_0_1,
   failureaccess_1_0_2,
   gson_2_11_0,
+  glide_5_0_5,
   guava_31_1_android,
   guava_33_3_1_jre,
   java_diff_utils_4_16,
@@ -33,6 +34,7 @@
   slf4j_api_1_7_30,
   slf4j_api_2_0_17,
   zxing_core_3_5_4,
+  zoomimage_1_0_2,
 }:
 
 {
@@ -65,6 +67,21 @@
   };
   "com.google.code.gson:gson-parent:2.11.0" = {
     "gson-parent-2.11.0.pom" = _: "${gson_2_11_0}/gson-parent-2.11.0.pom";
+  };
+  "com.github.bumptech.glide:disklrucache:5.0.5" = {
+    "disklrucache-5.0.5.aar" = _: "${glide_5_0_5}/disklrucache-5.0.5.aar";
+    "disklrucache-5.0.5.module" = _: "${glide_5_0_5}/disklrucache-5.0.5.module";
+    "disklrucache-5.0.5.pom" = _: "${glide_5_0_5}/disklrucache-5.0.5.pom";
+  };
+  "com.github.bumptech.glide:gifdecoder:5.0.5" = {
+    "gifdecoder-5.0.5.aar" = _: "${glide_5_0_5}/gifdecoder-5.0.5.aar";
+    "gifdecoder-5.0.5.module" = _: "${glide_5_0_5}/gifdecoder-5.0.5.module";
+    "gifdecoder-5.0.5.pom" = _: "${glide_5_0_5}/gifdecoder-5.0.5.pom";
+  };
+  "com.github.bumptech.glide:glide:5.0.5" = {
+    "glide-5.0.5.aar" = _: "${glide_5_0_5}/glide-5.0.5.aar";
+    "glide-5.0.5.module" = _: "${glide_5_0_5}/glide-5.0.5.module";
+    "glide-5.0.5.pom" = _: "${glide_5_0_5}/glide-5.0.5.pom";
   };
   "commons-io:commons-io:2.13.0" = {
     "commons-io-2.13.0.jar" = _: "${commons_io_2_13_0}/commons-io-2.13.0.jar";
@@ -185,6 +202,26 @@
   };
   "com.google.zxing:zxing-parent:3.5.4" = {
     "zxing-parent-3.5.4.pom" = _: "${zxing_core_3_5_4}/zxing-parent-3.5.4.pom";
+  };
+  "io.github.panpf.zoomimage:zoomimage-core-android:1.0.2" = {
+    "zoomimage-core-android-1.0.2.aar" = _: "${zoomimage_1_0_2}/zoomimage-core-android-1.0.2.aar";
+    "zoomimage-core-android-1.0.2.module" = _: "${zoomimage_1_0_2}/zoomimage-core-android-1.0.2.module";
+    "zoomimage-core-android-1.0.2.pom" = _: "${zoomimage_1_0_2}/zoomimage-core-android-1.0.2.pom";
+  };
+  "io.github.panpf.zoomimage:zoomimage-core-glide:1.0.2" = {
+    "zoomimage-core-glide-1.0.2.aar" = _: "${zoomimage_1_0_2}/zoomimage-core-glide-1.0.2.aar";
+    "zoomimage-core-glide-1.0.2.module" = _: "${zoomimage_1_0_2}/zoomimage-core-glide-1.0.2.module";
+    "zoomimage-core-glide-1.0.2.pom" = _: "${zoomimage_1_0_2}/zoomimage-core-glide-1.0.2.pom";
+  };
+  "io.github.panpf.zoomimage:zoomimage-view:1.0.2" = {
+    "zoomimage-view-1.0.2.aar" = _: "${zoomimage_1_0_2}/zoomimage-view-1.0.2.aar";
+    "zoomimage-view-1.0.2.module" = _: "${zoomimage_1_0_2}/zoomimage-view-1.0.2.module";
+    "zoomimage-view-1.0.2.pom" = _: "${zoomimage_1_0_2}/zoomimage-view-1.0.2.pom";
+  };
+  "io.github.panpf.zoomimage:zoomimage-view-glide:1.0.2" = {
+    "zoomimage-view-glide-1.0.2.aar" = _: "${zoomimage_1_0_2}/zoomimage-view-glide-1.0.2.aar";
+    "zoomimage-view-glide-1.0.2.module" = _: "${zoomimage_1_0_2}/zoomimage-view-glide-1.0.2.module";
+    "zoomimage-view-glide-1.0.2.pom" = _: "${zoomimage_1_0_2}/zoomimage-view-glide-1.0.2.pom";
   };
   "com.squareup:javawriter:2.5.0" = {
     "javawriter-2.5.0.jar" = _: "${javawriter_2_5_0}/javawriter-2.5.0.jar";
