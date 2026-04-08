@@ -48,7 +48,6 @@ let
   mkGradle' =
     {
       java ? defaultJava,
-      javaToolchains ? [ ],
       ...
     }:
     gradle2nixBuilders.buildGradlePackage rec {
