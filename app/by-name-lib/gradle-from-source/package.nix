@@ -1,45 +1,59 @@
 {
-  lib,
-  pkgs,
-  stdenv,
-  callPackage,
-  fetchFromGitHub,
-  makeWrapper,
-  unzip,
   autoPatchelfHook,
+  buildPackages,
   coreutils,
+  fetchFromGitHub,
   findutils,
   git,
   gnused,
-  jdk8_headless,
+  gradle2nixBuilders,
   jdk11,
   jdk17,
   jdk21,
+  jdk8_headless,
+  lib,
+  makeWrapper,
   ncurses5,
   ncurses6,
+  path,
+  gradle-packages,
+  stdenv,
   udev,
-  buildPackages,
+  unzip,
+  callPackage,
 }:
 {
   version,
   tag ? if lib.length (lib.splitString "." version) == 3 then "v${version}" else "v${version}.0",
   hash,
-  deps,
+  lockFile,
   defaultJava,
-  bootstrapGradle ? pkgs.gradle-packages.${"gradle_" + lib.versions.major version}.wrapped,
+  buildJdk ? jdk17,
+  javaToolchains ? [ ],
+  bootstrapGradle,
 }:
 let
+  toolchainPaths = lib.concatStringsSep "," (
+    [
+      jdk8_headless
+      jdk11
+      jdk17
+      jdk21
+    ]
+    ++ javaToolchains
+  );
+
+  jnaLibraryPath = lib.optionalString stdenv.hostPlatform.isLinux (lib.makeLibraryPath [ udev ]);
+  jnaFlag = lib.optionalString stdenv.hostPlatform.isLinux ''--add-flags "-Djna.library.path=${jnaLibraryPath}"'';
   mkGradle' =
     {
       java ? defaultJava,
       javaToolchains ? [ ],
-      gradleInitScript ? null,
-      mitmCache ? null,
       ...
     }:
-    stdenv.mkDerivation (finalAttrs: {
+    gradle2nixBuilders.buildGradlePackage rec {
       pname = "gradle";
-      inherit version;
+      inherit version lockFile;
 
       src = fetchFromGitHub {
         owner = "gradle";
@@ -47,17 +61,16 @@ let
         inherit tag hash;
       };
 
+      gradle = bootstrapGradle;
+      inherit buildJdk;
+
       nativeBuildInputs = [
-        bootstrapGradle
         git
         makeWrapper
         unzip
       ]
       ++ lib.optionals stdenv.hostPlatform.isLinux [
         autoPatchelfHook
-      ]
-      ++ lib.optionals (mitmCache != "") [
-        finalAttrs.mitmCache
       ];
 
       buildInputs = [
@@ -68,102 +81,63 @@ let
 
       dontAutoPatchelf = true;
 
-      gradleBuildCommand = ''
-        export GRADLE_USER_HOME="$TMPDIR/gradle-home"
-        mkdir -p "$GRADLE_USER_HOME"
-
-        gradleFlagsArray+=(
-          --no-configuration-cache
-          -PfinalRelease=true
-          -Dorg.gradle.configuration-cache=false
-          -Dorg.gradle.java.installations.auto-download=false
-          -Dorg.gradle.java.installations.paths=${
-            lib.concatStringsSep "," (
-              [
-                jdk8_headless
-                jdk11
-                jdk17
-                jdk21
-              ]
-              ++ javaToolchains
-            )
-          }
-        )
-
-        gradle :distributions-full:binDistributionZip
-      '';
-
-      configurePhase = ''
-        runHook preConfigure
-      '';
-
-      buildPhase = ''
-        runHook preBuild
-        ${finalAttrs.gradleBuildCommand}
-        runHook postBuild
-      '';
-
-      gradleUpdateScript = ''
-        ${finalAttrs.gradleBuildCommand}
-      '';
-
-      mitmCache = bootstrapGradle.fetchDeps {
-        pkg = finalAttrs.finalPackage;
-        pname = "gradle-${version}";
-        data = deps;
-        silent = false;
-        useBwrap = false;
+      env = {
+        JAVA_HOME = if stdenv.isDarwin then "${buildJdk}" else "${buildJdk}/lib/openjdk";
       };
+
+      gradleFlags = [
+        "-PfinalRelease=true"
+        "--no-configuration-cache"
+        "-Dorg.gradle.configuration-cache=false"
+        "-Dorg.gradle.java.installations.auto-download=false"
+        "-Dorg.gradle.java.installations.paths=${toolchainPaths}"
+      ];
+
+      gradleBuildFlags = [ ":distributions-full:binDistributionZip" ];
 
       gradleLibexec = "${placeholder "out"}/libexec/gradle";
 
-      installPhase =
-        let
-          toolchainPaths = "org.gradle.java.installations.paths=${lib.concatStringsSep "," javaToolchains}";
-          jnaLibraryPath = lib.optionalString stdenv.hostPlatform.isLinux (lib.makeLibraryPath [ udev ]);
-          jnaFlag = lib.optionalString stdenv.hostPlatform.isLinux ''--add-flags "-Djna.library.path=${jnaLibraryPath}"'';
-        in
-        ''
-          runHook preInstall
+      installPhase = ''
+        runHook preInstall
 
-          dist_zip="$(find . -path '*/build/distributions/gradle-*-bin.zip' | grep '/distributions-full/' | head -n1)"
-          test -n "$dist_zip"
-          test -f "$dist_zip"
-          mkdir dist-unpack
-          unzip -q "$dist_zip" -d dist-unpack
-          cd dist-unpack/gradle-*
+        dist_zip="$(find . -path '*/build/distributions/gradle-*-bin.zip' | grep '/distributions-full/' | head -n1)"
+        test -n "$dist_zip"
+        test -f "$dist_zip"
+        mkdir dist-unpack
+        unzip -q "$dist_zip" -d dist-unpack
+        cd dist-unpack/gradle-*
 
-          mkdir -vp $gradleLibexec
-          cp -av lib/ $gradleLibexec
-          [ -f $gradleLibexec/lib/gradle-launcher-*.jar ] || { echo "No Gradle launcher jar found!" >&2; exit 1; }
+        mkdir -vp $gradleLibexec
+        cp -av lib/ $gradleLibexec
+        [ -f $gradleLibexec/lib/gradle-launcher-*.jar ] || { echo "No Gradle launcher jar found!" >&2; exit 1; }
 
-          gradleCliMainJar="$(echo $gradleLibexec/lib/gradle-gradle-cli-main-*.jar)"
-          if ! unzip -p "$gradleCliMainJar" META-INF/MANIFEST.MF | grep -q '^Main-Class: '; then
-            printf 'Main-Class: org.gradle.launcher.GradleMain\n' > gradle-cli-main-manifest.txt
-            ${buildPackages.jdk}/bin/jar ufm "$gradleCliMainJar" gradle-cli-main-manifest.txt
-          fi
+        gradleCliMainJar="$(echo $gradleLibexec/lib/gradle-gradle-cli-main-*.jar)"
+        if ! unzip -p "$gradleCliMainJar" META-INF/MANIFEST.MF | grep -q '^Main-Class: '; then
+          printf 'Main-Class: org.gradle.launcher.GradleMain\n' > gradle-cli-main-manifest.txt
+          ${buildPackages.jdk}/bin/jar ufm "$gradleCliMainJar" gradle-cli-main-manifest.txt
+        fi
 
-          echo ${lib.escapeShellArg toolchainPaths} > $gradleLibexec/gradle.properties
+        echo ${lib.escapeShellArg "org.gradle.java.installations.paths=${toolchainPaths}"} > $gradleLibexec/gradle.properties
 
-          mkdir -vp $gradleLibexec/bin
-          cp -v bin/gradle $gradleLibexec/bin/gradlew
-          chmod +x $gradleLibexec/bin/gradlew
-          patchShebangs --host $gradleLibexec/bin/gradlew
+        mkdir -vp $gradleLibexec/bin
+        cp -v bin/gradle $gradleLibexec/bin/gradlew
+        chmod +x $gradleLibexec/bin/gradlew
+        patchShebangs --host $gradleLibexec/bin/gradlew
 
-          mkdir -vp $out/bin
-          makeWrapper $gradleLibexec/bin/gradlew $out/bin/gradle \
-            --set-default JAVA_HOME ${java} \
-            --suffix PATH : ${
-              lib.makeBinPath [
-                coreutils
-                findutils
-                gnused
-              ]
-            } \
-            ${jnaFlag}
+        mkdir -vp $out/bin
+        makeWrapper $gradleLibexec/bin/gradlew $out/bin/gradle \
+          --set-default JAVA_HOME ${java} \
+          --suffix PATH : ${
+            lib.makeBinPath [
+              coreutils
+              findutils
+              gnused
+            ]
+          } \
+          ${jnaFlag}
 
-          runHook postInstall
-        '';
+        runHook postInstall
+      '';
 
       dontFixup = !stdenv.hostPlatform.isLinux;
 
@@ -174,7 +148,7 @@ let
         in
         ''
           export PATH="${buildPackages.jdk}/bin:$PATH"
-          . ${pkgs.path}/pkgs/development/tools/build-managers/gradle/patching.sh
+          . ${path}/pkgs/development/tools/build-managers/gradle/patching.sh
 
           nativeVersion="$(extractVersion native-platform $gradleLibexec/lib/native-platform-*.jar)"
           for variant in "" "-ncurses5" "-ncurses6"; do
@@ -227,10 +201,10 @@ let
         license = lib.licenses.asl20;
         mainProgram = "gradle";
       };
-    });
+    };
 
   unwrapped = callPackage mkGradle' { };
 in
-callPackage pkgs.gradle-packages.wrapGradle {
+callPackage gradle-packages.wrapGradle {
   gradle-unwrapped = unwrapped;
 }
