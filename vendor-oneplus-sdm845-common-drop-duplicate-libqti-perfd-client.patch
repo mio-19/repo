@@ -60,3 +60,13 @@
  cc_prebuilt_library_shared {
      name: "libqti-perfd",
      owner: "oneplus",
+--- a/sdm845-common-vendor.mk
++++ b/sdm845-common-vendor.mk
+@@ -395,7 +395,6 @@ PRODUCT_PACKAGES += \
+     libqmi_encdec \
+     libqmi_legacy \
+     libqmiservices \
+-    libqti-perfd-client \
+     libqti-perfd \
+     libqti-util \
+     libscveCommon \

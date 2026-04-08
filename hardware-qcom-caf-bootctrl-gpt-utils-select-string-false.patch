@@ -1,0 +1,11 @@
+--- a/gpt-utils/Android.bp
++++ b/gpt-utils/Android.bp
+@@ -14,7 +14,7 @@
+         "libz",
+     ],
+     cflags: select(soong_config_variable("QTI_GPT_UTILS", "USE_BSG_FRAMEWORK"), {
+-        false: [],
++        "false": [],
+         default: ["-D_BSG_FRAMEWORK_KERNEL_HEADERS"],
+     }),
+     srcs: [
