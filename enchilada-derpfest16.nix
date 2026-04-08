@@ -54,6 +54,9 @@ args@{
     "device/oneplus/sdm845-common".postPatch = ''
       substituteInPlace common.mk \
         --replace-fail '$(call inherit-product, packages/apps/ViPER4AndroidFX/config.mk)' ""
+      substituteInPlace sepolicy/vendor/dashd.te \
+        --replace-fail "vendor_sysfs_battery_supply" "sysfs_battery_supply" \
+        --replace-fail "vendor_sysfs_usb_supply" "sysfs_usb_supply"
     '';
     "kernel/oneplus/sdm845".src = pkgs.fetchFromGitHub {
       owner = "ppanzenboeck";
