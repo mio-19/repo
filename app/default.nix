@@ -5,6 +5,7 @@
       pkgs,
       lib,
       system,
+      gradle2nixV1,
       ...
     }:
     let
@@ -91,6 +92,7 @@
       helpers = {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
         gradle2nixBuilders = inputs.gradle2nix.builders.${system};
+        gradle2nixV1Builders = gradle2nixV1.builders.${system};
         inherit
           mkSignScript
           sources

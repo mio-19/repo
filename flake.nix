@@ -41,14 +41,34 @@
       url = "github:tadfisher/gradle2nix/v2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    gradle2nix-v1 = {
+      url = "github:tadfisher/gradle2nix/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    {
+    inputs@{
       nixpkgs,
       flake-parts,
       ...
-    }@inputs:
+    }:
+    let
+      mkPatchedFlakeSrc =
+        {
+          system,
+          input,
+          name,
+          patches,
+        }:
+        let
+          pkgs0 = import inputs.nixpkgs { inherit system; };
+        in
+        pkgs0.applyPatches {
+          inherit name patches;
+          src = input.outPath;
+        };
+    in
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
@@ -64,10 +84,34 @@
       ];
       perSystem =
         args@{ pkgs, system, ... }:
+        let
+          gradle2nixV1Src = mkPatchedFlakeSrc {
+            inherit system;
+            input = inputs.gradle2nix-v1;
+            name = "gradle2nix-v1-patched";
+            patches = [
+              ./patches/gradle2nix-v1/bootstrap-modernization.patch
+            ];
+          };
+
+          gradle2nixV1 =
+            (import "${gradle2nixV1Src}/flake.nix").outputs {
+              self = gradle2nixV1;
+              nixpkgs = inputs.nixpkgs;
+              flake-utils = inputs.gradle2nix-v1.inputs.flake-utils;
+            }
+            // {
+              outPath = toString gradle2nixV1Src;
+            };
+        in
         {
+          _module.args.gradle2nixV1 = gradle2nixV1;
+
           formatter = pkgs.nixfmt;
 
           packages.ollama-static = pkgs.pkgsStatic.ollama;
+          packages.gradle2nix-v1 = gradle2nixV1.packages.${system}.gradle2nix;
+          packages.gradle2nix-v1-src = gradle2nixV1Src;
 
           # https://github.com/nix-community/nixos-apple-silicon/pull/353
           packages.zfs-installer =
