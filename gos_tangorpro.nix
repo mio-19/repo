@@ -11,7 +11,6 @@ args@{
   advancedPowerMenu = true;
   launcherVariant = "los";
   allowAdbWirelessWithoutWifi = true;
-  gos.useSourceBuiltToolchain = true;
   enableLindroid = true;
   enableDroidspaces = true;
   device = "tangorpro";
