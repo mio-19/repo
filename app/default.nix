@@ -100,7 +100,7 @@
         multidexlib2-src = sources.morphe_multidexlib2.src;
       };
       apkScope = lib.makeScope pkgs.newScope (
-        _: byName // helpers // { inherit (libs) gradle2nix_overrides; }
+        _: byName // helpers // libs
       );
       apk = lib.filesystem.packagesFromDirectoryRecursive {
         inherit (apkScope) callPackage newScope;
@@ -114,10 +114,13 @@
           ;
         directory = ./by-name-lib;
       };
-      byNameBase = lib.makeScope libBase.newScope (_: {
-        inherit apk;
-        inherit (libs) gradle2nix_overrides;
-      });
+      byNameBase = lib.makeScope libBase.newScope (
+        _:
+        {
+          inherit apk;
+        }
+        // libs
+      );
       byName = lib.filesystem.packagesFromDirectoryRecursive {
         inherit (byNameBase)
           callPackage
