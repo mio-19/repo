@@ -1,11 +1,12 @@
 {
   mk-apk-package,
+  gradle2nix_overrides,
+  gradle2nixBuilders,
   sources,
   lib,
   jdk21,
   jdk17,
   gradle-packages,
-  stdenv,
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -17,91 +18,94 @@ let
     version
     ;
 
-  appPackage =
-    let
-      androidSdk = androidSdkBuilder (s: [
-        s.cmdline-tools-latest
-        s.platform-tools
-        s.platforms-android-36
-        s.build-tools-36-1-0
-      ]);
+  androidSdk = androidSdkBuilder (s: [
+    s.cmdline-tools-latest
+    s.platform-tools
+    s.platforms-android-36
+    s.build-tools-36-1-0
+  ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "9.4.0";
-          hash = "sha256-YOpyM1bYEmPoAC/sD8+eKw7uDAhQx6PXqwpj8szGAfM=";
-          defaultJava = jdk21;
-        }).wrapped;
-    in
-    stdenv.mkDerivation (finalAttrs: {
-      pname = "grapheneos-info";
-      inherit version src;
+  gradle =
+    (gradle-packages.mkGradle {
+      version = "9.4.0";
+      hash = "sha256-YOpyM1bYEmPoAC/sD8+eKw7uDAhQx6PXqwpj8szGAfM=";
+      defaultJava = jdk21;
+    }).wrapped;
 
-      patches = [
-        (fetchpatch {
-          name = "added release state display to info app";
-          url = "https://github.com/GrapheneOS/Info/pull/56.diff";
-          hash = "sha256-qMMHV6426FHw1QCg+JfpvmjO/qUvul6T/2Le7A2YQXI=";
-        })
-      ];
+  appPackage = gradle2nixBuilders.buildGradlePackage rec {
+    pname = "grapheneos-info";
+    inherit version src gradle;
 
-      gradleBuildTask = ":app:assembleRelease";
-      gradleUpdateTask = finalAttrs.gradleBuildTask;
+    lockFile = ./gradle.lock;
+    overrides = gradle2nix_overrides;
+    buildJdk = jdk21;
 
-      mitmCache = gradle.fetchDeps {
-        inherit (finalAttrs) pname;
-        pkg = finalAttrs.finalPackage;
-        data = ./grapheneos_info_deps.json;
-        silent = false;
-        useBwrap = false;
-      };
+    patches = [
+      (fetchpatch {
+        name = "added release state display to info app";
+        url = "https://github.com/GrapheneOS/Info/pull/56.diff";
+        hash = "sha256-qMMHV6426FHw1QCg+JfpvmjO/qUvul6T/2Le7A2YQXI=";
+      })
+    ];
 
-      nativeBuildInputs = [
-        gradle
-        jdk21
-        jdk17
-        apksigner
-        writableTmpDirAsHomeHook
-      ];
+    postPatch = ''
+      rm -f gradle/verification-metadata.xml
 
-      env = {
-        JAVA_HOME = if stdenv.isDarwin then "${jdk21}" else "${jdk21}/lib/openjdk";
-        ANDROID_HOME = "${androidSdk}/share/android-sdk";
-        ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
-      };
+      pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                val agpVersion = requested.version ?: "9.0.0"\n                useModule("com.android.tools.build:gradle:$agpVersion")\n            }\n        }\n    }\n'
+      substituteInPlace settings.gradle.kts \
+        --replace-fail "pluginManagement {" "$pluginResolutionBlock"
+    '';
 
-      preConfigure = ''
-        export ANDROID_USER_HOME="$HOME/.android"
-        mkdir -p "$ANDROID_USER_HOME"
-        echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
-      '';
+    nativeBuildInputs = [
+      androidSdk
+      gradle
+      jdk21
+      jdk17
+      apksigner
+      writableTmpDirAsHomeHook
+    ];
 
-      gradleFlags =
-        let
-          postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
-        in
-        [
-          "-Dorg.gradle.java.installations.auto-download=false"
-          "-Dorg.gradle.java.installations.paths=${jdk17}${postfix},${jdk21}${postfix}"
-          "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-          "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-        ];
+    dontUseGradleConfigure = true;
 
-      installPhase = ''
-        runHook preInstall
-        apk_path="$(echo app/build/outputs/apk/release/*-unsigned.apk)"
-        install -Dm644 "$apk_path" "$out/Info.apk"
-        runHook postInstall
-      '';
+    env = {
+      ANDROID_HOME = "${androidSdk}/share/android-sdk";
+      ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
+    };
 
-      meta = with lib; {
-        description = "GrapheneOS Info app (unsigned APK)";
-        homepage = "https://github.com/GrapheneOS/Info";
-        license = licenses.asl20;
-        platforms = platforms.unix;
-      };
-    });
+    preConfigure = ''
+      export ANDROID_USER_HOME="$HOME/.android"
+      export GRADLE_USER_HOME="$(mktemp -d)"
+      export TERM=dumb
+      mkdir -p "$ANDROID_USER_HOME"
+      echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+      gradleFlagsArray+=(--no-daemon --init-script "$gradleInitScript" --offline)
+    '';
+
+    gradleFlags = [
+      "-Dorg.gradle.java.home=${jdk21.home}"
+      "-Dorg.gradle.java.installations.auto-download=false"
+      "-Dorg.gradle.java.installations.paths=${jdk17}/lib/openjdk,${jdk21}/lib/openjdk"
+      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+    ];
+
+    gradleBuildFlags = ":app:assembleRelease";
+
+    installPhase = ''
+      runHook preInstall
+      apk_path="$(echo app/build/outputs/apk/release/*-unsigned.apk)"
+      install -Dm644 "$apk_path" "$out/Info.apk"
+      runHook postInstall
+    '';
+
+    meta = with lib; {
+      description = "GrapheneOS Info app (unsigned APK)";
+      homepage = "https://github.com/GrapheneOS/Info";
+      license = licenses.asl20;
+      platforms = platforms.unix;
+    };
+  };
 in
 mk-apk-package {
   inherit appPackage;
