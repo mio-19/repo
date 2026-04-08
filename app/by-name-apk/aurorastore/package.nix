@@ -1,112 +1,110 @@
 {
   mk-apk-package,
+  overrides-from-source,
+  gradle2nixBuilders,
   lib,
   jdk21,
-  gradle-packages,
-  stdenv,
+  gradle_9_3_1,
   fetchgit,
-  git,
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
 let
-  appPackage =
-    let
-      version = "4.8.1";
+  version = "4.8.1";
 
-      androidSdk = androidSdkBuilder (s: [
-        s.cmdline-tools-latest
-        s.platform-tools
-        s.platforms-android-36
-        s.build-tools-35-0-0
-        s.build-tools-36-1-0
-      ]);
+  src = fetchgit {
+    url = "https://gitlab.com/AuroraOSS/AuroraStore.git";
+    tag = version;
+    hash = "sha256-qNAz3ctp5ThDP9C5ksSrk79xUmey2LKw1gG+N8D4zNg=";
+  };
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "9.4.0";
-          hash = "sha256-YOpyM1bYEmPoAC/sD8+eKw7uDAhQx6PXqwpj8szGAfM=";
-          defaultJava = jdk21;
-        }).wrapped;
-    in
-    stdenv.mkDerivation (finalAttrs: {
-      pname = "aurorastore";
-      inherit version;
+  androidSdk = androidSdkBuilder (s: [
+    s.cmdline-tools-latest
+    s.platform-tools
+    s.platforms-android-36
+    s.build-tools-35-0-0
+    s.build-tools-36-1-0
+  ]);
 
-      src = fetchgit {
-        url = "https://gitlab.com/AuroraOSS/AuroraStore.git";
-        tag = finalAttrs.version;
-        hash = "sha256-qNAz3ctp5ThDP9C5ksSrk79xUmey2LKw1gG+N8D4zNg=";
-      };
+  gradle = gradle_9_3_1;
 
-      gradleBuildTask = ":app:assembleVanillaRelease";
-      gradleUpdateTask = finalAttrs.gradleBuildTask;
+  appPackage = gradle2nixBuilders.buildGradlePackage rec {
+    pname = "aurorastore";
+    inherit version src gradle;
 
-      mitmCache = gradle.fetchDeps {
-        inherit (finalAttrs) pname;
-        pkg = finalAttrs.finalPackage;
-        data = ./aurorastore_deps.json;
-        silent = false;
-        useBwrap = false;
-      };
+    lockFile = ./gradle.lock;
+    overrides = overrides-from-source;
+    buildJdk = jdk21;
 
-      nativeBuildInputs = [
-        gradle
-        jdk21
-        git
-        apksigner
-        writableTmpDirAsHomeHook
-      ];
+    nativeBuildInputs = [
+      androidSdk
+      gradle
+      jdk21
+      apksigner
+      writableTmpDirAsHomeHook
+    ];
 
-      env = {
-        JAVA_HOME = jdk21;
-        ANDROID_HOME = "${androidSdk}/share/android-sdk";
-        ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
-      };
+    dontUseGradleConfigure = true;
 
-      preConfigure = ''
-        export ANDROID_USER_HOME="$HOME/.android"
-        mkdir -p "$ANDROID_USER_HOME"
-        echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
-      '';
+    env = {
+      JAVA_HOME = jdk21;
+      ANDROID_HOME = "${androidSdk}/share/android-sdk";
+      ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
+    };
 
-      postPatch = ''
-        substituteInPlace app/build.gradle.kts \
-          --replace-fail \
-            'val lastCommitHash = providers.exec {' \
-            'val lastCommitHash = providers.provider { "unknown" } /* patched for nix builds: no .git metadata */ ; if (false) { providers.exec {' \
-          --replace-fail \
-            '}.standardOutput.asText.map { it.trim() }' \
-            '}.standardOutput.asText.map { it.trim() } }'
-      '';
+    preConfigure = ''
+      export ANDROID_USER_HOME="$HOME/.android"
+      export GRADLE_USER_HOME="$(mktemp -d)"
+      export TERM=dumb
+      mkdir -p "$ANDROID_USER_HOME"
+      echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+      gradleFlagsArray+=(--no-daemon --init-script "$gradleInitScript" --offline)
+    '';
 
-      gradleFlags = [
-        "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-      ];
+    postPatch = ''
+      pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                val agpVersion = requested.version ?: "8.13.2"\n                useModule("com.android.tools.build:gradle:$agpVersion")\n            }\n        }\n    }\n'
+      substituteInPlace settings.gradle.kts \
+        --replace-fail "pluginManagement {" "$pluginResolutionBlock"
 
-      installPhase = ''
-        runHook preInstall
-        apk_dir="app/build/outputs/apk/vanilla/release"
-        apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apk_dir/output-metadata.json" | head -n 1)"
-        test -n "$apk_name"
-        apk_path="$apk_dir/$apk_name"
-        test -f "$apk_path"
-        install -Dm644 "$apk_path" "$out/aurorastore.apk"
-        runHook postInstall
-      '';
+      substituteInPlace app/build.gradle.kts \
+        --replace-fail \
+          'val lastCommitHash = providers.exec {' \
+          'val lastCommitHash = providers.provider { "unknown" } /* patched for nix builds: no .git metadata */ ; if (false) { providers.exec {' \
+        --replace-fail \
+          '}.standardOutput.asText.map { it.trim() }' \
+          '}.standardOutput.asText.map { it.trim() } }'
+    '';
 
-      meta = with lib; {
-        description = "Aurora Store app built from source";
-        homepage = "https://gitlab.com/AuroraOSS/AuroraStore";
-        license = licenses.gpl3Plus;
-        platforms = platforms.unix;
-      };
-    });
+    gradleFlags = [
+      "-Dorg.gradle.java.home=${jdk21.home}"
+      "-Dorg.gradle.java.installations.auto-download=false"
+      "-Dorg.gradle.java.installations.paths=${jdk21}"
+      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+    ];
+
+    gradleBuildFlags = ":app:assembleVanillaRelease";
+
+    installPhase = ''
+      runHook preInstall
+      apk_dir="app/build/outputs/apk/vanilla/release"
+      apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apk_dir/output-metadata.json" | head -n 1)"
+      test -n "$apk_name"
+      apk_path="$apk_dir/$apk_name"
+      test -f "$apk_path"
+      install -Dm644 "$apk_path" "$out/aurorastore.apk"
+      runHook postInstall
+    '';
+
+    meta = with lib; {
+      description = "Aurora Store app built from source";
+      homepage = "https://gitlab.com/AuroraOSS/AuroraStore";
+      license = licenses.gpl3Plus;
+      platforms = platforms.unix;
+    };
+  };
 in
 mk-apk-package {
   inherit appPackage;
