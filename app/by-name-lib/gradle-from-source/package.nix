@@ -1,7 +1,6 @@
 {
   autoPatchelfHook,
   buildPackages,
-  callPackage,
   coreutils,
   fetchFromGitHub,
   findutils,
@@ -16,10 +15,12 @@
   makeWrapper,
   ncurses5,
   ncurses6,
-  pkgs,
+  path,
+  gradle-packages,
   stdenv,
   udev,
   unzip,
+  callPackage,
 }:
 {
   version,
@@ -147,7 +148,7 @@ let
         in
         ''
           export PATH="${buildPackages.jdk}/bin:$PATH"
-          . ${pkgs.path}/pkgs/development/tools/build-managers/gradle/patching.sh
+          . ${path}/pkgs/development/tools/build-managers/gradle/patching.sh
 
           nativeVersion="$(extractVersion native-platform $gradleLibexec/lib/native-platform-*.jar)"
           for variant in "" "-ncurses5" "-ncurses6"; do
@@ -204,6 +205,6 @@ let
 
   unwrapped = callPackage mkGradle' { };
 in
-callPackage pkgs.gradle-packages.wrapGradle {
+callPackage gradle-packages.wrapGradle {
   gradle-unwrapped = unwrapped;
 }
