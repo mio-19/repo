@@ -1,5 +1,5 @@
 {
-  fetchurl,
+  fetchFromGitHub,
   jdk21,
   lib,
   stdenv,
@@ -9,19 +9,11 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "error-prone-annotations";
   version = "2.28.0";
 
-  src = fetchurl {
-    url = "https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/${finalAttrs.version}/error_prone_annotations-${finalAttrs.version}-sources.jar";
-    hash = "sha256-KTbpsxXXkNimNk8FdLzsnIsteGiLMX4XZcShb574BjI=";
-  };
-
-  pom = fetchurl {
-    url = "https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/${finalAttrs.version}/error_prone_annotations-${finalAttrs.version}.pom";
-    hash = "sha256-DOkJ8TpWgUhHbl7iAPOA+Yx1ugiXGq8V2ylet3WY7zo=";
-  };
-
-  parentPom = fetchurl {
-    url = "https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/${finalAttrs.version}/error_prone_parent-${finalAttrs.version}.pom";
-    hash = "sha256-rM79u1QWzvX80t3DfbTx/LNKIZPMGlXf5ZcKExs+doM=";
+  src = fetchFromGitHub {
+    owner = "google";
+    repo = "error-prone";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-bG5Cnv1TVWmkOGdR+kBa4DK/YGz8fja3xydC0TLqrJQ=";
   };
 
   nativeBuildInputs = [ jdk21 ];
@@ -35,12 +27,11 @@ stdenv.mkDerivation (finalAttrs: {
     tmp="$(mktemp -d)"
     trap 'rm -rf "$tmp"' EXIT
     cd "$tmp"
-    ${jdk21}/bin/jar xf "$src"
     mkdir -p classes
-    find . -name '*.java' ! -name 'module-info.java' | sort > sources.txt
+    find "${finalAttrs.src}/annotations/src/main/java" -name '*.java' ! -name 'module-info.java' | sort > sources.txt
     ${jdk21}/bin/javac --release 8 -d classes @sources.txt
-    if [ -f module-info.java ]; then
-      ${jdk21}/bin/javac --release 9 -cp classes -d classes module-info.java
+    if [ -f "${finalAttrs.src}/annotations/src/main/java/module-info.java" ]; then
+      ${jdk21}/bin/javac --release 9 -cp classes -d classes "${finalAttrs.src}/annotations/src/main/java/module-info.java"
     fi
     (
       cd classes
@@ -49,8 +40,8 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p "$out"
     install -Dm644 "$tmp/error_prone_annotations-${finalAttrs.version}.jar" "$out/error_prone_annotations-${finalAttrs.version}.jar"
-    install -Dm644 "$pom" "$out/error_prone_annotations-${finalAttrs.version}.pom"
-    install -Dm644 "$parentPom" "$out/error_prone_parent-${finalAttrs.version}.pom"
+    install -Dm644 "${finalAttrs.src}/annotations/pom.xml" "$out/error_prone_annotations-${finalAttrs.version}.pom"
+    install -Dm644 "${finalAttrs.src}/pom.xml" "$out/error_prone_parent-${finalAttrs.version}.pom"
 
     runHook postInstall
   '';

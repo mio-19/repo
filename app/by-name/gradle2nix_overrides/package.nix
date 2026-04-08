@@ -1,4 +1,6 @@
 {
+  auto_value_annotations_1_6_2,
+  auto_value_annotations_1_6_3,
   checker_qual_3_33_0,
   checker_qual_3_43_0,
   commons_codec_1_10,
@@ -19,14 +21,39 @@
   gson_2_11_0,
   guava_31_1_android,
   guava_33_3_1_jre,
+  java_diff_utils_4_16,
+  javax_inject_1,
+  javawriter_2_5_0,
   j2objc_annotations_2_8,
   j2objc_annotations_3_0_0,
   jsr305_3_0_2,
+  kotlin_result_2_1_0,
+  kotlin_retry_2_0_2,
+  kotlinx_io_0_8_2,
   slf4j_api_1_7_30,
   slf4j_api_2_0_17,
+  zxing_core_3_5_4,
 }:
 
 {
+  "com.google.auto.value:auto-value-annotations:1.6.2" = {
+    "auto-value-annotations-1.6.2.jar" =
+      _: "${auto_value_annotations_1_6_2}/auto-value-annotations-1.6.2.jar";
+    "auto-value-annotations-1.6.2.pom" =
+      _: "${auto_value_annotations_1_6_2}/auto-value-annotations-1.6.2.pom";
+  };
+  "com.google.auto.value:auto-value-annotations:1.6.3" = {
+    "auto-value-annotations-1.6.3.jar" =
+      _: "${auto_value_annotations_1_6_3}/auto-value-annotations-1.6.3.jar";
+    "auto-value-annotations-1.6.3.pom" =
+      _: "${auto_value_annotations_1_6_3}/auto-value-annotations-1.6.3.pom";
+  };
+  "com.google.auto.value:auto-value-parent:1.6.2" = {
+    "auto-value-parent-1.6.2.pom" = _: "${auto_value_annotations_1_6_2}/auto-value-parent-1.6.2.pom";
+  };
+  "com.google.auto.value:auto-value-parent:1.6.3" = {
+    "auto-value-parent-1.6.3.pom" = _: "${auto_value_annotations_1_6_3}/auto-value-parent-1.6.3.pom";
+  };
   "com.google.code.findbugs:jsr305:3.0.2" = {
     "jsr305-3.0.2.jar" = _: "${jsr305_3_0_2}/jsr305-3.0.2.jar";
     "jsr305-3.0.2.pom" = _: "${jsr305_3_0_2}/jsr305-3.0.2.pom";
@@ -150,6 +177,77 @@
   "com.google.errorprone:error_prone_parent:2.30.0" = {
     "error_prone_parent-2.30.0.pom" =
       _: "${error_prone_annotations_2_30_0}/error_prone_parent-2.30.0.pom";
+  };
+  "com.google.zxing:core:3.5.4" = {
+    "core-3.5.4.jar" = _: "${zxing_core_3_5_4}/core-3.5.4.jar";
+    "core-3.5.4.pom" = _: "${zxing_core_3_5_4}/core-3.5.4.pom";
+  };
+  "com.google.zxing:zxing-parent:3.5.4" = {
+    "zxing-parent-3.5.4.pom" = _: "${zxing_core_3_5_4}/zxing-parent-3.5.4.pom";
+  };
+  "com.squareup:javawriter:2.5.0" = {
+    "javawriter-2.5.0.jar" = _: "${javawriter_2_5_0}/javawriter-2.5.0.jar";
+    "javawriter-2.5.0.pom" = _: "${javawriter_2_5_0}/javawriter-2.5.0.pom";
+  };
+  "io.github.java-diff-utils:java-diff-utils:4.16" = {
+    "java-diff-utils-4.16.jar" = _: "${java_diff_utils_4_16}/java-diff-utils-4.16.jar";
+    "java-diff-utils-4.16.pom" = _: "${java_diff_utils_4_16}/java-diff-utils-4.16.pom";
+  };
+  "io.github.java-diff-utils:java-diff-utils-parent:4.16" = {
+    "java-diff-utils-parent-4.16.pom" = _: "${java_diff_utils_4_16}/java-diff-utils-parent-4.16.pom";
+  };
+  "com.michael-bull.kotlin-result:kotlin-result:2.1.0" = {
+    "kotlin-result-2.1.0.module" = _: "${kotlin_result_2_1_0}/kotlin-result-2.1.0.module";
+    "kotlin-result-2.1.0.pom" = _: "${kotlin_result_2_1_0}/kotlin-result-2.1.0.pom";
+  };
+  "com.michael-bull.kotlin-result:kotlin-result-jvm:2.1.0" = {
+    "kotlin-result-jvm-2.1.0.jar" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.jar";
+    "kotlin-result-jvm-2.1.0.module" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.module";
+    "kotlin-result-jvm-2.1.0.pom" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.pom";
+  };
+  "com.michael-bull.kotlin-retry:kotlin-retry:2.0.2" = {
+    "kotlin-retry-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-2.0.2.module";
+    "kotlin-retry-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-2.0.2.pom";
+  };
+  "com.michael-bull.kotlin-retry:kotlin-retry-jvm:2.0.2" = {
+    "kotlin-retry-jvm-2.0.2.jar" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.jar";
+    "kotlin-retry-jvm-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.module";
+    "kotlin-retry-jvm-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.pom";
+  };
+  "com.michael-bull.kotlin-retry:kotlin-retry-result:2.0.2" = {
+    "kotlin-retry-result-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-2.0.2.module";
+    "kotlin-retry-result-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-2.0.2.pom";
+  };
+  "com.michael-bull.kotlin-retry:kotlin-retry-result-jvm:2.0.2" = {
+    "kotlin-retry-result-jvm-2.0.2.jar" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.jar";
+    "kotlin-retry-result-jvm-2.0.2.module" =
+      _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.module";
+    "kotlin-retry-result-jvm-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-io-core:0.8.2" = {
+    "kotlinx-io-core-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-0.8.2.module";
+    "kotlinx-io-core-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-0.8.2.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-io-core-jvm:0.8.2" = {
+    "kotlinx-io-core-jvm-0.8.2.jar" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.jar";
+    "kotlinx-io-core-jvm-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.module";
+    "kotlinx-io-core-jvm-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-io-bytestring:0.8.2" = {
+    "kotlinx-io-bytestring-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-0.8.2.module";
+    "kotlinx-io-bytestring-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-0.8.2.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-io-bytestring-jvm:0.8.2" = {
+    "kotlinx-io-bytestring-jvm-0.8.2.jar" =
+      _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.jar";
+    "kotlinx-io-bytestring-jvm-0.8.2.module" =
+      _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.module";
+    "kotlinx-io-bytestring-jvm-0.8.2.pom" =
+      _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.pom";
+  };
+  "javax.inject:javax.inject:1" = {
+    "javax.inject-1.jar" = _: "${javax_inject_1}/javax.inject-1.jar";
+    "javax.inject-1.pom" = _: "${javax_inject_1}/javax.inject-1.pom";
   };
   "com.google.j2objc:j2objc-annotations:2.8" = {
     "j2objc-annotations-2.8.jar" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.jar";

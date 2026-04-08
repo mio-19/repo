@@ -1,4 +1,5 @@
 {
+  fetchFromGitHub,
   fetchurl,
   jdk21,
   lib,
@@ -9,9 +10,11 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "checker-qual";
   version = "3.33.0";
 
-  src = fetchurl {
-    url = "https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/${finalAttrs.version}/checker-qual-${finalAttrs.version}-sources.jar";
-    hash = "sha256-RD+mFRmCu0xs5i4pOPU2YAhbE6fc61FyAnd7h9Deosc=";
+  src = fetchFromGitHub {
+    owner = "typetools";
+    repo = "checker-framework";
+    tag = "checker-framework-${finalAttrs.version}";
+    hash = "sha256-4Ud7UL5Zo2lsXT8ke8VEKswupIcrXGFcd5I+LI1EfFM=";
   };
 
   pom = fetchurl {
@@ -30,15 +33,18 @@ stdenv.mkDerivation (finalAttrs: {
     tmp="$(mktemp -d)"
     trap 'rm -rf "$tmp"' EXIT
     cd "$tmp"
-    ${jdk21}/bin/jar xf "$src"
 
     mkdir -p classes
-    find . -name '*.java' | sort > sources.txt
+    find "${finalAttrs.src}/checker-qual/src/main/java" -name '*.java' ! -name 'module-info.java' | sort > sources.txt
     ${jdk21}/bin/javac --release 8 -d classes @sources.txt
+    if [ -f "${finalAttrs.src}/checker-qual/src/main/java/module-info.java" ]; then
+      ${jdk21}/bin/javac --release 9 -cp classes -d classes "${finalAttrs.src}/checker-qual/src/main/java/module-info.java"
+    fi
 
     while IFS= read -r path; do
-      install -Dm644 "$path" "classes/$path"
-    done < <(find . -type f ! -name '*.java' ! -name '*.class' ! -name 'sources.txt' ! -path './META-INF/maven/*' | sort)
+      rel_path="$(realpath --relative-to="${finalAttrs.src}/checker-qual/src/main/java" "$path")"
+      install -Dm644 "$path" "classes/$rel_path"
+    done < <(find "${finalAttrs.src}/checker-qual/src/main/java" -type f ! -name '*.java' | sort)
 
     (
       cd classes
