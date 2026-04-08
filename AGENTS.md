@@ -17,3 +17,4 @@
 - DON"T EVER find grep or anything SEARCH ON EVERY FILES ON WHOLE nix store!!!! nix store is big and that takes forever.
 - When working on patches. you try build for example gos.husky.config.source.dirs."path here".src to see if patch apply.
 - we are using gradle2nix v2 <https://github.com/tadfisher/gradle2nix/pull/62>
+- app/by-name-apk are exported with `apk_` prefix so appstore becomes `nix build .#apk_appstore`
