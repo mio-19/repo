@@ -74,6 +74,7 @@ let
 
         gradleFlagsArray+=(
           --no-configuration-cache
+          -PfinalRelease=true
           -Dorg.gradle.configuration-cache=false
           -Dorg.gradle.java.installations.auto-download=false
           -Dorg.gradle.java.installations.paths=${
