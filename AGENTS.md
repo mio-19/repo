@@ -19,4 +19,4 @@
 - we are using gradle2nix v2 <https://github.com/tadfisher/gradle2nix/pull/62> We prefer gradle2nix v2 over nixpkgs mitm gradle.fetchDeps way. Use gradle2nix instead of that mitm gradle.fetchDeps thing whenever possible.
 - app/by-name-apk are exported with `apk_` prefix so appstore becomes `nix build .#apk_appstore`
 - don't use callPackage and pkgs in a package's first arguments list which usually contan dependencies of that package. only allowed when not easy to refactor without pkgs and callPackage in argument list
-
+- we prefer mvn2nix & mkMavenPackageWithLock over maven.buildMavenPackage
