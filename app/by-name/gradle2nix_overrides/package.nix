@@ -42,24 +42,24 @@
     "auto-value-annotations-1.6.2.pom" =
       _: "${auto_value_annotations_1_6_2}/auto-value-annotations-1.6.2.pom";
   };
+  "com.google.auto.value:auto-value-annotations:1.6.3" = {
+    "auto-value-annotations-1.6.3.jar" =
+      _: "${auto_value_annotations_1_6_3}/auto-value-annotations-1.6.3.jar";
+    "auto-value-annotations-1.6.3.pom" =
+      _: "${auto_value_annotations_1_6_3}/auto-value-annotations-1.6.3.pom";
+  };
+  "com.google.auto.value:auto-value-parent:1.6.2" = {
+    "auto-value-parent-1.6.2.pom" = _: "${auto_value_annotations_1_6_2}/auto-value-parent-1.6.2.pom";
+  };
+  "com.google.auto.value:auto-value-parent:1.6.3" = {
+    "auto-value-parent-1.6.3.pom" = _: "${auto_value_annotations_1_6_3}/auto-value-parent-1.6.3.pom";
+  };
+  "com.google.code.findbugs:jsr305:3.0.2" = {
+    "jsr305-3.0.2.jar" = _: "${jsr305_3_0_2}/jsr305-3.0.2.jar";
+    "jsr305-3.0.2.pom" = _: "${jsr305_3_0_2}/jsr305-3.0.2.pom";
+  };
   # TODO: verify app actually work with replaced things:
   /*
-    "com.google.auto.value:auto-value-annotations:1.6.3" = {
-      "auto-value-annotations-1.6.3.jar" =
-        _: "${auto_value_annotations_1_6_3}/auto-value-annotations-1.6.3.jar";
-      "auto-value-annotations-1.6.3.pom" =
-        _: "${auto_value_annotations_1_6_3}/auto-value-annotations-1.6.3.pom";
-    };
-    "com.google.auto.value:auto-value-parent:1.6.2" = {
-      "auto-value-parent-1.6.2.pom" = _: "${auto_value_annotations_1_6_2}/auto-value-parent-1.6.2.pom";
-    };
-    "com.google.auto.value:auto-value-parent:1.6.3" = {
-      "auto-value-parent-1.6.3.pom" = _: "${auto_value_annotations_1_6_3}/auto-value-parent-1.6.3.pom";
-    };
-    "com.google.code.findbugs:jsr305:3.0.2" = {
-      "jsr305-3.0.2.jar" = _: "${jsr305_3_0_2}/jsr305-3.0.2.jar";
-      "jsr305-3.0.2.pom" = _: "${jsr305_3_0_2}/jsr305-3.0.2.pom";
-    };
     "com.google.code.gson:gson:2.11.0" = {
       "gson-2.11.0.jar" = _: "${gson_2_11_0}/gson-2.11.0.jar";
       "gson-2.11.0.pom" = _: "${gson_2_11_0}/gson-2.11.0.pom";
