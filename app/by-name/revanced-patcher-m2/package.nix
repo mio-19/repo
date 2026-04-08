@@ -26,13 +26,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "revanced-patcher-m2";
-  version = "22.0.0";
+  version = "22.0.1";
 
   src = fetchFromGitHub {
     owner = "ReVanced";
     repo = "revanced-patcher";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-MCuqosEkdro7nGxhiBctXusoOJmgJmgDqJbTl6HclBM=";
+    hash = "sha256-ag/9TSe26HwC8g6e5LfiDpe0aKKueBpfj1SSEZeKB7Q=";
   };
 
   gradleBuildTask = "publish";
