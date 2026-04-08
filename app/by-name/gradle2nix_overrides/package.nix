@@ -1,6 +1,4 @@
 {
-  checker_qual_3_33_0,
-  checker_qual_3_43_0,
   commons_codec_1_10,
   commons_codec_1_11,
   commons_codec_1_15,
@@ -17,7 +15,6 @@
   guava_33_3_1_jre,
   j2objc_annotations_2_8,
   j2objc_annotations_3_0_0,
-  jsr305_3_0_2,
   slf4j_api_2_0_17,
 }:
 
@@ -25,10 +22,6 @@
   "com.google.code.gson:gson:2.11.0" = {
     "gson-2.11.0.jar" = _: "${gson_2_11_0}/gson-2.11.0.jar";
     "gson-2.11.0.pom" = _: "${gson_2_11_0}/gson-2.11.0.pom";
-  };
-  "com.google.code.findbugs:jsr305:3.0.2" = {
-    "jsr305-3.0.2.jar" = _: "${jsr305_3_0_2}/jsr305-3.0.2.jar";
-    "jsr305-3.0.2.pom" = _: "${jsr305_3_0_2}/jsr305-3.0.2.pom";
   };
   "commons-io:commons-io:2.13.0" = {
     "commons-io-2.13.0.jar" = _: "${commons_io_2_13_0}/commons-io-2.13.0.jar";
@@ -108,14 +101,6 @@
   "com.google.j2objc:j2objc-annotations:3.0.0" = {
     "j2objc-annotations-3.0.0.jar" = _: "${j2objc_annotations_3_0_0}/j2objc-annotations-3.0.0.jar";
     "j2objc-annotations-3.0.0.pom" = _: "${j2objc_annotations_3_0_0}/j2objc-annotations-3.0.0.pom";
-  };
-  "org.checkerframework:checker-qual:3.33.0" = {
-    "checker-qual-3.33.0.jar" = _: "${checker_qual_3_33_0}/checker-qual-3.33.0.jar";
-    "checker-qual-3.33.0.pom" = _: "${checker_qual_3_33_0}/checker-qual-3.33.0.pom";
-  };
-  "org.checkerframework:checker-qual:3.43.0" = {
-    "checker-qual-3.43.0.jar" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.jar";
-    "checker-qual-3.43.0.pom" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.pom";
   };
   "org.slf4j:slf4j-api:2.0.17" = {
     "slf4j-api-2.0.17.jar" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.jar";
