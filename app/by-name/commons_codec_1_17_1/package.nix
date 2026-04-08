@@ -38,7 +38,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     while IFS= read -r path; do
       install -Dm644 "$path" "classes/$path"
-    done < <(find . -type f ! -name '*.java' ! -path './META-INF/maven/*' | sort)
+    done < <(find . -type f ! -name '*.java' ! -name 'sources.txt' ! -path './META-INF/maven/*' | sort)
 
     (
       cd classes
