@@ -55,7 +55,13 @@ in
       substituteInPlace common.mk \
         --replace-fail '$(call inherit-product, packages/apps/ViPER4AndroidFX/config.mk)' ""
     '';
+    "device/oneplus/sdm845-common".patches = [
+      ./device-oneplus-sdm845-common-drop-stale-lineage-device-framework-matrix.patch
+    ];
     "kernel/oneplus/sdm845".src = sources.derpfest16_kernel_oneplus_sdm845.src;
+    "hardware/qcom-caf/bootctrl".patches = [
+      ./hardware-qcom-caf-bootctrl-gpt-utils-select-string-false.patch
+    ];
     "hardware/oneplus".src = sources.derpfest16_hardware_oneplus.src;
 
     # Vendor blobs kept on the Lineage lineage-22.1 branch by the same maintainer.
