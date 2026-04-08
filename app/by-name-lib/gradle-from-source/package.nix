@@ -47,19 +47,18 @@ let
         inherit tag hash;
       };
 
-      nativeBuildInputs =
-        [
-          bootstrapGradle
-          git
-          makeWrapper
-          unzip
-        ]
-        ++ lib.optionals stdenv.hostPlatform.isLinux [
-          autoPatchelfHook
-        ]
-        ++ lib.optionals (mitmCache != "") [
-          finalAttrs.mitmCache
-        ];
+      nativeBuildInputs = [
+        bootstrapGradle
+        git
+        makeWrapper
+        unzip
+      ]
+      ++ lib.optionals stdenv.hostPlatform.isLinux [
+        autoPatchelfHook
+      ]
+      ++ lib.optionals (mitmCache != "") [
+        finalAttrs.mitmCache
+      ];
 
       buildInputs = [
         stdenv.cc.cc
@@ -77,7 +76,17 @@ let
           --no-configuration-cache
           -Dorg.gradle.configuration-cache=false
           -Dorg.gradle.java.installations.auto-download=false
-          -Dorg.gradle.java.installations.paths=${lib.concatStringsSep "," ([ jdk8_headless jdk11 jdk17 jdk21 ] ++ javaToolchains)}
+          -Dorg.gradle.java.installations.paths=${
+            lib.concatStringsSep "," (
+              [
+                jdk8_headless
+                jdk11
+                jdk17
+                jdk21
+              ]
+              ++ javaToolchains
+            )
+          }
         )
 
         gradle binDistributionZip

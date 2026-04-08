@@ -29,7 +29,7 @@
           defaultOut,
         }:
         let
-          androidSdk = helperScope.androidSdkBuilder (s: [
+          androidSdk = helpers.androidSdkBuilder (s: [
             s.cmdline-tools-latest
             s.build-tools-36-1-0
           ]);
@@ -88,7 +88,7 @@
           echo "Signed APK written to: $OUT"
         '';
 
-      helperScope = {
+      helpers = {
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
         gradle2nixBuilders = inputs.gradle2nix.builders.${system};
         inherit
@@ -99,24 +99,27 @@
         apktool-src = sources.morphe_apktool.src;
         multidexlib2-src = sources.morphe_multidexlib2.src;
       };
-
-      apkScope = lib.makeScope pkgs.newScope (_: byName // helperScope);
-
+      apkScope = lib.makeScope pkgs.newScope (
+        _: byName // helpers // { inherit (libs) gradle2nix_overrides; }
+      );
       apk = lib.filesystem.packagesFromDirectoryRecursive {
         inherit (apkScope) callPackage newScope;
         directory = ./by-name-apk;
       };
-
-      byNameScope = lib.makeScope pkgs.newScope (
-        _:
-        helperScope
-        // {
-          inherit apk;
-        }
-      );
-
+      libBase = lib.makeScope pkgs.newScope (_: helpers);
+      libs = lib.filesystem.packagesFromDirectoryRecursive {
+        inherit (libBase)
+          callPackage
+          newScope
+          ;
+        directory = ./by-name-lib;
+      };
+      byNameBase = lib.makeScope libBase.newScope (_: {
+        inherit apk;
+        inherit (libs) gradle2nix_overrides;
+      });
       byName = lib.filesystem.packagesFromDirectoryRecursive {
-        inherit (byNameScope)
+        inherit (byNameBase)
           callPackage
           newScope
           ;
@@ -125,7 +128,7 @@
     in
     {
       packages = lib.filterAttrs (_: lib.isDerivation) (
-        byName // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk
+        byName // libs // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk
       );
     };
 }
