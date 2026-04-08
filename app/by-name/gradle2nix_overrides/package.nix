@@ -1,4 +1,8 @@
 {
+  apache_21,
+  apache_32,
+  apache_33,
+  apache_31,
   auto_parent_6,
   auto_value_annotations_1_6_2,
   auto_value_annotations_1_6_3,
@@ -13,6 +17,8 @@
   commons_logging_1_2,
   commons_parent_34,
   commons_parent_69,
+  commons_parent_71,
+  commons_parent_72,
   error_prone_annotations_2_15_0,
   error_prone_annotations_2_18_0,
   error_prone_annotations_2_3_1,
@@ -25,6 +31,8 @@
   glide_5_0_5,
   guava_31_1_android,
   guava_33_3_1_jre,
+  httpcomponents_client_4_5_14,
+  httpcomponents_core_4_4_16,
   java_diff_utils_4_16,
   javax_inject_1,
   javawriter_2_5_0,
@@ -36,6 +44,8 @@
   kotlin_retry_2_0_2,
   kotlinx_io_0_8_2,
   oss_parent_7,
+  protobuf_bom_3_25_5,
+  protobuf_parent_3_25_5,
   slf4j_api_1_7_30,
   slf4j_api_2_0_17,
   zxing_core_3_5_4,
@@ -67,6 +77,12 @@
   "com.google.code.findbugs:jsr305:3.0.2" = {
     "jsr305-3.0.2.jar" = _: "${jsr305_3_0_2}/jsr305-3.0.2.jar";
     "jsr305-3.0.2.pom" = _: "${jsr305_3_0_2}/jsr305-3.0.2.pom";
+  };
+  "com.google.protobuf:protobuf-parent:3.25.5" = {
+    "protobuf-parent-3.25.5.pom" = _: "${protobuf_parent_3_25_5}/protobuf-parent-3.25.5.pom";
+  };
+  "com.google.protobuf:protobuf-bom:3.25.5" = {
+    "protobuf-bom-3.25.5.pom" = _: "${protobuf_bom_3_25_5}/protobuf-bom-3.25.5.pom";
   };
 
   "com.google.code.gson:gson:2.11.0" = {
@@ -248,101 +264,125 @@
   };
 
   # TODO: verify app actually work with replaced things:
-  /*
-      "com.michael-bull.kotlin-result:kotlin-result:2.1.0" = {
-        "kotlin-result-2.1.0.module" = _: "${kotlin_result_2_1_0}/kotlin-result-2.1.0.module";
-        "kotlin-result-2.1.0.pom" = _: "${kotlin_result_2_1_0}/kotlin-result-2.1.0.pom";
-      };
-      "com.michael-bull.kotlin-result:kotlin-result-jvm:2.1.0" = {
-        "kotlin-result-jvm-2.1.0.jar" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.jar";
-        "kotlin-result-jvm-2.1.0.module" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.module";
-        "kotlin-result-jvm-2.1.0.pom" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.pom";
-      };
-      "com.michael-bull.kotlin-retry:kotlin-retry:2.0.2" = {
-        "kotlin-retry-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-2.0.2.module";
-        "kotlin-retry-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-2.0.2.pom";
-      };
-      "com.michael-bull.kotlin-retry:kotlin-retry-jvm:2.0.2" = {
-        "kotlin-retry-jvm-2.0.2.jar" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.jar";
-        "kotlin-retry-jvm-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.module";
-        "kotlin-retry-jvm-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.pom";
-      };
-      "com.michael-bull.kotlin-retry:kotlin-retry-result:2.0.2" = {
-        "kotlin-retry-result-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-2.0.2.module";
-        "kotlin-retry-result-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-2.0.2.pom";
-      };
-      "com.michael-bull.kotlin-retry:kotlin-retry-result-jvm:2.0.2" = {
-        "kotlin-retry-result-jvm-2.0.2.jar" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.jar";
-        "kotlin-retry-result-jvm-2.0.2.module" =
-          _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.module";
-        "kotlin-retry-result-jvm-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.pom";
-      };
-      "org.jetbrains.kotlinx:kotlinx-io-core:0.8.2" = {
-        "kotlinx-io-core-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-0.8.2.module";
-        "kotlinx-io-core-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-0.8.2.pom";
-      };
-      "org.jetbrains.kotlinx:kotlinx-io-core-jvm:0.8.2" = {
-        "kotlinx-io-core-jvm-0.8.2.jar" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.jar";
-        "kotlinx-io-core-jvm-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.module";
-        "kotlinx-io-core-jvm-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.pom";
-      };
-      "org.jetbrains.kotlinx:kotlinx-io-bytestring:0.8.2" = {
-        "kotlinx-io-bytestring-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-0.8.2.module";
-        "kotlinx-io-bytestring-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-0.8.2.pom";
-      };
-      "org.jetbrains.kotlinx:kotlinx-io-bytestring-jvm:0.8.2" = {
-        "kotlinx-io-bytestring-jvm-0.8.2.jar" =
-          _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.jar";
-        "kotlinx-io-bytestring-jvm-0.8.2.module" =
-          _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.module";
-        "kotlinx-io-bytestring-jvm-0.8.2.pom" =
-          _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.pom";
-      };
-      "javax.inject:javax.inject:1" = {
-        "javax.inject-1.jar" = _: "${javax_inject_1}/javax.inject-1.jar";
-        "javax.inject-1.pom" = _: "${javax_inject_1}/javax.inject-1.pom";
-      };
-      "com.google.j2objc:j2objc-annotations:2.8" = {
-        "j2objc-annotations-2.8.jar" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.jar";
-        "j2objc-annotations-2.8.pom" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.pom";
-      };
-      "com.google.j2objc:j2objc-annotations:3.0.0" = {
-        "j2objc-annotations-3.0.0.jar" = _: "${j2objc_annotations_3_0_0}/j2objc-annotations-3.0.0.jar";
-        "j2objc-annotations-3.0.0.pom" = _: "${j2objc_annotations_3_0_0}/j2objc-annotations-3.0.0.pom";
-      };
-      "org.slf4j:slf4j-api:2.0.17" = {
-        "slf4j-api-2.0.17.jar" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.jar";
-        "slf4j-api-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.pom";
-      };
-      "org.slf4j:slf4j-api:1.7.30" = {
-        "slf4j-api-1.7.30.jar" = _: "${slf4j_api_1_7_30}/slf4j-api-1.7.30.jar";
-        "slf4j-api-1.7.30.pom" = _: "${slf4j_api_1_7_30}/slf4j-api-1.7.30.pom";
-      };
-      "org.slf4j:slf4j-parent:1.7.30" = {
-        "slf4j-parent-1.7.30.pom" = _: "${slf4j_api_1_7_30}/slf4j-parent-1.7.30.pom";
-      };
-      "org.slf4j:slf4j-bom:2.0.17" = {
-        "slf4j-bom-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-bom-2.0.17.pom";
-      };
-      "org.slf4j:slf4j-parent:2.0.17" = {
-        "slf4j-parent-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-parent-2.0.17.pom";
-      };
-      "org.checkerframework:checker-qual:3.33.0" = {
-        "checker-qual-3.33.0.jar" = _: "${checker_qual_3_33_0}/checker-qual-3.33.0.jar";
-        "checker-qual-3.33.0.pom" = _: "${checker_qual_3_33_0}/checker-qual-3.33.0.pom";
-      };
-    "org.checkerframework:checker-qual:3.43.0" = {
-      "checker-qual-3.43.0.jar" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.jar";
-      "checker-qual-3.43.0.pom" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.pom";
-    };
-    "org.apache.commons:commons-parent:34" = {
-      "commons-parent-34.pom" = _: "${commons_parent_34}/commons-parent-34.pom";
-    };
-    "org.apache.commons:commons-parent:69" = {
-      "commons-parent-69.pom" = _: "${commons_parent_69}/commons-parent-69.pom";
-    };
-    "org.sonatype.oss:oss-parent:7" = {
-      "oss-parent-7.pom" = _: "${oss_parent_7}/oss-parent-7.pom";
-    };
-  */
+  "com.michael-bull.kotlin-result:kotlin-result:2.1.0" = {
+    "kotlin-result-2.1.0.module" = _: "${kotlin_result_2_1_0}/kotlin-result-2.1.0.module";
+    "kotlin-result-2.1.0.pom" = _: "${kotlin_result_2_1_0}/kotlin-result-2.1.0.pom";
+  };
+  "com.michael-bull.kotlin-result:kotlin-result-jvm:2.1.0" = {
+    "kotlin-result-jvm-2.1.0.jar" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.jar";
+    "kotlin-result-jvm-2.1.0.module" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.module";
+    "kotlin-result-jvm-2.1.0.pom" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.pom";
+  };
+  "com.michael-bull.kotlin-retry:kotlin-retry:2.0.2" = {
+    "kotlin-retry-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-2.0.2.module";
+    "kotlin-retry-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-2.0.2.pom";
+  };
+  "com.michael-bull.kotlin-retry:kotlin-retry-jvm:2.0.2" = {
+    "kotlin-retry-jvm-2.0.2.jar" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.jar";
+    "kotlin-retry-jvm-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.module";
+    "kotlin-retry-jvm-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.pom";
+  };
+  "com.michael-bull.kotlin-retry:kotlin-retry-result:2.0.2" = {
+    "kotlin-retry-result-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-2.0.2.module";
+    "kotlin-retry-result-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-2.0.2.pom";
+  };
+  "com.michael-bull.kotlin-retry:kotlin-retry-result-jvm:2.0.2" = {
+    "kotlin-retry-result-jvm-2.0.2.jar" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.jar";
+    "kotlin-retry-result-jvm-2.0.2.module" =
+      _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.module";
+    "kotlin-retry-result-jvm-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-io-core:0.8.2" = {
+    "kotlinx-io-core-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-0.8.2.module";
+    "kotlinx-io-core-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-0.8.2.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-io-core-jvm:0.8.2" = {
+    "kotlinx-io-core-jvm-0.8.2.jar" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.jar";
+    "kotlinx-io-core-jvm-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.module";
+    "kotlinx-io-core-jvm-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-io-bytestring:0.8.2" = {
+    "kotlinx-io-bytestring-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-0.8.2.module";
+    "kotlinx-io-bytestring-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-0.8.2.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-io-bytestring-jvm:0.8.2" = {
+    "kotlinx-io-bytestring-jvm-0.8.2.jar" =
+      _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.jar";
+    "kotlinx-io-bytestring-jvm-0.8.2.module" =
+      _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.module";
+    "kotlinx-io-bytestring-jvm-0.8.2.pom" =
+      _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.pom";
+  };
+  "javax.inject:javax.inject:1" = {
+    "javax.inject-1.jar" = _: "${javax_inject_1}/javax.inject-1.jar";
+    "javax.inject-1.pom" = _: "${javax_inject_1}/javax.inject-1.pom";
+  };
+  "com.google.j2objc:j2objc-annotations:2.8" = {
+    "j2objc-annotations-2.8.jar" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.jar";
+    "j2objc-annotations-2.8.pom" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.pom";
+  };
+  "com.google.j2objc:j2objc-annotations:3.0.0" = {
+    "j2objc-annotations-3.0.0.jar" = _: "${j2objc_annotations_3_0_0}/j2objc-annotations-3.0.0.jar";
+    "j2objc-annotations-3.0.0.pom" = _: "${j2objc_annotations_3_0_0}/j2objc-annotations-3.0.0.pom";
+  };
+  "org.slf4j:slf4j-api:2.0.17" = {
+    "slf4j-api-2.0.17.jar" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.jar";
+    "slf4j-api-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.pom";
+  };
+  "org.slf4j:slf4j-api:1.7.30" = {
+    "slf4j-api-1.7.30.jar" = _: "${slf4j_api_1_7_30}/slf4j-api-1.7.30.jar";
+    "slf4j-api-1.7.30.pom" = _: "${slf4j_api_1_7_30}/slf4j-api-1.7.30.pom";
+  };
+  "org.slf4j:slf4j-parent:1.7.30" = {
+    "slf4j-parent-1.7.30.pom" = _: "${slf4j_api_1_7_30}/slf4j-parent-1.7.30.pom";
+  };
+  "org.slf4j:slf4j-bom:2.0.17" = {
+    "slf4j-bom-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-bom-2.0.17.pom";
+  };
+  "org.slf4j:slf4j-parent:2.0.17" = {
+    "slf4j-parent-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-parent-2.0.17.pom";
+  };
+  "org.checkerframework:checker-qual:3.33.0" = {
+    "checker-qual-3.33.0.jar" = _: "${checker_qual_3_33_0}/checker-qual-3.33.0.jar";
+    "checker-qual-3.33.0.pom" = _: "${checker_qual_3_33_0}/checker-qual-3.33.0.pom";
+  };
+  "org.checkerframework:checker-qual:3.43.0" = {
+    "checker-qual-3.43.0.jar" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.jar";
+    "checker-qual-3.43.0.pom" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.pom";
+  };
+  "org.apache.commons:commons-parent:34" = {
+    "commons-parent-34.pom" = _: "${commons_parent_34}/commons-parent-34.pom";
+  };
+  "org.apache.commons:commons-parent:69" = {
+    "commons-parent-69.pom" = _: "${commons_parent_69}/commons-parent-69.pom";
+  };
+  "org.apache.commons:commons-parent:71" = {
+    "commons-parent-71.pom" = _: "${commons_parent_71}/commons-parent-71.pom";
+  };
+  "org.apache.commons:commons-parent:72" = {
+    "commons-parent-72.pom" = _: "${commons_parent_72}/commons-parent-72.pom";
+  };
+  "org.apache:apache:21" = {
+    "apache-21.pom" = _: "${apache_21}/apache-21.pom";
+  };
+  "org.apache:apache:31" = {
+    "apache-31.pom" = _: "${apache_31}/apache-31.pom";
+  };
+  "org.apache:apache:32" = {
+    "apache-32.pom" = _: "${apache_32}/apache-32.pom";
+  };
+  "org.apache:apache:33" = {
+    "apache-33.pom" = _: "${apache_33}/apache-33.pom";
+  };
+  "org.apache.httpcomponents:httpcomponents-client:4.5.14" = {
+    "httpcomponents-client-4.5.14.pom" =
+      _: "${httpcomponents_client_4_5_14}/httpcomponents-client-4.5.14.pom";
+  };
+  "org.apache.httpcomponents:httpcomponents-core:4.4.16" = {
+    "httpcomponents-core-4.4.16.pom" =
+      _: "${httpcomponents_core_4_4_16}/httpcomponents-core-4.4.16.pom";
+  };
+  "org.sonatype.oss:oss-parent:7" = {
+    "oss-parent-7.pom" = _: "${oss_parent_7}/oss-parent-7.pom";
+  };
 }
