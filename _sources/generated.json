@@ -199,6 +199,86 @@
         },
         "version": "f05fafd0d636723bc3b8b3528cae7131359e1b25"
     },
+    "derpfest16_device_oneplus_enchilada": {
+        "cargoLock": null,
+        "date": "2026-02-03",
+        "extract": null,
+        "name": "derpfest16_device_oneplus_enchilada",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "983aa8010f76c978e838e80d987bbd5a9990da03",
+            "sha256": "sha256-S1lKJS+maEpdbKQ6cMMsh8kTuwLpkJ+jKADxpgGBb2M=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/ppanzenboeck/device_oneplus_enchilada.git"
+        },
+        "version": "983aa8010f76c978e838e80d987bbd5a9990da03"
+    },
+    "derpfest16_device_oneplus_sdm845_common": {
+        "cargoLock": null,
+        "date": "2026-03-17",
+        "extract": null,
+        "name": "derpfest16_device_oneplus_sdm845_common",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "279a14fbb48544071f2352b84eab511f377c1ea8",
+            "sha256": "sha256-uMcuA/xBEijfxSncLWEISlNl6dVooHnkvINmln4HqYU=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/ppanzenboeck/device_oneplus_sdm845-common.git"
+        },
+        "version": "279a14fbb48544071f2352b84eab511f377c1ea8"
+    },
+    "derpfest16_hardware_oneplus": {
+        "cargoLock": null,
+        "date": "2026-02-03",
+        "extract": null,
+        "name": "derpfest16_hardware_oneplus",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "3c3057c888e46beb4cc0a909f70d24257af7a8a5",
+            "sha256": "sha256-pnrTLQL+H9cuxLlbRVTJPY84GfW2ymJscIom/Wivnhc=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/ppanzenboeck/hardware_oneplus.git"
+        },
+        "version": "3c3057c888e46beb4cc0a909f70d24257af7a8a5"
+    },
+    "derpfest16_kernel_oneplus_sdm845": {
+        "cargoLock": null,
+        "date": "2026-03-17",
+        "extract": null,
+        "name": "derpfest16_kernel_oneplus_sdm845",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "9b322418d63762b3bec0c824a656227a6607aa9d",
+            "sha256": "sha256-3w7YBmhKSNsQFDrYNUtd/Uv6P5MPY6u/v4oS6RI2lNY=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/ppanzenboeck/kernel_oneplus_sdm845.git"
+        },
+        "version": "9b322418d63762b3bec0c824a656227a6607aa9d"
+    },
     "derpfest_launcher3": {
         "cargoLock": null,
         "date": "2026-03-16",
@@ -261,7 +341,7 @@
     },
     "google_gallery": {
         "cargoLock": null,
-        "date": "2026-04-02",
+        "date": "2026-04-08",
         "extract": null,
         "name": "google_gallery",
         "passthru": null,
@@ -271,13 +351,13 @@
             "fetchSubmodules": true,
             "leaveDotGit": false,
             "name": null,
-            "rev": "65e794bf2f247d0eee21a79ac0595f24fd3ac4cc",
-            "sha256": "sha256-CmhbD7nMBDanXy7t82G3HSr8IHAfJZCh7yIQyKj9JH4=",
+            "rev": "34324280e681de437b3e020db725bf2f8fc135ed",
+            "sha256": "sha256-2nnEvx4xhI1WSPxs26uUV0LXtA+pe7ZqEHKssoBXu2Y=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/google-ai-edge/gallery.git"
         },
-        "version": "65e794bf2f247d0eee21a79ac0595f24fd3ac4cc"
+        "version": "34324280e681de437b3e020db725bf2f8fc135ed"
     },
     "grapheneos_appstore": {
         "cargoLock": null,

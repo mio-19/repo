@@ -66,6 +66,27 @@ fetch.git = "https://github.com/LineageOS/android_packages_apps_Launcher3.git"
 src.git = "https://github.com/DerpFest-AOSP/android_packages_apps_DerpLauncher.git"
 src.branch = "16.2"
 fetch.git = "https://github.com/DerpFest-AOSP/android_packages_apps_DerpLauncher.git"
+
+[derpfest16_device_oneplus_enchilada]
+src.git = "https://github.com/ppanzenboeck/device_oneplus_enchilada.git"
+src.branch = "derp16.2"
+fetch.git = "https://github.com/ppanzenboeck/device_oneplus_enchilada.git"
+
+[derpfest16_device_oneplus_sdm845_common]
+src.git = "https://github.com/ppanzenboeck/device_oneplus_sdm845-common.git"
+src.branch = "derp16.2-4.9"
+fetch.git = "https://github.com/ppanzenboeck/device_oneplus_sdm845-common.git"
+
+[derpfest16_kernel_oneplus_sdm845]
+src.git = "https://github.com/ppanzenboeck/kernel_oneplus_sdm845.git"
+src.branch = "derp16.2-4.9"
+fetch.git = "https://github.com/ppanzenboeck/kernel_oneplus_sdm845.git"
+
+[derpfest16_hardware_oneplus]
+src.git = "https://github.com/ppanzenboeck/hardware_oneplus.git"
+src.branch = "derp16.2"
+fetch.git = "https://github.com/ppanzenboeck/hardware_oneplus.git"
+
 [evox_launcher3]
 src.git = "https://github.com/Evolution-X/packages_apps_Launcher3.git"
 src.branch = "vic"

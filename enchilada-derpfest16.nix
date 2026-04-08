@@ -3,6 +3,16 @@ args@{
   lib,
   ...
 }:
+let
+  sources = (import ./_sources/generated.nix) {
+    inherit (pkgs)
+      fetchurl
+      fetchgit
+      fetchFromGitHub
+      dockerTools
+      ;
+  };
+in
 {
   imports = [ ./los.nix ];
 
@@ -16,7 +26,7 @@ args@{
        https://xdaforums.com/t/closed-moved-to-telegram-derpfest-14-official-for-oneplus-6-enchilada-oneplus-6t-fajita.4633973/
     3. From that maintainer account, the Android 16-era branches used here are:
        - device_oneplus_enchilada: derp16.2
-       - device_oneplus_sdm845-common: derp16.2
+       - device_oneplus_sdm845-common: derp16.2-4.9
        - kernel_oneplus_sdm845: derp16.2-4.9
        - hardware_oneplus: derp16.2
        Vendor repos for sdm845 stayed on older Lineage branches, so this file
@@ -39,42 +49,14 @@ args@{
 
   source.dirs = {
     # DerpFest Android 16 / 16.2 maintainer trees for OnePlus 6 / 6T.
-    "device/oneplus/enchilada".src = pkgs.fetchFromGitHub {
-      owner = "ppanzenboeck";
-      repo = "device_oneplus_enchilada";
-      rev = "983aa8010f76c978e838e80d987bbd5a9990da03";
-      hash = "sha256-S1lKJS+maEpdbKQ6cMMsh8kTuwLpkJ+jKADxpgGBb2M=";
-    };
-    "device/oneplus/sdm845-common".src = pkgs.fetchFromGitHub {
-      owner = "ppanzenboeck";
-      repo = "device_oneplus_sdm845-common";
-      rev = "6a35ee792604a2feab55a3a42c4b78b5273beb3d";
-      hash = "sha256-u/vsbIfsLXVdH9hPwGcZX34FzrS4SeSWZtHsj8ILVgA=";
-    };
+    "device/oneplus/enchilada".src = sources.derpfest16_device_oneplus_enchilada.src;
+    "device/oneplus/sdm845-common".src = sources.derpfest16_device_oneplus_sdm845_common.src;
     "device/oneplus/sdm845-common".postPatch = ''
       substituteInPlace common.mk \
         --replace-fail '$(call inherit-product, packages/apps/ViPER4AndroidFX/config.mk)' ""
-      substituteInPlace sepolicy/vendor/dashd.te \
-        --replace-fail "vendor_sysfs_battery_supply" "sysfs_battery_supply" \
-        --replace-fail "vendor_sysfs_usb_supply" "sysfs_usb_supply"
     '';
-    "kernel/oneplus/sdm845".src = pkgs.fetchFromGitHub {
-      owner = "ppanzenboeck";
-      repo = "kernel_oneplus_sdm845";
-      rev = "9b322418d63762b3bec0c824a656227a6607aa9d";
-      hash = "sha256-3w7YBmhKSNsQFDrYNUtd/Uv6P5MPY6u/v4oS6RI2lNY=";
-    };
-    "kernel/oneplus/sdm845".postPatch = ''
-      mkdir -p arch/arm64/configs/vendor
-      cp arch/arm64/configs/enchilada_defconfig \
-        arch/arm64/configs/vendor/enchilada_defconfig
-    '';
-    "hardware/oneplus".src = pkgs.fetchFromGitHub {
-      owner = "ppanzenboeck";
-      repo = "hardware_oneplus";
-      rev = "3c3057c888e46beb4cc0a909f70d24257af7a8a5";
-      hash = "sha256-pnrTLQL+H9cuxLlbRVTJPY84GfW2ymJscIom/Wivnhc=";
-    };
+    "kernel/oneplus/sdm845".src = sources.derpfest16_kernel_oneplus_sdm845.src;
+    "hardware/oneplus".src = sources.derpfest16_hardware_oneplus.src;
 
     # Vendor blobs kept on the Lineage lineage-22.1 branch by the same maintainer.
     "vendor/oneplus/enchilada".src = pkgs.fetchFromGitHub {
