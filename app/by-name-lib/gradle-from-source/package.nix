@@ -89,7 +89,7 @@ let
           }
         )
 
-        gradle binDistributionZip
+        gradle :distributions-full:binDistributionZip
       '';
 
       configurePhase = ''
@@ -135,6 +135,12 @@ let
           mkdir -vp $gradleLibexec
           cp -av lib/ $gradleLibexec
           [ -f $gradleLibexec/lib/gradle-launcher-*.jar ] || { echo "No Gradle launcher jar found!" >&2; exit 1; }
+
+          gradleCliMainJar="$(echo $gradleLibexec/lib/gradle-gradle-cli-main-*.jar)"
+          if ! unzip -p "$gradleCliMainJar" META-INF/MANIFEST.MF | grep -q '^Main-Class: '; then
+            printf 'Main-Class: org.gradle.launcher.GradleMain\n' > gradle-cli-main-manifest.txt
+            ${buildPackages.jdk}/bin/jar ufm "$gradleCliMainJar" gradle-cli-main-manifest.txt
+          fi
 
           echo ${lib.escapeShellArg toolchainPaths} > $gradleLibexec/gradle.properties
 
