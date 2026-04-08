@@ -27,6 +27,7 @@ maven.buildMavenPackage rec {
     runHook preInstall
 
     mkdir -p $out
+    cp ${src}/pom.xml $out/gson-parent-${version}.pom
     cp target/gson-${version}.jar $out/
     cp pom.xml $out/gson-${version}.pom
 

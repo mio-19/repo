@@ -26,6 +26,7 @@ maven.buildMavenPackage rec {
     runHook preInstall
 
     mkdir -p $out
+    cp ${src}/android/pom.xml $out/guava-parent-${version}-android.pom
     cp guava/target/guava-31.1-android.jar $out/
     cp guava/pom.xml $out/guava-31.1-android.pom
 
