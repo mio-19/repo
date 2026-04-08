@@ -58,147 +58,146 @@
     "jsr305-3.0.2.jar" = _: "${jsr305_3_0_2}/jsr305-3.0.2.jar";
     "jsr305-3.0.2.pom" = _: "${jsr305_3_0_2}/jsr305-3.0.2.pom";
   };
-  # TODO: verify app actually work with replaced things:
-  /*
-    "com.google.code.gson:gson:2.11.0" = {
-      "gson-2.11.0.jar" = _: "${gson_2_11_0}/gson-2.11.0.jar";
-      "gson-2.11.0.pom" = _: "${gson_2_11_0}/gson-2.11.0.pom";
-    };
-    "com.google.code.gson:gson-parent:2.11.0" = {
-      "gson-parent-2.11.0.pom" = _: "${gson_2_11_0}/gson-parent-2.11.0.pom";
-    };
-    "commons-io:commons-io:2.13.0" = {
-      "commons-io-2.13.0.jar" = _: "${commons_io_2_13_0}/commons-io-2.13.0.jar";
-      "commons-io-2.13.0.pom" = _: "${commons_io_2_13_0}/commons-io-2.13.0.pom";
-    };
-    "commons-io:commons-io:2.16.1" = {
-      "commons-io-2.16.1.jar" = _: "${commons_io_2_16_1}/commons-io-2.16.1.jar";
-      "commons-io-2.16.1.pom" = _: "${commons_io_2_16_1}/commons-io-2.16.1.pom";
-    };
-    "commons-codec:commons-codec:1.10" = {
-      "commons-codec-1.10.jar" = _: "${commons_codec_1_10}/commons-codec-1.10.jar";
-      "commons-codec-1.10.pom" = _: "${commons_codec_1_10}/commons-codec-1.10.pom";
-    };
-    "commons-codec:commons-codec:1.11" = {
-      "commons-codec-1.11.jar" = _: "${commons_codec_1_11}/commons-codec-1.11.jar";
-      "commons-codec-1.11.pom" = _: "${commons_codec_1_11}/commons-codec-1.11.pom";
-    };
-    "commons-codec:commons-codec:1.15" = {
-      "commons-codec-1.15.jar" = _: "${commons_codec_1_15}/commons-codec-1.15.jar";
-      "commons-codec-1.15.pom" = _: "${commons_codec_1_15}/commons-codec-1.15.pom";
-    };
-    "commons-codec:commons-codec:1.17.1" = {
-      "commons-codec-1.17.1.jar" = _: "${commons_codec_1_17_1}/commons-codec-1.17.1.jar";
-      "commons-codec-1.17.1.pom" = _: "${commons_codec_1_17_1}/commons-codec-1.17.1.pom";
-    };
-    "commons-logging:commons-logging:1.2" = {
-      "commons-logging-1.2.jar" = _: "${commons_logging_1_2}/commons-logging-1.2.jar";
-      "commons-logging-1.2.pom" = _: "${commons_logging_1_2}/commons-logging-1.2.pom";
-    };
-    "com.google.guava:guava:31.1-android" = {
-      "guava-31.1-android.jar" = _: "${guava_31_1_android}/guava-31.1-android.jar";
-      "guava-31.1-android.pom" = _: "${guava_31_1_android}/guava-31.1-android.pom";
-    };
-    "com.google.guava:guava-parent:31.1-android" = {
-      "guava-parent-31.1-android.pom" = _: "${guava_31_1_android}/guava-parent-31.1-android.pom";
-    };
-    "com.google.guava:guava:33.3.1-jre" = {
-      "guava-33.3.1-jre.jar" = _: "${guava_33_3_1_jre}/guava-33.3.1-jre.jar";
-      "guava-33.3.1-jre.module" = _: "${guava_33_3_1_jre}/guava-33.3.1-jre.module";
-      "guava-33.3.1-jre.pom" = _: "${guava_33_3_1_jre}/guava-33.3.1-jre.pom";
-    };
-    "com.google.guava:guava-parent:33.3.1-jre" = {
-      "guava-parent-33.3.1-jre.pom" = _: "${guava_33_3_1_jre}/guava-parent-33.3.1-jre.pom";
-    };
-    "com.google.guava:failureaccess:1.0.1" = {
-      "failureaccess-1.0.1.jar" = _: "${failureaccess_1_0_1}/failureaccess-1.0.1.jar";
-      "failureaccess-1.0.1.pom" = _: "${failureaccess_1_0_1}/failureaccess-1.0.1.pom";
-    };
-    "com.google.guava:failureaccess:1.0.2" = {
-      "failureaccess-1.0.2.jar" = _: "${failureaccess_1_0_2}/failureaccess-1.0.2.jar";
-      "failureaccess-1.0.2.pom" = _: "${failureaccess_1_0_2}/failureaccess-1.0.2.pom";
-    };
-    "com.google.guava:guava-parent:26.0-android" = {
-      "guava-parent-26.0-android.pom" = _: "${failureaccess_1_0_1}/guava-parent-26.0-android.pom";
-    };
-    "com.google.errorprone:error_prone_annotations:2.27.0" = {
-      "error_prone_annotations-2.27.0.jar" =
-        _: "${error_prone_annotations_2_27_0}/error_prone_annotations-2.27.0.jar";
-      "error_prone_annotations-2.27.0.pom" =
-        _: "${error_prone_annotations_2_27_0}/error_prone_annotations-2.27.0.pom";
-    };
-    "com.google.errorprone:error_prone_annotations:2.28.0" = {
-      "error_prone_annotations-2.28.0.jar" =
-        _: "${error_prone_annotations_2_28_0}/error_prone_annotations-2.28.0.jar";
-      "error_prone_annotations-2.28.0.pom" =
-        _: "${error_prone_annotations_2_28_0}/error_prone_annotations-2.28.0.pom";
-    };
-    "com.google.errorprone:error_prone_parent:2.27.0" = {
-      "error_prone_parent-2.27.0.pom" =
-        _: "${error_prone_annotations_2_27_0}/error_prone_parent-2.27.0.pom";
-    };
-    "com.google.errorprone:error_prone_parent:2.28.0" = {
-      "error_prone_parent-2.28.0.pom" =
-        _: "${error_prone_annotations_2_28_0}/error_prone_parent-2.28.0.pom";
-    };
-    "com.google.errorprone:error_prone_annotations:2.3.1" = {
-      "error_prone_annotations-2.3.1.jar" =
-        _: "${error_prone_annotations_2_3_1}/error_prone_annotations-2.3.1.jar";
-      "error_prone_annotations-2.3.1.pom" =
-        _: "${error_prone_annotations_2_3_1}/error_prone_annotations-2.3.1.pom";
-    };
-    "com.google.errorprone:error_prone_parent:2.3.1" = {
-      "error_prone_parent-2.3.1.pom" = _: "${error_prone_annotations_2_3_1}/error_prone_parent-2.3.1.pom";
-    };
-    "com.google.errorprone:error_prone_annotations:2.15.0" = {
-      "error_prone_annotations-2.15.0.jar" =
-        _: "${error_prone_annotations_2_15_0}/error_prone_annotations-2.15.0.jar";
-      "error_prone_annotations-2.15.0.pom" =
-        _: "${error_prone_annotations_2_15_0}/error_prone_annotations-2.15.0.pom";
-    };
-    "com.google.errorprone:error_prone_parent:2.15.0" = {
-      "error_prone_parent-2.15.0.pom" =
-        _: "${error_prone_annotations_2_15_0}/error_prone_parent-2.15.0.pom";
-    };
-    "com.google.errorprone:error_prone_annotations:2.18.0" = {
-      "error_prone_annotations-2.18.0.jar" =
-        _: "${error_prone_annotations_2_18_0}/error_prone_annotations-2.18.0.jar";
-      "error_prone_annotations-2.18.0.pom" =
-        _: "${error_prone_annotations_2_18_0}/error_prone_annotations-2.18.0.pom";
-    };
-    "com.google.errorprone:error_prone_parent:2.18.0" = {
-      "error_prone_parent-2.18.0.pom" =
-        _: "${error_prone_annotations_2_18_0}/error_prone_parent-2.18.0.pom";
-    };
-    "com.google.errorprone:error_prone_annotations:2.30.0" = {
-      "error_prone_annotations-2.30.0.jar" =
-        _: "${error_prone_annotations_2_30_0}/error_prone_annotations-2.30.0.jar";
-      "error_prone_annotations-2.30.0.pom" =
-        _: "${error_prone_annotations_2_30_0}/error_prone_annotations-2.30.0.pom";
-    };
-    "com.google.errorprone:error_prone_parent:2.30.0" = {
-      "error_prone_parent-2.30.0.pom" =
-        _: "${error_prone_annotations_2_30_0}/error_prone_parent-2.30.0.pom";
-    };
-    "com.google.zxing:core:3.5.4" = {
-      "core-3.5.4.jar" = _: "${zxing_core_3_5_4}/core-3.5.4.jar";
-      "core-3.5.4.pom" = _: "${zxing_core_3_5_4}/core-3.5.4.pom";
-    };
-    "com.google.zxing:zxing-parent:3.5.4" = {
-      "zxing-parent-3.5.4.pom" = _: "${zxing_core_3_5_4}/zxing-parent-3.5.4.pom";
-    };
-    "com.squareup:javawriter:2.5.0" = {
-      "javawriter-2.5.0.jar" = _: "${javawriter_2_5_0}/javawriter-2.5.0.jar";
-      "javawriter-2.5.0.pom" = _: "${javawriter_2_5_0}/javawriter-2.5.0.pom";
-    };
-    "io.github.java-diff-utils:java-diff-utils:4.16" = {
-      "java-diff-utils-4.16.jar" = _: "${java_diff_utils_4_16}/java-diff-utils-4.16.jar";
-      "java-diff-utils-4.16.pom" = _: "${java_diff_utils_4_16}/java-diff-utils-4.16.pom";
-    };
-    "io.github.java-diff-utils:java-diff-utils-parent:4.16" = {
-      "java-diff-utils-parent-4.16.pom" = _: "${java_diff_utils_4_16}/java-diff-utils-parent-4.16.pom";
-    };
-  */
+
+  "com.google.code.gson:gson:2.11.0" = {
+    "gson-2.11.0.jar" = _: "${gson_2_11_0}/gson-2.11.0.jar";
+    "gson-2.11.0.pom" = _: "${gson_2_11_0}/gson-2.11.0.pom";
+  };
+  "com.google.code.gson:gson-parent:2.11.0" = {
+    "gson-parent-2.11.0.pom" = _: "${gson_2_11_0}/gson-parent-2.11.0.pom";
+  };
+  "commons-io:commons-io:2.13.0" = {
+    "commons-io-2.13.0.jar" = _: "${commons_io_2_13_0}/commons-io-2.13.0.jar";
+    "commons-io-2.13.0.pom" = _: "${commons_io_2_13_0}/commons-io-2.13.0.pom";
+  };
+  "commons-io:commons-io:2.16.1" = {
+    "commons-io-2.16.1.jar" = _: "${commons_io_2_16_1}/commons-io-2.16.1.jar";
+    "commons-io-2.16.1.pom" = _: "${commons_io_2_16_1}/commons-io-2.16.1.pom";
+  };
+  "commons-codec:commons-codec:1.10" = {
+    "commons-codec-1.10.jar" = _: "${commons_codec_1_10}/commons-codec-1.10.jar";
+    "commons-codec-1.10.pom" = _: "${commons_codec_1_10}/commons-codec-1.10.pom";
+  };
+  "commons-codec:commons-codec:1.11" = {
+    "commons-codec-1.11.jar" = _: "${commons_codec_1_11}/commons-codec-1.11.jar";
+    "commons-codec-1.11.pom" = _: "${commons_codec_1_11}/commons-codec-1.11.pom";
+  };
+  "commons-codec:commons-codec:1.15" = {
+    "commons-codec-1.15.jar" = _: "${commons_codec_1_15}/commons-codec-1.15.jar";
+    "commons-codec-1.15.pom" = _: "${commons_codec_1_15}/commons-codec-1.15.pom";
+  };
+  "commons-codec:commons-codec:1.17.1" = {
+    "commons-codec-1.17.1.jar" = _: "${commons_codec_1_17_1}/commons-codec-1.17.1.jar";
+    "commons-codec-1.17.1.pom" = _: "${commons_codec_1_17_1}/commons-codec-1.17.1.pom";
+  };
+  "commons-logging:commons-logging:1.2" = {
+    "commons-logging-1.2.jar" = _: "${commons_logging_1_2}/commons-logging-1.2.jar";
+    "commons-logging-1.2.pom" = _: "${commons_logging_1_2}/commons-logging-1.2.pom";
+  };
+  "com.google.guava:guava:31.1-android" = {
+    "guava-31.1-android.jar" = _: "${guava_31_1_android}/guava-31.1-android.jar";
+    "guava-31.1-android.pom" = _: "${guava_31_1_android}/guava-31.1-android.pom";
+  };
+  "com.google.guava:guava-parent:31.1-android" = {
+    "guava-parent-31.1-android.pom" = _: "${guava_31_1_android}/guava-parent-31.1-android.pom";
+  };
+  "com.google.guava:guava:33.3.1-jre" = {
+    "guava-33.3.1-jre.jar" = _: "${guava_33_3_1_jre}/guava-33.3.1-jre.jar";
+    "guava-33.3.1-jre.module" = _: "${guava_33_3_1_jre}/guava-33.3.1-jre.module";
+    "guava-33.3.1-jre.pom" = _: "${guava_33_3_1_jre}/guava-33.3.1-jre.pom";
+  };
+  "com.google.guava:guava-parent:33.3.1-jre" = {
+    "guava-parent-33.3.1-jre.pom" = _: "${guava_33_3_1_jre}/guava-parent-33.3.1-jre.pom";
+  };
+  "com.google.guava:failureaccess:1.0.1" = {
+    "failureaccess-1.0.1.jar" = _: "${failureaccess_1_0_1}/failureaccess-1.0.1.jar";
+    "failureaccess-1.0.1.pom" = _: "${failureaccess_1_0_1}/failureaccess-1.0.1.pom";
+  };
+  "com.google.guava:failureaccess:1.0.2" = {
+    "failureaccess-1.0.2.jar" = _: "${failureaccess_1_0_2}/failureaccess-1.0.2.jar";
+    "failureaccess-1.0.2.pom" = _: "${failureaccess_1_0_2}/failureaccess-1.0.2.pom";
+  };
+  "com.google.guava:guava-parent:26.0-android" = {
+    "guava-parent-26.0-android.pom" = _: "${failureaccess_1_0_1}/guava-parent-26.0-android.pom";
+  };
+  "com.google.errorprone:error_prone_annotations:2.27.0" = {
+    "error_prone_annotations-2.27.0.jar" =
+      _: "${error_prone_annotations_2_27_0}/error_prone_annotations-2.27.0.jar";
+    "error_prone_annotations-2.27.0.pom" =
+      _: "${error_prone_annotations_2_27_0}/error_prone_annotations-2.27.0.pom";
+  };
+  "com.google.errorprone:error_prone_annotations:2.28.0" = {
+    "error_prone_annotations-2.28.0.jar" =
+      _: "${error_prone_annotations_2_28_0}/error_prone_annotations-2.28.0.jar";
+    "error_prone_annotations-2.28.0.pom" =
+      _: "${error_prone_annotations_2_28_0}/error_prone_annotations-2.28.0.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.27.0" = {
+    "error_prone_parent-2.27.0.pom" =
+      _: "${error_prone_annotations_2_27_0}/error_prone_parent-2.27.0.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.28.0" = {
+    "error_prone_parent-2.28.0.pom" =
+      _: "${error_prone_annotations_2_28_0}/error_prone_parent-2.28.0.pom";
+  };
+  "com.google.errorprone:error_prone_annotations:2.3.1" = {
+    "error_prone_annotations-2.3.1.jar" =
+      _: "${error_prone_annotations_2_3_1}/error_prone_annotations-2.3.1.jar";
+    "error_prone_annotations-2.3.1.pom" =
+      _: "${error_prone_annotations_2_3_1}/error_prone_annotations-2.3.1.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.3.1" = {
+    "error_prone_parent-2.3.1.pom" = _: "${error_prone_annotations_2_3_1}/error_prone_parent-2.3.1.pom";
+  };
+  "com.google.errorprone:error_prone_annotations:2.15.0" = {
+    "error_prone_annotations-2.15.0.jar" =
+      _: "${error_prone_annotations_2_15_0}/error_prone_annotations-2.15.0.jar";
+    "error_prone_annotations-2.15.0.pom" =
+      _: "${error_prone_annotations_2_15_0}/error_prone_annotations-2.15.0.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.15.0" = {
+    "error_prone_parent-2.15.0.pom" =
+      _: "${error_prone_annotations_2_15_0}/error_prone_parent-2.15.0.pom";
+  };
+  "com.google.errorprone:error_prone_annotations:2.18.0" = {
+    "error_prone_annotations-2.18.0.jar" =
+      _: "${error_prone_annotations_2_18_0}/error_prone_annotations-2.18.0.jar";
+    "error_prone_annotations-2.18.0.pom" =
+      _: "${error_prone_annotations_2_18_0}/error_prone_annotations-2.18.0.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.18.0" = {
+    "error_prone_parent-2.18.0.pom" =
+      _: "${error_prone_annotations_2_18_0}/error_prone_parent-2.18.0.pom";
+  };
+  "com.google.errorprone:error_prone_annotations:2.30.0" = {
+    "error_prone_annotations-2.30.0.jar" =
+      _: "${error_prone_annotations_2_30_0}/error_prone_annotations-2.30.0.jar";
+    "error_prone_annotations-2.30.0.pom" =
+      _: "${error_prone_annotations_2_30_0}/error_prone_annotations-2.30.0.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.30.0" = {
+    "error_prone_parent-2.30.0.pom" =
+      _: "${error_prone_annotations_2_30_0}/error_prone_parent-2.30.0.pom";
+  };
+  "com.google.zxing:core:3.5.4" = {
+    "core-3.5.4.jar" = _: "${zxing_core_3_5_4}/core-3.5.4.jar";
+    "core-3.5.4.pom" = _: "${zxing_core_3_5_4}/core-3.5.4.pom";
+  };
+  "com.google.zxing:zxing-parent:3.5.4" = {
+    "zxing-parent-3.5.4.pom" = _: "${zxing_core_3_5_4}/zxing-parent-3.5.4.pom";
+  };
+  "com.squareup:javawriter:2.5.0" = {
+    "javawriter-2.5.0.jar" = _: "${javawriter_2_5_0}/javawriter-2.5.0.jar";
+    "javawriter-2.5.0.pom" = _: "${javawriter_2_5_0}/javawriter-2.5.0.pom";
+  };
+  "io.github.java-diff-utils:java-diff-utils:4.16" = {
+    "java-diff-utils-4.16.jar" = _: "${java_diff_utils_4_16}/java-diff-utils-4.16.jar";
+    "java-diff-utils-4.16.pom" = _: "${java_diff_utils_4_16}/java-diff-utils-4.16.pom";
+  };
+  "io.github.java-diff-utils:java-diff-utils-parent:4.16" = {
+    "java-diff-utils-parent-4.16.pom" = _: "${java_diff_utils_4_16}/java-diff-utils-parent-4.16.pom";
+  };
+
   # TODO: verify app actually work with replaced things:
   /*
     "com.michael-bull.kotlin-result:kotlin-result:2.1.0" = {
