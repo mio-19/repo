@@ -1,11 +1,11 @@
 {
-  lib,
-  maven,
   fetchFromGitHub,
   jdk17,
+  lib,
+  mkMavenPackageWithLock,
 }:
 
-maven.buildMavenPackage rec {
+mkMavenPackageWithLock rec {
   pname = "gson";
   version = "2.11.0";
 
@@ -17,11 +17,14 @@ maven.buildMavenPackage rec {
   };
 
   sourceRoot = "${src.name}/gson";
+  lockFile = ./mvn2nix-lock.json;
 
   mvnJdk = jdk17;
-  mvnHash = "sha256-el60eCmPyP6KK86BrPA/7kCc4ZN3OckR8uoHzVWENFY=";
-
-  mvnParameters = "-Dspotless.check.skip=true -Dmaven.javadoc.skip=true";
+  mvnFlags = [
+    "-Dspotless.check.skip=true"
+    "-Dmaven.javadoc.skip=true"
+    "package"
+  ];
 
   installPhase = ''
     runHook preInstall

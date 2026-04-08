@@ -1,25 +1,34 @@
 {
-  lib,
-  maven,
   fetchFromGitHub,
+  lib,
+  mkMavenPackageWithLock,
 }:
 
-maven.buildMavenPackage rec {
+mkMavenPackageWithLock rec {
   pname = "guava-jre";
   version = "33.3.1";
 
   src = fetchFromGitHub {
     owner = "google";
     repo = "guava";
-    rev = "v33.3.1";
+    tag = "v33.3.1";
     hash = "sha256-SnZ7+lft8r/VXzaY+jGb4SWhJyeEm4uW+s6V6r8qI6M=";
   };
 
-  patches = [ ./disable-toolchain-download.patch ];
+  patches = [
+    ./disable-toolchain-download.patch
+    ./pin-maven-plugin-versions.patch
+  ];
+  lockFile = ./mvn2nix-lock.json;
 
-  mvnHash = "sha256-HRbcNpA0aGk78l2sWGxDrM6k0KQe+XIiWgX5kt5J/tg=";
-
-  mvnParameters = "-pl guava -am -Dmaven.javadoc.skip=true -Dmaven.source.skip=true package";
+  mvnFlags = [
+    "-pl"
+    "guava"
+    "-am"
+    "-Dmaven.javadoc.skip=true"
+    "-Dmaven.source.skip=true"
+    "package"
+  ];
 
   installPhase = ''
     runHook preInstall

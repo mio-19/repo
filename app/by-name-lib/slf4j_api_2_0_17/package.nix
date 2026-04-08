@@ -1,10 +1,10 @@
 {
-  lib,
-  maven,
   fetchFromGitHub,
+  lib,
+  mkMavenPackageWithLock,
 }:
 
-maven.buildMavenPackage rec {
+mkMavenPackageWithLock rec {
   pname = "slf4j-api";
   version = "2.0.17";
 
@@ -15,9 +15,14 @@ maven.buildMavenPackage rec {
     hash = "sha256-MOAIvzVPxFv9Nfov4Ych774urZ0v9emscKqwIGI/3Ik=";
   };
 
-  mvnHash = "sha256-L3tg3OvkDHfAZCOWWscBOaBrwuf5g16j7GF6c1puLpk=";
-
-  mvnParameters = "-pl slf4j-api -am -Dmaven.javadoc.skip=true package";
+  lockFile = ./mvn2nix-lock.json;
+  mvnFlags = [
+    "-pl"
+    "slf4j-api"
+    "-am"
+    "-Dmaven.javadoc.skip=true"
+    "package"
+  ];
 
   installPhase = ''
     runHook preInstall

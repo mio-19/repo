@@ -1,0 +1,23 @@
+diff --git a/pom.xml b/pom.xml
+index 13dd098..dbffb4f 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -200,6 +200,18 @@
+           <artifactId>maven-dependency-plugin</artifactId>
+           <version>3.1.1</version>
+         </plugin>
++        <plugin>
++          <artifactId>maven-install-plugin</artifactId>
++          <version>3.1.4</version>
++        </plugin>
++        <plugin>
++          <artifactId>maven-deploy-plugin</artifactId>
++          <version>3.1.4</version>
++        </plugin>
++        <plugin>
++          <artifactId>maven-resources-plugin</artifactId>
++          <version>3.3.1</version>
++        </plugin>
+         <plugin>
+           <artifactId>maven-antrun-plugin</artifactId>
+           <version>1.6</version>

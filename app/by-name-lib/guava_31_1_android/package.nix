@@ -1,26 +1,29 @@
 {
-  lib,
-  maven,
   fetchFromGitHub,
+  lib,
+  mkMavenPackageWithLock,
 }:
 
-maven.buildMavenPackage rec {
+mkMavenPackageWithLock rec {
   pname = "guava-android";
   version = "31.1";
 
   src = fetchFromGitHub {
     owner = "google";
     repo = "guava";
-    rev = "v31.1";
+    tag = "v31.1";
     hash = "sha256-l4ZfHi8iO+Vz1zZGQxLjuPEA24AZ4kNHU0m3aFnhYWs=";
   };
 
   # We only want to build the android variant and ignore others to keep it minimal
   sourceRoot = "${src.name}/android";
+  lockFile = ./mvn2nix-lock.json;
+  patches = [ ./pin-maven-plugin-versions.patch ];
 
-  mvnHash = "sha256-jOVCO6RE1lNu4RV3T3F0v4sjje7WyYGFYc1whR6Kzmc=";
-
-  mvnParameters = "-Dmaven.test.skip=true";
+  mvnFlags = [
+    "-Dmaven.test.skip=true"
+    "package"
+  ];
 
   installPhase = ''
     runHook preInstall

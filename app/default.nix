@@ -17,6 +17,63 @@
           dockerTools
           ;
       };
+      mvn2nixPkgs = import inputs.nixpkgs {
+        inherit system;
+        overlays = [ inputs.mvn2nix.overlay ];
+      };
+
+      mkMavenPackageWithLock =
+        {
+          pname,
+          version,
+          src,
+          lockFile,
+          installPhase,
+          meta,
+          patches ? [ ],
+          sourceRoot ? null,
+          mvnJdk ? pkgs.jdk17,
+          mvnFlags ? [ "package" ],
+        }:
+        let
+          mavenRepository = mvn2nixPkgs.buildMavenRepositoryFromLockFile { file = lockFile; };
+        in
+        pkgs.stdenv.mkDerivation (
+          {
+            inherit
+              pname
+              version
+              src
+              patches
+              installPhase
+              ;
+
+            nativeBuildInputs = [
+              pkgs.maven
+              mvnJdk
+            ];
+
+            env = {
+              JAVA_HOME = if pkgs.stdenv.isDarwin then "${mvnJdk}" else "${mvnJdk}/lib/openjdk";
+            };
+
+            buildPhase = ''
+              runHook preBuild
+
+              export HOME="$NIX_BUILD_TOP/home"
+              mkdir -p "$HOME"
+
+              mvn --offline -ntp -Dmaven.repo.local=${mavenRepository} ${lib.escapeShellArgs mvnFlags}
+
+              runHook postBuild
+            '';
+
+            meta = meta // {
+              platforms = meta.platforms or lib.platforms.unix;
+            };
+          }
+          // lib.optionalAttrs (sourceRoot != null) { inherit sourceRoot; }
+        );
 
       # Generic helper: zipalign + apksigner wrapper for any pre-built APK.
       # Args:
@@ -94,6 +151,7 @@
         gradle2nixBuilders = inputs.gradle2nix.builders.${system};
         gradle2nixV1Builders = gradle2nixV1.builders.${system};
         inherit
+          mkMavenPackageWithLock
           mkSignScript
           sources
           ;
