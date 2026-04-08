@@ -47,15 +47,15 @@ let
     in
     buildDartApplication.override { dart = flutter335; } (finalAttrs: {
       pname = "immich";
-      version = "2.6.3+3041";
+      version = "2.7.2+3043";
 
       src = applyPatches {
         src = fetchFromGitHub {
           owner = "immich-app";
           repo = "immich";
-          tag = "v2.6.3";
+          tag = "v2.7.2";
           fetchSubmodules = true;
-          hash = "sha256-2vkHeTUPezEf6Qz4bVmln7unTIVuGdzXPTjr6vnW0NE=";
+          hash = "sha256-MSRcdAKpHVT5VpFGAWvTVZY/KYkxY+68XI+S2mb5BnM=";
         };
         patches = [
           /*
@@ -212,8 +212,8 @@ let
         echo "sdk.dir=${androidSdkRoot}" > android/local.properties
         echo "cmake.dir=${androidSdkRoot}/cmake/3.31.6" >> android/local.properties
         echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
-        echo "flutter.versionName=2.6.1" >> android/local.properties
-        echo "flutter.versionCode=3039" >> android/local.properties
+        echo "flutter.versionName=2.7.2" >> android/local.properties
+        echo "flutter.versionCode=3043" >> android/local.properties
       '';
 
       preBuild = ''
