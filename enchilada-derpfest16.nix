@@ -51,12 +51,21 @@ args@{
       rev = "6a35ee792604a2feab55a3a42c4b78b5273beb3d";
       hash = "sha256-u/vsbIfsLXVdH9hPwGcZX34FzrS4SeSWZtHsj8ILVgA=";
     };
+    "device/oneplus/sdm845-common".postPatch = ''
+      substituteInPlace common.mk \
+        --replace-fail '$(call inherit-product, packages/apps/ViPER4AndroidFX/config.mk)' ""
+    '';
     "kernel/oneplus/sdm845".src = pkgs.fetchFromGitHub {
       owner = "ppanzenboeck";
       repo = "kernel_oneplus_sdm845";
       rev = "9b322418d63762b3bec0c824a656227a6607aa9d";
-      hash = pkgs.lib.fakeHash;
+      hash = "sha256-3w7YBmhKSNsQFDrYNUtd/Uv6P5MPY6u/v4oS6RI2lNY=";
     };
+    "kernel/oneplus/sdm845".postPatch = ''
+      mkdir -p arch/arm64/configs/vendor
+      cp arch/arm64/configs/enchilada_defconfig \
+        arch/arm64/configs/vendor/enchilada_defconfig
+    '';
     "hardware/oneplus".src = pkgs.fetchFromGitHub {
       owner = "ppanzenboeck";
       repo = "hardware_oneplus";
@@ -71,11 +80,17 @@ args@{
       rev = "2dedc8d1099e0b4d3e507c0049ee9bdcf12d77f0";
       hash = "sha256-Tw9HIZ0AAIXLFFA5ZSot14eQ2K2hyEXG0kinXni0DC8=";
     };
+    "vendor/oneplus/enchilada".patches = [
+      ./vendor-oneplus-enchilada-update-radio-sha1.patch
+    ];
     "vendor/oneplus/sdm845-common".src = pkgs.fetchFromGitHub {
       owner = "TheMuppets";
       repo = "proprietary_vendor_oneplus_sdm845-common";
       rev = "3d6b72f093ccfb99e8bfc17af204441b6e6322aa";
       hash = "sha256-Qa6vdg7+qmij7VMdHXSQ+wYDmYdwUcAd1RdiH47Dzgg=";
     };
+    "vendor/oneplus/sdm845-common".patches = [
+      ./vendor-oneplus-sdm845-common-drop-duplicate-libqti-perfd-client.patch
+    ];
   };
 }

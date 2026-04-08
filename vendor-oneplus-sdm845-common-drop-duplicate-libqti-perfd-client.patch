@@ -1,0 +1,62 @@
+--- a/Android.bp
++++ b/Android.bp
+@@ -5,6 +5,7 @@ soong_namespace {
+         "device/oneplus/sdm845-common",
+         "hardware/oneplus",
+         "hardware/qcom-caf/sdm845",
++        "hardware/qcom-caf/common/libqti-perfd-client",
+         "hardware/qcom-caf/wlan",
+         "vendor/qcom/opensource/commonsys-intf/display",
+         "vendor/qcom/opensource/commonsys/display",
+@@ -2703,50 +2704,6 @@ cc_prebuilt_library_shared {
+     soc_specific: true,
+ }
+ 
+-cc_prebuilt_library_shared {
+-    name: "libqti-perfd-client",
+-    owner: "oneplus",
+-    strip: {
+-        none: true,
+-    },
+-    target: {
+-        android_arm: {
+-            srcs: [
+-                "proprietary/vendor/lib/libqti-perfd-client.so",
+-            ],
+-            shared_libs: [
+-                "libcutils",
+-                "libutils",
+-                "liblog",
+-                "vendor.qti.hardware.perf@2.2",
+-                "libhidlbase",
+-                "libc++",
+-                "libc",
+-                "libm",
+-                "libdl",
+-            ],
+-        },
+-        android_arm64: {
+-            srcs: [
+-                "proprietary/vendor/lib64/libqti-perfd-client.so",
+-            ],
+-            shared_libs: [
+-                "libcutils",
+-                "libutils",
+-                "liblog",
+-                "vendor.qti.hardware.perf@2.2",
+-                "libhidlbase",
+-                "libc++",
+-                "libc",
+-                "libm",
+-                "libdl",
+-            ],
+-        },
+-    },
+-    compile_multilib: "both",
+-    prefer: true,
+-    soc_specific: true,
+-}
+ 
+ cc_prebuilt_library_shared {
+     name: "libqti-perfd",
+     owner: "oneplus",
