@@ -146,6 +146,62 @@
     };
     date = "2026-03-18";
   };
+  derpfest16_device_oneplus_enchilada = {
+    pname = "derpfest16_device_oneplus_enchilada";
+    version = "983aa8010f76c978e838e80d987bbd5a9990da03";
+    src = fetchgit {
+      url = "https://github.com/ppanzenboeck/device_oneplus_enchilada.git";
+      rev = "983aa8010f76c978e838e80d987bbd5a9990da03";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-S1lKJS+maEpdbKQ6cMMsh8kTuwLpkJ+jKADxpgGBb2M=";
+    };
+    date = "2026-02-03";
+  };
+  derpfest16_device_oneplus_sdm845_common = {
+    pname = "derpfest16_device_oneplus_sdm845_common";
+    version = "279a14fbb48544071f2352b84eab511f377c1ea8";
+    src = fetchgit {
+      url = "https://github.com/ppanzenboeck/device_oneplus_sdm845-common.git";
+      rev = "279a14fbb48544071f2352b84eab511f377c1ea8";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-uMcuA/xBEijfxSncLWEISlNl6dVooHnkvINmln4HqYU=";
+    };
+    date = "2026-03-17";
+  };
+  derpfest16_hardware_oneplus = {
+    pname = "derpfest16_hardware_oneplus";
+    version = "3c3057c888e46beb4cc0a909f70d24257af7a8a5";
+    src = fetchgit {
+      url = "https://github.com/ppanzenboeck/hardware_oneplus.git";
+      rev = "3c3057c888e46beb4cc0a909f70d24257af7a8a5";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-pnrTLQL+H9cuxLlbRVTJPY84GfW2ymJscIom/Wivnhc=";
+    };
+    date = "2026-02-03";
+  };
+  derpfest16_kernel_oneplus_sdm845 = {
+    pname = "derpfest16_kernel_oneplus_sdm845";
+    version = "9b322418d63762b3bec0c824a656227a6607aa9d";
+    src = fetchgit {
+      url = "https://github.com/ppanzenboeck/kernel_oneplus_sdm845.git";
+      rev = "9b322418d63762b3bec0c824a656227a6607aa9d";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-3w7YBmhKSNsQFDrYNUtd/Uv6P5MPY6u/v4oS6RI2lNY=";
+    };
+    date = "2026-03-17";
+  };
   derpfest_launcher3 = {
     pname = "derpfest_launcher3";
     version = "21fc063308cd20425f2283593497385fff7f9297";
@@ -190,17 +246,17 @@
   };
   google_gallery = {
     pname = "google_gallery";
-    version = "65e794bf2f247d0eee21a79ac0595f24fd3ac4cc";
+    version = "34324280e681de437b3e020db725bf2f8fc135ed";
     src = fetchgit {
       url = "https://github.com/google-ai-edge/gallery.git";
-      rev = "65e794bf2f247d0eee21a79ac0595f24fd3ac4cc";
+      rev = "34324280e681de437b3e020db725bf2f8fc135ed";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-CmhbD7nMBDanXy7t82G3HSr8IHAfJZCh7yIQyKj9JH4=";
+      sha256 = "sha256-2nnEvx4xhI1WSPxs26uUV0LXtA+pe7ZqEHKssoBXu2Y=";
     };
-    date = "2026-04-02";
+    date = "2026-04-08";
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
