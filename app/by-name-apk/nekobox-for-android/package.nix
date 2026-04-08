@@ -60,7 +60,7 @@ let
         ];
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+        outputHash = "sha256-UJfHrjgQ+oOzW9gA86A2lpR0ayE06n19SfA3etVJipI=";
         dontConfigure = true;
         dontFixup = true;
 
@@ -117,11 +117,24 @@ let
           cd libcore
           go mod edit -replace=golang.org/x/mobile=../x-mobile
           go mod download all
+          mkdir -p "$TMPDIR/gomobile-compat"
+          cat > "$TMPDIR/gomobile-compat/go.mod" <<'EOF'
+          module gomobile-compat
+
+          go 1.23
+
+          require golang.org/x/mobile v0.0.0-20201217150744-e6ae53a27f4f
+          EOF
+          (
+            cd "$TMPDIR/gomobile-compat"
+            go mod download all
+          )
           go mod download \
             github.com/stretchr/objx@v0.5.2 \
             github.com/stretchr/testify@v1.10.0 \
             github.com/stretchr/testify@v1.2.2 \
             github.com/BurntSushi/toml@v0.3.1 \
+            github.com/BurntSushi/xgb@v0.0.0-20160522181843-27f122750802 \
             dmitri.shuralyov.com/app/changes@v0.0.0-20180602232624-0a106ad413e3 \
             dmitri.shuralyov.com/html/belt@v0.0.0-20180602232347-f7d459c86be0 \
             dmitri.shuralyov.com/service/change@v0.0.0-20181023043359-a85b471d5412 \
@@ -236,10 +249,18 @@ let
             golang.org/x/crypto@v0.0.0-20190313024323-a1f597ede03a \
             golang.org/x/crypto@v0.0.0-20190308221718-c2843e01d9a2 \
             golang.org/x/crypto@v0.0.0-20181030102418-4d3f4d9ffa16 \
+            golang.org/x/exp@v0.0.0-20190731235908-ec7cb31e5a56 \
+            golang.org/x/image@v0.0.0-20190227222117-0694c2d4d067 \
+            golang.org/x/image@v0.0.0-20190802002840-cff245a6509b \
+            golang.org/x/mobile@v0.0.0-20190312151609-d3739f865fa6 \
+            golang.org/x/mobile@v0.0.0-20201217150744-e6ae53a27f4f \
+            golang.org/x/mod@v0.1.0 \
+            golang.org/x/mod@v0.1.1-0.20191209134235-331c550502dd \
             golang.org/x/net@v0.0.0-20190313220215-9f648a60d977 \
             golang.org/x/net@v0.0.0-20190108225652-1e06a53dbb7e \
             golang.org/x/net@v0.0.0-20190213061140-3a22650c66bd \
             golang.org/x/net@v0.0.0-20180826012351-8a410e7b638d \
+            golang.org/x/net@v0.0.0-20181106065722-10aee1819953 \
             golang.org/x/net@v0.0.0-20180906233101-161cd47e91fd \
             golang.org/x/net@v0.0.0-20181029044818-c44066c5c816 \
             golang.org/x/net@v0.0.0-20180724234803-3673e40ba225 \
@@ -261,6 +282,7 @@ let
             golang.org/x/sys@v0.0.0-20180909124046-d0be0721c37e \
             golang.org/x/sys@v0.0.0-20181029174526-d69651ed3497 \
             golang.org/x/sys@v0.0.0-20190316082340-a2f829d7f35f \
+            golang.org/x/sys@v0.0.0-20190412213103-97732733099d \
             golang.org/x/sys@v0.0.0-20190215142949-d0b11bdaac8a \
             golang.org/x/sys@v0.0.0-20220817070843-5a390386f1f2 \
             golang.org/x/text@v0.3.1-0.20180807135948-17ff2d5776d2 \
@@ -271,6 +293,8 @@ let
             golang.org/x/tools@v0.0.0-20180828015842-6cd1fcedba52 \
             golang.org/x/tools@v0.0.0-20190114222345-bf090417da8b \
             golang.org/x/tools@v0.0.0-20190226205152-f727befe758c \
+            golang.org/x/tools@v0.0.0-20190312151545-0bb0c0a6e846 \
+            golang.org/x/tools@v0.0.0-20200117012304-6edc0a871e69 \
             google.golang.org/api@v0.1.0 \
             google.golang.org/api@v0.0.0-20180910000450-7ca32eb868bf \
             google.golang.org/api@v0.0.0-20181030000543-1d582fd0359e \
@@ -297,7 +321,8 @@ let
             gopkg.in/yaml.v2@v2.2.1 \
             gopkg.in/yaml.v2@v2.2.2 \
             gopkg.in/yaml.v3@v3.0.1 \
-            sourcegraph.com/sourcegraph/go-diff@v0.5.0
+            sourcegraph.com/sourcegraph/go-diff@v0.5.0 \
+            sourcegraph.com/sqs/pbtypes@v0.0.0-20180604144634-d3ebe8f20ae4
           for arch in arm arm64 386 amd64; do
             GOOS=android GOARCH="$arch" CGO_ENABLED=1 \
               go list -deps -test \
@@ -346,6 +371,46 @@ let
       gradleUpdateTask = finalAttrs.gradleBuildTask;
 
       postPatch = ''
+        cat > settings.gradle.kts.new <<'EOF'
+        pluginManagement {
+            repositories {
+                google()
+                mavenCentral()
+                gradlePluginPortal()
+                maven(url = "https://jitpack.io")
+            }
+            resolutionStrategy {
+                eachPlugin {
+                    if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {
+                        val agpVersion = requested.version ?: "8.8.1"
+                        useModule("com.android.tools.build:gradle:$agpVersion")
+                    }
+                    if (
+                        requested.id.id == "org.jetbrains.kotlin.android" ||
+                        requested.id.id == "kotlin-android" ||
+                        requested.id.id == "org.jetbrains.kotlin.jvm" ||
+                        requested.id.id == "kotlin-parcelize"
+                    ) {
+                        val kotlinVersion = requested.version ?: "2.0.21"
+                        useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+                    }
+                    if (requested.id.id == "com.google.devtools.ksp") {
+                        val kspVersion = requested.version ?: "2.0.21-1.0.27"
+                        useModule("com.google.devtools.ksp:symbol-processing-gradle-plugin:$kspVersion")
+                    }
+                    if (requested.id.id == "org.gradle.kotlin.kotlin-dsl") {
+                        val kotlinDslVersion = requested.version ?: "6.4.2"
+                        useModule("org.gradle.kotlin:gradle-kotlin-dsl-plugins:$kotlinDslVersion")
+                    }
+                }
+            }
+        }
+
+        EOF
+        cat settings.gradle.kts >> settings.gradle.kts.new
+        mv settings.gradle.kts.new settings.gradle.kts
+        substituteInPlace buildSrc/build.gradle.kts \
+          --replace-fail '    `kotlin-dsl`' '    id("org.gradle.kotlin.kotlin-dsl") version "6.4.2"'
         cat >> build.gradle.kts <<'EOF'
         tasks.register("lintVitalRelease")
         EOF
@@ -402,6 +467,10 @@ let
         chmod -R u+w x-mobile
         (
           cd x-mobile
+          patch -p1 < ${../tailscale/gomobile-avoid-empty-go-mod.patch}
+          substituteInPlace cmd/gomobile/init.go \
+            --replace-fail 'if err := goInstall([]string{"golang.org/x/mobile/cmd/gobind@latest"}, nil); err != nil {' \
+                           'if _, err := exec.LookPath("gobind"); err != nil {'
           substituteInPlace cmd/gomobile/bind_androidapp.go \
             --replace-fail 'if err := goModTidyAt(srcDir, env); err != nil {' 'if false {'
           substituteInPlace cmd/gomobile/build.go \
@@ -426,13 +495,32 @@ let
         (
           cd libcore
           go mod edit -replace=golang.org/x/mobile=../x-mobile
+          go mod vendor
         )
 
         mkdir -p app/libs
         (
           cd libcore
-          mkdir -p "$GOPATH/pkg/gomobile"
-          gomobile bind -v \
+          gomobileBin="$PWD/../gomobile-bin"
+          gobindBin="$PWD/../gobind-bin"
+          (cd ../x-mobile && go build -o "$gomobileBin" ./cmd/gomobile)
+          (cd ../x-mobile && go build -o "$gobindBin" ./cmd/gobind)
+          mkdir -p "$GOPATH/bin" "$GOPATH/pkg/gomobile" "$GOPATH/src/golang.org/x"
+          install -m755 "$gobindBin" "$GOPATH/bin/gobind"
+          ln -s "$PWD/../x-mobile" "$GOPATH/src/golang.org/x/mobile"
+          rm -rf vendor/golang.org/x/mobile
+          cp -R vendor/. "$GOPATH/src/"
+          find "$GOMODCACHE" -name go.mod -print | while read -r gomod; do
+            module_dir="$(dirname "$gomod")"
+            rel_path="''${module_dir#$GOMODCACHE/}"
+            module_path="''${rel_path%@*}"
+            mkdir -p "$GOPATH/src/$(dirname "$module_path")"
+            if [ ! -e "$GOPATH/src/$module_path" ]; then
+              ln -s "$module_dir" "$GOPATH/src/$module_path"
+            fi
+          done
+          export PATH="$GOPATH/bin:$PATH"
+          "$gomobileBin" bind -v \
             -androidapi 21 \
             -trimpath \
             -ldflags='-s -w' \
