@@ -1,4 +1,6 @@
 {
+  auto_value_annotations_1_6_2,
+  auto_value_annotations_1_6_3,
   checker_qual_3_33_0,
   checker_qual_3_43_0,
   commons_codec_1_10,
@@ -19,14 +21,36 @@
   gson_2_11_0,
   guava_31_1_android,
   guava_33_3_1_jre,
+  java_diff_utils_4_16,
+  javax_inject_1,
+  javawriter_2_5_0,
   j2objc_annotations_2_8,
   j2objc_annotations_3_0_0,
   jsr305_3_0_2,
   slf4j_api_1_7_30,
   slf4j_api_2_0_17,
+  zxing_core_3_5_4,
 }:
 
 {
+  "com.google.auto.value:auto-value-annotations:1.6.2" = {
+    "auto-value-annotations-1.6.2.jar" =
+      _: "${auto_value_annotations_1_6_2}/auto-value-annotations-1.6.2.jar";
+    "auto-value-annotations-1.6.2.pom" =
+      _: "${auto_value_annotations_1_6_2}/auto-value-annotations-1.6.2.pom";
+  };
+  "com.google.auto.value:auto-value-annotations:1.6.3" = {
+    "auto-value-annotations-1.6.3.jar" =
+      _: "${auto_value_annotations_1_6_3}/auto-value-annotations-1.6.3.jar";
+    "auto-value-annotations-1.6.3.pom" =
+      _: "${auto_value_annotations_1_6_3}/auto-value-annotations-1.6.3.pom";
+  };
+  "com.google.auto.value:auto-value-parent:1.6.2" = {
+    "auto-value-parent-1.6.2.pom" = _: "${auto_value_annotations_1_6_2}/auto-value-parent-1.6.2.pom";
+  };
+  "com.google.auto.value:auto-value-parent:1.6.3" = {
+    "auto-value-parent-1.6.3.pom" = _: "${auto_value_annotations_1_6_3}/auto-value-parent-1.6.3.pom";
+  };
   "com.google.code.findbugs:jsr305:3.0.2" = {
     "jsr305-3.0.2.jar" = _: "${jsr305_3_0_2}/jsr305-3.0.2.jar";
     "jsr305-3.0.2.pom" = _: "${jsr305_3_0_2}/jsr305-3.0.2.pom";
@@ -150,6 +174,28 @@
   "com.google.errorprone:error_prone_parent:2.30.0" = {
     "error_prone_parent-2.30.0.pom" =
       _: "${error_prone_annotations_2_30_0}/error_prone_parent-2.30.0.pom";
+  };
+  "com.google.zxing:core:3.5.4" = {
+    "core-3.5.4.jar" = _: "${zxing_core_3_5_4}/core-3.5.4.jar";
+    "core-3.5.4.pom" = _: "${zxing_core_3_5_4}/core-3.5.4.pom";
+  };
+  "com.google.zxing:zxing-parent:3.5.4" = {
+    "zxing-parent-3.5.4.pom" = _: "${zxing_core_3_5_4}/zxing-parent-3.5.4.pom";
+  };
+  "com.squareup:javawriter:2.5.0" = {
+    "javawriter-2.5.0.jar" = _: "${javawriter_2_5_0}/javawriter-2.5.0.jar";
+    "javawriter-2.5.0.pom" = _: "${javawriter_2_5_0}/javawriter-2.5.0.pom";
+  };
+  "io.github.java-diff-utils:java-diff-utils:4.16" = {
+    "java-diff-utils-4.16.jar" = _: "${java_diff_utils_4_16}/java-diff-utils-4.16.jar";
+    "java-diff-utils-4.16.pom" = _: "${java_diff_utils_4_16}/java-diff-utils-4.16.pom";
+  };
+  "io.github.java-diff-utils:java-diff-utils-parent:4.16" = {
+    "java-diff-utils-parent-4.16.pom" = _: "${java_diff_utils_4_16}/java-diff-utils-parent-4.16.pom";
+  };
+  "javax.inject:javax.inject:1" = {
+    "javax.inject-1.jar" = _: "${javax_inject_1}/javax.inject-1.jar";
+    "javax.inject-1.pom" = _: "${javax_inject_1}/javax.inject-1.pom";
   };
   "com.google.j2objc:j2objc-annotations:2.8" = {
     "j2objc-annotations-2.8.jar" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.jar";
