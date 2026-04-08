@@ -8,6 +8,7 @@
   auto_value_annotations_1_6_3,
   checker_qual_3_33_0,
   checker_qual_3_43_0,
+  error_prone_annotations_2_41_0,
   commons_codec_1_10,
   commons_codec_1_11,
   commons_codec_1_15,
@@ -27,6 +28,7 @@
   error_prone_annotations_2_30_0,
   failureaccess_1_0_1,
   failureaccess_1_0_2,
+  gson_2_10_1,
   gson_2_11_0,
   glide_5_0_5,
   guava_31_1_android,
@@ -38,6 +40,7 @@
   javawriter_2_5_0,
   j2objc_annotations_2_8,
   j2objc_annotations_3_0_0,
+  j2objc_annotations_3_1,
   jopt_simple_4_9,
   jsr305_3_0_2,
   kotlin_result_2_1_0,
@@ -47,7 +50,9 @@
   protobuf_bom_3_25_5,
   protobuf_parent_3_25_5,
   slf4j_api_1_7_30,
+  slf4j_api_1_7_36,
   slf4j_api_2_0_17,
+  zxing_core_3_5_3,
   zxing_core_3_5_4,
   zoomimage_1_0_2,
 }:
@@ -89,8 +94,15 @@
     "gson-2.11.0.jar" = _: "${gson_2_11_0}/gson-2.11.0.jar";
     "gson-2.11.0.pom" = _: "${gson_2_11_0}/gson-2.11.0.pom";
   };
+  "com.google.code.gson:gson:2.10.1" = {
+    "gson-2.10.1.jar" = _: "${gson_2_10_1}/gson-2.10.1.jar";
+    "gson-2.10.1.pom" = _: "${gson_2_10_1}/gson-2.10.1.pom";
+  };
   "com.google.code.gson:gson-parent:2.11.0" = {
     "gson-parent-2.11.0.pom" = _: "${gson_2_11_0}/gson-parent-2.11.0.pom";
+  };
+  "com.google.code.gson:gson-parent:2.10.1" = {
+    "gson-parent-2.10.1.pom" = _: "${gson_2_10_1}/gson-parent-2.10.1.pom";
   };
   "com.github.bumptech.glide:disklrucache:5.0.5" = {
     "disklrucache-5.0.5.aar" = _: "${glide_5_0_5}/disklrucache-5.0.5.aar";
@@ -224,9 +236,26 @@
     "error_prone_parent-2.30.0.pom" =
       _: "${error_prone_annotations_2_30_0}/error_prone_parent-2.30.0.pom";
   };
+  "com.google.errorprone:error_prone_annotations:2.41.0" = {
+    "error_prone_annotations-2.41.0.jar" =
+      _: "${error_prone_annotations_2_41_0}/error_prone_annotations-2.41.0.jar";
+    "error_prone_annotations-2.41.0.pom" =
+      _: "${error_prone_annotations_2_41_0}/error_prone_annotations-2.41.0.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.41.0" = {
+    "error_prone_parent-2.41.0.pom" =
+      _: "${error_prone_annotations_2_41_0}/error_prone_parent-2.41.0.pom";
+  };
   "com.google.zxing:core:3.5.4" = {
     "core-3.5.4.jar" = _: "${zxing_core_3_5_4}/core-3.5.4.jar";
     "core-3.5.4.pom" = _: "${zxing_core_3_5_4}/core-3.5.4.pom";
+  };
+  "com.google.zxing:core:3.5.3" = {
+    "core-3.5.3.jar" = _: "${zxing_core_3_5_3}/core-3.5.3.jar";
+    "core-3.5.3.pom" = _: "${zxing_core_3_5_3}/core-3.5.3.pom";
+  };
+  "com.google.zxing:zxing-parent:3.5.3" = {
+    "zxing-parent-3.5.3.pom" = _: "${zxing_core_3_5_3}/zxing-parent-3.5.3.pom";
   };
   "com.google.zxing:zxing-parent:3.5.4" = {
     "zxing-parent-3.5.4.pom" = _: "${zxing_core_3_5_4}/zxing-parent-3.5.4.pom";
@@ -323,6 +352,10 @@
     "j2objc-annotations-3.0.0.jar" = _: "${j2objc_annotations_3_0_0}/j2objc-annotations-3.0.0.jar";
     "j2objc-annotations-3.0.0.pom" = _: "${j2objc_annotations_3_0_0}/j2objc-annotations-3.0.0.pom";
   };
+  "com.google.j2objc:j2objc-annotations:3.1" = {
+    "j2objc-annotations-3.1.jar" = _: "${j2objc_annotations_3_1}/j2objc-annotations-3.1.jar";
+    "j2objc-annotations-3.1.pom" = _: "${j2objc_annotations_3_1}/j2objc-annotations-3.1.pom";
+  };
   "org.slf4j:slf4j-api:2.0.17" = {
     "slf4j-api-2.0.17.jar" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.jar";
     "slf4j-api-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.pom";
@@ -333,6 +366,13 @@
   };
   "org.slf4j:slf4j-parent:1.7.30" = {
     "slf4j-parent-1.7.30.pom" = _: "${slf4j_api_1_7_30}/slf4j-parent-1.7.30.pom";
+  };
+  "org.slf4j:slf4j-api:1.7.36" = {
+    "slf4j-api-1.7.36.jar" = _: "${slf4j_api_1_7_36}/slf4j-api-1.7.36.jar";
+    "slf4j-api-1.7.36.pom" = _: "${slf4j_api_1_7_36}/slf4j-api-1.7.36.pom";
+  };
+  "org.slf4j:slf4j-parent:1.7.36" = {
+    "slf4j-parent-1.7.36.pom" = _: "${slf4j_api_1_7_36}/slf4j-parent-1.7.36.pom";
   };
   "org.slf4j:slf4j-bom:2.0.17" = {
     "slf4j-bom-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-bom-2.0.17.pom";
