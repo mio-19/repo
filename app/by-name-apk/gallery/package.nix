@@ -1,104 +1,112 @@
 {
   mk-apk-package,
+  overrides-from-source,
+  gradle2nixBuilders,
   lib,
-  stdenv,
   androidSdkBuilder,
   gradle-packages,
   jdk21,
+  runCommand,
   writableTmpDirAsHomeHook,
   sources,
 }:
 let
-  appPackage =
-    let
+  androidSdk = androidSdkBuilder (s: [
+    s.cmdline-tools-latest
+    s.platform-tools
+    s.platforms-android-35
+    s.build-tools-35-0-0
+  ]);
 
-      androidSdk = androidSdkBuilder (s: [
-        s.cmdline-tools-latest
-        s.platform-tools
-        s.platforms-android-35
-        s.build-tools-35-0-0
-      ]);
+  gradle =
+    (gradle-packages.mkGradle {
+      version = "8.10.2";
+      hash = "sha256-McVXE+QCM6gwOCfOtCykikcmegrUurkXcSMSHnFSTCY=";
+      defaultJava = jdk21;
+    }).wrapped;
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.10.2";
-          hash = "sha256-McVXE+QCM6gwOCfOtCykikcmegrUurkXcSMSHnFSTCY=";
-          defaultJava = jdk21;
-        }).wrapped;
-    in
-    stdenv.mkDerivation (finalAttrs: {
-      pname = "gallery";
-      inherit (sources.google_gallery) src;
-      version = sources.google_gallery.date;
+  appPackage = gradle2nixBuilders.buildGradlePackage rec {
+    pname = "gallery";
+    inherit gradle;
+    inherit (sources.google_gallery) src;
+    version = sources.google_gallery.date;
 
-      sourceRoot = "${finalAttrs.src.name}/Android/src";
+    sourceRoot = "${src.name}/Android/src";
 
-      gradleBuildTask = ":app:assembleRelease";
-      gradleUpdateTask = finalAttrs.gradleBuildTask;
+    lockFile = ./gradle.lock;
+    overrides = overrides-from-source // {
+      "com.google.protobuf:protoc:4.26.1"."protoc-4.26.1-linux-x86_64.exe" =
+        src:
+        runCommand "protoc-4.26.1-linux-x86_64.exe" { } ''
+          cp ${src} $out
+          chmod +x $out
+        '';
+    };
+    buildJdk = jdk21;
 
-      mitmCache = gradle.fetchDeps {
-        inherit (finalAttrs) pname;
-        pkg = finalAttrs.finalPackage;
-        data = ./gallery_deps.json;
-        silent = false;
-        useBwrap = false;
-      };
+    nativeBuildInputs = [
+      gradle
+      jdk21
+      writableTmpDirAsHomeHook
+    ];
 
-      nativeBuildInputs = [
-        gradle
-        jdk21
-        writableTmpDirAsHomeHook
-      ];
+    dontUseGradleConfigure = true;
 
-      env = {
-        JAVA_HOME = jdk21;
-        ANDROID_HOME = "${androidSdk}/share/android-sdk";
-        ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
-      };
+    env = {
+      JAVA_HOME = jdk21;
+      ANDROID_HOME = "${androidSdk}/share/android-sdk";
+      ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+    };
 
-      preConfigure = ''
-        export ANDROID_USER_HOME="$HOME/.android"
-        mkdir -p "$ANDROID_USER_HOME"
-        cat > local.properties <<EOF
-        sdk.dir=${androidSdk}/share/android-sdk
-        EOF
-      '';
+    preConfigure = ''
+      export ANDROID_USER_HOME="$HOME/.android"
+      export GRADLE_USER_HOME="$(mktemp -d)"
+      export TERM=dumb
+      mkdir -p "$ANDROID_USER_HOME"
+      cat > local.properties <<EOF
+      sdk.dir=${androidSdk}/share/android-sdk
+      EOF
+      gradleFlagsArray+=(--no-daemon --init-script "$gradleInitScript" --offline)
+    '';
 
-      postPatch = ''
-        substituteInPlace app/build.gradle.kts \
-          --replace-fail "REPLACE_WITH_YOUR_REDIRECT_SCHEME_IN_HUGGINGFACE_APP" "com.google.ai.edge.gallery.oauthredirect" \
-          --replace-fail 'applicationId = "com.google.aiedge.gallery"' 'applicationId = "com.google.ai.edge.gallery"'
-        substituteInPlace app/src/main/java/com/google/ai/edge/gallery/common/ProjectConfig.kt \
-          --replace-fail "REPLACE_WITH_YOUR_CLIENT_ID_IN_HUGGINGFACE_APP" "$(echo MWYwNTA3YzAtNWRiMi00MTc5LWFhYTEtYjVmZTRjNDhmYjU5Cg== | base64 -d)" \
-          --replace-fail "REPLACE_WITH_YOUR_REDIRECT_URI_IN_HUGGINGFACE_APP" "com.google.ai.edge.gallery.oauthredirect://oauth_redirect" \
-      '';
+    postPatch = ''
+      substituteInPlace app/build.gradle.kts \
+        --replace-fail "REPLACE_WITH_YOUR_REDIRECT_SCHEME_IN_HUGGINGFACE_APP" "com.google.ai.edge.gallery.oauthredirect" \
+        --replace-fail 'applicationId = "com.google.aiedge.gallery"' 'applicationId = "com.google.ai.edge.gallery"'
+      substituteInPlace app/src/main/java/com/google/ai/edge/gallery/common/ProjectConfig.kt \
+        --replace-fail "REPLACE_WITH_YOUR_CLIENT_ID_IN_HUGGINGFACE_APP" "$(echo MWYwNTA3YzAtNWRiMi00MTc5LWFhYTEtYjVmZTRjNDhmYjU5Cg== | base64 -d | tr -d '\n')" \
+        --replace-fail "REPLACE_WITH_YOUR_REDIRECT_URI_IN_HUGGINGFACE_APP" "com.google.ai.edge.gallery.oauthredirect://oauth_redirect" \
+    '';
 
-      gradleFlags = [
-        "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-      ];
+    gradleFlags = [
+      "-Dorg.gradle.java.home=${jdk21.home}"
+      "-Dorg.gradle.java.installations.auto-download=false"
+      "-Dorg.gradle.java.installations.paths=${jdk21}"
+      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+    ];
 
-      installPhase = ''
-        runHook preInstall
-        apk_dir="app/build/outputs/apk/release"
-        apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apk_dir/output-metadata.json" | head -n 1)"
-        test -n "$apk_name"
-        apk_path="$apk_dir/$apk_name"
-        test -f "$apk_path"
-        install -Dm644 "$apk_path" "$out/gallery.apk"
-        runHook postInstall
-      '';
+    gradleBuildFlags = ":app:assembleRelease";
 
-      meta = with lib; {
-        description = "Google AI Edge Gallery app built from source";
-        homepage = "https://github.com/google-ai-edge/gallery";
-        license = licenses.asl20;
-        platforms = platforms.unix;
-      };
-    });
+    installPhase = ''
+      runHook preInstall
+      apk_dir="app/build/outputs/apk/release"
+      apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apk_dir/output-metadata.json" | head -n 1)"
+      test -n "$apk_name"
+      apk_path="$apk_dir/$apk_name"
+      test -f "$apk_path"
+      install -Dm644 "$apk_path" "$out/gallery.apk"
+      runHook postInstall
+    '';
+
+    meta = with lib; {
+      description = "Google AI Edge Gallery app built from source";
+      homepage = "https://github.com/google-ai-edge/gallery";
+      license = licenses.asl20;
+      platforms = platforms.unix;
+    };
+  };
 in
 mk-apk-package {
   inherit appPackage;
