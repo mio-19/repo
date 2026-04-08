@@ -2,7 +2,7 @@
   androidSdkBuilder,
   fetchFromGitHub,
   gradle2nixBuilders,
-  gradle2nix_overrides,
+  overrides-from-source,
   gradle-packages,
   jdk17,
   lib,
@@ -39,7 +39,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   inherit gradle;
 
-  overrides = gradle2nix_overrides;
+  overrides = overrides-from-source;
 
   buildJdk = jdk17;
 

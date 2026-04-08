@@ -2,7 +2,7 @@
   apksigner,
   androidSdkBuilder,
   fetchgit,
-  gradle2nix_overrides,
+  overrides-from-source,
   gradle-packages,
   gradle2nixBuilders,
   jdk21,
@@ -40,7 +40,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   inherit gradle;
 
-  overrides = gradle2nix_overrides;
+  overrides = overrides-from-source;
 
   buildJdk = jdk21;
 
