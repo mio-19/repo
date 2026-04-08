@@ -1,0 +1,35 @@
+{
+  fetchFromGitHub,
+  lib,
+  stdenv,
+}:
+
+stdenv.mkDerivation (finalAttrs: {
+  pname = "commons-parent";
+  version = "72";
+
+  src = fetchFromGitHub {
+    owner = "apache";
+    repo = "commons-parent";
+    tag = "rel/commons-parent-${finalAttrs.version}";
+    hash = "sha256-oc8DHVt9ZLyZ4Z1WigPqn99fjK+ifsepzq4dUZe8vIY=";
+  };
+
+  dontConfigure = true;
+  dontBuild = true;
+  dontUnpack = true;
+
+  installPhase = ''
+    runHook preInstall
+    mkdir -p "$out"
+    install -Dm644 "${finalAttrs.src}/pom.xml" "$out/commons-parent-${finalAttrs.version}.pom"
+    runHook postInstall
+  '';
+
+  meta = with lib; {
+    description = "Apache Commons parent POM";
+    homepage = "https://github.com/apache/commons-parent";
+    license = licenses.asl20;
+    platforms = platforms.unix;
+  };
+})
