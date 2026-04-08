@@ -1,5 +1,6 @@
 {
   callPackage,
+  jdk17,
   jdk21,
   pkgs,
 }:
@@ -7,8 +8,9 @@
   version = "9.3.1";
   tag = "v9.3.1";
   hash = "sha256-uDc2w+D/xxK/2rguf48eUZ9UPYtVpMePfnJOKh/NNCE=";
-  deps = ./gradle_9_3_1_deps.json;
+  lockFile = ./gradle.lock;
   defaultJava = jdk21;
+  buildJdk = jdk17;
   bootstrapGradle =
     (pkgs.gradle-packages.mkGradle {
       version = "9.3.1";
