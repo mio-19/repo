@@ -262,8 +262,6 @@
   "io.github.java-diff-utils:java-diff-utils-parent:4.16" = {
     "java-diff-utils-parent-4.16.pom" = _: "${java_diff_utils_4_16}/java-diff-utils-parent-4.16.pom";
   };
-
-  # TODO: verify app actually work with replaced things:
   "com.michael-bull.kotlin-result:kotlin-result:2.1.0" = {
     "kotlin-result-2.1.0.module" = _: "${kotlin_result_2_1_0}/kotlin-result-2.1.0.module";
     "kotlin-result-2.1.0.pom" = _: "${kotlin_result_2_1_0}/kotlin-result-2.1.0.pom";
