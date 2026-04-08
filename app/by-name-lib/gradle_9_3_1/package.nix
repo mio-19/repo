@@ -1,7 +1,7 @@
 {
   jdk17,
   jdk21,
-  pkgs,
+  gradle-packages,
   gradle-from-source,
 }:
 gradle-from-source {
@@ -12,7 +12,7 @@ gradle-from-source {
   defaultJava = jdk21;
   buildJdk = jdk17;
   bootstrapGradle =
-    (pkgs.gradle-packages.mkGradle {
+    (gradle-packages.mkGradle {
       version = "9.3.1";
       hash = "sha256-smbV/2uQ6tptw7IMsJDjcxMC5VOifF0+TfHw12vq/wY=";
       defaultJava = jdk21;
