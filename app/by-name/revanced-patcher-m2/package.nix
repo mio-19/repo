@@ -2,7 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  gradle-packages,
+  gradle_9_3_1,
   jdk17,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -17,12 +17,7 @@ let
     s.build-tools-36-0-0
   ]);
 
-  gradle =
-    (gradle-packages.mkGradle {
-      version = "9.3.1";
-      hash = "sha256-smbV/2uQ6tptw7IMsJDjcxMC5VOifF0+TfHw12vq/wY=";
-      defaultJava = jdk17;
-    }).wrapped;
+  gradle = gradle_9_3_1;
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "revanced-patcher-m2";

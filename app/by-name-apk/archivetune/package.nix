@@ -2,9 +2,9 @@
   mk-apk-package,
   overrides-from-source,
   gradle2nixBuilders,
+  gradle_9_3_1,
   lib,
   jdk21,
-  gradle-packages,
   fetchFromGitHub,
   apksigner,
   zip,
@@ -30,12 +30,7 @@ let
     s.build-tools-36-0-0
   ]);
 
-  gradle =
-    (gradle-packages.mkGradle {
-      version = "9.3.1";
-      hash = "sha256-smbV/2uQ6tptw7IMsJDjcxMC5VOifF0+TfHw12vq/wY=";
-      defaultJava = jdk21;
-    }).wrapped;
+  gradle = gradle_9_3_1;
 
   appPackage = gradle2nixBuilders.buildGradlePackage rec {
     pname = "archivetune";

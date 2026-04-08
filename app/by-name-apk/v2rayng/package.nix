@@ -2,9 +2,9 @@
   mk-apk-package,
   lib,
   stdenvNoCC,
+  gradle_9_3_1,
   jdk21,
   go_1_26,
-  gradle-packages,
   stdenv,
   fetchFromGitHub,
   apksigner,
@@ -24,12 +24,7 @@ let
         s.ndk-28-2-13676358
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "9.3.1";
-          hash = "sha256-smbV/2uQ6tptw7IMsJDjcxMC5VOifF0+TfHw12vq/wY=";
-          defaultJava = jdk21;
-        }).wrapped;
+      gradle = gradle_9_3_1;
 
       androidLibXrayLiteSrc = fetchFromGitHub {
         owner = "2dust";

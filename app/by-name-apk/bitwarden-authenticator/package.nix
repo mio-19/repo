@@ -2,8 +2,8 @@
   mk-apk-package,
   lib,
   pkgs,
+  gradle_9_3_1,
   jdk21,
-  gradle-packages,
   stdenv,
   fetchFromGitHub,
   apksigner,
@@ -27,12 +27,7 @@ let
         s.build-tools-36-0-0
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "9.3.1";
-          hash = "sha256-smbV/2uQ6tptw7IMsJDjcxMC5VOifF0+TfHw12vq/wY=";
-          defaultJava = jdk21;
-        }).wrapped;
+      gradle = gradle_9_3_1;
 
       # https://github.com/bitwarden/android/blob/v2026.3.1-bwa/gradle/libs.versions.toml#L33 bitwardenSdk = "2.0.0-5676-14521973"
       sdkSrc = fetchFromGitHub {

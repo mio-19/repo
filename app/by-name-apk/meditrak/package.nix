@@ -1,8 +1,8 @@
 {
   mk-apk-package,
   lib,
+  gradle_9_3_1,
   jdk21,
-  gradle-packages,
   stdenv,
   fetchFromGitHub,
   fetchurl,
@@ -34,12 +34,7 @@ let
         hash = "sha256-bOvR2EA/xYww6Tk5skbz5uWNB2WlzVBUbxbAD9gF0sM=";
       };
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "9.3.1";
-          hash = "sha256-smbV/2uQ6tptw7IMsJDjcxMC5VOifF0+TfHw12vq/wY=";
-          defaultJava = jdk21;
-        }).wrapped;
+      gradle = gradle_9_3_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "meditrak";
