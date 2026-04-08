@@ -48,7 +48,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   lockFile = ./gradle.lock;
 
-  overrides = gradle2nix_overrides;
+  #overrides = gradle2nix_overrides;
 
   buildJdk = jdk21;
 
