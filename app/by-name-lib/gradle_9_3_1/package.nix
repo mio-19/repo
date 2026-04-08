@@ -1,10 +1,10 @@
 {
-  callPackage,
   jdk17,
   jdk21,
   pkgs,
+  gradle-from-source,
 }:
-(callPackage ../gradle-from-source/package.nix { }) {
+gradle-from-source {
   version = "9.3.1";
   tag = "v9.3.1";
   hash = "sha256-uDc2w+D/xxK/2rguf48eUZ9UPYtVpMePfnJOKh/NNCE=";
