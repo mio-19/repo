@@ -1,3 +1,4 @@
+# read https://discuss.gradle.org/t/building-gradle-from-pure-source-without-any-bootstrap-binaries/19398/7
 {
   lib,
   stdenv,
