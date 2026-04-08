@@ -60,7 +60,7 @@ index e9412f86..4f2f2af3 100644
  
      public static int getMaxAccountCount() {
 -        return MAX_ACCOUNT_COUNT;
-+        return 999; // return MAX_ACCOUNT_COUNT;
++        return MAX_ACCOUNT_COUNT; // return 999;
      }
  
      public int getNewMessageId() {
