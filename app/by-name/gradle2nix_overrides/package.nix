@@ -1,4 +1,7 @@
 {
+  apache_32,
+  apache_33,
+  auto_parent_6,
   auto_value_annotations_1_6_2,
   auto_value_annotations_1_6_3,
   checker_qual_3_33_0,
@@ -10,6 +13,10 @@
   commons_io_2_13_0,
   commons_io_2_16_1,
   commons_logging_1_2,
+  commons_parent_34,
+  commons_parent_69,
+  commons_parent_71,
+  commons_parent_72,
   error_prone_annotations_2_15_0,
   error_prone_annotations_2_18_0,
   error_prone_annotations_2_3_1,
@@ -19,6 +26,7 @@
   failureaccess_1_0_1,
   failureaccess_1_0_2,
   gson_2_11_0,
+  glide_5_0_5,
   guava_31_1_android,
   guava_33_3_1_jre,
   java_diff_utils_4_16,
@@ -26,13 +34,17 @@
   javawriter_2_5_0,
   j2objc_annotations_2_8,
   j2objc_annotations_3_0_0,
+  jopt_simple_4_9,
   jsr305_3_0_2,
   kotlin_result_2_1_0,
   kotlin_retry_2_0_2,
   kotlinx_io_0_8_2,
+  oss_parent_7,
+  protobuf_parent_3_25_5,
   slf4j_api_1_7_30,
   slf4j_api_2_0_17,
   zxing_core_3_5_4,
+  zoomimage_1_0_2,
 }:
 
 {
@@ -54,9 +66,15 @@
   "com.google.auto.value:auto-value-parent:1.6.3" = {
     "auto-value-parent-1.6.3.pom" = _: "${auto_value_annotations_1_6_3}/auto-value-parent-1.6.3.pom";
   };
+  "com.google.auto:auto-parent:6" = {
+    "auto-parent-6.pom" = _: "${auto_parent_6}/auto-parent-6.pom";
+  };
   "com.google.code.findbugs:jsr305:3.0.2" = {
     "jsr305-3.0.2.jar" = _: "${jsr305_3_0_2}/jsr305-3.0.2.jar";
     "jsr305-3.0.2.pom" = _: "${jsr305_3_0_2}/jsr305-3.0.2.pom";
+  };
+  "com.google.protobuf:protobuf-parent:3.25.5" = {
+    "protobuf-parent-3.25.5.pom" = _: "${protobuf_parent_3_25_5}/protobuf-parent-3.25.5.pom";
   };
 
   "com.google.code.gson:gson:2.11.0" = {
@@ -65,6 +83,21 @@
   };
   "com.google.code.gson:gson-parent:2.11.0" = {
     "gson-parent-2.11.0.pom" = _: "${gson_2_11_0}/gson-parent-2.11.0.pom";
+  };
+  "com.github.bumptech.glide:disklrucache:5.0.5" = {
+    "disklrucache-5.0.5.aar" = _: "${glide_5_0_5}/disklrucache-5.0.5.aar";
+    "disklrucache-5.0.5.module" = _: "${glide_5_0_5}/disklrucache-5.0.5.module";
+    "disklrucache-5.0.5.pom" = _: "${glide_5_0_5}/disklrucache-5.0.5.pom";
+  };
+  "com.github.bumptech.glide:gifdecoder:5.0.5" = {
+    "gifdecoder-5.0.5.aar" = _: "${glide_5_0_5}/gifdecoder-5.0.5.aar";
+    "gifdecoder-5.0.5.module" = _: "${glide_5_0_5}/gifdecoder-5.0.5.module";
+    "gifdecoder-5.0.5.pom" = _: "${glide_5_0_5}/gifdecoder-5.0.5.pom";
+  };
+  "com.github.bumptech.glide:glide:5.0.5" = {
+    "glide-5.0.5.aar" = _: "${glide_5_0_5}/glide-5.0.5.aar";
+    "glide-5.0.5.module" = _: "${glide_5_0_5}/glide-5.0.5.module";
+    "glide-5.0.5.pom" = _: "${glide_5_0_5}/glide-5.0.5.pom";
   };
   "commons-io:commons-io:2.13.0" = {
     "commons-io-2.13.0.jar" = _: "${commons_io_2_13_0}/commons-io-2.13.0.jar";
@@ -93,6 +126,10 @@
   "commons-logging:commons-logging:1.2" = {
     "commons-logging-1.2.jar" = _: "${commons_logging_1_2}/commons-logging-1.2.jar";
     "commons-logging-1.2.pom" = _: "${commons_logging_1_2}/commons-logging-1.2.pom";
+  };
+  "net.sf.jopt-simple:jopt-simple:4.9" = {
+    "jopt-simple-4.9.jar" = _: "${jopt_simple_4_9}/jopt-simple-4.9.jar";
+    "jopt-simple-4.9.pom" = _: "${jopt_simple_4_9}/jopt-simple-4.9.pom";
   };
   "com.google.guava:guava:31.1-android" = {
     "guava-31.1-android.jar" = _: "${guava_31_1_android}/guava-31.1-android.jar";
@@ -186,6 +223,26 @@
   "com.google.zxing:zxing-parent:3.5.4" = {
     "zxing-parent-3.5.4.pom" = _: "${zxing_core_3_5_4}/zxing-parent-3.5.4.pom";
   };
+  "io.github.panpf.zoomimage:zoomimage-core-android:1.0.2" = {
+    "zoomimage-core-android-1.0.2.aar" = _: "${zoomimage_1_0_2}/zoomimage-core-android-1.0.2.aar";
+    "zoomimage-core-android-1.0.2.module" = _: "${zoomimage_1_0_2}/zoomimage-core-android-1.0.2.module";
+    "zoomimage-core-android-1.0.2.pom" = _: "${zoomimage_1_0_2}/zoomimage-core-android-1.0.2.pom";
+  };
+  "io.github.panpf.zoomimage:zoomimage-core-glide:1.0.2" = {
+    "zoomimage-core-glide-1.0.2.aar" = _: "${zoomimage_1_0_2}/zoomimage-core-glide-1.0.2.aar";
+    "zoomimage-core-glide-1.0.2.module" = _: "${zoomimage_1_0_2}/zoomimage-core-glide-1.0.2.module";
+    "zoomimage-core-glide-1.0.2.pom" = _: "${zoomimage_1_0_2}/zoomimage-core-glide-1.0.2.pom";
+  };
+  "io.github.panpf.zoomimage:zoomimage-view:1.0.2" = {
+    "zoomimage-view-1.0.2.aar" = _: "${zoomimage_1_0_2}/zoomimage-view-1.0.2.aar";
+    "zoomimage-view-1.0.2.module" = _: "${zoomimage_1_0_2}/zoomimage-view-1.0.2.module";
+    "zoomimage-view-1.0.2.pom" = _: "${zoomimage_1_0_2}/zoomimage-view-1.0.2.pom";
+  };
+  "io.github.panpf.zoomimage:zoomimage-view-glide:1.0.2" = {
+    "zoomimage-view-glide-1.0.2.aar" = _: "${zoomimage_1_0_2}/zoomimage-view-glide-1.0.2.aar";
+    "zoomimage-view-glide-1.0.2.module" = _: "${zoomimage_1_0_2}/zoomimage-view-glide-1.0.2.module";
+    "zoomimage-view-glide-1.0.2.pom" = _: "${zoomimage_1_0_2}/zoomimage-view-glide-1.0.2.pom";
+  };
   "com.squareup:javawriter:2.5.0" = {
     "javawriter-2.5.0.jar" = _: "${javawriter_2_5_0}/javawriter-2.5.0.jar";
     "javawriter-2.5.0.pom" = _: "${javawriter_2_5_0}/javawriter-2.5.0.pom";
@@ -200,91 +257,112 @@
 
   # TODO: verify app actually work with replaced things:
   /*
-    "com.michael-bull.kotlin-result:kotlin-result:2.1.0" = {
-      "kotlin-result-2.1.0.module" = _: "${kotlin_result_2_1_0}/kotlin-result-2.1.0.module";
-      "kotlin-result-2.1.0.pom" = _: "${kotlin_result_2_1_0}/kotlin-result-2.1.0.pom";
+        "com.michael-bull.kotlin-result:kotlin-result:2.1.0" = {
+          "kotlin-result-2.1.0.module" = _: "${kotlin_result_2_1_0}/kotlin-result-2.1.0.module";
+          "kotlin-result-2.1.0.pom" = _: "${kotlin_result_2_1_0}/kotlin-result-2.1.0.pom";
+        };
+        "com.michael-bull.kotlin-result:kotlin-result-jvm:2.1.0" = {
+          "kotlin-result-jvm-2.1.0.jar" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.jar";
+          "kotlin-result-jvm-2.1.0.module" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.module";
+          "kotlin-result-jvm-2.1.0.pom" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.pom";
+        };
+        "com.michael-bull.kotlin-retry:kotlin-retry:2.0.2" = {
+          "kotlin-retry-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-2.0.2.module";
+          "kotlin-retry-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-2.0.2.pom";
+        };
+        "com.michael-bull.kotlin-retry:kotlin-retry-jvm:2.0.2" = {
+          "kotlin-retry-jvm-2.0.2.jar" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.jar";
+          "kotlin-retry-jvm-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.module";
+          "kotlin-retry-jvm-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.pom";
+        };
+        "com.michael-bull.kotlin-retry:kotlin-retry-result:2.0.2" = {
+          "kotlin-retry-result-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-2.0.2.module";
+          "kotlin-retry-result-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-2.0.2.pom";
+        };
+        "com.michael-bull.kotlin-retry:kotlin-retry-result-jvm:2.0.2" = {
+          "kotlin-retry-result-jvm-2.0.2.jar" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.jar";
+          "kotlin-retry-result-jvm-2.0.2.module" =
+            _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.module";
+          "kotlin-retry-result-jvm-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.pom";
+        };
+        "org.jetbrains.kotlinx:kotlinx-io-core:0.8.2" = {
+          "kotlinx-io-core-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-0.8.2.module";
+          "kotlinx-io-core-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-0.8.2.pom";
+        };
+        "org.jetbrains.kotlinx:kotlinx-io-core-jvm:0.8.2" = {
+          "kotlinx-io-core-jvm-0.8.2.jar" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.jar";
+          "kotlinx-io-core-jvm-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.module";
+          "kotlinx-io-core-jvm-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.pom";
+        };
+        "org.jetbrains.kotlinx:kotlinx-io-bytestring:0.8.2" = {
+          "kotlinx-io-bytestring-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-0.8.2.module";
+          "kotlinx-io-bytestring-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-0.8.2.pom";
+        };
+        "org.jetbrains.kotlinx:kotlinx-io-bytestring-jvm:0.8.2" = {
+          "kotlinx-io-bytestring-jvm-0.8.2.jar" =
+            _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.jar";
+          "kotlinx-io-bytestring-jvm-0.8.2.module" =
+            _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.module";
+          "kotlinx-io-bytestring-jvm-0.8.2.pom" =
+            _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.pom";
+        };
+        "javax.inject:javax.inject:1" = {
+          "javax.inject-1.jar" = _: "${javax_inject_1}/javax.inject-1.jar";
+          "javax.inject-1.pom" = _: "${javax_inject_1}/javax.inject-1.pom";
+        };
+        "com.google.j2objc:j2objc-annotations:2.8" = {
+          "j2objc-annotations-2.8.jar" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.jar";
+          "j2objc-annotations-2.8.pom" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.pom";
+        };
+        "com.google.j2objc:j2objc-annotations:3.0.0" = {
+          "j2objc-annotations-3.0.0.jar" = _: "${j2objc_annotations_3_0_0}/j2objc-annotations-3.0.0.jar";
+          "j2objc-annotations-3.0.0.pom" = _: "${j2objc_annotations_3_0_0}/j2objc-annotations-3.0.0.pom";
+        };
+        "org.slf4j:slf4j-api:2.0.17" = {
+          "slf4j-api-2.0.17.jar" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.jar";
+          "slf4j-api-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.pom";
+        };
+        "org.slf4j:slf4j-api:1.7.30" = {
+          "slf4j-api-1.7.30.jar" = _: "${slf4j_api_1_7_30}/slf4j-api-1.7.30.jar";
+          "slf4j-api-1.7.30.pom" = _: "${slf4j_api_1_7_30}/slf4j-api-1.7.30.pom";
+        };
+        "org.slf4j:slf4j-parent:1.7.30" = {
+          "slf4j-parent-1.7.30.pom" = _: "${slf4j_api_1_7_30}/slf4j-parent-1.7.30.pom";
+        };
+        "org.slf4j:slf4j-bom:2.0.17" = {
+          "slf4j-bom-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-bom-2.0.17.pom";
+        };
+        "org.slf4j:slf4j-parent:2.0.17" = {
+          "slf4j-parent-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-parent-2.0.17.pom";
+        };
+        "org.checkerframework:checker-qual:3.33.0" = {
+          "checker-qual-3.33.0.jar" = _: "${checker_qual_3_33_0}/checker-qual-3.33.0.jar";
+          "checker-qual-3.33.0.pom" = _: "${checker_qual_3_33_0}/checker-qual-3.33.0.pom";
+        };
+      "org.checkerframework:checker-qual:3.43.0" = {
+        "checker-qual-3.43.0.jar" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.jar";
+        "checker-qual-3.43.0.pom" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.pom";
+      };
+    "org.apache.commons:commons-parent:34" = {
+      "commons-parent-34.pom" = _: "${commons_parent_34}/commons-parent-34.pom";
     };
-    "com.michael-bull.kotlin-result:kotlin-result-jvm:2.1.0" = {
-      "kotlin-result-jvm-2.1.0.jar" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.jar";
-      "kotlin-result-jvm-2.1.0.module" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.module";
-      "kotlin-result-jvm-2.1.0.pom" = _: "${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.pom";
+    "org.apache.commons:commons-parent:69" = {
+      "commons-parent-69.pom" = _: "${commons_parent_69}/commons-parent-69.pom";
     };
-    "com.michael-bull.kotlin-retry:kotlin-retry:2.0.2" = {
-      "kotlin-retry-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-2.0.2.module";
-      "kotlin-retry-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-2.0.2.pom";
+    "org.apache.commons:commons-parent:71" = {
+      "commons-parent-71.pom" = _: "${commons_parent_71}/commons-parent-71.pom";
     };
-    "com.michael-bull.kotlin-retry:kotlin-retry-jvm:2.0.2" = {
-      "kotlin-retry-jvm-2.0.2.jar" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.jar";
-      "kotlin-retry-jvm-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.module";
-      "kotlin-retry-jvm-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-jvm-2.0.2.pom";
+    "org.apache.commons:commons-parent:72" = {
+      "commons-parent-72.pom" = _: "${commons_parent_72}/commons-parent-72.pom";
     };
-    "com.michael-bull.kotlin-retry:kotlin-retry-result:2.0.2" = {
-      "kotlin-retry-result-2.0.2.module" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-2.0.2.module";
-      "kotlin-retry-result-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-2.0.2.pom";
+    "org.apache:apache:32" = {
+      "apache-32.pom" = _: "${apache_32}/apache-32.pom";
     };
-    "com.michael-bull.kotlin-retry:kotlin-retry-result-jvm:2.0.2" = {
-      "kotlin-retry-result-jvm-2.0.2.jar" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.jar";
-      "kotlin-retry-result-jvm-2.0.2.module" =
-        _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.module";
-      "kotlin-retry-result-jvm-2.0.2.pom" = _: "${kotlin_retry_2_0_2}/kotlin-retry-result-jvm-2.0.2.pom";
+    "org.apache:apache:33" = {
+      "apache-33.pom" = _: "${apache_33}/apache-33.pom";
     };
-    "org.jetbrains.kotlinx:kotlinx-io-core:0.8.2" = {
-      "kotlinx-io-core-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-0.8.2.module";
-      "kotlinx-io-core-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-0.8.2.pom";
-    };
-    "org.jetbrains.kotlinx:kotlinx-io-core-jvm:0.8.2" = {
-      "kotlinx-io-core-jvm-0.8.2.jar" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.jar";
-      "kotlinx-io-core-jvm-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.module";
-      "kotlinx-io-core-jvm-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-core-jvm-0.8.2.pom";
-    };
-    "org.jetbrains.kotlinx:kotlinx-io-bytestring:0.8.2" = {
-      "kotlinx-io-bytestring-0.8.2.module" = _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-0.8.2.module";
-      "kotlinx-io-bytestring-0.8.2.pom" = _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-0.8.2.pom";
-    };
-    "org.jetbrains.kotlinx:kotlinx-io-bytestring-jvm:0.8.2" = {
-      "kotlinx-io-bytestring-jvm-0.8.2.jar" =
-        _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.jar";
-      "kotlinx-io-bytestring-jvm-0.8.2.module" =
-        _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.module";
-      "kotlinx-io-bytestring-jvm-0.8.2.pom" =
-        _: "${kotlinx_io_0_8_2}/kotlinx-io-bytestring-jvm-0.8.2.pom";
-    };
-    "javax.inject:javax.inject:1" = {
-      "javax.inject-1.jar" = _: "${javax_inject_1}/javax.inject-1.jar";
-      "javax.inject-1.pom" = _: "${javax_inject_1}/javax.inject-1.pom";
-    };
-    "com.google.j2objc:j2objc-annotations:2.8" = {
-      "j2objc-annotations-2.8.jar" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.jar";
-      "j2objc-annotations-2.8.pom" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.pom";
-    };
-    "com.google.j2objc:j2objc-annotations:3.0.0" = {
-      "j2objc-annotations-3.0.0.jar" = _: "${j2objc_annotations_3_0_0}/j2objc-annotations-3.0.0.jar";
-      "j2objc-annotations-3.0.0.pom" = _: "${j2objc_annotations_3_0_0}/j2objc-annotations-3.0.0.pom";
-    };
-    "org.slf4j:slf4j-api:2.0.17" = {
-      "slf4j-api-2.0.17.jar" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.jar";
-      "slf4j-api-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.pom";
-    };
-    "org.slf4j:slf4j-api:1.7.30" = {
-      "slf4j-api-1.7.30.jar" = _: "${slf4j_api_1_7_30}/slf4j-api-1.7.30.jar";
-      "slf4j-api-1.7.30.pom" = _: "${slf4j_api_1_7_30}/slf4j-api-1.7.30.pom";
-    };
-    "org.slf4j:slf4j-parent:1.7.30" = {
-      "slf4j-parent-1.7.30.pom" = _: "${slf4j_api_1_7_30}/slf4j-parent-1.7.30.pom";
-    };
-    "org.slf4j:slf4j-bom:2.0.17" = {
-      "slf4j-bom-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-bom-2.0.17.pom";
-    };
-    "org.slf4j:slf4j-parent:2.0.17" = {
-      "slf4j-parent-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-parent-2.0.17.pom";
-    };
-    "org.checkerframework:checker-qual:3.33.0" = {
-      "checker-qual-3.33.0.jar" = _: "${checker_qual_3_33_0}/checker-qual-3.33.0.jar";
-      "checker-qual-3.33.0.pom" = _: "${checker_qual_3_33_0}/checker-qual-3.33.0.pom";
-    };
-    "org.checkerframework:checker-qual:3.43.0" = {
-      "checker-qual-3.43.0.jar" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.jar";
-      "checker-qual-3.43.0.pom" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.pom";
+    "org.sonatype.oss:oss-parent:7" = {
+      "oss-parent-7.pom" = _: "${oss_parent_7}/oss-parent-7.pom";
     };
   */
 }
