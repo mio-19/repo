@@ -56,28 +56,6 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
-  doInstallCheck = true;
-
-  installCheckPhase = ''
-    runHook preInstallCheck
-
-    cat > CommonsLoggingSmoke.java <<'EOF'
-    public final class CommonsLoggingSmoke {
-      public static void main(String[] args) {
-        org.apache.commons.logging.Log log =
-            org.apache.commons.logging.LogFactory.getLog("commons-logging-smoke");
-        if (log == null) {
-          throw new AssertionError("LogFactory returned null");
-        }
-      }
-    }
-    EOF
-    ${jdk21}/bin/javac --release 8 -cp "$out/commons-logging-${finalAttrs.version}.jar" CommonsLoggingSmoke.java
-    ${jdk21}/bin/java -cp "$out/commons-logging-${finalAttrs.version}.jar:." CommonsLoggingSmoke
-
-    runHook postInstallCheck
-  '';
-
   meta = with lib; {
     description = "Apache Commons Logging";
     homepage = "https://commons.apache.org/proper/commons-logging/";

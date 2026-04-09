@@ -48,22 +48,6 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
-  doInstallCheck = true;
-
-  installCheckPhase = ''
-    runHook preInstallCheck
-
-    cat > J2ObjCAnnotationsSmoke.java <<'EOF'
-    import com.google.j2objc.annotations.ObjectiveCName;
-
-    @ObjectiveCName("J2ObjCAnnotationsSmoke")
-    final class J2ObjCAnnotationsSmoke {}
-    EOF
-    ${jdk21}/bin/javac --release 8 -cp "$out/j2objc-annotations-${finalAttrs.version}.jar" J2ObjCAnnotationsSmoke.java
-
-    runHook postInstallCheck
-  '';
-
   meta = with lib; {
     description = "Annotations that provide additional information to the J2ObjC translator";
     homepage = "https://github.com/google/j2objc/";

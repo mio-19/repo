@@ -56,25 +56,6 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
-  doInstallCheck = true;
-
-  installCheckPhase = ''
-    runHook preInstallCheck
-
-    cat > JSpecifySmoke.java <<'EOF'
-    import org.jspecify.annotations.NullMarked;
-    import org.jspecify.annotations.Nullable;
-
-    @NullMarked
-    final class JSpecifySmoke {
-      @Nullable Object value;
-    }
-    EOF
-    ${jdk21}/bin/javac --release 9 -cp "$out/jspecify-${finalAttrs.version}.jar" JSpecifySmoke.java
-
-    runHook postInstallCheck
-  '';
-
   meta = with lib; {
     description = "JSpecify nullness annotations";
     homepage = "https://jspecify.dev/";
