@@ -99,7 +99,7 @@ stdenv.mkDerivation (finalAttrs: {
     export MAVEN_OPTS="-Dmaven.repo.local=$HOME/.m2/repository"
     mkdir -p "$HOME/.m2/repository"
     echo "DEBUG: maven local repository: $HOME/.m2/repository"
-    export GRADLE_OPTS="-Dmaven.repo.local=$HOME/.m2/repository"
+    gradleFlagsArray+=("-Dmaven.repo.local=$HOME/.m2/repository")
   '';
 
   gradleFlags = [
