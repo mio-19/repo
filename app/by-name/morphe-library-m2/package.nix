@@ -3,7 +3,7 @@
 # -jvm variant can't be cleanly substituted via Gradle composite builds.
 {
   lib,
-  jdk21,
+  jdk21_headless,
   gradle-packages,
   stdenv,
   fetchFromGitHub,
@@ -23,7 +23,7 @@ let
     (gradle-packages.mkGradle {
       version = "8.14.3";
       hash = "sha256-vXEQIhNJMGCVbsIp2Ua+7lcVjb2J0OYrkbyg+ixfNTE=";
-      defaultJava = jdk21;
+      defaultJava = jdk21_headless;
     }).wrapped;
 
   jadb-src = fetchFromGitHub {
@@ -57,12 +57,12 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     gradle
-    jdk21
+    jdk21_headless
     writableTmpDirAsHomeHook
   ];
 
   env = {
-    JAVA_HOME = if stdenv.isDarwin then "${jdk21}" else "${jdk21}/lib/openjdk";
+    JAVA_HOME = if stdenv.isDarwin then "${jdk21_headless}" else "${jdk21_headless}/lib/openjdk";
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
   };

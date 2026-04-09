@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  jdk25,
+  jdk25_headless,
   gradle-packages,
   stdenv,
   fetchFromGitHub,
@@ -23,7 +23,7 @@ let
         (gradle-packages.mkGradle {
           version = "9.1.0";
           hash = "sha256-oX3dhaJran9d23H/iwX8UQTAICxuZHgkKXkMkzaGyAY=";
-          defaultJava = jdk25;
+          defaultJava = jdk25_headless;
         }).wrapped;
     in
     stdenv.mkDerivation (finalAttrs: {
@@ -50,13 +50,13 @@ let
 
       nativeBuildInputs = [
         gradle
-        jdk25
+        jdk25_headless
         apksigner
         writableTmpDirAsHomeHook
       ];
 
       env = {
-        JAVA_HOME = jdk25;
+        JAVA_HOME = jdk25_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
@@ -70,7 +70,7 @@ let
 
       gradleFlags = [
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk25}"
+        "-Dorg.gradle.java.installations.paths=${jdk25_headless}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];

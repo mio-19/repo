@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   curl,
-  jdk21,
+  jdk21_headless,
   gradle-packages,
   stdenv,
   fetchgit,
@@ -30,7 +30,7 @@ let
         (gradle-packages.mkGradle {
           version = "8.14";
           hash = "sha256-Ya0xDTx9Pl2hMbdrvyK1pMB4bp2JLa6MFljUtITePKo=";
-          defaultJava = jdk21;
+          defaultJava = jdk21_headless;
         }).wrapped;
     in
     stdenv.mkDerivation (finalAttrs: {
@@ -131,13 +131,13 @@ let
       nativeBuildInputs = [
         curl
         gradle
-        jdk21
+        jdk21_headless
         apksigner
         writableTmpDirAsHomeHook
       ];
 
       env = {
-        JAVA_HOME = if stdenv.isDarwin then "${jdk21}" else "${jdk21}/lib/openjdk";
+        JAVA_HOME = if stdenv.isDarwin then "${jdk21_headless}" else "${jdk21_headless}/lib/openjdk";
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk-bundle";
@@ -163,7 +163,7 @@ let
         cxxAar="$cacheRoot/https/repo.maven.apache.org/maven2/org/lsposed/libcxx/libcxx/27.0.12077973/libcxx-27.0.12077973.aar"
         (
           cd "$cxxPkgDir"
-          ${lib.getExe' jdk21 "jar"} xf "$cxxAar" prefab/modules/cxx
+          ${lib.getExe' jdk21_headless "jar"} xf "$cxxAar" prefab/modules/cxx
         )
         cat > "$cxxPkgDir/cxxConfig.cmake" <<'EOF'
         add_library(cxx::cxx STATIC IMPORTED)
@@ -176,7 +176,7 @@ let
         boringsslAar="$cacheRoot/https/repo.maven.apache.org/maven2/io/github/vvb2060/ndk/boringssl/20250114/boringssl-20250114.aar"
         (
           cd "$boringsslPkgDir"
-          ${lib.getExe' jdk21 "jar"} xf "$boringsslAar" prefab/modules/crypto_static prefab/modules/ssl_static
+          ${lib.getExe' jdk21_headless "jar"} xf "$boringsslAar" prefab/modules/crypto_static prefab/modules/ssl_static
         )
         cat > "$boringsslPkgDir/boringsslConfig.cmake" <<'EOF'
         add_library(boringssl::crypto_static STATIC IMPORTED)

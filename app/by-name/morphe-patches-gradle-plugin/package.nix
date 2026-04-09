@@ -3,7 +3,7 @@
   stdenv,
   fetchFromGitHub,
   gradle-packages,
-  jdk21,
+  jdk21_headless,
   writableTmpDirAsHomeHook,
 }:
 let
@@ -11,7 +11,7 @@ let
     (gradle-packages.mkGradle {
       version = "8.14.4";
       hash = "sha256-8XcSmKcPbbWina9iN4xOGKF/wzybprFDYuDN9AYQOA0=";
-      defaultJava = jdk21;
+      defaultJava = jdk21_headless;
     }).wrapped;
 in
 stdenv.mkDerivation (finalAttrs: {
@@ -38,12 +38,12 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     gradle
-    jdk21
+    jdk21_headless
     writableTmpDirAsHomeHook
   ];
 
   env = {
-    JAVA_HOME = if stdenv.isDarwin then "${jdk21}" else "${jdk21}/lib/openjdk";
+    JAVA_HOME = if stdenv.isDarwin then "${jdk21_headless}" else "${jdk21_headless}/lib/openjdk";
     GITHUB_ACTOR = "nix-build";
     GITHUB_TOKEN = "ghp_dummy";
   };

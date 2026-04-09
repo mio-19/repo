@@ -1,6 +1,6 @@
 {
   fetchFromGitHub,
-  jdk21,
+  jdk21_headless,
   lib,
   stdenv,
 }:
@@ -16,7 +16,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-KYcHj4s0Es1hXZrGoV0YG3DQp6H0gaHOS8W0gDWxwJw=";
   };
 
-  nativeBuildInputs = [ jdk21 ];
+  nativeBuildInputs = [ jdk21_headless ];
 
   dontConfigure = true;
   dontUnpack = true;

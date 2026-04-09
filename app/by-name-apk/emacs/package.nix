@@ -4,7 +4,7 @@
   stdenv,
   fetchFromGitHub,
   androidSdkBuilder,
-  jdk17,
+  jdk17_headless,
   autoconf,
   automake,
   m4,
@@ -48,11 +48,11 @@ let
         ncurses
         zip
         which
-        jdk17
+        jdk17_headless
       ];
 
       env = {
-        JAVA_HOME = "${jdk17}/lib/openjdk";
+        JAVA_HOME = "${jdk17_headless}/lib/openjdk";
       };
 
       postPatch = ''

@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  jdk21,
+  jdk21_headless,
   gradle-packages,
   stdenv,
   fetchFromGitHub,
@@ -24,7 +24,7 @@ let
         (gradle-packages.mkGradle {
           version = "8.13";
           hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
-          defaultJava = jdk21;
+          defaultJava = jdk21_headless;
         }).wrapped;
     in
     stdenv.mkDerivation (finalAttrs: {
@@ -67,13 +67,13 @@ let
 
       nativeBuildInputs = [
         gradle
-        jdk21
+        jdk21_headless
         apksigner
         writableTmpDirAsHomeHook
       ];
 
       env = {
-        JAVA_HOME = jdk21;
+        JAVA_HOME = jdk21_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
@@ -87,7 +87,7 @@ let
 
       gradleFlags = [
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21}"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
         "-Dandroid.suppressUnsupportedCompileSdk=35"

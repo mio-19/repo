@@ -1,6 +1,6 @@
 {
   fetchurl,
-  jdk21,
+  jdk21_headless,
   lib,
   stdenv,
 }:
@@ -14,7 +14,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-Y5rhpxMtZqCq6xEB2sw5SBwMPycfh8+IWlNCtBFDhRY=";
   };
 
-  nativeBuildInputs = [ jdk21 ];
+  nativeBuildInputs = [ jdk21_headless ];
 
   dontConfigure = true;
   dontUnpack = true;

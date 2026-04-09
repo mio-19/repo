@@ -7,9 +7,9 @@
   git,
   gnused,
   gradle2nixBuilders,
-  jdk11,
-  jdk17,
-  jdk21,
+  jdk11_headless,
+  jdk17_headless,
+  jdk21_headless,
   jdk8_headless,
   lib,
   makeWrapper,
@@ -29,7 +29,7 @@
   lockFile,
   defaultJava,
   gradleBuilders ? gradle2nixBuilders,
-  buildJdk ? jdk17,
+  buildJdk ? jdk17_headless,
   javaToolchains ? [ ],
   bootstrapGradle,
 }:
@@ -37,9 +37,9 @@ let
   toolchainPaths = lib.concatStringsSep "," (
     [
       jdk8_headless
-      jdk11
-      jdk17
-      jdk21
+      jdk11_headless
+      jdk17_headless
+      jdk21_headless
     ]
     ++ javaToolchains
   );

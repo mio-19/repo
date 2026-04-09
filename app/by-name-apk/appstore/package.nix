@@ -4,8 +4,8 @@
   gradle2nixBuilders,
   sources,
   lib,
-  jdk25,
-  jdk17,
+  jdk25_headless,
+  jdk17_headless,
   gradle-packages,
   stdenv,
   fetchpatch,
@@ -31,7 +31,7 @@ let
     (gradle-packages.mkGradle {
       version = "9.4.0";
       hash = "sha256-YOpyM1bYEmPoAC/sD8+eKw7uDAhQx6PXqwpj8szGAfM=";
-      defaultJava = jdk25;
+      defaultJava = jdk25_headless;
     }).wrapped;
 
   appPackage = gradle2nixBuilders.buildGradlePackage {
@@ -40,7 +40,7 @@ let
 
     lockFile = ./gradle.lock;
     overrides = overrides-from-source // overrides-update;
-    buildJdk = jdk25;
+    buildJdk = jdk25_headless;
 
     patches = [
       ./0001-always-show-vanadium.patch # TODO: test
@@ -64,14 +64,14 @@ let
 
     nativeBuildInputs = [
       androidSdk
-      jdk25
-      jdk17
+      jdk25_headless
+      jdk17_headless
       apksigner
       writableTmpDirAsHomeHook
     ];
 
     env = {
-      JAVA_HOME = if stdenv.isDarwin then "${jdk25}" else "${jdk25}/lib/openjdk";
+      JAVA_HOME = if stdenv.isDarwin then "${jdk25_headless}" else "${jdk25_headless}/lib/openjdk";
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
@@ -90,9 +90,9 @@ let
       [
         "--console=plain"
         "--dependency-verification=off"
-        "-Dorg.gradle.java.home=${if stdenv.isDarwin then jdk25 else "${jdk25}/lib/openjdk"}"
+        "-Dorg.gradle.java.home=${if stdenv.isDarwin then jdk25_headless else "${jdk25_headless}/lib/openjdk"}"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk17}${postfix},${jdk25}${postfix}"
+        "-Dorg.gradle.java.installations.paths=${jdk17_headless}${postfix},${jdk25_headless}${postfix}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
       ];

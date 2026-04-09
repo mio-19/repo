@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  jdk17,
+  jdk17_headless,
   gradle-packages,
   stdenv,
   fetchFromGitHub,
@@ -34,7 +34,7 @@ let
         (gradle-packages.mkGradle {
           version = "8.2";
           hash = "sha256-OPZs1u7yF7TDWFW7EepOn7xTWUzMy1+4Lf0xfvjCxaM=";
-          defaultJava = jdk17;
+          defaultJava = jdk17_headless;
         }).wrapped;
 
       mkDroidspacesStatic =
@@ -127,13 +127,13 @@ let
 
       nativeBuildInputs = [
         gradle
-        jdk17
+        jdk17_headless
         apksigner
         writableTmpDirAsHomeHook
       ];
 
       env = {
-        JAVA_HOME = jdk17;
+        JAVA_HOME = jdk17_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2";
@@ -167,7 +167,7 @@ let
       gradleFlags = [
         "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk17}"
+        "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
       ];

@@ -1,6 +1,6 @@
 {
   lib,
-  jdk21,
+  jdk21_headless,
   gradle-packages,
   stdenv,
   fetchFromGitHub,
@@ -27,7 +27,7 @@ let
     (gradle-packages.mkGradle {
       version = "8.14.3";
       hash = "sha256-vXEQIhNJMGCVbsIp2Ua+7lcVjb2J0OYrkbyg+ixfNTE=";
-      defaultJava = jdk21;
+      defaultJava = jdk21_headless;
     }).wrapped;
 
   arsclib-src = fetchFromGitHub {
@@ -62,14 +62,14 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     gradle
-    jdk21
+    jdk21_headless
     makeWrapper
     writableTmpDirAsHomeHook
     git
   ];
 
   env = {
-    JAVA_HOME = if stdenv.isDarwin then "${jdk21}" else "${jdk21}/lib/openjdk";
+    JAVA_HOME = if stdenv.isDarwin then "${jdk21_headless}" else "${jdk21_headless}/lib/openjdk";
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
@@ -146,7 +146,7 @@ stdenv.mkDerivation (finalAttrs: {
     test -n "$jar_path" && test -f "$jar_path"
     install -Dm644 "$jar_path" "$out/share/morphe-cli/morphe-cli.jar"
 
-    makeWrapper ${jdk21}/bin/java $out/bin/morphe-cli \
+    makeWrapper ${jdk21_headless}/bin/java $out/bin/morphe-cli \
       --add-flags "-jar $out/share/morphe-cli/morphe-cli.jar"
 
     runHook postInstall

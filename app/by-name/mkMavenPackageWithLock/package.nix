@@ -1,6 +1,6 @@
 {
   buildMavenRepositoryFromLockFile,
-  jdk17,
+  jdk17_headless,
   stdenv,
   maven,
   lib,
@@ -14,7 +14,7 @@
   meta,
   patches ? [ ],
   sourceRoot ? null,
-  mvnJdk ? jdk17,
+  mvnJdk ? jdk17_headless,
   mvnFlags ? [ "package" ],
 }:
 let

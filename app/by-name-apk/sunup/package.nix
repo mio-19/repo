@@ -3,7 +3,7 @@
   overrides-from-source,
   gradle2nixBuilders,
   lib,
-  jdk21,
+  jdk21_headless,
   jdk17_headless,
   gradle-packages,
   fetchFromGitea,
@@ -35,7 +35,7 @@ let
     (gradle-packages.mkGradle {
       version = "8.13";
       hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
-      defaultJava = jdk21;
+      defaultJava = jdk21_headless;
     }).wrapped;
 
   appPackage = gradle2nixBuilders.buildGradlePackage rec {
@@ -84,7 +84,7 @@ let
       "lintVitalRelease"
       "-Dorg.gradle.java.home=${jdk17_headless.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
-      "-Dorg.gradle.java.installations.paths=${jdk17_headless},${jdk21}"
+      "-Dorg.gradle.java.installations.paths=${jdk17_headless},${jdk21_headless}"
       "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
       "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
     ];

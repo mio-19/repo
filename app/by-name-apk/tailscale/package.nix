@@ -7,7 +7,7 @@
   androidSdkBuilder,
   gradle-packages,
   go_1_26,
-  jdk17,
+  jdk17_headless,
   writableTmpDirAsHomeHook,
   gnumake,
   zip,
@@ -91,7 +91,7 @@ let
         (gradle-packages.mkGradle {
           version = "8.7";
           hash = "sha256-VEw11r2Emuil7QvOo5umd9xA9J330YNVYVgtogCblh0=";
-          defaultJava = jdk17;
+          defaultJava = jdk17_headless;
         }).wrapped;
     in
     stdenv.mkDerivation (finalAttrs: {
@@ -121,14 +121,14 @@ let
         gradle
         go_1_26
         gnumake
-        jdk17
+        jdk17_headless
         writableTmpDirAsHomeHook
         zip
         unzip
       ];
 
       env = {
-        JAVA_HOME = if stdenv.isDarwin then "${jdk17}" else "${jdk17}/lib/openjdk";
+        JAVA_HOME = if stdenv.isDarwin then "${jdk17_headless}" else "${jdk17_headless}/lib/openjdk";
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";

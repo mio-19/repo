@@ -4,7 +4,7 @@
   gradle2nixBuilders,
   overrides-from-source,
   gradle-packages,
-  jdk17,
+  jdk17_headless,
   lib,
   stdenv,
   writableTmpDirAsHomeHook,
@@ -22,7 +22,7 @@ let
     (gradle-packages.mkGradle {
       version = "8.2";
       hash = "sha256-OPZs1u7yF7TDWFW7EepOn7xTWUzMy1+4Lf0xfvjCxaM=";
-      defaultJava = jdk17;
+      defaultJava = jdk17_headless;
     }).wrapped;
 in
 gradle2nixBuilders.buildGradlePackage rec {
@@ -42,15 +42,15 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   overrides = overrides-from-source // overrides-update;
 
-  buildJdk = jdk17;
+  buildJdk = jdk17_headless;
 
   nativeBuildInputs = [
-    jdk17
+    jdk17_headless
     writableTmpDirAsHomeHook
   ];
 
   env = {
-    JAVA_HOME = if stdenv.isDarwin then "${jdk17}" else "${jdk17}/lib/openjdk";
+    JAVA_HOME = if stdenv.isDarwin then "${jdk17_headless}" else "${jdk17_headless}/lib/openjdk";
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
   };
@@ -86,7 +86,7 @@ gradle2nixBuilders.buildGradlePackage rec {
     "--console=plain"
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${
-      if stdenv.isDarwin then "${jdk17}" else "${jdk17}/lib/openjdk"
+      if stdenv.isDarwin then "${jdk17_headless}" else "${jdk17_headless}/lib/openjdk"
     }"
   ];
 

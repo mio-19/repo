@@ -3,7 +3,7 @@
   stdenv,
   fetchFromGitHub,
   gradle_9_3_1,
-  jdk17,
+  jdk17_headless,
   writableTmpDirAsHomeHook,
 }:
 let
@@ -33,12 +33,12 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     gradle
-    jdk17
+    jdk17_headless
     writableTmpDirAsHomeHook
   ];
 
   env = {
-    JAVA_HOME = if stdenv.isDarwin then "${jdk17}" else "${jdk17}/lib/openjdk";
+    JAVA_HOME = if stdenv.isDarwin then "${jdk17_headless}" else "${jdk17_headless}/lib/openjdk";
   };
 
   postUnpack = ''

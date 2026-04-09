@@ -1,6 +1,6 @@
 {
   fetchFromGitHub,
-  jdk17,
+  jdk17_headless,
   lib,
   mkMavenPackageWithLock,
 }:
@@ -19,7 +19,7 @@ mkMavenPackageWithLock rec {
   sourceRoot = "${src.name}/gson";
   lockFile = ./mvn2nix-lock.json;
 
-  mvnJdk = jdk17;
+  mvnJdk = jdk17_headless;
   mvnFlags = [
     "-Dspotless.check.skip=true"
     "-Dmaven.javadoc.skip=true"

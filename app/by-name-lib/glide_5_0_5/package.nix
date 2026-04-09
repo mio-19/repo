@@ -3,7 +3,7 @@
   fetchFromGitHub,
   git,
   gradle-packages,
-  jdk17,
+  jdk17_headless,
   lib,
   stdenv,
   writableTmpDirAsHomeHook,
@@ -21,7 +21,7 @@ let
     (gradle-packages.mkGradle {
       version = "8.14.3";
       hash = "sha256-vXEQIhNJMGCVbsIp2Ua+7lcVjb2J0OYrkbyg+ixfNTE=";
-      defaultJava = jdk17;
+      defaultJava = jdk17_headless;
     }).wrapped;
 in
 stdenv.mkDerivation (finalAttrs: {
@@ -49,12 +49,12 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [
     gradle
     git
-    jdk17
+    jdk17_headless
     writableTmpDirAsHomeHook
   ];
 
   env = {
-    JAVA_HOME = if stdenv.isDarwin then "${jdk17}" else "${jdk17}/lib/openjdk";
+    JAVA_HOME = if stdenv.isDarwin then "${jdk17_headless}" else "${jdk17_headless}/lib/openjdk";
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
   };

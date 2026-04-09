@@ -3,7 +3,7 @@
   stdenv,
   fetchFromGitHub,
   gradle_9_3_1,
-  jdk17,
+  jdk17_headless,
   makeWrapper,
   writableTmpDirAsHomeHook,
   revanced-library-m2,
@@ -36,13 +36,13 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     gradle
-    jdk17
+    jdk17_headless
     makeWrapper
     writableTmpDirAsHomeHook
   ];
 
   env = {
-    JAVA_HOME = if stdenv.isDarwin then "${jdk17}" else "${jdk17}/lib/openjdk";
+    JAVA_HOME = if stdenv.isDarwin then "${jdk17_headless}" else "${jdk17_headless}/lib/openjdk";
   };
 
   postUnpack = ''
@@ -73,7 +73,7 @@ stdenv.mkDerivation (finalAttrs: {
     test -n "$jar_path"
     install -Dm644 "$jar_path" "$out/share/revanced-cli/revanced-cli.jar"
 
-    makeWrapper ${jdk17}/bin/java "$out/bin/revanced-cli" \
+    makeWrapper ${jdk17_headless}/bin/java "$out/bin/revanced-cli" \
       --add-flags "-jar $out/share/revanced-cli/revanced-cli.jar"
 
     runHook postInstall

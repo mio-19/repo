@@ -7,7 +7,7 @@
   fetchgit,
   androidSdkBuilder,
   gradle-packages,
-  jdk17,
+  jdk17_headless,
   git,
   cmake,
   ninja,
@@ -48,7 +48,7 @@ let
         (gradle-packages.mkGradle {
           version = "8.14.3";
           hash = "sha256-vXEQIhNJMGCVbsIp2Ua+7lcVjb2J0OYrkbyg+ixfNTE=";
-          defaultJava = jdk17;
+          defaultJava = jdk17_headless;
         }).wrapped;
 
       androidArch = "arm64";
@@ -111,7 +111,7 @@ let
             meson
             curl
             bash
-            jdk17
+            jdk17_headless
             apksigner
             p7zip
             buildPackages.stdenv.cc
@@ -174,7 +174,7 @@ let
         python3
         unzip
         gradle
-        jdk17
+        jdk17_headless
         apksigner
         writableTmpDirAsHomeHook
         util-linux
@@ -191,7 +191,7 @@ let
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/${androidNdkVersion}";
-        JAVA_HOME = jdk17;
+        JAVA_HOME = jdk17_headless;
         CC_FOR_BUILD = "${buildPackages.stdenv.cc}/bin/cc";
         CXX_FOR_BUILD = "${buildPackages.stdenv.cc}/bin/c++";
         LD_FOR_BUILD = "${buildPackages.stdenv.cc}/bin/ld";
@@ -202,7 +202,7 @@ let
       gradleFlags = [
         "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk17}"
+        "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
         "-Dorg.gradle.jvmargs=-Xmx4g"
         "-p"
         androidLauncherDir
@@ -356,7 +356,7 @@ let
           export ANDROID_HOME=${androidSdk}/share/android-sdk
           export ANDROID_SDK_ROOT=${androidSdk}/share/android-sdk
           export ANDROID_NDK_HOME=${androidSdk}/share/android-sdk/ndk/${androidNdkVersion}
-          export JAVA_HOME=${jdk17}
+          export JAVA_HOME=${jdk17_headless}
           export CC_FOR_BUILD=${buildPackages.stdenv.cc}/bin/cc
           export CXX_FOR_BUILD=${buildPackages.stdenv.cc}/bin/c++
           export LD_FOR_BUILD=${buildPackages.stdenv.cc}/bin/ld
