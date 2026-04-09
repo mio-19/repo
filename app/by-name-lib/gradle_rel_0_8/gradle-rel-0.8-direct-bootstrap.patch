@@ -1,0 +1,14 @@
+diff --git a/subprojects/gradle-core/src/main/groovy/org/gradle/api/tasks/ide/eclipse/EclipseClasspath.java b/subprojects/gradle-core/src/main/groovy/org/gradle/api/tasks/ide/eclipse/EclipseClasspath.java
+index b25766e..b296ccb 100644
+--- a/subprojects/gradle-core/src/main/groovy/org/gradle/api/tasks/ide/eclipse/EclipseClasspath.java
++++ b/subprojects/gradle-core/src/main/groovy/org/gradle/api/tasks/ide/eclipse/EclipseClasspath.java
+@@ -117,7 +117,8 @@ public class EclipseClasspath extends ConventionTask {
+     }
+
+     private void addTestSrcDirs(Element root) {
+-        for (String testSrcDir : existingRelativePaths(getTestSrcDirs())) {
++        List<String> testSrcDirs = existingRelativePaths(getTestSrcDirs());
++        for (String testSrcDir : testSrcDirs) {
+             classpathEntry(root, SRC, testSrcDir).
+                     addAttribute(OUTPUT, FilenameUtils.separatorsToUnix(relativePath(getTestOutputDirectory())));
+         }
