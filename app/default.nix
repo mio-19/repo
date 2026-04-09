@@ -17,10 +17,17 @@
           dockerTools
           ;
       };
+      pkgs1 = import inputs.nixpkgs {
+        inherit system;
+        overlays = [ inputs.mvn2nix.overlay ];
+      };
+      gradle2nixScope = pkgs.callPackage "${inputs.gradle2nix}/nix" { };
       helpers = {
-        inherit (inputs.mvn2nix.legacyPackages.${system}) buildMavenRepositoryFromLockFile;
+        inherit (pkgs1) buildMavenRepositoryFromLockFile;
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
-        gradle2nixBuilders = inputs.gradle2nix.builders.${system};
+        gradle2nixBuilders = {
+          inherit (gradle2nixScope) buildGradlePackage buildMavenRepo;
+        };
         gradle2nixV1Builders = gradle2nixV1.builders.${system};
         inherit
           sources

@@ -48,7 +48,6 @@
     };
     mvn2nix = {
       url = "github:fzakaria/mvn2nix";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
