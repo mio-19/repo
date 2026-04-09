@@ -74,6 +74,9 @@ let
 
     # build tool "qmake" runs on linux only
     "firebird"
+
+    # failed to compile on darwin after https://github.com/NixOS/nixpkgs/pull/500309
+    "rain"
   ];
 
   excludedApkNames = [
