@@ -29,7 +29,9 @@
       overrides-from-source."commons-codec:commons-codec:1.17.1"."commons-codec-1.17.1.pom";
   };
   "org.checkerframework:checker-qual:3.33.0" = {
-    "checker-qual-3.33.0.jar" = overrides-from-source."org.checkerframework:checker-qual:3.43.0"."checker-qual-3.43.0.jar";
-    "checker-qual-3.33.0.pom" = overrides-from-source."org.checkerframework:checker-qual:3.43.0"."checker-qual-3.43.0.pom";
+    "checker-qual-3.33.0.jar" =
+      overrides-from-source."org.checkerframework:checker-qual:3.43.0"."checker-qual-3.43.0.jar";
+    "checker-qual-3.33.0.pom" =
+      overrides-from-source."org.checkerframework:checker-qual:3.43.0"."checker-qual-3.43.0.pom";
   };
 }
