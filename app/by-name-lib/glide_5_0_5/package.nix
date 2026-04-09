@@ -98,6 +98,7 @@ stdenv.mkDerivation (finalAttrs: {
   + lib.optionalString stdenv.isDarwin ''
     export MAVEN_OPTS="-Dmaven.repo.local=$HOME/.m2/repository"
     mkdir -p "$HOME/.m2/repository"
+    echo "DEBUG: maven local repository: $HOME/.m2/repository"
   '';
 
   gradleFlags = [
