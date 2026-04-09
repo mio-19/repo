@@ -60,6 +60,7 @@ let
         ];
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
+        # TODO: this hash is unstable, change during every rebuild!
         outputHash = "sha256-CKBqvQ+Yb4oKdGp+K0DEgp0dUt1I7RED1j435srBr3Q=";
         dontConfigure = true;
         dontFixup = true;
