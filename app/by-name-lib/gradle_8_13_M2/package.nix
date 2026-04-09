@@ -1,13 +1,24 @@
 {
-  jdk11_headless,
+  temurin-bin-8,
+  temurin-bin-11,
+  temurin-bin-17,
   jdk21_headless,
-  gradle-packages,
+  gradle_8_12_1,
   gradle-from-source,
 }:
-(gradle-packages.mkGradle {
-  version = "8.13-milestone-2";
-  hash = "sha256-6LBNVJGtZ7teLNajFoYx3em1q40Pr17R/TCBUmze0Oo=";
+gradle-from-source {
+  version = "8.13.0-M2";
+  hash = "";
+  lockFile = ./gradle.lock;
   defaultJava = jdk21_headless;
-}).wrapped
-# nix-shell -p javaPackages.compiler.openjdk17-bootstrap
-# nix run github:tadfisher/gradle2nix/53672d5e875235c34dee1a4c012b0269ba76e440  -- --gradle-wrapper=8.13-milestone-1
+  # this version specifically ask for termurin branded jdk.
+  buildJdk = temurin-bin-17;
+  javaToolchains = [
+    temurin-bin-8
+    temurin-bin-11
+    temurin-bin-17
+  ];
+  # nix-shell -p javaPackages.compiler.openjdk17-bootstrap
+  # nix run github:tadfisher/gradle2nix/53672d5e875235c34dee1a4c012b0269ba76e440  -- --gradle-wrapper=8.12.1
+  bootstrapGradle = gradle_8_12_1;
+}
