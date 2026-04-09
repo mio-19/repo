@@ -14,6 +14,7 @@
   gnused,
   which,
   ant_1_7_0,
+  commons_httpclient_3_0,
   commons_cli_1_0,
   commons_codec_1_2,
   commons_io_1_3_1,
@@ -108,10 +109,12 @@ let
     }
     {
       path = "commons-httpclient/commons-httpclient/3.0/commons-httpclient-3.0.jar";
+      package = "${commons_httpclient_3_0}/commons-httpclient-3.0.jar";
       hash = "sha256-ev0Y8w6YySv4c7ZLr+6kO0q96rpipOUOG2stAEBe9+8=";
     }
     {
       path = "commons-httpclient/commons-httpclient/3.0/commons-httpclient-3.0.pom";
+      package = "${commons_httpclient_3_0}/commons-httpclient-3.0.pom";
       hash = "sha256-84yodRd/RBCO4n6hhqyiSP8FRQiIRp0eev78xMeSe5A=";
     }
     {
