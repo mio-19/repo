@@ -63,8 +63,16 @@ jobs:
         echo "SYSTEM=$SYSTEM" >> $GITHUB_ENV
         echo "Building for system: $SYSTEM"
     # https://github.com/nix-community/nixos-apple-silicon/blob/7aad69158fc1b5bbbddac19040b6aae14daaa35c/.github/workflows/cache.yml#L45C56-L50C24
+    # add timeout less than github hard timeout so there is time to upload cache.
     - name: Build nix packages
+      if: runner.os == 'Linux'
+      run: |
+        timeout --foreground 5h nix run nixpkgs#nix-fast-build -- --max-jobs 1 \
+          --no-nom \
+          -f .#packages.${{ env.SYSTEM }} ${{ matrix.nixpkgs-override }}
+    - name: Build nix packages
+      if: runner.os != 'Linux'
       run: |
         nix run nixpkgs#nix-fast-build -- --max-jobs 1 \
           --no-nom \
-          -f .#packages.${{ env.SYSTEM }}.cached
+          -f .#packages.${{ env.SYSTEM }} ${{ matrix.nixpkgs-override }}
