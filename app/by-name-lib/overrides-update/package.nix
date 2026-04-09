@@ -21,4 +21,34 @@
     "checker-qual-3.33.0.jar" =
       overrides-from-source."org.checkerframework:checker-qual:3.43.0"."checker-qual-3.43.0.jar";
   };
+  "com.google.errorprone:error_prone_annotations:2.3.1" = {
+    "error_prone_annotations-2.3.1.jar" =
+      overrides-from-source."com.google.errorprone:error_prone_annotations:2.41.0"."error_prone_annotations-2.41.0.jar";
+  };
+  "com.google.errorprone:error_prone_annotations:2.15.0" = {
+    "error_prone_annotations-2.15.0.jar" =
+      overrides-from-source."com.google.errorprone:error_prone_annotations:2.41.0"."error_prone_annotations-2.41.0.jar";
+  };
+  "com.google.errorprone:error_prone_annotations:2.18.0" = {
+    "error_prone_annotations-2.18.0.jar" =
+      overrides-from-source."com.google.errorprone:error_prone_annotations:2.41.0"."error_prone_annotations-2.41.0.jar";
+  };
+  "com.google.errorprone:error_prone_annotations:2.27.0" = {
+    "error_prone_annotations-2.27.0.jar" =
+      overrides-from-source."com.google.errorprone:error_prone_annotations:2.41.0"."error_prone_annotations-2.41.0.jar";
+  };
+  "com.google.errorprone:error_prone_annotations:2.28.0" = {
+    "error_prone_annotations-2.28.0.jar" =
+      overrides-from-source."com.google.errorprone:error_prone_annotations:2.41.0"."error_prone_annotations-2.41.0.jar";
+  };
+  "com.google.errorprone:error_prone_annotations:2.30.0" = {
+    "error_prone_annotations-2.30.0.jar" =
+      overrides-from-source."com.google.errorprone:error_prone_annotations:2.41.0"."error_prone_annotations-2.41.0.jar";
+  };
+  "org.slf4j:slf4j-api:1.7.30" = {
+    "slf4j-api-1.7.30.jar" = overrides-from-source."org.slf4j:slf4j-api:1.7.36"."slf4j-api-1.7.36.jar";
+  };
+  "com.google.zxing:core:3.5.3" = {
+    "core-3.5.3.jar" = overrides-from-source."com.google.zxing:core:3.5.4"."core-3.5.4.jar";
+  };
 }
