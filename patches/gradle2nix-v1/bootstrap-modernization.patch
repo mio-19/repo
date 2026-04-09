@@ -130,6 +130,35 @@ index 6ff7a39..c44ed56 100644
          {
            "id": {
              "group": "com.github.ajalt",
+@@ -2576,23 +2544,23 @@
+           "urls": [
+             "https://jcenter.bintray.com/net/swiftzer/semver/semver/1.1.1/semver-1.1.1.jar",
+             "https://repo.gradle.org/gradle/libs-releases/net/swiftzer/semver/semver/1.1.1/semver-1.1.1.jar"
+-          ],
+-          "sha256": "757eeb1c6703b81fa3bb6bc2eae7a5fe6ddac5d833b977aa1ce08979d7c2de5a"
++          ],
++          "sha256": "sha256-8ChUbXAya5MxSk9EjP0he1C4AewgMTzUYCipRgT0bWY="
+         },
+         {
+           "id": {
+             "group": "net.swiftzer.semver",
+             "name": "semver",
+             "version": "1.1.1",
+             "type": "pom",
+             "extension": "pom"
+           },
+           "name": "semver-1.1.1.pom",
+           "path": "net/swiftzer/semver/semver/1.1.1",
+           "urls": [
+             "https://jcenter.bintray.com/net/swiftzer/semver/semver/1.1.1/semver-1.1.1.pom",
+             "https://repo.gradle.org/gradle/libs-releases/net/swiftzer/semver/semver/1.1.1/semver-1.1.1.pom"
+-          ],
+-          "sha256": "5d65513ed1a37cc927e4261a1c9f198ea4b033dbf88930358c37b61fe63c00e7"
++          ],
++          "sha256": "sha256-MgwRUMLF3ECTdCP56IjhDZ6LLU4TRsNJhkgWuir+Of8="
+         },
+         {
+           "id": {
 diff --git a/gradle-env.nix b/gradle-env.nix
 index b512f90..078d5ee 100644
 --- a/gradle-env.nix

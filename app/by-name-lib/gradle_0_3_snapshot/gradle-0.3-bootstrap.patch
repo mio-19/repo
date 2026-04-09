@@ -1,0 +1,427 @@
+diff --git a/build.gradle b/build.gradle
+index 399a653..49b85e6 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -49,7 +49,7 @@ configureByDag = {Dag dag ->
+         javadocRemoteDir += 'latest'
+     }
+     manifest.mainAttributes([
+-            (Attributes.Name.CLASS_PATH.toString()): dependencies.resolve('runtime').inject('') {
++            (Attributes.Name.CLASS_PATH.toString()): dependencies.resolveClasspath('runtime').inject('') {
+                 path, file -> path + file.name + ' '
+             },
+             (Attributes.Name.IMPLEMENTATION_TITLE.toString()): 'Gradle',
+@@ -128,7 +128,7 @@ createTask('explodedDist', dependsOn: ['libs', 'userguide', 'javadoc']) {
+     File explodedDistLibDir = mkdir(explodedDistDir, 'lib')
+     ant {
+         logger.info('Generate lib dir')
+-        dependencies.resolve('distLib').each {File file ->
++        dependencies.resolveClasspath('distLib').each {File file ->
+             copy(file: file, todir: explodedDistLibDir)
+         }
+         jar(destfile: new File(explodedDistLibDir, "$archivesBaseName-wrapper-${version}.jar"),
+@@ -160,7 +160,8 @@ zipRootFolder = "$archivesBaseName-${-> version}"
+ dists {
+     dependsOn 'explodedDist'
+     childrenDependsOn = 'explodedDist'
+-    zip(classifier: 'all').afterDag {
++    zip("${archivesBaseName}_all").afterDag {
++        customName = "${archivesBaseName}-${version}-all.zip"
+         zipFileSet(dir: explodedDistDir, prefix: zipRootFolder) {
+             exclude 'bin/*'
+         }
+@@ -172,7 +173,8 @@ dists {
+             include 'bin/*.*'
+         }
+     }
+-    zip(classifier: 'bin').afterDag {
++    zip("${archivesBaseName}_bin").afterDag {
++        customName = "${archivesBaseName}-${version}-bin.zip"
+         zipFileSet(dir: explodedDistDir, prefix: zipRootFolder) {
+             exclude 'bin/*'
+             exclude 'src/'
+@@ -186,7 +188,8 @@ dists {
+             include 'bin/*.*'
+         }
+     }
+-    zip(classifier: 'src').afterDag {
++    zip("${archivesBaseName}_src").afterDag {
++        customName = "${archivesBaseName}-${version}-src.zip"
+         destinationDir = distsDir
+         zipFileSet(dir: projectDir, prefix: archiveName, fileMode: '775') {
+             include 'gradlew'
+@@ -337,7 +340,7 @@ void ftp(Map args, Closure antFileset = {}) {
+     ant {
+         taskdef(name: 'ftp',
+                 classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP',
+-                classpath: dependencies.resolve('ftpAntTask').join(':'))
++                classpath: dependencies.resolveClasspath('ftpAntTask').join(':'))
+         Map ftpArgs = args + [
+                 server: 'www.gradle.org',
+                 userid: websiteFtpUserName,
+diff --git a/buildSrc/build.gradle b/buildSrc/build.gradle
+index aba475d..432e1f3 100644
+--- a/buildSrc/build.gradle
++++ b/buildSrc/build.gradle
+@@ -7,7 +7,6 @@ usePlugin('groovy')
+ 
+ dependencies {
+     addFlatDirResolver('lib', new File(rootDir, 'lib'))
+-    dependencies(['compile'], ":svnkit:1.1.6", ":svnkit-javahl:1.1.6")
+ }
+ 
+ sourceCompatibility = 1.5
+diff --git a/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy b/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy
+index f848c01..9d563e4 100644
+--- a/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy
++++ b/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy
+@@ -2,179 +2,27 @@
+  * Copyright 2007 the original author or authors.
+  *
+  * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+  */
+ 
+ package org.gradle.build.release
+ 
+ import org.gradle.api.GradleException
+ import org.gradle.api.Project
+-import org.tigris.subversion.javahl.Revision
+-import org.tigris.subversion.javahl.Status
+-import org.tmatesoft.svn.core.SVNException
+-import org.tmatesoft.svn.core.SVNURL
+-import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory
+-import org.tmatesoft.svn.core.javahl.SVNClientImpl
+-import org.tmatesoft.svn.core.wc.SVNClientManager
+-import org.tmatesoft.svn.core.wc.SVNRevision
+-import org.tmatesoft.svn.core.wc.SVNStatusClient
+-import org.tmatesoft.svn.core.wc.SVNWCUtil
+-import org.tmatesoft.svn.core.internal.util.SVNPathUtil
+-import org.slf4j.Logger
+-import org.slf4j.LoggerFactory
+ 
+-/**
+- * @author Hans Dockter
+- */
+ class Svn {
+-    private static Logger logger = LoggerFactory.getLogger(Svn)
+-
+     Project project
+-    SVNClientManager clientManager
+-    SVNStatusClient statusClient
+-    SVNClientImpl javaHlClient
+-    boolean alwaysTrunk = false
+ 
+     Svn() {}
+ 
+     Svn(Project project) {
+-        assert project
+         this.project = project
+-        try {
+-            DAVRepositoryFactory.setup();
+-            clientManager = SVNClientManager.newInstance(
+-                    SVNWCUtil.createDefaultOptions(true), project.codehausUserName, project.codehausUserPassword)
+-            statusClient = clientManager.getStatusClient()
+-            javaHlClient = SVNClientImpl.newInstance()
+-            throwExceptionIfNoSvnProject()
+-        } catch (Throwable e) {
+-            logger.info("""Can't access svn working copy. Maybe this is not an svn project or the codehausUserName/password property is not set.
+-                Releasing won't be possible. It is assumed that this isTrunk is true.""")
+-            alwaysTrunk = true
+-        }
+-    }
+-
+-    void throwExceptionIfNoSvnProject() {
+-        svnDir
+-    }
+-
+-    def release() {
+-        checkWorkingCopy()
+-        if (isTrunk() || project.version.toString() == branchVersion) {
+-            majorOrMinorRelease()
+-        } else {
+-            revisionRelease()
+-        }
+-    }
+-
+-    def majorOrMinorRelease() {
+-        if (isTrunk()) {
+-            exitIfReleaseBranchDirectoryExists()
+-        }
+-        project.version.storeCurrentVersion()
+-        commitProperties()
+-        if (isTrunk()) {
+-            copyTrunkToReleaseBranch()
+-        }
+-        tagReleaseBranch()
+-    }
+-
+-    def revisionRelease() {
+-        project.version.storeCurrentVersion()
+-        commitProperties()
+-        tagReleaseBranch()
+-    }
+-
+-
+-    def commitProperties() {
+-        File props = new File(project.projectDir, 'gradle.properties')
+-        javaHlClient.commit([props.absolutePath] as String[], "Incremented version properties", false)
+-    }
+-
+-    def exitIfReleaseBranchDirectoryExists() {
+-        try {
+-            clientManager.WCClient.doInfo(new SVNURL(releaseBranchUrl, true),
+-                    SVNRevision.UNDEFINED, SVNRevision.HEAD)
+-            throw new GradleException("Release branch directory $releaseBranchUrl already exists. You can't release from trunk therefore.")
+-        } catch (SVNException ignore) {
+-            // SVNException means directory does not exists. Which is what we want.
+-        }
+-    }
+-
+-    def copyTrunkToReleaseBranch() {
+-        javaHlClient.copy(trunkUrl, releaseBranchUrl, "Copy trunk to release branch $releaseBranchName" as String, Revision.HEAD)
+-    }
+-
+-    def tagReleaseBranch() {
+-        javaHlClient.copy(releaseBranchUrl, tagsUrl, "Tag release $releaseTagName" as String, Revision.HEAD)
+-    }
+-
+-    def getReleaseBranchName() {
+-        'RB-' + majorMinorVersion
+-    }
+-
+-    def getReleaseTagName() {
+-        'REL-' + project.version
+-    }
+-
+-    def getMajorMinorVersion() {
+-        project.version.toString().split('\\.')[0..1].join('.')
+-    }
+-
+-    def getReleaseBranchUrl() {
+-        svnBaseUrl + "/branches/$releaseBranchName"
+-    }
+-
+-    def getTagsUrl() {
+-        svnBaseUrl + "/tags/$releaseTagName"
+-    }
+-
+-    def getTrunkUrl() {
+-        svnBaseUrl + "/trunk"
+-    }
+-
+-    String getSvnUrl() {
+-        statusClient.doStatus(project.projectDir, false).URL
+-    }
+-
+-    String getSvnBaseUrl() {
+-        String url = svnUrl
+-        url = SVNPathUtil.removeTail(url)
+-        if (!isTrunk()) {
+-            url = SVNPathUtil.removeTail(url)
+-        }
+-        url
+     }
+ 
+     boolean isTrunk() {
+-        alwaysTrunk || svnDir == 'trunk'
++        true
+     }
+ 
+-    String getSvnDir() {
+-        svnUrl.substring(svnUrl.lastIndexOf('/') + 1)
+-    }
+-
+-    String getBranchVersion() {
+-        svnDir.replaceFirst('RB-', '')
+-    }
+-
+-    void checkWorkingCopy() {
+-        List statuses = javaHlClient.status(project.projectDir.absolutePath, true, true, false)
+-//        ISVNStatusHandler statusHandler = {SVNStatus status -> statuses << status} as ISVNStatusHandler
+-//        statusClient.doStatus(project.projectDir, true, true, false, false, statusHandler)
+-        if (statuses) {
+-            String result = ''
+-            statuses.each {Status status -> result += status.path + ' ' + status.url.toString() + '\n'}
+-            throw new GradleException("The working copy is not in sync with the SVN server. We can't release!\n$result")
+-        }
++    def release() {
++        throw new GradleException("release task is disabled in bootstrap builds")
+     }
+ }
+diff --git a/src/main/groovy/org/gradle/api/DependencyManager.java b/src/main/groovy/org/gradle/api/DependencyManager.java
+index 96f3ef0..2479c22 100644
+--- a/src/main/groovy/org/gradle/api/DependencyManager.java
++++ b/src/main/groovy/org/gradle/api/DependencyManager.java
+@@ -156,6 +156,8 @@ public interface DependencyManager extends DependencyContainer {
+      */
+     List resolveTask(String taskName);
+ 
++    List resolveClasspath(String taskName);
++
+     /**
+      * Returns a classpath String in ant notation for the configuration.
+      *
+@@ -190,6 +192,12 @@ public interface DependencyManager extends DependencyContainer {
+ 
+     boolean getFailForMissingDependencies();
+ 
++    FileSystemResolver createFlatDirResolver(String name, File[] dirs);
++
++    FileSystemResolver addFlatDirResolver(String name, File[] dirs);
++
++    IBiblioResolver addIBiblio();
++
+     FileSystemResolver addFlatDirResolver(String name, Object[] dirs);
+ 
+     /**
+diff --git a/src/main/groovy/org/gradle/api/internal/ConventionTask.groovy b/src/main/groovy/org/gradle/api/internal/ConventionTask.groovy
+index a80ccc8..87e1c56 100644
+--- a/src/main/groovy/org/gradle/api/internal/ConventionTask.groovy
++++ b/src/main/groovy/org/gradle/api/internal/ConventionTask.groovy
+@@ -31,6 +31,10 @@ abstract class ConventionTask extends DefaultTask implements IConventionAware {
+         conventionAwareHelper.convention = project.convention
+     }
+ 
++    Task convention(def convention, Map conventionMapping) {
++        conventionAwareHelper.convention(convention, conventionMapping)
++    }
++
+     Task conventionMapping(Map mapping) {
+         conventionAwareHelper.conventionMapping(mapping)
+     }
+@@ -39,6 +43,14 @@ abstract class ConventionTask extends DefaultTask implements IConventionAware {
+         conventionAwareHelper.getValue(name)
+     }
+ 
++    void setConvention(def convention) {
++        conventionAwareHelper.convention = convention
++    }
++
++    def getConvention() {
++        conventionAwareHelper.convention
++    }
++
+     void setConventionMapping(Map conventionMapping) {
+         conventionAwareHelper.conventionMapping = conventionMapping
+     }
+diff --git a/src/main/groovy/org/gradle/api/internal/dependencies/DefaultDependencyManager.groovy b/src/main/groovy/org/gradle/api/internal/dependencies/DefaultDependencyManager.groovy
+index 970a7b3..5f525b6 100644
+--- a/src/main/groovy/org/gradle/api/internal/dependencies/DefaultDependencyManager.groovy
++++ b/src/main/groovy/org/gradle/api/internal/dependencies/DefaultDependencyManager.groovy
+@@ -26,6 +26,7 @@ import org.apache.ivy.core.report.ResolveReport
+ import org.apache.ivy.core.resolve.ResolveOptions
+ import org.apache.ivy.plugins.resolver.DualResolver
+ import org.apache.ivy.plugins.resolver.FileSystemResolver
++import org.apache.ivy.plugins.resolver.IBiblioResolver
+ import org.apache.ivy.plugins.resolver.RepositoryResolver
+ import org.gradle.api.DependencyManager
+ import org.gradle.api.GradleException
+@@ -152,6 +153,11 @@ class DefaultDependencyManager extends DefaultDependencyContainer implements Dep
+         resolve(conf)
+     }
+ 
++    List resolveClasspath(String taskName) {
++        String conf = task2Conf[taskName] ?: taskName
++        resolve(conf)
++    }
++
+     String antpath(String conf) {
+         resolve(conf).join(':')
+     }
+@@ -262,6 +268,18 @@ class DefaultDependencyManager extends DefaultDependencyContainer implements Dep
+                 dirs.collect {new File(it.toString())} as File[]))
+     }
+ 
++    FileSystemResolver addFlatDirResolver(String name, File[] dirs) {
++        classpathResolvers.add(classpathResolvers.createFlatDirResolver(name, dirs))
++    }
++
++    FileSystemResolver createFlatDirResolver(String name, File[] dirs) {
++        classpathResolvers.createFlatDirResolver(name, dirs)
++    }
++
++    IBiblioResolver addIBiblio() {
++        classpathResolvers.add([name: DependencyManager.DEFAULT_MAVEN_REPO_NAME, root: DependencyManager.MAVEN_REPO_URL, jarRepoUrls: [] as String[]])
++    }
++
+     DualResolver addMavenRepo(String[] jarRepoUrls) {
+         classpathResolvers.add(classpathResolvers.createMavenRepoResolver(DependencyManager.DEFAULT_MAVEN_REPO_NAME,
+                 DependencyManager.MAVEN_REPO_URL, jarRepoUrls))
+diff --git a/src/main/groovy/org/gradle/api/internal/project/DefaultProject.groovy b/src/main/groovy/org/gradle/api/internal/project/DefaultProject.groovy
+index 6883d99..3a3c1f3 100644
+--- a/src/main/groovy/org/gradle/api/internal/project/DefaultProject.groovy
++++ b/src/main/groovy/org/gradle/api/internal/project/DefaultProject.groovy
+@@ -351,6 +351,14 @@ class DefaultProject implements Comparable, Project {
+         foundTargets
+     }
+ 
++    File file(String path) {
++        file((Object) path, PathValidation.NONE)
++    }
++
++    File file(String path, PathValidation validation) {
++        file((Object) path, validation)
++    }
++
+     File file(Object path) {
+         file(path, PathValidation.NONE)
+     }
+@@ -359,6 +367,18 @@ class DefaultProject implements Comparable, Project {
+         baseDirConverter.baseDir(path.toString(), projectDir, validation)
+     }
+ 
++    Convention getConvention() {
++        convention
++    }
++
++    void setConvention(Convention convention) {
++        this.convention = convention
++    }
++
++    void setConvention(Object convention) {
++        this.convention = (Convention) convention
++    }
++
+     Task dir(String path) {
+         String resultTaskName = path
+         path.split('/').inject('') {name, pathElement ->
+diff --git a/src/main/groovy/org/gradle/api/plugins/JavaPlugin.groovy b/src/main/groovy/org/gradle/api/plugins/JavaPlugin.groovy
+index 48e2a9c..6f51d20 100644
+--- a/src/main/groovy/org/gradle/api/plugins/JavaPlugin.groovy
++++ b/src/main/groovy/org/gradle/api/plugins/JavaPlugin.groovy
+@@ -35,6 +35,10 @@ import org.gradle.api.tasks.util.FileSet
+  * @author Hans Dockter
+  */
+ class JavaPlugin implements Plugin {
++
++    void apply(Project project, PluginRegistry pluginRegistry, Object customValues) {
++        apply(project, pluginRegistry, customValues instanceof Map ? customValues : [:])
++    }
+     static final String RESOURCES = 'resources'
+     static final String COMPILE = 'compile'
+     static final String TEST_RESOURCES = 'testResources'
+diff --git a/src/main/groovy/org/gradle/api/plugins/WarPlugin.groovy b/src/main/groovy/org/gradle/api/plugins/WarPlugin.groovy
+index 2553129..5368263 100644
+--- a/src/main/groovy/org/gradle/api/plugins/WarPlugin.groovy
++++ b/src/main/groovy/org/gradle/api/plugins/WarPlugin.groovy
+@@ -25,6 +25,10 @@ import org.gradle.api.internal.project.PluginRegistry
+  */
+ class WarPlugin implements Plugin {
+ 
++    void apply(Project project, PluginRegistry pluginRegistry, Object customValues) {
++        apply(project, pluginRegistry, customValues instanceof Map ? customValues : [:])
++    }
++
+     void apply(Project project, PluginRegistry pluginRegistry, Map customValues) {
+         pluginRegistry.apply(JavaPlugin, project, pluginRegistry, customValues)
+         project.task("${project.archivesBaseName}_jar").enabled = false
