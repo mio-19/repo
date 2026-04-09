@@ -220,5 +220,3 @@ read
 + <https://github.com/tiann/KernelSU/issues/2942#issuecomment-4078266560>
 + <https://www.reddit.com/r/LineageOS/comments/1oaw2hj/comment/nkisxra/>
 
-
-Make gradle not download android-studio:android-studio!
