@@ -26,13 +26,13 @@ stdenv.mkDerivation (finalAttrs: {
     trap 'rm -rf "$tmp"' EXIT
     mkdir -p "$tmp/src" "$tmp/classes"
     cd "$tmp/src"
-    ${jdk21}/bin/jar xf "${finalAttrs.src}"
+    jar xf "${finalAttrs.src}"
     find . -name '*.java' | sort > "$tmp/sources.txt"
-    ${jdk21}/bin/javac --release 8 -encoding ISO-8859-1 -d "$tmp/classes" @"$tmp/sources.txt"
+    javac --release 8 -encoding ISO-8859-1 -d "$tmp/classes" @"$tmp/sources.txt"
 
     (
       cd "$tmp/classes"
-      ${jdk21}/bin/jar cf "$tmp/junit-${finalAttrs.version}.jar" .
+      jar cf "$tmp/junit-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

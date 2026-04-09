@@ -29,13 +29,13 @@ stdenv.mkDerivation (finalAttrs: {
     cd "$tmp"
     mkdir -p classes
     find "${finalAttrs.src}/annotations/src/main/java" -name '*.java' ! -name 'module-info.java' | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
+    javac --release 8 -d classes @sources.txt
     if [ -f "${finalAttrs.src}/annotations/src/main/java/module-info.java" ]; then
-      ${jdk21}/bin/javac --release 9 -cp classes -d classes "${finalAttrs.src}/annotations/src/main/java/module-info.java"
+      javac --release 9 -cp classes -d classes "${finalAttrs.src}/annotations/src/main/java/module-info.java"
     fi
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/error_prone_annotations-${finalAttrs.version}.jar" .
+      jar cf "$tmp/error_prone_annotations-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

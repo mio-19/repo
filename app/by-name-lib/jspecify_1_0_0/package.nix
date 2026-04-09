@@ -41,11 +41,11 @@ stdenv.mkDerivation (finalAttrs: {
 
     find "${finalAttrs.src}/src/main/java" -name '*.java' | sort > sources.txt
     mkdir -p classes
-    ${jdk21}/bin/javac --release 9 -encoding UTF-8 -d classes @sources.txt
+    javac --release 9 -encoding UTF-8 -d classes @sources.txt
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/jspecify-${finalAttrs.version}.jar" .
+      jar cf "$tmp/jspecify-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

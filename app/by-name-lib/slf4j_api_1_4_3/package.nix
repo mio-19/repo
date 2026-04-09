@@ -30,7 +30,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p classes
     find "${finalAttrs.src}/slf4j-api/src/main/java" -name '*.java' | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
+    javac --release 8 -d classes @sources.txt
     rm -rf classes/org/slf4j/impl
 
     resource_root="${finalAttrs.src}/slf4j-api/src/main/resources"
@@ -43,7 +43,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/slf4j-api-${finalAttrs.version}.jar" .
+      jar cf "$tmp/slf4j-api-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

@@ -30,11 +30,11 @@ stdenv.mkDerivation (finalAttrs: {
     tmp="$(mktemp -d)"
     trap 'rm -rf "$tmp"' EXIT
     cd "$tmp"
-    ${jdk21}/bin/jar xf "$src"
+    jar xf "$src"
 
     mkdir -p classes
     find . -name '*.java' | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
+    javac --release 8 -d classes @sources.txt
 
     while IFS= read -r path; do
       install -Dm644 "$path" "classes/$path"
@@ -42,7 +42,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/jsr305-${finalAttrs.version}.jar" .
+      jar cf "$tmp/jsr305-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

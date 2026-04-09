@@ -31,11 +31,11 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir -p classes
     find "${finalAttrs.src}/value/src/main/java/com/google/auto/value" -maxdepth 1 -name '*.java' | sort > sources.txt
     find "${finalAttrs.src}/value/src/main/java/com/google/auto/value/extension/memoized" -maxdepth 1 -name '*.java' | sort >> sources.txt
-    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
+    javac --release 8 -d classes @sources.txt
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/auto-value-annotations-${finalAttrs.version}.jar" .
+      jar cf "$tmp/auto-value-annotations-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

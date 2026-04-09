@@ -42,7 +42,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p classes
     find "${finalAttrs.src}/jaxb-api/src/main/java" -name '*.java' ! -name 'module-info.java' | sort > sources.txt
-    ${jdk21}/bin/javac \
+    javac \
       --release 8 \
       -encoding UTF-8 \
       -cp "${jakarta_activation_api_1_2_1}/jakarta.activation-api-1.2.1.jar" \
@@ -57,7 +57,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/jakarta.xml.bind-api-${finalAttrs.version}.jar" .
+      jar cf "$tmp/jakarta.xml.bind-api-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

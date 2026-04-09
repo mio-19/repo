@@ -37,11 +37,11 @@ stdenv.mkDerivation (finalAttrs: {
       ! -path '*/org/apache/commons/logging/impl/LogKitLogger.java' \
       ! -path '*/org/apache/commons/logging/impl/ServletContextCleaner.java' \
       | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
+    javac --release 8 -d classes @sources.txt
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/commons-logging-${finalAttrs.version}.jar" .
+      jar cf "$tmp/commons-logging-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

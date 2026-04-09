@@ -31,11 +31,11 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p classes
     find "${finalAttrs.src}/src/java" -name '*.java' | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -cp "${commons_lang_2_3}/commons-lang-${commons_lang_2_3.version}.jar" -d classes @sources.txt
+    javac --release 8 -cp "${commons_lang_2_3}/commons-lang-${commons_lang_2_3.version}.jar" -d classes @sources.txt
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/commons-cli-${finalAttrs.version}.jar" .
+      jar cf "$tmp/commons-cli-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

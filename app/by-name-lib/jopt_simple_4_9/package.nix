@@ -30,12 +30,12 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p classes
     find "${finalAttrs.src}/src/main/java" -name '*.java' | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
+    javac --release 8 -d classes @sources.txt
     cp -R "${finalAttrs.src}/src/main/resources"/. classes/
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/jopt-simple-${finalAttrs.version}.jar" .
+      jar cf "$tmp/jopt-simple-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

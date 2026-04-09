@@ -29,7 +29,7 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir empty
     (
       cd empty
-      ${jdk21}/bin/jar cf "$tmp/listenablefuture-${finalAttrs.version}.jar" .
+      jar cf "$tmp/listenablefuture-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

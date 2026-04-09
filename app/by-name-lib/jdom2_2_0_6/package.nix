@@ -43,11 +43,11 @@ stdenv.mkDerivation (finalAttrs: {
     find src -name '*.java' \
       ! -path '*/org/jdom2/xpath/*' \
       | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -encoding UTF-8 -d classes @sources.txt
+    javac --release 8 -encoding UTF-8 -d classes @sources.txt
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/jdom2-${finalAttrs.version}.jar" .
+      jar cf "$tmp/jdom2-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

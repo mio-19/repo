@@ -36,9 +36,9 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p classes
     find "${finalAttrs.src}/checker-qual/src/main/java" -name '*.java' ! -name 'module-info.java' | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
+    javac --release 8 -d classes @sources.txt
     if [ -f "${finalAttrs.src}/checker-qual/src/main/java/module-info.java" ]; then
-      ${jdk21}/bin/javac --release 9 -cp classes -d classes "${finalAttrs.src}/checker-qual/src/main/java/module-info.java"
+      javac --release 9 -cp classes -d classes "${finalAttrs.src}/checker-qual/src/main/java/module-info.java"
     fi
 
     while IFS= read -r path; do
@@ -48,7 +48,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/checker-qual-${finalAttrs.version}.jar" .
+      jar cf "$tmp/checker-qual-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

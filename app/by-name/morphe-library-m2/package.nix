@@ -78,11 +78,11 @@ stdenv.mkDerivation (finalAttrs: {
       cd "$root/jadb"
       find src -name '*.java' > /tmp/jadb-sources.txt
       mkdir -p build/classes
-      ${jdk21}/bin/javac -source 1.8 -target 1.8 \
+      javac -source 1.8 -target 1.8 \
         -d build/classes \
         @/tmp/jadb-sources.txt 2>/dev/null || true
       cd build/classes
-      ${jdk21}/bin/jar cf "$root/.m2/repository/app/morphe/jadb/1.2.1/jadb-1.2.1.jar" .
+      jar cf "$root/.m2/repository/app/morphe/jadb/1.2.1/jadb-1.2.1.jar" .
     )
     cat > "$root/.m2/repository/app/morphe/jadb/1.2.1/jadb-1.2.1.pom" << 'POMEOF'
     <?xml version="1.0" encoding="UTF-8"?>

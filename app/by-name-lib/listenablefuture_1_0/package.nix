@@ -35,12 +35,12 @@ stdenv.mkDerivation (finalAttrs: {
     cd "$tmp"
 
     mkdir -p classes
-    ${jdk21}/bin/javac --release 8 -encoding UTF-8 -d classes \
+    javac --release 8 -encoding UTF-8 -d classes \
       "${finalAttrs.src}/src/com/google/common/util/concurrent/ListenableFuture.java"
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/listenablefuture-${finalAttrs.version}.jar" .
+      jar cf "$tmp/listenablefuture-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"
