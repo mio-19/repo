@@ -10,20 +10,30 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
-    #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
-    robotnix.url = "git+https://github.com/nix-community/robotnix.git?shallow=1";
-    #robotnix.url = "github:nix-community/robotnix/grapheneos_2026-04-04";
-    #robotnix.url = "github:mio-19/robotnix";
-    robotnix.inputs.nixpkgs.follows = "nixpkgs";
-    robotnix.inputs.androidPkgs.follows = "android-nixpkgs";
-    robotnix.inputs.nixpkgs-nixfmt-old.follows = "nixpkgs";
-    robotnix.inputs.treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+    robotnix = {
+      #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
+      url = "git+https://github.com/nix-community/robotnix.git?shallow=1";
+      #url = "github:nix-community/robotnix/grapheneos_2026-04-04";
+      #url = "github:mio-19/robotnix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.androidPkgs.follows = "android-nixpkgs";
+      inputs.nixpkgs-nixfmt-old.follows = "nixpkgs";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+    };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-utils.url = "github:numtide/flake-utils";
     # https://github.com/xddxdd/nix-kernelsu-builder
-    nix-kernelsu-builder.url = "github:xddxdd/nix-kernelsu-builder/cc0fce340e330ad07331692b7c3673d9974be377";
-    nix-kernelsu-builder.inputs.flake-parts.follows = "flake-parts";
-    nix-kernelsu-builder.inputs.nixpkgs.follows = "nixpkgs";
+    nix-kernelsu-builder = {
+      url = "github:xddxdd/nix-kernelsu-builder/cc0fce340e330ad07331692b7c3673d9974be377";
+      inputs.flake-parts.follows = "flake-parts";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.pre-commit-hooks-nix.inputs.flake-compat.follows = "flake-compat";
+      inputs.nur-xddxdd.inputs.treefmt-nix.follows = "treefmt-nix";
+    };
     # --option extra-substituters https://nixos-apple-silicon.cachix.org --option extra-trusted-public-keys nixos-apple-silicon.cachix.org-1:8psDu5SA5dAD7qA0zMy5UT292TxeEPzIz8VVEr2Js20=
     nixos-apple-silicon = {
       #url = "github:nix-community/nixos-apple-silicon";
@@ -32,6 +42,8 @@
       # https://github.com/nix-community/nixos-apple-silicon/issues/384
       url = "github:mio-19/nixos-apple-silicon/mio-release-2025-08-23";
       #inputs.nixpkgs.follows = "nixpkgs"; # needs to comment out this to use binary cache
+      inputs.flake-compat.follows = "flake-compat";
+      inputs.treefmt-nix.follows = "treefmt-nix";
     };
     flake-compat = {
       url = "github:NixOS/flake-compat";
@@ -42,6 +54,7 @@
       #url = "github:mio-19/nix-openwrt-imagebuilder";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
+      inputs.systems.follows = "flake-utils/systems";
     };
     gradle2nix = {
       url = "github:tadfisher/gradle2nix/v2";
