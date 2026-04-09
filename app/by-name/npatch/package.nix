@@ -7,7 +7,7 @@
   jdk21_headless,
   writableTmpDirAsHomeHook,
   runCommand,
-  jre,
+  jre_headless,
   makeWrapper,
 }:
 let
@@ -162,7 +162,7 @@ in
       }
       ''
         mkdir -p $out/bin
-        makeWrapper ${lib.getExe jre} "$out/bin/lspatch" --add-flags -jar --add-flags "${common}/lspatch.jar"
+        makeWrapper ${lib.getExe jre_headless} "$out/bin/lspatch" --add-flags -jar --add-flags "${common}/lspatch.jar"
       '';
 
   manager = runCommand "lspatch-manager-${version}" { } ''
