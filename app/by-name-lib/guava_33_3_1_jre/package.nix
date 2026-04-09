@@ -23,7 +23,7 @@ mkMavenPackageWithLock rec {
 
   mvnFlags = [
     "-pl"
-    "guava"
+    "guava,guava-tests"
     "-am"
     "-Dmaven.javadoc.skip=true"
     "-Dmaven.source.skip=true"

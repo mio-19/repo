@@ -1,7 +1,28 @@
+diff --git a/guava-tests/pom.xml b/guava-tests/pom.xml
+index 4d2eaf0..c84d5ef 100644
+--- a/guava-tests/pom.xml
++++ b/guava-tests/pom.xml
+@@ -115,7 +115,7 @@
+       <plugin>
+         <groupId>org.codehaus.mojo</groupId>
+         <artifactId>build-helper-maven-plugin</artifactId>
+-        <version>1.7</version>
++        <version>3.4.0</version>
+         <executions>
+           <execution>
+             <id>add-benchmark-sources</id>
 diff --git a/pom.xml b/pom.xml
-index 37f4cee..e37b355 100644
+index 37f4cee..5f96a48 100644
 --- a/pom.xml
 +++ b/pom.xml
+@@ -185,6 +185,6 @@
+        <plugin>
+           <artifactId>maven-jar-plugin</artifactId>
+-          <version>3.2.0</version>
++          <version>3.4.1</version>
+         </plugin>
+         <plugin>
+           <artifactId>maven-source-plugin</artifactId>
 @@ -298,6 +298,14 @@
            <artifactId>maven-enforcer-plugin</artifactId>
            <version>3.0.0-M3</version>

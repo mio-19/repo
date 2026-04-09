@@ -1,3 +1,41 @@
+diff --git a/guava-testlib/pom.xml b/guava-testlib/pom.xml
+index d760f20..4b92404 100644
+--- a/guava-testlib/pom.xml
++++ b/guava-testlib/pom.xml
+@@ -60,13 +60,7 @@
+   </dependencies>
+   <build>
+     <plugins>
+-      <plugin>
+-        <groupId>org.mvnsearch</groupId>
+-        <artifactId>toolchains-maven-plugin</artifactId>
+-      </plugin>
+-      <plugin>
+-        <artifactId>maven-toolchains-plugin</artifactId>
+-      </plugin>
++
+       <plugin>
+         <artifactId>maven-compiler-plugin</artifactId>
+       </plugin>
+diff --git a/guava-tests/pom.xml b/guava-tests/pom.xml
+index 31d8781..4d2eaf0 100644
+--- a/guava-tests/pom.xml
++++ b/guava-tests/pom.xml
+@@ -72,13 +72,7 @@
+   </dependencies>
+   <build>
+     <plugins>
+-      <plugin>
+-        <groupId>org.mvnsearch</groupId>
+-        <artifactId>toolchains-maven-plugin</artifactId>
+-      </plugin>
+-      <plugin>
+-        <artifactId>maven-toolchains-plugin</artifactId>
+-      </plugin>
++
+       <plugin>
+         <artifactId>maven-compiler-plugin</artifactId>
+       </plugin>
 diff --git a/guava/pom.xml b/guava/pom.xml
 index 8d31e64..9dbe18e 100644
 --- a/guava/pom.xml
