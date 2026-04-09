@@ -36,6 +36,10 @@ let
       hash = "sha256-quB6V5siMtWNWcKMSYg5+GuE14nxR5lv+ETHrWzGfZo=";
     }
     {
+      path = "org/apache/ant/ant-junit/1.8.1/ant-junit-1.8.1.jar";
+      hash = "sha256-UFo3kykH+QsAvqM8CpzIL/Iy6FEnf4ALxGZeZrnKkqw=";
+    }
+    {
       path = "org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar";
       hash = "sha256-nQpWAmaAmZmGyjPVPRLW8o97/148nm4MZjOjZ3ygDxg=";
     }
@@ -100,6 +104,14 @@ let
       hash = "sha256-7RBipCkXH1H9eR6V3OkkNiEVwM/pBti+9GsuELZBuO0=";
     }
     {
+      path = "junit/junit/4.8.1/junit-4.8.1.jar";
+      hash = "sha256-79jPk7V9Aej1++++HxeuOebiJVNhWSbgCm7vwwfaIeY=";
+    }
+    {
+      path = "org/testng/testng/5.12.1/testng-5.12.1.jar";
+      hash = "sha256-k2tG+Yi2whMDo3/BXGP6Zh00fdj1xTFvtDB9fof7iD4=";
+    }
+    {
       path = "org/sonatype/pmaven/pmaven-common/0.8-20100325/pmaven-common-0.8-20100325.jar";
       url = "https://repo.gradle.org/gradle/libs/org/sonatype/pmaven/pmaven-common/0.8-20100325/pmaven-common-0.8-20100325.jar";
       hash = "sha256-EpMGq82zN81T5xCq2vqiJvAXmX5ryBwstQ3rAJFsqNg=";
@@ -134,6 +146,8 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [ jdk8_headless ];
 
+  patches = [ ./gradle-0.9-direct-bootstrap.patch ];
+
   dontConfigure = true;
 
   buildPhase = ''
@@ -141,11 +155,11 @@ stdenv.mkDerivation {
 
     export JAVA_HOME=${jdk8_headless}
     export HOME="$TMPDIR/home"
-    mkdir -p "$HOME" build/lib build/core/classes build/launcher/classes build/launcher-stub
+    mkdir -p "$HOME" build/lib build/core/classes build/plugins/classes build/launcher/classes build/launcher-stub
 
     cp ${gradle_rel_0_8}/libexec/gradle/lib/*.jar build/lib/
     rm -f build/lib/gradle-core-*.jar build/lib/groovy-*.jar build/lib/groovy-all-*.jar
-    rm -f build/lib/ant-*.jar build/lib/ivy-*.jar build/lib/slf4j-*.jar
+    rm -f build/lib/ant-*.jar build/lib/ivy-*.jar build/lib/junit-*.jar build/lib/slf4j-*.jar
     rm -f build/lib/jcl-over-slf4j-*.jar build/lib/jul-to-slf4j-*.jar build/lib/log4j-over-slf4j-*.jar
     rm -f build/lib/logback-*.jar build/lib/asm-*.jar build/lib/jsch-*.jar build/lib/commons-lang-*.jar
     rm -f build/lib/maven-ant-tasks-*.jar
@@ -167,6 +181,16 @@ stdenv.mkDerivation {
     version=${version}
     buildTime=source bootstrap
     EOF
+
+    pluginsClasspath="build/core/classes:$compileClasspath"
+    "''$JAVA_HOME/bin/java" -noverify -Xmx1536m -classpath "$pluginsClasspath" \
+      org.codehaus.groovy.tools.FileSystemCompiler \
+      --classpath "$pluginsClasspath" \
+      -j \
+      -d build/plugins/classes \
+      $(find subprojects/gradle-plugins/src/main -type f \( -name '*.groovy' -o -name '*.java' \) | sort)
+
+    cp -a subprojects/gradle-plugins/src/main/resources/. build/plugins/classes/
 
     mkdir -p build/launcher-stub/org/gradle/gradleplugin/userinterface/swing/standalone
     cat > build/launcher-stub/org/gradle/gradleplugin/userinterface/swing/standalone/BlockingApplication.java <<'EOF'
@@ -194,6 +218,10 @@ stdenv.mkDerivation {
       cd build/launcher/classes
       "''$JAVA_HOME/bin/jar" cf ../gradle-launcher-${version}.jar .
     )
+    (
+      cd build/plugins/classes
+      "''$JAVA_HOME/bin/jar" cf ../gradle-plugins-${version}.jar .
+    )
 
     runHook postBuild
   '';
@@ -202,10 +230,11 @@ stdenv.mkDerivation {
     runHook preInstall
 
     gradleHome="$out/libexec/gradle"
-    mkdir -p "$gradleHome/lib" "$out/bin"
+    mkdir -p "$gradleHome/lib/plugins" "$out/bin"
 
     cp build/core/gradle-core-${version}.jar "$gradleHome/lib/"
     cp build/launcher/gradle-launcher-${version}.jar "$gradleHome/lib/"
+    cp build/plugins/gradle-plugins-${version}.jar "$gradleHome/lib/plugins/"
     cp build/lib/*.jar "$gradleHome/lib/"
     cp -a src/toplevel/. "$gradleHome/"
 
@@ -224,9 +253,9 @@ stdenv.mkDerivation {
     }:''$PATH"
     exec "''$JAVA_HOME/bin/java" \
       -noverify \
-      -classpath "${placeholder "out"}/libexec/gradle/lib/*" \
+      -classpath "${placeholder "out"}/libexec/gradle/lib/gradle-core-${version}.jar:${placeholder "out"}/libexec/gradle/lib/gradle-launcher-${version}.jar" \
       -Dgradle.home="${placeholder "out"}/libexec/gradle" \
-      org.gradle.launcher.Main \
+      org.gradle.launcher.GradleMain \
       "''$@"
     EOF
     chmod +x "$out/bin/gradle"

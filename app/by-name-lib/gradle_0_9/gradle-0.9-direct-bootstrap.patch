@@ -1,0 +1,38 @@
+--- a/subprojects/gradle-plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Groovydoc.java
++++ b/subprojects/gradle-plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Groovydoc.java
+@@ -141,7 +141,7 @@
+     /**
+      * Returns the browser window title for the documentation. Set to {@code null} when there is no window title.
+      */
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+     public String getWindowTitle() {
+         return windowTitle;
+     }
+@@ -158,7 +158,7 @@
+     /**
+      * Returns the title for the package index(first) page. Set to {@code null} when there is no document title.
+      */
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+     public String getDocTitle() {
+         return docTitle;
+     }
+@@ -175,7 +175,7 @@
+     /**
+      * Returns the html header for each page. Set to {@code null} when there is no header.
+      */
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+     public String getHeader() {
+         return header;
+     }
+@@ -192,7 +192,7 @@
+     /**
+      * Returns the html footer for each page. Set to {@code null} when there is no footer.
+      */
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+     public String getFooter() {
+         return footer;
+     }
