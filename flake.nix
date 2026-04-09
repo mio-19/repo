@@ -3,9 +3,13 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
-    #android-nixpkgs.url = "github:tadfisher/android-nixpkgs/stable";
-    android-nixpkgs.url = "github:tadfisher/android-nixpkgs/2026-04-08-stable"; # this thing cause rebuild with no real thing changed everyday. pin.
-    android-nixpkgs.inputs.nixpkgs.follows = "nixpkgs";
+    android-nixpkgs = {
+      #url = "github:tadfisher/android-nixpkgs/stable";
+      # this thing cause rebuild with no real thing changed everyday. pin.
+      url = "github:tadfisher/android-nixpkgs/2026-04-08-stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
     #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
     robotnix.url = "git+https://github.com/nix-community/robotnix.git?shallow=1";
     #robotnix.url = "github:nix-community/robotnix/grapheneos_2026-04-04";
@@ -15,6 +19,7 @@
     robotnix.inputs.nixpkgs-nixfmt-old.follows = "nixpkgs";
     robotnix.inputs.treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-utils.url = "github:numtide/flake-utils";
     # https://github.com/xddxdd/nix-kernelsu-builder
     nix-kernelsu-builder.url = "github:xddxdd/nix-kernelsu-builder/cc0fce340e330ad07331692b7c3673d9974be377";
     nix-kernelsu-builder.inputs.flake-parts.follows = "flake-parts";
@@ -41,16 +46,19 @@
     gradle2nix = {
       url = "github:tadfisher/gradle2nix/v2";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
     };
     gradle2nix-v1 = {
       url = "github:tadfisher/gradle2nix/master";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
     };
     mvn2nix = {
       #url = "github:fzakaria/mvn2nix";
       # https://github.com/fzakaria/mvn2nix/pull/64
       url = "github:benaryorg/mvn2nix/6dc27e1897453a0efcb783094cd4522af88c09ee";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.utils.follows = "flake-utils";
     };
   };
 
