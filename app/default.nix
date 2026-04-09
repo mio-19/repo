@@ -17,24 +17,17 @@
           dockerTools
           ;
       };
-      helpers =
-        let
-          mvn2nixPkgs = import inputs.nixpkgs {
-            inherit system;
-            overlays = [ inputs.mvn2nix.overlay ];
-          };
-        in
-        {
-          inherit (mvn2nixPkgs) buildMavenRepositoryFromLockFile;
-          androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
-          gradle2nixBuilders = inputs.gradle2nix.builders.${system};
-          gradle2nixV1Builders = gradle2nixV1.builders.${system};
-          inherit
-            sources
-            ;
-          apktool-src = sources.morphe_apktool.src;
-          multidexlib2-src = sources.morphe_multidexlib2.src;
-        };
+      helpers = {
+        inherit (inputs.mvn2nix.legacyPackages.${system}) buildMavenRepositoryFromLockFile;
+        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+        gradle2nixBuilders = inputs.gradle2nix.builders.${system};
+        gradle2nixV1Builders = gradle2nixV1.builders.${system};
+        inherit
+          sources
+          ;
+        apktool-src = sources.morphe_apktool.src;
+        multidexlib2-src = sources.morphe_multidexlib2.src;
+      };
       apkScope = lib.makeScope pkgs.newScope (_: byName // helpers // libs);
       apk = lib.filesystem.packagesFromDirectoryRecursive {
         inherit (apkScope) callPackage newScope;
@@ -63,9 +56,9 @@
         directory = ./by-name;
       };
     in
-    {
-      packages = lib.filterAttrs (_: lib.isDerivation) (
-        byName // libs // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk
-      );
+    rec {
+      packages = lib.filterAttrs (_: lib.isDerivation) legacyPackages;
+      legacyPackages =
+        byName // libs // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk;
     };
 }
