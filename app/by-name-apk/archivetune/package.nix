@@ -4,7 +4,7 @@
   gradle2nixBuilders,
   gradle_9_3_1,
   lib,
-  jdk25,
+  jdk21,
   fetchFromGitHub,
   apksigner,
   zip,
@@ -39,7 +39,7 @@ let
 
     lockFile = ./gradle.lock;
     overrides = overrides-from-source // overrides-update;
-    buildJdk = jdk25;
+    buildJdk = jdk21;
 
     postPatch = ''
       pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                val agpVersion = requested.version ?: "9.1.0"\n                useModule("com.android.tools.build:gradle:$agpVersion")\n            }\n        }\n    }\n'
@@ -50,7 +50,7 @@ let
     nativeBuildInputs = [
       androidSdk
       gradle
-      jdk25
+      jdk21
       apksigner
       zip
       unzip
@@ -60,7 +60,7 @@ let
     dontUseGradleConfigure = true;
 
     env = {
-      JAVA_HOME = jdk25;
+      JAVA_HOME = jdk21;
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
@@ -78,9 +78,9 @@ let
     gradleFlags = [
       "-xlintVitalUniversalRelease"
       "-xlintVitalArmeabiRelease"
-      "-Dorg.gradle.java.home=${jdk25.home}"
+      "-Dorg.gradle.java.home=${jdk21.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
-      "-Dorg.gradle.java.installations.paths=${jdk25}"
+      "-Dorg.gradle.java.installations.paths=${jdk21}"
       "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
       "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
     ];
