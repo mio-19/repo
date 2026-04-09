@@ -12,6 +12,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  overrides-update,
 }:
 let
   inherit (sources.grapheneos_appstore)
@@ -38,7 +39,7 @@ let
     inherit version src gradle;
 
     lockFile = ./gradle.lock;
-    overrides = overrides-from-source;
+    overrides = overrides-from-source // overrides-update;
     buildJdk = jdk21;
 
     patches = [

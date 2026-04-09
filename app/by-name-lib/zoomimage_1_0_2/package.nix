@@ -8,6 +8,7 @@
   lib,
   stdenv,
   writableTmpDirAsHomeHook,
+  overrides-update,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -39,7 +40,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   inherit gradle;
 
-  overrides = overrides-from-source;
+  overrides = overrides-from-source // overrides-update;
 
   buildJdk = jdk17;
 

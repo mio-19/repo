@@ -14,6 +14,7 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   nodejs,
+  overrides-update,
 }:
 let
 
@@ -43,7 +44,7 @@ let
       inherit gradle;
 
       lockFile = ./gradle.lock;
-      overrides = overrides-from-source;
+      overrides = overrides-from-source // overrides-update;
       buildJdk = jdk21;
 
       npmDeps = fetchNpmDeps {

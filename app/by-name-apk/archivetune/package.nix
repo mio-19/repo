@@ -11,6 +11,7 @@
   unzip,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  overrides-update,
 }:
 let
   version = "13.1.0";
@@ -37,7 +38,7 @@ let
     inherit version src gradle;
 
     lockFile = ./gradle.lock;
-    overrides = overrides-from-source;
+    overrides = overrides-from-source // overrides-update;
     buildJdk = jdk21;
 
     postPatch = ''

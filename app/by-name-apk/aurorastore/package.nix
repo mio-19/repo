@@ -9,6 +9,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  overrides-update,
 }:
 let
   version = "4.8.1";
@@ -34,7 +35,7 @@ let
     inherit version src gradle;
 
     lockFile = ./gradle.lock;
-    overrides = overrides-from-source;
+    overrides = overrides-from-source // overrides-update;
     buildJdk = jdk21;
 
     nativeBuildInputs = [
