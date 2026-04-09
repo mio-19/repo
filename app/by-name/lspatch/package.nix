@@ -6,7 +6,7 @@
   androidSdkBuilder,
   jdk21_headless,
   makeWrapper,
-  jre,
+  jre_headless,
   writableTmpDirAsHomeHook,
   runCommand,
   fetchpatch,
@@ -139,7 +139,7 @@ in
       }
       ''
         mkdir -p $out/bin
-        makeWrapper ${lib.getExe jre} "$out/bin/lspatch" --add-flags -jar --add-flags "${common}/lspatch.jar"
+        makeWrapper ${lib.getExe jre_headless} "$out/bin/lspatch" --add-flags -jar --add-flags "${common}/lspatch.jar"
       '';
 
   manager = runCommand "lspatch-manager-${version}" { } ''
