@@ -5,8 +5,8 @@
   gradle-from-source,
 }:
 (gradle-packages.mkGradle {
-  version = "8.14-rc-1";
-  hash = "sha256-6offYgS7lKQyz1jZqRVAixWIqL8UZkOjR+Mfq9ew5ag=";
+  version = "8.14-milestone-8";
+  hash = "sha256-a242N0+A0+VZTZ/acEC/ReHkYX7LlVKfT1yud9TGzY8=";
   defaultJava = jdk21_headless;
 }).wrapped
 # nix-shell -p jdk17
