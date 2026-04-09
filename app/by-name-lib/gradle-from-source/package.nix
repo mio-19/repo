@@ -92,8 +92,8 @@ let
         "-PfinalRelease=true"
         "--no-configuration-cache"
         "-Dorg.gradle.configuration-cache=false"
-        "-Dorg.gradle.java.installations.auto-download=false"
-        "-Porg.gradle.java.installations.auto-download=false"
+        "-Dorg.gradle.java.installations.auto-download=false" # gradle 9.x
+        "-Porg.gradle.java.installations.auto-download=false" # https://docs.gradle.org/8.14.4/userguide/toolchains.html#sec:auto_detection
         "-Dorg.gradle.java.installations.paths=${toolchainPaths}"
       ];
 
