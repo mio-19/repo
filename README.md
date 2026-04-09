@@ -213,8 +213,6 @@ see <https://github.com/nix-community/robotnix/blob/a2c5626074199e6b990fdeb8107f
 
 ## todo
 
-+ <https://github.com/nix-community/robotnix/commit/2b5be1b40170aff4a9841d291b2c3303e6e04154#commitcomment-181052651>
-
 read
 
 + <https://xdaforums.com/t/improving-s-pen-sensitivity-under-lineage-roms.4752027/>
