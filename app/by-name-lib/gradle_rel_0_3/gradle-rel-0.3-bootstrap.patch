@@ -1,0 +1,712 @@
+diff --git a/build.gradle b/build.gradle
+index 4fede89..cba4640 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -107,18 +107,11 @@ dependencies {
+             ":launch4j-bin-windows:$launch4jVersion@zip", ":launch4j-bin-unix:$launch4jVersion@zip"
+ }
+ 
+-init.doFirst {Task task, Dag dag ->
+-    if (dag.hasTask(':release')) {
+-        versionModifier = ''
+-        distributionUploadUrl = 'https://dav.codehaus.org/dist/gradle'
+-        userguideRemoteDir += version
+-        javadocRemoteDir += version
+-    } else {
+-        versionModifier = new SimpleDateFormat('yyMMddHHmmssZ').format(buildTime)
+-        distributionUploadUrl = 'https://dav.codehaus.org/snapshots.dist/gradle'
+-        userguideRemoteDir += 'latest'
+-        javadocRemoteDir += "latest"
+-    }
++init.doFirst { Task task ->
++    versionModifier = new SimpleDateFormat('yyMMddHHmmssZ').format(buildTime)
++    distributionUploadUrl = 'https://dav.codehaus.org/snapshots.dist/gradle'
++    userguideRemoteDir += 'latest'
++    javadocRemoteDir += "latest"
+     manifest.mainAttributes([
+             (Attributes.Name.IMPLEMENTATION_TITLE.toString()): 'Gradle',
+             (Attributes.Name.IMPLEMENTATION_VERSION.toString()): version.toString(),
+@@ -142,16 +135,20 @@ test {
+     options.fork(forkMode: ForkMode.ONCE, jvmArgs: ["-ea", "-Dgradle.home=roadToNowhere"])
+ }
+ 
+-libs {
+-    jar(appendix: 'wrapper') {
+-        fileSet(dir: classesDir) {
+-            include 'org/gradle/wrapper/'
+-        }
+-        manifest.mainAttributes("Main-Class": 'org.gradle.wrapper.WrapperMain')
++File bootstrapSupportJar = new File(rootDir, 'bootstrap-support/stop-action-support.jar')
++compile.groovyClasspath = org.gradle.util.GradleUtil.groovyFiles + [bootstrapSupportJar]
++testCompile.groovyClasspath = org.gradle.util.GradleUtil.groovyFiles + [bootstrapSupportJar]
++
++createTask('gradle_wrapper_jar', type: org.gradle.api.tasks.bundling.Jar, dependsOn: 'test', overwrite: true).configure {
++    baseName = "${archivesBaseName}-wrapper"
++    destinationDir = buildDir
++    fileSet(dir: classesDir) {
++        include 'org/gradle/wrapper/'
+     }
+ }
++libs.dependsOn 'gradle_wrapper_jar'
+ 
+-archive_jar.manifest.mainAttributes("Main-Class": "org.gradle.BootstrapMain")
++gradle_jar.manifest.mainAttributes("Main-Class": "org.gradle.BootstrapMain")
+ 
+ explodedDistDir = new File(distsDir, 'exploded')
+ explodedDistDocsDir = new File(explodedDistDir, 'docs')
+@@ -161,7 +158,7 @@ explodedDistSamplesDir = new File(explodedDistDir, 'samples')
+ explodedDistUserguideOutputDir = new File(explodedDistSamplesDir, 'userguideOutput')
+ explodedDistLibDir = new File(explodedDistDir, 'lib')
+ 
+-createTask('explodedDistBase', dependsOn: ['libs', 'javadoc', 'groovydoc']) {
++createTask('explodedDistBase', dependsOn: ['libs', 'javadoc'], overwrite: true) {
+     [explodedDistDir, explodedDistSamplesDir, explodedDistLibDir]*.mkdirs()
+     File explodedDistBinDir = mkdir(explodedDistDir, 'bin')
+     File explodedDistSrcDir = mkdir(explodedDistDir, 'src')
+@@ -176,12 +173,12 @@ createTask('explodedDistBase', dependsOn: ['libs', 'javadoc', 'groovydoc']) {
+             copy(file: file, todir: explodedDistLaunch4jLibDir)
+         }
+         // todo: find out why Ivy does not include the jar in the resolve
+-        copy(file: archive_jar.archivePath, toDir: explodedDistLibDir)
+-        copy(file: archive_wrapper_jar.archivePath, toDir: explodedDistLibDir)
++        copy(file: gradle_jar.archivePath, toDir: explodedDistLibDir)
++        copy(file: gradle_wrapper_jar.archivePath, toDir: explodedDistLibDir)
+         logger.info('Generate start scripts')
+         StartScriptsGenerator.generate("$archivesBaseName-${version}.jar", explodedDistBinDir, archivesBaseName)
+         logger.info('Generate and copy samples.')
+-        WrapperProjectCreator.createProject(explodedDistSamplesDir, task('archive_bin_zip').archivePath.parentFile,
++        WrapperProjectCreator.createProject(explodedDistSamplesDir, task('gradle_bin_zip').archivePath.parentFile,
+                 version.toString())
+         copy(toDir: explodedDistSamplesDir) {fileset(dir: new File(srcRoot, 'samples'))}
+         logger.info('Copy binary sources.')
+@@ -205,7 +202,7 @@ createTask('explodedDistBase', dependsOn: ['libs', 'javadoc', 'groovydoc']) {
+                     classpath: "$buildDir/$launch4jDistName/launch4j.jar:$buildDir/$launch4jDistName/lib/xstream.jar")
+             ant.launch4j() {
+                 config(headerType: "console", outfile: "$explodedDistBinDir/gradle.exe",
+-                        dontWrapJar: "true", jarPath: "../lib/" + archive_jar.archiveName) {
++                        dontWrapJar: "true", jarPath: "../lib/" + gradle_jar.archiveName) {
+                     jre(minVersion: "1.5.0", jdkPreference: 'jdkOnly')
+                 }
+             }
+@@ -216,7 +213,7 @@ createTask('explodedDistBase', dependsOn: ['libs', 'javadoc', 'groovydoc']) {
+     }
+ }
+ 
+-createTask('explodedDist', dependsOn: ['userguide'])
++createTask('explodedDist', dependsOn: ['userguide'], overwrite: true)
+ 
+ def createLaunch4j(File launch4jLibDir, String launch4jDistName) {
+     ant {
+@@ -233,7 +230,7 @@ zipRootFolder = "$archivesBaseName-${-> version}"
+ 
+ distsRetroLibsFolder = new File(distsDir, 'retroLibs')
+ 
+-createTask('retroTranslateLibs', dependsOn: 'explodedDist') {
++createTask('retroTranslateLibs', dependsOn: 'explodedDist', overwrite: true) {
+     distsRetroLibsFolder.mkdirs()
+     ant {
+         taskdef(name: "retrotranslator", classname: "net.sf.retrotranslator.transformer.RetrotranslatorTask",
+@@ -255,7 +252,7 @@ createTask('retroTranslateLibs', dependsOn: 'explodedDist') {
+     }
+ }.configure {
+     enabled = hasProperty('gradle_retroLibsDir')
+-    skipProperties << 'skip.archive_all-jdk14_zip'
++    skipProperties << 'skip.gradle_all-jdk14_zip'
+ }
+ 
+ void retroExe(File file, Closure fileSet) {
+@@ -334,17 +331,21 @@ dists {
+     }
+ }
+ 
+-groovydoc.destinationDir = explodedDistGroovydocsDir
++if (tasks['groovydoc']) {
++    groovydoc.destinationDir = explodedDistGroovydocsDir
++}
+ 
+-javadoc {
+-    title = "Gradle API $version"
+-    destinationDir = explodedDistJavadocsDir
+-    include 'org/gradle/api/**'
+-    exclude 'org/gradle/api/internal/**'
+-    exclude 'org/gradle/api/*Exception.java', '**/*Notation.java'
++if (tasks['javadoc'] instanceof org.gradle.api.tasks.javadoc.Javadoc) {
++    javadoc {
++        title = "Gradle API $version"
++        destinationDir = explodedDistJavadocsDir
++        include 'org/gradle/api/**'
++        exclude 'org/gradle/api/internal/**'
++        exclude 'org/gradle/api/*Exception.java', '**/*Notation.java'
++    }
+ }
+ 
+-createTask('uploadJavadoc', dependsOn: ['javadoc', 'init']) {
++createTask('uploadJavadoc', dependsOn: ['javadoc', 'init'], overwrite: true) {
+     ftp(action: 'mkdir', remotedir: javadocRemoteDir)
+     ftp(action: 'delete', remotedir: javadocRemoteDir) {
+         fileset() {include(name: '**/*')}
+@@ -358,13 +359,13 @@ createTask('uploadJavadoc', dependsOn: ['javadoc', 'init']) {
+ 
+ userguideDir = dir("$buildDir.name/$docsDir.name/userguide")
+ 
+-createTask('userguideVersion', dependsOn: [userguideDir, init]) {
++createTask('userguideVersion', dependsOn: [userguideDir, init], overwrite: true) {
+     File userguideData = mkdir(userguideDir.dir, 'data')
+     new File(userguideData, 'version.tex').write(version.toString())
+     new File(userguideData, 'javadocDir.tex').write('\\def \\JAVADOCDIR {' + javadocRemoteDir + '}')
+ }
+ 
+-createTask('userguide', dependsOn: [userguideDir, 'userguideVersion', 'explodedDistBase']) {
++createTask('userguide', dependsOn: [userguideDir, 'userguideVersion', 'explodedDistBase'], overwrite: true) {
+     File userguideSrc = new File(srcDocsDir, 'userguide')
+     ant {
+         if (!isLatexInstalled()) {
+@@ -414,7 +415,7 @@ void cleanLatex(File dir) {
+     }
+ }
+ 
+-createTask('uploadUserguide', dependsOn: ['userguide', 'init']) {
++createTask('uploadUserguide', dependsOn: ['userguide', 'init'], overwrite: true) {
+     ftp(action: 'mkdir', remotedir: userguideRemoteDir)
+     ftp(action: 'delete', remotedir: userguideRemoteDir) {
+         fileset() {
+@@ -430,13 +431,13 @@ createTask('uploadUserguide', dependsOn: ['userguide', 'init']) {
+ }
+ 
+ // The integtests depend on dists because of the wrapper test
+-createTask('integTest', dependsOn: ['dists']) {
++createTask('integTest', dependsOn: ['dists'], overwrite: true) {
+     IntegTestSuite.execute(explodedDistDir.absolutePath, explodedDistSamplesDir.absolutePath, explodedDistUserguideOutputDir.absolutePath)
+ }.skipProperties
+ 
+-createTask('nightlyBuild', dependsOn: ['integTest', 'uploadJavadoc'])
++createTask('nightlyBuild', dependsOn: ['integTest', 'uploadJavadoc'], overwrite: true)
+ 
+-createTask('install', dependsOn: 'integTest') {
++createTask('install', dependsOn: 'integTest', overwrite: true) {
+     ant.delete(dir: "$gradle_installDir/$gradle_installDirName")
+     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+         windowsInstall()
+@@ -447,7 +448,7 @@ createTask('install', dependsOn: 'integTest') {
+ }
+ 
+ void windowsInstall() {
+-    ant.unzip(src: task('archive_all_zip').archivePath, dest: gradle_installDir)
++    ant.unzip(src: task('gradle_all_zip').archivePath, dest: gradle_installDir)
+ }
+ 
+ /**
+@@ -458,7 +459,7 @@ void asternixInstall() {
+         arg(value: '-q')
+         arg(value: '-d')
+         arg(value: gradle_installDir)
+-        arg(value: "${task('archive_all_zip').archivePath}")
++        arg(value: "${task('gradle_all_zip').archivePath}")
+     }
+ }
+ 
+@@ -473,13 +474,13 @@ uploadDists {
+     }
+ }
+ 
+-createTask('developerBuild', dependsOn: ['clean', 'integTest'])
++createTask('developerBuild', dependsOn: ['clean', 'integTest'], overwrite: true)
+ 
+-createTask('release', dependsOn: ['uploadDists', 'uploadUserguide', 'uploadJavadoc']) {
++createTask('release', dependsOn: ['uploadDists', 'uploadUserguide', 'uploadJavadoc'], overwrite: true) {
+     svn.release()
+ }
+ 
+-createTask('wrapper', type: Wrapper, dependsOn: ['init', 'archive_bin_zip']).doFirst { task ->
++createTask('wrapper', type: Wrapper, dependsOn: ['init', 'gradle_bin_zip'], overwrite: true).doFirst { task ->
+     task.configure {
+         gradleVersion = version
+         archiveBase = Wrapper.PathBase.PROJECT
+@@ -489,11 +490,11 @@ createTask('wrapper', type: Wrapper, dependsOn: ['init', 'archive_bin_zip']).doF
+ }
+ 
+ wrapper.doLast {
+-    def binDistZip = project.archive_bin_zip.archivePath
++    def binDistZip = project.gradle_bin_zip.archivePath
+     ant.copy(file: binDistZip, toDir: 'wrapper')
+ }
+ 
+-createTask('rebuildWrapper', dependsOn: ['clean', 'wrapper'])
++createTask('rebuildWrapper', dependsOn: ['clean', 'wrapper'], overwrite: true)
+ 
+ void ftp(Map args, Closure antFileset = {}) {
+     ant {
+@@ -511,8 +512,3 @@ void ftp(Map args, Closure antFileset = {}) {
+         }
+     }
+ }
+-
+-
+-
+-
+-
+diff --git a/buildSrc/build.gradle b/buildSrc/build.gradle
+index 33eed79..c7685f7 100644
+--- a/buildSrc/build.gradle
++++ b/buildSrc/build.gradle
+@@ -1,13 +1,7 @@
+-import org.gradle.api.DependencyManager
+-import org.apache.ivy.core.install.InstallOptions
+-import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor
+-import org.apache.ivy.core.module.descriptor.DependencyDescriptor
+-
+ usePlugin('groovy')
+ 
+ dependencies {
+     addFlatDirResolver('lib', new File(rootDir, 'lib'))
+-    dependencies(['compile'], ":svnkit:1.1.6", ":svnkit-javahl:1.1.6")
+ }
+ 
+ sourceCompatibility = 1.5
+@@ -23,14 +17,3 @@ test {
+     // We set forkmode to ONCE as our tests are written in Groovy and the startup time of Groovy is significant.
+     options.fork(forkMode: org.gradle.api.tasks.testing.ForkMode.ONCE)
+ }
+-
+-uploadLibs.doLast {
+-    InstallOptions installOptions = new InstallOptions()
+-    installOptions.overwrite = true
+-    installOptions.validate = false
+-    def ivy = dependencies.ivy
+-    DefaultModuleDescriptor moduleDescriptor = dependencies.moduleDescriptorConverter.convert(dependencies)
+-    moduleDescriptor.dependencies.each { DependencyDescriptor dependencyDescriptor ->
+-        ivy.install(dependencyDescriptor.dependencyRevisionId, 'lib', DependencyManager.BUILD_RESOLVER_NAME, installOptions)
+-    }
+-}
+\ No newline at end of file
+diff --git a/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy b/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy
+index 7e63604..079a6b8 100644
+--- a/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy
++++ b/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy
+@@ -18,165 +18,24 @@ package org.gradle.build.release
+ 
+ import org.gradle.api.GradleException
+ import org.gradle.api.Project
+-import org.slf4j.Logger
+-import org.slf4j.LoggerFactory
+-import org.tigris.subversion.javahl.Revision
+-import org.tigris.subversion.javahl.Status
+-import org.tmatesoft.svn.core.SVNException
+-import org.tmatesoft.svn.core.SVNURL
+-import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory
+-import org.tmatesoft.svn.core.internal.util.SVNPathUtil
+-import org.tmatesoft.svn.core.javahl.SVNClientImpl
+-import org.tmatesoft.svn.core.wc.SVNClientManager
+-import org.tmatesoft.svn.core.wc.SVNRevision
+-import org.tmatesoft.svn.core.wc.SVNStatusClient
+-import org.tmatesoft.svn.core.wc.SVNWCUtil
+ 
+ /**
+  * @author Hans Dockter
+  */
+ class Svn {
+-    private static Logger logger = LoggerFactory.getLogger(Svn)
+-
+     Project project
+-    SVNClientManager clientManager
+-    SVNStatusClient statusClient
+-    SVNClientImpl javaHlClient
+-    boolean alwaysTrunk = false
+ 
+     Svn() {}
+ 
+     Svn(Project project) {
+-        assert project
+         this.project = project
+-        try {
+-            DAVRepositoryFactory.setup();
+-            clientManager = SVNClientManager.newInstance(
+-                    SVNWCUtil.createDefaultOptions(true), project.codehausUserName, project.codehausUserPassword)
+-            statusClient = clientManager.getStatusClient()
+-            javaHlClient = SVNClientImpl.newInstance()
+-            javaHlClient.username(project.codehausUserName)
+-            javaHlClient.password(project.codehausUserPassword)
+-            throwExceptionIfNoSvnProject()
+-        } catch (Throwable e) {
+-            logger.info("""Can't access svn working copy. Maybe this is not an svn project or the codehausUserName/password property is not set.
+-                Releasing won't be possible. It is assumed that this isTrunk is true.""")
+-            alwaysTrunk = true
+-        }
+-    }
+-
+-    void throwExceptionIfNoSvnProject() {
+-        svnDir
+-    }
+-
+-    def release() {
+-        checkWorkingCopy()
+-        if (isTrunk() || project.version.toString() == branchVersion) {
+-            majorOrMinorRelease()
+-        } else {
+-            revisionRelease()
+-        }
+-    }
+-
+-    def majorOrMinorRelease() {
+-        if (isTrunk()) {
+-            exitIfReleaseBranchDirectoryExists()
+-        }
+-        project.version.storeCurrentVersion()
+-        commitProperties()
+-        if (isTrunk()) {
+-            copyTrunkToReleaseBranch()
+-        }
+-        tagReleaseBranch()
+-    }
+-
+-    def revisionRelease() {
+-        project.version.storeCurrentVersion()
+-        commitProperties()
+-        tagReleaseBranch()
+-    }
+-
+-
+-    def commitProperties() {
+-        File props = new File(project.projectDir, 'gradle.properties')
+-        javaHlClient.commit([props.absolutePath] as String[], "Incremented version properties", false)
+-    }
+-
+-    def exitIfReleaseBranchDirectoryExists() {
+-        try {
+-            clientManager.WCClient.doInfo(new SVNURL(releaseBranchUrl, true),
+-                    SVNRevision.UNDEFINED, SVNRevision.HEAD)
+-            throw new GradleException("Release branch directory $releaseBranchUrl already exists. You can't release from trunk therefore.")
+-        } catch (SVNException ignore) {
+-            // SVNException means directory does not exists. Which is what we want.
+-        }
+-    }
+-
+-    def copyTrunkToReleaseBranch() {
+-        javaHlClient.copy(trunkUrl, releaseBranchUrl, "Copy trunk to release branch $releaseBranchName" as String, Revision.HEAD)
+-    }
+-
+-    def tagReleaseBranch() {
+-        javaHlClient.copy(releaseBranchUrl, tagsUrl, "Tag release $releaseTagName" as String, Revision.HEAD)
+-    }
+-
+-    def getReleaseBranchName() {
+-        'RB-' + majorMinorVersion
+-    }
+-
+-    def getReleaseTagName() {
+-        'REL-' + project.version
+-    }
+-
+-    def getMajorMinorVersion() {
+-        project.version.toString().split('\\.')[0..1].join('.')
+-    }
+-
+-    def getReleaseBranchUrl() {
+-        svnBaseUrl + "/branches/$releaseBranchName"
+-    }
+-
+-    def getTagsUrl() {
+-        svnBaseUrl + "/tags/$releaseTagName"
+-    }
+-
+-    def getTrunkUrl() {
+-        svnBaseUrl + "/trunk"
+-    }
+-
+-    String getSvnUrl() {
+-        statusClient.doStatus(project.projectDir, false).URL
+-    }
+-
+-    String getSvnBaseUrl() {
+-        String url = svnUrl
+-        url = SVNPathUtil.removeTail(url)
+-        if (!isTrunk()) {
+-            url = SVNPathUtil.removeTail(url)
+-        }
+-        url
+     }
+ 
+     boolean isTrunk() {
+-        alwaysTrunk || svnDir == 'trunk'
++        true
+     }
+ 
+-    String getSvnDir() {
+-        svnUrl.substring(svnUrl.lastIndexOf('/') + 1)
+-    }
+-
+-    String getBranchVersion() {
+-        svnDir.replaceFirst('RB-', '')
+-    }
+-
+-    void checkWorkingCopy() {
+-        List statuses = javaHlClient.status(project.projectDir.absolutePath, true, true, false)
+-//        ISVNStatusHandler statusHandler = {SVNStatus status -> statuses << status} as ISVNStatusHandler
+-//        statusClient.doStatus(project.projectDir, true, true, false, false, statusHandler)
+-        if (statuses) {
+-            String result = ''
+-            statuses.each {Status status -> result += status.path + ' ' + status.url.toString() + '\n'}
+-            throw new GradleException("The working copy is not in sync with the SVN server. We can't release!\n$result")
+-        }
++    def release() {
++        throw new GradleException("release task is disabled in bootstrap builds")
+     }
+ }
+diff --git a/src/main/groovy/org/gradle/api/dependencies/ArtifactDependency.java b/src/main/groovy/org/gradle/api/dependencies/ArtifactDependency.java
+index 3dc06a2..cbf8375 100644
+--- a/src/main/groovy/org/gradle/api/dependencies/ArtifactDependency.java
++++ b/src/main/groovy/org/gradle/api/dependencies/ArtifactDependency.java
+@@ -58,12 +58,10 @@ public class ArtifactDependency extends AbstractDependency {
+         DefaultDependencyDescriptor dd = (DefaultDependencyDescriptor) dependencyDescriptorFactory.createDescriptor(
+                 (String) groups.get("core"), force, false, false, getConfs(), new ArrayList<ExcludeRule>());
+         DefaultDependencyArtifactDescriptor artifactDescriptor = new DefaultDependencyArtifactDescriptor(
+-                dd, dd.getDependencyRevisionId().getName(),
+-                groups.get("extension"), groups.get("extension"), null, null);
+-        dd.addDependencyArtifact("*", artifactDescriptor);
++                dd.getDependencyRevisionId().getName(), groups.get("extension"), groups.get("extension"), null, null);
++        dd.addDependencyArtifact(Dependency.DEFAULT_CONFIGURATION, artifactDescriptor);
+         for (String conf : getConfs()) {
+             dd.addDependencyConfiguration(conf, Dependency.DEFAULT_CONFIGURATION);
+-            artifactDescriptor.addConfiguration(conf);
+         }
+         return dd;
+     }
+diff --git a/src/main/groovy/org/gradle/api/internal/ConventionTask.java b/src/main/groovy/org/gradle/api/internal/ConventionTask.java
+index 9aa00fc..15b0287 100644
+--- a/src/main/groovy/org/gradle/api/internal/ConventionTask.java
++++ b/src/main/groovy/org/gradle/api/internal/ConventionTask.java
+@@ -34,6 +34,10 @@ public abstract class ConventionTask extends DefaultTask implements IConventionA
+         conventionAwareHelper.setConvention(project.getConvention());
+     }
+ 
++    public ConventionTask(Project project, String name) {
++        this(project, name, null);
++    }
++
+     public Task conventionMapping(Map mapping) {
+         return (Task) conventionAwareHelper.conventionMapping(mapping);
+     }
+diff --git a/src/main/groovy/org/gradle/api/internal/DefaultTask.java b/src/main/groovy/org/gradle/api/internal/DefaultTask.java
+index 5c995f2..e5ab80a 100644
+--- a/src/main/groovy/org/gradle/api/internal/DefaultTask.java
++++ b/src/main/groovy/org/gradle/api/internal/DefaultTask.java
+@@ -43,6 +43,10 @@ public class DefaultTask extends AbstractTask {
+         super(project, name, tasksGraph);
+     }
+ 
++    public DefaultTask(Project project, String name) {
++        this(project, name, null);
++    }
++
+     public Task doFirst(Closure action) {
+         if (action == null) {
+             throw new InvalidUserDataException("Action must not be null!");
+@@ -98,4 +102,4 @@ public class DefaultTask extends AbstractTask {
+         }
+     }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/src/main/groovy/org/gradle/api/internal/project/DefaultProject.groovy b/src/main/groovy/org/gradle/api/internal/project/DefaultProject.groovy
+index d52b9f1..432fd75 100644
+--- a/src/main/groovy/org/gradle/api/internal/project/DefaultProject.groovy
++++ b/src/main/groovy/org/gradle/api/internal/project/DefaultProject.groovy
+@@ -137,7 +137,7 @@ class DefaultProject extends AbstractProject {
+     public void allprojects(Closure configureClosure) {
+         configureProjects(getAllprojects(), configureClosure);
+     }
+ 
+-    public void configureProjects(Iterable<Project> projects, Closure configureClosure) {
++    public void configureProjects(Iterable projects, Closure configureClosure) {
+         for (Project project : projects) {
+             ConfigureUtil.configure(configureClosure, project);
+         }
+@@ -162,5 +162,4 @@ class DefaultProject extends AbstractProject {
+         addAfterEvaluateListener(afterEvaluateListener as AfterEvaluateListener)
+     }
+ 
+-
+ }
+diff --git a/src/main/groovy/org/gradle/api/tasks/StopActionException.groovy b/src/main/groovy/org/gradle/api/tasks/StopActionException.groovy
+deleted file mode 100644
+index bf0acb6..0000000
+--- a/src/main/groovy/org/gradle/api/tasks/StopActionException.groovy
++++ /dev/null
+@@ -1,40 +0,0 @@
+-/*
+- * Copyright 2007 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+- 
+-package org.gradle.api.tasks
+-
+-import org.gradle.api.GradleException
+-
+-/**
+- * An action can usually be stopped by just calling return inside the action closure.
+- * But if the action works with helper methods that can lead to redundant code.
+- * For example <blockquote><pre>
+- *     List existentSourceDirs = HelperUtil.getExistentSourceDirs()
+- *     if (!existentSourceDirs) {return}
+- * </pre></blockquote>
+- * If the getExistentSourceDirs throws a StopActionException the tasks does not need the if statement.
+- * 
+- * @author Hans Dockter
+- */
+-class StopActionException extends GradleException {
+-    StopActionException() {
+-        super()
+-    }
+-
+-    StopActionException(String message) {
+-        super(message)
+-    }
+-}
+diff --git a/src/main/groovy/org/gradle/api/tasks/util/ExistingDirsFilter.java b/src/main/groovy/org/gradle/api/tasks/util/ExistingDirsFilter.java
+index 349cf7d..7a4d42e 100644
+--- a/src/main/groovy/org/gradle/api/tasks/util/ExistingDirsFilter.java
++++ b/src/main/groovy/org/gradle/api/tasks/util/ExistingDirsFilter.java
+@@ -17,7 +17,7 @@
+ package org.gradle.api.tasks.util;
+ 
+ import org.gradle.api.InvalidUserDataException;
+-import org.gradle.api.tasks.StopActionException;
++import org.gradle.api.tasks.StopExecutionException;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+ 
+@@ -55,7 +55,7 @@ public class ExistingDirsFilter {
+     public List<File> findExistingDirsAndThrowStopActionIfNone(Collection dirFiles) {
+         List result = findExistingDirsAndLogExitMessage(dirFiles);
+         if (result.size() == 0) {
+-            throw new StopActionException();
++            throw new StopExecutionException();
+         }
+         return result;
+     }
+diff --git a/src/main/groovy/org/gradle/util/GFileUtils.java b/src/main/groovy/org/gradle/util/GFileUtils.java
+index bac1865..81eccde 100644
+--- a/src/main/groovy/org/gradle/util/GFileUtils.java
++++ b/src/main/groovy/org/gradle/util/GFileUtils.java
+@@ -162,18 +162,26 @@ public class GFileUtils {
+     }
+ 
+     public static void copyDirectory(File srcDir, File destDir, FileFilter filter) {
+-        try {
+-            FileUtils.copyDirectory(srcDir, destDir, filter);
+-        } catch (IOException e) {
+-            throw new UncheckedIOException(e);
+-        }
++        copyDirectory(srcDir, destDir, filter, true);
+     }
+ 
+     public static void copyDirectory(File srcDir, File destDir, FileFilter filter, boolean preserveFileDate) {
+-        try {
+-            FileUtils.copyDirectory(srcDir, destDir, filter, preserveFileDate);
+-        } catch (IOException e) {
+-            throw new UncheckedIOException(e);
++        if (filter == null) {
++            copyDirectory(srcDir, destDir, preserveFileDate);
++            return;
++        }
++        forceMkdir(destDir);
++        File[] files = srcDir.listFiles(filter);
++        if (files == null) {
++            return;
++        }
++        for (File file : files) {
++            File target = new File(destDir, file.getName());
++            if (file.isDirectory()) {
++                copyDirectory(file, target, filter, preserveFileDate);
++            } else {
++                copyFile(file, target, preserveFileDate);
++            }
+         }
+     }
+ 
+@@ -194,7 +202,15 @@ public class GFileUtils {
+     }
+ 
+     public static boolean deleteQuietly(File file) {
+-        return FileUtils.deleteQuietly(file);
++        if (file == null || !file.exists()) {
++            return true;
++        }
++        try {
++            FileUtils.forceDelete(file);
++            return true;
++        } catch (IOException e) {
++            return false;
++        }
+     }
+ 
+     public static void cleanDirectory(File directory) {
+@@ -390,42 +406,34 @@ public class GFileUtils {
+     }
+ 
+     public static void moveDirectory(File srcDir, File destDir) {
+-        try {
+-            FileUtils.moveDirectory(srcDir, destDir);
+-        } catch (IOException e) {
+-            throw new UncheckedIOException(e);
+-        }
++        copyDirectory(srcDir, destDir);
++        deleteDirectory(srcDir);
+     }
+ 
+     public static void moveDirectoryToDirectory(File src, File destDir, boolean createDestDir) {
+-        try {
+-            FileUtils.moveDirectoryToDirectory(src, destDir, createDestDir);
+-        } catch (IOException e) {
+-            throw new UncheckedIOException(e);
++        if (createDestDir) {
++            forceMkdir(destDir);
+         }
++        moveDirectory(src, new File(destDir, src.getName()));
+     }
+ 
+     public static void moveFile(File srcFile, File destFile) {
+-        try {
+-            FileUtils.moveFile(srcFile, destFile);
+-        } catch (IOException e) {
+-            throw new UncheckedIOException(e);
+-        }
++        copyFile(srcFile, destFile);
++        forceDelete(srcFile);
+     }
+ 
+     public static void moveFileToDirectory(File srcFile, File destDir, boolean createDestDir) {
+-        try {
+-            FileUtils.moveFileToDirectory(srcFile, destDir, createDestDir);
+-        } catch (IOException e) {
+-            throw new UncheckedIOException(e);
++        if (createDestDir) {
++            forceMkdir(destDir);
+         }
++        moveFile(srcFile, new File(destDir, srcFile.getName()));
+     }
+ 
+     public static void moveToDirectory(File src, File destDir, boolean createDestDir) {
+-        try {
+-            FileUtils.moveToDirectory(src, destDir, createDestDir);
+-        } catch (IOException e) {
+-            throw new UncheckedIOException(e);
++        if (src.isDirectory()) {
++            moveDirectoryToDirectory(src, destDir, createDestDir);
++        } else {
++            moveFileToDirectory(src, destDir, createDestDir);
+         }
+     }
+ }
