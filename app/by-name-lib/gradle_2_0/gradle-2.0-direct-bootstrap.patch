@@ -1,0 +1,45 @@
+diff --git a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultMavenSettingsProvider.java b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultMavenSettingsProvider.java
+index 04ec293..23c567d 100644
+--- a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultMavenSettingsProvider.java
++++ b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultMavenSettingsProvider.java
+@@ -15,8 +15,8 @@
+  */
+ package org.gradle.api.internal.artifacts.mvnsettings;
+
+-import org.gradle.mvn3.org.apache.maven.settings.Settings;
+-import org.gradle.mvn3.org.apache.maven.settings.building.*;
++import org.apache.maven.settings.Settings;
++import org.apache.maven.settings.building.*;
+
+ public class DefaultMavenSettingsProvider implements MavenSettingsProvider {
+
+diff --git a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultLocalMavenRepositoryLocator.java b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultLocalMavenRepositoryLocator.java
+index 4797f5e..a8d9985 100644
+--- a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultLocalMavenRepositoryLocator.java
++++ b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultLocalMavenRepositoryLocator.java
+@@ -15,8 +15,8 @@
+  */
+ package org.gradle.api.internal.artifacts.mvnsettings;
+
+-import org.gradle.mvn3.org.apache.maven.settings.Settings;
+-import org.gradle.mvn3.org.apache.maven.settings.building.SettingsBuildingException;
++import org.apache.maven.settings.Settings;
++import org.apache.maven.settings.building.SettingsBuildingException;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+
+diff --git a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/MavenSettingsProvider.java b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/MavenSettingsProvider.java
+index dd93102..a7d7030 100644
+--- a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/MavenSettingsProvider.java
++++ b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/MavenSettingsProvider.java
+@@ -15,8 +15,8 @@
+  */
+ package org.gradle.api.internal.artifacts.mvnsettings;
+
+-import org.gradle.mvn3.org.apache.maven.settings.Settings;
+-import org.gradle.mvn3.org.apache.maven.settings.building.SettingsBuildingException;
++import org.apache.maven.settings.Settings;
++import org.apache.maven.settings.building.SettingsBuildingException;
+
+ public interface MavenSettingsProvider {
+     Settings buildSettings() throws SettingsBuildingException;
