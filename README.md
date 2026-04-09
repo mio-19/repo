@@ -16,6 +16,8 @@ I want the following freedom on my devices: The freedom to study how the program
 
 However it is always false on certain operating systems. Certain operating systems in principle discourage users from modifying any application.
 
+[Android App Readme](./app)
+
 android devices rom configurations
 
 command examples:
