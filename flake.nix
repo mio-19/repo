@@ -47,7 +47,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     mvn2nix = {
-      url = "github:fzakaria/mvn2nix";
+      #url = "github:fzakaria/mvn2nix";
+      # https://github.com/fzakaria/mvn2nix/pull/64
+      url = "github:benaryorg/mvn2nix/6dc27e1897453a0efcb783094cd4522af88c09ee";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
