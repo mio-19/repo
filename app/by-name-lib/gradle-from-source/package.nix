@@ -85,7 +85,7 @@ let
       dontAutoPatchelf = true;
 
       env = {
-        JAVA_HOME = if stdenv.isDarwin then "${buildJdk}" else "${buildJdk}/lib/openjdk";
+        JAVA_HOME = buildJdk;
       };
 
       gradleFlags = [
