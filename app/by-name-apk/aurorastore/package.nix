@@ -3,7 +3,7 @@
   overrides-from-source,
   gradle2nixBuilders,
   lib,
-  jdk21,
+  jdk25,
   gradle_9_3_1,
   fetchgit,
   apksigner,
@@ -36,12 +36,12 @@ let
 
     lockFile = ./gradle.lock;
     overrides = overrides-from-source // overrides-update;
-    buildJdk = jdk21;
+    buildJdk = jdk25;
 
     nativeBuildInputs = [
       androidSdk
       gradle
-      jdk21
+      jdk25
       apksigner
       writableTmpDirAsHomeHook
     ];
@@ -49,7 +49,7 @@ let
     dontUseGradleConfigure = true;
 
     env = {
-      JAVA_HOME = jdk21;
+      JAVA_HOME = jdk25;
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
@@ -79,9 +79,9 @@ let
     '';
 
     gradleFlags = [
-      "-Dorg.gradle.java.home=${jdk21.home}"
+      "-Dorg.gradle.java.home=${jdk25.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
-      "-Dorg.gradle.java.installations.paths=${jdk21}"
+      "-Dorg.gradle.java.installations.paths=${jdk25}"
       "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
       "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
     ];

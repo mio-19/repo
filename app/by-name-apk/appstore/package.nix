@@ -4,7 +4,7 @@
   gradle2nixBuilders,
   sources,
   lib,
-  jdk21,
+  jdk25,
   jdk17,
   gradle-packages,
   stdenv,
@@ -31,16 +31,16 @@ let
     (gradle-packages.mkGradle {
       version = "9.4.0";
       hash = "sha256-YOpyM1bYEmPoAC/sD8+eKw7uDAhQx6PXqwpj8szGAfM=";
-      defaultJava = jdk21;
+      defaultJava = jdk25;
     }).wrapped;
 
-  appPackage = gradle2nixBuilders.buildGradlePackage rec {
+  appPackage = gradle2nixBuilders.buildGradlePackage {
     pname = "appstore";
     inherit version src gradle;
 
     lockFile = ./gradle.lock;
     overrides = overrides-from-source // overrides-update;
-    buildJdk = jdk21;
+    buildJdk = jdk25;
 
     patches = [
       ./0001-always-show-vanadium.patch # TODO: test
@@ -64,14 +64,14 @@ let
 
     nativeBuildInputs = [
       androidSdk
-      jdk21
+      jdk25
       jdk17
       apksigner
       writableTmpDirAsHomeHook
     ];
 
     env = {
-      JAVA_HOME = if stdenv.isDarwin then "${jdk21}" else "${jdk21}/lib/openjdk";
+      JAVA_HOME = if stdenv.isDarwin then "${jdk25}" else "${jdk25}/lib/openjdk";
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
@@ -90,9 +90,9 @@ let
       [
         "--console=plain"
         "--dependency-verification=off"
-        "-Dorg.gradle.java.home=${if stdenv.isDarwin then jdk21 else "${jdk21}/lib/openjdk"}"
+        "-Dorg.gradle.java.home=${if stdenv.isDarwin then jdk25 else "${jdk25}/lib/openjdk"}"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk17}${postfix},${jdk21}${postfix}"
+        "-Dorg.gradle.java.installations.paths=${jdk17}${postfix},${jdk25}${postfix}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
       ];

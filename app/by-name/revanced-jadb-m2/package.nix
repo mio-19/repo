@@ -2,7 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  jdk21,
+  jdk25,
 }:
 stdenv.mkDerivation {
   pname = "revanced-jadb-m2";
@@ -15,7 +15,7 @@ stdenv.mkDerivation {
     hash = "sha256-eLGpJcy1e5cZYGxDxVB8mNsYQQOlOivwHcn9CaIFouQ=";
   };
 
-  nativeBuildInputs = [ jdk21 ];
+  nativeBuildInputs = [ jdk25 ];
 
   dontConfigure = true;
 

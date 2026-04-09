@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  jdk21,
+  jdk25,
   gradle-packages,
   stdenv,
   fetchFromGitHub,
@@ -28,7 +28,7 @@ let
         (gradle-packages.mkGradle {
           version = "9.4.1";
           hash = "sha256-KrKVjyoeURIMMmytbzhRU7sR7pOzwhbF/M6/37t+xss=";
-          defaultJava = jdk21;
+          defaultJava = jdk25;
         }).wrapped;
     in
     stdenv.mkDerivation (finalAttrs: {
@@ -60,13 +60,13 @@ let
 
       nativeBuildInputs = [
         gradle
-        jdk21
+        jdk25
         apksigner
         writableTmpDirAsHomeHook
       ];
 
       env = {
-        JAVA_HOME = jdk21;
+        JAVA_HOME = jdk25;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.1/aapt2";
@@ -105,7 +105,7 @@ let
         # Select upstream's official Breezy branding resources instead of res_fork.
         "-Pbreezy"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21}"
+        "-Dorg.gradle.java.installations.paths=${jdk25}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.1/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.1/aapt2"
       ];
