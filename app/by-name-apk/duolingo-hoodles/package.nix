@@ -36,7 +36,6 @@ let
       dontUnpack = true;
 
       nativeBuildInputs = [
-        apkeditor
         morphe-cli
         unzip
         zip
@@ -48,15 +47,12 @@ let
         workdir="$TMPDIR/duolingo-hoodles"
         mkdir -p "$workdir/input"
 
-        # Merge the split package into a standalone APK before patching.
-        APKEditor m -i ${duolingoXapk} -o "$workdir/input.apk"
-
         morphe-cli patch \
           --patches=${hoodlesPatches} \
           --unsigned \
           --temporary-files-path "$workdir/tmp" \
           --out "$workdir/duolingo-hoodles.apk" \
-          "$workdir/input.apk"
+          ${duolingoXapk}
 
         ${androidSdk}/share/android-sdk/build-tools/35.0.0/zipalign -P 16 -f 4 \
           "$workdir/duolingo-hoodles.apk" "$workdir/duolingo-hoodles-aligned.apk"
