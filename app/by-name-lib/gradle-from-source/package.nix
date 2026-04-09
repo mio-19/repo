@@ -100,6 +100,11 @@ let
 
       gradleLibexec = "${placeholder "out"}/libexec/gradle";
 
+      postPatch = ''
+        rm -f gradle/verification-metadata.xml
+        echo "Removed gradle/verification-metadata.xml so the source-built Guava override is not rejected by upstream checksum verification."
+      '';
+
       installPhase = ''
         runHook preInstall
 
