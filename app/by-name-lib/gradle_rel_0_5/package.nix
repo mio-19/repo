@@ -10,8 +10,13 @@
   gnugrep,
   gnused,
   which,
+  ant_1_7_0,
+  commons_cli_1_0,
   commons_codec_1_2,
   commons_io_1_4,
+  commons_lang_2_3,
+  jopt_simple_2_4_1,
+  slf4j_1_5_3,
   gradle_rel_0_4,
 }:
 let
@@ -23,22 +28,27 @@ let
     }
     {
       path = "org/apache/ant/ant/1.7.0/ant-1.7.0.jar";
+      package = "${ant_1_7_0}/ant-1.7.0.jar";
       hash = "sha256-kvcjB+dEDx41LJFvJDjSu6s//Sz3MMcTFhF60Eq63qg=";
     }
     {
       path = "org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar";
+      package = "${ant_1_7_0}/ant-launcher-1.7.0.jar";
       hash = "sha256-crPQPg19hqVlE+w43UzWq+PaZiAYm+IiqyVTUstuuko=";
     }
     {
       path = "org/apache/ant/ant-junit/1.7.0/ant-junit-1.7.0.jar";
+      package = "${ant_1_7_0}/ant-junit-1.7.0.jar";
       hash = "sha256-PWfPVcDoHUEPAXHJhptZFOR+lKVTADTBwAGLlT//THg=";
     }
     {
       path = "org/apache/ant/ant-nodeps/1.7.0/ant-nodeps-1.7.0.jar";
+      package = "${ant_1_7_0}/ant-nodeps-1.7.0.jar";
       hash = "sha256-HgEQTpbttkxMJbRE6OX2MIhq9nCRGMhujFrPYwFioyE=";
     }
     {
       path = "commons-cli/commons-cli/1.0/commons-cli-1.0.jar";
+      package = "${commons_cli_1_0}/commons-cli-1.0.jar";
       hash = "sha256-Q/JIULe3t9ecX6ZSQYUY+99CfmArHtq+bxG4X7k+sBM=";
     }
     {
@@ -48,6 +58,7 @@ let
     }
     {
       path = "commons-lang/commons-lang/2.3/commons-lang-2.3.jar";
+      package = "${commons_lang_2_3}/commons-lang-2.3.jar";
       hash = "sha256-BpNhxx8i+Nf71MOlaMAV4oCTJ/wuaGma62OmQXjN5W8=";
     }
     {
@@ -77,14 +88,17 @@ let
     }
     {
       path = "org/slf4j/slf4j-api/1.5.3/slf4j-api-1.5.3.jar";
+      package = "${slf4j_1_5_3}/slf4j-api-1.5.3.jar";
       hash = "sha256-z3lo2hv0OuJsDaEhIXmphn3syvxKmqcSgdH0YfBddBc=";
     }
     {
       path = "org/slf4j/jcl-over-slf4j/1.5.3/jcl-over-slf4j-1.5.3.jar";
+      package = "${slf4j_1_5_3}/jcl-over-slf4j-1.5.3.jar";
       hash = "sha256-6MdZCZPV+ivus1sdvLdAqsGcWO0H1SPZbFEAYEfIdEA=";
     }
     {
       path = "net/sf/jopt-simple/jopt-simple/2.4.1/jopt-simple-2.4.1.jar";
+      package = "${jopt_simple_2_4_1}/jopt-simple-2.4.1.jar";
       hash = "sha256-18qdFFkYq/C3rfLE3lWugXQKL3XX/F6krTQC6liqdAk=";
     }
     {

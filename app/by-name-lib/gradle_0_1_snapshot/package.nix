@@ -13,9 +13,13 @@
   gnugrep,
   gnused,
   which,
+  ant_1_7_0,
+  commons_cli_1_0,
   commons_codec_1_2,
   commons_io_1_3_1,
+  commons_lang_2_3,
   commons_logging_1_0_3,
+  junit_3_8_1,
   slf4j_api_1_4_3,
 }:
 let
@@ -31,30 +35,37 @@ let
     }
     {
       path = "org/apache/ant/ant/1.7.0/ant-1.7.0.jar";
+      package = "${ant_1_7_0}/ant-1.7.0.jar";
       hash = "sha256-kvcjB+dEDx41LJFvJDjSu6s//Sz3MMcTFhF60Eq63qg=";
     }
     {
       path = "org/apache/ant/ant/1.7.0/ant-1.7.0.pom";
+      package = "${ant_1_7_0}/ant-1.7.0.pom";
       hash = "sha256-fAIXQD9XogDLgNSJiSzgTqdi8qEzq+PdOEcGUUNM+vI=";
     }
     {
       path = "org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar";
+      package = "${ant_1_7_0}/ant-launcher-1.7.0.jar";
       hash = "sha256-crPQPg19hqVlE+w43UzWq+PaZiAYm+IiqyVTUstuuko=";
     }
     {
       path = "org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.pom";
+      package = "${ant_1_7_0}/ant-launcher-1.7.0.pom";
       hash = "sha256-0p0myykG6cOYOBvUhz7KuwTWMO9hNDXssUmoWirvyvQ=";
     }
     {
       path = "org/apache/ant/ant-junit/1.7.0/ant-junit-1.7.0.jar";
+      package = "${ant_1_7_0}/ant-junit-1.7.0.jar";
       hash = "sha256-PWfPVcDoHUEPAXHJhptZFOR+lKVTADTBwAGLlT//THg=";
     }
     {
       path = "org/apache/ant/ant-junit/1.7.0/ant-junit-1.7.0.pom";
+      package = "${ant_1_7_0}/ant-junit-1.7.0.pom";
       hash = "sha256-b6z/PljB1vSEAISg4CLGWkec6IK3KfPxU7yXZchQCQA=";
     }
     {
       path = "org/apache/ant/ant-parent/1.7.0/ant-parent-1.7.0.pom";
+      package = "${ant_1_7_0}/ant-parent-1.7.0.pom";
       hash = "sha256-GlLYNxpsvG4F7b8CZGcXEX3SNERZvulnAU8EH9zzCJM=";
     }
     {
@@ -67,10 +78,12 @@ let
     }
     {
       path = "commons-cli/commons-cli/1.0/commons-cli-1.0.jar";
+      package = "${commons_cli_1_0}/commons-cli-1.0.jar";
       hash = "sha256-Q/JIULe3t9ecX6ZSQYUY+99CfmArHtq+bxG4X7k+sBM=";
     }
     {
       path = "commons-cli/commons-cli/1.0/commons-cli-1.0.pom";
+      package = "${commons_cli_1_0}/commons-cli-1.0.pom";
       hash = "sha256-l+5A9OgMpezCAWL06X7hrf6sG0W6iLkj1aUh5IfJxAc=";
     }
     {
@@ -85,10 +98,12 @@ let
     }
     {
       path = "commons-lang/commons-lang/2.3/commons-lang-2.3.jar";
+      package = "${commons_lang_2_3}/commons-lang-2.3.jar";
       hash = "sha256-BpNhxx8i+Nf71MOlaMAV4oCTJ/wuaGma62OmQXjN5W8=";
     }
     {
       path = "commons-lang/commons-lang/2.3/commons-lang-2.3.pom";
+      package = "${commons_lang_2_3}/commons-lang-2.3.pom";
       hash = "sha256-VijV6y6CDeec+j8alwMbeBMlmOm789QZN2V9326cYGQ=";
     }
     {
@@ -121,10 +136,12 @@ let
     }
     {
       path = "junit/junit/3.8.1/junit-3.8.1.jar";
+      package = "${junit_3_8_1}/junit-3.8.1.jar";
       hash = "sha256-tY5FlQnhkL7XN/NZK8GVBIUyKEbPEOeN7R0GUVMBLXA=";
     }
     {
       path = "junit/junit/3.8.1/junit-3.8.1.pom";
+      package = "${junit_3_8_1}/junit-3.8.1.pom";
       hash = "sha256-5o8zND2DI5jzyKp4r82AjVa3wQIN5NOtjOR5CQle6QQ=";
     }
     {
