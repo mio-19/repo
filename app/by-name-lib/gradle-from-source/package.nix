@@ -26,6 +26,7 @@
 {
   version,
   tag ? if lib.length (lib.splitString "." version) == 2 then "v${version}.0" else "v${version}",
+  rev ? null,
   hash,
   lockFile,
   defaultJava,
@@ -55,11 +56,19 @@ let
 
       overrides = overrides-from-source;
 
-      src = fetchFromGitHub {
-        owner = "gradle";
-        repo = "gradle";
-        inherit tag hash;
-      };
+      src =
+        if rev == null then
+          fetchFromGitHub {
+            owner = "gradle";
+            repo = "gradle";
+            inherit tag hash;
+          }
+        else
+          fetchFromGitHub {
+            owner = "gradle";
+            repo = "gradle";
+            inherit rev hash;
+          };
 
       gradle = bootstrapGradle;
       inherit buildJdk;
