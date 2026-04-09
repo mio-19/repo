@@ -114,7 +114,6 @@
 
           formatter = pkgs.nixfmt;
 
-          packages.ollama-static = pkgs.pkgsStatic.ollama;
           packages.gradle2nix-v1 = gradle2nixV1.packages.${system}.gradle2nix;
           packages.gradle2nix-v1-src = gradle2nixV1Src;
           packages.mvn2nix = inputs.mvn2nix.packages.${system}.mvn2nix;
