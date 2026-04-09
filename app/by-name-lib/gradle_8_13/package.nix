@@ -4,16 +4,9 @@
   gradle-packages,
   gradle-from-source,
 }:
-gradle-from-source {
-  version = "8.14.4";
-  hash = "sha256-DzIJ4bPmyOj58GEpdAS9MZ4APmT5NKgNhiNp/UwZbhY=";
-  lockFile = ./gradle.lock;
+(gradle-packages.mkGradle {
+  version = "8.13";
+  hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
   defaultJava = jdk21_headless;
-  buildJdk = jdk11_headless;
-  bootstrapGradle =
-    (gradle-packages.mkGradle {
-      version = "8.14.4";
-      hash = "sha256-8XcSmKcPbbWina9iN4xOGKF/wzybprFDYuDN9AYQOA0=";
-      defaultJava = jdk21_headless;
-    }).wrapped;
-}
+}).wrapped
+# nix run github:tadfisher/gradle2nix/53672d5e875235c34dee1a4c012b0269ba76e440  -- --gradle-wrapper=8.11.1
