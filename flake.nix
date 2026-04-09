@@ -84,7 +84,6 @@
     let
       mkPatchedFlakeSrc =
         {
-          system,
           input,
           name,
           patches,
@@ -112,7 +111,7 @@
         args@{ pkgs, system, ... }:
         let
           gradle2nixV1Src = mkPatchedFlakeSrc {
-            inherit system pkgs;
+            inherit pkgs;
             input = inputs.gradle2nix-v1;
             name = "gradle2nix-v1-patched";
             patches = [
