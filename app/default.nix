@@ -155,7 +155,6 @@
           mkSignScript
           sources
           ;
-        apkeditor = pkgs.apkeditor;
         apktool-src = sources.morphe_apktool.src;
         multidexlib2-src = sources.morphe_multidexlib2.src;
       };
