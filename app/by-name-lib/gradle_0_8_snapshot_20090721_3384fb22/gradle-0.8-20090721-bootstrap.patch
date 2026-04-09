@@ -1,0 +1,599 @@
+diff --git a/build.gradle b/build.gradle
+index bc3e162..1fbb1f9 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -6,8 +6,6 @@ import org.gradle.api.Task
+ import org.gradle.api.artifacts.repositories.WebdavResolver
+ import org.gradle.api.tasks.testing.ForkMode
+ import org.gradle.api.tasks.wrapper.Wrapper
+-import org.gradle.build.release.Svn
+-import org.gradle.build.release.Version
+ import org.gradle.build.samples.WrapperProjectCreator
+ import org.gradle.build.startscripts.StartScriptsGenerator
+ import org.gradle.util.GradleVersion
+@@ -36,165 +34,61 @@ archivesBaseName = 'gradle'
+ 
+ sourceCompatibility = 1.5
+ targetCompatibility = 1.5
+-
+-svn = new Svn(project)
++bootstrapLibs = new File(System.getProperty('gradle.home'), 'lib').listFiles().findAll { it.name.endsWith('.jar') }
++bootstrapLibs << new File(System.getProperty('java.home'), '../lib/tools.jar').canonicalFile
++bootstrapExternalLibs = bootstrapLibs.findAll {
++    !it.name.startsWith('gradle-') && !it.name.startsWith('source-') && !it.name.startsWith('groovy-all-')
++}
++targetLibs = new File(rootDir, 'lib').listFiles().findAll { it.name.endsWith('.jar') && !it.name.startsWith('source-') }
++bootstrapCompilerLibs = targetLibs.findAll { it.name.startsWith('groovy-all-') } + bootstrapExternalLibs
++compile.groovyClasspath = files(bootstrapCompilerLibs as File[])
++compile.unmanagedClasspath((bootstrapExternalLibs + targetLibs) as File[])
++compileTests.groovyClasspath = compile.groovyClasspath
+ 
+ type = 'jar'
+-version = new Version(svn, project, false)
++version = '0.8-snapshot'
+ group = 'org.gradle'
+ buildTime = new Date()
+ versionModifier = null
+ 
+-repositories {
+-    mavenCentral()
+-    add(new URLResolver()) {
+-        name = 'sf_gradleRepo'
+-        addArtifactPattern('http://gradle.sourceforge.net/gradleRepo/[organisation]/[module](/[branch])/[type]s/[artifact]-[revision](-[classifier])(.[ext])')
+-    }
+-}
+-
+ configurations {
+-    distLib {
+-        visible = false
+-        extendsFrom getByName('default')
+-    }
++    distLib
+     ftpAntTask
+     retrotranslatorAntTask
+     userGuideStyleSheets
+     userGuideTask
+ }
+ 
+-dependencies {
+-
+-    // todo: Improve dependency handling for xUnit jars
+-    ftpAntTask module("org.apache.ant:ant-commons-net:1.7.0") {
+-        module("commons-net:commons-net:1.4.1") {
+-            dependencies("oro:oro:2.0.8@jar")
+-        }
+-    }
+-
+-    retrotranslatorAntTask 'net.sf.retrotranslator:retrotranslator-runtime:1.2.7@jar', 'net.sf.retrotranslator:retrotranslator-transformer:1.2.7@jar',
+-            'backport-util-concurrent:backport-util-concurrent:3.1@jar'
+-
+-    userGuideTask 'xalan:xalan:2.7.1', 'xerces:xercesImpl:2.9.1'
+-    userGuideTask module('xhtmlrenderer:xhtmlrenderer:R8rc1') {
+-        dependency 'itext:itext:2.0.8@jar'
+-    }
+-
+-    userGuideStyleSheets 'docbook:docbook-xsl:1.74.3@zip'
+-
+-    groovy module("org.codehaus.groovy:groovy-all:1.6.3") {
+-        module("org.apache.ant:ant:1.7.0") {
+-            dependencies("org.apache.ant:ant-junit:1.7.0@jar", "org.apache.ant:ant-launcher:1.7.0@jar")
+-        }
+-    }
+-
+-    compile module("commons-httpclient:commons-httpclient:3.0") {
+-        dependencies("commons-codec:commons-codec:1.2@jar", "org.slf4j:jcl-over-slf4j:1.5.3@jar")
+-    }
+-
+-    // Needed by the eclipse plugin
+-    compile module("dom4j:dom4j:1.6.1") {
+-        dependencies("jaxen:jaxen:1.1@jar")
+-    }
+-
+-    compile "org.mortbay.jetty:jetty-plus:6.1.14@jar",
+-            "org.mortbay.jetty:jetty-util:6.1.14@jar",
+-            "javax.servlet:servlet-api:2.5@jar"
+-
+-    compile module("org.mortbay.jetty:jetty:6.1.14") {
+-        // todo - these should be runtime dependencies
+-        dependencies("javax.servlet:servlet-api:2.5@jar",
+-                "org.apache.ant:ant:1.7.0@jar",
+-                // todo jsp stuff should be a module
+-                "org.mortbay.jetty:jsp-api-2.1:6.1.14@jar",
+-                "org.mortbay.jetty:jsp-2.1:6.1.14@jar",
+-                "org.eclipse.jdt:core:3.1.1@jar",
+-                "org.mortbay.jetty:jetty-util:6.1.14@jar",
+-                "org.mortbay.jetty:jetty-naming:6.1.14@jar",
+-                "org.mortbay.jetty:jetty-annotations:6.1.14@jar")
+-    }
+-
+-    compile module("org.apache.ivy:ivy:2.1.0-rc2") {
+-        dependencies("jsch:jsch:0.1.31")
+-    }
+-
+-    compile "net.sf.jopt-simple:jopt-simple:2.4.1@jar",
+-            "org.apache.ant:ant:1.7.0@jar",
+-            "ch.qos.logback:logback-classic:0.9.9@jar",
+-            "org.slf4j:slf4j-api:1.5.3@jar",
+-            "ch.qos.logback:logback-core:0.9.9@jar",
+-            "commons-io:commons-io:1.4@jar",
+-            "commons-lang:commons-lang:2.3@jar",
+-            "commons-codec:commons-codec:1.2@jar",
+-            "slide:webdavlib:2.0@jar",
+-            "biz.aQute:bndlib:0.0.255@jar",
+-            "org.apache.maven:maven-ant-tasks:2.0.9@jar",
+-            "asm:asm-all:2.2.3@jar"
+-
+-    runtime "org.apache.ant:ant-junit:1.7.0@jar",
+-            "org.apache.ant:ant-launcher:1.7.0@jar",
+-            "org.apache.ant:ant-nodeps:1.7.0@jar",
+-            "org.apache.ant:ant-trax:1.7.0@jar",
+-            "junit:junit:4.5"
+-    runtime module("checkstyle:checkstyle:5.0") {
+-        dependency("antlr:antlr:2.7.7")
+-        dependency("org.slf4j:jcl-over-slf4j:1.5.3@jar")
+-        dependency("com.google.collections:google-collections:0.9")
+-        dependency("commons-beanutils:commons-beanutils-core:1.7.0")
+-    }
+-    runtime module("org.codenarc:CodeNarc:0.5") {
+-        dependency("org.slf4j:log4j-over-slf4j:1.5.3@jar")
+-    }
+-
+-    def FIRST_LEVEL_JMOCK = ['org.hamcrest:hamcrest-core:1.1@jar', 'org.hamcrest:hamcrest-library:1.1@jar', 'org.jmock:jmock-junit4:2.4.0@jar']
+-    testCompile "junit:junit:4.5", "xmlunit:xmlunit:1.2", FIRST_LEVEL_JMOCK
+-    testCompile module("org.jmock:jmock:2.4.0") {
+-        dependencies('org.jmock:jmock-legacy:2.4.0@jar', 'org.objenesis:objenesis:1.0', 'cglib:cglib-nodep:2.1_3')
+-        dependencies(FIRST_LEVEL_JMOCK as Object[])
+-    }
+-    // todo - these should not be here
+-    testCompile 'org.jmock:jmock-legacy:2.4.0@jar', 'org.objenesis:objenesis:1.0', 'cglib:cglib-nodep:2.1_3'
+-    distLib "junit:junit:4.5"
+-}
+-
+ distributionUploadUrl = null
+ docsRemoteDir = ''
+ javadocRemoteDir = ''
+ groovydocRemoteDir = ''
+-build.taskGraph.whenReady {graph ->
+-    String prefix = ''
+-    if (graph.hasTask(':release')) {
+-        versionModifier = ''
+-        distributionUploadUrl = 'https://dav.codehaus.org/dist/gradle'
+-        prefix = version as String
+-    } else {
+-        versionModifier = new SimpleDateFormat('yyyyMMddHHmmssZ').format(buildTime)
+-        distributionUploadUrl = 'https://dav.codehaus.org/snapshots.dist/gradle'
+-        prefix = 'latest'
+-    }
+-    docsRemoteDir = prefix + '/docs'
+-    javadocRemoteDir = docsRemoteDir + '/javadoc'
+-    groovydocRemoteDir = docsRemoteDir + '/groovydoc'
+-    manifest.mainAttributes([
+-            (Attributes.Name.IMPLEMENTATION_TITLE.toString()): 'Gradle',
+-            (Attributes.Name.IMPLEMENTATION_VERSION.toString()): version.toString(),
+-    ])
+-}
+-
++versionModifier = new SimpleDateFormat('yyyyMMddHHmmssZ').format(buildTime)
++distributionUploadUrl = 'https://dav.codehaus.org/snapshots.dist/gradle'
++docsRemoteDir = 'latest/docs'
++javadocRemoteDir = docsRemoteDir + '/javadoc'
++groovydocRemoteDir = docsRemoteDir + '/groovydoc'
++manifest.mainAttributes([
++        (Attributes.Name.IMPLEMENTATION_TITLE.toString()): 'Gradle',
++        (Attributes.Name.IMPLEMENTATION_VERSION.toString()): version.toString(),
++])
+ processResources.doLast {
+-    File versionPropertiesDestination = new File(classesDir, GradleVersion.FILE_NAME)
+-    logger.info('Write version properties to: {}', versionPropertiesDestination.absoluteFile)
++    List versionPropertiesDestinations = [
++        new File(classesDir, GradleVersion.FILE_NAME),
++        new File(classesDir, 'org/gradle/version.properties')
++    ].unique { it.absoluteFile }
+     Properties versionProperties = new Properties()
+     versionProperties.putAll([
+             (GradleVersion.VERSION): version.toString(),
+             (GradleVersion.BUILD_TIME): DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL).format(buildTime)
+     ])
+-    versionProperties.store(new FileOutputStream(versionPropertiesDestination), '')
++    versionPropertiesDestinations.each { File versionPropertiesDestination ->
++        logger.info('Write version properties to: {}', versionPropertiesDestination.absoluteFile)
++        versionPropertiesDestination.parentFile.mkdirs()
++        versionProperties.store(new FileOutputStream(versionPropertiesDestination), '')
++    }
+ }
+ 
+-[compile, compileTests]*.groovyOptions*.fork(memoryInitialSize: '128M', memoryMaximumSize: '1G')
+-
+ test {
+     // We set forkmode to ONCE as our tests are written in Groovy and the startup time of Groovy is significant.
+     options.fork(forkMode: ForkMode.ONCE, jvmArgs: ["-ea", '-Xms128m', '-Xmx1g', '-XX:MaxPermSize=128m', '-XX:+HeapDumpOnOutOfMemoryError'])
+diff --git a/buildSrc/build.gradle b/buildSrc/build.gradle
+index ca9562e..861ab94 100644
+--- a/buildSrc/build.gradle
++++ b/buildSrc/build.gradle
+@@ -1,33 +1,16 @@
+-import org.apache.ivy.plugins.resolver.*
+-
+ usePlugin('groovy')
+ 
+-repositories {
+-    mavenCentral()
+-    add(new URLResolver()) {
+-        name = 'sf_gradleRepo'
+-        addArtifactPattern('http://gradle.sourceforge.net/gradleRepo/[organisation]/[module](/[branch])/[type]s/[artifact]-[revision](-[classifier])(.[ext])')
+-    }
+-}
++bootstrapLibs = new File(System.getProperty('gradle.home'), 'lib').listFiles().findAll { it.name.endsWith('.jar') }
++bootstrapLibs << new File(System.getProperty('java.home'), '../lib/tools.jar').canonicalFile
++bootstrapExternalLibs = bootstrapLibs.findAll { !it.name.startsWith('gradle-') }
+ 
+-dependencies {
+-    compile "com.svnkit:svnkit:1.1.6", "com.svnkit:svnkit-javahl:1.1.6", 'org.hamcrest:hamcrest-core:1.1', 'org.hamcrest:hamcrest-library:1.1'
+-    compile files(org.gradle.util.BootstrapUtil.gradleClasspath)
+-    // todo Actually it should be only groovy, but without junit we get a strange error. We need to understand this.
+-    groovy files(org.gradle.util.BootstrapUtil.groovyFiles)
+-}
++
++compile.groovyClasspath = files(bootstrapExternalLibs as File[])
++compile.unmanagedClasspath(bootstrapExternalLibs as File[])
++compileTests.groovyClasspath = compile.groovyClasspath
+ 
+ test {
+     // We set forkmode to ONCE as our tests are written in Groovy and the startup time of Groovy is significant.
+     options.fork(forkMode: org.gradle.api.tasks.testing.ForkMode.ONCE)
+ }
+ 
+-task ide << {
+-    def libDir = file('lib')
+-    ant.delete(dir: libDir)
+-    [configurations.runtime, configurations.testRuntime].each {config ->
+-        config.copyRecursive(DependencySpecs.type(Type.EXTERNAL)).files.each {file ->
+-            ant.copy(file: file, todir: libDir)
+-        }
+-    }
+-}
+diff --git a/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy b/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy
+deleted file mode 100644
+index 7e63604..0000000
+--- a/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy
++++ /dev/null
+@@ -1,182 +0,0 @@
+-/*
+- * Copyright 2007 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+-
+-package org.gradle.build.release
+-
+-import org.gradle.api.GradleException
+-import org.gradle.api.Project
+-import org.slf4j.Logger
+-import org.slf4j.LoggerFactory
+-import org.tigris.subversion.javahl.Revision
+-import org.tigris.subversion.javahl.Status
+-import org.tmatesoft.svn.core.SVNException
+-import org.tmatesoft.svn.core.SVNURL
+-import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory
+-import org.tmatesoft.svn.core.internal.util.SVNPathUtil
+-import org.tmatesoft.svn.core.javahl.SVNClientImpl
+-import org.tmatesoft.svn.core.wc.SVNClientManager
+-import org.tmatesoft.svn.core.wc.SVNRevision
+-import org.tmatesoft.svn.core.wc.SVNStatusClient
+-import org.tmatesoft.svn.core.wc.SVNWCUtil
+-
+-/**
+- * @author Hans Dockter
+- */
+-class Svn {
+-    private static Logger logger = LoggerFactory.getLogger(Svn)
+-
+-    Project project
+-    SVNClientManager clientManager
+-    SVNStatusClient statusClient
+-    SVNClientImpl javaHlClient
+-    boolean alwaysTrunk = false
+-
+-    Svn() {}
+-
+-    Svn(Project project) {
+-        assert project
+-        this.project = project
+-        try {
+-            DAVRepositoryFactory.setup();
+-            clientManager = SVNClientManager.newInstance(
+-                    SVNWCUtil.createDefaultOptions(true), project.codehausUserName, project.codehausUserPassword)
+-            statusClient = clientManager.getStatusClient()
+-            javaHlClient = SVNClientImpl.newInstance()
+-            javaHlClient.username(project.codehausUserName)
+-            javaHlClient.password(project.codehausUserPassword)
+-            throwExceptionIfNoSvnProject()
+-        } catch (Throwable e) {
+-            logger.info("""Can't access svn working copy. Maybe this is not an svn project or the codehausUserName/password property is not set.
+-                Releasing won't be possible. It is assumed that this isTrunk is true.""")
+-            alwaysTrunk = true
+-        }
+-    }
+-
+-    void throwExceptionIfNoSvnProject() {
+-        svnDir
+-    }
+-
+-    def release() {
+-        checkWorkingCopy()
+-        if (isTrunk() || project.version.toString() == branchVersion) {
+-            majorOrMinorRelease()
+-        } else {
+-            revisionRelease()
+-        }
+-    }
+-
+-    def majorOrMinorRelease() {
+-        if (isTrunk()) {
+-            exitIfReleaseBranchDirectoryExists()
+-        }
+-        project.version.storeCurrentVersion()
+-        commitProperties()
+-        if (isTrunk()) {
+-            copyTrunkToReleaseBranch()
+-        }
+-        tagReleaseBranch()
+-    }
+-
+-    def revisionRelease() {
+-        project.version.storeCurrentVersion()
+-        commitProperties()
+-        tagReleaseBranch()
+-    }
+-
+-
+-    def commitProperties() {
+-        File props = new File(project.projectDir, 'gradle.properties')
+-        javaHlClient.commit([props.absolutePath] as String[], "Incremented version properties", false)
+-    }
+-
+-    def exitIfReleaseBranchDirectoryExists() {
+-        try {
+-            clientManager.WCClient.doInfo(new SVNURL(releaseBranchUrl, true),
+-                    SVNRevision.UNDEFINED, SVNRevision.HEAD)
+-            throw new GradleException("Release branch directory $releaseBranchUrl already exists. You can't release from trunk therefore.")
+-        } catch (SVNException ignore) {
+-            // SVNException means directory does not exists. Which is what we want.
+-        }
+-    }
+-
+-    def copyTrunkToReleaseBranch() {
+-        javaHlClient.copy(trunkUrl, releaseBranchUrl, "Copy trunk to release branch $releaseBranchName" as String, Revision.HEAD)
+-    }
+-
+-    def tagReleaseBranch() {
+-        javaHlClient.copy(releaseBranchUrl, tagsUrl, "Tag release $releaseTagName" as String, Revision.HEAD)
+-    }
+-
+-    def getReleaseBranchName() {
+-        'RB-' + majorMinorVersion
+-    }
+-
+-    def getReleaseTagName() {
+-        'REL-' + project.version
+-    }
+-
+-    def getMajorMinorVersion() {
+-        project.version.toString().split('\\.')[0..1].join('.')
+-    }
+-
+-    def getReleaseBranchUrl() {
+-        svnBaseUrl + "/branches/$releaseBranchName"
+-    }
+-
+-    def getTagsUrl() {
+-        svnBaseUrl + "/tags/$releaseTagName"
+-    }
+-
+-    def getTrunkUrl() {
+-        svnBaseUrl + "/trunk"
+-    }
+-
+-    String getSvnUrl() {
+-        statusClient.doStatus(project.projectDir, false).URL
+-    }
+-
+-    String getSvnBaseUrl() {
+-        String url = svnUrl
+-        url = SVNPathUtil.removeTail(url)
+-        if (!isTrunk()) {
+-            url = SVNPathUtil.removeTail(url)
+-        }
+-        url
+-    }
+-
+-    boolean isTrunk() {
+-        alwaysTrunk || svnDir == 'trunk'
+-    }
+-
+-    String getSvnDir() {
+-        svnUrl.substring(svnUrl.lastIndexOf('/') + 1)
+-    }
+-
+-    String getBranchVersion() {
+-        svnDir.replaceFirst('RB-', '')
+-    }
+-
+-    void checkWorkingCopy() {
+-        List statuses = javaHlClient.status(project.projectDir.absolutePath, true, true, false)
+-//        ISVNStatusHandler statusHandler = {SVNStatus status -> statuses << status} as ISVNStatusHandler
+-//        statusClient.doStatus(project.projectDir, true, true, false, false, statusHandler)
+-        if (statuses) {
+-            String result = ''
+-            statuses.each {Status status -> result += status.path + ' ' + status.url.toString() + '\n'}
+-            throw new GradleException("The working copy is not in sync with the SVN server. We can't release!\n$result")
+-        }
+-    }
+-}
+diff --git a/buildSrc/src/main/groovy/org/gradle/build/release/Version.groovy b/buildSrc/src/main/groovy/org/gradle/build/release/Version.groovy
+deleted file mode 100644
+index 980cf00..0000000
+--- a/buildSrc/src/main/groovy/org/gradle/build/release/Version.groovy
++++ /dev/null
+@@ -1,87 +0,0 @@
+-/*
+- * Copyright 2007 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+-
+-package org.gradle.build.release
+-
+-import org.gradle.api.Project
+-
+-/**
+- * @author Hans Dockter
+- */
+-class Version {
+-    File propertyFile
+-
+-    Project project
+-
+-    boolean majorNotMinor
+-
+-    Svn svn
+-
+-    int majorInternal, minorInternal, revisionInternal
+-
+-    Version(Svn svn, Project project, boolean majorNotMinor) {
+-        this.project = project
+-        this.majorNotMinor = majorNotMinor
+-        this.svn = svn
+-        majorInternal = project.hasProperty('previousMajor') ? project.previousMajor.toInteger() : 0
+-        minorInternal = project.hasProperty('previousMinor') ? project.previousMinor.toInteger() : 0
+-        revisionInternal = project.hasProperty('previousRevision') ? project.previousRevision.toInteger() : 0
+-    }
+-
+-    void storeCurrentVersion() {
+-        Properties properties = new Properties()
+-        propertyFile = new File(project.projectDir, 'gradle.properties')
+-        if (propertyFile.isFile()) {
+-            FileInputStream propertiesInputStream = new FileInputStream(propertyFile)
+-            properties.load(propertiesInputStream)
+-            propertiesInputStream.close()
+-        }
+-        properties['previousMajor'] = major as String
+-        properties['previousMinor'] = minor as String
+-        properties['previousRevision'] = revision as String
+-        FileOutputStream propertiesOutputStream = new FileOutputStream(propertyFile)
+-        properties.store(propertiesOutputStream, null)
+-        propertiesOutputStream.close()
+-    }
+-
+-    int getMajor() {
+-        majorNotMinor && svn.isTrunk() ? majorInternal + 1 : majorInternal
+-    }
+-
+-    int getMinor() {
+-        if (svn.isTrunk()) {
+-            return majorNotMinor ? 0 : minorInternal + 1
+-        } else {
+-            return minorInternal
+-        }
+-    }
+-
+-    int getRevision() {
+-        svn.isTrunk() ? 0 : revisionInternal + 1
+-    }
+-
+-    String getLastRelease() {
+-        versionString(majorInternal, minorInternal, revisionInternal)
+-    }
+-
+-    String toString() {
+-        "${versionString(major, minor, revision)}${project.versionModifier ? '-' + project.versionModifier : ''}"
+-    }
+-
+-    private String versionString(int major, int minor, int revision) {
+-        "${major}.${minor}${revision ? '.' + revision : ''}"
+-    }
+-}
+diff --git a/src/main/groovy/org/gradle/api/tasks/ide/eclipse/EclipseClasspath.java b/src/main/groovy/org/gradle/api/tasks/ide/eclipse/EclipseClasspath.java
+index e79b3ae..927202c 100644
+--- a/src/main/groovy/org/gradle/api/tasks/ide/eclipse/EclipseClasspath.java
++++ b/src/main/groovy/org/gradle/api/tasks/ide/eclipse/EclipseClasspath.java
+@@ -126,7 +126,8 @@ public class EclipseClasspath extends ConventionTask {
+     }
+ 
+     private void addTestSrcDirs(Element root) {
+-        for (String testSrcDir : existingRelativePaths(getTestSrcDirs())) {
++        List<String> testSrcDirs = existingRelativePaths(getTestSrcDirs());
++        for (String testSrcDir : testSrcDirs) {
+             classpathEntry(root, SRC, testSrcDir).
+                     addAttribute(OUTPUT, FilenameUtils.separatorsToUnix(relativePath(getTestOutputDirectory())));
+         }
+diff --git a/src/main/groovy/org/gradle/initialization/DefaultSettings.groovy b/src/main/groovy/org/gradle/initialization/DefaultSettings.java
+similarity index 64%
+rename from src/main/groovy/org/gradle/initialization/DefaultSettings.groovy
+rename to src/main/groovy/org/gradle/initialization/DefaultSettings.java
+index a87bb05..91f43c7 100644
+--- a/src/main/groovy/org/gradle/initialization/DefaultSettings.groovy
++++ b/src/main/groovy/org/gradle/initialization/DefaultSettings.java
+@@ -13,31 +13,30 @@
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
++package org.gradle.initialization;
+ 
+-package org.gradle.initialization
++import org.gradle.StartParameter;
++import org.gradle.groovy.scripts.ScriptSource;
+ 
+-import org.gradle.StartParameter
+-import org.gradle.groovy.scripts.ScriptSource
+-import org.gradle.initialization.BaseSettings
+-import org.gradle.initialization.BuildSourceBuilder
+-import org.gradle.initialization.IProjectDescriptorRegistry
++import java.io.File;
+ 
+ /**
+  * @author Hans Dockter
+  */
+ public class DefaultSettings extends BaseSettings {
+-    public DefaultSettings() {}
++    public DefaultSettings() {
++    }
+ 
+     DefaultSettings(IProjectDescriptorRegistry projectDescriptorRegistry,
+                     BuildSourceBuilder buildSourceBuilder, File settingsDir, ScriptSource settingsScript, StartParameter startParameter) {
+-        super(projectDescriptorRegistry, buildSourceBuilder, settingsDir, settingsScript, startParameter)
++        super(projectDescriptorRegistry, buildSourceBuilder, settingsDir, settingsScript, startParameter);
+     }
+ 
+-    def propertyMissing(String property) {
+-        return dynamicObjectHelper.getProperty(property)
++    public Object propertyMissing(String property) {
++        return getDynamicObjectHelper().getProperty(property);
+     }
+ 
+-    void setProperty(String name, value) {
+-        dynamicObjectHelper.setProperty(name, value) 
++    public void setProperty(String name, Object value) {
++        getDynamicObjectHelper().setProperty(name, value);
+     }
+ }
