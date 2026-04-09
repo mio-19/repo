@@ -10,6 +10,7 @@
   androidSdkBuilder,
   pkgsCross,
   applyPatches,
+  gradle_8_2,
 }:
 let
   appPackage =
@@ -30,12 +31,7 @@ let
         s.build-tools-34-0-0
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.2";
-          hash = "sha256-OPZs1u7yF7TDWFW7EepOn7xTWUzMy1+4Lf0xfvjCxaM=";
-          defaultJava = jdk17_headless;
-        }).wrapped;
+      gradle = gradle_8_2;
 
       mkDroidspacesStatic =
         {

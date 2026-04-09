@@ -9,6 +9,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  gradle_9_1_0,
 }:
 let
   inherit (sources.lineage_glimpse)
@@ -24,12 +25,7 @@ let
     s.build-tools-36-0-0
   ]);
 
-  gradle =
-    (gradle-packages.mkGradle {
-      version = "9.1.0";
-      hash = "sha256-oX3dhaJran9d23H/iwX8UQTAICxuZHgkKXkMkzaGyAY=";
-      defaultJava = jdk25_headless;
-    }).wrapped;
+  gradle = gradle_9_1_0;
 
   appPackage = gradle2nixBuilders.buildGradlePackage rec {
     pname = "glimpse";

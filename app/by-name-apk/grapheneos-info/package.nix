@@ -5,7 +5,7 @@
   sources,
   lib,
   jdk25_headless,
-  gradle-packages,
+  gradle_9_4_0,
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -20,12 +20,7 @@ let
     s.build-tools-36-1-0
   ]);
 
-  gradle =
-    (gradle-packages.mkGradle {
-      version = "9.4.0";
-      hash = "sha256-YOpyM1bYEmPoAC/sD8+eKw7uDAhQx6PXqwpj8szGAfM=";
-      defaultJava = jdk25_headless;
-    }).wrapped;
+  gradle = gradle_9_4_0;
 
   appPackage = gradle2nixBuilders.buildGradlePackage rec {
     pname = "grapheneos-info";

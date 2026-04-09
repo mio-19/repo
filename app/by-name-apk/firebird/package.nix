@@ -14,6 +14,7 @@
   p7zip,
   writableTmpDirAsHomeHook,
   fetchpatch,
+  gradle_7_2,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -27,12 +28,7 @@ let
     s.ndk-21-4-7075529
   ]);
 
-  gradle =
-    (gradle-packages.mkGradle {
-      version = "7.2";
-      hash = "sha256-9YFwmpw16cuS4W9YXSxLyZsrGl+F0rrb09xr/1nh5t0=";
-      defaultJava = jdk17_headless;
-    }).wrapped;
+  gradle = gradle_7_2;
 
   version = "unstable-2026-01-24";
   rev = "556ca6740ce1c2171db6bd028de6690bc7094453";

@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk21_headless,
-  gradle-packages,
+  gradle_9_4_0,
   stdenv,
   fetchgit,
   apksigner,
@@ -24,12 +24,7 @@ let
         s.build-tools-36-1-0
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "9.4.0";
-          hash = "sha256-YOpyM1bYEmPoAC/sD8+eKw7uDAhQx6PXqwpj8szGAfM=";
-          defaultJava = jdk21_headless;
-        }).wrapped;
+      gradle = gradle_9_4_0;
 
       pythonWithCrc32c = python3.withPackages (ps: [ ps.crc32c ]);
     in

@@ -3,12 +3,12 @@
   fetchFromGitHub,
   gradle2nixBuilders,
   overrides-from-source,
-  gradle-packages,
   jdk17_headless,
   lib,
   stdenv,
   writableTmpDirAsHomeHook,
   overrides-update,
+  gradle_8_2,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -18,12 +18,7 @@ let
     s.build-tools-34-0-0
   ]);
 
-  gradle =
-    (gradle-packages.mkGradle {
-      version = "8.2";
-      hash = "sha256-OPZs1u7yF7TDWFW7EepOn7xTWUzMy1+4Lf0xfvjCxaM=";
-      defaultJava = jdk17_headless;
-    }).wrapped;
+  gradle = gradle_8_2;
 in
 gradle2nixBuilders.buildGradlePackage rec {
   pname = "zoomimage";

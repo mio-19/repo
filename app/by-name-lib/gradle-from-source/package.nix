@@ -21,10 +21,11 @@
   udev,
   unzip,
   callPackage,
+  overrides-from-source,
 }:
 {
   version,
-  tag ? if lib.length (lib.splitString "." version) == 3 then "v${version}" else "v${version}.0",
+  tag ? if lib.length (lib.splitString "." version) == 2 then "v${version}.0" else "v${version}",
   hash,
   lockFile,
   defaultJava,
@@ -54,6 +55,8 @@ let
     gradleBuilders.buildGradlePackage rec {
       pname = "gradle";
       inherit version lockFile;
+
+      overrides = overrides-from-source;
 
       src = fetchFromGitHub {
         owner = "gradle";

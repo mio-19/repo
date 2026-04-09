@@ -6,7 +6,7 @@
   lib,
   jdk25_headless,
   jdk17_headless,
-  gradle-packages,
+  gradle_9_4_0,
   stdenv,
   fetchpatch,
   apksigner,
@@ -27,12 +27,7 @@ let
     s.build-tools-36-1-0
   ]);
 
-  gradle =
-    (gradle-packages.mkGradle {
-      version = "9.4.0";
-      hash = "sha256-YOpyM1bYEmPoAC/sD8+eKw7uDAhQx6PXqwpj8szGAfM=";
-      defaultJava = jdk25_headless;
-    }).wrapped;
+  gradle = gradle_9_4_0;
 
   appPackage = gradle2nixBuilders.buildGradlePackage {
     pname = "appstore";
@@ -90,7 +85,9 @@ let
       [
         "--console=plain"
         "--dependency-verification=off"
-        "-Dorg.gradle.java.home=${if stdenv.isDarwin then jdk25_headless else "${jdk25_headless}/lib/openjdk"}"
+        "-Dorg.gradle.java.home=${
+          if stdenv.isDarwin then jdk25_headless else "${jdk25_headless}/lib/openjdk"
+        }"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk17_headless}${postfix},${jdk25_headless}${postfix}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
