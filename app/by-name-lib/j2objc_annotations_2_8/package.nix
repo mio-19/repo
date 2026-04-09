@@ -1,4 +1,5 @@
 {
+  fetchFromGitHub,
   fetchurl,
   jdk21,
   lib,
@@ -9,9 +10,11 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "j2objc-annotations";
   version = "2.8";
 
-  src = fetchurl {
-    url = "https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/${finalAttrs.version}/j2objc-annotations-${finalAttrs.version}-sources.jar";
-    hash = "sha256-dBPu1B8RFFOgiDf1rGgO3e1/rtRmy9NXReQC4T9Mw/U=";
+  src = fetchFromGitHub {
+    owner = "google";
+    repo = "j2objc";
+    tag = finalAttrs.version;
+    hash = "sha256-7cE5nGXe48j3ArdHi+3swmLHHOi8m6YWBUw6s1ikm4Q=";
   };
 
   pom = fetchurl {
@@ -30,9 +33,8 @@ stdenv.mkDerivation (finalAttrs: {
     tmp="$(mktemp -d)"
     trap 'rm -rf "$tmp"' EXIT
     cd "$tmp"
-    ${jdk21}/bin/jar xf "$src"
     mkdir -p classes
-    find . -name '*.java' ! -name 'module-info.java' | sort > sources.txt
+    find "${finalAttrs.src}/annotations/src/main/java" -name '*.java' ! -name 'module-info.java' | sort > sources.txt
     ${jdk21}/bin/javac --release 8 -d classes @sources.txt
     (
       cd classes
@@ -44,6 +46,22 @@ stdenv.mkDerivation (finalAttrs: {
     install -Dm644 "$pom" "$out/j2objc-annotations-${finalAttrs.version}.pom"
 
     runHook postInstall
+  '';
+
+  doInstallCheck = true;
+
+  installCheckPhase = ''
+    runHook preInstallCheck
+
+    cat > J2ObjCAnnotationsSmoke.java <<'EOF'
+    import com.google.j2objc.annotations.ObjectiveCName;
+
+    @ObjectiveCName("J2ObjCAnnotationsSmoke")
+    final class J2ObjCAnnotationsSmoke {}
+    EOF
+    ${jdk21}/bin/javac --release 8 -cp "$out/j2objc-annotations-${finalAttrs.version}.jar" J2ObjCAnnotationsSmoke.java
+
+    runHook postInstallCheck
   '';
 
   meta = with lib; {

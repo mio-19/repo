@@ -1,5 +1,5 @@
 {
-  fetchurl,
+  fetchFromGitHub,
   jdk21,
   lib,
   stdenv,
@@ -9,14 +9,11 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "commons-logging";
   version = "1.2";
 
-  src = fetchurl {
-    url = "https://repo.maven.apache.org/maven2/commons-logging/commons-logging/${finalAttrs.version}/commons-logging-${finalAttrs.version}-sources.jar";
-    hash = "sha256-RDR6z+WGBGFyjpyzMlHpc0W+Nvig39XFEwwXJVlFX0E=";
-  };
-
-  pom = fetchurl {
-    url = "https://repo.maven.apache.org/maven2/commons-logging/commons-logging/${finalAttrs.version}/commons-logging-${finalAttrs.version}.pom";
-    hash = "sha256-yRq1qlcNhvb9B8wVjsa8LFAIBAKXLukXn+JBAHOfuyA=";
+  src = fetchFromGitHub {
+    owner = "apache";
+    repo = "commons-logging";
+    tag = "LOGGING_1_2";
+    hash = "sha256-iLslo01M2tp9Ls5yPBRBcA+1w2sp2doHJRYlMkUfzSg=";
   };
 
   nativeBuildInputs = [ jdk21 ];
@@ -30,20 +27,22 @@ stdenv.mkDerivation (finalAttrs: {
     tmp="$(mktemp -d)"
     trap 'rm -rf "$tmp"' EXIT
     cd "$tmp"
-    ${jdk21}/bin/jar xf "$src"
 
     mkdir -p classes
-    find . -name '*.java' \
-      ! -path './org/apache/commons/logging/impl/AvalonLogger.java' \
-      ! -path './org/apache/commons/logging/impl/Log4JLogger.java' \
-      ! -path './org/apache/commons/logging/impl/LogKitLogger.java' \
-      ! -path './org/apache/commons/logging/impl/ServletContextCleaner.java' \
+    find "${finalAttrs.src}/src/main/java" -name '*.java' \
+      ! -path '*/org/apache/commons/logging/impl/AvalonLogger.java' \
+      ! -path '*/org/apache/commons/logging/impl/Log4JLogger.java' \
+      ! -path '*/org/apache/commons/logging/impl/LogKitLogger.java' \
+      ! -path '*/org/apache/commons/logging/impl/ServletContextCleaner.java' \
       | sort > sources.txt
     ${jdk21}/bin/javac --release 8 -d classes @sources.txt
 
-    while IFS= read -r path; do
-      install -Dm644 "$path" "classes/$path"
-    done < <(find . -type f ! -name '*.java' ! -name 'sources.txt' ! -path './META-INF/maven/*' | sort)
+    if [ -d "${finalAttrs.src}/src/main/resources" ]; then
+      while IFS= read -r path; do
+        rel_path="$(realpath --relative-to="${finalAttrs.src}/src/main/resources" "$path")"
+        install -Dm644 "$path" "classes/$rel_path"
+      done < <(find "${finalAttrs.src}/src/main/resources" -type f | sort)
+    fi
 
     (
       cd classes
@@ -52,9 +51,31 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p "$out"
     install -Dm644 "$tmp/commons-logging-${finalAttrs.version}.jar" "$out/commons-logging-${finalAttrs.version}.jar"
-    install -Dm644 "$pom" "$out/commons-logging-${finalAttrs.version}.pom"
+    install -Dm644 "${finalAttrs.src}/pom.xml" "$out/commons-logging-${finalAttrs.version}.pom"
 
     runHook postInstall
+  '';
+
+  doInstallCheck = true;
+
+  installCheckPhase = ''
+    runHook preInstallCheck
+
+    cat > CommonsLoggingSmoke.java <<'EOF'
+    public final class CommonsLoggingSmoke {
+      public static void main(String[] args) {
+        org.apache.commons.logging.Log log =
+            org.apache.commons.logging.LogFactory.getLog("commons-logging-smoke");
+        if (log == null) {
+          throw new AssertionError("LogFactory returned null");
+        }
+      }
+    }
+    EOF
+    ${jdk21}/bin/javac --release 8 -cp "$out/commons-logging-${finalAttrs.version}.jar" CommonsLoggingSmoke.java
+    ${jdk21}/bin/java -cp "$out/commons-logging-${finalAttrs.version}.jar:." CommonsLoggingSmoke
+
+    runHook postInstallCheck
   '';
 
   meta = with lib; {
