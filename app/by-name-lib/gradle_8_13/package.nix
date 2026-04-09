@@ -10,7 +10,6 @@ gradle-from-source {
   lockFile = ./gradle.lock;
   defaultJava = jdk21_headless;
   buildJdk = jdk11_headless;
-  # nix run github:tadfisher/gradle2nix/53672d5e875235c34dee1a4c012b0269ba76e440  -- --gradle-wrapper=8.13
   bootstrapGradle =
     (gradle-packages.mkGradle {
       version = "8.14.4";
