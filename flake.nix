@@ -88,11 +88,9 @@
           input,
           name,
           patches,
+          pkgs,
         }:
-        let
-          pkgs0 = import inputs.nixpkgs { inherit system; };
-        in
-        pkgs0.applyPatches {
+        pkgs.applyPatches {
           inherit name patches;
           src = input.outPath;
         };
@@ -114,7 +112,7 @@
         args@{ pkgs, system, ... }:
         let
           gradle2nixV1Src = mkPatchedFlakeSrc {
-            inherit system;
+            inherit system pkgs;
             input = inputs.gradle2nix-v1;
             name = "gradle2nix-v1-patched";
             patches = [
