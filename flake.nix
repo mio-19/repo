@@ -173,9 +173,11 @@
     extra-substituters = [
       # https://garnix.io/docs/caching # garnix sometimes often 504 Gateway Time-out. to avoid waiting on this garnix, supply `--offline` to nix commands.
       "https://cache.garnix.io"
+      "https://mio-repo.cachix.org"
     ];
     extra-trusted-public-keys = [
       "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+      "mio-repo.cachix.org-1:+l5kqQn5w9e3i3tDZY9o3pVQABC0Z/d0kAqhQpqKP8g="
     ];
   };
 }
