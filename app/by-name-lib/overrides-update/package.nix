@@ -75,4 +75,28 @@
     "core-3.5.3.jar" = overrides-from-source."com.google.zxing:core:3.5.4"."core-3.5.4.jar";
     "core-3.5.3.pom" = overrides-from-source."com.google.zxing:core:3.5.3"."core-3.5.3.pom";
   };
+  "com.google.j2objc:j2objc-annotations:3.0.0" = {
+    "j2objc-annotations-3.0.0.jar" =
+      overrides-from-source."com.google.j2objc:j2objc-annotations:3.1"."j2objc-annotations-3.1.jar";
+    "j2objc-annotations-3.0.0.pom" =
+      overrides-from-source."com.google.j2objc:j2objc-annotations:3.0.0"."j2objc-annotations-3.0.0.pom";
+  };
+  "com.google.guava:failureaccess:1.0.1" = {
+    "failureaccess-1.0.1.jar" =
+      overrides-from-source."com.google.guava:failureaccess:1.0.2"."failureaccess-1.0.2.jar";
+    "failureaccess-1.0.1.pom" =
+      overrides-from-source."com.google.guava:failureaccess:1.0.1"."failureaccess-1.0.1.pom";
+  };
+  "com.google.auto.service:auto-service-annotations:1.0.1" = {
+    "auto-service-annotations-1.0.1.jar" =
+      overrides-from-source."com.google.auto.service:auto-service-annotations:1.6.3"."auto-service-annotations-1.6.3.jar";
+    "auto-service-annotations-1.0.1.pom" =
+      overrides-from-source."com.google.auto.service:auto-service-annotations:1.0.1"."auto-service-annotations-1.0.1.pom";
+  };
+  "com.google.auto.value:auto-value-annotations:1.6.2" = {
+    "auto-value-annotations-1.6.2.jar" =
+      overrides-from-source."com.google.auto.value:auto-value-annotations:1.6.3"."auto-value-annotations-1.6.3.jar";
+    "auto-value-annotations-1.6.2.pom" =
+      overrides-from-source."com.google.auto.value:auto-value-annotations:1.6.2"."auto-value-annotations-1.6.2.pom";
+  };
 }
