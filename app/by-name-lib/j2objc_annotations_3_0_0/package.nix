@@ -1,4 +1,5 @@
 {
+  fetchFromGitHub,
   fetchurl,
   jdk21,
   lib,
@@ -9,9 +10,11 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "j2objc-annotations";
   version = "3.0.0";
 
-  src = fetchurl {
-    url = "https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/${finalAttrs.version}/j2objc-annotations-${finalAttrs.version}-sources.jar";
-    hash = "sha256-vWABmgQjw6Al72qyT+B2H19F/7SKjMp0oBtnjeEQXTg=";
+  src = fetchFromGitHub {
+    owner = "google";
+    repo = "j2objc";
+    tag = finalAttrs.version;
+    hash = "sha256-ljnnsyMhDVicgwsFPum5Wsv4fS47rsfTqBWhxYYib40=";
   };
 
   pom = fetchurl {
@@ -30,9 +33,8 @@ stdenv.mkDerivation (finalAttrs: {
     tmp="$(mktemp -d)"
     trap 'rm -rf "$tmp"' EXIT
     cd "$tmp"
-    ${jdk21}/bin/jar xf "$src"
     mkdir -p classes
-    find . -name '*.java' ! -name 'module-info.java' | sort > sources.txt
+    find "${finalAttrs.src}/annotations/src/main/java" -name '*.java' ! -name 'module-info.java' | sort > sources.txt
     ${jdk21}/bin/javac --release 8 -d classes @sources.txt
     (
       cd classes

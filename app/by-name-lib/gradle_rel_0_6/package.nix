@@ -5,7 +5,6 @@
   fetchurl,
   linkFarm,
   jdk8_headless,
-  makeWrapper,
   coreutils,
   findutils,
   gnugrep,
@@ -13,16 +12,14 @@
   which,
   commons_codec_1_2,
   commons_io_1_4,
-  commons_logging_1_0_3,
-  slf4j_api_1_4_3,
-  gradle_rel_0_3,
+  gradle_rel_0_5,
 }:
 let
-  version = "0.5-snapshot";
+  version = "0.7-snapshot";
   artifacts = [
     {
-      path = "org/codehaus/groovy/groovy-all/1.5.5/groovy-all-1.5.5.jar";
-      hash = "sha256-2uRrDyxyGvsgPT45xG/ZoEQXrU/zqGaaY7hVg47CuZU=";
+      path = "org/codehaus/groovy/groovy-all/1.5.6/groovy-all-1.5.6.jar";
+      hash = "sha256-vKxmqYQPMCrrLtr5uNNoMzIEIzS2rr8imfDM8Yj2Cls=";
     }
     {
       path = "org/apache/ant/ant/1.7.0/ant-1.7.0.jar";
@@ -58,47 +55,101 @@ let
       hash = "sha256-ev0Y8w6YySv4c7ZLr+6kO0q96rpipOUOG2stAEBe9+8=";
     }
     {
-      path = "commons-logging/commons-logging/1.0.3/commons-logging-1.0.3.jar";
-      package = "${commons_logging_1_0_3}/commons-logging-1.0.3.jar";
-      hash = "sha256-vPoCPa6oUl1tsCnqguj1jb8aBgBttlJtn5hNvyFdinU=";
-    }
-    {
       path = "commons-codec/commons-codec/1.2/commons-codec-1.2.jar";
       package = "${commons_codec_1_2}/commons-codec-1.2.jar";
       hash = "sha256-mJijs4V2dhKJh7l10LDwNb7PPaXPZ3Jmo01mNvK4BUI=";
     }
     {
-      path = "junit/junit/4.4/junit-4.4.jar";
-      hash = "sha256-D2uM7WfX5ywVgA53u+wem1bmFLNC6+v9SQtCaOHP0P8=";
+      path = "junit/junit/4.5/junit-4.5.jar";
+      hash = "sha256-kjurxR22dfOSN3fDn/fYaOenbmmkU0C6Ts84zlMa3w4=";
     }
     {
       path = "slide/webdavlib/2.0/webdavlib-2.0.jar";
       hash = "sha256-CijngVokZPOPfIC2Hd0T4EZaeHMoUozMIFLvapG6Tyc=";
     }
     {
-      path = "ch/qos/logback/logback-classic/0.9.8/logback-classic-0.9.8.jar";
-      hash = "sha256-NCR0VLpB4ZoaYjC8REtbr+Lz8ytGK4krMbWo7EgjjkI=";
+      path = "ch/qos/logback/logback-classic/0.9.9/logback-classic-0.9.9.jar";
+      hash = "sha256-sZ0cKny7+I1sxzxuPsWjA/3jh/zX8u4N5EZrRioyMrE=";
     }
     {
-      path = "ch/qos/logback/logback-core/0.9.8/logback-core-0.9.8.jar";
-      hash = "sha256-1F2OvJRJ/ajW2B0AhuE5aUOqscNiz7adYUvwKnsrG3U=";
+      path = "ch/qos/logback/logback-core/0.9.9/logback-core-0.9.9.jar";
+      hash = "sha256-9uxzDnLF9PA8rYJ7hGScRWcRR8fL3v9iYHHzFETwoTY=";
     }
     {
-      path = "org/slf4j/slf4j-api/1.4.3/slf4j-api-1.4.3.jar";
-      package = "${slf4j_api_1_4_3}/slf4j-api-1.4.3.jar";
-      hash = "sha256-321SjPU94d9R7xVEtuDlXHsLpgS0IM9UimxjnUYfc0g=";
+      path = "org/slf4j/slf4j-api/1.5.3/slf4j-api-1.5.3.jar";
+      hash = "sha256-z3lo2hv0OuJsDaEhIXmphn3syvxKmqcSgdH0YfBddBc=";
+    }
+    {
+      path = "org/slf4j/jcl-over-slf4j/1.5.3/jcl-over-slf4j-1.5.3.jar";
+      hash = "sha256-6MdZCZPV+ivus1sdvLdAqsGcWO0H1SPZbFEAYEfIdEA=";
     }
     {
       path = "net/sf/jopt-simple/jopt-simple/2.4.1/jopt-simple-2.4.1.jar";
       hash = "sha256-18qdFFkYq/C3rfLE3lWugXQKL3XX/F6krTQC6liqdAk=";
     }
     {
-      path = "org/apache/ivy/ivy/2.0.0-beta2/ivy-2.0.0-beta2.jar";
-      hash = "sha256-pkDB33ILM4kjZj1d0nB3/tDEt+MrX83HoMITLSNSwWI=";
+      path = "org/apache/ivy/ivy/2.1.0-rc1/ivy-2.1.0-rc1.jar";
+      hash = "sha256-EQnhPQ+7l7r3ct8IsVIiJIL6knprKabIVU64ozzzjZg=";
+    }
+    {
+      path = "com/jcraft/jsch/0.1.31/jsch-0.1.31.jar";
+      hash = "sha256-gk5XFFy709OAuTrLaRyUkj0jL/8Imw5FBJ+0r5bBdnE=";
+    }
+    {
+      path = "asm/asm-all/2.2/asm-all-2.2.jar";
+      hash = "sha256-ToHGsLwlFy3ZgRFnqrnnZK/XYJJdAI5frYtcAgGSC/I=";
     }
     {
       path = "dom4j/dom4j/1.6.1/dom4j-1.6.1.jar";
       hash = "sha256-WTVS/+o8WCPGYCR4tQAqfFJf2QSjxE8avkBlwi7frHM=";
+    }
+    {
+      path = "jaxen/jaxen/1.1/jaxen-1.1.jar";
+      hash = "sha256-SWdVeYIksMjwxEcRd4UvG+8palJKLfd2XvnfUFTlrp8=";
+    }
+    {
+      path = "org/mortbay/jetty/jetty/6.1.14/jetty-6.1.14.jar";
+      hash = "sha256-IwGVcKiM3lf3z572YuVvZssXnc9+KMvg0WKedk0Iw0M=";
+    }
+    {
+      path = "org/mortbay/jetty/jetty-naming/6.1.14/jetty-naming-6.1.14.jar";
+      hash = "sha256-YifLBTUXj61rNyi1Bd2m4u5zUQZj/fA1albdsJCWlWw=";
+    }
+    {
+      path = "org/mortbay/jetty/jetty-plus/6.1.14/jetty-plus-6.1.14.jar";
+      hash = "sha256-/TzONrhfY5XOE4Fjz/hqYAoAg4c0aL+CrDHPOZo/TJ8=";
+    }
+    {
+      path = "org/mortbay/jetty/jetty-util/6.1.14/jetty-util-6.1.14.jar";
+      hash = "sha256-8mY5/R7P2Dpm+dilkyQvpavXW7R2TP2siLQHmpP+Mvk=";
+    }
+    {
+      path = "org/mortbay/jetty/jsp-api-2.1/6.1.14/jsp-api-2.1-6.1.14.jar";
+      hash = "sha256-2+YHBuGi8+PjeFsofXi1J7b0GqY37M2k48OEF2w1pAU=";
+    }
+    {
+      path = "org/mortbay/jetty/jsp-2.1/6.1.14/jsp-2.1-6.1.14.jar";
+      hash = "sha256-2VTa2Kpx8mmfNZAzPoybjY/B6ixZ12A1GTuP8q8F1j8=";
+    }
+    {
+      path = "org/eclipse/jdt/core/3.1.1/core-3.1.1.jar";
+      hash = "sha256-+eOc9zJrYNHTAW7ZD63ASfcdMSyXqpfLqvhR1jdnMLo=";
+    }
+    {
+      path = "org/mortbay/jetty/jetty-annotations/6.1.14/jetty-annotations-6.1.14.jar";
+      hash = "sha256-3c6g5SJm916M2c9Ldhq5pcmOTqmqP9CB6QpFMWgHcCs=";
+    }
+    {
+      path = "javax/servlet/servlet-api/2.5/servlet-api-2.5.jar";
+      hash = "sha256-xljqNgpw+u6ttm+zyQpwLkFCoKt3aPmumChnjg2a1Nw=";
+    }
+    {
+      path = "biz/aQute/bndlib/0.0.255/bndlib-0.0.255.jar";
+      hash = "sha256-cR7DDjyjqSL4AdusnJGRavd1XsWHLUezEGwMUXKL6yU=";
+    }
+    {
+      path = "org/apache/maven/maven-ant-tasks/2.0.9/maven-ant-tasks-2.0.9.jar";
+      hash = "sha256-SCKPuTSA6sOHGTqyTSx7dIrMZj8Tj8dhGoKuFRN2xbY=";
     }
   ];
 
@@ -120,11 +171,11 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "gradle";
     repo = "gradle";
-    rev = "REL-0.4";
-    hash = "sha256-C4rQ0ZpZzXpX45LuvLoXx9XHCtxXrd7yL0Tu9MTM4+Y=";
+    tag = "REL-0.6";
+    hash = "sha256-OsAtuaBU+JigezzlVwtxc++UWe4kuNSHIT+OzuEZnkc=";
   };
 
-  patches = [ ./gradle-rel-0.4-bootstrap.patch ];
+  patches = [ ./gradle-rel-0.6-bootstrap.patch ];
 
   nativeBuildInputs = [
     jdk8_headless
@@ -141,23 +192,10 @@ stdenv.mkDerivation {
 
     rm -rf buildSrc/src/test src/test
     cp ${bootstrapJars}/*.jar lib/
-    cp lib/ivy-2.0.0-beta2.jar lib/ivy-2.0.0.rc1_20080716132100_r677238.jar
-    cp lib/ivy-2.0.0-beta2.jar lib/ivy-2.0.0.cr1_20080911151837.jar
-
-    mkdir -p bootstrap-support/src/org/gradle/api/tasks bootstrap-support/classes
-    cat > bootstrap-support/src/org/gradle/api/tasks/StopActionException.java <<'EOF'
-    package org.gradle.api.tasks;
-    public class StopActionException extends RuntimeException {
-      public StopActionException() { super(); }
-      public StopActionException(String message) { super(message); }
-    }
-    EOF
-    "$JAVA_HOME/bin/javac" -d bootstrap-support/classes bootstrap-support/src/org/gradle/api/tasks/StopActionException.java
-    "$JAVA_HOME/bin/jar" cf bootstrap-support/stop-action-support.jar -C bootstrap-support/classes .
 
     "''$JAVA_HOME/bin/java" \
-      -classpath "bootstrap-support/stop-action-support.jar:${gradle_rel_0_3}/libexec/gradle/lib/*" \
-      -Dgradle.home="${gradle_rel_0_3}/libexec/gradle" \
+      -classpath "${gradle_rel_0_5}/libexec/gradle/lib/*" \
+      -Dgradle.home="${gradle_rel_0_5}/libexec/gradle" \
       org.gradle.Main \
       -p "$PWD" \
       -b build.gradle \
@@ -198,7 +236,6 @@ stdenv.mkDerivation {
       -classpath "${placeholder "out"}/libexec/gradle/lib/*" \
       -Dgradle.home="${placeholder "out"}/libexec/gradle" \
       org.gradle.Main \
-      bootstrap \
       "''$@"
     EOF
     chmod +x "$out/bin/gradle"
@@ -207,7 +244,7 @@ stdenv.mkDerivation {
   '';
 
   meta = {
-    description = "Gradle built from upstream tag REL-0.4 using the previous bootstrap stage";
+    description = "Gradle built from upstream tag REL-0.6 using the previous bootstrap stage";
     homepage = "https://www.gradle.org/";
     sourceProvenance = with lib.sourceTypes; [ fromSource ];
     license = lib.licenses.asl20;

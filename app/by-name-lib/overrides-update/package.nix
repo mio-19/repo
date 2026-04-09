@@ -87,12 +87,6 @@
     "failureaccess-1.0.1.pom" =
       overrides-from-source."com.google.guava:failureaccess:1.0.1"."failureaccess-1.0.1.pom";
   };
-  "com.google.auto.service:auto-service-annotations:1.0.1" = {
-    "auto-service-annotations-1.0.1.jar" =
-      overrides-from-source."com.google.auto.service:auto-service-annotations:1.6.3"."auto-service-annotations-1.6.3.jar";
-    "auto-service-annotations-1.0.1.pom" =
-      overrides-from-source."com.google.auto.service:auto-service-annotations:1.0.1"."auto-service-annotations-1.0.1.pom";
-  };
   "com.google.auto.value:auto-value-annotations:1.6.2" = {
     "auto-value-annotations-1.6.2.jar" =
       overrides-from-source."com.google.auto.value:auto-value-annotations:1.6.3"."auto-value-annotations-1.6.3.jar";

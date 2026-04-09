@@ -11,6 +11,10 @@
   gnugrep,
   gnused,
   which,
+  commons_codec_1_2,
+  commons_io_1_3_1,
+  commons_logging_1_0_3,
+  slf4j_api_1_4_3,
   gradle_0_1_snapshot,
 }:
 let
@@ -42,6 +46,7 @@ let
     }
     {
       path = "commons-io/commons-io/1.3.1/commons-io-1.3.1.jar";
+      package = "${commons_io_1_3_1}/commons-io-1.3.1.jar";
       hash = "sha256-MwcxndwiHxsj6KFEWu8Q0tIwjg7EaXez8Xy7FcDvM1s=";
     }
     {
@@ -54,10 +59,12 @@ let
     }
     {
       path = "commons-logging/commons-logging/1.0.3/commons-logging-1.0.3.jar";
+      package = "${commons_logging_1_0_3}/commons-logging-1.0.3.jar";
       hash = "sha256-vPoCPa6oUl1tsCnqguj1jb8aBgBttlJtn5hNvyFdinU=";
     }
     {
       path = "commons-codec/commons-codec/1.2/commons-codec-1.2.jar";
+      package = "${commons_codec_1_2}/commons-codec-1.2.jar";
       hash = "sha256-mJijs4V2dhKJh7l10LDwNb7PPaXPZ3Jmo01mNvK4BUI=";
     }
     {
@@ -78,6 +85,7 @@ let
     }
     {
       path = "org/slf4j/slf4j-api/1.4.3/slf4j-api-1.4.3.jar";
+      package = "${slf4j_api_1_4_3}/slf4j-api-1.4.3.jar";
       hash = "sha256-321SjPU94d9R7xVEtuDlXHsLpgS0IM9UimxjnUYfc0g=";
     }
     {
@@ -89,10 +97,11 @@ let
   bootstrapJars = linkFarm "gradle-${version}-bootstrap-jars" (
     map (artifact: {
       name = baseNameOf artifact.path;
-      path = fetchurl {
-        url = "https://repo1.maven.org/maven2/${artifact.path}";
-        hash = artifact.hash;
-      };
+      path =
+        artifact.package or (fetchurl {
+          url = "https://repo1.maven.org/maven2/${artifact.path}";
+          hash = artifact.hash;
+        });
     }) artifacts
   );
 in

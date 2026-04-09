@@ -1,5 +1,6 @@
 {
   fetchFromGitHub,
+  jdk8_headless,
   lib,
   mkMavenPackageWithLock,
 }:
@@ -19,9 +20,9 @@ mkMavenPackageWithLock rec {
   sourceRoot = "${src.name}/android";
   lockFile = ./mvn2nix-lock.json;
   patches = [ ./pin-maven-plugin-versions.patch ];
+  mvnJdk = jdk8_headless;
 
   mvnFlags = [
-    "-Dmaven.test.skip=true"
     "package"
   ];
 

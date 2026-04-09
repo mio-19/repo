@@ -7,13 +7,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "commons-logging";
-  version = "1.2";
+  version = "1.0.3";
 
   src = fetchFromGitHub {
     owner = "apache";
     repo = "commons-logging";
-    tag = "LOGGING_1_2";
-    hash = "sha256-iLslo01M2tp9Ls5yPBRBcA+1w2sp2doHJRYlMkUfzSg=";
+    tag = "LOGGING_1_0_3";
+    hash = "sha256-+acvWKFRD2jSpnLl5i3EJUDD4V+SyVP0ydcxG8HQ+JY=";
   };
 
   nativeBuildInputs = [ jdk21 ];
@@ -29,20 +29,15 @@ stdenv.mkDerivation (finalAttrs: {
     cd "$tmp"
 
     mkdir -p classes
-    find "${finalAttrs.src}/src/main/java" -name '*.java' \
+    find "${finalAttrs.src}/src/java" -name '*.java' \
       ! -path '*/org/apache/commons/logging/impl/AvalonLogger.java' \
+      ! -path '*/org/apache/commons/logging/impl/Log4JCategoryLog.java' \
       ! -path '*/org/apache/commons/logging/impl/Log4JLogger.java' \
+      ! -path '*/org/apache/commons/logging/impl/Log4jFactory.java' \
       ! -path '*/org/apache/commons/logging/impl/LogKitLogger.java' \
       ! -path '*/org/apache/commons/logging/impl/ServletContextCleaner.java' \
       | sort > sources.txt
     ${jdk21}/bin/javac --release 8 -d classes @sources.txt
-
-    if [ -d "${finalAttrs.src}/src/main/resources" ]; then
-      while IFS= read -r path; do
-        rel_path="$(realpath --relative-to="${finalAttrs.src}/src/main/resources" "$path")"
-        install -Dm644 "$path" "classes/$rel_path"
-      done < <(find "${finalAttrs.src}/src/main/resources" -type f | sort)
-    fi
 
     (
       cd classes
@@ -51,7 +46,14 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p "$out"
     install -Dm644 "$tmp/commons-logging-${finalAttrs.version}.jar" "$out/commons-logging-${finalAttrs.version}.jar"
-    install -Dm644 "${finalAttrs.src}/pom.xml" "$out/commons-logging-${finalAttrs.version}.pom"
+    cat > "$out/commons-logging-${finalAttrs.version}.pom" <<EOF
+    <project>
+      <modelVersion>4.0.0</modelVersion>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>${finalAttrs.version}</version>
+    </project>
+    EOF
 
     runHook postInstall
   '';

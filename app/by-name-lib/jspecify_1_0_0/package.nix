@@ -1,4 +1,5 @@
 {
+  fetchFromGitHub,
   fetchurl,
   jdk21,
   lib,
@@ -9,9 +10,11 @@ stdenv.mkDerivation (finalAttrs: {
   pname = "jspecify";
   version = "1.0.0";
 
-  srcJar = fetchurl {
-    url = "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0-sources.jar";
-    hash = "sha256-rfCJgZHVWTf7MZK6lxgm9PKUKSxKlgdA88JzEOe3ApY=";
+  src = fetchFromGitHub {
+    owner = "jspecify";
+    repo = "jspecify";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-WgVRaGm9lYhMeMM6QWUezXtUsXkaK/iPt1gj2koWNu8=";
   };
 
   pomFile = fetchurl {
@@ -36,8 +39,7 @@ stdenv.mkDerivation (finalAttrs: {
     trap 'rm -rf "$tmp"' EXIT
     cd "$tmp"
 
-    ${jdk21}/bin/jar xf "${finalAttrs.srcJar}"
-    find org -name '*.java' | sort > sources.txt
+    find "${finalAttrs.src}/src/main/java" -name '*.java' | sort > sources.txt
     mkdir -p classes
     ${jdk21}/bin/javac --release 9 -encoding UTF-8 -d classes @sources.txt
 
