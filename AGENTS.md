@@ -15,7 +15,8 @@
 - fetchFromGitHub and fetching from git in nix: prefer tag over rev, use tag = "tag name" when fetching tag!
 - DON"T EVER find grep or anything SEARCH ON EVERY FILES ON WHOLE nix store!!!! nix store is big and that takes forever.
 - When working on patches. you try build for example gos.husky.config.source.dirs."path here".src to see if patch apply.
-- we are using gradle2nix v2 <https://github.com/tadfisher/gradle2nix/pull/62> We prefer gradle2nix v2 over nixpkgs mitm gradle.fetchDeps way. Use gradle2nix instead of that mitm gradle.fetchDeps thing whenever possible.
+- we are using gradle2nix v2 <https://github.com/tadfisher/gradle2nix/pull/62> We prefer gradle2nix v2 over nixpkgs mitm gradle.fetchDeps way. Use gradle2nix instead of that mitm gradle.fetchDeps thing whenever possible. when using gradle2nix remember to use `overrides = overrides-from-source;` so that we use those libraries built from source code version and the binray versions are being overrided.
+- When fetching sources we prefer fetchFromGithub or fetchgit over a tarball provided by some party like tarball uploaded on github release. Do you remember the xz incident? it is safer to fetch from git or github.
 - app/by-name-apk are exported with `apk_` prefix so appstore becomes `nix build .#apk_appstore`
 - don't use callPackage and pkgs in a package's first arguments list which usually contan dependencies of that package. only allowed when not easy to refactor without pkgs and callPackage in argument list
 - we prefer mvn2nix & mkMavenPackageWithLock over maven.buildMavenPackage
