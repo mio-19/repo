@@ -4,7 +4,7 @@
   stdenv,
   fetchurl,
   apkeditor,
-  jdk25,
+  jdk21,
   lspatch-cli,
   biliroaming,
 }:
@@ -28,11 +28,11 @@ let
 
       nativeBuildInputs = [
         apkeditor
-        jdk25
+        jdk21
       ];
 
       env = {
-        JAVA_HOME = jdk25;
+        JAVA_HOME = jdk21;
       };
 
       buildPhase = ''

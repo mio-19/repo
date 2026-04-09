@@ -1,6 +1,6 @@
 {
   fetchurl,
-  jdk25,
+  jdk21,
   lib,
   stdenv,
 }:
@@ -19,7 +19,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-GYidvfGyVLJgGl7mRbgUepdGRIgil2hMeYr+XWPXjf4=";
   };
 
-  nativeBuildInputs = [ jdk25 ];
+  nativeBuildInputs = [ jdk21 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -30,11 +30,11 @@ stdenv.mkDerivation (finalAttrs: {
     tmp="$(mktemp -d)"
     trap 'rm -rf "$tmp"' EXIT
     cd "$tmp"
-    ${jdk25}/bin/jar xf "$src"
+    ${jdk21}/bin/jar xf "$src"
 
     mkdir -p classes
     find . -name '*.java' | sort > sources.txt
-    ${jdk25}/bin/javac --release 8 -d classes @sources.txt
+    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
 
     while IFS= read -r path; do
       install -Dm644 "$path" "classes/$path"
@@ -42,7 +42,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     (
       cd classes
-      ${jdk25}/bin/jar cf "$tmp/jsr305-${finalAttrs.version}.jar" .
+      ${jdk21}/bin/jar cf "$tmp/jsr305-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

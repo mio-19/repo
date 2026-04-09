@@ -4,7 +4,7 @@
   gradle2nixBuilders,
   sources,
   lib,
-  jdk25,
+  jdk21,
   jdk17,
   gradle-packages,
   fetchpatch,
@@ -31,7 +31,7 @@ let
         (gradle-packages.mkGradle {
           version = "9.4.0";
           hash = "sha256-YOpyM1bYEmPoAC/sD8+eKw7uDAhQx6PXqwpj8szGAfM=";
-          defaultJava = jdk25;
+          defaultJava = jdk21;
         }).wrapped;
     in
     gradle2nixBuilders.buildGradlePackage rec {
@@ -45,7 +45,7 @@ let
 
       lockFile = ./gradle.lock;
       overrides = overrides-from-source // overrides-update;
-      buildJdk = jdk25;
+      buildJdk = jdk21;
 
       npmDeps = fetchNpmDeps {
         pname = "npm-deps-${pname}";
@@ -69,7 +69,7 @@ let
       nativeBuildInputs = [
         androidSdk
         gradle
-        jdk25
+        jdk21
         jdk17
         apksigner
         writableTmpDirAsHomeHook
@@ -120,9 +120,9 @@ let
       '';
 
       gradleFlags = [
-        "-Dorg.gradle.java.home=${jdk25.home}"
+        "-Dorg.gradle.java.home=${jdk21.home}"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk17}/lib/openjdk,${jdk25}/lib/openjdk"
+        "-Dorg.gradle.java.installations.paths=${jdk17}/lib/openjdk,${jdk21}/lib/openjdk"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
       ];

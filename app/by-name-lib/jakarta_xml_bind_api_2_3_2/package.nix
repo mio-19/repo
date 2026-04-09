@@ -2,7 +2,7 @@
   fetchFromGitHub,
   fetchurl,
   jakarta_activation_api_1_2_1,
-  jdk25,
+  jdk21,
   lib,
   stdenv,
 }:
@@ -28,7 +28,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-FaVbfVN8n5lwrq0o0q+XwFn2X/YQL3a70p8SR92Kbfs=";
   };
 
-  nativeBuildInputs = [ jdk25 ];
+  nativeBuildInputs = [ jdk21 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -42,7 +42,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p classes
     find "${finalAttrs.src}/jaxb-api/src/main/java" -name '*.java' ! -name 'module-info.java' | sort > sources.txt
-    ${jdk25}/bin/javac \
+    ${jdk21}/bin/javac \
       --release 8 \
       -encoding UTF-8 \
       -cp "${jakarta_activation_api_1_2_1}/jakarta.activation-api-1.2.1.jar" \
@@ -57,7 +57,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     (
       cd classes
-      ${jdk25}/bin/jar cf "$tmp/jakarta.xml.bind-api-${finalAttrs.version}.jar" .
+      ${jdk21}/bin/jar cf "$tmp/jakarta.xml.bind-api-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

@@ -3,7 +3,7 @@
 # -jvm variant can't be cleanly substituted via Gradle composite builds.
 {
   lib,
-  jdk25,
+  jdk21,
   gradle-packages,
   stdenv,
   fetchFromGitHub,
@@ -23,7 +23,7 @@ let
     (gradle-packages.mkGradle {
       version = "8.14.3";
       hash = "sha256-vXEQIhNJMGCVbsIp2Ua+7lcVjb2J0OYrkbyg+ixfNTE=";
-      defaultJava = jdk25;
+      defaultJava = jdk21;
     }).wrapped;
 
   jadb-src = fetchFromGitHub {
@@ -57,12 +57,12 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     gradle
-    jdk25
+    jdk21
     writableTmpDirAsHomeHook
   ];
 
   env = {
-    JAVA_HOME = if stdenv.isDarwin then "${jdk25}" else "${jdk25}/lib/openjdk";
+    JAVA_HOME = if stdenv.isDarwin then "${jdk21}" else "${jdk21}/lib/openjdk";
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
   };
@@ -78,11 +78,11 @@ stdenv.mkDerivation (finalAttrs: {
       cd "$root/jadb"
       find src -name '*.java' > /tmp/jadb-sources.txt
       mkdir -p build/classes
-      ${jdk25}/bin/javac -source 1.8 -target 1.8 \
+      ${jdk21}/bin/javac -source 1.8 -target 1.8 \
         -d build/classes \
         @/tmp/jadb-sources.txt 2>/dev/null || true
       cd build/classes
-      ${jdk25}/bin/jar cf "$root/.m2/repository/app/morphe/jadb/1.2.1/jadb-1.2.1.jar" .
+      ${jdk21}/bin/jar cf "$root/.m2/repository/app/morphe/jadb/1.2.1/jadb-1.2.1.jar" .
     )
     cat > "$root/.m2/repository/app/morphe/jadb/1.2.1/jadb-1.2.1.pom" << 'POMEOF'
     <?xml version="1.0" encoding="UTF-8"?>

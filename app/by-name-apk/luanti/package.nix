@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  jdk25,
+  jdk21,
   gradle-packages,
   stdenv,
   fetchFromGitHub,
@@ -30,7 +30,7 @@ let
         (gradle-packages.mkGradle {
           version = "8.13";
           hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
-          defaultJava = jdk25;
+          defaultJava = jdk21;
         }).wrapped;
     in
     stdenv.mkDerivation (finalAttrs: {
@@ -60,14 +60,14 @@ let
 
       nativeBuildInputs = [
         gradle
-        jdk25
+        jdk21
         apksigner
         writableTmpDirAsHomeHook
         gettext
       ];
 
       env = {
-        JAVA_HOME = jdk25;
+        JAVA_HOME = jdk21;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
@@ -91,7 +91,7 @@ let
 
       gradleFlags = [
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk25}"
+        "-Dorg.gradle.java.installations.paths=${jdk21}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
         "-Pandroid.injected.build.abi=arm64-v8a"

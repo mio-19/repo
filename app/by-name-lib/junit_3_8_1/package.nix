@@ -1,6 +1,6 @@
 {
   fetchurl,
-  jdk25,
+  jdk21,
   lib,
   stdenv,
 }:
@@ -14,7 +14,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-ziUxkgk/sk2ucX6ltoY+Zwh0Fnls42bXpT+kZ7DRTq0=";
   };
 
-  nativeBuildInputs = [ jdk25 ];
+  nativeBuildInputs = [ jdk21 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -26,13 +26,13 @@ stdenv.mkDerivation (finalAttrs: {
     trap 'rm -rf "$tmp"' EXIT
     mkdir -p "$tmp/src" "$tmp/classes"
     cd "$tmp/src"
-    ${jdk25}/bin/jar xf "${finalAttrs.src}"
+    ${jdk21}/bin/jar xf "${finalAttrs.src}"
     find . -name '*.java' | sort > "$tmp/sources.txt"
-    ${jdk25}/bin/javac --release 8 -encoding ISO-8859-1 -d "$tmp/classes" @"$tmp/sources.txt"
+    ${jdk21}/bin/javac --release 8 -encoding ISO-8859-1 -d "$tmp/classes" @"$tmp/sources.txt"
 
     (
       cd "$tmp/classes"
-      ${jdk25}/bin/jar cf "$tmp/junit-${finalAttrs.version}.jar" .
+      ${jdk21}/bin/jar cf "$tmp/junit-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

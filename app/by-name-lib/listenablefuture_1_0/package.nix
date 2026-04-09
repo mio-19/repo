@@ -1,7 +1,7 @@
 {
   fetchFromGitHub,
   fetchurl,
-  jdk25,
+  jdk21,
   lib,
   stdenv,
 }:
@@ -22,7 +22,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-U4c8rya8HtilZ+psk5qyqqP0el4y1creld31CA0jI4o=";
   };
 
-  nativeBuildInputs = [ jdk25 ];
+  nativeBuildInputs = [ jdk21 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -35,12 +35,12 @@ stdenv.mkDerivation (finalAttrs: {
     cd "$tmp"
 
     mkdir -p classes
-    ${jdk25}/bin/javac --release 8 -encoding UTF-8 -d classes \
+    ${jdk21}/bin/javac --release 8 -encoding UTF-8 -d classes \
       "${finalAttrs.src}/src/com/google/common/util/concurrent/ListenableFuture.java"
 
     (
       cd classes
-      ${jdk25}/bin/jar cf "$tmp/listenablefuture-${finalAttrs.version}.jar" .
+      ${jdk21}/bin/jar cf "$tmp/listenablefuture-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

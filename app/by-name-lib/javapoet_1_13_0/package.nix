@@ -1,6 +1,6 @@
 {
   fetchFromGitHub,
-  jdk25,
+  jdk21,
   lib,
   stdenv,
 }:
@@ -16,7 +16,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-Pj28ZTJFi9WB5Qnl8XIrSkRkzdA4De0o4vL9Ww9XjuA=";
   };
 
-  nativeBuildInputs = [ jdk25 ];
+  nativeBuildInputs = [ jdk21 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -30,11 +30,11 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p classes
     find "${finalAttrs.src}/src/main/java" -name '*.java' | sort > sources.txt
-    ${jdk25}/bin/javac --release 8 -encoding UTF-8 -d classes @sources.txt
+    ${jdk21}/bin/javac --release 8 -encoding UTF-8 -d classes @sources.txt
 
     (
       cd classes
-      ${jdk25}/bin/jar cf "$tmp/javapoet-${finalAttrs.version}.jar" .
+      ${jdk21}/bin/jar cf "$tmp/javapoet-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

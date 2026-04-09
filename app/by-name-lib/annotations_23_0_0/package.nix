@@ -1,7 +1,7 @@
 {
   fetchFromGitHub,
   fetchurl,
-  jdk25,
+  jdk21,
   lib,
   stdenv,
 }:
@@ -22,7 +22,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-yUkPZVEyMo3yz7z990P1P8ORbWwdEENxdabKbjpndxw=";
   };
 
-  nativeBuildInputs = [ jdk25 ];
+  nativeBuildInputs = [ jdk21 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -36,11 +36,11 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p classes
     find "${finalAttrs.src}/common/src/main/java" "${finalAttrs.src}/java8/src/main/java" -name '*.java' | sort > sources.txt
-    ${jdk25}/bin/javac --release 8 -encoding UTF-8 -d classes @sources.txt
+    ${jdk21}/bin/javac --release 8 -encoding UTF-8 -d classes @sources.txt
 
     (
       cd classes
-      ${jdk25}/bin/jar cf "$tmp/annotations-${finalAttrs.version}.jar" .
+      ${jdk21}/bin/jar cf "$tmp/annotations-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

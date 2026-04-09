@@ -2,7 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  jdk25,
+  jdk21,
 }:
 stdenv.mkDerivation {
   pname = "revanced-jadb-m2";
@@ -15,7 +15,7 @@ stdenv.mkDerivation {
     hash = "sha256-eLGpJcy1e5cZYGxDxVB8mNsYQQOlOivwHcn9CaIFouQ=";
   };
 
-  nativeBuildInputs = [ jdk25 ];
+  nativeBuildInputs = [ jdk21 ];
 
   dontConfigure = true;
 
@@ -24,7 +24,7 @@ stdenv.mkDerivation {
 
     mkdir -p build/classes
     find src -name '*.java' > sources.txt
-    ${jdk25}/bin/javac -source 1.8 -target 1.8 -d build/classes @sources.txt
+    ${jdk21}/bin/javac -source 1.8 -target 1.8 -d build/classes @sources.txt
 
     runHook postBuild
   '';
@@ -36,7 +36,7 @@ stdenv.mkDerivation {
     mkdir -p "$m2"
     (
       cd build/classes
-      ${jdk25}/bin/jar cf "$m2/jadb-1.2.1.1.jar" .
+      ${jdk21}/bin/jar cf "$m2/jadb-1.2.1.1.jar" .
     )
     install -Dm644 pom.xml "$m2/jadb-1.2.1.1.pom"
 

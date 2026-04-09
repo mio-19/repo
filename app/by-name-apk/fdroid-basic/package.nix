@@ -5,7 +5,7 @@
   overrides-from-source,
   gradle2nixBuilders,
   gradle_9_3_1,
-  jdk25,
+  jdk21,
   lib,
   mkSignScript,
   writableTmpDirAsHomeHook,
@@ -38,11 +38,11 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   overrides = overrides-from-source // overrides-update;
 
-  buildJdk = jdk25;
+  buildJdk = jdk21;
 
   nativeBuildInputs = [
     androidSdk
-    jdk25
+    jdk21
     apksigner
     writableTmpDirAsHomeHook
   ];
@@ -73,9 +73,9 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   gradleFlags = [
     "--console=plain"
-    "-Dorg.gradle.java.home=${jdk25.home}"
+    "-Dorg.gradle.java.home=${jdk21.home}"
     "-Dorg.gradle.java.installations.auto-download=false"
-    "-Dorg.gradle.java.installations.paths=${jdk25}"
+    "-Dorg.gradle.java.installations.paths=${jdk21}"
     "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
     "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
   ];

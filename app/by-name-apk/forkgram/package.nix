@@ -8,7 +8,7 @@
   overrides-from-source,
   gradle2nixBuilders,
   gperf,
-  jdk25,
+  jdk21,
   lib,
   mkSignScript,
   meson,
@@ -50,14 +50,14 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   overrides = overrides-from-source;
 
-  buildJdk = jdk25;
+  buildJdk = jdk21;
 
   nativeBuildInputs = [
     androidSdk
     cmake
     gperf
     go
-    jdk25
+    jdk21
     meson
     ninja
     perl

@@ -1,6 +1,6 @@
 {
   fetchFromGitHub,
-  jdk25,
+  jdk21,
   lib,
   stdenv,
 }:
@@ -23,7 +23,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-Y7Crkd32PyYCy/GAOJB5KaS/qBsV005paLoWuAB48+M=";
   };
 
-  nativeBuildInputs = [ jdk25 ];
+  nativeBuildInputs = [ jdk21 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -36,10 +36,10 @@ stdenv.mkDerivation (finalAttrs: {
     cd "$tmp"
     mkdir -p classes
     find "${finalAttrs.src}/futures/failureaccess/src" -name '*.java' | sort > sources.txt
-    ${jdk25}/bin/javac --release 8 -d classes @sources.txt
+    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
     (
       cd classes
-      ${jdk25}/bin/jar cf "$tmp/failureaccess-${finalAttrs.version}.jar" .
+      ${jdk21}/bin/jar cf "$tmp/failureaccess-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

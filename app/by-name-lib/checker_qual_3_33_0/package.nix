@@ -1,7 +1,7 @@
 {
   fetchFromGitHub,
   fetchurl,
-  jdk25,
+  jdk21,
   lib,
   stdenv,
 }:
@@ -22,7 +22,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-9VqSICenj92LPqFaDYv+P+xqXOrDDIaqivpKW5sN9gM=";
   };
 
-  nativeBuildInputs = [ jdk25 ];
+  nativeBuildInputs = [ jdk21 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -36,9 +36,9 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p classes
     find "${finalAttrs.src}/checker-qual/src/main/java" -name '*.java' ! -name 'module-info.java' | sort > sources.txt
-    ${jdk25}/bin/javac --release 8 -d classes @sources.txt
+    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
     if [ -f "${finalAttrs.src}/checker-qual/src/main/java/module-info.java" ]; then
-      ${jdk25}/bin/javac --release 9 -cp classes -d classes "${finalAttrs.src}/checker-qual/src/main/java/module-info.java"
+      ${jdk21}/bin/javac --release 9 -cp classes -d classes "${finalAttrs.src}/checker-qual/src/main/java/module-info.java"
     fi
 
     while IFS= read -r path; do
@@ -48,7 +48,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     (
       cd classes
-      ${jdk25}/bin/jar cf "$tmp/checker-qual-${finalAttrs.version}.jar" .
+      ${jdk21}/bin/jar cf "$tmp/checker-qual-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"
