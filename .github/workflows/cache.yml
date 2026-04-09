@@ -28,7 +28,7 @@ jobs:
     - run: sudo sysctl kernel.unprivileged_userns_clone=1
       if: runner.os == 'Linux'
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
     - name: Install nix
       uses: cachix/install-nix-action@v31
       with:
