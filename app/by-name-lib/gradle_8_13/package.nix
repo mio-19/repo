@@ -11,6 +11,7 @@ gradle-from-source {
   defaultJava = jdk21_headless;
   buildJdk = javaPackages.compiler.openjdk17-bootstrap;
   javaToolchains = [
+    javaPackages.compiler.openjdk8-bootstrap
     javaPackages.compiler.openjdk11-bootstrap
     javaPackages.compiler.openjdk17-bootstrap
   ];
