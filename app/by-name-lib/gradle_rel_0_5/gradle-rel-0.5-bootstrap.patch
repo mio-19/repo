@@ -1,0 +1,553 @@
+diff --git a/build.gradle b/build.gradle
+index 2d8b226..d1375d3 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -49,10 +49,7 @@ libDir = new File(rootDir, 'lib')
+ dependencies {
+     addFlatDirResolver('lib', libDir)
+     // todo: Improve dependency handling for xUnit jars
+-    addConfiguration('distLib') {
+-        visible = false
+-        extendsFrom 'default'
+-    }
++    addConfiguration('distLib')
+     addConfiguration('ftpAntTask')
+     addConfiguration('retrotranslatorAntTask')
+ 
+@@ -64,29 +61,21 @@ dependencies {
+ 
+     retrotranslatorAntTask ':retrotranslator-runtime:1.2.7', ':retrotranslator-transformer:1.2.7', ':backport-util-concurrent:3.1'
+ 
+-    clientModule(['groovy'], ":groovy-all:1.5.6") {
+-        clientModule(":ant:1.7.0") {
+-            dependencies(":ant-junit:1.7.0@jar", ":ant-launcher:1.7.0")
+-        }
+-    }
+-
+-    clientModule(['compile'], ":commons-httpclient:3.0") {
+-        dependencies(":commons-codec:1.2", ":jcl-over-slf4j:1.5.3")
+-    }
++    groovy ":groovy-all:1.5.6"
++    compile ":commons-httpclient:3.0",
++            ":commons-codec:1.2",
++            ":jcl-over-slf4j:1.5.3"
+ 
+     // Needed by the eclipse plugin
+-    clientModule(['compile'], ":dom4j:1.6.1") {
+-        dependencies(":jaxen:1.1@jar")
+-    }
++    compile ":dom4j:1.6.1", ":jaxen:1.1@jar"
+ 
+-    runtime(":ant-junit:1.7.0") {
+-        exclude(module: 'junit')
+-    }
++    runtime ":ant-junit:1.7.0"
+ 
+-    clientModule(['compile'], ":jetty:6.1.14") {
+-        dependencies(":servlet-api:2.5", ":jetty-naming:6.1.14")
+-    }
+-    compile ":jetty-plus:6.1.14", ":jetty-util:6.1.14", ":servlet-api:2.5"
++    compile ":jetty:6.1.14",
++            ":jetty-naming:6.1.14",
++            ":jetty-plus:6.1.14",
++            ":jetty-util:6.1.14",
++            ":servlet-api:2.5"
+ 
+     compile ":jopt-simple:2.4.1",
+             ":ant:1.7.0",
+@@ -99,7 +88,7 @@ dependencies {
+             ":bndlib:0.0.255@jar",
+             ":ivy:2.0.0-rc2@jar",
+             ":maven-ant-tasks:2.0.9"
+-    
++
+     runtime ":ant-launcher:1.7.0",
+             ":ant-nodeps:1.7.0",
+             ":ant-trax:1.7.0",
+@@ -118,23 +107,14 @@ userguideRemoteDirRoot = 'userguide/'
+ userguideRemoteDir = ''
+ javadocRemoteDirRoot = 'api/'
+ javadocRemoteDir = ''
+-build.taskGraph.whenReady {graph ->
+-    if (graph.hasTask(':release')) {
+-        versionModifier = ''
+-        distributionUploadUrl = 'https://dav.codehaus.org/dist/gradle'
+-        userguideRemoteDir = userguideRemoteDirRoot + version
+-        javadocRemoteDir = javadocRemoteDirRoot + version
+-    } else {
+-        versionModifier = new SimpleDateFormat('yyyyMMddHHmmssZ').format(buildTime)
+-        distributionUploadUrl = 'https://dav.codehaus.org/snapshots.dist/gradle'
+-        userguideRemoteDir = userguideRemoteDirRoot + 'latest'
+-        javadocRemoteDir = javadocRemoteDirRoot + "latest"
+-    }
+-    manifest.mainAttributes([
+-            (Attributes.Name.IMPLEMENTATION_TITLE.toString()): 'Gradle',
+-            (Attributes.Name.IMPLEMENTATION_VERSION.toString()): version.toString(),
+-    ])
+-}
++versionModifier = new SimpleDateFormat('yyyyMMddHHmmssZ').format(buildTime)
++distributionUploadUrl = 'https://dav.codehaus.org/snapshots.dist/gradle'
++userguideRemoteDir = userguideRemoteDirRoot + 'latest'
++javadocRemoteDir = javadocRemoteDirRoot + "latest"
++manifest.mainAttributes([
++        (Attributes.Name.IMPLEMENTATION_TITLE.toString()): 'Gradle',
++        (Attributes.Name.IMPLEMENTATION_VERSION.toString()): version.toString(),
++])
+ 
+ resources.doLast {
+     logger.info('Write version properties')
+@@ -146,8 +126,6 @@ resources.doLast {
+     versionProperties.store(new FileOutputStream(new File(classesDir, GradleVersion.FILE_NAME)), '')
+ }
+ 
+-[compile, testCompile]*.groovyOptions*.fork(memoryInitialSize: '128M', memoryMaximumSize: '1G')
+-
+ 
+ test {
+     // We set forkmode to ONCE as our tests are written in Groovy and the startup time of Groovy is significant.
+diff --git a/buildSrc/build.gradle b/buildSrc/build.gradle
+index 17bd1a5..5316629 100644
+--- a/buildSrc/build.gradle
++++ b/buildSrc/build.gradle
+@@ -1,21 +1,16 @@
+-import org.apache.ivy.core.install.InstallOptions
+-import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor
+-import org.apache.ivy.core.module.descriptor.DependencyDescriptor
+-import org.gradle.api.DependencyManager
+ 
+ usePlugin('groovy')
+ 
+ dependencies {
+     addFlatDirResolver('lib', new File(rootDir, 'lib'), new File(rootDir.parentFile, 'lib'))
+-    compile ":svnkit:1.1.6", ":svnkit-javahl:1.1.6", ":xmlunit:1.2", ':hamcrest-core:1.1', ':hamcrest-library:1.1'
+ }
+ 
+ sourceCompatibility = 1.5
+ targetCompatibility = 1.5
+-// todo Actually it should be only groovy, but without junit we get a strange error. We need to understand this.
+-compile.groovyClasspath = org.gradle.util.BootstrapUtil.groovyFiles
+-testCompile.groovyClasspath = org.gradle.util.BootstrapUtil.groovyFiles
+-compile.unmanagedClasspath(org.gradle.util.BootstrapUtil.gradleClasspath as File[])
++bootstrapLibs = new File(System.getProperty('gradle.home'), 'lib').listFiles().findAll { it.name.endsWith('.jar') }
++compile.groovyClasspath = bootstrapLibs.findAll { it.name.startsWith('groovy-') }
++testCompile.groovyClasspath = compile.groovyClasspath
++compile.unmanagedClasspath(bootstrapLibs as File[])
+ test {
+     include '**/*Test.class'
+     exclude '**/Abstract*'
+diff --git a/buildSrc/src/main/groovy/org/gradle/build/integtests/JavaProject.groovy b/buildSrc/src/main/groovy/org/gradle/build/integtests/JavaProject.groovy
+index 7401073..1040b3a 100644
+--- a/buildSrc/src/main/groovy/org/gradle/build/integtests/JavaProject.groovy
++++ b/buildSrc/src/main/groovy/org/gradle/build/integtests/JavaProject.groovy
+@@ -17,9 +17,6 @@
+ package org.gradle.build.integtests
+ 
+ import groovy.text.SimpleTemplateEngine
+-import org.custommonkey.xmlunit.Diff
+-import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier
+-import org.custommonkey.xmlunit.XMLAssert
+ import static org.junit.Assert.assertTrue
+ 
+ 
+@@ -94,7 +91,7 @@ class JavaProject {
+         compareXmlWithIgnoringOrder(JavaProject.getResourceAsStream("javaproject/expectedApiProjectFile.txt").text,
+               file(javaprojectDir, API_NAME, ".project").text)
+         compareXmlWithIgnoringOrder(JavaProject.getResourceAsStream("javaproject/expectedWebApp1ProjectFile.txt").text,
+-                file(javaprojectDir, WEBAPP_1_PATH, ".project").text) 
++                file(javaprojectDir, WEBAPP_1_PATH, ".project").text)
+         compareXmlWithIgnoringOrder(JavaProject.getResourceAsStream("javaproject/expectedWebApp1ProjectFile.txt").text,
+                 file(javaprojectDir, WEBAPP_1_PATH, ".project").text)
+         compareXmlWithIgnoringOrder(replaceWithGradleHome("javaproject/expectedApiClasspathFile.txt", gradleHome),
+@@ -112,16 +109,18 @@ class JavaProject {
+     }
+ 
+     private static void compareXmlWithIgnoringOrder(String expectedXml, String actualXml) {
+-        Diff diff = new Diff(expectedXml, actualXml)
+-        diff.overrideElementQualifier(new ElementNameAndAttributeQualifier())
+-        XMLAssert.assertXMLEqual(diff, true);
++        assert normalizeXml(expectedXml) == normalizeXml(actualXml)
++    }
++
++    private static String normalizeXml(String xml) {
++        xml.replaceAll(">\\s+<", "><").trim()
+     }
+ 
+     private static String replaceWithGradleHome(String resourcePath, String gradleHome) {
+         SimpleTemplateEngine templateEngine = new SimpleTemplateEngine();
+         templateEngine.createTemplate(JavaProject.getResourceAsStream(resourcePath).text).make(gradleHome: new File(gradleHome).canonicalPath).toString().replace('\\', '/')
+     }
+-           
++
+     private static def checkPartialWebAppBuild(String packagePrefix, File javaprojectDir, String testPackagePrefix) {
+         checkExistence(javaprojectDir, SHARED_NAME, packagePrefix, SHARED_NAME, 'Person.class')
+         checkExistence(javaprojectDir, SHARED_NAME, packagePrefix, SHARED_NAME, 'main.properties')
+@@ -137,7 +136,7 @@ class JavaProject {
+     }
+ 
+     static File file(File baseDir, String[] path) {
+-        new File(baseDir, path.join('/'));    
++        new File(baseDir, path.join('/'));
+     }
+ 
+     static void checkExistence(File baseDir, boolean shouldExists, String[] path) {
+diff --git a/buildSrc/src/main/groovy/org/gradle/build/integtests/PomGeneration.groovy b/buildSrc/src/main/groovy/org/gradle/build/integtests/PomGeneration.groovy
+index f3df481..6542873 100644
+--- a/buildSrc/src/main/groovy/org/gradle/build/integtests/PomGeneration.groovy
++++ b/buildSrc/src/main/groovy/org/gradle/build/integtests/PomGeneration.groovy
+@@ -17,10 +17,6 @@ package org.gradle.build.integtests
+ 
+ import groovy.text.SimpleTemplateEngine
+ import org.apache.commons.io.FileUtils
+-import org.custommonkey.xmlunit.Diff
+-import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier
+-import org.custommonkey.xmlunit.XMLAssert
+-import org.hamcrest.Matchers
+ import org.junit.Assert
+ 
+ /**
+@@ -81,10 +77,12 @@ class PomGeneration {
+     }
+ 
+     private static void compareXmlWithIgnoringOrder(String expectedXml, String actualXml) {
+-        Diff diff = new Diff(expectedXml, actualXml)
+-        diff.overrideElementQualifier(new ElementNameAndAttributeQualifier())
+-        XMLAssert.assertXMLEqual(diff, true);
+-        Assert.assertThat(actualXml, Matchers.startsWith(String.format('<?xml version="1.0" encoding="UTF-8"?>%n<!-- mylicenseheader -->')))
++        Assert.assertEquals(normalizeXml(expectedXml), normalizeXml(actualXml))
++        Assert.assertTrue(actualXml.startsWith(String.format('<?xml version="1.0" encoding="UTF-8"?>%n<!-- mylicenseheader -->')))
++    }
++
++    private static String normalizeXml(String xml) {
++        xml.replaceAll(">\\s+<", "><").trim()
+     }
+ 
+     static void main(String[] args) {
+diff --git a/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy b/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy
+index 7e63604..079a6b8 100644
+--- a/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy
++++ b/buildSrc/src/main/groovy/org/gradle/build/release/Svn.groovy
+@@ -18,165 +18,24 @@ package org.gradle.build.release
+ 
+ import org.gradle.api.GradleException
+ import org.gradle.api.Project
+-import org.slf4j.Logger
+-import org.slf4j.LoggerFactory
+-import org.tigris.subversion.javahl.Revision
+-import org.tigris.subversion.javahl.Status
+-import org.tmatesoft.svn.core.SVNException
+-import org.tmatesoft.svn.core.SVNURL
+-import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory
+-import org.tmatesoft.svn.core.internal.util.SVNPathUtil
+-import org.tmatesoft.svn.core.javahl.SVNClientImpl
+-import org.tmatesoft.svn.core.wc.SVNClientManager
+-import org.tmatesoft.svn.core.wc.SVNRevision
+-import org.tmatesoft.svn.core.wc.SVNStatusClient
+-import org.tmatesoft.svn.core.wc.SVNWCUtil
+ 
+ /**
+  * @author Hans Dockter
+  */
+ class Svn {
+-    private static Logger logger = LoggerFactory.getLogger(Svn)
+-
+     Project project
+-    SVNClientManager clientManager
+-    SVNStatusClient statusClient
+-    SVNClientImpl javaHlClient
+-    boolean alwaysTrunk = false
+ 
+     Svn() {}
+ 
+     Svn(Project project) {
+-        assert project
+         this.project = project
+-        try {
+-            DAVRepositoryFactory.setup();
+-            clientManager = SVNClientManager.newInstance(
+-                    SVNWCUtil.createDefaultOptions(true), project.codehausUserName, project.codehausUserPassword)
+-            statusClient = clientManager.getStatusClient()
+-            javaHlClient = SVNClientImpl.newInstance()
+-            javaHlClient.username(project.codehausUserName)
+-            javaHlClient.password(project.codehausUserPassword)
+-            throwExceptionIfNoSvnProject()
+-        } catch (Throwable e) {
+-            logger.info("""Can't access svn working copy. Maybe this is not an svn project or the codehausUserName/password property is not set.
+-                Releasing won't be possible. It is assumed that this isTrunk is true.""")
+-            alwaysTrunk = true
+-        }
+-    }
+-
+-    void throwExceptionIfNoSvnProject() {
+-        svnDir
+-    }
+-
+-    def release() {
+-        checkWorkingCopy()
+-        if (isTrunk() || project.version.toString() == branchVersion) {
+-            majorOrMinorRelease()
+-        } else {
+-            revisionRelease()
+-        }
+-    }
+-
+-    def majorOrMinorRelease() {
+-        if (isTrunk()) {
+-            exitIfReleaseBranchDirectoryExists()
+-        }
+-        project.version.storeCurrentVersion()
+-        commitProperties()
+-        if (isTrunk()) {
+-            copyTrunkToReleaseBranch()
+-        }
+-        tagReleaseBranch()
+-    }
+-
+-    def revisionRelease() {
+-        project.version.storeCurrentVersion()
+-        commitProperties()
+-        tagReleaseBranch()
+-    }
+-
+-
+-    def commitProperties() {
+-        File props = new File(project.projectDir, 'gradle.properties')
+-        javaHlClient.commit([props.absolutePath] as String[], "Incremented version properties", false)
+-    }
+-
+-    def exitIfReleaseBranchDirectoryExists() {
+-        try {
+-            clientManager.WCClient.doInfo(new SVNURL(releaseBranchUrl, true),
+-                    SVNRevision.UNDEFINED, SVNRevision.HEAD)
+-            throw new GradleException("Release branch directory $releaseBranchUrl already exists. You can't release from trunk therefore.")
+-        } catch (SVNException ignore) {
+-            // SVNException means directory does not exists. Which is what we want.
+-        }
+-    }
+-
+-    def copyTrunkToReleaseBranch() {
+-        javaHlClient.copy(trunkUrl, releaseBranchUrl, "Copy trunk to release branch $releaseBranchName" as String, Revision.HEAD)
+-    }
+-
+-    def tagReleaseBranch() {
+-        javaHlClient.copy(releaseBranchUrl, tagsUrl, "Tag release $releaseTagName" as String, Revision.HEAD)
+-    }
+-
+-    def getReleaseBranchName() {
+-        'RB-' + majorMinorVersion
+-    }
+-
+-    def getReleaseTagName() {
+-        'REL-' + project.version
+-    }
+-
+-    def getMajorMinorVersion() {
+-        project.version.toString().split('\\.')[0..1].join('.')
+-    }
+-
+-    def getReleaseBranchUrl() {
+-        svnBaseUrl + "/branches/$releaseBranchName"
+-    }
+-
+-    def getTagsUrl() {
+-        svnBaseUrl + "/tags/$releaseTagName"
+-    }
+-
+-    def getTrunkUrl() {
+-        svnBaseUrl + "/trunk"
+-    }
+-
+-    String getSvnUrl() {
+-        statusClient.doStatus(project.projectDir, false).URL
+-    }
+-
+-    String getSvnBaseUrl() {
+-        String url = svnUrl
+-        url = SVNPathUtil.removeTail(url)
+-        if (!isTrunk()) {
+-            url = SVNPathUtil.removeTail(url)
+-        }
+-        url
+     }
+ 
+     boolean isTrunk() {
+-        alwaysTrunk || svnDir == 'trunk'
++        true
+     }
+ 
+-    String getSvnDir() {
+-        svnUrl.substring(svnUrl.lastIndexOf('/') + 1)
+-    }
+-
+-    String getBranchVersion() {
+-        svnDir.replaceFirst('RB-', '')
+-    }
+-
+-    void checkWorkingCopy() {
+-        List statuses = javaHlClient.status(project.projectDir.absolutePath, true, true, false)
+-//        ISVNStatusHandler statusHandler = {SVNStatus status -> statuses << status} as ISVNStatusHandler
+-//        statusClient.doStatus(project.projectDir, true, true, false, false, statusHandler)
+-        if (statuses) {
+-            String result = ''
+-            statuses.each {Status status -> result += status.path + ' ' + status.url.toString() + '\n'}
+-            throw new GradleException("The working copy is not in sync with the SVN server. We can't release!\n$result")
+-        }
++    def release() {
++        throw new GradleException("release task is disabled in bootstrap builds")
+     }
+ }
+diff --git a/src/main/groovy/org/gradle/api/internal/dependencies/BaseDependencyManager.java b/src/main/groovy/org/gradle/api/internal/dependencies/BaseDependencyManager.java
+index 72a46fd..71d2387 100644
+--- a/src/main/groovy/org/gradle/api/internal/dependencies/BaseDependencyManager.java
++++ b/src/main/groovy/org/gradle/api/internal/dependencies/BaseDependencyManager.java
+@@ -68,7 +68,7 @@ public class BaseDependencyManager extends DefaultDependencyContainer
+ 
+     private DefaultSettingsConverter settingsConverter;
+ 
+-    private ModuleDescriptorConverter moduleDescriptorConverter;
++    private org.gradle.api.dependencies.ModuleDescriptorConverter moduleDescriptorConverter;
+ 
+     private IDependencyResolver dependencyResolver;
+ 
+@@ -95,7 +95,7 @@ public class BaseDependencyManager extends DefaultDependencyContainer
+     }
+ 
+     public BaseDependencyManager(IIvyFactory ivyFactory, DependencyFactory dependencyFactory,
+-                                 ResolverFactory resolverFactory, DefaultSettingsConverter settingsConverter, ModuleDescriptorConverter moduleDescriptorConverter,
++                                 ResolverFactory resolverFactory, DefaultSettingsConverter settingsConverter, org.gradle.api.dependencies.ModuleDescriptorConverter moduleDescriptorConverter,
+                                  IDependencyResolver dependencyResolver, IDependencyPublisher dependencyPublisher,
+                                  BuildResolverHandler buildResolverHandler, ExcludeRuleContainer excludeRuleContainer) {
+         super(dependencyFactory, new ArrayList());
+@@ -318,7 +318,7 @@ public class BaseDependencyManager extends DefaultDependencyContainer
+         this.ivyFactory = ivyFactory;
+     }
+ 
+-    public SettingsConverter getSettingsConverter() {
++    public org.gradle.api.dependencies.SettingsConverter getSettingsConverter() {
+         return settingsConverter;
+     }
+ 
+@@ -326,11 +326,11 @@ public class BaseDependencyManager extends DefaultDependencyContainer
+         this.settingsConverter = settingsConverter;
+     }
+ 
+-    public ModuleDescriptorConverter getModuleDescriptorConverter() {
++    public org.gradle.api.dependencies.ModuleDescriptorConverter getModuleDescriptorConverter() {
+         return moduleDescriptorConverter;
+     }
+ 
+-    public void setModuleDescriptorConverter(ModuleDescriptorConverter moduleDescriptorConverter) {
++    public void setModuleDescriptorConverter(org.gradle.api.dependencies.ModuleDescriptorConverter moduleDescriptorConverter) {
+         this.moduleDescriptorConverter = moduleDescriptorConverter;
+     }
+ 
+@@ -439,4 +439,4 @@ public class BaseDependencyManager extends DefaultDependencyContainer
+     public void addIvyTransformer(Closure transformer) {
+         moduleDescriptorConverter.addIvyTransformer(transformer);
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/src/main/groovy/org/gradle/api/internal/dependencies/DefaultModuleDescriptorConverter.java b/src/main/groovy/org/gradle/api/internal/dependencies/DefaultModuleDescriptorConverter.java
+index afecd94..9c8dd15 100644
+--- a/src/main/groovy/org/gradle/api/internal/dependencies/DefaultModuleDescriptorConverter.java
++++ b/src/main/groovy/org/gradle/api/internal/dependencies/DefaultModuleDescriptorConverter.java
+@@ -40,7 +40,7 @@ import groovy.lang.Closure;
+ /**
+  * @author Hans Dockter
+  */
+-public class DefaultModuleDescriptorConverter implements ModuleDescriptorConverter {
++public class DefaultModuleDescriptorConverter implements org.gradle.api.dependencies.ModuleDescriptorConverter {
+     private static Logger logger = LoggerFactory.getLogger(DefaultModuleDescriptorConverter.class);
+     private ChainingTransformer<DefaultModuleDescriptor> transformer
+             = new ChainingTransformer<DefaultModuleDescriptor>(DefaultModuleDescriptor.class);
+@@ -74,7 +74,7 @@ public class DefaultModuleDescriptorConverter implements ModuleDescriptorConvert
+     public void addIvyTransformer(Closure tranformer) {
+         this.transformer.add(tranformer);
+     }
+-    
++
+     private void addExcludes(DefaultModuleDescriptor moduleDescriptor, DependencyManagerInternal dependencyManager) {
+         for (ExcludeRule excludeRule : dependencyManager.getExcludeRules().createRules(IvyUtil.getAllMasterConfs(moduleDescriptor.getConfigurations()))) {
+             moduleDescriptor.addExcludeRule(excludeRule);
+diff --git a/src/main/groovy/org/gradle/api/internal/project/DefaultProject.groovy b/src/main/groovy/org/gradle/api/internal/project/DefaultProject.groovy
+index 36e33d6..e7fecc5 100644
+--- a/src/main/groovy/org/gradle/api/internal/project/DefaultProject.groovy
++++ b/src/main/groovy/org/gradle/api/internal/project/DefaultProject.groovy
+@@ -35,7 +35,7 @@ class DefaultProject extends AbstractProject {
+ 
+     public DefaultProject(String name, ProjectInternal parent, File projectDir, String buildFileName, ScriptSource scriptSource,
+                           ClassLoader buildScriptClassLoader, ITaskFactory taskFactory,
+-                          DependencyManagerFactory dependencyManagerFactory, AntBuilderFactory antBuilderFactory, 
++                          DependencyManagerFactory dependencyManagerFactory, AntBuilderFactory antBuilderFactory,
+                           BuildScriptProcessor buildScriptProcessor,
+                           PluginRegistry pluginRegistry, IProjectRegistry projectRegistry,
+                           IProjectFactory projectFactory, Build build) {
+@@ -49,7 +49,7 @@ class DefaultProject extends AbstractProject {
+         }
+         return propertyMissing(name);
+     }
+-    
++
+     def propertyMissing(String name) {
+         if (additionalProperties.keySet().contains(name)) {
+             return additionalProperties[name]
+@@ -140,7 +140,7 @@ class DefaultProject extends AbstractProject {
+         configureProjects(getAllprojects(), configureClosure);
+     }
+ 
+-    public void configureProjects(Iterable<Project> projects, Closure configureClosure) {
++    public void configureProjects(Iterable projects, Closure configureClosure) {
+         for (Project project : projects) {
+             ConfigureUtil.configure(configureClosure, project);
+         }
+diff --git a/src/main/groovy/org/gradle/api/tasks/ide/eclipse/EclipseClasspath.java b/src/main/groovy/org/gradle/api/tasks/ide/eclipse/EclipseClasspath.java
+index 1fd34e7..7efd60a 100644
+--- a/src/main/groovy/org/gradle/api/tasks/ide/eclipse/EclipseClasspath.java
++++ b/src/main/groovy/org/gradle/api/tasks/ide/eclipse/EclipseClasspath.java
+@@ -126,8 +126,8 @@ public class EclipseClasspath extends ConventionTask {
+     }
+ 
+     private void addTestSrcDirs(Element root) {
+-        for (String testSrcDir : existingRelativePaths(getTestSrcDirs())) {
+-            classpathEntry(root, SRC, testSrcDir).
++        for (Object testSrcDir : existingRelativePaths(getTestSrcDirs())) {
++            classpathEntry(root, SRC, testSrcDir.toString()).
+                     addAttribute(OUTPUT, FilenameUtils.separatorsToUnix(relativePath(getTestOutputDirectory())));
+         }
+     }
+@@ -184,7 +184,7 @@ public class EclipseClasspath extends ConventionTask {
+ 
+     /**
+      * Returns a list of paths to be transformed into eclipse test source dirs.
+-     * 
++     *
+      * @see #getTestSrcDirs() (java.util.List)
+      */
+     public List getTestSrcDirs() {
+@@ -207,7 +207,7 @@ public class EclipseClasspath extends ConventionTask {
+     /**
+      * Returns the eclipse output directory for compiled sources
+      *
+-     * @see #setOutputDirectory(Object) 
++     * @see #setOutputDirectory(Object)
+      */
+     public Object getOutputDirectory() {
+         return (Object) conv(outputDirectory, "outputDirectory");
+@@ -228,7 +228,7 @@ public class EclipseClasspath extends ConventionTask {
+     /**
+      * Returns the eclipse output directory for compiled test sources
+      *
+-     * @see #setTestOutputDirectory(Object) 
++     * @see #setTestOutputDirectory(Object)
+      */
+     public Object getTestOutputDirectory() {
+         return (Object) conv(testOutputDirectory, "testOutputDirectory");
+@@ -257,7 +257,7 @@ public class EclipseClasspath extends ConventionTask {
+ 
+     /**
+      * Sets the project dependencies to be transformed into eclipse project dependencies.
+-     * 
++     *
+      * @param projectDependencies
+      */
+     public void setProjectDependencies(List<DefaultProjectDependency> projectDependencies) {
