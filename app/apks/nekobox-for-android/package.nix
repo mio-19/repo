@@ -60,8 +60,7 @@ let
         ];
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        # TODO: this hash is unstable, change during every rebuild!
-        outputHash = "sha256-CKBqvQ+Yb4oKdGp+K0DEgp0dUt1I7RED1j435srBr3Q=";
+        outputHash = "sha256-4o9EGVYSmDXf2qpID+ZWUjDP6YSV6PzpE1URcfRzuj0=";
         dontConfigure = true;
         dontFixup = true;
 
@@ -74,7 +73,7 @@ let
           export GOCACHE="$TMPDIR/go-build-cache"
           export GOMODCACHE="$TMPDIR/go-mod-cache"
           export GOPROXY=https://proxy.golang.org,direct
-          export GOSUMDB=sum.golang.org
+          export GOSUMDB=off
           export CGO_ENABLED=0
 
           cp -R "$src" source
@@ -345,6 +344,7 @@ let
 
         installPhase = ''
           runHook preInstall
+          rm -rf "$TMPDIR/go-mod-cache/cache/download/sumdb"
           cp -R "$TMPDIR/go-mod-cache" "$out"
           runHook postInstall
         '';
