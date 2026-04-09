@@ -94,10 +94,9 @@ stdenv.mkDerivation (finalAttrs: {
     export ANDROID_USER_HOME="$HOME/.android"
     mkdir -p "$ANDROID_USER_HOME"
     echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
-  '';
-
-  preBuild = lib.optionalString stdenv.isDarwin ''
-    export MAVEN_OPTS="-Dmaven.repo.local=$HOME/.m2"
+  '' ++ lib.optionalString stdenv.isDarwin ''
+    export MAVEN_OPTS="-Dmaven.repo.local=$HOME/.m2/repository"
+    mkdir -p "$HOME/.m2/repository"
   '';
 
   gradleFlags = [
@@ -108,7 +107,7 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    repoBase="$NIX_BUILD_TOP/.m2/repository/com/github/bumptech/glide"
+    repoBase="${if stdenv.isDarwin then "$HOME" else "$NIX_BUILD_TOP"}/.m2/repository/com/github/bumptech/glide"
     mkdir -p "$out"
     install -Dm644 "$repoBase/glide/${finalAttrs.version}/glide-${finalAttrs.version}.aar" "$out/glide-${finalAttrs.version}.aar"
     install -Dm644 "$repoBase/glide/${finalAttrs.version}/glide-${finalAttrs.version}.module" "$out/glide-${finalAttrs.version}.module"
