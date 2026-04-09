@@ -1,6 +1,6 @@
 {
   fetchFromGitHub,
-  jdk21,
+  jdk25,
   lib,
   stdenv,
 }:
@@ -16,7 +16,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-yhje4nHwesaMcgJfa44TywE7dzBn5TnaMZmo269er3s=";
   };
 
-  nativeBuildInputs = [ jdk21 ];
+  nativeBuildInputs = [ jdk25 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -30,12 +30,12 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p classes
     find "${finalAttrs.src}/src/main/java" -name '*.java' | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
+    ${jdk25}/bin/javac --release 8 -d classes @sources.txt
     cp -R "${finalAttrs.src}/src/main/resources"/. classes/
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/jopt-simple-${finalAttrs.version}.jar" .
+      ${jdk25}/bin/jar cf "$tmp/jopt-simple-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

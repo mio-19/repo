@@ -2,7 +2,7 @@
   fetchFromGitHub,
   fetchurl,
   jakarta_activation_api_1_2_1,
-  jdk21,
+  jdk25,
   lib,
   stdenv,
 }:
@@ -28,7 +28,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-oPBRfoUS8PvMe4KVwS9lZqPQwthtZVY53GYu+MDH6+U=";
   };
 
-  nativeBuildInputs = [ jdk21 ];
+  nativeBuildInputs = [ jdk25 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -42,7 +42,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p classes
     find "${finalAttrs.src}/istack-commons/runtime/src/main/java" -name '*.java' ! -name 'module-info.java' | sort > sources.txt
-    ${jdk21}/bin/javac \
+    ${jdk25}/bin/javac \
       --release 8 \
       -encoding UTF-8 \
       -cp "${jakarta_activation_api_1_2_1}/jakarta.activation-api-1.2.1.jar" \
@@ -57,7 +57,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/istack-commons-runtime-${finalAttrs.version}.jar" .
+      ${jdk25}/bin/jar cf "$tmp/istack-commons-runtime-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

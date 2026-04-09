@@ -3,7 +3,7 @@
   lib,
   stdenv,
   fetchurl,
-  jdk21,
+  jdk25,
   lspatch-cli,
   biliroaming,
 }:
@@ -24,11 +24,11 @@ let
       dontUnpack = true;
 
       nativeBuildInputs = [
-        jdk21
+        jdk25
       ];
 
       env = {
-        JAVA_HOME = jdk21;
+        JAVA_HOME = jdk25;
       };
 
       buildPhase = ''

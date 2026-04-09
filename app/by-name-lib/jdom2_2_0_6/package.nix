@@ -1,7 +1,7 @@
 {
   fetchFromGitHub,
   fetchurl,
-  jdk21,
+  jdk25,
   lib,
   stdenv,
 }:
@@ -22,7 +22,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-R7I6ef4za3QbgkNMbgSdaBZSVuQF51wQkh/XL6imXY0=";
   };
 
-  nativeBuildInputs = [ jdk21 ];
+  nativeBuildInputs = [ jdk25 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -43,11 +43,11 @@ stdenv.mkDerivation (finalAttrs: {
     find src -name '*.java' \
       ! -path '*/org/jdom2/xpath/*' \
       | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -encoding UTF-8 -d classes @sources.txt
+    ${jdk25}/bin/javac --release 8 -encoding UTF-8 -d classes @sources.txt
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/jdom2-${finalAttrs.version}.jar" .
+      ${jdk25}/bin/jar cf "$tmp/jdom2-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

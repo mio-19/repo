@@ -4,7 +4,7 @@
   gradle2nixBuilders,
   sources,
   lib,
-  jdk21,
+  jdk25,
   gradle-packages,
   apksigner,
   writableTmpDirAsHomeHook,
@@ -28,7 +28,7 @@ let
     (gradle-packages.mkGradle {
       version = "9.1.0";
       hash = "sha256-oX3dhaJran9d23H/iwX8UQTAICxuZHgkKXkMkzaGyAY=";
-      defaultJava = jdk21;
+      defaultJava = jdk25;
     }).wrapped;
 
   appPackage = gradle2nixBuilders.buildGradlePackage rec {
@@ -37,12 +37,12 @@ let
 
     lockFile = ./gradle.lock;
     overrides = overrides-from-source;
-    buildJdk = jdk21;
+    buildJdk = jdk25;
 
     nativeBuildInputs = [
       androidSdk
       gradle
-      jdk21
+      jdk25
       apksigner
       writableTmpDirAsHomeHook
     ];
@@ -72,9 +72,9 @@ let
     gradleFlags = [
       "-x"
       "lintVitalRelease"
-      "-Dorg.gradle.java.home=${jdk21.home}"
+      "-Dorg.gradle.java.home=${jdk25.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
-      "-Dorg.gradle.java.installations.paths=${jdk21}"
+      "-Dorg.gradle.java.installations.paths=${jdk25}"
       "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
       "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
     ];

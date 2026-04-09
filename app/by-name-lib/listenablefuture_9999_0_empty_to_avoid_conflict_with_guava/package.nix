@@ -1,6 +1,6 @@
 {
   fetchurl,
-  jdk21,
+  jdk25,
   lib,
   stdenv,
 }:
@@ -14,7 +14,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-GNSx2yYVPU5VB5zh92ux/gXNuGLvmVSojLzE/zi4Z5s=";
   };
 
-  nativeBuildInputs = [ jdk21 ];
+  nativeBuildInputs = [ jdk25 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -29,7 +29,7 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir empty
     (
       cd empty
-      ${jdk21}/bin/jar cf "$tmp/listenablefuture-${finalAttrs.version}.jar" .
+      ${jdk25}/bin/jar cf "$tmp/listenablefuture-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

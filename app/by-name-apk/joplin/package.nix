@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  jdk21,
+  jdk25,
   jdk17_headless,
   gradle-packages,
   stdenv,
@@ -21,7 +21,7 @@ let
         (gradle-packages.mkGradle {
           version = "8.14.3";
           hash = "sha256-vXEQIhNJMGCVbsIp2Ua+7lcVjb2J0OYrkbyg+ixfNTE=";
-          defaultJava = jdk21;
+          defaultJava = jdk25;
         }).wrapped;
 
       androidSdk = androidSdkBuilder (s: [
@@ -77,7 +77,7 @@ let
 
       nativeBuildInputs = [
         gradle
-        jdk21
+        jdk25
         jdk17_headless
         git
         nodejs
@@ -93,7 +93,7 @@ let
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.1.12297006";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
-        GRADLE_OPTS = "-Dorg.gradle.java.installations.auto-download=false -Dorg.gradle.java.installations.paths=${jdk17_headless},${jdk21}";
+        GRADLE_OPTS = "-Dorg.gradle.java.installations.auto-download=false -Dorg.gradle.java.installations.paths=${jdk17_headless},${jdk25}";
         NODE_ENV = "development";
         YARN_ENABLE_SCRIPTS = "0";
       };
@@ -321,7 +321,7 @@ let
         "--project-dir"
         "packages/app-mobile/android"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk17_headless},${jdk21}"
+        "-Dorg.gradle.java.installations.paths=${jdk17_headless},${jdk25}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];

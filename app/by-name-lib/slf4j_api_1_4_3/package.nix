@@ -1,6 +1,6 @@
 {
   fetchFromGitHub,
-  jdk21,
+  jdk25,
   lib,
   stdenv,
 }:
@@ -16,7 +16,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-KYcHj4s0Es1hXZrGoV0YG3DQp6H0gaHOS8W0gDWxwJw=";
   };
 
-  nativeBuildInputs = [ jdk21 ];
+  nativeBuildInputs = [ jdk25 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -30,7 +30,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p classes
     find "${finalAttrs.src}/slf4j-api/src/main/java" -name '*.java' | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
+    ${jdk25}/bin/javac --release 8 -d classes @sources.txt
     rm -rf classes/org/slf4j/impl
 
     resource_root="${finalAttrs.src}/slf4j-api/src/main/resources"
@@ -43,7 +43,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/slf4j-api-${finalAttrs.version}.jar" .
+      ${jdk25}/bin/jar cf "$tmp/slf4j-api-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

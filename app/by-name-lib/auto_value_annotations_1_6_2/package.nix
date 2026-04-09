@@ -1,6 +1,6 @@
 {
   fetchFromGitHub,
-  jdk21,
+  jdk25,
   lib,
   stdenv,
 }:
@@ -16,7 +16,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-D8ZppkX82bKxZNIxGboSW0Q1uDJKe1Cu7hOW2E6xc1s=";
   };
 
-  nativeBuildInputs = [ jdk21 ];
+  nativeBuildInputs = [ jdk25 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -31,11 +31,11 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir -p classes
     find "${finalAttrs.src}/value/src/main/java/com/google/auto/value" -maxdepth 1 -name '*.java' | sort > sources.txt
     find "${finalAttrs.src}/value/src/main/java/com/google/auto/value/extension/memoized" -maxdepth 1 -name '*.java' | sort >> sources.txt
-    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
+    ${jdk25}/bin/javac --release 8 -d classes @sources.txt
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/auto-value-annotations-${finalAttrs.version}.jar" .
+      ${jdk25}/bin/jar cf "$tmp/auto-value-annotations-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

@@ -1,6 +1,6 @@
 {
   jdk17,
-  jdk21,
+  jdk25,
   gradle-packages,
   gradle-from-source,
 }:
@@ -9,12 +9,12 @@ gradle-from-source {
   tag = "v9.3.1";
   hash = "sha256-uDc2w+D/xxK/2rguf48eUZ9UPYtVpMePfnJOKh/NNCE=";
   lockFile = ./gradle.lock;
-  defaultJava = jdk21;
+  defaultJava = jdk25;
   buildJdk = jdk17;
   bootstrapGradle =
     (gradle-packages.mkGradle {
       version = "9.3.1";
       hash = "sha256-smbV/2uQ6tptw7IMsJDjcxMC5VOifF0+TfHw12vq/wY=";
-      defaultJava = jdk21;
+      defaultJava = jdk25;
     }).wrapped;
 }

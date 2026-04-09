@@ -3,7 +3,7 @@
   stdenv,
   fetchFromGitHub,
   gradle-packages,
-  jdk21,
+  jdk25,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
@@ -19,7 +19,7 @@ let
     (gradle-packages.mkGradle {
       version = "8.7";
       hash = "sha256-VEw11r2Emuil7QvOo5umd9xA9J330YNVYVgtogCblh0=";
-      defaultJava = jdk21;
+      defaultJava = jdk25;
     }).wrapped;
 in
 stdenv.mkDerivation (finalAttrs: {
@@ -46,12 +46,12 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     gradle
-    jdk21
+    jdk25
     writableTmpDirAsHomeHook
   ];
 
   env = {
-    JAVA_HOME = if stdenv.isDarwin then "${jdk21}" else "${jdk21}/lib/openjdk";
+    JAVA_HOME = if stdenv.isDarwin then "${jdk25}" else "${jdk25}/lib/openjdk";
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
   };

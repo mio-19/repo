@@ -9,7 +9,7 @@
   gradle2nixBuilders,
   jdk11,
   jdk17,
-  jdk21,
+  jdk25,
   jdk8_headless,
   lib,
   makeWrapper,
@@ -39,7 +39,7 @@ let
       jdk8_headless
       jdk11
       jdk17
-      jdk21
+      jdk25
     ]
     ++ javaToolchains
   );

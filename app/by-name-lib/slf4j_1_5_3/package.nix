@@ -1,6 +1,6 @@
 {
   fetchFromGitHub,
-  jdk21,
+  jdk25,
   lib,
   stdenv,
 }:
@@ -16,7 +16,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-dKGhXZMwuWbznalhWLtNk2aSmNhWimMbIYQikiA1Ji4=";
   };
 
-  nativeBuildInputs = [ jdk21 ];
+  nativeBuildInputs = [ jdk25 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -30,19 +30,19 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p api-classes jcl-classes
     find "${finalAttrs.src}/slf4j-api/src/main/java" -name '*.java' | sort > api-sources.txt
-    ${jdk21}/bin/javac --release 8 -encoding ISO-8859-1 -d api-classes @api-sources.txt
+    ${jdk25}/bin/javac --release 8 -encoding ISO-8859-1 -d api-classes @api-sources.txt
     rm -rf api-classes/org/slf4j/impl
 
     find "${finalAttrs.src}/jcl-over-slf4j/src/main/java" -name '*.java' | sort > jcl-sources.txt
-    ${jdk21}/bin/javac --release 8 -encoding ISO-8859-1 -cp api-classes -d jcl-classes @jcl-sources.txt
+    ${jdk25}/bin/javac --release 8 -encoding ISO-8859-1 -cp api-classes -d jcl-classes @jcl-sources.txt
 
     (
       cd api-classes
-      ${jdk21}/bin/jar cf "$tmp/slf4j-api-${finalAttrs.version}.jar" .
+      ${jdk25}/bin/jar cf "$tmp/slf4j-api-${finalAttrs.version}.jar" .
     )
     (
       cd jcl-classes
-      ${jdk21}/bin/jar cf "$tmp/jcl-over-slf4j-${finalAttrs.version}.jar" .
+      ${jdk25}/bin/jar cf "$tmp/jcl-over-slf4j-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

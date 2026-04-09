@@ -1,7 +1,7 @@
 {
   fetchFromGitHub,
   fetchurl,
-  jdk21,
+  jdk25,
   lib,
   stdenv,
 }:
@@ -22,7 +22,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-QlhcsH3afyOqBOteCUAGGUSiRqZ609FpQvvlaf8DzTE=";
   };
 
-  nativeBuildInputs = [ jdk21 ];
+  nativeBuildInputs = [ jdk25 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -36,7 +36,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p classes
     find "${finalAttrs.src}/activation/src/main/java" -name '*.java' | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -encoding UTF-8 -d classes @sources.txt
+    ${jdk25}/bin/javac --release 8 -encoding UTF-8 -d classes @sources.txt
 
     resource_root="${finalAttrs.src}/activation/src/main/resources"
     find "$resource_root" -type f | sort | while IFS= read -r path; do
@@ -46,7 +46,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/jakarta.activation-api-${finalAttrs.version}.jar" .
+      ${jdk25}/bin/jar cf "$tmp/jakarta.activation-api-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

@@ -3,7 +3,7 @@
   lib,
   pkgs,
   gradle_9_3_1,
-  jdk21,
+  jdk25,
   stdenv,
   fetchFromGitHub,
   apksigner,
@@ -196,14 +196,14 @@ let
 
       nativeBuildInputs = [
         gradle
-        jdk21
+        jdk25
         apksigner
         writableTmpDirAsHomeHook
         git
       ];
 
       env = {
-        JAVA_HOME = jdk21;
+        JAVA_HOME = jdk25;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
@@ -387,7 +387,7 @@ let
       gradleFlags = [
         "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21}"
+        "-Dorg.gradle.java.installations.paths=${jdk25}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];

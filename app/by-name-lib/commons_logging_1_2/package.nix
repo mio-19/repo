@@ -1,6 +1,6 @@
 {
   fetchFromGitHub,
-  jdk21,
+  jdk25,
   lib,
   stdenv,
 }:
@@ -16,7 +16,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-iLslo01M2tp9Ls5yPBRBcA+1w2sp2doHJRYlMkUfzSg=";
   };
 
-  nativeBuildInputs = [ jdk21 ];
+  nativeBuildInputs = [ jdk25 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -35,7 +35,7 @@ stdenv.mkDerivation (finalAttrs: {
       ! -path '*/org/apache/commons/logging/impl/LogKitLogger.java' \
       ! -path '*/org/apache/commons/logging/impl/ServletContextCleaner.java' \
       | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
+    ${jdk25}/bin/javac --release 8 -d classes @sources.txt
 
     if [ -d "${finalAttrs.src}/src/main/resources" ]; then
       while IFS= read -r path; do
@@ -46,7 +46,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/commons-logging-${finalAttrs.version}.jar" .
+      ${jdk25}/bin/jar cf "$tmp/commons-logging-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

@@ -1,7 +1,7 @@
 {
   fetchFromGitHub,
   fetchurl,
-  jdk21,
+  jdk25,
   kotlin,
   lib,
   stdenv,
@@ -36,7 +36,7 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   nativeBuildInputs = [
-    jdk21
+    jdk25
     kotlin
   ];
 
@@ -46,7 +46,7 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    export JAVA_HOME=${jdk21}
+    export JAVA_HOME=${jdk25}
     tmp="$(mktemp -d)"
     trap 'rm -rf "$tmp"' EXIT
     cd "$tmp"

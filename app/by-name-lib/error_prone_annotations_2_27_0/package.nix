@@ -1,6 +1,6 @@
 {
   fetchFromGitHub,
-  jdk21,
+  jdk25,
   lib,
   stdenv,
 }:
@@ -16,7 +16,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-7ZCnruYaU9P7ks6S4xzctY9d702tzXsnZ0WyxZasLN0=";
   };
 
-  nativeBuildInputs = [ jdk21 ];
+  nativeBuildInputs = [ jdk25 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -29,13 +29,13 @@ stdenv.mkDerivation (finalAttrs: {
     cd "$tmp"
     mkdir -p classes
     find "${finalAttrs.src}/annotations/src/main/java" -name '*.java' ! -name 'module-info.java' | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
+    ${jdk25}/bin/javac --release 8 -d classes @sources.txt
     if [ -f "${finalAttrs.src}/annotations/src/main/java/module-info.java" ]; then
-      ${jdk21}/bin/javac --release 9 -cp classes -d classes "${finalAttrs.src}/annotations/src/main/java/module-info.java"
+      ${jdk25}/bin/javac --release 9 -cp classes -d classes "${finalAttrs.src}/annotations/src/main/java/module-info.java"
     fi
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/error_prone_annotations-${finalAttrs.version}.jar" .
+      ${jdk25}/bin/jar cf "$tmp/error_prone_annotations-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"

@@ -1,7 +1,7 @@
 {
   fetchFromGitHub,
   fetchurl,
-  jdk21,
+  jdk25,
   lib,
   stdenv,
 }:
@@ -22,7 +22,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-N/h3mLGDhRE8kYv6nhJ2/lBzXvj6hJtYAMUZ1U2/Efg=";
   };
 
-  nativeBuildInputs = [ jdk21 ];
+  nativeBuildInputs = [ jdk25 ];
 
   dontConfigure = true;
   dontUnpack = true;
@@ -35,10 +35,10 @@ stdenv.mkDerivation (finalAttrs: {
     cd "$tmp"
     mkdir -p classes
     find "${finalAttrs.src}/annotations/src/main/java" -name '*.java' ! -name 'module-info.java' | sort > sources.txt
-    ${jdk21}/bin/javac --release 8 -d classes @sources.txt
+    ${jdk25}/bin/javac --release 8 -d classes @sources.txt
     (
       cd classes
-      ${jdk21}/bin/jar cf "$tmp/j2objc-annotations-${finalAttrs.version}.jar" .
+      ${jdk25}/bin/jar cf "$tmp/j2objc-annotations-${finalAttrs.version}.jar" .
     )
 
     mkdir -p "$out"
