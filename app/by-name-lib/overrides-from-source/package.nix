@@ -4,6 +4,7 @@
   apache_33,
   apache_31,
   annotations_23_0_0,
+  auto_service_annotations_1_0_1,
   auto_parent_6,
   auto_value_annotations_1_6_2,
   auto_value_annotations_1_6_3,
@@ -38,14 +39,18 @@
   guava_33_3_1_jre,
   httpcomponents_client_4_5_14,
   httpcomponents_core_4_4_16,
+  istack_commons_runtime_3_0_8,
   java_diff_utils_4_16,
   javax_inject_1,
   javawriter_2_5_0,
+  jakarta_activation_api_1_2_1,
+  jakarta_xml_bind_api_2_3_2,
   javapoet_1_13_0,
   j2objc_annotations_2_8,
   j2objc_annotations_3_0_0,
   j2objc_annotations_3_1,
   jopt_simple_4_9,
+  jdom2_2_0_6,
   jspecify_1_0_0,
   jsr305_3_0_2,
   juniversalchardet_1_0_3,
@@ -55,6 +60,8 @@
   oss_parent_7,
   protobuf_bom_3_25_5,
   protobuf_parent_3_25_5,
+  listenablefuture_1_0,
+  listenablefuture_9999_0_empty_to_avoid_conflict_with_guava,
   slf4j_api_1_7_30,
   slf4j_api_1_7_36,
   slf4j_api_2_0_17,
@@ -84,6 +91,16 @@
   };
   "com.google.auto:auto-parent:6" = {
     "auto-parent-6.pom" = _: "${auto_parent_6}/auto-parent-6.pom";
+  };
+  "com.google.auto.service:auto-service-aggregator:1.0.1" = {
+    "auto-service-aggregator-1.0.1.pom" =
+      _: "${auto_service_annotations_1_0_1}/auto-service-aggregator-1.0.1.pom";
+  };
+  "com.google.auto.service:auto-service-annotations:1.0.1" = {
+    "auto-service-annotations-1.0.1.jar" =
+      _: "${auto_service_annotations_1_0_1}/auto-service-annotations-1.0.1.jar";
+    "auto-service-annotations-1.0.1.pom" =
+      _: "${auto_service_annotations_1_0_1}/auto-service-annotations-1.0.1.pom";
   };
   "com.google.code.findbugs:jsr305:3.0.2" = {
     "jsr305-3.0.2.jar" = _: "${jsr305_3_0_2}/jsr305-3.0.2.jar";
@@ -161,9 +178,38 @@
     "commons-logging-1.2.jar" = _: "${commons_logging_1_2}/commons-logging-1.2.jar";
     "commons-logging-1.2.pom" = _: "${commons_logging_1_2}/commons-logging-1.2.pom";
   };
+  "com.sun.istack:istack-commons:3.0.8" = {
+    "istack-commons-3.0.8.pom" = _: "${istack_commons_runtime_3_0_8}/istack-commons-3.0.8.pom";
+  };
+  "com.sun.istack:istack-commons-runtime:3.0.8" = {
+    "istack-commons-runtime-3.0.8.jar" =
+      _: "${istack_commons_runtime_3_0_8}/istack-commons-runtime-3.0.8.jar";
+    "istack-commons-runtime-3.0.8.pom" =
+      _: "${istack_commons_runtime_3_0_8}/istack-commons-runtime-3.0.8.pom";
+  };
+  "jakarta.activation:jakarta.activation-api:1.2.1" = {
+    "jakarta.activation-api-1.2.1.jar" =
+      _: "${jakarta_activation_api_1_2_1}/jakarta.activation-api-1.2.1.jar";
+    "jakarta.activation-api-1.2.1.pom" =
+      _: "${jakarta_activation_api_1_2_1}/jakarta.activation-api-1.2.1.pom";
+  };
+  "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2" = {
+    "jakarta.xml.bind-api-2.3.2.jar" =
+      _: "${jakarta_xml_bind_api_2_3_2}/jakarta.xml.bind-api-2.3.2.jar";
+    "jakarta.xml.bind-api-2.3.2.pom" =
+      _: "${jakarta_xml_bind_api_2_3_2}/jakarta.xml.bind-api-2.3.2.pom";
+  };
+  "jakarta.xml.bind:jakarta.xml.bind-api-parent:2.3.2" = {
+    "jakarta.xml.bind-api-parent-2.3.2.pom" =
+      _: "${jakarta_xml_bind_api_2_3_2}/jakarta.xml.bind-api-parent-2.3.2.pom";
+  };
   "net.sf.jopt-simple:jopt-simple:4.9" = {
     "jopt-simple-4.9.jar" = _: "${jopt_simple_4_9}/jopt-simple-4.9.jar";
     "jopt-simple-4.9.pom" = _: "${jopt_simple_4_9}/jopt-simple-4.9.pom";
+  };
+  "org.jdom:jdom2:2.0.6" = {
+    "jdom2-2.0.6.jar" = _: "${jdom2_2_0_6}/jdom2-2.0.6.jar";
+    "jdom2-2.0.6.pom" = _: "${jdom2_2_0_6}/jdom2-2.0.6.pom";
   };
   "com.google.guava:guava:31.1-android" = {
     "guava-31.1-android.jar" = _: "${guava_31_1_android}/guava-31.1-android.jar";
@@ -187,6 +233,18 @@
   "com.google.guava:failureaccess:1.0.2" = {
     "failureaccess-1.0.2.jar" = _: "${failureaccess_1_0_2}/failureaccess-1.0.2.jar";
     "failureaccess-1.0.2.pom" = _: "${failureaccess_1_0_2}/failureaccess-1.0.2.pom";
+  };
+  "com.google.guava:listenablefuture:1.0" = {
+    "listenablefuture-1.0.jar" = _: "${listenablefuture_1_0}/listenablefuture-1.0.jar";
+    "listenablefuture-1.0.pom" = _: "${listenablefuture_1_0}/listenablefuture-1.0.pom";
+  };
+  "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" = {
+    "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" =
+      _:
+      "${listenablefuture_9999_0_empty_to_avoid_conflict_with_guava}/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar";
+    "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.pom" =
+      _:
+      "${listenablefuture_9999_0_empty_to_avoid_conflict_with_guava}/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.pom";
   };
   "com.google.flatbuffers:flatbuffers-java:1.12.0" = {
     "flatbuffers-java-1.12.0.jar" = _: "${flatbuffers_java_1_12_0}/flatbuffers-java-1.12.0.jar";
