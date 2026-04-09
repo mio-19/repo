@@ -69,10 +69,10 @@ jobs:
       run: |
         timeout --foreground 5h nix run nixpkgs#nix-fast-build -- --max-jobs 1 \
           --no-nom \
-          -f .#packages.${{ env.SYSTEM }} ${{ matrix.nixpkgs-override }}
+          -f .#packages.${{ env.SYSTEM }}.cached
     - name: Build nix packages
       if: runner.os != 'Linux'
       run: |
         nix run nixpkgs#nix-fast-build -- --max-jobs 1 \
           --no-nom \
-          -f .#packages.${{ env.SYSTEM }} ${{ matrix.nixpkgs-override }}
+          -f .#packages.${{ env.SYSTEM }}.cached
