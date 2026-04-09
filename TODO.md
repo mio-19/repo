@@ -1,1 +1,0 @@
-+ any apk package not use mk-apk-package shall be changed to use mk-apk-package
