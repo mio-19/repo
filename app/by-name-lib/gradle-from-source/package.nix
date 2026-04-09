@@ -93,6 +93,7 @@ let
         "--no-configuration-cache"
         "-Dorg.gradle.configuration-cache=false"
         "-Dorg.gradle.java.installations.auto-download=false"
+        "-Porg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${toolchainPaths}"
       ];
 
