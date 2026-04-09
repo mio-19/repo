@@ -8,7 +8,7 @@
   gradle-from-source,
 }:
 gradle-from-source {
-  version = "8.12.1";
+  version = "8.12-20241015";
   rev = "e5393154ccd434c2cb563a625f54d41802cbdece";
   hash = "sha256-rLaoPV1t8vjlW7hYt1p8IR62XtxsNFdW2hIMMoL3wGI=";
   lockFile = ./gradle.lock;

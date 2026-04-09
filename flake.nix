@@ -77,6 +77,7 @@
 
   outputs =
     inputs@{
+      self,
       nixpkgs,
       flake-parts,
       ...
@@ -137,6 +138,14 @@
           packages.gradle2nix-v1 = gradle2nixV1.packages.${system}.gradle2nix;
           packages.gradle2nix-v1-src = gradle2nixV1Src;
           packages.mvn2nix = inputs.mvn2nix.packages.${system}.mvn2nix;
+
+          packages.cached = pkgs.symlinkJoin {
+            name = "packagessss";
+
+            paths = with self.packages."${system}"; [
+              fdroid-repo
+            ];
+          };
 
           # https://github.com/nix-community/nixos-apple-silicon/pull/353
           packages.zfs-installer =
