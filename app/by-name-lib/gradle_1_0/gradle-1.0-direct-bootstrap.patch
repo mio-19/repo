@@ -1,0 +1,5 @@
+--- a/subprojects/core/src/main/groovy/org/gradle/api/internal/project/taskfactory/AnnotationProcessingTaskFactory.java
++++ b/subprojects/core/src/main/groovy/org/gradle/api/internal/project/taskfactory/AnnotationProcessingTaskFactory.java
+@@ -246 +246 @@
+-            Annotation optional = annotationTarget.getAnnotation(Optional.class);
++            Annotation optional = annotationTarget.getAnnotation(org.gradle.api.tasks.Optional.class);
