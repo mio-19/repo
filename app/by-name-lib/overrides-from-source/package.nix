@@ -3,6 +3,7 @@
   apache_32,
   apache_33,
   apache_31,
+  annotations_23_0_0,
   auto_parent_6,
   auto_value_annotations_1_6_2,
   auto_value_annotations_1_6_3,
@@ -13,6 +14,7 @@
   commons_codec_1_11,
   commons_codec_1_15,
   commons_codec_1_17_1,
+  commons_lang3_3_16_0,
   commons_io_2_13_0,
   commons_io_2_16_1,
   commons_logging_1_2,
@@ -31,6 +33,7 @@
   gson_2_10_1,
   gson_2_11_0,
   glide_5_0_5,
+  flatbuffers_java_1_12_0,
   guava_31_1_android,
   guava_33_3_1_jre,
   httpcomponents_client_4_5_14,
@@ -38,11 +41,14 @@
   java_diff_utils_4_16,
   javax_inject_1,
   javawriter_2_5_0,
+  javapoet_1_13_0,
   j2objc_annotations_2_8,
   j2objc_annotations_3_0_0,
   j2objc_annotations_3_1,
   jopt_simple_4_9,
+  jspecify_1_0_0,
   jsr305_3_0_2,
+  juniversalchardet_1_0_3,
   kotlin_result_2_1_0,
   kotlin_retry_2_0_2,
   kotlinx_io_0_8_2,
@@ -119,6 +125,10 @@
     "glide-5.0.5.module" = _: "${glide_5_0_5}/glide-5.0.5.module";
     "glide-5.0.5.pom" = _: "${glide_5_0_5}/glide-5.0.5.pom";
   };
+  "org.jetbrains:annotations:23.0.0" = {
+    "annotations-23.0.0.jar" = _: "${annotations_23_0_0}/annotations-23.0.0.jar";
+    "annotations-23.0.0.pom" = _: "${annotations_23_0_0}/annotations-23.0.0.pom";
+  };
   "commons-io:commons-io:2.13.0" = {
     "commons-io-2.13.0.jar" = _: "${commons_io_2_13_0}/commons-io-2.13.0.jar";
     "commons-io-2.13.0.pom" = _: "${commons_io_2_13_0}/commons-io-2.13.0.pom";
@@ -142,6 +152,10 @@
   "commons-codec:commons-codec:1.17.1" = {
     "commons-codec-1.17.1.jar" = _: "${commons_codec_1_17_1}/commons-codec-1.17.1.jar";
     "commons-codec-1.17.1.pom" = _: "${commons_codec_1_17_1}/commons-codec-1.17.1.pom";
+  };
+  "org.apache.commons:commons-lang3:3.16.0" = {
+    "commons-lang3-3.16.0.jar" = _: "${commons_lang3_3_16_0}/commons-lang3-3.16.0.jar";
+    "commons-lang3-3.16.0.pom" = _: "${commons_lang3_3_16_0}/commons-lang3-3.16.0.pom";
   };
   "commons-logging:commons-logging:1.2" = {
     "commons-logging-1.2.jar" = _: "${commons_logging_1_2}/commons-logging-1.2.jar";
@@ -173,6 +187,23 @@
   "com.google.guava:failureaccess:1.0.2" = {
     "failureaccess-1.0.2.jar" = _: "${failureaccess_1_0_2}/failureaccess-1.0.2.jar";
     "failureaccess-1.0.2.pom" = _: "${failureaccess_1_0_2}/failureaccess-1.0.2.pom";
+  };
+  "com.google.flatbuffers:flatbuffers-java:1.12.0" = {
+    "flatbuffers-java-1.12.0.jar" = _: "${flatbuffers_java_1_12_0}/flatbuffers-java-1.12.0.jar";
+    "flatbuffers-java-1.12.0.pom" = _: "${flatbuffers_java_1_12_0}/flatbuffers-java-1.12.0.pom";
+  };
+  "com.squareup:javapoet:1.13.0" = {
+    "javapoet-1.13.0.jar" = _: "${javapoet_1_13_0}/javapoet-1.13.0.jar";
+    "javapoet-1.13.0.pom" = _: "${javapoet_1_13_0}/javapoet-1.13.0.pom";
+  };
+  "com.googlecode.juniversalchardet:juniversalchardet:1.0.3" = {
+    "juniversalchardet-1.0.3.jar" = _: "${juniversalchardet_1_0_3}/juniversalchardet-1.0.3.jar";
+    "juniversalchardet-1.0.3.pom" = _: "${juniversalchardet_1_0_3}/juniversalchardet-1.0.3.pom";
+  };
+  "org.jspecify:jspecify:1.0.0" = {
+    "jspecify-1.0.0.jar" = _: "${jspecify_1_0_0}/jspecify-1.0.0.jar";
+    "jspecify-1.0.0.module" = _: "${jspecify_1_0_0}/jspecify-1.0.0.module";
+    "jspecify-1.0.0.pom" = _: "${jspecify_1_0_0}/jspecify-1.0.0.pom";
   };
   "com.google.guava:guava-parent:26.0-android" = {
     "guava-parent-26.0-android.pom" = _: "${failureaccess_1_0_1}/guava-parent-26.0-android.pom";
