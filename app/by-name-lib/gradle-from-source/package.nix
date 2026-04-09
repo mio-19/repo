@@ -95,6 +95,7 @@ let
         "-Dorg.gradle.java.installations.auto-download=false" # gradle 9.x
         "-Porg.gradle.java.installations.auto-download=false" # https://docs.gradle.org/8.14.4/userguide/toolchains.html#sec:auto_detection
         "-Dorg.gradle.java.installations.paths=${toolchainPaths}"
+        "-Porg.gradle.java.installations.paths=${toolchainPaths}" # gradle 8.x?
       ];
 
       gradleBuildFlags = [ ":distributions-full:binDistributionZip" ];
