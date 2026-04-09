@@ -523,10 +523,13 @@
   "org.sonatype.oss:oss-parent:7" = {
     "oss-parent-7.pom" = _: "${oss_parent_7}/oss-parent-7.pom";
   };
-  "com.google.dagger:dagger:2.28.3" = {
-    "dagger-2.28.3.jar" = _: "${dagger_2_28_3}/dagger-2.28.3.jar";
-    "dagger-2.28.3.pom" = _: "${dagger_2_28_3}/dagger-2.28.3.pom";
-  };
+  /*
+    # not compile
+    "com.google.dagger:dagger:2.28.3" = {
+      "dagger-2.28.3.jar" = _: "${dagger_2_28_3}/dagger-2.28.3.jar";
+      "dagger-2.28.3.pom" = _: "${dagger_2_28_3}/dagger-2.28.3.pom";
+    };
+  */
   "com.google.errorprone:error_prone_annotations:2.11.0" = {
     "error_prone_annotations-2.11.0.jar" =
       _: "${error_prone_annotations_2_11_0}/error_prone_annotations-2.11.0.jar";
