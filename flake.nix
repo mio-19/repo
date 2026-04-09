@@ -3,7 +3,8 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
-    android-nixpkgs.url = "github:tadfisher/android-nixpkgs/stable";
+    #android-nixpkgs.url = "github:tadfisher/android-nixpkgs/stable";
+    android-nixpkgs.url = "github:tadfisher/android-nixpkgs/2026-04-08-stable"; # this thing cause rebuild with no real thing changed everyday. pin.
     android-nixpkgs.inputs.nixpkgs.follows = "nixpkgs";
     #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
     robotnix.url = "git+https://github.com/nix-community/robotnix.git?shallow=1";
