@@ -5,7 +5,7 @@
   lib,
   jdk21_headless,
   jdk17_headless,
-  gradle-packages,
+  gradle_8_13,
   fetchFromGitea,
   apksigner,
   writableTmpDirAsHomeHook,
@@ -31,12 +31,7 @@ let
     s.build-tools-35-0-0
   ]);
 
-  gradle =
-    (gradle-packages.mkGradle {
-      version = "8.13";
-      hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
-      defaultJava = jdk21_headless;
-    }).wrapped;
+  gradle = gradle_8_13;
 
   appPackage = gradle2nixBuilders.buildGradlePackage rec {
     pname = "sunup";

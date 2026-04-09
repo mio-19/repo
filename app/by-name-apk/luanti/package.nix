@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk21_headless,
-  gradle-packages,
+  gradle_8_13,
   stdenv,
   fetchFromGitHub,
   apksigner,
@@ -26,12 +26,7 @@ let
         s.cmake-3-22-1
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.13";
-          hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
-          defaultJava = jdk21_headless;
-        }).wrapped;
+      gradle = gradle_8_13;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "luanti";

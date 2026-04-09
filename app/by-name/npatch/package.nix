@@ -9,6 +9,7 @@
   runCommand,
   jre_headless,
   makeWrapper,
+  gradle_8_13,
 }:
 let
   version = "0.8-unstable-20260330";
@@ -22,12 +23,7 @@ let
     s.cmake-3-31-6
   ]);
 
-  gradle =
-    (gradle-packages.mkGradle {
-      version = "8.13";
-      hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
-      defaultJava = jdk21_headless;
-    }).wrapped;
+  gradle = gradle_8_13;
 
   common = stdenv.mkDerivation (finalAttrs: {
     pname = "npatch";

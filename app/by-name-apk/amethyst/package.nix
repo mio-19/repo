@@ -9,6 +9,7 @@
   unzip,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  gradle_8_13,
 }:
 let
   inherit (sources.amethyst_android)
@@ -26,12 +27,7 @@ let
         s.ndk-27-3-13750724
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.13";
-          hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
-          defaultJava = jdk21_headless;
-        }).wrapped;
+      gradle = gradle_8_13;
 
       # https://github.com/AngelAuraMC/angelauramc-openjdk-build/actions
       jre8Pojav = fetchurl {

@@ -6,7 +6,7 @@
 }:
 gradle-from-source {
   version = "8.13";
-  hash = "";
+  hash = "sha256-VhV58GDtZRjlQFtG1knTbm7vJP2JrrSr5yD/3/+yTnM=";
   lockFile = ./gradle.lock;
   defaultJava = jdk21_headless;
   buildJdk = javaPackages.compiler.openjdk17-bootstrap;
