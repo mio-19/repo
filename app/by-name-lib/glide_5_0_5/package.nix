@@ -95,7 +95,7 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir -p "$ANDROID_USER_HOME"
     echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
   ''
-  ++ lib.optionalString stdenv.isDarwin ''
+  + lib.optionalString stdenv.isDarwin ''
     export MAVEN_OPTS="-Dmaven.repo.local=$HOME/.m2/repository"
     mkdir -p "$HOME/.m2/repository"
   '';
