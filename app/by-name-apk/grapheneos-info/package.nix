@@ -5,7 +5,6 @@
   sources,
   lib,
   jdk25,
-  jdk17,
   gradle-packages,
   apksigner,
   writableTmpDirAsHomeHook,
@@ -14,11 +13,6 @@
   overrides-update,
 }:
 let
-  inherit (sources.grapheneos_info)
-    src
-    version
-    ;
-
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
@@ -35,7 +29,11 @@ let
 
   appPackage = gradle2nixBuilders.buildGradlePackage rec {
     pname = "grapheneos-info";
-    inherit version src gradle;
+    version = sources.grapheneos_info.date;
+    inherit (sources.grapheneos_info)
+      src
+      ;
+    inherit gradle;
 
     lockFile = ./gradle.lock;
     overrides = overrides-from-source // overrides-update;
@@ -61,7 +59,6 @@ let
       androidSdk
       gradle
       jdk25
-      jdk17
       apksigner
       writableTmpDirAsHomeHook
     ];
@@ -86,7 +83,7 @@ let
     gradleFlags = [
       "-Dorg.gradle.java.home=${jdk25.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
-      "-Dorg.gradle.java.installations.paths=${jdk17}/lib/openjdk,${jdk25}/lib/openjdk"
+      "-Dorg.gradle.java.installations.paths=${jdk25}/lib/openjdk"
       "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
       "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
     ];
