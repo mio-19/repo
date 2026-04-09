@@ -10,6 +10,8 @@
   gnugrep,
   gnused,
   which,
+  commons_codec_1_2,
+  commons_io_1_4,
   gradle_rel_0_5,
 }:
 let
@@ -41,6 +43,7 @@ let
     }
     {
       path = "commons-io/commons-io/1.4/commons-io-1.4.jar";
+      package = "${commons_io_1_4}/commons-io-1.4.jar";
       hash = "sha256-p/cTWTAHgTvwfRm9Hfn4HIbAcZ6aC7LvG5i3gxP8lA0=";
     }
     {
@@ -53,6 +56,7 @@ let
     }
     {
       path = "commons-codec/commons-codec/1.2/commons-codec-1.2.jar";
+      package = "${commons_codec_1_2}/commons-codec-1.2.jar";
       hash = "sha256-mJijs4V2dhKJh7l10LDwNb7PPaXPZ3Jmo01mNvK4BUI=";
     }
     {
@@ -152,10 +156,11 @@ let
   bootstrapJars = linkFarm "gradle-${version}-bootstrap-jars" (
     map (artifact: {
       name = baseNameOf artifact.path;
-      path = fetchurl {
-        url = "https://repo1.maven.org/maven2/${artifact.path}";
-        hash = artifact.hash;
-      };
+      path =
+        artifact.package or (fetchurl {
+          url = "https://repo1.maven.org/maven2/${artifact.path}";
+          hash = artifact.hash;
+        });
     }) artifacts
   );
 in
