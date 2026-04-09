@@ -5,7 +5,6 @@
   fetchurl,
   revanced-cli,
   revanced-patches,
-  apkeditor,
 }:
 let
   appPackage =
@@ -26,7 +25,6 @@ let
       dontUnpack = true;
 
       nativeBuildInputs = [
-        apkeditor
         revanced-cli
       ];
 
@@ -35,17 +33,12 @@ let
 
         workdir="$TMPDIR/spotify-revanced"
         mkdir -p "$workdir"
-        cp ${spotifyXapk} "$workdir/spotify.xapk"
-        chmod u+w "$workdir/spotify.xapk"
-
-        APKEditor m -i "$workdir/spotify.xapk" -o "$workdir/spotify-base.apk"
-
         revanced-cli patch \
           -b \
           -p ${revancedBundle} \
           --enable="Disable Play Integrity" \
           -o "$workdir/spotify-revanced.apk" \
-          "$workdir/spotify-base.apk"
+          ${spotifyXapk}
 
         runHook postBuild
       '';

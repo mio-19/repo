@@ -5,7 +5,6 @@
   fetchurl,
   morphe-cli,
   hoodles-patches,
-  apkeditor,
   zip,
   unzip,
   androidSdkBuilder,
@@ -45,7 +44,6 @@ let
         runHook preBuild
 
         workdir="$TMPDIR/duolingo-hoodles"
-        mkdir -p "$workdir/input"
 
         morphe-cli patch \
           --patches=${hoodlesPatches} \

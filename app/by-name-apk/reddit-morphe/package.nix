@@ -5,7 +5,6 @@
   fetchurl,
   morphe-cli,
   morphe-patches,
-  apkeditor,
   zip,
   unzip,
   androidSdkBuilder,
@@ -35,7 +34,6 @@ let
       dontUnpack = true;
 
       nativeBuildInputs = [
-        apkeditor
         morphe-cli
         unzip
         zip
@@ -45,16 +43,6 @@ let
         runHook preBuild
 
         workdir="$TMPDIR/reddit-morphe"
-        mkdir -p "$workdir/input"
-        cp ${redditXapk} "$workdir/reddit.xapk"
-        chmod u+w "$workdir/reddit.xapk"
-
-        unzip -q "$workdir/reddit.xapk" -d "$workdir/input"
-
-        # Merge the split package into a standalone APK before patching.
-        APKEditor m -i "$workdir/input" -o "$workdir/merged.apk"
-        cp "$workdir/merged.apk" "$workdir/input.apk"
-        chmod u+w "$workdir/input.apk"
 
         morphe-cli patch \
           --patches=${morphePatches} \
@@ -63,7 +51,7 @@ let
           --unsigned \
           --temporary-files-path "$workdir/tmp" \
           --out "$workdir/reddit-morphe.apk" \
-          "$workdir/input.apk"
+          ${redditXapk}
 
         ${androidSdk}/share/android-sdk/build-tools/35.0.0/zipalign -P 16 -f 4 \
           "$workdir/reddit-morphe.apk" "$workdir/reddit-morphe-aligned.apk"
