@@ -25,11 +25,11 @@ let
         s.platforms-android-36
         s.build-tools-36-0-0
         s.build-tools-35-0-0
-        s.ndk-27-3-13750724
+        s.ndk-29-0-14206865
         s.cmake-3-31-6
       ]);
       androidSdkRoot = "${androidSdk}/share/android-sdk";
-      androidNdkRoot = "${androidSdkRoot}/ndk/27.3.13750724";
+      androidNdkRoot = "${androidSdkRoot}/ndk/29.0.14206865";
       aapt2 = "${androidSdkRoot}/build-tools/36.0.0/aapt2";
 
       gradle =
@@ -62,7 +62,7 @@ let
             crossSystem = {
               inherit config;
               androidSdkVersion = "35";
-              androidNdkVersion = "27";
+              androidNdkVersion = "29";
               useAndroidPrebuilt = true;
               rust.rustcTarget = rustTarget;
             };
