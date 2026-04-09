@@ -10,4 +10,4 @@
   defaultJava = jdk21_headless;
 }).wrapped
 # nix-shell -p javaPackages.compiler.openjdk17-bootstrap
-# nix run github:tadfisher/gradle2nix/53672d5e875235c34dee1a4c012b0269ba76e440  -- --gradle-wrapper=8.11.1
+# nix run github:tadfisher/gradle2nix/53672d5e875235c34dee1a4c012b0269ba76e440  -- --gradle-wrapper=8.13-milestone-3
