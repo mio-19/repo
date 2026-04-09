@@ -5,9 +5,9 @@
   gradle-from-source,
 }:
 (gradle-packages.mkGradle {
-  version = "8.13-rc-1";
-  hash = "sha256-OzVl79LfLdmZd0tu+OpXGHjFUyy6xtuq60snMfQuZwQ=";
+  version = "8.14-rc-1";
+  hash = "sha256-6offYgS7lKQyz1jZqRVAixWIqL8UZkOjR+Mfq9ew5ag=";
   defaultJava = jdk21_headless;
 }).wrapped
 # nix-shell -p javaPackages.compiler.openjdk17-bootstrap
-# nix run github:tadfisher/gradle2nix/53672d5e875235c34dee1a4c012b0269ba76e440  -- --gradle-wrapper=8.13-milestone-1
+# nix run github:tadfisher/gradle2nix/53672d5e875235c34dee1a4c012b0269ba76e440  -- --gradle-wrapper=8.14-milestone-1

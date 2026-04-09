@@ -1,13 +1,15 @@
 {
-  jdk11_headless,
+  jdk17_headless,
   jdk21_headless,
-  gradle-packages,
   gradle-from-source,
+  gradle_8_14_rc1,
 }:
-(gradle-packages.mkGradle {
+gradle-from-source {
   version = "8.14";
-  hash = "sha256-Ya0xDTx9Pl2hMbdrvyK1pMB4bp2JLa6MFljUtITePKo=";
+  hash = "";
+  lockFile = ./gradle.lock;
   defaultJava = jdk21_headless;
-}).wrapped
-
-# nix run github:tadfisher/gradle2nix/53672d5e875235c34dee1a4c012b0269ba76e440  -- --gradle-wrapper=8.14-rc-1
+  buildJdk = jdk17_headless;
+  # nix run github:tadfisher/gradle2nix/53672d5e875235c34dee1a4c012b0269ba76e440  -- --gradle-wrapper=8.14-rc-1
+  bootstrapGradle = gradle_8_14_rc1;
+}
