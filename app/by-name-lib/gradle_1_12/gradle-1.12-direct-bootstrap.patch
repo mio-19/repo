@@ -1,0 +1,181 @@
+diff --git a/subprojects/core/src/main/groovy/org/gradle/api/internal/project/taskfactory/AnnotationProcessingTaskFactory.java b/subprojects/core/src/main/groovy/org/gradle/api/internal/project/taskfactory/AnnotationProcessingTaskFactory.java
+index 28059ef..54a5a49 100644
+--- a/subprojects/core/src/main/groovy/org/gradle/api/internal/project/taskfactory/AnnotationProcessingTaskFactory.java
++++ b/subprojects/core/src/main/groovy/org/gradle/api/internal/project/taskfactory/AnnotationProcessingTaskFactory.java
+@@ -335,7 +335,7 @@ public class AnnotationProcessingTaskFactory implements ITaskFactory {
+                 return;
+             }
+
+-            Annotation optional = annotationTarget.getAnnotation(Optional.class);
++            Annotation optional = annotationTarget.getAnnotation(org.gradle.api.tasks.Optional.class);
+             if (optional == null) {
+                 propertyInfo.setNotNullValidator(notNullValidator);
+             }
+diff --git a/subprojects/plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Groovydoc.java b/subprojects/plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Groovydoc.java
+index 19011e9..8ab663e 100644
+--- a/subprojects/plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Groovydoc.java
++++ b/subprojects/plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Groovydoc.java
+@@ -157,7 +157,7 @@ public class Groovydoc extends SourceTask {
+     /**
+      * Returns the browser window title for the documentation. Set to {@code null} when there is no window title.
+      */
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+     public String getWindowTitle() {
+         return windowTitle;
+     }
+@@ -174,7 +174,7 @@ public class Groovydoc extends SourceTask {
+     /**
+      * Returns the title for the package index(first) page. Set to {@code null} when there is no document title.
+      */
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+     public String getDocTitle() {
+         return docTitle;
+     }
+@@ -191,7 +191,7 @@ public class Groovydoc extends SourceTask {
+     /**
+      * Returns the HTML header for each page. Set to {@code null} when there is no header.
+      */
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+     public String getHeader() {
+         return header;
+     }
+@@ -208,7 +208,7 @@ public class Groovydoc extends SourceTask {
+     /**
+      * Returns the HTML footer for each page. Set to {@code null} when there is no footer.
+      */
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+     public String getFooter() {
+         return footer;
+     }
+diff --git a/subprojects/plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Javadoc.java b/subprojects/plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Javadoc.java
+index 3b04541..8938b80 100644
+--- a/subprojects/plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Javadoc.java
++++ b/subprojects/plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Javadoc.java
+@@ -295,7 +295,7 @@ public class Javadoc extends SourceTask {
+      *
+      * @return The executable. May be null.
+      */
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+     public String getExecutable() {
+         return executable;
+     }
+diff --git a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultMavenSettingsProvider.java b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultMavenSettingsProvider.java
+index 04ec293..23c567d 100644
+--- a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultMavenSettingsProvider.java
++++ b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultMavenSettingsProvider.java
+@@ -15,8 +15,8 @@
+  */
+ package org.gradle.api.internal.artifacts.mvnsettings;
+
+-import org.gradle.mvn3.org.apache.maven.settings.Settings;
+-import org.gradle.mvn3.org.apache.maven.settings.building.*;
++import org.apache.maven.settings.Settings;
++import org.apache.maven.settings.building.*;
+
+ public class DefaultMavenSettingsProvider implements MavenSettingsProvider {
+
+diff --git a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultLocalMavenRepositoryLocator.java b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultLocalMavenRepositoryLocator.java
+index 4797f5e..a8d9985 100644
+--- a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultLocalMavenRepositoryLocator.java
++++ b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultLocalMavenRepositoryLocator.java
+@@ -15,8 +15,8 @@
+  */
+ package org.gradle.api.internal.artifacts.mvnsettings;
+
+-import org.gradle.mvn3.org.apache.maven.settings.Settings;
+-import org.gradle.mvn3.org.apache.maven.settings.building.SettingsBuildingException;
++import org.apache.maven.settings.Settings;
++import org.apache.maven.settings.building.SettingsBuildingException;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+
+diff --git a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/MavenSettingsProvider.java b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/MavenSettingsProvider.java
+index dd93102..a7d7030 100644
+--- a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/MavenSettingsProvider.java
++++ b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/MavenSettingsProvider.java
+@@ -15,8 +15,8 @@
+  */
+ package org.gradle.api.internal.artifacts.mvnsettings;
+
+-import org.gradle.mvn3.org.apache.maven.settings.Settings;
+-import org.gradle.mvn3.org.apache.maven.settings.building.SettingsBuildingException;
++import org.apache.maven.settings.Settings;
++import org.apache.maven.settings.building.SettingsBuildingException;
+
+ public interface MavenSettingsProvider {
+     Settings buildSettings() throws SettingsBuildingException;
+diff --git a/subprojects/core/src/main/groovy/org/gradle/plugin/resolve/internal/JCenterPluginMapper.java b/subprojects/core/src/main/groovy/org/gradle/plugin/resolve/internal/JCenterPluginMapper.java
+index f8719c3..298176d 100644
+--- a/subprojects/core/src/main/groovy/org/gradle/plugin/resolve/internal/JCenterPluginMapper.java
++++ b/subprojects/core/src/main/groovy/org/gradle/plugin/resolve/internal/JCenterPluginMapper.java
+@@ -16,16 +16,12 @@
+
+ package org.gradle.plugin.resolve.internal;
+
+-import com.jfrog.bintray.client.api.handle.Bintray;
+-import com.jfrog.bintray.client.api.model.Pkg;
+-import com.jfrog.bintray.client.impl.BintrayClient;
+ import org.gradle.api.Transformer;
+ import org.gradle.api.artifacts.Dependency;
+ import org.gradle.api.artifacts.dsl.DependencyHandler;
+ import org.gradle.cache.PersistentIndexedCache;
+ import org.gradle.internal.Supplier;
+
+-import java.util.List;
+
+ public class JCenterPluginMapper implements ModuleMappingPluginResolver.Mapper {
+
+@@ -64,47 +60,11 @@ public class JCenterPluginMapper implements ModuleMappingPluginResolver.Mapper {
+         if (cached != null) {
+             return cached;
+         }
+-
+-        Bintray bintrayClient = createBintrayClient();
+-        List<Pkg> results = bintrayClient.
+-                subject(GRADLE_PLUGINS_ORG).
+-                repository(GRADLE_PLUGINS_REPO).
+-                searchForPackage().
+-                byAttributeName(PLUGIN_ID_ATTRIBUTE_NAME).
+-                equals(pluginId).
+-                search();
+-
+-        String systemId;
+-
+-        if (results.isEmpty()) {
+-            systemId = NOT_FOUND;
+-        } else if (request.getVersion() == null) {
+-            throw new InvalidPluginRequestException(String.format("No version number supplied for plugin '%s'. A version number must be supplied for plugins resolved from '%s'.", pluginId, getBintrayRepoUrl()));
+-        } else if (results.size() > 1) {
+-            throw new InvalidPluginRequestException("Found more than one plugin for plugin id " + pluginId);
+-        } else {
+-            Pkg pluginPackage = results.get(0);
+-            List<String> systemIds = pluginPackage.systemIds();
+-            if (systemIds.isEmpty()) {
+-                throw new InvalidPluginRequestException("No artifacts in maven layout found for plugin id" + pluginId);
+-            }
+-
+-            systemId = systemIds.get(0);
+-        }
+-
++        String systemId = NOT_FOUND;
+         indexedCache.put(request, systemId);
+         return systemId;
+     }
+
+-    private Bintray createBintrayClient() {
+-        String override = System.getProperty(BINTRAY_API_OVERRIDE_URL_PROPERTY);
+-        if (override == null) {
+-            return BintrayClient.create();
+-        } else {
+-            return BintrayClient.create(override, null, null);
+-        }
+-    }
+-
+     public String getBintrayRepoUrl() {
+         return String.format("https://bintray.com/%s/%s", GRADLE_PLUGINS_ORG, GRADLE_PLUGINS_REPO);
+     }
