@@ -31,19 +31,16 @@
   defaultJava,
   gradleBuilders ? gradle2nixBuilders,
   buildJdk ? jdk17_headless,
-  javaToolchains ? [ ],
+  javaToolchains ? [
+    jdk8_headless
+    jdk11_headless
+    jdk17_headless
+    jdk21_headless
+  ],
   bootstrapGradle,
 }:
 let
-  toolchainPaths = lib.concatStringsSep "," (
-    [
-      jdk8_headless
-      jdk11_headless
-      jdk17_headless
-      jdk21_headless
-    ]
-    ++ javaToolchains
-  );
+  toolchainPaths = lib.concatStringsSep "," javaToolchains;
 
   jnaLibraryPath = lib.optionalString stdenv.hostPlatform.isLinux (lib.makeLibraryPath [ udev ]);
   jnaFlag = lib.optionalString stdenv.hostPlatform.isLinux ''--add-flags "-Djna.library.path=${jnaLibraryPath}"'';
