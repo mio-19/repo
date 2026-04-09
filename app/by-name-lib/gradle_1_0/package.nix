@@ -96,7 +96,7 @@ stdenv.mkDerivation {
 
     export JAVA_HOME=${jdk8_headless}
     export HOME="$TMPDIR/home"
-    mkdir -p "$HOME" build/lib build/runtime/classes build/stubs
+    mkdir -p "$HOME" build/lib build/runtime/classes build/plugins/classes build/stubs
 
     cp ${gradle_0_9}/libexec/gradle/lib/*.jar build/lib/
     rm -f build/lib/gradle-*.jar
@@ -127,8 +127,11 @@ stdenv.mkDerivation {
       subprojects/wrapper/src/main/java \
       subprojects/launcher/src/main/java \
       -type f \( -name '*.groovy' -o -name '*.java' \) | sort > build/runtime-sources.txt
+    find \
+      subprojects/plugins/src/main/groovy \
+      -type f \( -name '*.groovy' -o -name '*.java' \) | sort > build/plugins-sources.txt
 
-    compileClasspath="$(printf '%s:' build/lib/*.jar)''${JAVA_HOME}/lib/tools.jar"
+    compileClasspath="$(printf '%s:' build/lib/*.jar)''${JAVA_HOME}/lib/openjdk/lib/tools.jar"
     "''$JAVA_HOME/bin/java" -noverify -Dfile.encoding=UTF-8 -Xmx2048m -classpath "$compileClasspath" \
       org.codehaus.groovy.tools.FileSystemCompiler \
       --classpath "$compileClasspath" \
@@ -136,6 +139,17 @@ stdenv.mkDerivation {
       -j \
       -d build/runtime/classes \
       @build/runtime-sources.txt
+
+    pluginsClasspath="build/runtime/classes:$compileClasspath"
+    "''$JAVA_HOME/bin/java" -noverify -Dfile.encoding=UTF-8 -Xmx1536m -classpath "$pluginsClasspath" \
+      org.codehaus.groovy.tools.FileSystemCompiler \
+      --classpath "$pluginsClasspath" \
+      --encoding UTF-8 \
+      -j \
+      -d build/plugins/classes \
+      @build/plugins-sources.txt
+
+    cp -a subprojects/plugins/src/main/resources/. build/plugins/classes/
 
     for subproject in core core-impl launcher; do
       if [ -d "subprojects/$subproject/src/main/resources" ]; then
@@ -150,6 +164,7 @@ stdenv.mkDerivation {
       <current version="${version}" build-time="20120612000000+0000" type="final"/>
     </releases>
     EOF
+    printf 'plugins=gradle-plugins\n' > build/runtime/classes/gradle-plugins.properties
 
     runtime="$(cd build/lib && ls *.jar | grep -v '^gradle-' | paste -sd, -)"
     for module in ${lib.escapeShellArgs gradleModules}; do
@@ -158,10 +173,18 @@ stdenv.mkDerivation {
         printf 'projects=\n'
       } > "build/runtime/classes/$module-classpath.properties"
     done
+    {
+      printf 'runtime=%s\n' "$runtime"
+      printf 'projects=\n'
+    } > build/plugins/classes/gradle-plugins-classpath.properties
 
     (
       cd build/runtime/classes
       "''$JAVA_HOME/bin/jar" cf ../gradle-runtime-${version}.jar .
+    )
+    (
+      cd build/plugins/classes
+      "''$JAVA_HOME/bin/jar" cf ../gradle-plugins-${version}.jar .
     )
 
     runHook postBuild
@@ -176,6 +199,7 @@ stdenv.mkDerivation {
     for module in ${lib.escapeShellArgs gradleModules}; do
       cp build/runtime/gradle-runtime-${version}.jar "$gradleHome/lib/$module-${version}.jar"
     done
+    cp build/plugins/gradle-plugins-${version}.jar "$gradleHome/lib/"
     cp build/lib/*.jar "$gradleHome/lib/"
 
     cat > "$out/bin/gradle" <<'EOF'

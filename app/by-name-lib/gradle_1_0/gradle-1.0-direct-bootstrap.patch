@@ -3,3 +3,17 @@
 @@ -246 +246 @@
 -            Annotation optional = annotationTarget.getAnnotation(Optional.class);
 +            Annotation optional = annotationTarget.getAnnotation(org.gradle.api.tasks.Optional.class);
+--- a/subprojects/plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Groovydoc.java
++++ b/subprojects/plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Groovydoc.java
+@@ -162 +162 @@
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+@@ -179 +179 @@
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+@@ -196 +196 @@
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+@@ -213 +213 @@
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
