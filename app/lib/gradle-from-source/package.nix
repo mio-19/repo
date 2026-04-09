@@ -97,7 +97,8 @@ let
       gradleFlags = [
         "-PfinalRelease=true"
         "--no-configuration-cache"
-        "-Dorg.gradle.configuration-cache=false"
+        "-Dorg.gradle.configuration-cache=false" # gradle 9.x?
+        "-Porg.gradle.configuration-cache=false" # gradle 8.x?
         "-Dorg.gradle.java.installations.auto-download=false" # gradle 9.x
         "-Porg.gradle.java.installations.auto-download=false" # https://docs.gradle.org/8.14.4/userguide/toolchains.html#sec:auto_detection
         "-Dorg.gradle.java.installations.paths=${toolchainPaths}" # gradle 9.x
