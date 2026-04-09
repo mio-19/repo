@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk17_headless,
-  gradle-packages,
+  gradle_9_4_1,
   stdenv,
   fetchFromGitHub,
   apksigner,
@@ -22,12 +22,7 @@ let
         s.build-tools-36-0-0
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "9.4.1";
-          hash = "sha256-KrKVjyoeURIMMmytbzhRU7sR7pOzwhbF/M6/37t+xss=";
-          defaultJava = jdk17_headless;
-        }).wrapped;
+      gradle = gradle_9_4_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "mpvex";

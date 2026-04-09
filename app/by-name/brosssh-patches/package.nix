@@ -2,7 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  gradle-packages,
+  gradle_8_14_4,
   jdk21_headless,
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
@@ -23,12 +23,7 @@ let
     s.build-tools-35-0-0
   ]);
 
-  gradle =
-    (gradle-packages.mkGradle {
-      version = "8.14.4";
-      hash = "sha256-8XcSmKcPbbWina9iN4xOGKF/wzybprFDYuDN9AYQOA0=";
-      defaultJava = jdk21_headless;
-    }).wrapped;
+  gradle = gradle_8_14_4;
 
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";

@@ -3,7 +3,7 @@
   lib,
   curl,
   jdk21_headless,
-  gradle-packages,
+  gradle_8_14,
   stdenv,
   fetchgit,
   apksigner,
@@ -26,12 +26,7 @@ let
         s.cmake-3-31-6
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.14";
-          hash = "sha256-Ya0xDTx9Pl2hMbdrvyK1pMB4bp2JLa6MFljUtITePKo=";
-          defaultJava = jdk21_headless;
-        }).wrapped;
+      gradle = gradle_8_14;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "shizuku";
