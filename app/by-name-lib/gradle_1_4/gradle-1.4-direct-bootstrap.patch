@@ -1,0 +1,93 @@
+diff --git a/subprojects/core/src/main/groovy/org/gradle/api/internal/project/taskfactory/AnnotationProcessingTaskFactory.java b/subprojects/core/src/main/groovy/org/gradle/api/internal/project/taskfactory/AnnotationProcessingTaskFactory.java
+--- a/subprojects/core/src/main/groovy/org/gradle/api/internal/project/taskfactory/AnnotationProcessingTaskFactory.java
++++ b/subprojects/core/src/main/groovy/org/gradle/api/internal/project/taskfactory/AnnotationProcessingTaskFactory.java
+@@ -254,7 +254,7 @@
+                 return;
+             }
+ 
+-            Annotation optional = annotationTarget.getAnnotation(Optional.class);
++            Annotation optional = annotationTarget.getAnnotation(org.gradle.api.tasks.Optional.class);
+             if (optional == null) {
+                 propertyInfo.setNotNullValidator(notNullValidator);
+             }
+diff --git a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultMavenSettingsProvider.java b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultMavenSettingsProvider.java
+--- a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultMavenSettingsProvider.java
++++ b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultMavenSettingsProvider.java
+@@ -15,8 +15,8 @@
+  */
+ package org.gradle.api.internal.artifacts.mvnsettings;
+ 
+-import org.gradle.mvn3.org.apache.maven.settings.Settings;
+-import org.gradle.mvn3.org.apache.maven.settings.building.*;
++import org.apache.maven.settings.Settings;
++import org.apache.maven.settings.building.*;
+ 
+ /**
+  * @author Szczepan Faber/Steve Ebersole
+diff --git a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultLocalMavenRepositoryLocator.java b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultLocalMavenRepositoryLocator.java
+--- a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultLocalMavenRepositoryLocator.java
++++ b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/DefaultLocalMavenRepositoryLocator.java
+@@ -15,8 +15,8 @@
+  */
+ package org.gradle.api.internal.artifacts.mvnsettings;
+ 
+-import org.gradle.mvn3.org.apache.maven.settings.Settings;
+-import org.gradle.mvn3.org.apache.maven.settings.building.*;
++import org.apache.maven.settings.Settings;
++import org.apache.maven.settings.building.*;
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+
+diff --git a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/MavenSettingsProvider.java b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/MavenSettingsProvider.java
+--- a/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/MavenSettingsProvider.java
++++ b/subprojects/core-impl/src/main/groovy/org/gradle/api/internal/artifacts/mvnsettings/MavenSettingsProvider.java
+@@ -15,8 +15,8 @@
+  */
+ package org.gradle.api.internal.artifacts.mvnsettings;
+ 
+-import org.gradle.mvn3.org.apache.maven.settings.Settings;
+-import org.gradle.mvn3.org.apache.maven.settings.building.SettingsBuildingException;
++import org.apache.maven.settings.Settings;
++import org.apache.maven.settings.building.SettingsBuildingException;
+ 
+ public interface MavenSettingsProvider {
+     Settings buildSettings() throws SettingsBuildingException;
+diff --git a/subprojects/plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Groovydoc.java b/subprojects/plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Groovydoc.java
+--- a/subprojects/plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Groovydoc.java
++++ b/subprojects/plugins/src/main/groovy/org/gradle/api/tasks/javadoc/Groovydoc.java
+@@ -159,7 +159,7 @@
+     /**
+      * Returns the browser window title for the documentation. Set to {@code null} when there is no window title.
+      */
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+     public String getWindowTitle() {
+         return windowTitle;
+     }
+@@ -176,7 +176,7 @@
+     /**
+      * Returns the title for the package index(first) page. Set to {@code null} when there is no document title.
+      */
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+     public String getDocTitle() {
+         return docTitle;
+     }
+@@ -193,7 +193,7 @@
+     /**
+      * Returns the html header for each page. Set to {@code null} when there is no header.
+      */
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+     public String getHeader() {
+         return header;
+     }
+@@ -210,7 +210,7 @@
+     /**
+      * Returns the html footer for each page. Set to {@code null} when there is no footer.
+      */
+-    @Input @Optional
++    @Input @org.gradle.api.tasks.Optional
+     public String getFooter() {
+         return footer;
+     }
