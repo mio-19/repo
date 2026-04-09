@@ -13,7 +13,7 @@ let
         f:
         args@{ pkgs, ... }:
         {
-          _module.args.pkgs-unstable = import nixpkgs {
+          _module.args.pkgs-unfree = import nixpkgs {
             system = pkgs.stdenv.hostPlatform.system;
             config.allowUnfree = true;
           };
@@ -39,7 +39,7 @@ let
         f:
         args@{ pkgs, ... }:
         {
-          _module.args.pkgs-unstable = import nixpkgs {
+          _module.args.pkgs-unfree = import nixpkgs {
             system = pkgs.stdenv.hostPlatform.system;
             config.allowUnfree = true;
           };

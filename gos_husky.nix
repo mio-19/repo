@@ -1,6 +1,6 @@
 args@{
   config,
-  pkgs-unstable,
+  pkgs-unfree,
   lib,
   ...
 }:
@@ -19,7 +19,7 @@ args@{
   source.dirs."device/google/shusky-kernels/6.1" = lib.mkForce {
     src =
       let
-        src = pkgs-unstable.callPackage ./gos_kernel_shusky.nix {
+        src = pkgs-unfree.callPackage ./gos_kernel_shusky.nix {
           inherit (config) enableLindroid enableDroidspaces;
         };
       in

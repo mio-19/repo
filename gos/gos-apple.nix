@@ -1,6 +1,6 @@
 args@{
   pkgs,
-  pkgs-unstable,
+  pkgs-unfree,
   lib,
   self,
   ...
