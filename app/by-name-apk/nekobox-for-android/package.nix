@@ -60,7 +60,7 @@ let
         ];
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-UJfHrjgQ+oOzW9gA86A2lpR0ayE06n19SfA3etVJipI=";
+        outputHash = "sha256-6PX5UURhTUxEOFaaelyslJl/uYe2vx1zEOWYvugZEtM=";
         dontConfigure = true;
         dontFixup = true;
 
