@@ -18,8 +18,14 @@
           ;
       };
       helpers =
+        let
+          mvn2nixPkgs = import inputs.nixpkgs {
+            inherit system;
+            overlays = [ inputs.mvn2nix.overlay ];
+          };
+        in
         {
-          inherit (inputs.mvn2nix.packages) buildMavenRepositoryFromLockFile;
+          inherit (mvn2nixPkgs) buildMavenRepositoryFromLockFile;
           androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
           gradle2nixBuilders = inputs.gradle2nix.builders.${system};
           gradle2nixV1Builders = gradle2nixV1.builders.${system};
