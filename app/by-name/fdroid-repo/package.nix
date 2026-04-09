@@ -77,6 +77,7 @@ let
 
     # failed to compile on darwin after https://github.com/NixOS/nixpkgs/pull/500309
     "rain"
+    "weathermaster"
   ];
 
   excludedApkNames = [
