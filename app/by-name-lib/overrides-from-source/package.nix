@@ -68,6 +68,17 @@
   zxing_core_3_5_3,
   zxing_core_3_5_4,
   zoomimage_1_0_2,
+  dagger_2_28_3,
+  error_prone_annotations_2_11_0,
+  gson_2_8_9,
+  checker_qual_2_5_8,
+  checker_compat_qual_2_5_5,
+  reactive_streams_1_0_3,
+  jsr305_3_0_1,
+  j2objc_annotations_1_3,
+  animal_sniffer_annotations_1_18,
+  commons_compress_1_21,
+  rxjava_2_2_21,
 }:
 
 {
@@ -511,5 +522,53 @@
   };
   "org.sonatype.oss:oss-parent:7" = {
     "oss-parent-7.pom" = _: "${oss_parent_7}/oss-parent-7.pom";
+  };
+  "com.google.dagger:dagger:2.28.3" = {
+    "dagger-2.28.3.jar" = _: "${dagger_2_28_3}/dagger-2.28.3.jar";
+    "dagger-2.28.3.pom" = _: "${dagger_2_28_3}/dagger-2.28.3.pom";
+  };
+  "com.google.errorprone:error_prone_annotations:2.11.0" = {
+    "error_prone_annotations-2.11.0.jar" =
+      _: "${error_prone_annotations_2_11_0}/error_prone_annotations-2.11.0.jar";
+    "error_prone_annotations-2.11.0.pom" =
+      _: "${error_prone_annotations_2_11_0}/error_prone_annotations-2.11.0.pom";
+  };
+  "com.google.code.gson:gson:2.8.9" = {
+    "gson-2.8.9.jar" = _: "${gson_2_8_9}/gson-2.8.9.jar";
+    "gson-2.8.9.pom" = _: "${gson_2_8_9}/gson-2.8.9.pom";
+  };
+  "org.checkerframework:checker-qual:2.5.8" = {
+    "checker-qual-2.5.8.jar" = _: "${checker_qual_2_5_8}/checker-qual-2.5.8.jar";
+    "checker-qual-2.5.8.pom" = _: "${checker_qual_2_5_8}/checker-qual-2.5.8.pom";
+  };
+  "org.checkerframework:checker-compat-qual:2.5.5" = {
+    "checker-compat-qual-2.5.5.jar" = _: "${checker_compat_qual_2_5_5}/checker-compat-qual-2.5.5.jar";
+    "checker-compat-qual-2.5.5.pom" = _: "${checker_compat_qual_2_5_5}/checker-compat-qual-2.5.5.pom";
+  };
+  "org.reactivestreams:reactive-streams:1.0.3" = {
+    "reactive-streams-1.0.3.jar" = _: "${reactive_streams_1_0_3}/reactive-streams-1.0.3.jar";
+    "reactive-streams-1.0.3.pom" = _: "${reactive_streams_1_0_3}/reactive-streams-1.0.3.pom";
+  };
+  "com.google.code.findbugs:jsr305:3.0.1" = {
+    "jsr305-3.0.1.jar" = _: "${jsr305_3_0_1}/jsr305-3.0.1.jar";
+    "jsr305-3.0.1.pom" = _: "${jsr305_3_0_1}/jsr305-3.0.1.pom";
+  };
+  "com.google.j2objc:j2objc-annotations:1.3" = {
+    "j2objc-annotations-1.3.jar" = _: "${j2objc_annotations_1_3}/j2objc-annotations-1.3.jar";
+    "j2objc-annotations-1.3.pom" = _: "${j2objc_annotations_1_3}/j2objc-annotations-1.3.pom";
+  };
+  "org.codehaus.mojo:animal-sniffer-annotations:1.18" = {
+    "animal-sniffer-annotations-1.18.jar" =
+      _: "${animal_sniffer_annotations_1_18}/animal-sniffer-annotations-1.18.jar";
+    "animal-sniffer-annotations-1.18.pom" =
+      _: "${animal_sniffer_annotations_1_18}/animal-sniffer-annotations-1.18.pom";
+  };
+  "org.apache.commons:commons-compress:1.21" = {
+    "commons-compress-1.21.jar" = _: "${commons_compress_1_21}/commons-compress-1.21.jar";
+    "commons-compress-1.21.pom" = _: "${commons_compress_1_21}/commons-compress-1.21.pom";
+  };
+  "io.reactivex.rxjava2:rxjava:2.2.21" = {
+    "rxjava-2.2.21.jar" = _: "${rxjava_2_2_21}/rxjava-2.2.21.jar";
+    "rxjava-2.2.21.pom" = _: "${rxjava_2_2_21}/rxjava-2.2.21.pom";
   };
 }
