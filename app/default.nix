@@ -35,7 +35,7 @@
       apkScope = lib.makeScope pkgs.newScope (_: byName // helpers // libs);
       apk = lib.filesystem.packagesFromDirectoryRecursive {
         inherit (apkScope) callPackage newScope;
-        directory = ./by-name-apk;
+        directory = ./apks;
       };
       libBase = lib.makeScope pkgs.newScope (_: helpers // byName);
       libs = lib.filesystem.packagesFromDirectoryRecursive {
@@ -43,7 +43,7 @@
           callPackage
           newScope
           ;
-        directory = ./by-name-lib;
+        directory = ./lib;
       };
       byNameBase = lib.makeScope libBase.newScope (
         _:
