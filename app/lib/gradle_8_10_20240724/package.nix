@@ -13,7 +13,7 @@
 gradle-from-source {
   version = "8.10-20240724";
   rev = "6058693c57c73206c870bce9b04cdd0e85fa171b";
-  hash = "";
+  hash = "sha256-DrAF0xanK61JkU8bntf1GdTKY8j0TC3XNwT8qh7DiXw=";
   lockFile = runCommand "merged-lock" { } ''
     ${lib.getExe jq} -s '.[0] * .[1]' ${gradle_8_10_20240721.unwrapped.passthru.lockFile} ${./more.gradle.lock} > $out
   '';

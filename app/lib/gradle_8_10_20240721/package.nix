@@ -13,7 +13,7 @@
 gradle-from-source {
   version = "8.10-20240721";
   rev = "bafc39a1a9df8e10de23549490dcaec72e02daa2";
-  hash = "";
+  hash = "sha256-X86Z8OKAK3S57AXt7Y6p1kpvpgSq6LdQ3xPRrFlkUO8=";
   lockFile = runCommand "merged-lock" { } ''
     ${lib.getExe jq} -s '
       reduce .[] as $item ({}; . * $item)
