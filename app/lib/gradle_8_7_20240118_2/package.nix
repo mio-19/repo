@@ -11,7 +11,7 @@
 gradle-from-source {
   version = "8.7.0-20240118-2";
   rev = "318fea30a18b28b341841954977367da6c415cae";
-  hash = "";
+  hash = "sha256-bK0dU0VuX+5JzjYQ8qjK0Paz4No037bhnLBqppo1/Jc=";
   lockFile = mergeLock [
     gradle_8_7_20240118_1.unwrapped.passthru.lockFile
     ../gradle_8_7_rc1/gradle.lock
