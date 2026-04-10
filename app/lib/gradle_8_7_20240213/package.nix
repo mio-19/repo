@@ -1,0 +1,24 @@
+# before https://github.com/gradle/gradle/commit/72fb053ee30fd022b06d31d11f72a01a660be8fb
+{
+  temurin-bin-8,
+  temurin-bin-11,
+  temurin-bin-17,
+  jdk21_headless,
+  gradle_8_8,
+  gradle-from-source,
+}:
+gradle-from-source {
+  version = "8.7.0-20240213";
+  rev = "acefc992467caf1e3a523b93bff767473f31c5ff";
+  hash = "";
+  lockFile = ./gradle.lock;
+  defaultJava = jdk21_headless;
+  # this version specifically ask for termurin branded jdk.
+  buildJdk = temurin-bin-11;
+  javaToolchains = [
+    temurin-bin-8
+    temurin-bin-11
+    temurin-bin-17
+  ];
+  bootstrapGradle = gradle_8_8;
+}
