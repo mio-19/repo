@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk17_headless,
-  gradle-packages,
+  gradle_8_12_1,
   stdenv,
   fetchFromGitHub,
   apksigner,
@@ -19,12 +19,7 @@ let
         s.build-tools-35-0-0
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.12.1";
-          hash = "sha256-jZepeYT2y9K4X+TGCnQ0QKNHVEvxiBgEjmEfUojUbJQ=";
-          defaultJava = jdk17_headless;
-        }).wrapped;
+      gradle = gradle_8_12_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gamenative";

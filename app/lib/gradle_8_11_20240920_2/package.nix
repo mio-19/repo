@@ -4,26 +4,19 @@
   temurin-bin-11,
   temurin-bin-17,
   jdk21_headless,
-  gradle_8_11_20240807,
+  gradle_8_11_20240920_1,
   gradle-from-source,
   runCommand,
   jq,
+  lib,
 }:
 gradle-from-source {
   version = "8.11-20240920-2";
   rev = "2b50be0d09a3f123924787e1e4117a42bac5d635";
   hash = "sha256-EyxhwVt9hMBVyZhRP6wfKrzbopNiuzQLdHuOfsAaeLI=";
-  lockFile =
-    runCommand "merged-lock"
-      {
-        nativeBuildInputs = [ jq ];
-      }
-      ''
-        jq -s '
-          reduce .[] as $item ({}; . * $item)
-          | del(.["gradle:gradle:8.10.2"])
-        ' ${../gradle_8_11_20240807/gradle.lock} ${../gradle_8_11/gradle.lock} ${./more.gradle.lock} > $out
-      '';
+  lockFile = runCommand "merged-lock" { } ''
+    ${lib.getExe jq} -s '.[0] * .[1]' ${gradle_8_11_20240920_1.unwrapped.passthru.lockFile} ${./more.gradle.lock} > $out
+  '';
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.
   buildJdk = temurin-bin-11;
@@ -32,7 +25,5 @@ gradle-from-source {
     temurin-bin-11
     temurin-bin-17
   ];
-  # nix-shell -p javaPackages.compiler.openjdk11-bootstrap
-  # nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.10.2
-  bootstrapGradle = gradle_8_11_20240807;
+  bootstrapGradle = gradle_8_11_20240920_1;
 }

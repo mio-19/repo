@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk21_headless,
-  gradle-packages,
+  gradle_8_14_3,
   stdenv,
   fetchFromGitHub,
   apksigner,
@@ -22,12 +22,7 @@ let
         s.build-tools-36-0-0
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.14.3";
-          hash = "sha256-vXEQIhNJMGCVbsIp2Ua+7lcVjb2J0OYrkbyg+ixfNTE=";
-          defaultJava = jdk21_headless;
-        }).wrapped;
+      gradle = gradle_8_14_3;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "microg-re";

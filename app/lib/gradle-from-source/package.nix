@@ -44,25 +44,20 @@
 }:
 let
   toolchainPaths = lib.concatStringsSep "," javaToolchains;
-  filteredLockfile =
-    runCommand "filtered-gradle-${version}-gradle.lock"
-      {
-        nativeBuildInputs = [ jq ];
-      }
-      ''
-        jq '
-          with_entries(
-            select(
-              (
-                (.key | startswith("gradle:gradle:"))
-                or (.key | startswith("android-studio:android-studio:"))
-                or (.key | startswith("org.gradle.buildtool.internal:gradle-ide-starter:"))
-              )
-              | not
-            )
+  filteredLockfile = runCommand "filtered-gradle-${version}-gradle.lock" { } ''
+    ${lib.getExe jq} '
+      with_entries(
+        select(
+          (
+            (.key | startswith("gradle:gradle:"))
+            or (.key | startswith("android-studio:android-studio:"))
+            or (.key | startswith("org.gradle.buildtool.internal:gradle-ide-starter:"))
           )
-        ' ${lockFile} > $out
-      '';
+          | not
+        )
+      )
+    ' ${lockFile} > $out
+  '';
   jnaLibraryPath = lib.optionalString stdenv.hostPlatform.isLinux (lib.makeLibraryPath [ udev ]);
   jnaFlag = lib.optionalString stdenv.hostPlatform.isLinux ''--add-flags "-Djna.library.path=${jnaLibraryPath}"'';
   mkGradle' =
@@ -163,7 +158,8 @@ let
         [ -f $gradleLibexec/lib/gradle-launcher-*.jar ] || { echo "No Gradle launcher jar found!" >&2; exit 1; }
 
         gradleCliMainJar="$(echo $gradleLibexec/lib/gradle-gradle-cli-main-*.jar)"
-        if ! unzip -p "$gradleCliMainJar" META-INF/MANIFEST.MF | grep -q '^Main-Class: '; then
+        # $gradleCliMainJar no such file with gradle older than gradle_8_9_20240411
+        if [ -f "$gradleCliMainJar" ] && ! unzip -p "$gradleCliMainJar" META-INF/MANIFEST.MF | grep -q '^Main-Class: '; then
           printf 'Main-Class: org.gradle.launcher.GradleMain\n' > gradle-cli-main-manifest.txt
           ${buildPackages.jdk}/bin/jar ufm "$gradleCliMainJar" gradle-cli-main-manifest.txt
         fi
