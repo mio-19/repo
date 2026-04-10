@@ -15,6 +15,8 @@ gradle-from-source {
   lockFile = mergeLock [
     gradle_8_7_20240118_1.unwrapped.passthru.lockFile
     ./more.gradle.lock
+    # org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:4.3.0
+    ../gradle_8_7_rc1/gradle.lock
   ];
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.
