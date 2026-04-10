@@ -20,12 +20,16 @@
   sourceSubprojects,
   builtRuntimeModules,
   builtPluginModules,
+  implementationPluginModules ? [ ],
+  extraLibs ? [ ],
+  extraPluginLibs ? [ ],
   buildTimestamp ? "19700101000000+0000",
   patches ? [ ],
   patchFlags ? [ ],
 }:
 let
   pluginsPropertyModules = builtPluginModules ++ [ "gradle-wrapper" ];
+  implementationPluginsPropertyModules = implementationPluginModules;
 
   mkGradle' =
     {
@@ -65,6 +69,8 @@ let
         cp -a --dereference ${bootstrapGradle}/libexec/gradle/. build/bootstrap/gradle-${version}/
         chmod -R u+w build/bootstrap/gradle-${version}
         mkdir -p build/bootstrap/gradle-${version}/lib/plugins
+        cp ${lib.escapeShellArgs extraLibs} build/bootstrap/gradle-${version}/lib/ 2>/dev/null || true
+        cp ${lib.escapeShellArgs extraPluginLibs} build/bootstrap/gradle-${version}/lib/plugins/ 2>/dev/null || true
 
         cp build/bootstrap/gradle-${version}/lib/*.jar build/lib/
         cp build/bootstrap/gradle-${version}/lib/plugins/*.jar build/lib/
@@ -85,6 +91,20 @@ let
           done
         done
         sort -u build/all-sources.txt -o build/all-sources.txt
+
+        tmpSources="$(mktemp)"
+        declare -A seenPackageInfo=()
+        while IFS= read -r source; do
+          if [ "''${source##*/}" = package-info.java ]; then
+            packageName="$(${gnugrep}/bin/grep -E '^package ' "$source" | head -n1 | ${gnused}/bin/sed -E 's/^package ([^;]+);/\1/')"
+            if [ -n "$packageName" ] && [ -n "''${seenPackageInfo[$packageName]:-}" ]; then
+              continue
+            fi
+            seenPackageInfo["$packageName"]=1
+          fi
+          printf '%s\n' "$source" >> "$tmpSources"
+        done < build/all-sources.txt
+        mv "$tmpSources" build/all-sources.txt
 
         compileClasspath="$(printf '%s:' build/lib/*.jar)''${JAVA_HOME}/lib/tools.jar"
         "''$JAVA_HOME/bin/java" -noverify -Dfile.encoding=UTF-8 -Xmx3000m -classpath "$compileClasspath" \
@@ -111,6 +131,7 @@ let
         EOF
 
         printf 'plugins=%s\n' "${lib.concatStringsSep "," pluginsPropertyModules}" > build/all/classes/gradle-plugins.properties
+        printf 'plugins=%s\n' "${lib.concatStringsSep "," implementationPluginsPropertyModules}" > build/all/classes/gradle-implementation-plugins.properties
 
         runtime="$(cd build/bootstrap/gradle-${version}/lib && ls *.jar | grep -v '^gradle-' | paste -sd, -)"
         pluginRuntime="$(cd build/bootstrap/gradle-${version}/lib/plugins && ls *.jar | grep -v '^gradle-' | paste -sd, -)"
