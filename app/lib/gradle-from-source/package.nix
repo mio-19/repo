@@ -73,7 +73,7 @@ let
       ...
     }:
     gradleBuilders.buildGradlePackage rec {
-      pname = "gradle";
+      pname = "gradle-unwrapped";
       inherit version;
       lockFile = filteredLockfile;
 
