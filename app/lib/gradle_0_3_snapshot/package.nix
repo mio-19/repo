@@ -5,7 +5,7 @@
   fetchurl,
   linkFarm,
   jdk8_headless,
-  makeWrapper,
+  writableTmpDirAsHomeHook,
   coreutils,
   findutils,
   gnugrep,
@@ -131,6 +131,7 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [
     jdk8_headless
+    writableTmpDirAsHomeHook
   ];
 
   dontConfigure = true;
@@ -139,7 +140,6 @@ stdenv.mkDerivation {
     runHook preBuild
 
     export JAVA_HOME=${jdk8_headless}
-    export HOME="$TMPDIR/home"
     mkdir -p "$HOME" lib
 
     rm -rf buildSrc/src/test src/test
