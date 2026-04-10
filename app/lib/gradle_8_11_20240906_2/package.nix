@@ -1,15 +1,16 @@
-# this is before gradle_12_rc1. before commit https://github.com/gradle/gradle/commit/864ddaf0a289b122e804046ab4a0e618dce9b8e7
+# this is before gradle v8.11.0-M1. before commit https://github.com/gradle/gradle/commit/fabfa88bbf12b1c7258147962161fc5c2729ff6d
 {
   temurin-bin-8,
   temurin-bin-11,
   temurin-bin-17,
   jdk21_headless,
-  gradle_8_11_M1,
+  gradle_8_11_1,
   gradle-from-source,
 }:
 gradle-from-source {
-  version = "8.11.1";
-  hash = "sha256-s9Fcf6zz0TTLEFeq0zGxovCppZGluIV3ux8XmcDdF2A=";
+  version = "8.11-20240906-2";
+  rev = "4bff127b7534bb00104c2877f865cf6f38b2e5b5";
+  hash = "";
   lockFile = ./gradle.lock;
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.
@@ -20,6 +21,6 @@ gradle-from-source {
     temurin-bin-17
   ];
   # nix-shell -p javaPackages.compiler.openjdk11-bootstrap
-  # nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.11-milestone-1
-  bootstrapGradle = gradle_8_11_M1;
+  # nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.10.2
+  bootstrapGradle = gradle_8_11_1;
 }

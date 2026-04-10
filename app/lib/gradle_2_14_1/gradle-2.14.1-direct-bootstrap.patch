@@ -1,0 +1,26 @@
+diff --git a/subprojects/core/src/main/java/org/gradle/api/internal/file/collections/DefaultDirectoryWalkerFactory.java b/subprojects/core/src/main/java/org/gradle/api/internal/file/collections/DefaultDirectoryWalkerFactory.java
+index 735f3c2..7bc8632 100644
+--- a/subprojects/core/src/main/java/org/gradle/api/internal/file/collections/DefaultDirectoryWalkerFactory.java
++++ b/subprojects/core/src/main/java/org/gradle/api/internal/file/collections/DefaultDirectoryWalkerFactory.java
+@@ -55,7 +55,7 @@ public class DefaultDirectoryWalkerFactory implements Factory<DirectoryWalker> {
+         if (javaVersion.isJava8Compatible() || (javaVersion.isJava7Compatible() && defaultEncodingContainsPlatformEncoding())) {
+             try {
+                 Class clazz = classLoader.loadClass("org.gradle.api.internal.file.collections.jdk7.Jdk7DirectoryWalker");
+-                return Cast.uncheckedCast(DirectInstantiator.instantiate(clazz, fileSystem));
++                return (DirectoryWalker) DirectInstantiator.instantiate(clazz, fileSystem);
+             } catch (ClassNotFoundException e) {
+                 throw UncheckedException.throwAsUncheckedException(e);
+             }
+diff --git a/subprojects/core/src/main/java/org/gradle/internal/filewatch/DefaultFileWatcherFactory.java b/subprojects/core/src/main/java/org/gradle/internal/filewatch/DefaultFileWatcherFactory.java
+index 14cc6fb..3f31c18 100644
+--- a/subprojects/core/src/main/java/org/gradle/internal/filewatch/DefaultFileWatcherFactory.java
++++ b/subprojects/core/src/main/java/org/gradle/internal/filewatch/DefaultFileWatcherFactory.java
+@@ -53,7 +53,7 @@ public class DefaultFileWatcherFactory implements FileWatcherFactory, Stoppable {
+         if (javaVersion.isJava7Compatible()) {
+             try {
+                 Class clazz = classLoader.loadClass("org.gradle.internal.filewatch.jdk7.Jdk7FileWatcherFactory");
+-                return Cast.uncheckedCast(DirectInstantiator.instantiate(clazz, executor));
++                return (FileWatcherFactory) DirectInstantiator.instantiate(clazz, executor);
+             } catch (ClassNotFoundException e) {
+                 throw UncheckedException.throwAsUncheckedException(e);
+             }

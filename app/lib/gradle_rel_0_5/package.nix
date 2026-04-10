@@ -11,11 +11,13 @@
   gnused,
   which,
   ant_1_7_0,
+  commons_httpclient_3_0,
   commons_cli_1_0,
   commons_codec_1_2,
   commons_io_1_4,
   commons_lang_2_3,
   jopt_simple_2_4_1,
+  servlet_api_2_5,
   slf4j_1_5_3,
   gradle_rel_0_4,
 }:
@@ -63,6 +65,7 @@ let
     }
     {
       path = "commons-httpclient/commons-httpclient/3.0/commons-httpclient-3.0.jar";
+      package = "${commons_httpclient_3_0}/commons-httpclient-3.0.jar";
       hash = "sha256-ev0Y8w6YySv4c7ZLr+6kO0q96rpipOUOG2stAEBe9+8=";
     }
     {
@@ -131,6 +134,7 @@ let
     }
     {
       path = "javax/servlet/servlet-api/2.5/servlet-api-2.5.jar";
+      package = "${servlet_api_2_5}/servlet-api-2.5.jar";
       hash = "sha256-xljqNgpw+u6ttm+zyQpwLkFCoKt3aPmumChnjg2a1Nw=";
     }
     {

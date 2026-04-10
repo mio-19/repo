@@ -97,13 +97,23 @@ let
       gradleFlags = [
         "-PfinalRelease=true"
         "--no-configuration-cache"
-        "-Dorg.gradle.configuration-cache=false"
-        "-Dorg.gradle.java.installations.auto-download=false" # gradle 9.x
-        "-Porg.gradle.java.installations.auto-download=false" # https://docs.gradle.org/8.14.4/userguide/toolchains.html#sec:auto_detection
-        "-Dorg.gradle.java.installations.paths=${toolchainPaths}" # gradle 9.x
-        "-Porg.gradle.java.installations.paths=${toolchainPaths}" # gradle 8.x
+        "--no-build-cache"
         "--parallel"
-      ];
+      ]
+      ++ (
+        if lib.versionOlder version "8.99.9" then
+          [
+            "-Porg.gradle.configuration-cache=false" # gradle 8.x?
+            "-Porg.gradle.java.installations.paths=${toolchainPaths}" # gradle 8.x
+            "-Porg.gradle.java.installations.auto-download=false" # https://docs.gradle.org/8.14.4/userguide/toolchains.html#sec:auto_detection
+          ]
+        else
+          [
+            "-Dorg.gradle.configuration-cache=false" # gradle 9.x?
+            "-Dorg.gradle.java.installations.auto-download=false" # gradle 9.x
+            "-Dorg.gradle.java.installations.paths=${toolchainPaths}" # gradle 9.x
+          ]
+      );
 
       gradleBuildFlags = [ ":distributions-full:binDistributionZip" ];
 

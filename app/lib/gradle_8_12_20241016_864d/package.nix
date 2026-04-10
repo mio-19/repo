@@ -1,16 +1,18 @@
+# this is before gradle_12_rc1. https://github.com/gradle/gradle/commit/864ddaf0a289b122e804046ab4a0e618dce9b8e7
 {
   temurin-bin-8,
   temurin-bin-11,
   temurin-bin-17,
   jdk21_headless,
-  gradle_8_12_20241126,
+  gradle_8_12_20241015,
   gradle-from-source,
   runCommand,
   jq,
 }:
 gradle-from-source {
-  version = "8.12.0-RC1";
-  hash = "sha256-AfBP4nX8M//8WVCkN48MG6Rl5XoYwARIadmpYM/O07U=";
+  version = "8.12-20241016-864d";
+  rev = "864ddaf0a289b122e804046ab4a0e618dce9b8e7";
+  hash = "sha256-BPB0LHdA5eMegwHRFfvPTgoFEwTMSLvU1xtxkYriVcY=";
   lockFile =
     runCommand "merged-lock"
       {
@@ -27,7 +29,5 @@ gradle-from-source {
     temurin-bin-11
     temurin-bin-17
   ];
-  # nix-shell -p javaPackages.compiler.openjdk17-bootstrap
-  # nix run github:tadfisher/gradle2nix/effc6f3c8ba22e718eb4fb31f09219d0fcc75649  -- --gradle-home=/nix/store/2fqkjv8xnwcf495q2xnj112vh84ar01v-gradle-8.12-20241015/libexec/gradle
-  bootstrapGradle = gradle_8_12_20241126;
+  bootstrapGradle = gradle_8_12_20241015;
 }
