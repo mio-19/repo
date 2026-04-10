@@ -10,7 +10,9 @@
   gnugrep,
   gnused,
   which,
+  ant_1_9_3,
   gradle_1_6,
+  slf4j_1_7_2,
 }:
 let
   version = "1.12";
@@ -31,27 +33,27 @@ let
   artifacts = [
     {
       path = "org/apache/ant/ant/1.9.3/ant-1.9.3.jar";
-      hash = "sha256-XhzxdgGAsK+VO6S3bg7QKiarKiqVU9L8jYJP8drZBMM=";
+      package = "${ant_1_9_3}/ant-1.9.3.jar";
     }
     {
       path = "org/apache/ant/ant-launcher/1.9.3/ant-launcher-1.9.3.jar";
-      hash = "sha256-5crzC7Yc1a56BRUlEXLFWOEDB0xg+pFpqb6bOY1z4eM=";
+      package = "${ant_1_9_3}/ant-launcher-1.9.3.jar";
     }
     {
       path = "org/slf4j/slf4j-api/1.7.2/slf4j-api-1.7.2.jar";
-      hash = "sha256-O654m0ATM7Kh0WA7f6Vz4ZkIYoGRcHID9utwjN7iwFI=";
+      package = "${slf4j_1_7_2}/slf4j-api-1.7.2.jar";
     }
     {
       path = "org/slf4j/jcl-over-slf4j/1.7.2/jcl-over-slf4j-1.7.2.jar";
-      hash = "sha256-W4oHWBvct1zg1HrGNO0Kzl+gSGaf6BEJcmQJKGUdzBQ=";
+      package = "${slf4j_1_7_2}/jcl-over-slf4j-1.7.2.jar";
     }
     {
       path = "org/slf4j/jul-to-slf4j/1.7.2/jul-to-slf4j-1.7.2.jar";
-      hash = "sha256-dEjlZB/sBW4bCzst7fCvCSGX4att37TrpLYInNpIr0g=";
+      package = "${slf4j_1_7_2}/jul-to-slf4j-1.7.2.jar";
     }
     {
       path = "org/slf4j/log4j-over-slf4j/1.7.2/log4j-over-slf4j-1.7.2.jar";
-      hash = "sha256-Rgl4HietsK/G4VP2i63Mnemf1vdYBUbmOV1tMad7gBQ=";
+      package = "${slf4j_1_7_2}/log4j-over-slf4j-1.7.2.jar";
     }
     {
       path = "ch/qos/logback/logback-core/1.0.9/logback-core-1.0.9.jar";
@@ -164,10 +166,11 @@ let
   artifactJars = linkFarm "gradle-${version}-jars" (
     map (artifact: {
       name = baseNameOf artifact.path;
-      path = fetchurl {
-        url = "${artifact.repo or defaultRepo}/${artifact.path}";
-        hash = artifact.hash;
-      };
+      path =
+        artifact.package or (fetchurl {
+          url = "${artifact.repo or defaultRepo}/${artifact.path}";
+          hash = artifact.hash;
+        });
     }) artifacts
   );
 in

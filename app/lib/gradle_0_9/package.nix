@@ -10,6 +10,7 @@
   gnugrep,
   gnused,
   which,
+  commons_lang_2_5,
   gradle_rel_0_8,
 }:
 let
@@ -53,7 +54,7 @@ let
     }
     {
       path = "commons-lang/commons-lang/2.5/commons-lang-2.5.jar";
-      hash = "sha256-pk4Mc5iP741bc/wp0QWjpuLcXZuQqU/KBlzSQ53FZZA=";
+      package = "${commons_lang_2_5}/commons-lang-2.5.jar";
     }
     {
       path = "com/google/collections/google-collections/1.0/google-collections-1.0.jar";
@@ -126,10 +127,11 @@ let
   artifactJars = linkFarm "gradle-${version}-jars" (
     map (artifact: {
       name = baseNameOf artifact.path;
-      path = fetchurl {
-        url = artifact.url or "https://repo1.maven.org/maven2/${artifact.path}";
-        hash = artifact.hash;
-      };
+      path =
+        artifact.package or (fetchurl {
+          url = artifact.url or "https://repo1.maven.org/maven2/${artifact.path}";
+          hash = artifact.hash;
+        });
     }) artifacts
   );
 in
