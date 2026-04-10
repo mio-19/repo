@@ -42,9 +42,11 @@
   ],
   bootstrapGradle,
   gradleFlags ? [ ],
+  postPatch ? "",
 }:
 let
   additionalGradleFlags = gradleFlags;
+  additionalPostPatch = postPatch;
   toolchainPaths = lib.concatStringsSep "," javaToolchains;
   filteredLockfile = runCommand "filtered-gradle-${version}-gradle.lock" { } ''
     ${lib.getExe jq} '
@@ -147,7 +149,8 @@ let
         rm -fr gradle/wrapper .teamcity/.mvn/wrapper
         find . -name "*.jar" -print0 | xargs -0 rm
         echo "Removed gradle/wrapper, .teamcity/.mvn/wrapper and all .jar files"
-      '';
+      ''
+      + additionalPostPatch;
 
       installPhase = ''
         runHook preInstall
