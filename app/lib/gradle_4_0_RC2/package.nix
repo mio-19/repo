@@ -1,8 +1,8 @@
 {
-  callPackage,
+  gradle-legacy-bridge,
   gradle_4_0_RC1,
 }:
-(callPackage ../gradle-legacy-bridge.nix { }) {
+gradle-legacy-bridge {
   version = "4.0-rc-2";
   tag = "v4.0.0-RC2";
   hash = "sha256-HgPicRbYnfQG3rf7umI24ltn0bQCh49q8dy6b+28i9w=";

@@ -3,13 +3,13 @@
   asm_commons_6_2,
   asm_tree_6_2,
   brotli_dec_0_1_2,
-  callPackage,
+  gradle-legacy-bridge,
   commons_compress_1_14,
   gradle_4_0,
   jsr305_3_0_2,
   xz_java_1_6,
 }:
-(callPackage ../gradle-legacy-bridge.nix { }) {
+gradle-legacy-bridge {
   version = "4.10.3";
   tag = "v4.10.3";
   hash = "sha256-rpvkNqSdInehucshyQb4X1ZpROkx8n9hga95L8XkKTk=";
