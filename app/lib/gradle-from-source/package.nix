@@ -41,8 +41,10 @@
     jdk21_headless
   ],
   bootstrapGradle,
+  gradleFlags ? [ ],
 }:
 let
+  additionalGradleFlags = gradleFlags;
   toolchainPaths = lib.concatStringsSep "," javaToolchains;
   filteredLockfile = runCommand "filtered-gradle-${version}-gradle.lock" { } ''
     ${lib.getExe jq} '
@@ -132,7 +134,8 @@ let
             "-Dorg.gradle.java.installations.auto-download=false" # gradle 9.x
             "-Dorg.gradle.java.installations.paths=${toolchainPaths}" # gradle 9.x
           ]
-      );
+      )
+      ++ additionalGradleFlags;
 
       gradleBuildFlags = [ ":distributions-full:binDistributionZip" ];
 
