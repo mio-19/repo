@@ -96,7 +96,7 @@ gradle2nixBuilders.buildGradlePackage rec {
     export ANDROID_USER_HOME="$HOME/.android"
     export GRADLE_USER_HOME="$HOME/.gradle"
     mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"
-    export GRADLE_OPTS="''${GRADLE_OPTS:+$GRADLE_OPTS }-Duser.home=$HOME"
+    export GRADLE_OPTS="''${GRADLE_OPTS:+$GRADLE_OPTS }-Duser.home=$HOME -Dmaven.repo.local=$HOME/.m2/repository"
     export MAVEN_OPTS="-Dmaven.repo.local=$HOME/.m2/repository"
   '';
 
