@@ -12,7 +12,7 @@
 gradle-from-source {
   version = "8.11-20240920-2";
   rev = "2b50be0d09a3f123924787e1e4117a42bac5d635";
-  hash = "";
+  hash = "sha256-EyxhwVt9hMBVyZhRP6wfKrzbopNiuzQLdHuOfsAaeLI=";
   lockFile =
     runCommand "merged-lock"
       {
