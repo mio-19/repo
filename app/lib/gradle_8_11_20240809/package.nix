@@ -24,7 +24,7 @@ gradle-from-source {
         jq -s '
           reduce .[] as $item ({}; . * $item)
           | del(.["gradle:gradle:8.10.2"])
-        ' ${../gradle_8_11_20240807/gradle.lock} ${../gradle_8_11/gradle.lock} ${./more.gradle.lock} > $out
+        ' ${gradle_8_11_20240808_2.unwrapped.passthru.lockFile} ${../gradle_8_11/gradle.lock} ${./more.gradle.lock} > $out
       '';
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.
