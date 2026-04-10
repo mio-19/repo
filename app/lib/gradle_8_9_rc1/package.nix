@@ -14,7 +14,7 @@ gradle-from-source {
   hash = "sha256-VnYpNXi/ztBSZiwdaWzRWajxZL1rHAXENvoE2ZHi+Yk=";
   # nix-shell -p javaPackages.compiler.openjdk11-bootstrap
   # nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.9-rc-1
-  # why generate lock file with 8.9-rc-1? beacuse it is easier. it doesn't match bootstrapGradle.
+  # why generate lock file with different version? beacuse it is easier. it doesn't match bootstrapGradle.
   lockFile = runCommand "merged-lock" { } ''
     ${lib.getExe jq} -s '.[0] * .[1]' ${gradle_8_9_20240529.unwrapped.passthru.lockFile} ${./gradle.lock} > $out
   '';
