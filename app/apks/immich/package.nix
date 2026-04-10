@@ -9,7 +9,6 @@
   jdk17_headless,
   curl,
   python3,
-  gradle-packages,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   applyPatches,
@@ -43,15 +42,15 @@ let
     in
     buildDartApplication.override { dart = flutter335; } (finalAttrs: {
       pname = "immich";
-      version = "2.7.2+3043";
+      version = "2.7.3";
 
       src = applyPatches {
         src = fetchFromGitHub {
           owner = "immich-app";
           repo = "immich";
-          tag = "v2.7.2";
+          tag = "v${finalAttrs.version}";
           fetchSubmodules = true;
-          hash = "sha256-MSRcdAKpHVT5VpFGAWvTVZY/KYkxY+68XI+S2mb5BnM=";
+          hash = "sha256-YytGPDsbzlc4GJpEZwiMEBze+3MMdyPhDa2UMX5ypNs=";
         };
         patches = [
           /*
