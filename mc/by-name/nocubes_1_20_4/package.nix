@@ -2,18 +2,13 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  gradle-packages,
+  gradle_8_7,
   jdk17_headless,
   writableTmpDirAsHomeHook,
   git,
 }:
 let
-  gradle =
-    (gradle-packages.mkGradle {
-      version = "8.7";
-      hash = "sha256-VEw11r2Emuil7QvOo5umd9xA9J330YNVYVgtogCblh0=";
-      defaultJava = jdk17_headless;
-    }).wrapped;
+  gradle = gradle_8_7;
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "nocubes_1_20_4";

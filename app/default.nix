@@ -61,6 +61,7 @@
       };
     in
     rec {
+      _module.args.libs = libs;
       packages = lib.filterAttrs (_: lib.isDerivation) legacyPackages;
       legacyPackages =
         byName // libs // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk;

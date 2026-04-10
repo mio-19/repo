@@ -4,10 +4,11 @@
     {
       lib,
       pkgs,
+      libs,
       ...
     }:
     let
-      byNameScope = lib.makeScope pkgs.newScope (_: { });
+      byNameScope = lib.makeScope pkgs.newScope (_: libs);
 
       byName = lib.filesystem.packagesFromDirectoryRecursive {
         inherit (byNameScope)

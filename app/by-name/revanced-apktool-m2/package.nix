@@ -2,7 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  gradle-packages,
+  gradle_8_7,
   jdk21_headless,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -15,12 +15,7 @@ let
     s.build-tools-35-0-0
   ]);
 
-  gradle =
-    (gradle-packages.mkGradle {
-      version = "8.7";
-      hash = "sha256-VEw11r2Emuil7QvOo5umd9xA9J330YNVYVgtogCblh0=";
-      defaultJava = jdk21_headless;
-    }).wrapped;
+  gradle = gradle_8_7;
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "revanced-apktool-m2";
