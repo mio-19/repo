@@ -1,10 +1,7 @@
 { gradle_9_4_1, gradle2nixBuilders }:
-let
-  gradle = gradle_9_4_1;
-in
 gradle2nixBuilders.buildGradlePackage rec {
   pname = "gradle-wrapper";
-  inherit (gradle.unwrapped)
+  inherit (gradle_9_4_1.unwrapped)
     version
     src
     lockFile
