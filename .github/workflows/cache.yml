@@ -79,7 +79,7 @@ jobs:
     - name: Build nix packages
       if: runner.os == 'Linux'
       run: |
-        timeout --foreground 50m nix run nixpkgs#nix-fast-build -- --max-jobs 1 --option cores 1 \
+        timeout --foreground 30m nix run nixpkgs#nix-fast-build -- --max-jobs 1 --option cores 1 \
           --no-nom \
           -f .#packages.${{ env.SYSTEM }}.cached
     - name: Build nix packages
