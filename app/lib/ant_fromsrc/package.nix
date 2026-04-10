@@ -3,6 +3,7 @@
   jdk17_headless,
   lib,
   stdenv,
+  writableTmpDirAsHomeHook,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -16,16 +17,15 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-lRaDj8MMfuMqjXwHglZlKgqUmkbbs0dCTDFF61zW5Qg=";
   };
 
-  nativeBuildInputs = [ jdk17_headless ];
+  nativeBuildInputs = [
+    jdk17_headless
+    writableTmpDirAsHomeHook
+  ];
 
   dontConfigure = true;
 
   buildPhase = ''
     runHook preBuild
-
-    export JAVA_HOME=${jdk17_headless}/lib/openjdk
-    export HOME="$TMPDIR/home"
-    mkdir -p "$HOME"
 
     sh ./bootstrap.sh jars
 
