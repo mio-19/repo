@@ -4,10 +4,8 @@
   temurin-bin-17,
   jdk21_headless,
   gradle-from-source,
-  gradle_8_9_20240529,
-  runCommand,
-  jq,
-  lib,
+  gradle_8_9_20240411,
+  mergeLock,
 }:
 gradle-from-source {
   version = "8.9.0-RC1";
@@ -15,9 +13,10 @@ gradle-from-source {
   # nix-shell -p javaPackages.compiler.openjdk11-bootstrap
   # nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.9-rc-1
   # why generate lock file with different version? beacuse it is easier. it doesn't match bootstrapGradle.
-  lockFile = runCommand "merged-lock" { } ''
-    ${lib.getExe jq} -s '.[0] * .[1]' ${gradle_8_9_20240529.unwrapped.passthru.lockFile} ${./gradle.lock} > $out
-  '';
+  lockFile = mergeLock [
+    ./gradle.lock
+    gradle_8_9_20240411.unwrapped.passthru.lockFile
+  ];
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.
   buildJdk = temurin-bin-11;
@@ -26,5 +25,5 @@ gradle-from-source {
     temurin-bin-11
     temurin-bin-17
   ];
-  bootstrapGradle = gradle_8_9_20240529;
+  bootstrapGradle = gradle_8_9_20240411;
 }
