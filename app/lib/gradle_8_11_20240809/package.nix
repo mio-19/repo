@@ -4,7 +4,7 @@
   temurin-bin-11,
   temurin-bin-17,
   jdk21_headless,
-  gradle_8_11_20240807,
+  gradle_8_11_20240808_2,
   gradle-from-source,
   runCommand,
   jq,
@@ -34,5 +34,5 @@ gradle-from-source {
     temurin-bin-11
     temurin-bin-17
   ];
-  bootstrapGradle = gradle_8_11_20240807;
+  bootstrapGradle = gradle_8_11_20240808_2;
 }
