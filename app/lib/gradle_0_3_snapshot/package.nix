@@ -31,52 +31,42 @@ let
     {
       path = "org/apache/ant/ant/1.7.0/ant-1.7.0.jar";
       package = "${ant_1_7_0}/ant-1.7.0.jar";
-      hash = "sha256-kvcjB+dEDx41LJFvJDjSu6s//Sz3MMcTFhF60Eq63qg=";
     }
     {
       path = "org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar";
       package = "${ant_1_7_0}/ant-launcher-1.7.0.jar";
-      hash = "sha256-crPQPg19hqVlE+w43UzWq+PaZiAYm+IiqyVTUstuuko=";
     }
     {
       path = "org/apache/ant/ant-junit/1.7.0/ant-junit-1.7.0.jar";
       package = "${ant_1_7_0}/ant-junit-1.7.0.jar";
-      hash = "sha256-PWfPVcDoHUEPAXHJhptZFOR+lKVTADTBwAGLlT//THg=";
     }
     {
       path = "org/apache/ant/ant-nodeps/1.7.0/ant-nodeps-1.7.0.jar";
       package = "${ant_1_7_0}/ant-nodeps-1.7.0.jar";
-      hash = "sha256-HgEQTpbttkxMJbRE6OX2MIhq9nCRGMhujFrPYwFioyE=";
     }
     {
       path = "commons-cli/commons-cli/1.0/commons-cli-1.0.jar";
       package = "${commons_cli_1_0}/commons-cli-1.0.jar";
-      hash = "sha256-Q/JIULe3t9ecX6ZSQYUY+99CfmArHtq+bxG4X7k+sBM=";
     }
     {
       path = "commons-io/commons-io/1.3.1/commons-io-1.3.1.jar";
       package = "${commons_io_1_3_1}/commons-io-1.3.1.jar";
-      hash = "sha256-MwcxndwiHxsj6KFEWu8Q0tIwjg7EaXez8Xy7FcDvM1s=";
     }
     {
       path = "commons-lang/commons-lang/2.3/commons-lang-2.3.jar";
       package = "${commons_lang_2_3}/commons-lang-2.3.jar";
-      hash = "sha256-BpNhxx8i+Nf71MOlaMAV4oCTJ/wuaGma62OmQXjN5W8=";
     }
     {
       path = "commons-httpclient/commons-httpclient/3.0/commons-httpclient-3.0.jar";
       package = "${commons_httpclient_3_0}/commons-httpclient-3.0.jar";
-      hash = "sha256-ev0Y8w6YySv4c7ZLr+6kO0q96rpipOUOG2stAEBe9+8=";
     }
     {
       path = "commons-logging/commons-logging/1.0.3/commons-logging-1.0.3.jar";
       package = "${commons_logging_1_0_3}/commons-logging-1.0.3.jar";
-      hash = "sha256-vPoCPa6oUl1tsCnqguj1jb8aBgBttlJtn5hNvyFdinU=";
     }
     {
       path = "commons-codec/commons-codec/1.2/commons-codec-1.2.jar";
       package = "${commons_codec_1_2}/commons-codec-1.2.jar";
-      hash = "sha256-mJijs4V2dhKJh7l10LDwNb7PPaXPZ3Jmo01mNvK4BUI=";
     }
     {
       path = "junit/junit/4.4/junit-4.4.jar";
@@ -97,7 +87,6 @@ let
     {
       path = "org/slf4j/slf4j-api/1.4.3/slf4j-api-1.4.3.jar";
       package = "${slf4j_api_1_4_3}/slf4j-api-1.4.3.jar";
-      hash = "sha256-321SjPU94d9R7xVEtuDlXHsLpgS0IM9UimxjnUYfc0g=";
     }
     {
       path = "org/apache/ivy/ivy/2.0.0-beta2/ivy-2.0.0-beta2.jar";

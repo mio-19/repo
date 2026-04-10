@@ -31,47 +31,38 @@ let
     {
       path = "org/apache/ant/ant/1.7.0/ant-1.7.0.jar";
       package = "${ant_1_7_0}/ant-1.7.0.jar";
-      hash = "sha256-kvcjB+dEDx41LJFvJDjSu6s//Sz3MMcTFhF60Eq63qg=";
     }
     {
       path = "org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar";
       package = "${ant_1_7_0}/ant-launcher-1.7.0.jar";
-      hash = "sha256-crPQPg19hqVlE+w43UzWq+PaZiAYm+IiqyVTUstuuko=";
     }
     {
       path = "org/apache/ant/ant-junit/1.7.0/ant-junit-1.7.0.jar";
       package = "${ant_1_7_0}/ant-junit-1.7.0.jar";
-      hash = "sha256-PWfPVcDoHUEPAXHJhptZFOR+lKVTADTBwAGLlT//THg=";
     }
     {
       path = "org/apache/ant/ant-nodeps/1.7.0/ant-nodeps-1.7.0.jar";
       package = "${ant_1_7_0}/ant-nodeps-1.7.0.jar";
-      hash = "sha256-HgEQTpbttkxMJbRE6OX2MIhq9nCRGMhujFrPYwFioyE=";
     }
     {
       path = "commons-cli/commons-cli/1.0/commons-cli-1.0.jar";
       package = "${commons_cli_1_0}/commons-cli-1.0.jar";
-      hash = "sha256-Q/JIULe3t9ecX6ZSQYUY+99CfmArHtq+bxG4X7k+sBM=";
     }
     {
       path = "commons-io/commons-io/1.4/commons-io-1.4.jar";
       package = "${commons_io_1_4}/commons-io-1.4.jar";
-      hash = "sha256-p/cTWTAHgTvwfRm9Hfn4HIbAcZ6aC7LvG5i3gxP8lA0=";
     }
     {
       path = "commons-lang/commons-lang/2.3/commons-lang-2.3.jar";
       package = "${commons_lang_2_3}/commons-lang-2.3.jar";
-      hash = "sha256-BpNhxx8i+Nf71MOlaMAV4oCTJ/wuaGma62OmQXjN5W8=";
     }
     {
       path = "commons-httpclient/commons-httpclient/3.0/commons-httpclient-3.0.jar";
       package = "${commons_httpclient_3_0}/commons-httpclient-3.0.jar";
-      hash = "sha256-ev0Y8w6YySv4c7ZLr+6kO0q96rpipOUOG2stAEBe9+8=";
     }
     {
       path = "commons-codec/commons-codec/1.2/commons-codec-1.2.jar";
       package = "${commons_codec_1_2}/commons-codec-1.2.jar";
-      hash = "sha256-mJijs4V2dhKJh7l10LDwNb7PPaXPZ3Jmo01mNvK4BUI=";
     }
     {
       path = "junit/junit/4.5/junit-4.5.jar";
@@ -92,17 +83,14 @@ let
     {
       path = "org/slf4j/slf4j-api/1.5.3/slf4j-api-1.5.3.jar";
       package = "${slf4j_1_5_3}/slf4j-api-1.5.3.jar";
-      hash = "sha256-z3lo2hv0OuJsDaEhIXmphn3syvxKmqcSgdH0YfBddBc=";
     }
     {
       path = "org/slf4j/jcl-over-slf4j/1.5.3/jcl-over-slf4j-1.5.3.jar";
       package = "${slf4j_1_5_3}/jcl-over-slf4j-1.5.3.jar";
-      hash = "sha256-6MdZCZPV+ivus1sdvLdAqsGcWO0H1SPZbFEAYEfIdEA=";
     }
     {
       path = "net/sf/jopt-simple/jopt-simple/2.4.1/jopt-simple-2.4.1.jar";
       package = "${jopt_simple_2_4_1}/jopt-simple-2.4.1.jar";
-      hash = "sha256-18qdFFkYq/C3rfLE3lWugXQKL3XX/F6krTQC6liqdAk=";
     }
     {
       path = "org/apache/ivy/ivy/2.1.0-rc1/ivy-2.1.0-rc1.jar";
@@ -159,7 +147,6 @@ let
     {
       path = "javax/servlet/servlet-api/2.5/servlet-api-2.5.jar";
       package = "${servlet_api_2_5}/servlet-api-2.5.jar";
-      hash = "sha256-xljqNgpw+u6ttm+zyQpwLkFCoKt3aPmumChnjg2a1Nw=";
     }
     {
       path = "biz/aQute/bndlib/0.0.255/bndlib-0.0.255.jar";
