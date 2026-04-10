@@ -22,4 +22,3 @@ gradle-from-source {
   # nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.7-rc-1
   bootstrapGradle = gradle_8_7_rc1;
 }
-
