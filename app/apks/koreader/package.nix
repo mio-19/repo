@@ -6,7 +6,7 @@
   fetchurl,
   fetchgit,
   androidSdkBuilder,
-  gradle-packages,
+  gradle_8_14_3,
   jdk17_headless,
   git,
   cmake,
@@ -44,12 +44,7 @@ let
         s.ndk-26-1-10909125
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.14.3";
-          hash = "sha256-vXEQIhNJMGCVbsIp2Ua+7lcVjb2J0OYrkbyg+ixfNTE=";
-          defaultJava = jdk17_headless;
-        }).wrapped;
+      gradle = gradle_8_14_3;
 
       androidArch = "arm64";
       androidFlavor = "Fdroid";

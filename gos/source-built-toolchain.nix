@@ -6,7 +6,6 @@
   ...
 }:
 let
-  cfg = config.gos;
   originalGrapheneosConfig =
     (robotnix.lib.robotnixSystem (
       { ... }:
@@ -314,7 +313,7 @@ let
     '';
 in
 {
-  options.gos.useSourceBuiltToolchain = lib.mkOption {
+  options.useSourceBuiltToolchain = lib.mkOption {
     type = lib.types.bool;
     default = false;
     description = ''
@@ -325,7 +324,7 @@ in
     '';
   };
 
-  config = lib.mkIf cfg.useSourceBuiltToolchain {
+  config = lib.mkIf config.useSourceBuiltToolchain {
     source.dirs."prebuilts/clang/host/linux-x86" = lib.mkForce {
       src = sourceBuiltClangHostLinuxX86;
     };
