@@ -5,7 +5,7 @@
   fetchurl,
   linkFarm,
   jdk8_headless,
-  makeWrapper,
+  writableTmpDirAsHomeHook,
   coreutils,
   findutils,
   gnugrep,
@@ -23,7 +23,7 @@
   gradle_rel_0_3,
 }:
 let
-  version = "0.5-snapshot";
+  version = "rel-0.4";
   artifacts = [
     {
       path = "org/codehaus/groovy/groovy-all/1.5.5/groovy-all-1.5.5.jar";
@@ -141,6 +141,7 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [
     jdk8_headless
+    writableTmpDirAsHomeHook
   ];
 
   dontConfigure = true;
@@ -149,8 +150,7 @@ stdenv.mkDerivation {
     runHook preBuild
 
     export JAVA_HOME=${jdk8_headless}
-    export HOME="$TMPDIR/home"
-    mkdir -p "$HOME" lib
+    mkdir -p lib
 
     rm -rf buildSrc/src/test src/test
     cp ${bootstrapJars}/*.jar lib/

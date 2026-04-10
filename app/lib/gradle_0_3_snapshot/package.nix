@@ -145,7 +145,7 @@ stdenv.mkDerivation {
     rm -rf buildSrc/src/test src/test
     cp ${bootstrapJars}/*.jar lib/
 
-    ${gradle_0_1_snapshot}/bin/gradle -Duser.home="$HOME" -p "$PWD" -b build.gradle libs
+    ${lib.getExe gradle_0_1_snapshot} -Duser.home="$HOME" -p "$PWD" -b build.gradle libs
 
     runHook postBuild
   '';

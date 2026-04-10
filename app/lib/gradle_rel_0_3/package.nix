@@ -5,7 +5,7 @@
   fetchurl,
   linkFarm,
   jdk8_headless,
-  makeWrapper,
+  writableTmpDirAsHomeHook,
   coreutils,
   findutils,
   gnugrep,
@@ -23,7 +23,7 @@
   gradle_0_3_snapshot,
 }:
 let
-  version = "0.4-snapshot";
+  version = "rel-0.3";
   artifacts = [
     {
       path = "org/codehaus/groovy/groovy-all/1.5.5/groovy-all-1.5.5.jar";
@@ -137,6 +137,7 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [
     jdk8_headless
+    writableTmpDirAsHomeHook
   ];
 
   dontConfigure = true;
@@ -145,8 +146,7 @@ stdenv.mkDerivation {
     runHook preBuild
 
     export JAVA_HOME=${jdk8_headless}
-    export HOME="$TMPDIR/home"
-    mkdir -p "$HOME" lib
+    mkdir -p lib
 
     rm -rf buildSrc/src/test src/test
     cp ${bootstrapJars}/*.jar lib/
@@ -163,7 +163,7 @@ stdenv.mkDerivation {
     "$JAVA_HOME/bin/javac" -d bootstrap-support/classes bootstrap-support/src/org/gradle/api/tasks/StopActionException.java
     "$JAVA_HOME/bin/jar" cf bootstrap-support/stop-action-support.jar -C bootstrap-support/classes .
 
-    ${gradle_0_3_snapshot}/bin/gradle -p "$PWD" -b build.gradle libs
+    ${lib.getExe gradle_0_3_snapshot} -Duser.home="$HOME" -p "$PWD" -b build.gradle libs
 
     runHook postBuild
   '';
