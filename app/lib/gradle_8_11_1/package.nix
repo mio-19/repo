@@ -19,7 +19,7 @@ gradle-from-source {
     temurin-bin-11
     temurin-bin-17
   ];
-# nix-shell -p javaPackages.compiler.openjdk11-bootstrap
-# nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.11-milestone-1
+  # nix-shell -p javaPackages.compiler.openjdk11-bootstrap
+  # nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.11-milestone-1
   bootstrapGradle = gradle_8_11_M1;
 }
