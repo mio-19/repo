@@ -12,4 +12,4 @@
 }).wrapped
 
 # nix-shell -p javaPackages.compiler.openjdk11-bootstrap
-# nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.8
+# nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.9-rc-1
