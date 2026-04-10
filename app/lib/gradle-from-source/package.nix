@@ -114,7 +114,8 @@ let
         "-PfinalRelease=true"
         "--no-configuration-cache"
         "--no-build-cache"
-        "--parallel"
+        # for speed:
+        "--configure-on-demand"
       ]
       ++ (
         if lib.versionOlder version "8.99.9" then
