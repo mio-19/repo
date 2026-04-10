@@ -143,9 +143,9 @@ let
       postPatch = ''
         rm -f gradle/verification-metadata.xml
         echo "Removed gradle/verification-metadata.xml so the source-built Guava override is not rejected by upstream checksum verification."
-        rm -fr gradle/wrapper
+        rm -fr gradle/wrapper .teamcity/.mvn/wrapper
         find . -name "*.jar" -print0 | xargs -0 rm
-        echo "Removed gradle/wrapper and all .jar files"
+        echo "Removed gradle/wrapper, .teamcity/.mvn/wrapper and all .jar files"
       '';
 
       installPhase = ''
