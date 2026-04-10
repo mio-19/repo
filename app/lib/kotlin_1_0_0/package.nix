@@ -29,7 +29,7 @@ stdenv.mkDerivation (finalAttrs: {
     fetchTags = true;
     fetchSubmodules = false;
     leaveDotGit = true;
-    hash = "sha256-NNmeHbDc9KL6X+NCYRacaKWZd2ZKJ8vT45lYxi9Xlw8=";
+    hash = lib.fakeHash;
   };
 
   intellij133Src = fetchFromGitHub {
