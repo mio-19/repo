@@ -3,6 +3,7 @@
   stdenv,
   fetchFromGitHub,
   fetchurl,
+  gradle_2_0,
   jdk8_headless,
   coreutils,
   findutils,
@@ -123,7 +124,7 @@ let
     "testing-native"
     "tooling-api-builders"
   ];
-  bootstrapDist = fetchurl {
+  bootstrapDepsDist = fetchurl {
     url = "https://services.gradle.org/distributions/gradle-${version}-bin.zip";
     hash = "sha256-z8Ye2nHy0SpXKCJkTOE9KRlAdZXCrsPjVm0qq2+X7zk=";
   };
@@ -133,7 +134,8 @@ stdenv.mkDerivation {
   inherit version;
 
   passthru = {
-    inherit bootstrapDist;
+    bootstrapGradle = gradle_2_0;
+    inherit bootstrapDepsDist;
   };
 
   src = fetchFromGitHub {
@@ -159,7 +161,36 @@ stdenv.mkDerivation {
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME" build/lib build/runtime/classes build/plugins/classes build/bootstrap build/meta
 
-    unzip -q ${bootstrapDist} -d build/bootstrap
+    mkdir -p build/upstream
+    cp -a ${gradle_2_0}/libexec/gradle/. build/bootstrap/gradle-${version}/
+    chmod -R u+w build/bootstrap/gradle-${version}
+    unzip -q ${bootstrapDepsDist} -d build/upstream
+
+    for jar in build/bootstrap/gradle-${version}/lib/*.jar; do
+      name="$(basename "$jar")"
+      if ! echo "$name" | grep -q '^gradle-'; then
+        rm -f "$jar"
+      fi
+    done
+    for jar in build/bootstrap/gradle-${version}/lib/plugins/*.jar; do
+      name="$(basename "$jar")"
+      if ! echo "$name" | grep -q '^gradle-'; then
+        rm -f "$jar"
+      fi
+    done
+    for jar in build/upstream/gradle-${version}/lib/*.jar; do
+      name="$(basename "$jar")"
+      if ! echo "$name" | grep -q '^gradle-'; then
+        cp "$jar" build/bootstrap/gradle-${version}/lib/
+      fi
+    done
+    for jar in build/upstream/gradle-${version}/lib/plugins/*.jar; do
+      name="$(basename "$jar")"
+      if ! echo "$name" | grep -q '^gradle-'; then
+        cp "$jar" build/bootstrap/gradle-${version}/lib/plugins/
+      fi
+    done
+
     cp build/bootstrap/gradle-${version}/lib/*.jar build/lib/
     cp build/bootstrap/gradle-${version}/lib/plugins/*.jar build/lib/
     chmod u+w build/lib/*.jar
@@ -215,7 +246,7 @@ stdenv.mkDerivation {
 
     (
       cd build/meta
-      "''$JAVA_HOME/bin/jar" xf ../bootstrap/gradle-${version}/lib/gradle-docs-${version}.jar default-imports.txt api-mapping.txt
+      "''$JAVA_HOME/bin/jar" xf ../upstream/gradle-${version}/lib/gradle-docs-${version}.jar default-imports.txt api-mapping.txt
       cp default-imports.txt ../runtime/classes/
       cp api-mapping.txt ../runtime/classes/
     )
