@@ -14,6 +14,7 @@ gradle-from-source {
   hash = "sha256-WI4+JnQorP9HTJ/kCzgNzp6mfiWMzwrM/r3uZ5VA3qE=";
   lockFile = mergeLock [
     gradle_8_11_20240906.unwrapped.passthru.lockFile
+    # org.gradle.buildtool.internal:configuration-cache-report:1.16
     ./more.gradle.lock
   ];
   defaultJava = jdk21_headless;
