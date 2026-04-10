@@ -116,6 +116,7 @@ let
         "--no-build-cache"
         # for speed:
         "--configure-on-demand"
+        "--no-daemon"
       ]
       ++ (
         if lib.versionOlder version "8.99.9" then
