@@ -5,7 +5,7 @@
   fetchFromGitHub,
   fetchurl,
   linkFarm,
-  ant,
+  ant_fromsrc,
   jdk8_headless,
   makeWrapper,
   coreutils,
@@ -224,7 +224,7 @@ stdenv.mkDerivation {
   patches = [ ./gradle-0.1-bootstrap.patch ];
 
   nativeBuildInputs = [
-    ant
+    ant_fromsrc
     jdk8_headless
     makeWrapper
   ];
@@ -234,7 +234,8 @@ stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
 
-    export JAVA_HOME=${jdk8_headless}
+    export JAVA_HOME=${jdk8_headless}/lib/openjdk
+    export CLASSPATH=${jdk8_headless}/lib/openjdk/lib/tools.jar
     export HOME="$TMPDIR/home"
     export mavenRepo="${mavenRepo}"
     mkdir -p "$HOME/.ivy2/local" ivy src/samples
@@ -261,7 +262,7 @@ stdenv.mkDerivation {
 
     mkdir -p "$out/bin"
     makeWrapper "$out/libexec/gradle/bin/gradle" "$out/bin/gradle" \
-      --set-default JAVA_HOME ${jdk8_headless} \
+      --set-default JAVA_HOME ${jdk8_headless}/lib/openjdk \
       --suffix PATH : ${
         lib.makeBinPath [
           coreutils

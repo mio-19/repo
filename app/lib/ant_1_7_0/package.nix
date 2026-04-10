@@ -1,5 +1,5 @@
 {
-  ant,
+  ant_fromsrc,
   fetchFromGitHub,
   jdk8_headless,
   lib,
@@ -18,7 +18,7 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   nativeBuildInputs = [
-    ant
+    ant_fromsrc
     jdk8_headless
   ];
 
@@ -27,7 +27,8 @@ stdenv.mkDerivation (finalAttrs: {
   buildPhase = ''
     runHook preBuild
 
-    export JAVA_HOME=${jdk8_headless}
+    export JAVA_HOME=${jdk8_headless}/lib/openjdk
+    export CLASSPATH=${jdk8_headless}/lib/openjdk/lib/tools.jar
     ant -noinput -Dbuild.compiler=modern jars
 
     runHook postBuild
