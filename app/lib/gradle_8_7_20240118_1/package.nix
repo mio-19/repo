@@ -10,7 +10,7 @@
 gradle-from-source {
   version = "8.7.0-20240118-1";
   rev = "28bfb012b44808ee4239d41a349869e49324a7ec";
-  hash = "";
+  hash = "sha256-bxaB26lNuc+iiI6fxKtD6b2ZvowxYTIgiXy7i/ai38I=";
   lockFile = ./gradle.lock;
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.

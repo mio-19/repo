@@ -5,7 +5,7 @@
 # v8.6.0-RC2
 (gradle-packages.mkGradle {
   version = "8.6-rc-2";
-  hash = "";
+  hash = "sha256-OjbO3SXAIzXZkeNoTheYUjkVDiS3RKhRPUZlQwg8olA=";
   defaultJava = jdk17_headless;
 }).wrapped
 
