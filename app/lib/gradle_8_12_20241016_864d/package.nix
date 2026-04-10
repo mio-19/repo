@@ -20,6 +20,6 @@ gradle-from-source {
     temurin-bin-11
     temurin-bin-17
   ];
-  # hand edit gradle.lock from gradle_8_12_20241015: add org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin 5.1.2 org.jetbrains.kotlin:kotlin-build-tools-impl:2.0.21 dependencies, copy from gradle.lock from nearby gradle versions.
+  # hand edit gradle.lock from gradle_8_12_20241015: add org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin 5.1.2 org.jetbrains.kotlin:kotlin-build-tools-impl:2.0.21 org.jetbrains.kotlin:kotlin-build-common:2.0.21 dependencies, copy from gradle.lock from nearby gradle versions.
   bootstrapGradle = gradle_8_12_20241015;
 }
