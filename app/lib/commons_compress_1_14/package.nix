@@ -1,7 +1,7 @@
 {
   brotli_dec_0_1_2,
   fetchFromGitHub,
-  jdk21_headless,
+  jdk25_headless,
   lib,
   stdenv,
   xz_java_1_6,
@@ -18,7 +18,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-ZDumFi1THSgrldqjA8dpW6oVImA1YQynmKrYAePYcak=";
   };
 
-  nativeBuildInputs = [ jdk21_headless ];
+  nativeBuildInputs = [ jdk25_headless ];
 
   dontConfigure = true;
   dontUnpack = true;

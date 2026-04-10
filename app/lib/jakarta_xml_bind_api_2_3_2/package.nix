@@ -2,7 +2,7 @@
   fetchFromGitHub,
   fetchurl,
   jakarta_activation_api_1_2_1,
-  jdk21_headless,
+  jdk25_headless,
   lib,
   stdenv,
 }:
@@ -28,7 +28,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-FaVbfVN8n5lwrq0o0q+XwFn2X/YQL3a70p8SR92Kbfs=";
   };
 
-  nativeBuildInputs = [ jdk21_headless ];
+  nativeBuildInputs = [ jdk25_headless ];
 
   dontConfigure = true;
   dontUnpack = true;
