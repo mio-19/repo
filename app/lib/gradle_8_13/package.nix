@@ -12,7 +12,7 @@ if stdenv.isDarwin then
   # no termurin-bin-* on darwin
   (gradle-packages.mkGradle {
     version = "8.13";
-    hash = "";
+    hash = "sha256-IPGxF2I3JUpvwgTYQ0GW+hGkz7OHVnUZxhVW6HEK7Xg=";
     defaultJava = jdk21_headless;
   }).wrapped
 else
