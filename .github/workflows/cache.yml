@@ -51,6 +51,8 @@ jobs:
           experimental-features = nix-command flakes
           access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
           system-features = gccarch-x86-64-v3 benchmark big-parallel kvm nixos-test uid-range
+          trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g= mio-repo.cachix.org-1:+l5kqQn5w9e3i3tDZY9o3pVQABC0Z/d0kAqhQpqKP8g=
+          substituters = https://cache.nixos.org/ https://cache.garnix.io https://mio-repo.cachix.org/
     - name: Setup cachix
       uses: cachix/cachix-action@v16
       # Don't replace <YOUR_CACHIX_NAME> here!
