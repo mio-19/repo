@@ -19,7 +19,7 @@ gradle-from-source {
         nativeBuildInputs = [ jq ];
       }
       ''
-        jq -s '.[0] * .[1]' ${../gradle_8_11_20240807/gradle.lock} ${../gradle_8_11_1/gradle.lock} > $out
+        jq -s '.[0] * .[1]' ${../gradle_8_11_20240807/gradle.lock} ${./more.gradle.lock} > $out
       '';
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.
