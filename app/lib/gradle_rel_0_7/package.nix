@@ -17,7 +17,7 @@
   gradle_rel_0_6,
 }:
 let
-  version = "0.8-snapshot";
+  version = "rel-0.7";
   artifacts = [
     {
       path = "org/codehaus/groovy/groovy-all/1.6.3/groovy-all-1.6.3.jar";
