@@ -11,7 +11,7 @@ gradle-from-source {
   version = "8.14.3";
   hash = "sha256-k9j9/w3HEBZc2z2dOgpAm+338hhIjh/WxvAE28viOVk=";
   lockFile = runCommand "merged-lock" { } ''
-      ${lib.getExe jq} -s '
+    ${lib.getExe jq} -s '
       reduce .[] as $item ({}; . * $item)
     ' ${../gradle_8_14/gradle.lock} ${../gradle_8_14_4/gradle.lock} > $out
   '';
