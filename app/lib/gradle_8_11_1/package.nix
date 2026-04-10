@@ -6,20 +6,30 @@
   jdk21_headless,
   gradle_8_11_M1,
   gradle-from-source,
+  gradle-packages,
+  stdenv,
 }:
-gradle-from-source {
-  version = "8.11.1";
-  hash = "sha256-s9Fcf6zz0TTLEFeq0zGxovCppZGluIV3ux8XmcDdF2A=";
-  lockFile = ./gradle.lock;
-  defaultJava = jdk21_headless;
-  # this version specifically ask for termurin branded jdk.
-  buildJdk = temurin-bin-11;
-  javaToolchains = [
-    temurin-bin-8
-    temurin-bin-11
-    temurin-bin-17
-  ];
-  # nix-shell -p javaPackages.compiler.openjdk11-bootstrap
-  # nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.11-milestone-1
-  bootstrapGradle = gradle_8_11_M1;
-}
+if stdenv.isDarwin then
+  # no termurin-bin-* on darwin
+  (gradle-packages.mkGradle {
+    version = "8.11.1";
+    hash = "";
+    defaultJava = jdk21_headless;
+  }).wrapped
+else
+  gradle-from-source {
+    version = "8.11.1";
+    hash = "sha256-s9Fcf6zz0TTLEFeq0zGxovCppZGluIV3ux8XmcDdF2A=";
+    lockFile = ./gradle.lock;
+    defaultJava = jdk21_headless;
+    # this version specifically ask for termurin branded jdk.
+    buildJdk = temurin-bin-11;
+    javaToolchains = [
+      temurin-bin-8
+      temurin-bin-11
+      temurin-bin-17
+    ];
+    # nix-shell -p javaPackages.compiler.openjdk11-bootstrap
+    # nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.11-milestone-1
+    bootstrapGradle = gradle_8_11_M1;
+  }
