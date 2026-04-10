@@ -115,7 +115,7 @@ let
         "--no-configuration-cache"
         "--no-build-cache"
         # for speed:
-        "--configure-on-demand"
+        #"--configure-on-demand" # breaks 8.7.0-20240118-1
         "--no-daemon"
         # gradle2nix already set --parallel for us
       ]
