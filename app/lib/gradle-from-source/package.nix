@@ -21,6 +21,8 @@
   udev,
   unzip,
   callPackage,
+  jq,
+  runCommand,
   overrides-from-source,
 }:
 {
@@ -42,7 +44,21 @@
 }:
 let
   toolchainPaths = lib.concatStringsSep "," javaToolchains;
-
+  filteredLockfile =
+    runCommand "filtered-gradle-${version}-gradle.lock"
+      {
+        nativeBuildInputs = [ jq ];
+      }
+      ''
+        jq '
+          with_entries(
+            select(
+              (.key | startswith("gradle:gradle:") or startswith("android-studio:android-studio:"))
+              | not
+            )
+          )
+        ' ${lockFile} > $out
+      '';
   jnaLibraryPath = lib.optionalString stdenv.hostPlatform.isLinux (lib.makeLibraryPath [ udev ]);
   jnaFlag = lib.optionalString stdenv.hostPlatform.isLinux ''--add-flags "-Djna.library.path=${jnaLibraryPath}"'';
   mkGradle' =
@@ -52,7 +68,8 @@ let
     }:
     gradleBuilders.buildGradlePackage rec {
       pname = "gradle";
-      inherit version lockFile;
+      inherit version;
+      lockFile = filteredLockfile;
 
       overrides = overrides-from-source;
 
@@ -210,7 +227,7 @@ let
         '';
 
       passthru.jdk = java;
-      passthru.lockFile = lockFile;
+      passthru.lockFile = filteredLockfile;
 
       meta = {
         platforms = [
