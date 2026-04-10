@@ -17,7 +17,6 @@ gradle-from-source {
   lockFile = runCommand "merged-lock" { } ''
     ${lib.getExe jq} -s '
       reduce .[] as $item ({}; . * $item)
-      | del(.["gradle:gradle:8.10.2"])
     ' ${gradle_8_10_20240711.unwrapped.passthru.lockFile} ${../gradle_8_10_rc1/gradle.lock} ${./more.gradle.lock} > $out
   '';
   defaultJava = jdk21_headless;
