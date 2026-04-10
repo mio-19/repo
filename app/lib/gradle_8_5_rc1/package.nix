@@ -10,5 +10,4 @@
 }).wrapped
 
 # nix-shell -p javaPackages.compiler.openjdk11-bootstrap
-# rm gradle/verification-metadata.xml
-# nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.4
+# nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.5-rc-1
