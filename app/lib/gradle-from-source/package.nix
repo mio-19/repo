@@ -58,6 +58,7 @@ let
             (.key | startswith("gradle:gradle:"))
             or (.key | startswith("android-studio:android-studio:"))
             or (.key | startswith("org.gradle.buildtool.internal:gradle-ide-starter:"))
+            or (.key | startswith("net.sf.docbook:docbook-xsl:"))
           )
           | not
         )
