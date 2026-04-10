@@ -3,7 +3,6 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  fetchurl,
   gradle-packages,
   gradle_2_14_1,
   jdk8_headless,
@@ -121,9 +120,7 @@ let
     "reporting"
     "resources"
     "resources-http"
-    "resources-s3"
     "resources-sftp"
-    "signing"
     "test-kit"
     "testing-base"
     "testing-jvm"
@@ -145,63 +142,18 @@ let
     "gradle-ide-play"
     "gradle-language-scala"
     "gradle-platform-play"
+    "gradle-resources-s3"
     "gradle-scala"
+    "gradle-signing"
   ];
   builtRuntimeModules = builtins.filter (m: !(builtins.elem m binaryRuntimeModules)) gradleModules;
   builtPluginModules = builtins.filter (m: !(builtins.elem m binaryPluginModules)) pluginModules;
-  pluginsPropertyModules = [
-    "gradle-announce"
-    "gradle-antlr"
-    "gradle-build-comparison"
-    "gradle-build-init"
-    "gradle-code-quality"
-    "gradle-diagnostics"
-    "gradle-ear"
-    "gradle-ide"
-    "gradle-ide-native"
-    "gradle-ide-play"
-    "gradle-ivy"
-    "gradle-jacoco"
-    "gradle-javascript"
-    "gradle-jetty"
-    "gradle-language-groovy"
-    "gradle-language-java"
-    "gradle-language-jvm"
-    "gradle-language-native"
-    "gradle-language-scala"
-    "gradle-maven"
-    "gradle-osgi"
-    "gradle-platform-base"
-    "gradle-platform-jvm"
-    "gradle-platform-native"
-    "gradle-platform-play"
-    "gradle-plugin-development"
-    "gradle-plugin-use"
-    "gradle-plugins"
-    "gradle-publish"
-    "gradle-reporting"
-    "gradle-resources-http"
-    "gradle-resources-s3"
-    "gradle-resources-sftp"
-    "gradle-scala"
-    "gradle-signing"
-    "gradle-testing-base"
-    "gradle-testing-jvm"
-    "gradle-testing-native"
-    "gradle-tooling-api-builders"
-    "gradle-wrapper"
-  ];
+  pluginsPropertyModules = builtPluginModules ++ [ "gradle-wrapper" ];
 
   mkGradle' =
     {
       ...
     }:
-    let
-      bootstrapDepsDist = fetchurl {
-        url = "https://services.gradle.org/distributions/gradle-${version}-bin.zip";
-        hash = "sha256-3/+ff7910CXPW097YeqeJHV/dKaTS6cklljn4t6dMp8=";
-      };
-    in
     stdenv.mkDerivation {
       pname = "gradle";
       inherit version;
@@ -230,28 +182,19 @@ let
 
         export JAVA_HOME=${jdk8_headless}
         export HOME="$TMPDIR/home"
-        mkdir -p "$HOME" build/lib build/all/classes build/bootstrap build/upstream build/meta
+        mkdir -p "$HOME" build/lib build/all/classes build/bootstrap build/meta
 
-        unzip -q ${bootstrapDepsDist} -d build/upstream
-        mkdir -p build/bootstrap/gradle-${version}
-        cp -a build/upstream/gradle-${version}/bin build/bootstrap/gradle-${version}/
-        cp -a build/upstream/gradle-${version}/init.d build/bootstrap/gradle-${version}/
-        cp -a build/upstream/gradle-${version}/media build/bootstrap/gradle-${version}/
-        cp -a build/upstream/gradle-${version}/LICENSE build/upstream/gradle-${version}/NOTICE build/bootstrap/gradle-${version}/
-        mkdir -p build/bootstrap/gradle-${version}/lib/plugins
-
-        cp build/upstream/gradle-${version}/lib/*.jar build/bootstrap/gradle-${version}/lib/
-        cp build/upstream/gradle-${version}/lib/plugins/*.jar build/bootstrap/gradle-${version}/lib/plugins/
+        cp -a ${gradle_2_14_1}/libexec/gradle/. build/bootstrap/gradle-${version}/
+        chmod -R u+w build/bootstrap/gradle-${version}
 
         cp build/bootstrap/gradle-${version}/lib/*.jar build/lib/
         cp build/bootstrap/gradle-${version}/lib/plugins/*.jar build/lib/
         chmod u+w build/lib/*.jar
-        for jar in build/lib/gradle-*.jar; do
-          name="$(basename "$jar")"
-          if echo "$name" | grep -q '^gradle-script-kotlin-'; then
-            continue
-          fi
-          rm -f "$jar"
+        for module in ${lib.escapeShellArgs builtRuntimeModules}; do
+          rm -f build/lib/"$module"-*.jar
+        done
+        for module in ${lib.escapeShellArgs builtPluginModules}; do
+          rm -f build/lib/"$module"-*.jar
         done
 
         : > build/all-sources.txt
@@ -278,24 +221,6 @@ let
             cp -a "subprojects/$subproject/src/main/resources"/. build/all/classes/
           fi
         done
-
-        (
-          cd build/meta
-          "''$JAVA_HOME/bin/jar" xf ../upstream/gradle-${version}/lib/gradle-docs-${version}.jar default-imports.txt api-mapping.txt
-          cp default-imports.txt ../all/classes/
-          cp api-mapping.txt ../all/classes/
-        )
-
-        mkdir -p build/all/classes/META-INF/services
-        while IFS= read -r jar; do
-          jarPath="$(readlink -f "$jar")"
-          if "''$JAVA_HOME/bin/jar" tf "$jarPath" | grep -q '^META-INF/services/'; then
-            (
-              cd build/all/classes
-              "''$JAVA_HOME/bin/jar" xf "$jarPath" META-INF/services
-            )
-          fi
-        done < <(find build/upstream/gradle-${version}/lib build/upstream/gradle-${version}/lib/plugins -type f -name 'gradle-*.jar' | sort)
 
         mkdir -p build/all/classes/org/gradle
         cat > build/all/classes/org/gradle/build-receipt.properties <<EOF
@@ -341,14 +266,12 @@ let
         cp build/bootstrap/gradle-${version}/lib/*.jar "$gradleHome/lib/"
         cp build/bootstrap/gradle-${version}/lib/plugins/*.jar "$gradleHome/lib/plugins/"
 
-        for jar in "$gradleHome"/lib/gradle-*.jar; do
-          name="$(basename "$jar")"
-          if echo "$name" | grep -q '^gradle-script-kotlin-'; then
-            continue
-          fi
-          rm -f "$jar"
+        for module in ${lib.escapeShellArgs builtRuntimeModules}; do
+          rm -f "$gradleHome/lib/$module"-*.jar
         done
-        rm -f "$gradleHome"/lib/plugins/gradle-*.jar
+        for module in ${lib.escapeShellArgs builtPluginModules}; do
+          rm -f "$gradleHome/lib/plugins/$module"-*.jar
+        done
 
         for module in ${lib.escapeShellArgs builtRuntimeModules}; do
           cp build/all/gradle-bootstrap-${version}.jar "$gradleHome/lib/$module-${version}.jar"
