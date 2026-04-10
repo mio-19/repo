@@ -184,7 +184,7 @@ let
         export HOME="$TMPDIR/home"
         mkdir -p "$HOME" build/lib build/all/classes build/bootstrap build/meta
 
-        cp -a ${gradle_2_14_1}/libexec/gradle/. build/bootstrap/gradle-${version}/
+        cp -a --dereference ${gradle_2_14_1}/libexec/gradle/. build/bootstrap/gradle-${version}/
         chmod -R u+w build/bootstrap/gradle-${version}
 
         cp build/bootstrap/gradle-${version}/lib/*.jar build/lib/
