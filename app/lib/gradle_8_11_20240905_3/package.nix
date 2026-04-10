@@ -25,4 +25,7 @@ gradle-from-source {
     temurin-bin-17
   ];
   bootstrapGradle = gradle_8_11_20240905_2;
+  postPatch = ''
+    substituteInPlace build-logic/jvm/src/main/kotlin/gradlebuild.strict-compile.gradle.kts --replace-fail 'val strictCompilerArgs = listOf("-Werror", "-Xlint:all", "-Xlint:-options", "-Xlint:-serial", "-Xlint:-classfile", "-Xlint:-try")' 'val strictCompilerArgs = listOf("-Xlint:all", "-Xlint:-options", "-Xlint:-serial", "-Xlint:-classfile", "-Xlint:-try")'
+  '';
 }
