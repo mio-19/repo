@@ -67,6 +67,7 @@ let
   '';
   jnaLibraryPath = lib.optionalString stdenv.hostPlatform.isLinux (lib.makeLibraryPath [ udev ]);
   jnaFlag = lib.optionalString stdenv.hostPlatform.isLinux ''--add-flags "-Djna.library.path=${jnaLibraryPath}"'';
+  # similar to nixpkgs mkGradle'
   mkGradle' =
     {
       java ? defaultJava,
