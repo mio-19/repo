@@ -22,6 +22,7 @@
   commons_logging_1_0_3,
   junit_3_8_1,
   slf4j_api_1_4_3,
+  writableTmpDirAsHomeHook,
 }:
 let
   version = "0.1-snapshot";
@@ -209,6 +210,7 @@ let
         });
     }) artifacts
   );
+  postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
 in
 stdenv.mkDerivation {
   pname = "gradle";
@@ -227,6 +229,7 @@ stdenv.mkDerivation {
     ant_fromsrc
     jdk8_headless
     makeWrapper
+    writableTmpDirAsHomeHook
   ];
 
   dontConfigure = true;
@@ -234,10 +237,10 @@ stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
 
-    export JAVA_HOME=${jdk8_headless}/lib/openjdk
-    export CLASSPATH=${jdk8_headless}/lib/openjdk/lib/tools.jar
-    export HOME="$TMPDIR/home"
+    export JAVA_HOME=${jdk8_headless}${postfix}
+    export CLASSPATH=${jdk8_headless}${postfix}/lib/tools.jar
     export mavenRepo="${mavenRepo}"
+    export ANT_OPTS=-Divy.default.ivy.user.dir="$HOME/.ivy2"
     mkdir -p "$HOME/.ivy2/local" ivy src/samples
 
     cp ${mavenRepo}/org/apache/ivy/ivy/2.0.0-beta2/ivy-2.0.0-beta2.jar \
@@ -262,7 +265,7 @@ stdenv.mkDerivation {
 
     mkdir -p "$out/bin"
     makeWrapper "$out/libexec/gradle/bin/gradle" "$out/bin/gradle" \
-      --set-default JAVA_HOME ${jdk8_headless}/lib/openjdk \
+      --set-default JAVA_HOME ${jdk8_headless}${postfix} \
       --suffix PATH : ${
         lib.makeBinPath [
           coreutils
