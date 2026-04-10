@@ -106,6 +106,7 @@ let
       ];
 
       buildInputs = [
+        stdenv.cc.cc
         ncurses5
         ncurses6
       ];
