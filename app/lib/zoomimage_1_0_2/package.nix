@@ -92,6 +92,13 @@ gradle2nixBuilders.buildGradlePackage rec {
     ":zoomimage-view-glide:publishToMavenLocal"
   ];
 
+  preBuild = lib.optionalString stdenv.isDarwin ''
+    export ANDROID_USER_HOME="$HOME/.android"
+    export GRADLE_USER_HOME="$HOME/.gradle"
+    mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"
+    export GRADLE_OPTS="''${GRADLE_OPTS:+$GRADLE_OPTS }-Duser.home=$HOME"
+  '';
+
   installPhase = ''
     runHook preInstall
 
