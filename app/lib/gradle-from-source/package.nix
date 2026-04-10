@@ -50,7 +50,7 @@ let
   additionalPostPatch = postPatch;
   additionalPatches = patches;
   toolchainPaths = lib.concatStringsSep "," javaToolchains;
-  filteredLockfile = runCommand "filtered-gradle-${version}-gradle.lock" { } ''
+  filteredLockfile = runCommand "filtered-gradle-unwrapped-${version}.lock" { } ''
     ${lib.getExe jq} '
       with_entries(
         select(
