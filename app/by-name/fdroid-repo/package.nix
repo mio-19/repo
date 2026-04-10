@@ -79,6 +79,7 @@ let
     "rain"
     "weathermaster"
     "meshcore-open"
+    "immich"
   ];
 
   excludedApkNames = [
