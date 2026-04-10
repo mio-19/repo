@@ -6,6 +6,9 @@
   stdenv,
 }:
 
+let
+  postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
+in
 stdenv.mkDerivation (finalAttrs: {
   pname = "ant";
   version = "1.7.0";
@@ -27,8 +30,8 @@ stdenv.mkDerivation (finalAttrs: {
   buildPhase = ''
     runHook preBuild
 
-    export JAVA_HOME=${jdk8_headless}/lib/openjdk
-    export CLASSPATH=${jdk8_headless}/lib/openjdk/lib/tools.jar
+    export JAVA_HOME=${jdk8_headless}${postfix}
+    export CLASSPATH=${jdk8_headless}${postfix}/lib/tools.jar
     ant -noinput -Dbuild.compiler=modern jars
 
     runHook postBuild
