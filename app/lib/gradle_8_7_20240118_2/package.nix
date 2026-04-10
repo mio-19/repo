@@ -6,19 +6,17 @@
   jdk21_headless,
   gradle_8_7_20240118_1,
   gradle-from-source,
-  runCommand,
-  jq,
-  lib,
+  mergeLock,
 }:
 gradle-from-source {
   version = "8.7.0-20240118-2";
   rev = "318fea30a18b28b341841954977367da6c415cae";
   hash = "";
-  lockFile = runCommand "merged-lock" { } ''
-    ${lib.getExe jq} -s '
-      reduce .[] as $item ({}; . * $item)
-    ' ${gradle_8_7_20240118_1.unwrapped.passthru.lockFile} ${../gradle_8_7_rc1/gradle.lock} ${./more.gradle.lock} > $out
-  '';
+  lockFile = mergeLock [
+    gradle_8_7_20240118_1.unwrapped.passthru.lockFile
+    ../gradle_8_7_rc1/gradle.lock
+    ./more.gradle.lock
+  ];
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.
   buildJdk = temurin-bin-11;
