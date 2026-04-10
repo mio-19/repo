@@ -5,7 +5,9 @@
   temurin-bin-17,
   jdk21_headless,
   gradle_8_11_1,
-  gradle-from-source,runCommand,jq,
+  gradle-from-source,
+  runCommand,
+  jq,
 }:
 gradle-from-source {
   version = "8.11-20240911";

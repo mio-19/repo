@@ -68,9 +68,51 @@
   zxing_core_3_5_3,
   zxing_core_3_5_4,
   zoomimage_1_0_2,
-}:
+  gradle_8_11_1,
+  gradle_8_12_1,
+  gradle_8_13,
+  gradle_8_14,
+  gradle_9_4_0,
 
+  runCommand,
+  zip,
+}:
+let
+  mkGradleZip =
+    gradle:
+    runCommand "gradle-${gradle.version}-fromsource.zip"
+      {
+        nativeBuildInputs = [ zip ];
+      }
+      ''
+        cd ${gradle}/libexec/gradle
+        zip -r "$out" .
+      '';
+  noAsc = runCommand "empty.asc" { } ''
+    touch $out
+  '';
+in
 {
+  "gradle:gradle:8.11.1" = {
+    "gradle-8.11.1.zip" = _: mkGradleZip gradle_8_11_1;
+    "gradle-8.11.1.zip.asc" = _: noAsc;
+  };
+  "gradle:gradle:8.12.1" = {
+    "gradle-8.12.1.zip" = _: mkGradleZip gradle_8_12_1;
+    "gradle-8.12.1.zip.asc" = _: noAsc;
+  };
+  "gradle:gradle:8.13" = {
+    "gradle-8.13.zip" = _: mkGradleZip gradle_8_13;
+    "gradle-8.13.zip.asc" = _: noAsc;
+  };
+  "gradle:gradle:8.14" = {
+    "gradle-8.14.zip" = _: mkGradleZip gradle_8_14;
+    "gradle-8.14.zip.asc" = _: noAsc;
+  };
+  "gradle:gradle:9.4.0" = {
+    "gradle-9.4.0.zip" = _: mkGradleZip gradle_9_4_0;
+    "gradle-9.4.0.zip.asc" = _: noAsc;
+  };
   "com.google.auto.value:auto-value-annotations:1.6.2" = {
     "auto-value-annotations-1.6.2.jar" =
       _: "${auto_value_annotations_1_6_2}/auto-value-annotations-1.6.2.jar";

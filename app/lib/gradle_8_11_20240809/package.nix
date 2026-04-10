@@ -5,12 +5,14 @@
   temurin-bin-17,
   jdk21_headless,
   gradle_8_11_20240807,
-  gradle-from-source,runCommand,jq,
+  gradle-from-source,
+  runCommand,
+  jq,
 }:
 gradle-from-source {
   version = "8.11-20240809";
   rev = "d40cb09ed3c2f557ee731dd88dde0cae2f3f0ce1";
-  hash = "";
+  hash = "sha256-xt5RLWbM1YAgg0IAl7OttqV1qjxpWzyRmQdGKjTXmr0=";
   lockFile =
     runCommand "merged-lock"
       {
