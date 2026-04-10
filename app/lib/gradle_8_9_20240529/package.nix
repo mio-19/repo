@@ -14,6 +14,7 @@ gradle-from-source {
   version = "8.9.0-20240529";
   rev = "8a9cda36b91f1b7f66d0c2c27e5594a210bac8f3";
   hash = "sha256-IplC2CQp/ZWMn37fUByaHF9/X04Ey4Q4vfmFaPXCqQA=";
+  # [id: 'com.gradle.develocity', version: '3.17.4']
   lockFile = runCommand "merged-lock" { } ''
     ${lib.getExe jq} -s '.[0] * .[1]' ${gradle_8_9_20240420.unwrapped.passthru.lockFile} ${./more.gradle.lock} > $out
   '';
