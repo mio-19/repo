@@ -195,7 +195,7 @@ let
     }
     {
       path = "org/slf4j/slf4j-parent/1.4.3/slf4j-parent-1.4.3.pom";
-      hash = "sha256-PuzZ0E3tNbkbSLkQhEphVCLYKTJqhUB7fm/3JPJPHSI=";
+      package = "${slf4j_api_1_4_3}/slf4j-parent-1.4.3.pom";
     }
   ];
 

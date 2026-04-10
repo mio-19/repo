@@ -49,6 +49,7 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir -p "$out"
     install -Dm644 "$tmp/slf4j-api-${finalAttrs.version}.jar" "$out/slf4j-api-${finalAttrs.version}.jar"
     install -Dm644 "${finalAttrs.src}/slf4j-api/pom.xml" "$out/slf4j-api-${finalAttrs.version}.pom"
+    install -Dm644 "${finalAttrs.src}/pom.xml" "$out/slf4j-parent-${finalAttrs.version}.pom"
 
     runHook postInstall
   '';
