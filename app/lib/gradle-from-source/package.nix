@@ -26,6 +26,7 @@
   overrides-from-source,
 }:
 {
+  configureOnDemand ? false,
   version,
   tag ? if lib.length (lib.splitString "." version) == 2 then "v${version}.0" else "v${version}",
   rev ? null,
@@ -121,7 +122,6 @@ let
         "--no-configuration-cache"
         "--no-build-cache"
         # for speed:
-        #"--configure-on-demand" # breaks 8.7.0-20240118-1
         "--no-daemon"
         # gradle2nix already set --parallel for us
       ]
@@ -139,6 +139,9 @@ let
             "-Dorg.gradle.java.installations.paths=${toolchainPaths}" # gradle 9.x
           ]
       )
+      ++ lib.optionals configureOnDemand [
+        "--configure-on-demand" # breaks 8.7.0-20240118-1
+      ]
       ++ additionalGradleFlags;
 
       gradleBuildFlags = [ ":distributions-full:binDistributionZip" ];
