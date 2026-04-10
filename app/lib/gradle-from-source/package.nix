@@ -210,6 +210,7 @@ let
         '';
 
       passthru.jdk = java;
+      passthru.lockFile = lockFile;
 
       meta = {
         platforms = [

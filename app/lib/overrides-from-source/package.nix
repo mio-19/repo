@@ -68,10 +68,12 @@
   zxing_core_3_5_3,
   zxing_core_3_5_4,
   zoomimage_1_0_2,
+  gradle_8_11,
   gradle_8_11_1,
   gradle_8_12_1,
   gradle_8_13,
   gradle_8_14,
+  gradle_8_14_3,
   gradle_9_4_0,
 
   runCommand,
@@ -93,6 +95,10 @@ let
   '';
 in
 {
+  "gradle:gradle:8.11" = {
+    "gradle-8.11.zip" = _: mkGradleZip gradle_8_11;
+    "gradle-8.11.zip.asc" = _: noAsc;
+  };
   "gradle:gradle:8.11.1" = {
     "gradle-8.11.1.zip" = _: mkGradleZip gradle_8_11_1;
     "gradle-8.11.1.zip.asc" = _: noAsc;
@@ -108,6 +114,10 @@ in
   "gradle:gradle:8.14" = {
     "gradle-8.14.zip" = _: mkGradleZip gradle_8_14;
     "gradle-8.14.zip.asc" = _: noAsc;
+  };
+  "gradle:gradle:8.14.3" = {
+    "gradle-8.14.3.zip" = _: mkGradleZip gradle_8_14_3;
+    "gradle-8.14.3.zip.asc" = _: noAsc;
   };
   "gradle:gradle:9.4.0" = {
     "gradle-9.4.0.zip" = _: mkGradleZip gradle_9_4_0;

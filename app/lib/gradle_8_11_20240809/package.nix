@@ -8,6 +8,7 @@
   gradle-from-source,
   runCommand,
   jq,
+  gradle_8_11,
 }:
 gradle-from-source {
   version = "8.11-20240809";
@@ -19,7 +20,7 @@ gradle-from-source {
         nativeBuildInputs = [ jq ];
       }
       ''
-        jq -s '.[0] * .[1]' ${../gradle_8_11_20240807/gradle.lock} ${../gradle_8_11_1/gradle.lock} > $out
+        jq -s '.[0] * .[1]' ${../gradle_8_11_20240807/gradle.lock} ${gradle_8_11.passthru.lockFile} > $out
       '';
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.

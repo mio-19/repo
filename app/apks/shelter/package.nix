@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk17_headless,
-  gradle-packages,
+  gradle_8_11_1,
   stdenv,
   fetchgit,
   apksigner,
@@ -24,12 +24,7 @@ let
         s.build-tools-35-0-0
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.11.1";
-          hash = "sha256-85eyhwI6zboen2/F6nLSLdY2adWe1KKJopsadu7hUcY=";
-          defaultJava = jdk17_headless;
-        }).wrapped;
+      gradle = gradle_8_11_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "shelter";

@@ -3,7 +3,7 @@
   lib,
   pkgs,
   jdk17_headless,
-  gradle-packages,
+  gradle_8_11_1,
   stdenv,
   stdenvNoCC,
   fetchFromGitHub,
@@ -32,12 +32,7 @@ let
       androidNdkRoot = "${androidSdkRoot}/ndk/29.0.14206865";
       aapt2 = "${androidSdkRoot}/build-tools/36.0.0/aapt2";
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.11.1";
-          hash = "sha256-85eyhwI6zboen2/F6nLSLdY2adWe1KKJopsadu7hUcY=";
-          defaultJava = jdk17_headless;
-        }).wrapped;
+      gradle = gradle_8_11_1;
 
       xMobileSrc = fetchFromGitHub {
         owner = "golang";

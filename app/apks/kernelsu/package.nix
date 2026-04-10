@@ -3,7 +3,7 @@
   lib,
   pkgs,
   jdk21_headless,
-  gradle-packages,
+  gradle_8_12_1,
   stdenv,
   fetchFromGitHub,
   apksigner,
@@ -26,12 +26,7 @@ let
         s.cmake-3-31-6
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.12.1";
-          hash = "sha256-jZepeYT2y9K4X+TGCnQ0QKNHVEvxiBgEjmEfUojUbJQ=";
-          defaultJava = jdk21_headless;
-        }).wrapped;
+      gradle = gradle_8_12_1;
 
       kernelsuSrc = fetchFromGitHub {
         owner = "tiann";
