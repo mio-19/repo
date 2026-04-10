@@ -103,7 +103,9 @@ gradle2nixBuilders.buildGradlePackage rec {
   installPhase = ''
     runHook preInstall
 
-    repoBase="$NIX_BUILD_TOP/.m2/repository/io/github/panpf/zoomimage"
+    repoBase="${
+      if stdenv.isDarwin then "$HOME" else "$NIX_BUILD_TOP"
+    }/.m2/repository/io/github/panpf/zoomimage"
     mkdir -p "$out"
     install -Dm644 "$repoBase/zoomimage-core-android/${version}/zoomimage-core-android-${version}.aar" "$out/zoomimage-core-android-${version}.aar"
     install -Dm644 "$repoBase/zoomimage-core-android/${version}/zoomimage-core-android-${version}.module" "$out/zoomimage-core-android-${version}.module"
