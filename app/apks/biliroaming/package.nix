@@ -2,7 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  gradle-packages,
+  gradle_8_12,
   androidSdkBuilder,
   jdk21_headless,
   writableTmpDirAsHomeHook,
@@ -19,12 +19,7 @@ let
     s.ndk-29-0-14206865
     s.cmake-4-1-2
   ]);
-  gradle =
-    (gradle-packages.mkGradle {
-      version = "8.12";
-      hash = "sha256-egDVH7kxR4Gaq3YCT+7OILa4TkIGlBAfJ2vpUuCL7wM=";
-      defaultJava = jdk21_headless;
-    }).wrapped;
+  gradle = gradle_8_12;
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "biliroaming";

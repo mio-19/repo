@@ -7,7 +7,7 @@
   flutter338,
   jdk17_headless,
   python3,
-  gradle-packages,
+  gradle_8_12,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
@@ -27,12 +27,7 @@ let
         s.cmake-3-31-6
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.12";
-          hash = "sha256-egDVH7kxR4Gaq3YCT+7OILa4TkIGlBAfJ2vpUuCL7wM=";
-          defaultJava = jdk17_headless;
-        }).wrapped;
+      gradle = gradle_8_12;
 
       pythonWithYaml = python3.withPackages (ps: [ ps.pyyaml ]);
     in
