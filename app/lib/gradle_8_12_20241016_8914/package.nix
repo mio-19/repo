@@ -4,7 +4,7 @@
   temurin-bin-11,
   temurin-bin-17,
   jdk21_headless,
-  gradle_8_12_20241015,
+  gradle_8_12_20241016_864d,
   gradle-from-source,
 }:
 gradle-from-source {
@@ -21,6 +21,6 @@ gradle-from-source {
     temurin-bin-17
   ];
   # nix-shell -p javaPackages.compiler.openjdk17-bootstrap
-  # nix run github:tadfisher/gradle2nix/effc6f3c8ba22e718eb4fb31f09219d0fcc75649  -- --gradle-home=/nix/store/2fqkjv8xnwcf495q2xnj112vh84ar01v-gradle-8.12-20241015/libexec/gradle
-  bootstrapGradle = gradle_8_12_20241015;
+  # nix run github:tadfisher/gradle2nix/v2  -- --gradle-home=/nix/store/2fqkjv8xnwcf495q2xnj112vh84ar01v-gradle-8.12-20241015/libexec/gradle
+  bootstrapGradle = gradle_8_12_20241016_864d;
 }

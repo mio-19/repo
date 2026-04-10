@@ -10,7 +10,7 @@
 gradle-from-source {
   version = "8.12-20241016-864d";
   rev = "864ddaf0a289b122e804046ab4a0e618dce9b8e7";
-  hash = "";
+  hash = "sha256-BPB0LHdA5eMegwHRFfvPTgoFEwTMSLvU1xtxkYriVcY=";
   lockFile = ./gradle.lock;
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.
@@ -20,7 +20,6 @@ gradle-from-source {
     temurin-bin-11
     temurin-bin-17
   ];
-  # nix-shell -p javaPackages.compiler.openjdk17-bootstrap
-  # nix run github:tadfisher/gradle2nix/effc6f3c8ba22e718eb4fb31f09219d0fcc75649  -- --gradle-wrapper=8.12-rc-1
+  # hand edit gradle.lock from gradle_8_12_20241015: add org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin 5.1.2 org.jetbrains.kotlin:kotlin-build-tools-impl:2.0.21 dependencies, copy from gradle.lock from nearby gradle versions.
   bootstrapGradle = gradle_8_12_20241015;
 }
