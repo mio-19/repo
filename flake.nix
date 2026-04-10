@@ -139,7 +139,7 @@
           packages.gradle2nix-v1-src = gradle2nixV1Src;
           packages.mvn2nix = inputs.mvn2nix.packages.${system}.mvn2nix;
 
-          packages.cached = pkgs.symlinkJoin {
+          packages.github-actions-cached = pkgs.symlinkJoin {
             name = "packagessss";
 
             paths = with self.packages."${system}"; [
