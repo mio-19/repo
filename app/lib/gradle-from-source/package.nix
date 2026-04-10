@@ -117,6 +117,7 @@ let
         # for speed:
         "--configure-on-demand"
         "--no-daemon"
+        # gradle2nix already set --parallel for us
       ]
       ++ (
         if lib.versionOlder version "8.99.9" then
