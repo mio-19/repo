@@ -41,6 +41,7 @@
     jdk21_headless
   ],
   bootstrapGradle,
+  passthru ? { },
 }:
 let
   toolchainPaths = lib.concatStringsSep "," javaToolchains;
@@ -230,8 +231,11 @@ let
           ${lib.optionalString stdenv.hostPlatform.isLinux "echo ${udev} >> $out/nix-support/manual-runtime-dependencies"}
         '';
 
-      passthru.jdk = java;
-      passthru.lockFile = filteredLockfile;
+      passthru = {
+        jdk = java;
+        lockFile = filteredLockfile;
+      }
+      // passthru;
 
       meta = {
         platforms = [
