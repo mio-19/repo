@@ -5,6 +5,7 @@
   gradle-from-source,
   runCommand,
   jq,
+  lib,
 }:
 gradle-from-source {
   version = "8.14.3";

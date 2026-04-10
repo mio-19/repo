@@ -8,20 +8,16 @@
   gradle-from-source,
   runCommand,
   jq,
+  lib,
 }:
 gradle-from-source {
   version = "8.11-20240808-2";
   rev = "c2454dd71782f1affb28858269f1360e96763033";
   hash = "sha256-tfMknJmlZ70ZtMgLf8J54nCSxuHz1fpgygiijsjJhh8=";
   # org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:5.0.0 org.jetbrains.kotlin:kotlin-stdlib:2.0.10
-  lockFile =
-    runCommand "merged-lock"
-      {
-        nativeBuildInputs = [ jq ];
-      }
-      ''
-        jq -s '.[0] * .[1]' ${gradle_8_11_20240808_1.unwrapped.passthru.lockFile} ${./more.gradle.lock} > $out
-      '';
+  lockFile = runCommand "merged-lock" { } ''
+    ${lib.getExe jq} -s '.[0] * .[1]' ${gradle_8_11_20240808_1.unwrapped.passthru.lockFile} ${./more.gradle.lock} > $out
+  '';
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.
   buildJdk = temurin-bin-11;

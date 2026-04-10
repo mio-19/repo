@@ -44,25 +44,20 @@
 }:
 let
   toolchainPaths = lib.concatStringsSep "," javaToolchains;
-  filteredLockfile =
-    runCommand "filtered-gradle-${version}-gradle.lock"
-      {
-        nativeBuildInputs = [ jq ];
-      }
-      ''
-        jq '
-          with_entries(
-            select(
-              (
-                (.key | startswith("gradle:gradle:"))
-                or (.key | startswith("android-studio:android-studio:"))
-                or (.key | startswith("org.gradle.buildtool.internal:gradle-ide-starter:"))
-              )
-              | not
-            )
+  filteredLockfile = runCommand "filtered-gradle-${version}-gradle.lock" { } ''
+    ${lib.getExe jq} '
+      with_entries(
+        select(
+          (
+            (.key | startswith("gradle:gradle:"))
+            or (.key | startswith("android-studio:android-studio:"))
+            or (.key | startswith("org.gradle.buildtool.internal:gradle-ide-starter:"))
           )
-        ' ${lockFile} > $out
-      '';
+          | not
+        )
+      )
+    ' ${lockFile} > $out
+  '';
   jnaLibraryPath = lib.optionalString stdenv.hostPlatform.isLinux (lib.makeLibraryPath [ udev ]);
   jnaFlag = lib.optionalString stdenv.hostPlatform.isLinux ''--add-flags "-Djna.library.path=${jnaLibraryPath}"'';
   mkGradle' =
