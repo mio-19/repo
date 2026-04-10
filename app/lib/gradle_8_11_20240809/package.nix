@@ -13,7 +13,7 @@ gradle-from-source {
   version = "8.11-20240809";
   rev = "d40cb09ed3c2f557ee731dd88dde0cae2f3f0ce1";
   hash = "sha256-xt5RLWbM1YAgg0IAl7OttqV1qjxpWzyRmQdGKjTXmr0=";
-  # more.gradle.lock: org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:5.1.0 org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.10 org.jetbrains.kotlin:kotlin-util-io:2.0.10
+  # more.gradle.lock: org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:5.1.0 org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.10 org.jetbrains.kotlin:kotlin-util-io:2.0.10 org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.7.0
   # ./refresh-hashes.sh more.gradle.lock
   lockFile =
     runCommand "merged-lock"
