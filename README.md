@@ -219,6 +219,3 @@ read
 + <https://github.com/osbm/nixapks>
 + <https://github.com/tiann/KernelSU/issues/2942#issuecomment-4078266560>
 + <https://www.reddit.com/r/LineageOS/comments/1oaw2hj/comment/nkisxra/>
-
-
-gradle: can we remove org.gradle.buildtool.internal:gradle-ide-starter ?
