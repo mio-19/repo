@@ -7,4 +7,3 @@
   hash = "";
   defaultJava = jdk17_headless;
 }).wrapped
-
