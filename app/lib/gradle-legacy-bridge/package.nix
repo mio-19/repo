@@ -25,6 +25,7 @@
   extraPluginLibs ? [ ],
   jdk ? jdk8_headless,
   buildTimestamp ? "19700101000000+0000",
+  buildTimestampIso ? "1970-01-01 00\\:00\\:00 UTC",
   patches ? [ ],
   patchFlags ? [ ],
 }:
@@ -124,7 +125,9 @@ let
 
         mkdir -p build/all/classes/org/gradle
         cat > build/all/classes/org/gradle/build-receipt.properties <<EOF
+        baseVersion=${version}
         buildTimestamp=${buildTimestamp}
+        buildTimestampIso=${buildTimestampIso}
         commitId=direct-bootstrap
         isSnapshot=false
         versionBase=${version}

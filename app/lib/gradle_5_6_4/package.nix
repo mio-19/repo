@@ -31,6 +31,8 @@ gradle-legacy-bridge {
   hash = "sha256-sGLAyKn2PVIp4OBe1rvhU7Tact4cHvF9iaIlSZ4bGYE=";
   inherit bootstrapGradle;
   jdk = jdk11_headless;
+  patches = [ ./bootstrap-jdk11-compat.patch ];
+  patchFlags = [ "-p1" ];
   extraLibs = [ antlr ];
   sourceSubprojects = [
     "antlr"
@@ -60,6 +62,7 @@ gradle-legacy-bridge {
     "javascript"
     "jvm-services"
     "language-jvm"
+    "launcher"
     "logging"
     "maven"
     "messaging"
@@ -104,6 +107,7 @@ gradle-legacy-bridge {
     "gradle-hashing"
     "gradle-installation-beacon"
     "gradle-jvm-services"
+    "gradle-launcher"
     "gradle-logging"
     "gradle-messaging"
     "gradle-model-core"
