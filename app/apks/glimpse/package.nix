@@ -35,6 +35,8 @@ let
       ./gradle.lock
       # [id: 'org.lineageos.generatebp', version: '1.28', apply: false] org.jetbrains.kotlin:kotlin-stdlib:2.2.0 org.jetbrains.kotlin:kotlin-reflect:2.2.0
       ./more.gradle.lock
+      # org.jetbrains.kotlin:kotlin-reflect:2.2.21
+      gradle_9_3_1.unwrapped.passthru.lockFile
     ];
     postPatch = ''
       substituteInPlace gradle/libs.versions.toml \
