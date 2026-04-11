@@ -4,6 +4,8 @@
   commons_codec_1_10,
   commons_codec_1_11,
   commons_codec_1_13,
+  slf4j_api_1_7_30,
+  slf4j_api_1_7_36,
 }:
 # generally jar use newer version, pom keeps the same version.
 {
@@ -16,6 +18,10 @@
       overrides-fromsrc-bare."com.google.guava:failureaccess:1.0.2"."failureaccess-1.0.2.jar";
     "failureaccess-1.0.1.pom" =
       overrides-fromsrc-bare."com.google.guava:failureaccess:1.0.1"."failureaccess-1.0.1.pom";
+  };
+  "org.slf4j:slf4j-api:1.7.30" = {
+    "slf4j-api-1.7.30.jar" = _: "${slf4j_api_1_7_36}/slf4j-api-1.7.30.jar";
+    "slf4j-api-1.7.30.pom" = _: "${slf4j_api_1_7_30}/slf4j-api-1.7.30.pom";
   };
 
   # WS-2019-0379 https://github.com/apache/incubator-kie-issues/issues/1785 Apache commons-codec before version “commons-codec-1.13-RC1” is vulnerable to information disclosure due to Improper Input validation.
