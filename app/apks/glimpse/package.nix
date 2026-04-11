@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   overrides-from-source,
-  gradle2nixBuilders,
+  gradle2nixBuilders',
   sources,
   lib,
   jdk25_headless,
@@ -12,11 +12,6 @@
   gradle_9_4_1,
 }:
 let
-  inherit (sources.lineage_glimpse)
-    src
-    version
-    ;
-
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
@@ -26,17 +21,21 @@ let
 
   gradle = gradle_9_4_1;
 
-  appPackage = gradle2nixBuilders.buildGradlePackage rec {
+  appPackage = gradle2nixBuilders'.buildGradlePackage rec {
     pname = "glimpse";
-    inherit version src gradle;
+    inherit (sources.lineage_glimpse)
+      src
+      version
+      ;
+    inherit gradle;
 
     lockFile = mergeLock [
+      gradle_9_4_1.unwrapped.passthru.lockFile
       ./gradle.lock
       # [id: 'org.lineageos.generatebp', version: '1.28', apply: false] org.jetbrains.kotlin:kotlin-stdlib:2.2.0 org.jetbrains.kotlin:kotlin-reflect:2.2.0
       ./more.gradle.lock
       # generateBp 1.32
       ./bp.gradle.lock
-      gradle_9_4_1.unwrapped.passthru.lockFile
     ];
     postPatch = ''
       substituteInPlace gradle/libs.versions.toml \
@@ -53,26 +52,13 @@ let
       writableTmpDirAsHomeHook
     ];
 
-    dontUseGradleConfigure = true;
-
     env = {
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     };
 
-    preConfigure = ''
-      export ANDROID_USER_HOME="$HOME/.android"
-      export GRADLE_USER_HOME="$(mktemp -d)"
-      export TERM=dumb
-      mkdir -p "$ANDROID_USER_HOME"
-      echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
-      gradleFlagsArray+=(--no-daemon --init-script "$gradleInitScript" --offline)
-    '';
-
     gradleFlags = [
-      "-x"
-      "lintVitalRelease"
       "-Dorg.gradle.java.home=${jdk25_headless.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
       "-Dorg.gradle.java.installations.paths=${jdk25_headless}"

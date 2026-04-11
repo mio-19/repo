@@ -82,19 +82,6 @@
       flake-parts,
       ...
     }:
-    let
-      mkPatchedFlakeSrc =
-        {
-          input,
-          name,
-          patches,
-          pkgs,
-        }:
-        pkgs.applyPatches {
-          inherit name patches;
-          src = input.outPath;
-        };
-    in
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
@@ -111,39 +98,70 @@
       perSystem =
         args@{ pkgs, system, ... }:
         let
-          gradle2nixV1Src = mkPatchedFlakeSrc {
-            inherit pkgs;
-            input = inputs.gradle2nix-v1;
+          inherit (pkgs) fetchpatch applyPatches;
+          gradle2nixV1Src = applyPatches {
+            src = inputs.gradle2nix-v1.outPath;
             name = "gradle2nix-v1-patched";
             patches = [
               ./patches/gradle2nix-v1/bootstrap-modernization.patch
             ];
           };
-
           gradle2nixV1 =
-            (import "${gradle2nixV1Src}/flake.nix").outputs {
-              self = gradle2nixV1;
-              nixpkgs = inputs.nixpkgs;
-              flake-utils = inputs.gradle2nix-v1.inputs.flake-utils;
-            }
+            (import "${gradle2nixV1Src}/flake.nix").outputs (
+              inputs.gradle2nix-v1.inputs
+              // {
+                self = gradle2nixV1;
+              }
+            )
             // {
               outPath = toString gradle2nixV1Src;
             };
+
+          gradle2nixSrc = applyPatches {
+            src = inputs.gradle2nix.outPath;
+            name = "gradle2nix-patched";
+            patches = [
+              (fetchpatch {
+                name = "v2: gradleFlags: use -Dorg.gradle.console=plain";
+                url = "https://github.com/tadfisher/gradle2nix/pull/92.patch";
+                hash = "sha256-q9qHgFA2FHfO91ltgub+D4QmElveQ4LT0jDoz/WGdGE=";
+              })
+              (fetchpatch {
+                name = "fix gradle 7.5 support";
+                url = "https://github.com/tadfisher/gradle2nix/pull/88.patch";
+                hash = "sha256-mvtKycVDJ3NMV/CPRcsWKg0irLDxYDlLRU/3X3YBB60=";
+              })
+            ];
+          };
+          gradle2nix =
+            (import "${gradle2nixSrc}/flake.nix").outputs (
+              inputs.gradle2nix.inputs
+              // {
+                self = gradle2nix;
+              }
+            )
+            // {
+              outPath = toString gradle2nixSrc;
+            };
         in
         {
-          _module.args.gradle2nixV1 = gradle2nixV1;
+          _module.args.gradle2nixV1Patched = gradle2nixV1;
+          _module.args.gradle2nixPatched = gradle2nix;
 
           formatter = pkgs.nixfmt;
 
           packages.gradle2nix-v1 = gradle2nixV1.packages.${system}.gradle2nix;
-          packages.gradle2nix-v1-src = gradle2nixV1Src;
+          packages.gradle2nix-v1Src = gradle2nixV1.outPath;
+          packages.gradle2nix = gradle2nix.packages.${system}.gradle2nix;
+          packages.gradle2nixSrc = gradle2nix.outPath;
           packages.mvn2nix = inputs.mvn2nix.packages.${system}.mvn2nix;
 
           packages.github-actions-cached = pkgs.symlinkJoin {
-            name = "packagessss";
-
+            name = "github-actions-cached";
             paths = with self.packages."${system}"; [
               fdroid-repo
+              gradle2nix
+              mvn2nix
             ];
           };
 
