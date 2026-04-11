@@ -43,6 +43,17 @@ gradle-from-source {
         mavenCentral()
     }
     EOF
+    tee -a build-logic/buildquality/build.gradle.kts >/dev/null <<'EOF'
+
+    repositories {
+        gradlePluginPortal()
+        maven {
+            name = "JFrog OSS releases"
+            url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
+        }
+        mavenCentral()
+    }
+    EOF
     nix run github:tadfisher/gradle2nix/6c0f9601ac41a1af04df09d8377ab706d07a4cf4  -- --gradle-wrapper=7.6
   */
   bootstrapGradle = gradle_7_6;
