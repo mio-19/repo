@@ -2,7 +2,6 @@
 {
   perSystem =
     {
-      lib,
       system,
       gradle2nixV1Patched,
       gradle2nixPatched,
@@ -11,6 +10,7 @@
     }:
     let
       pkgs = pkgsPatched;
+      inherit (pkgs) lib;
       sources = (import ../_sources/generated.nix) {
         inherit (pkgs)
           fetchurl
