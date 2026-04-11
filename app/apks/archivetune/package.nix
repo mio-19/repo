@@ -11,7 +11,7 @@
   unzip,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  overrides-update,
+  overrides-fromsrc-updated,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -40,7 +40,7 @@ let
 
     # $ nix develop /path/to/repo#apk_archivetune -c nix run github:tadfisher/gradle2nix/v2
     lockFile = ./gradle.lock;
-    overrides = overrides-fromsrc // overrides-update;
+    overrides = overrides-fromsrc-updated;
     buildJdk = jdk21_headless;
 
     nativeBuildInputs = [

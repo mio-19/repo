@@ -10,7 +10,7 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   fetchpatch,
-  overrides-update,
+  overrides-fromsrc-updated,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -31,7 +31,7 @@ let
     inherit gradle;
 
     lockFile = ./gradle.lock;
-    overrides = overrides-fromsrc // overrides-update;
+    overrides = overrides-fromsrc-updated;
     buildJdk = jdk25_headless;
 
     patches = [

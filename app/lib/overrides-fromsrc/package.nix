@@ -1,5 +1,11 @@
 {
   overrides-fromsrc-bare,
-  overrides-update-patch,
+  deepMerge,
 }:
-overrides-fromsrc-bare // overrides-update-patch
+let
+  patches = import ./patches.nix {
+    self = result;
+  };
+  result = deepMerge overrides-fromsrc-bare patches;
+in
+result

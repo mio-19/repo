@@ -9,7 +9,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  overrides-update,
+  overrides-fromsrc-updated,
   gradle_9_1_0,
 }:
 let
@@ -32,7 +32,7 @@ let
     inherit version src gradle;
 
     lockFile = ./gradle.lock;
-    overrides = overrides-fromsrc // overrides-update;
+    overrides = overrides-fromsrc-updated;
     buildJdk = jdk25_headless;
 
     nativeBuildInputs = [

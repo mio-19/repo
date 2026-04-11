@@ -9,7 +9,7 @@
   lib,
   mkSignScript,
   writableTmpDirAsHomeHook,
-  overrides-update,
+  overrides-fromsrc-updated,
 }:
 
 let
@@ -36,7 +36,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   inherit gradle;
 
-  overrides = overrides-fromsrc // overrides-update;
+  overrides = overrides-fromsrc-updated;
 
   buildJdk = jdk25_headless;
 

@@ -7,7 +7,7 @@
   lib,
   stdenv,
   writableTmpDirAsHomeHook,
-  overrides-update,
+  overrides-fromsrc-updated,
   gradle_8_2,
 }:
 let
@@ -35,7 +35,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   inherit gradle;
 
-  overrides = overrides-fromsrc // overrides-update;
+  overrides = overrides-fromsrc-updated;
 
   buildJdk = jdk17_headless;
 
