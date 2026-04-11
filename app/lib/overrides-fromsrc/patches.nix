@@ -50,5 +50,21 @@
   "commons-codec:commons-codec:1.12"."commons-codec-1.12.jar" =
     self."commons-codec:commons-codec:1.13"."commons-codec-1.13.jar";
 
-  # TODO: gson [2.2.3,2.8.9) CVE-2022-25647 https://nvd.nist.gov/vuln/detail/cve-2022-25647
+  # gson [2.2.3,2.8.9) CVE-2022-25647 https://nvd.nist.gov/vuln/detail/cve-2022-25647
+  "com.google.code.gson:gson:2.8.1"."gson-2.8.1.jar" =
+    self."com.google.code.gson:gson:2.8.2"."gson-2.8.2.jar";
+  "com.google.code.gson:gson:2.8.2"."gson-2.8.2.jar" =
+    self."com.google.code.gson:gson:2.8.3"."gson-2.8.3.jar";
+  "com.google.code.gson:gson:2.8.3"."gson-2.8.3.jar" =
+    self."com.google.code.gson:gson:2.8.4"."gson-2.8.4.jar";
+  "com.google.code.gson:gson:2.8.4"."gson-2.8.4.jar" =
+    self."com.google.code.gson:gson:2.8.5"."gson-2.8.5.jar";
+  "com.google.code.gson:gson:2.8.5"."gson-2.8.5.jar" =
+    self."com.google.code.gson:gson:2.8.6"."gson-2.8.6.jar";
+  "com.google.code.gson:gson:2.8.6"."gson-2.8.6.jar" =
+    self."com.google.code.gson:gson:2.8.7"."gson-2.8.7.jar";
+  "com.google.code.gson:gson:2.8.7"."gson-2.8.7.jar" =
+    self."com.google.code.gson:gson:2.8.8"."gson-2.8.8.jar";
+  "com.google.code.gson:gson:2.8.8"."gson-2.8.8.jar" =
+    self."com.google.code.gson:gson:2.8.9"."gson-2.8.9.jar";
 }
