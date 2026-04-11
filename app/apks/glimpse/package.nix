@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   overrides-from-source,
-  gradle2nixBuilders',
+  gradle2nixBuilders,
   sources,
   lib,
   jdk25_headless,
@@ -21,7 +21,7 @@ let
 
   gradle = gradle_9_4_1_;
 
-  appPackage = gradle2nixBuilders'.buildGradlePackage rec {
+  appPackage = gradle2nixBuilders.buildGradlePackage rec {
     pname = "glimpse";
     inherit (sources.lineage_glimpse)
       src
