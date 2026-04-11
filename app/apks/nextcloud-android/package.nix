@@ -1,6 +1,6 @@
 {
   mk-apk-package,
-  overrides-from-source,
+  overrides-fromsrc,
   gradle2nixBuilders,
   lib,
   jdk25_headless,
@@ -34,7 +34,7 @@ let
     };
 
     lockFile = ./gradle.lock;
-    overrides = overrides-from-source;
+    overrides = overrides-fromsrc;
     buildJdk = jdk25_headless;
 
     postPatch = ''

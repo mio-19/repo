@@ -2,12 +2,12 @@
   androidSdkBuilder,
   fetchFromGitHub,
   gradle2nixBuilders,
-  overrides-from-source,
+  overrides-fromsrc,
   jdk17_headless,
   lib,
   stdenv,
   writableTmpDirAsHomeHook,
-  overrides-update,
+  overrides-fromsrc-updated,
   gradle_8_2,
 }:
 let
@@ -35,7 +35,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   inherit gradle;
 
-  overrides = overrides-from-source // overrides-update;
+  overrides = overrides-fromsrc-updated;
 
   buildJdk = jdk17_headless;
 

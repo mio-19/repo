@@ -2,14 +2,14 @@
   apksigner,
   androidSdkBuilder,
   fetchgit,
-  overrides-from-source,
+  overrides-fromsrc,
   gradle2nixBuilders,
   gradle_9_3_1,
   jdk25_headless,
   lib,
   mkSignScript,
   writableTmpDirAsHomeHook,
-  overrides-update,
+  overrides-fromsrc-updated,
 }:
 
 let
@@ -36,7 +36,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   inherit gradle;
 
-  overrides = overrides-from-source // overrides-update;
+  overrides = overrides-fromsrc-updated;
 
   buildJdk = jdk25_headless;
 

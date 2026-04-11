@@ -5,7 +5,7 @@
   darwin,
   fetchFromGitHub,
   go,
-  overrides-from-source,
+  overrides-fromsrc,
   gradle2nixBuilders,
   gperf,
   jdk21_headless,
@@ -19,6 +19,7 @@
   unzip,
   which,
   writableTmpDirAsHomeHook,
+  gradle_8_14_4,
 }:
 
 let
@@ -38,6 +39,8 @@ gradle2nixBuilders.buildGradlePackage rec {
   pname = "forkgram";
   version = "12.6.5.0";
 
+  gradle = gradle_8_14_4;
+
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "TelegramAndroid";
@@ -48,7 +51,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   lockFile = ./gradle.lock;
 
-  overrides = overrides-from-source;
+  overrides = overrides-fromsrc;
 
   buildJdk = jdk21_headless;
 

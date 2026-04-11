@@ -2,8 +2,6 @@
 {
   perSystem =
     {
-      pkgs,
-      lib,
       system,
       gradle2nixV1Patched,
       gradle2nixPatched,
@@ -11,6 +9,8 @@
       ...
     }:
     let
+      pkgs = pkgsPatched;
+      inherit (pkgs) lib;
       sources = (import ../_sources/generated.nix) {
         inherit (pkgs)
           fetchurl
@@ -20,17 +20,12 @@
           ;
       };
       mvn2nixMaven = pkgs.callPackage "${inputs.mvn2nix}/maven.nix" { };
-      gradle2nixScope = pkgs.callPackage "${inputs.gradle2nix}/nix" { };
-      # TODO: replace above
-      gradle2nixScope' = pkgs.callPackage "${gradle2nixPatched}/nix" { };
+      gradle2nixScope = pkgs.callPackage "${gradle2nixPatched}/nix" { };
       helpers = {
         inherit (mvn2nixMaven) buildMavenRepositoryFromLockFile;
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
         gradle2nixBuilders = {
           inherit (gradle2nixScope) buildGradlePackage buildMavenRepo;
-        };
-        gradle2nixBuilders' = {
-          inherit (gradle2nixScope') buildGradlePackage buildMavenRepo;
         };
         gradle2nixV1Builders = gradle2nixV1Patched.builders.${system};
         inherit

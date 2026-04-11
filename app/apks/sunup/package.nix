@@ -1,6 +1,6 @@
 {
   mk-apk-package,
-  overrides-from-source,
+  overrides-fromsrc,
   gradle2nixBuilders,
   lib,
   jdk21_headless,
@@ -11,7 +11,7 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   git,
-  overrides-update,
+  overrides-fromsrc-updated,
 }:
 let
   version = "1.3.1";
@@ -38,7 +38,7 @@ let
     inherit version src gradle;
 
     lockFile = ./gradle.lock;
-    overrides = overrides-from-source // overrides-update;
+    overrides = overrides-fromsrc-updated;
     buildJdk = jdk17_headless;
 
     postPatch = ''

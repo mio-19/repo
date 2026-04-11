@@ -1,6 +1,6 @@
 {
   mk-apk-package,
-  overrides-from-source,
+  overrides-fromsrc,
   gradle2nixBuilders,
   sources,
   lib,
@@ -9,7 +9,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  overrides-update,
+  overrides-fromsrc-updated,
   gradle_9_1_0,
 }:
 let
@@ -32,7 +32,7 @@ let
     inherit version src gradle;
 
     lockFile = ./gradle.lock;
-    overrides = overrides-from-source // overrides-update;
+    overrides = overrides-fromsrc-updated;
     buildJdk = jdk25_headless;
 
     nativeBuildInputs = [

@@ -1,6 +1,6 @@
 {
   mk-apk-package,
-  overrides-from-source,
+  overrides-fromsrc,
   gradle2nixBuilders,
   sources,
   lib,
@@ -14,7 +14,7 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   nodejs,
-  overrides-update,
+  overrides-fromsrc-updated,
 }:
 let
 
@@ -39,7 +39,7 @@ let
       inherit gradle;
 
       lockFile = ./gradle.lock;
-      overrides = overrides-from-source // overrides-update;
+      overrides = overrides-fromsrc-updated;
       buildJdk = jdk25_headless;
 
       npmDeps = fetchNpmDeps {

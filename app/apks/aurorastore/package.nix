@@ -1,6 +1,6 @@
 {
   mk-apk-package,
-  overrides-from-source,
+  overrides-fromsrc,
   gradle2nixBuilders,
   lib,
   jdk21_headless,
@@ -9,7 +9,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  overrides-update,
+  overrides-fromsrc-updated,
 }:
 let
   version = "4.8.1";
@@ -35,7 +35,7 @@ let
     inherit version src gradle;
 
     lockFile = ./gradle.lock;
-    overrides = overrides-from-source // overrides-update;
+    overrides = overrides-fromsrc-updated;
     buildJdk = jdk21_headless;
 
     nativeBuildInputs = [

@@ -1,8 +1,8 @@
 {
   mk-apk-package,
-  overrides-from-source,
+  overrides-fromsrc,
   gradle2nixBuilders,
-  gradle_9_4_1_,
+  gradle_9_4_1,
   lib,
   jdk21_headless,
   fetchFromGitHub,
@@ -11,7 +11,7 @@
   unzip,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  overrides-update,
+  overrides-fromsrc-updated,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -23,7 +23,7 @@ let
   ]);
 
   # https://github.com/koiverse/ArchiveTune/blob/v13.1.0/gradle/wrapper/gradle-wrapper.properties
-  gradle = gradle_9_4_1_;
+  gradle = gradle_9_4_1;
 
   appPackage = gradle2nixBuilders.buildGradlePackage rec {
     pname = "archivetune";
@@ -40,7 +40,7 @@ let
 
     # $ nix develop /path/to/repo#apk_archivetune -c nix run github:tadfisher/gradle2nix/v2
     lockFile = ./gradle.lock;
-    overrides = overrides-from-source // overrides-update;
+    overrides = overrides-fromsrc-updated;
     buildJdk = jdk21_headless;
 
     nativeBuildInputs = [

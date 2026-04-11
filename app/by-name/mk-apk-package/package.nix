@@ -75,15 +75,15 @@ appPackage.overrideAttrs (
       };
     };
 
-    preBuild = lib.optionalString hasGradleBuild disableLintHook + (old.preBuild or "");
-
-    preGradleUpdate = lib.optionalString hasGradleBuild disableLintHook + (old.preGradleUpdate or "");
-
     meta =
       (old.meta or { })
       // {
         inherit mainApk;
       }
       // lib.optionalAttrs (fdroid != null) fdroid;
+  }
+  // lib.optionalAttrs hasGradleBuild {
+    preBuild = disableLintHook + (old.preBuild or "");
+    preGradleUpdate = disableLintHook + (old.preGradleUpdate or "");
   }
 )
