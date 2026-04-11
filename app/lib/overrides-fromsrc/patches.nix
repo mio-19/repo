@@ -67,4 +67,6 @@
     self."com.google.code.gson:gson:2.8.8"."gson-2.8.8.jar";
   "com.google.code.gson:gson:2.8.8"."gson-2.8.8.jar" =
     self."com.google.code.gson:gson:2.8.9"."gson-2.8.9.jar";
+
+  # TODO: guava CVE-2023-2976 https://nvd.nist.gov/vuln/detail/cve-2023-2976 Even though the security vulnerability is fixed in version 32.0.0, we recommend using version 32.0.1 as version 32.0.0 breaks some functionality under Windows.
 }
