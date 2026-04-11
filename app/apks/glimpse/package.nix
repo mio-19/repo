@@ -9,7 +9,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  gradle_9_1_0,
+  gradle_9_3_1,
 }:
 let
   inherit (sources.lineage_glimpse)
@@ -25,7 +25,7 @@ let
     s.build-tools-36-0-0
   ]);
 
-  gradle = gradle_9_1_0;
+  gradle = gradle_9_3_1;
 
   appPackage = gradle2nixBuilders.buildGradlePackage rec {
     pname = "glimpse";
