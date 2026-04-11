@@ -1,4 +1,4 @@
-# before commit https://github.com/gradle/gradle/commit/b88dfd4e5c1aebc5dfa9c2e9c5663fd05c69b8ee
+# before commit https://github.com/gradle/gradle/commit/0c667cf65b0b6fe397de7a5a7d0479f158da37d4
 {
   temurin-bin-8,
   temurin-bin-11,
@@ -8,8 +8,8 @@
   gradle-from-source,
 }:
 gradle-from-source {
-  version = "7.6.0-20220909";
-  rev = "f8b0dfe64a1adb979d594102dac01435901444a4";
+  version = "7.6.0-20220803";
+  rev = "b7aed4fb93d9aaeb2e1d24d60eab4150cc39d997";
   hash = "";
   lockFile = ./gradle.lock;
   defaultJava = jdk17_headless;
