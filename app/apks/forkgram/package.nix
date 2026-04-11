@@ -5,7 +5,7 @@
   darwin,
   fetchFromGitHub,
   go,
-  overrides-from-source,
+  overrides-fromsrc,
   gradle2nixBuilders,
   gperf,
   jdk21_headless,
@@ -48,7 +48,7 @@ gradle2nixBuilders.buildGradlePackage rec {
 
   lockFile = ./gradle.lock;
 
-  overrides = overrides-from-source;
+  overrides = overrides-fromsrc;
 
   buildJdk = jdk21_headless;
 

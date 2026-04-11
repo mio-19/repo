@@ -1,0 +1,143 @@
+diff --git a/build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts b/build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts
+index 2f0e1a4fafc..d9813df5a1f 100644
+--- a/build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts
++++ b/build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts
+@@ -40,5 +40,18 @@ repositories {
+             includeGroup("io.usethesource")
+         }
+     }
++    maven {
++        name = "JFrog OSS releases"
++        url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
++    }
++
++    maven {
++        name = "Gradle JCenter backup"
++        url = uri("https://repo.gradle.org/artifactory/jcenter-backup/")
++        content {
++            includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")
++        }
++    }
++
+     mavenCentral()
+ }
+diff --git a/build-logic/build-platform/build.gradle.kts b/build-logic/build-platform/build.gradle.kts
+index a31cf95af80..411502808a5 100644
+--- a/build-logic/build-platform/build.gradle.kts
++++ b/build-logic/build-platform/build.gradle.kts
+@@ -76,3 +76,12 @@ dependencies {
+         api("org.objenesis:objenesis") { version { strictly("3.1") } }
+     }
+ }
++
++    repositories {
++        gradlePluginPortal()
++        maven {
++            name = "JFrog OSS releases"
++            url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
++        }
++        mavenCentral()
++    }
+diff --git a/build-logic/buildquality/build.gradle.kts b/build-logic/buildquality/build.gradle.kts
+index 09b76157999..ff78c391c2c 100644
+--- a/build-logic/buildquality/build.gradle.kts
++++ b/build-logic/buildquality/build.gradle.kts
+@@ -28,3 +28,12 @@ dependencies {
+ 
+     testImplementation("org.junit.jupiter:junit-jupiter-engine")
+ }
++
++    repositories {
++        gradlePluginPortal()
++        maven {
++            name = "JFrog OSS releases"
++            url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
++        }
++        mavenCentral()
++    }
+diff --git a/build-logic/performance-testing/build.gradle.kts b/build-logic/performance-testing/build.gradle.kts
+index ecf478850d9..665fb6ff0d2 100644
+--- a/build-logic/performance-testing/build.gradle.kts
++++ b/build-logic/performance-testing/build.gradle.kts
+@@ -49,3 +49,12 @@ tasks.withType<Test>().configureEach {
+     environment("BUILD_BRANCH", "myBranch")
+     environment("BUILD_COMMIT_ID", "myCommitId")
+ }
++
++    repositories {
++        gradlePluginPortal()
++        maven {
++            name = "JFrog OSS releases"
++            url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
++        }
++        mavenCentral()
++    }
+diff --git a/build-logic/settings.gradle.kts b/build-logic/settings.gradle.kts
+index 52bb131f1ef..a01523d69c8 100644
+--- a/build-logic/settings.gradle.kts
++++ b/build-logic/settings.gradle.kts
+@@ -21,6 +21,7 @@ pluginManagement {
+ }
+ 
+ dependencyResolutionManagement {
++        repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+     repositories {
+         maven {
+             name = "Gradle Enterprise release candidates"
+@@ -39,6 +40,19 @@ dependencyResolutionManagement {
+                 includeModule("classycle", "classycle")
+             }
+         }
++            maven {
++                name = "Gradle JCenter backup"
++                url = uri("https://repo.gradle.org/artifactory/jcenter-backup/")
++                content {
++                    includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")
++                }
++            }
++
++            maven {
++                name = "JFrog OSS release-local"
++                url = uri("https://oss.jfrog.org/oss-release-local/")
++            }
++
+         mavenCentral()
+         gradlePluginPortal()
+     }
+diff --git a/build-logic/uber-plugins/build.gradle.kts b/build-logic/uber-plugins/build.gradle.kts
+index 5cf863994d1..972b9518239 100644
+--- a/build-logic/uber-plugins/build.gradle.kts
++++ b/build-logic/uber-plugins/build.gradle.kts
+@@ -17,3 +17,12 @@ dependencies {
+     implementation("org.gradle.kotlin:gradle-kotlin-dsl-conventions")
+     implementation(kotlin("gradle-plugin"))
+ }
++
++    repositories {
++        gradlePluginPortal()
++        maven {
++            name = "JFrog OSS releases"
++            url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
++        }
++        mavenCentral()
++    }
+diff --git a/settings.gradle.kts b/settings.gradle.kts
+index 4e21f76197e..e88324c51f8 100644
+--- a/settings.gradle.kts
++++ b/settings.gradle.kts
+@@ -13,6 +13,15 @@ pluginManagement {
+             }
+         }
+         gradlePluginPortal()
++        maven {
++            name = "Gradle JCenter backup"
++            url = uri("https://repo.gradle.org/artifactory/jcenter-backup/")
++            content {
++                includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")
++            }
++        }
++
++        maven { url = uri("https://releases.jfrog.io/artifactory/oss-releases/") }
+     }
+ }
+ 

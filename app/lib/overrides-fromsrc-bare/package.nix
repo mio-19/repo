@@ -19,6 +19,7 @@
   error_prone_annotations_2_36_0,
   commons_codec_1_10,
   commons_codec_1_11,
+  commons_codec_1_13,
   commons_codec_1_15,
   commons_codec_1_17_1,
   commons_lang3_3_16_0,
@@ -244,6 +245,10 @@ in
   "commons-codec:commons-codec:1.11" = {
     "commons-codec-1.11.jar" = _: "${commons_codec_1_11}/commons-codec-1.11.jar";
     "commons-codec-1.11.pom" = _: "${commons_codec_1_11}/commons-codec-1.11.pom";
+  };
+  "commons-codec:commons-codec:1.13" = {
+    "commons-codec-1.13.jar" = _: "${commons_codec_1_13}/commons-codec-1.13.jar";
+    "commons-codec-1.13.pom" = _: "${commons_codec_1_13}/commons-codec-1.13.pom";
   };
   "commons-codec:commons-codec:1.15" = {
     "commons-codec-1.15.jar" = _: "${commons_codec_1_15}/commons-codec-1.15.jar";
