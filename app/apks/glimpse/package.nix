@@ -9,7 +9,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  gradle_9_4_1,
+  gradle_9_4_1_,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -19,7 +19,7 @@ let
     s.build-tools-36-0-0
   ]);
 
-  gradle = gradle_9_4_1;
+  gradle = gradle_9_4_1_;
 
   appPackage = gradle2nixBuilders'.buildGradlePackage rec {
     pname = "glimpse";
@@ -30,7 +30,7 @@ let
     inherit gradle;
 
     lockFile = mergeLock [
-      gradle_9_4_1.unwrapped.passthru.lockFile
+      gradle.unwrapped.passthru.lockFile
       ./gradle.lock
       # [id: 'org.lineageos.generatebp', version: '1.28', apply: false] org.jetbrains.kotlin:kotlin-stdlib:2.2.0 org.jetbrains.kotlin:kotlin-reflect:2.2.0
       ./more.gradle.lock

@@ -7,6 +7,7 @@
       system,
       gradle2nixV1Patched,
       gradle2nixPatched,
+      pkgsPatched,
       ...
     }:
     let
@@ -34,6 +35,7 @@
         gradle2nixV1Builders = gradle2nixV1Patched.builders.${system};
         inherit
           sources
+          pkgsPatched
           ;
         apktool-src = sources.morphe_apktool.src;
         multidexlib2-src = sources.morphe_multidexlib2.src;

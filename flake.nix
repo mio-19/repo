@@ -106,15 +106,16 @@
               ./patches/gradle2nix-v1/bootstrap-modernization.patch
             ];
           };
-          gradle2nixV1 =
+          gradle2nixV1Patched =
             (import "${gradle2nixV1Src}/flake.nix").outputs (
               inputs.gradle2nix-v1.inputs
               // {
-                self = gradle2nixV1;
+                self = gradle2nixV1Patched;
+                inherit nixpkgs;
               }
             )
             // {
-              outPath = toString gradle2nixV1Src;
+              inherit (gradle2nixV1Src) outPath;
             };
 
           gradle2nixSrc = applyPatches {
@@ -133,27 +134,53 @@
               })
             ];
           };
-          gradle2nix =
+          gradle2nixPatched =
             (import "${gradle2nixSrc}/flake.nix").outputs (
               inputs.gradle2nix.inputs
               // {
-                self = gradle2nix;
+                self = gradle2nixPatched;
+                inherit nixpkgs;
               }
             )
             // {
-              outPath = toString gradle2nixSrc;
+              inherit (gradle2nixSrc) outPath;
             };
+
+          nixpkgsSrc = applyPatches {
+            src = inputs.nixpkgs;
+            name = "nixpkgs-patched";
+            postPatch = ''
+              substituteInPlace \
+                pkgs/development/tools/build-managers/gradle/setup-hook.sh \
+                --replace-fail '--console plain' '-Dorg.gradle.console=plain'
+            '';
+          };
+          nixpkgs =
+            (import "${nixpkgsSrc}/flake.nix").outputs (
+              inputs.nixpkgs.inputs
+              // {
+                self = nixpkgs;
+              }
+            )
+            // {
+              inherit (nixpkgsSrc) outPath;
+            };
+          pkgsPatched = import nixpkgs {
+            inherit (pkgs) config;
+            inherit system;
+          };
         in
         {
-          _module.args.gradle2nixV1Patched = gradle2nixV1;
-          _module.args.gradle2nixPatched = gradle2nix;
+          _module.args = {
+            inherit pkgsPatched gradle2nixV1Patched gradle2nixPatched;
+          };
 
           formatter = pkgs.nixfmt;
 
-          packages.gradle2nix-v1 = gradle2nixV1.packages.${system}.gradle2nix;
-          packages.gradle2nix-v1Src = gradle2nixV1.outPath;
-          packages.gradle2nix = gradle2nix.packages.${system}.gradle2nix;
-          packages.gradle2nixSrc = gradle2nix.outPath;
+          packages.gradle2nix-v1 = gradle2nixV1Patched.packages.${system}.gradle2nix;
+          packages.gradle2nix-v1Src = gradle2nixV1Patched.outPath;
+          packages.gradle2nix = gradle2nixPatched.packages.${system}.gradle2nix;
+          packages.gradle2nixSrc = gradle2nixPatched.outPath;
           packages.mvn2nix = inputs.mvn2nix.packages.${system}.mvn2nix;
 
           packages.github-actions-cached = pkgs.symlinkJoin {
