@@ -4,7 +4,7 @@
   temurin-bin-11,
   temurin-bin-17,
   jdk21_headless,
-  gradle_8_7_20240118_2,
+  gradle_8_7_20240118_1,
   gradle-from-source,
   mergeLock,
 }:
@@ -13,8 +13,10 @@ gradle-from-source {
   rev = "7fce522c0d57e78741975babadb286989f7c1f72";
   hash = "sha256-+oxWCSomQVqUQeh+CmaJe3VjyhP+xRqN90rtA2ZtNhc=";
   lockFile = mergeLock [
-    gradle_8_7_20240118_2.unwrapped.passthru.lockFile
+    gradle_8_7_20240118_1.unwrapped.passthru.lockFile
     ./more.gradle.lock
+    # org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:4.3.0
+    ../gradle_8_7_rc1/gradle.lock
   ];
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.
@@ -24,5 +26,5 @@ gradle-from-source {
     temurin-bin-11
     temurin-bin-17
   ];
-  bootstrapGradle = gradle_8_7_20240118_2;
+  bootstrapGradle = gradle_8_7_20240118_1;
 }

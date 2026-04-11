@@ -26,6 +26,7 @@
   overrides-from-source,
 }:
 {
+  configureOnDemand ? false,
   version,
   tag ? if lib.length (lib.splitString "." version) == 2 then "v${version}.0" else "v${version}",
   rev ? null,
@@ -50,7 +51,7 @@ let
   additionalPostPatch = postPatch;
   additionalPatches = patches;
   toolchainPaths = lib.concatStringsSep "," javaToolchains;
-  filteredLockfile = runCommand "filtered-gradle-${version}-gradle.lock" { } ''
+  filteredLockfile = runCommand "filtered-gradle-unwrapped-${version}.lock" { } ''
     ${lib.getExe jq} '
       with_entries(
         select(
@@ -58,6 +59,7 @@ let
             (.key | startswith("gradle:gradle:"))
             or (.key | startswith("android-studio:android-studio:"))
             or (.key | startswith("org.gradle.buildtool.internal:gradle-ide-starter:"))
+            or (.key | startswith("net.sf.docbook:docbook-xsl:"))
           )
           | not
         )
@@ -66,13 +68,14 @@ let
   '';
   jnaLibraryPath = lib.optionalString stdenv.hostPlatform.isLinux (lib.makeLibraryPath [ udev ]);
   jnaFlag = lib.optionalString stdenv.hostPlatform.isLinux ''--add-flags "-Djna.library.path=${jnaLibraryPath}"'';
+  # similar to nixpkgs mkGradle'
   mkGradle' =
     {
       java ? defaultJava,
       ...
     }:
     gradleBuilders.buildGradlePackage rec {
-      pname = "gradle";
+      pname = "gradle-unwrapped";
       inherit version;
       lockFile = filteredLockfile;
 
@@ -121,7 +124,6 @@ let
         "--no-configuration-cache"
         "--no-build-cache"
         # for speed:
-        #"--configure-on-demand" # breaks 8.7.0-20240118-1
         "--no-daemon"
         # gradle2nix already set --parallel for us
       ]
@@ -139,6 +141,9 @@ let
             "-Dorg.gradle.java.installations.paths=${toolchainPaths}" # gradle 9.x
           ]
       )
+      ++ lib.optionals configureOnDemand [
+        "--configure-on-demand" # breaks 8.7.0-20240118-1
+      ]
       ++ additionalGradleFlags;
 
       gradleBuildFlags = [ ":distributions-full:binDistributionZip" ];
@@ -169,13 +174,6 @@ let
         mkdir -vp $gradleLibexec
         cp -av lib/ $gradleLibexec
         [ -f $gradleLibexec/lib/gradle-launcher-*.jar ] || { echo "No Gradle launcher jar found!" >&2; exit 1; }
-
-        gradleCliMainJar="$(echo $gradleLibexec/lib/gradle-gradle-cli-main-*.jar)"
-        # $gradleCliMainJar no such file with gradle older than gradle_8_9_20240411
-        if [ -f "$gradleCliMainJar" ] && ! unzip -p "$gradleCliMainJar" META-INF/MANIFEST.MF | grep -q '^Main-Class: '; then
-          printf 'Main-Class: org.gradle.launcher.GradleMain\n' > gradle-cli-main-manifest.txt
-          ${buildPackages.jdk}/bin/jar ufm "$gradleCliMainJar" gradle-cli-main-manifest.txt
-        fi
 
         echo ${lib.escapeShellArg "org.gradle.java.installations.paths=${toolchainPaths}"} > $gradleLibexec/gradle.properties
 

@@ -13,6 +13,7 @@
   rustPlatform,
   cargo,
   rustc,
+  fetchurl,
 }:
 let
   appPackage =
@@ -35,6 +36,11 @@ let
         repo = "sdk-internal";
         rev = "14521973668ec4f5e3de86e474637cc68bd70ac3";
         hash = "sha256-EZZa3Cv7HdQKy9JCqqrn6s/CQJ1LECvl5UIWSztvIKE=";
+      };
+
+      sdkSrcLock = fetchurl {
+        url = "${sdkSrc.meta.homepage}/raw/${sdkSrc.rev}/Cargo.lock";
+        hash = "sha256-dZGh3z/twScrWkX1rcJWmcnqorsVYQq3ZbKgCsooE8o=";
       };
 
       androidCrossConfig = {
@@ -80,7 +86,10 @@ let
           src = sdkSrc;
 
           cargoLock = {
-            lockFile = "${sdkSrc}/Cargo.lock";
+            # this cause whole src to be fetched during evaluation
+            #lockFile = "${sdkSrc}/Cargo.lock";
+            # this only fetches one file during nix evaluation
+            lockFile = sdkSrcLock;
             outputHashes = {
               "passkey-0.5.0" = "sha256-vOeb5y3NImP1YQxs70FRiJACtQK+IdtE0HeHHUJoK5o=";
               "uniffi-0.29.4" = "sha256-uUENtV5Oo+Gz5p44e+f2SDX6ea3tlWlLqAFOLBnxHwg=";
@@ -118,7 +127,10 @@ let
         version = "2.0.0";
         src = sdkSrc;
         cargoLock = {
-          lockFile = "${sdkSrc}/Cargo.lock";
+          # this cause whole src to be fetched during evaluation
+          #lockFile = "${sdkSrc}/Cargo.lock";
+          # this only fetches one file during nix evaluation
+          lockFile = sdkSrcLock;
           outputHashes = {
             "passkey-0.5.0" = "sha256-vOeb5y3NImP1YQxs70FRiJACtQK+IdtE0HeHHUJoK5o=";
             "uniffi-0.29.4" = "sha256-uUENtV5Oo+Gz5p44e+f2SDX6ea3tlWlLqAFOLBnxHwg=";

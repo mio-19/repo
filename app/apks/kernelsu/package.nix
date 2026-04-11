@@ -9,6 +9,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  fetchurl,
 }:
 let
   appPackage =
@@ -79,7 +80,13 @@ let
           sourceRoot = "${kernelsuSrc.name}/userspace/ksud";
 
           cargoLock = {
-            lockFile = "${kernelsuSrc}/userspace/ksud/Cargo.lock";
+            # this cause whole src to be fetched during evaluation
+            #lockFile = "${kernelsuSrc}/userspace/ksud/Cargo.lock";
+            # this only fetches one file during nix evaluation
+            lockFile = fetchurl {
+              url = "${kernelsuSrc.meta.homepage}/raw/refs/tags/${kernelsuSrc.tag}/userspace/ksud/Cargo.lock";
+              hash = "sha256-fmsvdykF2oSNcjzTOQO+qFvsncMRnSMOwGhoCEZtvzs=";
+            };
             outputHashes = {
               "hole-punch-0.0.4-alpha.0" = "sha256-Ye8jEhvDOxBsIzmLTF1oxSuIuFdcy0+sh5cCYbg+VZg=";
               "java-properties-2.0.0" = "sha256-fvekRqJI3Xwzo9z0Li36NFMIYnP5FMP8D9uVcK32soc=";

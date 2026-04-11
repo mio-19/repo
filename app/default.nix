@@ -5,7 +5,9 @@
       pkgs,
       lib,
       system,
-      gradle2nixV1,
+      gradle2nixV1Patched,
+      gradle2nixPatched,
+      pkgsPatched,
       ...
     }:
     let
@@ -19,15 +21,21 @@
       };
       mvn2nixMaven = pkgs.callPackage "${inputs.mvn2nix}/maven.nix" { };
       gradle2nixScope = pkgs.callPackage "${inputs.gradle2nix}/nix" { };
+      # TODO: replace above
+      gradle2nixScope' = pkgs.callPackage "${gradle2nixPatched}/nix" { };
       helpers = {
         inherit (mvn2nixMaven) buildMavenRepositoryFromLockFile;
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
         gradle2nixBuilders = {
           inherit (gradle2nixScope) buildGradlePackage buildMavenRepo;
         };
-        gradle2nixV1Builders = gradle2nixV1.builders.${system};
+        gradle2nixBuilders' = {
+          inherit (gradle2nixScope') buildGradlePackage buildMavenRepo;
+        };
+        gradle2nixV1Builders = gradle2nixV1Patched.builders.${system};
         inherit
           sources
+          pkgsPatched
           ;
         apktool-src = sources.morphe_apktool.src;
         multidexlib2-src = sources.morphe_multidexlib2.src;
