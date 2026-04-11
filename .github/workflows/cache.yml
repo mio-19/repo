@@ -81,7 +81,7 @@ jobs:
     - name: Build nix packages
       if: runner.os == 'Linux'
       run: |
-        timeout --signal=KILL 15m nix run nixpkgs#nix-fast-build -- --max-jobs 1 --option cores 1 \
+        timeout --signal=KILL 25m nix run nixpkgs#nix-fast-build -- --max-jobs 1 --option cores 1 \
           --no-nom \
           -f .#packages.${{ env.SYSTEM }}.github-actions-cached
     - name: Build nix packages
