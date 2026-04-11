@@ -41,6 +41,7 @@
   gson_2_10_1,
   gson_2_11_0,
   gson_2_8_6,
+  gson_2_8_9,
   gson_2_12_1,
   gson_2_13_2,
   glide_5_0_5,
@@ -184,6 +185,10 @@ in
     "gson-2.10.1.jar" = _: "${gson_2_10_1}/gson-2.10.1.jar";
     "gson-2.10.1.pom" = _: "${gson_2_10_1}/gson-2.10.1.pom";
   };
+  "com.google.code.gson:gson:2.8.9" = {
+    "gson-2.8.9.jar" = _: "${gson_2_8_9}/gson-2.8.9.jar";
+    "gson-2.8.9.pom" = _: "${gson_2_8_9}/gson-2.8.9.pom";
+  };
   "com.google.code.gson:gson:2.8.6" = {
     "gson-2.8.6.jar" = _: "${gson_2_8_6}/gson-2.8.6.jar";
     "gson-2.8.6.pom" = _: "${gson_2_8_6}/gson-2.8.6.pom";
@@ -204,6 +209,9 @@ in
   };
   "com.google.code.gson:gson-parent:2.8.6" = {
     "gson-parent-2.8.6.pom" = _: "${gson_2_8_6}/gson-parent-2.8.6.pom";
+  };
+  "com.google.code.gson:gson-parent:2.8.9" = {
+    "gson-parent-2.8.9.pom" = _: "${gson_2_8_9}/gson-parent-2.8.9.pom";
   };
   "com.google.code.gson:gson-parent:2.12.1" = {
     "gson-parent-2.12.1.pom" = _: "${gson_2_12_1}/gson-parent-2.12.1.pom";
