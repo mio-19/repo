@@ -23,7 +23,7 @@
   callPackage,
   jq,
   runCommand,
-  overrides-from-source,
+  overrides-fromsrc,
 }:
 {
   configureOnDemand ? false,
@@ -79,7 +79,7 @@ let
       inherit version;
       lockFile = filteredLockfile;
 
-      overrides = overrides-from-source;
+      overrides = overrides-fromsrc;
 
       src =
         if rev == null then

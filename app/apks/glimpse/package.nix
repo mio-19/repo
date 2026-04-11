@@ -1,6 +1,6 @@
 {
   mk-apk-package,
-  overrides-from-source,
+  overrides-fromsrc,
   gradle2nixBuilders,
   sources,
   lib,
@@ -41,7 +41,7 @@ let
       substituteInPlace gradle/libs.versions.toml \
         --replace-fail 'generateBp = "+"' 'generateBp = "1.32"'
     '';
-    overrides = overrides-from-source;
+    overrides = overrides-fromsrc;
     buildJdk = jdk25_headless;
 
     nativeBuildInputs = [

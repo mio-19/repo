@@ -1,6 +1,6 @@
 {
   mk-apk-package,
-  overrides-from-source,
+  overrides-fromsrc,
   gradle2nixBuilders,
   sources,
   lib,
@@ -34,7 +34,7 @@ let
     inherit version src gradle;
 
     lockFile = ./gradle.lock;
-    overrides = overrides-from-source // overrides-update;
+    overrides = overrides-fromsrc // overrides-update;
     buildJdk = jdk25_headless;
 
     patches = [
