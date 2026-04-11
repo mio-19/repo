@@ -1,0 +1,159 @@
+diff -urN gradle-5.1.1-base/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/ivyresolve/ErrorHandlingModuleComponentRepository.java gradle-5.1.1-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/ivyresolve/ErrorHandlingModuleComponentRepository.java
+--- gradle-5.1.1-base/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/ivyresolve/ErrorHandlingModuleComponentRepository.java	2019-01-11 02:02:23.000000000 +1100
++++ gradle-5.1.1-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/ivyresolve/ErrorHandlingModuleComponentRepository.java	2026-04-11 13:20:31.773402150 +1000
+@@ -48,6 +48,7 @@
+ import org.gradle.internal.resolve.result.ErroringResolveResult;
+ import org.gradle.internal.resource.transport.http.HttpErrorStatusCodeException;
+ 
++import java.lang.reflect.Field;
+ import java.net.SocketTimeoutException;
+ import java.util.List;
+ import java.util.Map;
+@@ -291,7 +292,7 @@
+             }
+             if (failure instanceof HttpErrorStatusCodeException) {
+                 HttpErrorStatusCodeException httpError = (HttpErrorStatusCodeException) failure;
+-                return httpError.isServerError() || isTransientClientError(httpError.getStatusCode());
++                return httpError.isServerError() || isTransientClientError(getStatusCode(httpError));
+             }
+             Throwable cause = failure.getCause();
+             if (cause != null && cause != failure) {
+@@ -300,6 +301,16 @@
+             return false;
+         }
+ 
++        private static int getStatusCode(HttpErrorStatusCodeException httpError) {
++            try {
++                Field statusCodeField = HttpErrorStatusCodeException.class.getDeclaredField("statusCode");
++                statusCodeField.setAccessible(true);
++                return statusCodeField.getInt(httpError);
++            } catch (ReflectiveOperationException ex) {
++                return -1;
++            }
++        }
++
+         private static boolean isTransientClientError(int statusCode) {
+             return statusCode == HttpStatus.SC_REQUEST_TIMEOUT ||
+                     statusCode == 429; // Too many requests (not available through HttpStatus.XXX)
+diff -urN gradle-5.1.1-base/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java gradle-5.1.1-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java
+--- gradle-5.1.1-base/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java	2019-01-11 02:02:23.000000000 +1100
++++ gradle-5.1.1-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java	2026-04-11 13:20:31.771402149 +1000
+@@ -691,7 +691,7 @@
+ 
+         private List<String> readStringList() throws IOException {
+             int size = readCount();
+-            ImmutableList.Builder<String> builder = ImmutableList.builderWithExpectedSize(size);
++            ImmutableList.Builder<String> builder = ImmutableList.builder();
+             for (int i = 0; i < size; i++) {
+                 builder.add(readString());
+             }
+@@ -700,7 +700,7 @@
+ 
+         private Set<String> readStringSet() throws IOException {
+             int size = readCount();
+-            ImmutableSet.Builder<String> builder = ImmutableSet.builderWithExpectedSize(size);
++            ImmutableSet.Builder<String> builder = ImmutableSet.builder();
+             for (int i = 0; i < size; i++) {
+                 builder.add(readString());
+             }
+diff -urN gradle-5.1.1-base/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java gradle-5.1.1-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java
+--- gradle-5.1.1-base/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java	2019-01-11 02:02:23.000000000 +1100
++++ gradle-5.1.1-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java	2026-04-11 13:20:31.771402149 +1000
+@@ -69,7 +69,7 @@
+     private static ImmutableList<SpecMatcher> createSpecMatchers(Set<ContentSpec> specs) {
+         ImmutableList<SpecMatcher> matchers = null;
+         if (specs != null) {
+-            ImmutableList.Builder<SpecMatcher> builder = ImmutableList.builderWithExpectedSize(specs.size());
++            ImmutableList.Builder<SpecMatcher> builder = ImmutableList.builder();
+             for (ContentSpec spec : specs) {
+                 builder.add(spec.toMatcher());
+             }
+diff -urN gradle-5.1.1-base/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java gradle-5.1.1-mod/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java
+--- gradle-5.1.1-base/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java	2019-01-11 02:02:23.000000000 +1100
++++ gradle-5.1.1-mod/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java	2026-04-11 13:20:31.771402149 +1000
+@@ -314,7 +314,7 @@
+     @VisibleForTesting
+     static final class ProgressListenerConfiguration {
+ 
+-        private static final Map<String, OperationType> OPERATION_TYPE_MAPPING = ImmutableMap.<String, OperationType>builderWithExpectedSize(OperationType.values().length)
++        private static final Map<String, OperationType> OPERATION_TYPE_MAPPING = ImmutableMap.<String, OperationType>builder()
+             .put(InternalBuildProgressListener.TEST_EXECUTION, OperationType.TEST)
+             .put(InternalBuildProgressListener.TASK_EXECUTION, OperationType.TASK)
+             .put(InternalBuildProgressListener.WORK_ITEM_EXECUTION, OperationType.WORK_ITEM)
+diff -urN gradle-5.1.1-base/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java gradle-5.1.1-mod/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java
+--- gradle-5.1.1-base/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java	2019-01-11 02:02:23.000000000 +1100
++++ gradle-5.1.1-mod/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java	2026-04-11 13:20:31.773402150 +1000
+@@ -20,6 +20,8 @@
+ import org.gradle.internal.Factory;
+ 
+ import javax.annotation.Nullable;
++import java.lang.reflect.InvocationTargetException;
++import java.lang.reflect.Method;
+ import java.util.concurrent.Callable;
+ 
+ import static org.gradle.util.GUtil.uncheckedCall;
+@@ -27,6 +29,8 @@
+ public class DeferredUtil {
+ 
+     private static Boolean kotlinFunction0CanBeLoaded = null;
++    private static Class<?> kotlinFunction0Class = null;
++    private static Method kotlinFunction0InvokeMethod = null;
+ 
+     /**
+      * Successively unpacks a deferred value until it is resolved to null or something other than Callable (including Groovy Closure) or Kotlin lambda
+@@ -72,16 +76,19 @@
+     }
+ 
+     private static boolean isKotlinFunction0Deferrable(@Nullable Object value) {
+-        return value != null && kotlinFunction0CanBeLoaded() && value instanceof kotlin.jvm.functions.Function0;
++        return value != null && kotlinFunction0CanBeLoaded() && kotlinFunction0Class.isInstance(value);
+     }
+ 
+     private static boolean kotlinFunction0CanBeLoaded() {
+         if (kotlinFunction0CanBeLoaded == null) {
+             try {
+-                DeferredUtil.class.getClassLoader().loadClass("kotlin.jvm.functions.Function0");
++                kotlinFunction0Class = DeferredUtil.class.getClassLoader().loadClass("kotlin.jvm.functions.Function0");
++                kotlinFunction0InvokeMethod = kotlinFunction0Class.getMethod("invoke");
+                 kotlinFunction0CanBeLoaded = true;
+             } catch (ClassNotFoundException ex) {
+                 kotlinFunction0CanBeLoaded = false;
++            } catch (NoSuchMethodException ex) {
++                throw new IllegalStateException("Failed to locate kotlin.jvm.functions.Function0.invoke()", ex);
+             }
+         }
+         return kotlinFunction0CanBeLoaded;
+@@ -90,6 +97,12 @@
+     @Nullable
+     private static Object unpackKotlinFunction0(Object value) {
+         assert kotlinFunction0CanBeLoaded;
+-        return ((kotlin.jvm.functions.Function0) value).invoke();
++        try {
++            return kotlinFunction0InvokeMethod.invoke(value);
++        } catch (IllegalAccessException ex) {
++            throw new IllegalStateException("Failed to invoke kotlin.jvm.functions.Function0", ex);
++        } catch (InvocationTargetException ex) {
++            throw org.gradle.internal.UncheckedException.throwAsUncheckedException(ex.getCause());
++        }
+     }
+ }
+diff -urN gradle-5.1.1-base/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java gradle-5.1.1-mod/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java
+--- gradle-5.1.1-base/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java	2019-01-11 02:02:23.000000000 +1100
++++ gradle-5.1.1-mod/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java	2026-04-11 13:20:31.771402149 +1000
+@@ -16,7 +16,6 @@
+ 
+ package org.gradle.tooling.internal.provider.runner;
+ 
+-import com.google.common.base.MoreObjects;
+ import org.apache.commons.io.FilenameUtils;
+ import org.gradle.api.internal.ExecuteDomainObjectCollectionCallbackBuildOperationType;
+ import org.gradle.api.internal.plugins.ApplyPluginBuildOperationType;
+@@ -122,7 +121,7 @@
+     private InternalBinaryPluginIdentifier toBinaryPluginIdentifier(ApplyPluginBuildOperationType.Details details) {
+         String className = details.getPluginClass().getName();
+         String pluginId = details.getPluginId();
+-        String displayName = MoreObjects.firstNonNull(pluginId, className);
++        String displayName = pluginId != null ? pluginId : className;
+         return new DefaultBinaryPluginIdentifier(displayName, className, pluginId);
+     }
+ 
