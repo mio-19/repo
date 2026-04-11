@@ -37,8 +37,8 @@ let
       ./more.gradle.lock
       # generateBp 1.32
       ./bp.gradle.lock
-      # com.android.tools.lint:lint-gradle:32.1.0. only needed on darwin for some reason
-      ../archivetune/gradle.lock
+      # com.android.tools.lint:lint-gradle:32.1.0
+      ./lint.gradle.lock
     ];
     postPatch = ''
       substituteInPlace gradle/libs.versions.toml \
