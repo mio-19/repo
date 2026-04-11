@@ -96,7 +96,7 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
-        data = ./nix-on-droid_deps.json;
+        data = if bumpAGP then ./nix-on-droid_deps.json else ./deps-old.json;
         silent = false;
         useBwrap = false;
       };
