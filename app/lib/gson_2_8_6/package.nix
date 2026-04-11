@@ -18,41 +18,31 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [ jdk21_headless ];
 
-  dontConfigure = true;
-  dontUnpack = true;
+  buildPhase = ''
+    runHook preBuild
+
+    mkdir -p generated/src/main/java/com/google/gson/internal
+    substitute $src/gson/src/main/java-templates/com/google/gson/internal/GsonBuildConfig.java generated/src/main/java/com/google/gson/internal/GsonBuildConfig.java \
+      --replace-fail '${"$"}{project.version}' "${finalAttrs.version}"
+    find "$src/gson/src/main/java" -name '*.java' ! -name 'module-info.java' > sources.txt
+    find generated -name '*.java' >> sources.txt
+    mkdir classes
+    javac --release 8 -encoding UTF-8 -d classes @sources.txt
+
+    cd classes
+    jar cf "../gson-${finalAttrs.version}.jar" .
+    cd ..
+
+    runHook postBuild
+  '';
 
   installPhase = ''
     runHook preInstall
 
-    tmp="$(mktemp -d)"
-    trap 'rm -rf "$tmp"' EXIT
-    cd "$tmp"
-
-    mkdir -p classes
-    mkdir -p generated/com/google/gson/internal
-    cat > generated/com/google/gson/internal/GsonBuildConfig.java <<EOF
-    package com.google.gson.internal;
-
-    public final class GsonBuildConfig {
-      public static final String VERSION = "${finalAttrs.version}";
-
-      private GsonBuildConfig() {
-      }
-    }
-    EOF
-    find "${finalAttrs.src}/gson/src/main/java" -name '*.java' ! -name 'module-info.java' | sort > sources.txt
-    find generated -name '*.java' | sort >> sources.txt
-    javac --release 8 -encoding UTF-8 -d classes @sources.txt
-
-    (
-      cd classes
-      jar cf "$tmp/gson-${finalAttrs.version}.jar" .
-    )
-
     mkdir -p "$out"
-    install -Dm644 "$tmp/gson-${finalAttrs.version}.jar" "$out/gson-${finalAttrs.version}.jar"
-    install -Dm644 "${finalAttrs.src}/gson/pom.xml" "$out/gson-${finalAttrs.version}.pom"
-    install -Dm644 "${finalAttrs.src}/pom.xml" "$out/gson-parent-${finalAttrs.version}.pom"
+    install -Dm644 "./gson-${finalAttrs.version}.jar" "$out/gson-${finalAttrs.version}.jar"
+    install -Dm644 "$src/gson/pom.xml" "$out/gson-${finalAttrs.version}.pom"
+    install -Dm644 "$src/pom.xml" "$out/gson-parent-${finalAttrs.version}.pom"
 
     runHook postInstall
   '';
