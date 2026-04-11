@@ -20,7 +20,10 @@ gradle-legacy-bridge {
   hash = "sha256-rpvkNqSdInehucshyQb4X1ZpROkx8n9hga95L8XkKTk=";
   bootstrapGradle = gradle_4_0;
   jdk = jdk11_headless;
-  patches = [ ./bootstrap-compat.patch ];
+  patches = [
+    ./bootstrap-compat.patch
+    ./bootstrap-jdk11-compat.patch
+  ];
   patchFlags = [ "-p1" ];
   extraLibs = [
     "${asm_6_2}/asm-${asm_6_2.version}.jar"
@@ -51,6 +54,7 @@ gradle-legacy-bridge {
     "composite-builds"
     "core"
     "core-api"
+    "dependency-management"
     "installation-beacon"
     "ivy"
     "jacoco"
@@ -65,6 +69,7 @@ gradle-legacy-bridge {
     "messaging"
     "model-core"
     "model-groovy"
+    "native"
     "osgi"
     "persistent-cache"
     "platform-base"
@@ -76,13 +81,13 @@ gradle-legacy-bridge {
     "publish"
     "reporting"
     "resources"
+    "resources-http"
     "resources-sftp"
     "runtime-api-info"
     "test-kit"
     "testing-base"
     "tooling-api"
     "tooling-api-builders"
-    "tooling-native"
     "workers"
     "wrapper"
   ];
@@ -102,6 +107,7 @@ gradle-legacy-bridge {
     "gradle-messaging"
     "gradle-model-core"
     "gradle-model-groovy"
+    "gradle-native"
     "gradle-persistent-cache"
     "gradle-process-services"
     "gradle-resources"
@@ -117,6 +123,7 @@ gradle-legacy-bridge {
     "gradle-build-init"
     "gradle-code-quality"
     "gradle-composite-builds"
+    "gradle-dependency-management"
     "gradle-ivy"
     "gradle-jacoco"
     "gradle-javascript"
@@ -132,11 +139,11 @@ gradle-legacy-bridge {
     "gradle-plugin-use"
     "gradle-publish"
     "gradle-reporting"
+    "gradle-resources-http"
     "gradle-resources-sftp"
     "gradle-test-kit"
     "gradle-testing-base"
     "gradle-tooling-api-builders"
-    "gradle-tooling-native"
     "gradle-workers"
   ];
   implementationPluginModules = [ "gradle-tooling-api-builders" ];

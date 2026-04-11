@@ -1,27 +1,29 @@
 {
   gradle-legacy-bridge,
   gradle_4_10_3,
+  jdk11_headless,
 }:
 gradle-legacy-bridge {
   version = "5.0-milestone-1";
   tag = "v5.0.0-M1";
   hash = "sha256-hmbktwjXBX04Y0n3pD8x9e4ZeOyX2va+tN/3R3Nkh30=";
   bootstrapGradle = gradle_4_10_3;
-  patches = [ ./bootstrap-compat.patch ];
+  jdk = jdk11_headless;
+  patches = [
+    ./bootstrap-compat.patch
+    ./bootstrap-jdk11-compat.patch
+  ];
   patchFlags = [ "-p1" ];
   sourceSubprojects = [
-    "announce"
     "antlr"
     "api-metadata"
     "base-services"
     "base-services-groovy"
     "build-cache"
-    "build-cache-http"
     "build-comparison"
     "build-init"
     "build-option"
     "cli"
-    "code-quality"
     "composite-builds"
     "core"
     "core-api"
@@ -29,16 +31,12 @@ gradle-legacy-bridge {
     "diagnostics"
     "ear"
     "files"
-    "ide"
-    "ide-native"
     "installation-beacon"
     "ivy"
     "jacoco"
     "javascript"
     "jvm-services"
-    "language-groovy"
     "language-jvm"
-    "language-native"
     "launcher"
     "logging"
     "maven"
@@ -46,28 +44,20 @@ gradle-legacy-bridge {
     "model-core"
     "model-groovy"
     "native"
-    "osgi"
     "persistent-cache"
     "platform-base"
     "platform-jvm"
-    "platform-native"
-    "plugin-development"
     "plugin-use"
-    "plugins"
     "process-services"
     "publish"
     "reporting"
     "resources"
-    "resources-s3"
     "resources-sftp"
     "runtime-api-info"
     "test-kit"
     "testing-base"
-    "testing-jvm"
-    "testing-native"
     "tooling-api"
     "tooling-api-builders"
-    "tooling-native"
     "workers"
     "wrapper"
   ];
@@ -97,42 +87,27 @@ gradle-legacy-bridge {
     "gradle-wrapper"
   ];
   builtPluginModules = [
-    "gradle-announce"
     "gradle-antlr"
-    "gradle-build-cache-http"
     "gradle-build-comparison"
     "gradle-build-init"
-    "gradle-code-quality"
     "gradle-composite-builds"
     "gradle-dependency-management"
     "gradle-diagnostics"
     "gradle-ear"
-    "gradle-ide"
-    "gradle-ide-native"
     "gradle-ivy"
     "gradle-jacoco"
     "gradle-javascript"
-    "gradle-language-groovy"
     "gradle-language-jvm"
-    "gradle-language-native"
     "gradle-maven"
-    "gradle-osgi"
     "gradle-platform-base"
     "gradle-platform-jvm"
-    "gradle-platform-native"
-    "gradle-plugin-development"
     "gradle-plugin-use"
-    "gradle-plugins"
     "gradle-publish"
     "gradle-reporting"
-    "gradle-resources-s3"
     "gradle-resources-sftp"
     "gradle-test-kit"
     "gradle-testing-base"
-    "gradle-testing-jvm"
-    "gradle-testing-native"
     "gradle-tooling-api-builders"
-    "gradle-tooling-native"
     "gradle-workers"
   ];
   implementationPluginModules = [ "gradle-tooling-api-builders" ];
