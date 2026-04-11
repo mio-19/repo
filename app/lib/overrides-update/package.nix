@@ -79,12 +79,6 @@ overrides-update-patch
     "j2objc-annotations-3.0.0.pom" =
       overrides-fromsrc-bare."com.google.j2objc:j2objc-annotations:3.0.0"."j2objc-annotations-3.0.0.pom";
   };
-  "com.google.guava:failureaccess:1.0.1" = {
-    "failureaccess-1.0.1.jar" =
-      overrides-fromsrc-bare."com.google.guava:failureaccess:1.0.2"."failureaccess-1.0.2.jar";
-    "failureaccess-1.0.1.pom" =
-      overrides-fromsrc-bare."com.google.guava:failureaccess:1.0.1"."failureaccess-1.0.1.pom";
-  };
   "com.google.auto.value:auto-value-annotations:1.6.2" = {
     "auto-value-annotations-1.6.2.jar" =
       overrides-fromsrc-bare."com.google.auto.value:auto-value-annotations:1.6.3"."auto-value-annotations-1.6.3.jar";
