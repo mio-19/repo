@@ -186,31 +186,40 @@
 
           packages.github-actions-cached = pkgs.symlinkJoin {
             name = "github-actions-cached";
-            paths = with self.packages."${system}"; [
-              gradle2nix
-              mvn2nix
+            paths =
+              with self.packages."${system}";
+              [
+                gradle2nix
+                mvn2nix
 
-              gradle_9_4_1
+                gradle_9_4_1
 
-              apk_joplin
-              apk_meditrak
-              apk_sunup
-              apk_nix-on-droid
-            ];
+                apk_joplin
+                apk_meditrak
+                apk_sunup
+              ]
+              ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+
+                apk_nix-on-droid
+              ];
           };
 
           packages.garnix-cached = pkgs.symlinkJoin {
             name = "garnix-cached";
-            paths = with self.packages."${system}"; [
-              github-actions-cached
+            paths =
+              with self.packages."${system}";
+              [
+                github-actions-cached
 
-              apk_comaps
-              apk_tailscale
-              apk_pdfviewer
-              apk_immich
-              apk_gamenative
-              apk_droidspaces
-            ];
+                apk_comaps
+                apk_tailscale
+                apk_pdfviewer
+                apk_gamenative
+                apk_droidspaces
+              ]
+              ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+                apk_immich
+              ];
           };
 
           # https://github.com/nix-community/nixos-apple-silicon/pull/353
