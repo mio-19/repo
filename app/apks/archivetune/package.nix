@@ -2,7 +2,7 @@
   mk-apk-package,
   overrides-fromsrc,
   gradle2nixBuilders,
-  gradle_9_4_1_,
+  gradle_9_4_1,
   lib,
   jdk21_headless,
   fetchFromGitHub,
@@ -23,7 +23,7 @@ let
   ]);
 
   # https://github.com/koiverse/ArchiveTune/blob/v13.1.0/gradle/wrapper/gradle-wrapper.properties
-  gradle = gradle_9_4_1_;
+  gradle = gradle_9_4_1;
 
   appPackage = gradle2nixBuilders.buildGradlePackage rec {
     pname = "archivetune";
