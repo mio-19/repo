@@ -4,7 +4,7 @@
   temurin-bin-11,
   temurin-bin-17,
   jdk21_headless,
-  gradle_8_11_20240904,
+  gradle_8_11_20240903,
   gradle-from-source,
   mergeLock,
 }:
@@ -13,7 +13,7 @@ gradle-from-source {
   rev = "b94bbd90f6c3da3f5f10a60dd2b1f1d75b51dd83";
   hash = "sha256-FSWbdTtldrxRNq0lsXBNH+ZdrqmQLvpavcDOKjkM/MU=";
   lockFile = mergeLock [
-    gradle_8_11_20240904.unwrapped.passthru.lockFile
+    gradle_8_11_20240903.unwrapped.passthru.lockFile
     ./more.gradle.lock
   ];
   defaultJava = jdk21_headless;
@@ -24,5 +24,5 @@ gradle-from-source {
     temurin-bin-11
     temurin-bin-17
   ];
-  bootstrapGradle = gradle_8_11_20240904;
+  bootstrapGradle = gradle_8_11_20240903;
 }
