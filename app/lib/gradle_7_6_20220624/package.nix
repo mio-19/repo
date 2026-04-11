@@ -33,5 +33,9 @@ gradle-from-source {
     temurin-bin-11
     temurin-bin-17
   ];
+  # read https://github.com/tadfisher/gradle2nix/pull/88
+  #nix-shell -p javaPackages.compiler.openjdk11-bootstrap
+  #patch -p1 < path/to/repository.patch
+  #rm gradle/verification-*; nix run github:tadfisher/gradle2nix/6c0f9601ac41a1af04df09d8377ab706d07a4cf4  -- --gradle-home=/nix/store/qm4b12x9cg8hybf6xnqg0sk3d3sqyfvr-gradle-7.6.0-20220514/libexec/gradle
   bootstrapGradle = gradle_7_6_20220514;
 }
