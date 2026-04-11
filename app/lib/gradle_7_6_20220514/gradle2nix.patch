@@ -1,9 +1,8 @@
-      
 diff --git a/build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts b/build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts
-index 2f0e1a4fafc..2ceb874adf0 100644
+index 2f0e1a4fafc..d9813df5a1f 100644
 --- a/build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts
 +++ b/build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts
-@@ -40,5 +40,16 @@ repositories {
+@@ -40,5 +40,18 @@ repositories {
              includeGroup("io.usethesource")
          }
      }
@@ -12,11 +11,13 @@ index 2f0e1a4fafc..2ceb874adf0 100644
 +        url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
 +    }
 +
-+        jcenter {
-+            content {
-+                includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")
-+            }
++    maven {
++        name = "Gradle JCenter backup"
++        url = uri("https://repo.gradle.org/artifactory/jcenter-backup/")
++        content {
++            includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")
 +        }
++    }
 +
      mavenCentral()
  }
@@ -72,20 +73,10 @@ index 29fe69a0bda..ba0a6e454d1 100644
 +        mavenCentral()
 +    }
 diff --git a/build-logic/settings.gradle.kts b/build-logic/settings.gradle.kts
-index 52bb131f1ef..21802e20411 100644
+index 52bb131f1ef..a01523d69c8 100644
 --- a/build-logic/settings.gradle.kts
 +++ b/build-logic/settings.gradle.kts
-@@ -17,10 +17,17 @@
- pluginManagement {
-     repositories {
-         gradlePluginPortal()
-+        jcenter {
-+            content {
-+                includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")
-+            }
-+        }
-+
-     }
+@@ -21,6 +21,7 @@ pluginManagement {
  }
  
  dependencyResolutionManagement {
@@ -93,11 +84,13 @@ index 52bb131f1ef..21802e20411 100644
      repositories {
          maven {
              name = "Gradle Enterprise release candidates"
-@@ -39,8 +46,25 @@ dependencyResolutionManagement {
+@@ -39,6 +40,19 @@ dependencyResolutionManagement {
                  includeModule("classycle", "classycle")
              }
          }
-+            jcenter {
++            maven {
++                name = "Gradle JCenter backup"
++                url = uri("https://repo.gradle.org/artifactory/jcenter-backup/")
 +                content {
 +                    includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")
 +                }
@@ -110,15 +103,7 @@ index 52bb131f1ef..21802e20411 100644
 +
          mavenCentral()
          gradlePluginPortal()
-+        jcenter {
-+            content {
-+                includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")
-+            }
-+        }
-+
      }
- }
- 
 diff --git a/build-logic/uber-plugins/build.gradle.kts b/build-logic/uber-plugins/build.gradle.kts
 index 5cf863994d1..972b9518239 100644
 --- a/build-logic/uber-plugins/build.gradle.kts
@@ -137,14 +122,16 @@ index 5cf863994d1..972b9518239 100644
 +        mavenCentral()
 +    }
 diff --git a/settings.gradle.kts b/settings.gradle.kts
-index c2a65166268..b02ee479874 100644
+index c2a65166268..37e1eb7aca2 100644
 --- a/settings.gradle.kts
 +++ b/settings.gradle.kts
-@@ -13,6 +13,13 @@ pluginManagement {
+@@ -13,6 +13,15 @@ pluginManagement {
              }
          }
          gradlePluginPortal()
-+        jcenter {
++        maven {
++            name = "Gradle JCenter backup"
++            url = uri("https://repo.gradle.org/artifactory/jcenter-backup/")
 +            content {
 +                includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")
 +            }
