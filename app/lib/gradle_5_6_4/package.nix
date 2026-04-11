@@ -1,45 +1,23 @@
 {
-  fetchurl,
   gradle-legacy-bridge,
+  gradle_5_1_1,
   jdk11_headless,
-  runCommand,
-  unzip,
 }:
-let
-  antlr = fetchurl {
-    url = "https://repo1.maven.org/maven2/antlr/antlr/2.7.7/antlr-2.7.7.jar";
-    hash = "sha256-iPvaS5Ellrn1bo4S5YDMlUus+1F3bs/d0+GPwc9W3Ew=";
-  };
-  bootstrapGradle =
-    runCommand "gradle-5.6.4-bootstrap"
-      {
-        src = fetchurl {
-          url = "https://services.gradle.org/distributions/gradle-5.6.4-bin.zip";
-          hash = "sha256-HzBnBzBBvERVTQ7+XUAqM7w9PJPMOatoTzCFhtcyqA0=";
-        };
-        nativeBuildInputs = [ unzip ];
-      }
-      ''
-        mkdir -p "$out/libexec/gradle"
-        unzip -q "$src"
-        cp -a gradle-5.6.4/lib "$out/libexec/gradle/"
-      '';
-in
 gradle-legacy-bridge {
   version = "5.6.4";
   tag = "v5.6.4";
   hash = "sha256-sGLAyKn2PVIp4OBe1rvhU7Tact4cHvF9iaIlSZ4bGYE=";
-  inherit bootstrapGradle;
+  bootstrapGradle = gradle_5_1_1;
   jdk = jdk11_headless;
-  patches = [ ./bootstrap-jdk11-compat.patch ];
+  patches = [
+    ./bootstrap-jdk11-compat.patch
+  ];
   patchFlags = [ "-p1" ];
-  extraLibs = [ antlr ];
   sourceSubprojects = [
     "antlr"
     "api-metadata"
     "base-services"
     "base-services-groovy"
-    "bootstrap"
     "build-cache"
     "build-cache-packaging"
     "build-comparison"
@@ -73,12 +51,10 @@ gradle-legacy-bridge {
     "platform-base"
     "platform-jvm"
     "plugin-use"
-    "plugins"
     "process-services"
     "publish"
     "reporting"
     "resources"
-    "resources-http"
     "resources-sftp"
     "runtime-api-info"
     "snapshots"
@@ -140,7 +116,6 @@ gradle-legacy-bridge {
     "gradle-plugin-use"
     "gradle-publish"
     "gradle-reporting"
-    "gradle-resources-http"
     "gradle-resources-sftp"
     "gradle-test-kit"
     "gradle-testing-base"
