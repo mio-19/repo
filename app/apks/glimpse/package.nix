@@ -9,7 +9,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  gradle_9_3_1,
+  gradle_9_4_1,
 }:
 let
   inherit (sources.lineage_glimpse)
@@ -25,7 +25,7 @@ let
     s.build-tools-36-0-0
   ]);
 
-  gradle = gradle_9_3_1;
+  gradle = gradle_9_4_1;
 
   appPackage = gradle2nixBuilders.buildGradlePackage rec {
     pname = "glimpse";
@@ -35,8 +35,7 @@ let
       ./gradle.lock
       # [id: 'org.lineageos.generatebp', version: '1.28', apply: false] org.jetbrains.kotlin:kotlin-stdlib:2.2.0 org.jetbrains.kotlin:kotlin-reflect:2.2.0
       ./more.gradle.lock
-      # org.jetbrains.kotlin:kotlin-reflect:2.2.21
-      gradle_9_3_1.unwrapped.passthru.lockFile
+      gradle_9_4_1.unwrapped.passthru.lockFile
     ];
     postPatch = ''
       substituteInPlace gradle/libs.versions.toml \
