@@ -1,4 +1,5 @@
 {
+  stdenv,
   mk-apk-package,
   overrides-fromsrc,
   gradle2nixBuilders,
@@ -36,6 +37,8 @@ let
       ./more.gradle.lock
       # generateBp 1.32
       ./bp.gradle.lock
+      # com.android.tools.lint:lint-gradle:32.1.0. only needed on darwin for some reason
+      ../archivetune/gradle.lock
     ];
     postPatch = ''
       substituteInPlace gradle/libs.versions.toml \
@@ -67,6 +70,11 @@ let
     ];
 
     gradleBuildFlags = ":app:assembleRelease";
+
+    preBuild = lib.optionalString stdenv.isDarwin ''
+      export ANDROID_USER_HOME="$HOME/.android"
+      mkdir -p "$ANDROID_USER_HOME"
+    '';
 
     installPhase = ''
       runHook preInstall
