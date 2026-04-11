@@ -11,6 +11,12 @@
   checker_qual_3_33_0,
   checker_qual_3_43_0,
   error_prone_annotations_2_41_0,
+  error_prone_annotations_2_5_1,
+  error_prone_annotations_2_11_0,
+  error_prone_annotations_2_23_0,
+  error_prone_annotations_2_3_2,
+  error_prone_annotations_2_3_4,
+  error_prone_annotations_2_36_0,
   commons_codec_1_10,
   commons_codec_1_11,
   commons_codec_1_15,
@@ -33,6 +39,9 @@
   failureaccess_1_0_2,
   gson_2_10_1,
   gson_2_11_0,
+  gson_2_8_6,
+  gson_2_12_1,
+  gson_2_13_2,
   glide_5_0_5,
   flatbuffers_java_1_12_0,
   guava_31_1_android,
@@ -46,6 +55,7 @@
   jakarta_activation_api_1_2_1,
   jakarta_xml_bind_api_2_3_2,
   javapoet_1_13_0,
+  javapoet_1_10_0,
   j2objc_annotations_2_8,
   j2objc_annotations_3_0_0,
   j2objc_annotations_3_1,
@@ -173,11 +183,32 @@ in
     "gson-2.10.1.jar" = _: "${gson_2_10_1}/gson-2.10.1.jar";
     "gson-2.10.1.pom" = _: "${gson_2_10_1}/gson-2.10.1.pom";
   };
+  "com.google.code.gson:gson:2.8.6" = {
+    "gson-2.8.6.jar" = _: "${gson_2_8_6}/gson-2.8.6.jar";
+    "gson-2.8.6.pom" = _: "${gson_2_8_6}/gson-2.8.6.pom";
+  };
+  "com.google.code.gson:gson:2.12.1" = {
+    "gson-2.12.1.jar" = _: "${gson_2_12_1}/gson-2.12.1.jar";
+    "gson-2.12.1.pom" = _: "${gson_2_12_1}/gson-2.12.1.pom";
+  };
+  "com.google.code.gson:gson:2.13.2" = {
+    "gson-2.13.2.jar" = _: "${gson_2_13_2}/gson-2.13.2.jar";
+    "gson-2.13.2.pom" = _: "${gson_2_13_2}/gson-2.13.2.pom";
+  };
   "com.google.code.gson:gson-parent:2.11.0" = {
     "gson-parent-2.11.0.pom" = _: "${gson_2_11_0}/gson-parent-2.11.0.pom";
   };
   "com.google.code.gson:gson-parent:2.10.1" = {
     "gson-parent-2.10.1.pom" = _: "${gson_2_10_1}/gson-parent-2.10.1.pom";
+  };
+  "com.google.code.gson:gson-parent:2.8.6" = {
+    "gson-parent-2.8.6.pom" = _: "${gson_2_8_6}/gson-parent-2.8.6.pom";
+  };
+  "com.google.code.gson:gson-parent:2.12.1" = {
+    "gson-parent-2.12.1.pom" = _: "${gson_2_12_1}/gson-parent-2.12.1.pom";
+  };
+  "com.google.code.gson:gson-parent:2.13.2" = {
+    "gson-parent-2.13.2.pom" = _: "${gson_2_13_2}/gson-parent-2.13.2.pom";
   };
   "com.github.bumptech.glide:disklrucache:5.0.5" = {
     "disklrucache-5.0.5.aar" = _: "${glide_5_0_5}/disklrucache-5.0.5.aar";
@@ -306,6 +337,10 @@ in
     "javapoet-1.13.0.jar" = _: "${javapoet_1_13_0}/javapoet-1.13.0.jar";
     "javapoet-1.13.0.pom" = _: "${javapoet_1_13_0}/javapoet-1.13.0.pom";
   };
+  "com.squareup:javapoet:1.10.0" = {
+    "javapoet-1.10.0.jar" = _: "${javapoet_1_10_0}/javapoet-1.10.0.jar";
+    "javapoet-1.10.0.pom" = _: "${javapoet_1_10_0}/javapoet-1.10.0.pom";
+  };
   "com.googlecode.juniversalchardet:juniversalchardet:1.0.3" = {
     "juniversalchardet-1.0.3.jar" = _: "${juniversalchardet_1_0_3}/juniversalchardet-1.0.3.jar";
     "juniversalchardet-1.0.3.pom" = _: "${juniversalchardet_1_0_3}/juniversalchardet-1.0.3.pom";
@@ -347,6 +382,43 @@ in
   "com.google.errorprone:error_prone_parent:2.3.1" = {
     "error_prone_parent-2.3.1.pom" = _: "${error_prone_annotations_2_3_1}/error_prone_parent-2.3.1.pom";
   };
+  "com.google.errorprone:error_prone_annotations:2.3.2" = {
+    "error_prone_annotations-2.3.2.jar" =
+      _: "${error_prone_annotations_2_3_2}/error_prone_annotations-2.3.2.jar";
+    "error_prone_annotations-2.3.2.pom" =
+      _: "${error_prone_annotations_2_3_2}/error_prone_annotations-2.3.2.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.3.2" = {
+    "error_prone_parent-2.3.2.pom" = _: "${error_prone_annotations_2_3_2}/error_prone_parent-2.3.2.pom";
+  };
+  "com.google.errorprone:error_prone_annotations:2.3.4" = {
+    "error_prone_annotations-2.3.4.jar" =
+      _: "${error_prone_annotations_2_3_4}/error_prone_annotations-2.3.4.jar";
+    "error_prone_annotations-2.3.4.pom" =
+      _: "${error_prone_annotations_2_3_4}/error_prone_annotations-2.3.4.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.3.4" = {
+    "error_prone_parent-2.3.4.pom" = _: "${error_prone_annotations_2_3_4}/error_prone_parent-2.3.4.pom";
+  };
+  "com.google.errorprone:error_prone_annotations:2.5.1" = {
+    "error_prone_annotations-2.5.1.jar" =
+      _: "${error_prone_annotations_2_5_1}/error_prone_annotations-2.5.1.jar";
+    "error_prone_annotations-2.5.1.pom" =
+      _: "${error_prone_annotations_2_5_1}/error_prone_annotations-2.5.1.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.5.1" = {
+    "error_prone_parent-2.5.1.pom" = _: "${error_prone_annotations_2_5_1}/error_prone_parent-2.5.1.pom";
+  };
+  "com.google.errorprone:error_prone_annotations:2.11.0" = {
+    "error_prone_annotations-2.11.0.jar" =
+      _: "${error_prone_annotations_2_11_0}/error_prone_annotations-2.11.0.jar";
+    "error_prone_annotations-2.11.0.pom" =
+      _: "${error_prone_annotations_2_11_0}/error_prone_annotations-2.11.0.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.11.0" = {
+    "error_prone_parent-2.11.0.pom" =
+      _: "${error_prone_annotations_2_11_0}/error_prone_parent-2.11.0.pom";
+  };
   "com.google.errorprone:error_prone_annotations:2.15.0" = {
     "error_prone_annotations-2.15.0.jar" =
       _: "${error_prone_annotations_2_15_0}/error_prone_annotations-2.15.0.jar";
@@ -367,6 +439,16 @@ in
     "error_prone_parent-2.18.0.pom" =
       _: "${error_prone_annotations_2_18_0}/error_prone_parent-2.18.0.pom";
   };
+  "com.google.errorprone:error_prone_annotations:2.23.0" = {
+    "error_prone_annotations-2.23.0.jar" =
+      _: "${error_prone_annotations_2_23_0}/error_prone_annotations-2.23.0.jar";
+    "error_prone_annotations-2.23.0.pom" =
+      _: "${error_prone_annotations_2_23_0}/error_prone_annotations-2.23.0.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.23.0" = {
+    "error_prone_parent-2.23.0.pom" =
+      _: "${error_prone_annotations_2_23_0}/error_prone_parent-2.23.0.pom";
+  };
   "com.google.errorprone:error_prone_annotations:2.30.0" = {
     "error_prone_annotations-2.30.0.jar" =
       _: "${error_prone_annotations_2_30_0}/error_prone_annotations-2.30.0.jar";
@@ -376,6 +458,16 @@ in
   "com.google.errorprone:error_prone_parent:2.30.0" = {
     "error_prone_parent-2.30.0.pom" =
       _: "${error_prone_annotations_2_30_0}/error_prone_parent-2.30.0.pom";
+  };
+  "com.google.errorprone:error_prone_annotations:2.36.0" = {
+    "error_prone_annotations-2.36.0.jar" =
+      _: "${error_prone_annotations_2_36_0}/error_prone_annotations-2.36.0.jar";
+    "error_prone_annotations-2.36.0.pom" =
+      _: "${error_prone_annotations_2_36_0}/error_prone_annotations-2.36.0.pom";
+  };
+  "com.google.errorprone:error_prone_parent:2.36.0" = {
+    "error_prone_parent-2.36.0.pom" =
+      _: "${error_prone_annotations_2_36_0}/error_prone_parent-2.36.0.pom";
   };
   "com.google.errorprone:error_prone_annotations:2.41.0" = {
     "error_prone_annotations-2.41.0.jar" =
