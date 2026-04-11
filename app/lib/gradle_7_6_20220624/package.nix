@@ -11,10 +11,20 @@
 gradle-from-source {
   version = "7.6.0-20220624";
   rev = "9e244e0ace2e7698374f5199570e09295950683a";
-  hash = "";
+  hash = "sha256-Dw9YoD5eDsSQphD9kuS/20SlMNfcbncPN0QaJeAfBJQ=";
   lockFile = mergeLock [
     gradle_7_6_20220514.unwrapped.passthru.lockFile
+    # [id: 'com.gradle.enterprise', version: '3.10.2'] org.jsoup:jsoup:1.15.1 org.gradle:test-retry-gradle-plugin:1.4.0 com.gradle.publish:plugin-publish-plugin:1.0.0-rc-3
+    ./more.gradle.lock
+    # org.gradle.kotlin:gradle-kotlin-dsl-conventions:0.8.0
+    ../gradle_8_6_rc2/gradle.lock
   ];
+  postPatch = ''
+    substituteInPlace settings.gradle.kts \
+      --replace-fail 'id("com.gradle.enterprise.test-distribution").version("2.3.4-milestone-1")' 'id("com.gradle.enterprise.test-distribution").version("2.3.1")'
+    substituteInPlace build-logic/build-platform/build.gradle.kts \
+      --replace-fail 'api("com.gradle.enterprise:test-distribution-gradle-plugin:2.3.4-milestone-1")' 'api("com.gradle.enterprise:test-distribution-gradle-plugin:2.3.1")'
+  '';
   defaultJava = jdk17_headless;
   # this version specifically ask for termurin branded jdk.
   buildJdk = temurin-bin-11;

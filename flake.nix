@@ -199,6 +199,20 @@
             ];
           };
 
+          packages.garnix-cached = pkgs.symlinkJoin {
+            name = "garnix-cached";
+            paths = with self.packages."${system}"; [
+              github-actions-cached
+
+              apk_comaps
+              apk_tailscale
+              apk_pdfviewer
+              apk_immich
+              apk_gamenative
+              apk_droidspaces
+            ];
+          };
+
           # https://github.com/nix-community/nixos-apple-silicon/pull/353
           packages.zfs-installer =
             (nixpkgs.lib.nixosSystem {
