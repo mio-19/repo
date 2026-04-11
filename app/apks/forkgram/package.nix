@@ -19,6 +19,7 @@
   unzip,
   which,
   writableTmpDirAsHomeHook,
+  gradle_8_7,
 }:
 
 let
@@ -37,6 +38,9 @@ in
 gradle2nixBuilders.buildGradlePackage rec {
   pname = "forkgram";
   version = "12.6.5.0";
+
+  # https://github.com/forkgram/TelegramAndroid/blob/12.6.5.0/gradle/wrapper/gradle-wrapper.properties
+  gradle = gradle_8_7;
 
   src = fetchFromGitHub {
     owner = "forkgram";
