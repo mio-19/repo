@@ -85,8 +85,7 @@ let
 
     installPhase = ''
       runHook preInstall
-      apk_path="$(echo app/build/outputs/apk/release/*-release-unsigned.apk)"
-      install -Dm644 "$apk_path" "$out/glimpse.apk"
+      install -Dm644 app/build/outputs/apk/release/app-release-unsigned.apk "$out/glimpse.apk"
       runHook postInstall
     '';
 
