@@ -2,7 +2,7 @@
   mk-apk-package,
   overrides-from-source,
   gradle2nixBuilders,
-  gradle_9_3_1,
+  gradle_9_4_1_,
   lib,
   jdk21_headless,
   fetchFromGitHub,
@@ -14,15 +14,6 @@
   overrides-update,
 }:
 let
-  version = "13.1.0";
-
-  src = fetchFromGitHub {
-    owner = "koiverse";
-    repo = "ArchiveTune";
-    tag = "v${version}";
-    hash = "sha256-rA3hB/snF70Oourx9ub2gXfAkWsfsxSI7X6ZOIo+Wkk=";
-  };
-
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
@@ -31,21 +22,26 @@ let
     s.build-tools-36-0-0
   ]);
 
-  gradle = gradle_9_3_1;
+  # https://github.com/koiverse/ArchiveTune/blob/v13.1.0/gradle/wrapper/gradle-wrapper.properties
+  gradle = gradle_9_4_1_;
 
   appPackage = gradle2nixBuilders.buildGradlePackage rec {
     pname = "archivetune";
-    inherit version src gradle;
+    version = "13.1.0";
 
+    src = fetchFromGitHub {
+      owner = "koiverse";
+      repo = "ArchiveTune";
+      tag = "v${version}";
+      hash = "sha256-rA3hB/snF70Oourx9ub2gXfAkWsfsxSI7X6ZOIo+Wkk=";
+    };
+
+    inherit gradle;
+
+    # $ nix develop /path/to/repo#apk_archivetune -c nix run github:tadfisher/gradle2nix/v2
     lockFile = ./gradle.lock;
     overrides = overrides-from-source // overrides-update;
     buildJdk = jdk21_headless;
-
-    postPatch = ''
-      pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                val agpVersion = requested.version ?: "9.1.0"\n                useModule("com.android.tools.build:gradle:$agpVersion")\n            }\n        }\n    }\n'
-      substituteInPlace settings.gradle.kts \
-        --replace-fail "pluginManagement {" "$pluginResolutionBlock"
-    '';
 
     nativeBuildInputs = [
       androidSdk
@@ -57,23 +53,12 @@ let
       writableTmpDirAsHomeHook
     ];
 
-    dontUseGradleConfigure = true;
-
     env = {
       JAVA_HOME = jdk21_headless;
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
     };
-
-    preConfigure = ''
-      export ANDROID_USER_HOME="$HOME/.android"
-      export GRADLE_USER_HOME="$(mktemp -d)"
-      export TERM=dumb
-      mkdir -p "$ANDROID_USER_HOME"
-      echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
-      gradleFlagsArray+=(--no-daemon --init-script "$gradleInitScript" --offline)
-    '';
 
     gradleFlags = [
       "-xlintVitalUniversalRelease"
