@@ -13,7 +13,7 @@
 appPackage.overrideAttrs (
   finalAttrs: old:
   let
-    nixpkgsGradleMitmCache =
+    hasGradleBuild =
       old ? mitmCache
       && (
         old ? gradleBuildTask
@@ -79,18 +79,15 @@ appPackage.overrideAttrs (
       };
     };
 
+    preBuild = lib.optionalString hasGradleBuild disableLintHook + (old.preBuild or "");
+
+    preGradleUpdate = lib.optionalString hasGradleBuild disableLintHook + (old.preGradleUpdate or "");
+
     meta =
       (old.meta or { })
       // {
         inherit mainApk;
       }
       // lib.optionalAttrs (fdroid != null) fdroid;
-  }
-  // lib.optionalAttrs nixpkgsGradleMitmCache {
-
-    preBuild = disableLintHook + (old.preBuild or "");
-
-    preGradleUpdate = disableLintHook + (old.preGradleUpdate or "");
-
   }
 )
