@@ -33,7 +33,7 @@ let
 
     lockFile = mergeLock [
       ./gradle.lock
-      # [id: 'org.lineageos.generatebp', version: '1.28', apply: false]
+      # [id: 'org.lineageos.generatebp', version: '1.28', apply: false] org.jetbrains.kotlin:kotlin-stdlib:2.2.0
       ./more.gradle.lock
     ];
     postPatch = ''
