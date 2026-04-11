@@ -14,17 +14,21 @@ appPackage.overrideAttrs (
   finalAttrs: old:
   let
     hasGradleBuild =
-      old ? gradleBuildTask
-      || old ? gradleUpdateTask
-      || old ? gradleCheckTask
-      || old ? gradleBuildFlagsArray
-      || old ? gradleFlags;
+      old ? mitmCache
+      && (
+        old ? gradleBuildTask
+        || old ? gradleUpdateTask
+        || old ? gradleCheckTask
+        || old ? gradleBuildFlagsArray
+        || old ? gradleFlags
+      );
 
     # Centralize Gradle lint disabling for APK packages here instead of
     # repeating package-local -xlintVitalRelease flags. This avoids fetching
     # SDK index endpoints such as play-sdk/index/snapshot and group-index for
     # projects where those requests come from lint. Context:
     # https://github.com/NixOS/nixpkgs/issues/501643#issuecomment-4122356032
+    # this is designed for packages using nixpkgs gradle mitmCache and benifits mitmCache deps.json refreshes. not really need to be so complex if just for building reasons.
     disableLintHook = ''
       disableGradleLintTasks() {
         if [[ -n "''${disableGradleLintTasksDone:-}" ]]; then
