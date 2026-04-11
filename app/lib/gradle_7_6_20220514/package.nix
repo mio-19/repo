@@ -76,6 +76,29 @@ gradle-from-source {
         mavenCentral()
     }
     EOF
+    sed -i '/mavenCentral()/i\
+            jcenter {\
+                content {\
+                    includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")\
+                }\
+            }\
+    ' build-logic/settings.gradle.kts
+    sed -i '/dependencyResolutionManagement {/a\
+        repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    ' build-logic/settings.gradle.kts
+    sed -i '/mavenCentral()/i\
+            maven {\
+                name = "JFrog OSS release-local"\
+                url = uri("https://oss.jfrog.org/oss-release-local/")\
+            }\
+    ' build-logic/settings.gradle.kts
+    sed -i '/mavenCentral()/i\
+        jcenter {\
+            content {\
+                includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")\
+            }\
+        }\
+    ' build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts
     nix run github:tadfisher/gradle2nix/6c0f9601ac41a1af04df09d8377ab706d07a4cf4  -- --gradle-wrapper=7.5-rc-1
   */
   bootstrapGradle = gradle_7_5_rc1;
