@@ -2,7 +2,7 @@
   commons_codec_1_2,
   commons_logging_1_0_3,
   fetchurl,
-  jdk21_headless,
+  jdk25_headless,
   lib,
   stdenv,
 }:
@@ -16,7 +16,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-muWdaj/3rSDLNrlGsceoDbUSSCXXAf+O3kRkxCLsJR4=";
   };
 
-  nativeBuildInputs = [ jdk21_headless ];
+  nativeBuildInputs = [ jdk25_headless ];
 
   dontConfigure = true;
   dontUnpack = true;

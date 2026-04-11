@@ -1,6 +1,6 @@
 {
   fetchFromGitHub,
-  jdk17_headless,
+  jdk25_headless,
   lib,
   stdenv,
   writableTmpDirAsHomeHook,
@@ -18,7 +18,7 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   nativeBuildInputs = [
-    jdk17_headless
+    jdk25_headless
     writableTmpDirAsHomeHook
   ];
 
