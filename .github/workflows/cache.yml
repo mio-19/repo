@@ -77,11 +77,11 @@ jobs:
         echo "SYSTEM=$SYSTEM" >> $GITHUB_ENV
         echo "Building for system: $SYSTEM"
     # https://github.com/nix-community/nixos-apple-silicon/blob/7aad69158fc1b5bbbddac19040b6aae14daaa35c/.github/workflows/cache.yml#L45C56-L50C24
-    # why does it always lost communication after 1h?
+    # why does it always lost communication after 50m?
     - name: Build nix packages
       if: runner.os == 'Linux'
       run: |
-        timeout --kill-after=10s 30m nix run nixpkgs#nix-fast-build -- --max-jobs 1 --option cores 1 \
+        timeout --signal=KILL 15m nix run nixpkgs#nix-fast-build -- --max-jobs 1 --option cores 1 \
           --no-nom \
           -f .#packages.${{ env.SYSTEM }}.github-actions-cached
     - name: Build nix packages
