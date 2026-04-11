@@ -4,12 +4,11 @@
   fetchFromGitHub,
   fetchgit,
   fetchurl,
-  git,
-  gnumake,
-  jdk8_headless,
+  jdk8,
   lib,
   makeWrapper,
   stdenv,
+  unzip,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -23,61 +22,25 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-Zu3RDBztCIEg1Jp7CnH7k/Rt89MkbCoG5TCp/6FTYVY=";
   };
 
-  kotlinSrc = fetchgit {
-    url = "https://github.com/JetBrains/kotlin";
-    rev = "8549ec7645ff6db4d5fede2c43034be66683561a";
-    fetchTags = true;
-    fetchSubmodules = false;
-    leaveDotGit = true;
-    hash = lib.fakeHash;
+  # ebourg/kotlin-bootstrapping uses one Git checkout and `git checkout build-*`
+  # for every historical compiler.  Keep this stage as a plain source snapshot;
+  # the next bootstrap steps can replace the prebuilt compiler zip with earlier
+  # source-built Kotlin outputs.
+  kotlinSrc = fetchFromGitHub {
+    owner = "JetBrains";
+    repo = "kotlin";
+    tag = "build-${finalAttrs.version}";
+    hash = "sha256-az4maYaBFJFvQ6ik6/qdu840yz3TBPG5nAFNM5sUI3I=";
   };
 
-  intellij133Src = fetchFromGitHub {
-    owner = "JetBrains";
-    repo = "intellij-community";
-    tag = "133";
-    hash = "sha256-9Vr0/PJ+OA+dGB0fj2LJT0voFNE1Fw6P+nj425APi0w=";
+  kotlinIntellijPluginZip = fetchurl {
+    url = "https://teamcity.jetbrains.com/guestAuth/repository/download/Kotlin_Rc_Idea142branch150versionNoTests/1.0.0-release-IJ143-78/kotlin-plugin-1.0.0-release-IJ143-78.zip";
+    hash = "sha256-4tTZb2E6hrJSezGBBNHNWDdAHZfPnNSqcsywQMwIzdI=";
   };
 
-  intellij134Src = fetchFromGitHub {
-    owner = "JetBrains";
-    repo = "intellij-community";
-    rev = "1168c7b8cb4dc8318b8d24037b372141730a0d1f";
-    hash = "sha256-aa3AWnZOMB4nf5STjk9oyQFK4SiNNW0SL3b3SXCNuOc=";
-  };
-
-  intellij135Src = fetchFromGitHub {
-    owner = "JetBrains";
-    repo = "intellij-community";
-    tag = "135";
-    hash = "sha256-qgAxjSbseEGQiiGW3Sf8dEmHdmWF7mqlzWN8ah2mp7c=";
-  };
-
-  intellij138Src = fetchFromGitHub {
-    owner = "JetBrains";
-    repo = "intellij-community";
-    rev = "070c64f86da3bfd3c86f151c75aefeb4f67870c8";
-    hash = "sha256-4+KHVA7rFMqp5f519D5PX1+9pPL61dUnJK5ksZP+6gE=";
-  };
-
-  intellij139Src = fetchFromGitHub {
-    owner = "JetBrains";
-    repo = "intellij-community";
-    rev = "26e72feacf91bfb222bec00b3139ed05aa3084b5";
-    hash = "sha256-TsdwIrXQvO8xDPQ1Hk2KhCBbd29FqFa9prOztkUVAVc=";
-  };
-
-  intellij141Src = fetchFromGitHub {
-    owner = "JetBrains";
-    repo = "intellij-community";
-    tag = "141";
-    hash = "sha256-9rRoWxELfusNsnPefV5hPrpw2ZBypCFNjtEAezQZur4=";
-  };
-
-  intellij143Src = fetchFromGitHub {
-    owner = "JetBrains";
-    repo = "intellij-community";
-    tag = "143";
+  intellij143Src = fetchgit {
+    url = "https://github.com/JetBrains/intellij-community";
+    rev = "65d73acda17908887bd0cefbac22a2f36c2c7ef2";
     hash = "sha256-xZiKwE9UHXS9Wy75nK4XqkL3FlxwIsQe/DFchISXQdQ=";
   };
 
@@ -94,6 +57,21 @@ stdenv.mkDerivation (finalAttrs: {
   jarjarJar = fetchurl {
     url = "https://repo1.maven.org/maven2/org/sonatype/plugins/jarjar-maven-plugin/1.9/jarjar-maven-plugin-1.9.jar";
     hash = "sha256-zBBuZfcC0BHmJgSDBjMeTELNRaGl6z+OfNG8gROPkMU=";
+  };
+
+  asmJar = fetchurl {
+    url = "https://repo1.maven.org/maven2/org/ow2/asm/asm/5.0.1/asm-5.0.1.jar";
+    hash = "sha256-VgV0kMvB7q5iJ+brXG1bMkt3QpuKeNFQJ8d9SR75xnU=";
+  };
+
+  asmCommonsJar = fetchurl {
+    url = "https://repo1.maven.org/maven2/org/ow2/asm/asm-commons/5.0.1/asm-commons-5.0.1.jar";
+    hash = "sha256-+xy3+ifYknEs7Y+/jQJ+tQUuzTmZ26G6R4JDV6zLQOc=";
+  };
+
+  closureCompilerZip = fetchurl {
+    url = "https://dl.google.com/closure-compiler/compiler-20131014.zip";
+    hash = "sha256-6NSMUJeGlv3pA3lbId6fe6KK5MwHwm/wrl7sFRBZm7w=";
   };
 
   kotlinJdkAnnotationsJar = fetchurl {
@@ -153,10 +131,9 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     ant
-    git
-    gnumake
-    jdk8_headless
+    jdk8
     makeWrapper
+    unzip
   ];
 
   dontConfigure = true;
@@ -164,7 +141,10 @@ stdenv.mkDerivation (finalAttrs: {
   buildPhase = ''
     runHook preBuild
 
-    export JAVA_HOME=${jdk8_headless}
+    export JAVA_HOME=${jdk8}
+    export JDK_16_x64=${jdk8}/lib/openjdk
+    export JDK_18_x64=${jdk8}/lib/openjdk
+    export _JAVA_OPTIONS="-Xbootclasspath/a:${jdk8}/lib/openjdk/lib/tools.jar"
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME"
 
@@ -177,9 +157,20 @@ stdenv.mkDerivation (finalAttrs: {
     install -Dm644 ${finalAttrs.kotlinJdkAnnotationsJar} dependencies/kotlin-jdk-annotations.jar
     install -Dm644 ${finalAttrs.kotlinAndroidSdkAnnotationsJar} dependencies/kotlin-android-sdk-annotations.jar
     install -Dm644 ${finalAttrs.jarjarJar} dependencies/jarjar.jar
+    install -Dm644 ${finalAttrs.asmJar} dependencies/asm.jar
+    install -Dm644 ${finalAttrs.asmCommonsJar} dependencies/asm-commons.jar
     install -Dm644 ${finalAttrs.jansiJar} dependencies/jansi.jar
     install -Dm644 ${finalAttrs.jlineJar} dependencies/jline.jar
-    install -Dm644 ${ant}/lib/ant.jar dependencies/ant-1.8/lib/ant.jar
+    install -Dm644 ${ant}/share/ant/lib/ant.jar dependencies/ant-1.8/lib/ant.jar
+    unzip -p ${finalAttrs.closureCompilerZip} compiler.jar > dependencies/closure-compiler.jar
+
+    mkdir -p dependencies/jarjar-extra
+    (
+      cd dependencies/jarjar-extra
+      "''${JAVA_HOME}/bin/jar" xf ../asm.jar
+      "''${JAVA_HOME}/bin/jar" xf ../asm-commons.jar
+      "''${JAVA_HOME}/bin/jar" uf ../jarjar.jar org
+    )
 
     mkdir -p dependencies/download/native-platform
     install -Dm644 ${finalAttrs.nativePlatformCommonJar} dependencies/download/native-platform/native-platform.jar
@@ -192,8 +183,14 @@ stdenv.mkDerivation (finalAttrs: {
     install -Dm644 ${finalAttrs.nativePlatformFreebsdAmd64Jar} dependencies/download/native-platform/native-platform-freebsd-amd64.jar
     install -Dm644 ${finalAttrs.nativePlatformFreebsdI386Jar} dependencies/download/native-platform/native-platform-freebsd-i386.jar
 
-    "''${JAVA_HOME}/bin/jar" cf dependencies/native-platform-uberjar.jar \
-      -C dependencies/download/native-platform .
+    mkdir -p dependencies/native-platform-uberjar
+    (
+      cd dependencies/native-platform-uberjar
+      for jar in ../download/native-platform/*.jar; do
+        "''${JAVA_HOME}/bin/jar" xf "$jar"
+      done
+      "''${JAVA_HOME}/bin/jar" cf ../native-platform-uberjar.jar .
+    )
 
     build_intellij() {
       local src="$1"
@@ -211,6 +208,16 @@ stdenv.mkDerivation (finalAttrs: {
         if [ "$dropGradlePlugin" = 1 ]; then
           rm -rf plugins/gradle
         fi
+        mkdir -p build
+        unzip -q ${finalAttrs.kotlinIntellijPluginZip} -d build/kotlin-plugin
+        cp -a build/kotlin-plugin/Kotlin/kotlinc build/kotlinc
+        chmod -R u+w build/kotlinc
+        mkdir -p build/kotlinc/plugin build/kotlinc/jps
+        cp -a build/kotlin-plugin/Kotlin build/kotlinc/plugin/Kotlin
+        cp -a build/kotlin-plugin/Kotlin/lib/jps/. build/kotlinc/jps/
+        mkdir -p community/build
+        cp -a build/kotlinc community/build/kotlinc
+        cp ${jdk8}/lib/openjdk/lib/tools.jar lib/ant/lib/tools.jar
         ant
         rm -rf out/classes out/dist.win.ce out/dist.mac.ce out/dist.all.ce/plugins
         rm -f out/artifacts/*.zip out/artifacts/*.tar.gz
@@ -220,15 +227,58 @@ stdenv.mkDerivation (finalAttrs: {
       rm -rf intellij-community
     }
 
-    build_intellij ${finalAttrs.intellij133Src} sdk-133.patch intellij-community-133 1
-    build_intellij ${finalAttrs.intellij134Src} sdk-134.patch intellij-community-134 0
-    build_intellij ${finalAttrs.intellij135Src} sdk-135.patch intellij-community-135 0
-    build_intellij ${finalAttrs.intellij138Src} sdk-138.patch intellij-community-138 0
-    build_intellij ${finalAttrs.intellij139Src} sdk-139.patch intellij-community-139 0
-    build_intellij ${finalAttrs.intellij141Src} sdk-141.patch intellij-community-141 0
     build_intellij ${finalAttrs.intellij143Src} sdk-143.patch intellij-community-143 0
 
-    make build/kotlin-1.0.0
+    mkdir -p build/kotlinc-bootstrap
+    unzip -q ${finalAttrs.kotlinIntellijPluginZip} -d build/kotlinc-bootstrap-plugin
+    cp -a build/kotlinc-bootstrap-plugin/Kotlin/kotlinc/. build/kotlinc-bootstrap/
+
+    rm -rf kotlin
+    cp -a ${finalAttrs.kotlinSrc} kotlin
+    chmod -R u+w kotlin
+
+    (
+      cd kotlin
+      rm -rf ideaSDK dependencies
+      mkdir -p ideaSDK/lib ideaSDK/core ideaSDK/core-analysis ideaSDK/jps
+      mkdir -p dependencies/ant-1.8/lib dependencies/annotations
+
+      cp ../build/intellij-community-143/dist.all.ce/lib/javac2.jar                ideaSDK/lib
+      cp ../build/intellij-community-143/dist.all.ce/lib/asm-all.jar               ideaSDK/lib/
+      cp ../build/intellij-community-143/dist.all.ce/lib/asm-all.jar               ideaSDK/core/
+      cp ../build/intellij-community-143/artifacts/core/annotations.jar            ideaSDK/core/
+      cp ../build/intellij-community-143/artifacts/core/guava-17.0.jar             ideaSDK/core/
+      cp ../build/intellij-community-143/artifacts/core/intellij-core.jar          ideaSDK/core/
+      cp ../build/intellij-community-143/artifacts/core/intellij-core-analysis.jar ideaSDK/core-analysis/
+      cp ../build/intellij-community-143/dist.all.ce/lib/jdom.jar                  ideaSDK/core/
+      cp ../build/intellij-community-143/dist.all.ce/lib/protobuf-2.5.0.jar        ideaSDK/lib/
+      cp ../build/intellij-community-143/dist.all.ce/lib/protobuf-2.5.0.jar        dependencies/protobuf-2.5.0-lite.jar
+      cp ../build/intellij-community-143/artifacts/core/trove4j.jar                ideaSDK/core/
+      cp ../build/intellij-community-143/artifacts/core/trove4j.jar                ideaSDK/jps/
+      cp ../build/intellij-community-143/artifacts/core/cli-parser-1.1.jar         dependencies/cli-parser-1.1.1.jar
+      cp ../build/intellij-community-143/artifacts/core/picocontainer.jar          ideaSDK/core/
+      cp ../build/intellij-community-143/dist.all.ce/lib/log4j.jar                 ideaSDK/core/
+      cp ../build/intellij-community-143/dist.all.ce/lib/log4j.jar                 ideaSDK/jps/
+      cp ../build/intellij-community-143/dist.all.ce/lib/jps-model.jar             ideaSDK/jps/
+      cp ../build/intellij-community-143/dist.all.ce/lib/jna-platform.jar          ideaSDK/lib/
+      cp ../build/intellij-community-143/dist.all.ce/lib/oromatcher.jar            ideaSDK/lib/
+      cp ../dependencies/kotlin-*-annotations.jar                                  dependencies/annotations/
+      cp ../dependencies/jarjar.jar                                                dependencies/jarjar.jar
+      cp ../dependencies/jansi.jar                                                 dependencies/jansi.jar
+      cp ../dependencies/jline.jar                                                 dependencies/jline.jar
+      cp ../dependencies/closure-compiler.jar                                      dependencies/closure-compiler.jar
+      cp ../dependencies/native-platform-uberjar.jar                               dependencies/native-platform-uberjar.jar
+      cp ../dependencies/ant-1.8/lib/ant.jar                                       dependencies/ant-1.8/lib/
+
+      ANT_OPTS=-noverify ant \
+        -Dshrink=false \
+        -Dgenerate.javadoc=false \
+        -Dbootstrap.build.no.tests=true \
+        -Dbootstrap.compiler.home="$PWD/../build/kotlinc-bootstrap"
+
+      mkdir -p ../build
+      mv dist/kotlinc ../build/kotlin-1.0.0
+    )
 
     runHook postBuild
   '';
@@ -243,11 +293,14 @@ stdenv.mkDerivation (finalAttrs: {
     cp -a "$dist" "$out/libexec/kotlinc"
     chmod -R u+w "$out/libexec/kotlinc"
     patchShebangs "$out/libexec/kotlinc/bin"
+    if [ ! -e "$out/libexec/kotlinc/lib/kotlin-stdlib.jar" ]; then
+      cp "$out/libexec/kotlinc/lib/kotlin-runtime.jar" "$out/libexec/kotlinc/lib/kotlin-stdlib.jar"
+    fi
 
     mkdir -p "$out/bin"
-    makeWrapper "$out/libexec/kotlinc/bin/kotlinc" "$out/bin/kotlinc" --set-default JAVA_HOME ${jdk8_headless}
+    makeWrapper "$out/libexec/kotlinc/bin/kotlinc" "$out/bin/kotlinc" --set-default JAVA_HOME ${jdk8}
     if [ -x "$out/libexec/kotlinc/bin/kotlin" ]; then
-      makeWrapper "$out/libexec/kotlinc/bin/kotlin" "$out/bin/kotlin" --set-default JAVA_HOME ${jdk8_headless}
+      makeWrapper "$out/libexec/kotlinc/bin/kotlin" "$out/bin/kotlin" --set-default JAVA_HOME ${jdk8}
     fi
 
     install -Dm644 "$out/libexec/kotlinc/lib/kotlin-compiler.jar" "$out/kotlin-compiler-${finalAttrs.version}.jar"

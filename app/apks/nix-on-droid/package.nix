@@ -1,6 +1,7 @@
 {
   mk-apk-package,
   lib,
+  jdk17_headless,
   jdk21_headless,
   gradle_8_13,
   stdenv,
@@ -8,20 +9,44 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   fetchpatch,
+  gradle-packages,
 }:
 let
+  bumpAGP = false;
   appPackage =
     let
-      androidSdk = androidSdkBuilder (s: [
-        s.cmdline-tools-latest
-        s.platform-tools
-        s.platforms-android-36
-        s.build-tools-35-0-0
-        s.build-tools-36-0-0
-        s.ndk-29-0-14206865
-      ]);
+      androidSdk = androidSdkBuilder (
+        s:
+        if bumpAGP then
+          [
+            s.cmdline-tools-latest
+            s.platform-tools
+            s.platforms-android-36
+            s.build-tools-35-0-0
+            s.build-tools-36-0-0
+            s.ndk-29-0-14206865
+          ]
+        else
+          [
+            s.cmdline-tools-latest
+            s.platform-tools
+            s.platforms-android-28
+            s.platforms-android-30
+            s.build-tools-30-0-3
+            s.build-tools-33-0-2
+            s.ndk-27-3-13750724
+          ]
+      );
 
-      gradle = gradle_8_13;
+      gradle =
+        if bumpAGP then
+          gradle_8_13
+        else
+          (gradle-packages.mkGradle {
+            version = "7.5";
+            hash = "sha256-y4fyIsVYW9RoOK1Nt4RjpcXz0zbl4rmNx8DFhlJzUcI=";
+            defaultJava = jdk17_headless;
+          }).wrapped;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "nix-on-droid";
@@ -55,6 +80,8 @@ let
           url = "https://github.com/termux/termux-app/pull/4961.diff";
           hash = "sha256-N/Elb1VT54aLSgWxPbvEWoEUtkTsVoYKRSWZyt3L5/E=";
         })
+      ]
+      ++ lib.optionals bumpAGP [
         ./0001-nix-on-droid-adjust-gradle-agp-deps.patch # based on https://github.com/salmon-21/termux-app/commit/53f75a8da3b823c18a8244b298da50e87382984d
         (fetchpatch {
           name = "Fixed: Improve dark mode support for settings and shared activities";
@@ -69,26 +96,34 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
-        data = ./nix-on-droid_deps.json;
+        data = if bumpAGP then ./nix-on-droid_deps.json else ./deps-old.json;
         silent = false;
         useBwrap = false;
       };
 
       nativeBuildInputs = [
         gradle
-        jdk21_headless
+        (if bumpAGP then jdk21_headless else jdk17_headless)
         writableTmpDirAsHomeHook
       ];
 
       env = {
-        JAVA_HOME = jdk21_headless;
+        JAVA_HOME = (if bumpAGP then jdk21_headless else jdk17_headless);
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+        ANDROID_NDK_ROOT =
+          if bumpAGP then
+            "${androidSdk}/share/android-sdk/ndk/29.0.14206865"
+          else
+            "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE =
+          if bumpAGP then
+            "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+          else
+            "${androidSdk}/share/android-sdk/build-tools/33.0.2/aapt2";
         TERMUX_PACKAGE_VARIANT = "apt-android-7";
         TERMUX_SPLIT_APKS_FOR_RELEASE_BUILDS = "0";
-        JITPACK_NDK_VERSION = "29.0.14206865";
+        JITPACK_NDK_VERSION = if bumpAGP then "29.0.14206865" else "27.3.13750724";
       };
 
       preConfigure = ''
@@ -101,9 +136,13 @@ let
         "-xlintVitalRelease"
         "--no-daemon"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dorg.gradle.java.installations.paths=${if bumpAGP then jdk21_headless else jdk17_headless}"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/${
+          if bumpAGP then "36.0.0" else "33.0.2"
+        }/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/${
+          if bumpAGP then "36.0.0" else "33.0.2"
+        }/aapt2"
       ];
 
       installPhase = ''
