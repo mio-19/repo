@@ -149,6 +149,7 @@
           nixpkgsSrc = applyPatches {
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
+            # https://github.com/NixOS/nixpkgs/pull/508847
             postPatch = ''
               substituteInPlace \
                 pkgs/development/tools/build-managers/gradle/setup-hook.sh \
