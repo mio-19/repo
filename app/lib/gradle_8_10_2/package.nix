@@ -27,4 +27,5 @@ gradle-from-source {
   # nix-shell -p javaPackages.compiler.openjdk11-bootstrap
   # nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.10-rc-1
   bootstrapGradle = gradle_8_10_rc1;
+  configureOnDemand = true;
 }
