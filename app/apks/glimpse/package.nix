@@ -35,11 +35,13 @@ let
       ./gradle.lock
       # [id: 'org.lineageos.generatebp', version: '1.28', apply: false] org.jetbrains.kotlin:kotlin-stdlib:2.2.0 org.jetbrains.kotlin:kotlin-reflect:2.2.0
       ./more.gradle.lock
+      # generateBp 1.32
+      ./bp.gradle.lock
       gradle_9_4_1.unwrapped.passthru.lockFile
     ];
     postPatch = ''
       substituteInPlace gradle/libs.versions.toml \
-        --replace-fail 'generateBp = "+"' 'generateBp = "1.28"'
+        --replace-fail 'generateBp = "+"' 'generateBp = "1.32"'
     '';
     overrides = overrides-from-source;
     buildJdk = jdk25_headless;
