@@ -1,6 +1,4 @@
-{
-  commons_codec_common,
-}:
+{ commons_codec_common }:
 commons_codec_common {
 
   version = "1.6";

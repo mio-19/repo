@@ -1,6 +1,4 @@
-{
-  commons_codec_common,
-}:
+{ commons_codec_common }:
 commons_codec_common rec {
   version = "1.10";
   tag = version;
