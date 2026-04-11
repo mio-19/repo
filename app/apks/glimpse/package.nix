@@ -30,16 +30,20 @@ let
       ;
     inherit gradle;
 
-    lockFile = mergeLock [
-      gradle.unwrapped.passthru.lockFile
-      ./gradle.lock
-      # [id: 'org.lineageos.generatebp', version: '1.28', apply: false] org.jetbrains.kotlin:kotlin-stdlib:2.2.0 org.jetbrains.kotlin:kotlin-reflect:2.2.0
-      ./more.gradle.lock
-      # generateBp 1.32
-      ./bp.gradle.lock
-      # com.android.tools.lint:lint-gradle:32.1.0 only needed on darwin for some reason
-      ./lint.gradle.lock
-    ];
+    lockFile = mergeLock (
+      [
+        gradle.unwrapped.passthru.lockFile
+        ./gradle.lock
+        # [id: 'org.lineageos.generatebp', version: '1.28', apply: false] org.jetbrains.kotlin:kotlin-stdlib:2.2.0 org.jetbrains.kotlin:kotlin-reflect:2.2.0
+        ./more.gradle.lock
+        # generateBp 1.32
+        ./bp.gradle.lock
+      ]
+      ++ lib.optional stdenv.isDarwin [
+        # com.android.tools.lint:lint-gradle:32.1.0 only needed on darwin for some reason
+        ./lint.gradle.lock
+      ]
+    );
     postPatch = ''
       substituteInPlace gradle/libs.versions.toml \
         --replace-fail 'generateBp = "+"' 'generateBp = "1.32"'
