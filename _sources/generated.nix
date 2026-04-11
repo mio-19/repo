@@ -540,17 +540,17 @@
   };
   lineage_glimpse = {
     pname = "lineage_glimpse";
-    version = "1dff938788c8d114c0dd34ca6b803a6b8081886d";
+    version = "6148672c51d4c0508bf0b5df953b06ed4d96c343";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_Glimpse.git";
-      rev = "1dff938788c8d114c0dd34ca6b803a6b8081886d";
+      rev = "6148672c51d4c0508bf0b5df953b06ed4d96c343";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-Q+GMTnwyDQ0irEQ6XFqGjamQ9Z/6kkHHywIJhAKJ/eQ=";
+      sha256 = "sha256-MUS3QYywdZL+3dvoUJqdMwEwXcBCYD7drb8Xuuj3UNw=";
     };
-    date = "2026-04-09";
+    date = "2026-04-10";
   };
   lineage_hardware_mainline_common = {
     pname = "lineage_hardware_mainline_common";
