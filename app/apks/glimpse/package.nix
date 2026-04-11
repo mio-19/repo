@@ -9,7 +9,7 @@
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  gradle_9_4_1_,
+  gradle_9_4_1,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -19,7 +19,7 @@ let
     s.build-tools-36-0-0
   ]);
 
-  gradle = gradle_9_4_1_;
+  gradle = gradle_9_4_1;
 
   appPackage = gradle2nixBuilders.buildGradlePackage rec {
     pname = "glimpse";
