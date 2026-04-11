@@ -173,8 +173,12 @@
               (final: prev: rec {
                 gradle_9 = self.packages."${system}".gradle_9_4_1;
                 gradle_9-unwrapped = gradle_9.unwrapped;
-                gradle = gradle_9;
-                gradle-unwrapped = gradle_9-unwrapped;
+                gradle =
+                  assert prev.gradle == prev.gradle_8;
+                  gradle_8;
+                gradle-unwrapped =
+                  assert prev.gradle-unwrapped == prev.gradle_8-unwrapped;
+                  gradle_8-unwrapped;
                 gradle_8 = self.packages."${system}".gradle_8_14_4;
                 gradle_8-unwrapped = gradle_8.unwrapped;
               })
