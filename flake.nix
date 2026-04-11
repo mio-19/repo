@@ -187,9 +187,15 @@
           packages.github-actions-cached = pkgs.symlinkJoin {
             name = "github-actions-cached";
             paths = with self.packages."${system}"; [
-              fdroid-repo
               gradle2nix
               mvn2nix
+
+              gradle_9_4_1
+
+              apk_joplin
+              apk_meditrak
+              apk_sunup
+              apk_nix-on-droid
             ];
           };
 
