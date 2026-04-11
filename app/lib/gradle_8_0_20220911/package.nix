@@ -35,6 +35,7 @@ gradle-from-source {
     tee -a build-logic/performance-testing/build.gradle.kts >/dev/null <<'EOF'
 
     repositories {
+        gradlePluginPortal()
         maven {
             name = "JFrog OSS releases"
             url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
