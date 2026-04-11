@@ -61,4 +61,6 @@
   "commons-codec:commons-codec:1.12" = {
     "commons-codec-1.12.jar" = _: "${commons_codec_1_13}/commons-codec-1.13.jar";
   };
+
+  # TODO: gson [2.2.3,2.8.9) CVE-2022-25647 https://nvd.nist.gov/vuln/detail/cve-2022-25647
 }
