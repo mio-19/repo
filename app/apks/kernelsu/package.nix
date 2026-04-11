@@ -84,7 +84,7 @@ let
             #lockFile = "${kernelsuSrc}/userspace/ksud/Cargo.lock";
             # this only fetches one file during nix evaluation
             lockFile = fetchurl {
-              url = "https://github.com/tiann/KernelSU/raw/refs/tags/v${version}/userspace/ksud/Cargo.lock";
+              url = "https://github.com/${kernelsuSrc.owner}/${kernelsuSrc.repo}/raw/refs/tags/${kernelsuSrc.tag}/userspace/ksud/Cargo.lock";
               hash = "sha256-fmsvdykF2oSNcjzTOQO+qFvsncMRnSMOwGhoCEZtvzs=";
             };
             outputHashes = {
