@@ -4,6 +4,10 @@
   stdenv,
   fetchFromGitHub,
   fetchurl,
+  ant_1_9_6,
+  commons_cli_1_2,
+  commons_io_2_2,
+  gson_2_2_4,
   gzip,
   gradle-packages,
   gradle_2_0,
@@ -13,6 +17,7 @@
   gnugrep,
   gnused,
   linkFarm,
+  slf4j_1_7_10,
   which,
   unzip,
 }:
@@ -131,17 +136,11 @@ let
   bootstrapOverrides = linkFarm "gradle-${version}-bootstrap-overrides" [
     {
       name = "lib/ant-1.9.6.jar";
-      path = fetchurl {
-        url = "https://repo1.maven.org/maven2/org/apache/ant/ant/1.9.6/ant-1.9.6.jar";
-        hash = "sha256-103gvFVjFHa6hEPAf0PJxRZU7VoeDBlCygFXJNYz6b8=";
-      };
+      path = "${ant_1_9_6}/ant-1.9.6.jar";
     }
     {
       name = "lib/ant-launcher-1.9.6.jar";
-      path = fetchurl {
-        url = "https://repo1.maven.org/maven2/org/apache/ant/ant-launcher/1.9.6/ant-launcher-1.9.6.jar";
-        hash = "sha256-8sZqYP2s941lN3NO8cjtt3z2xFMucF7jSCvh0QBsJ3o=";
-      };
+      path = "${ant_1_9_6}/ant-launcher-1.9.6.jar";
     }
     {
       name = "lib/asm-all-5.1.jar";
@@ -159,10 +158,7 @@ let
     }
     {
       name = "lib/commons-io-2.2.jar";
-      path = fetchurl {
-        url = "https://repo1.maven.org/maven2/commons-io/commons-io/2.2/commons-io-2.2.jar";
-        hash = "sha256-Z19gvRGoLUgXNlkf5AVMZkcfpUY9RWFmUv1xWFeSuoc=";
-      };
+      path = "${commons_io_2_2}/commons-io-2.2.jar";
     }
     {
       name = "lib/groovy-all-2.4.4.jar";
@@ -173,31 +169,19 @@ let
     }
     {
       name = "lib/slf4j-api-1.7.10.jar";
-      path = fetchurl {
-        url = "https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.10/slf4j-api-1.7.10.jar";
-        hash = "sha256-OGPicAV0DU0Sib+HsRPv6hFemiJAin1iO+gASZEjK/4=";
-      };
+      path = "${slf4j_1_7_10}/slf4j-api-1.7.10.jar";
     }
     {
       name = "lib/jcl-over-slf4j-1.7.10.jar";
-      path = fetchurl {
-        url = "https://repo1.maven.org/maven2/org/slf4j/jcl-over-slf4j/1.7.10/jcl-over-slf4j-1.7.10.jar";
-        hash = "sha256-xW3S+0IupwVfoMTpMusn1VoKPptXiMxfI24Nt6SGD6M=";
-      };
+      path = "${slf4j_1_7_10}/jcl-over-slf4j-1.7.10.jar";
     }
     {
       name = "lib/jul-to-slf4j-1.7.10.jar";
-      path = fetchurl {
-        url = "https://repo1.maven.org/maven2/org/slf4j/jul-to-slf4j/1.7.10/jul-to-slf4j-1.7.10.jar";
-        hash = "sha256-HbABMYTZWAG5JmOmC7d12zyMehPd+KrNWTjUqbDJ2sc=";
-      };
+      path = "${slf4j_1_7_10}/jul-to-slf4j-1.7.10.jar";
     }
     {
       name = "lib/log4j-over-slf4j-1.7.10.jar";
-      path = fetchurl {
-        url = "https://repo1.maven.org/maven2/org/slf4j/log4j-over-slf4j/1.7.10/log4j-over-slf4j-1.7.10.jar";
-        hash = "sha256-6c8CgauzxzbTfnEzl23SzxbwO0dtvmaWdC0vauQ1Z64=";
-      };
+      path = "${slf4j_1_7_10}/log4j-over-slf4j-1.7.10.jar";
     }
     {
       name = "lib/minlog-1.2.jar";
@@ -313,10 +297,7 @@ let
     }
     {
       name = "lib/plugins/commons-cli-1.2.jar";
-      path = fetchurl {
-        url = "https://repo1.maven.org/maven2/commons-cli/commons-cli/1.2/commons-cli-1.2.jar";
-        hash = "sha256-582JUZVtNJtWi3zP1PWyUpqMET5nwysCj1L/2jcSWdk=";
-      };
+      path = "${commons_cli_1_2}/commons-cli-1.2.jar";
     }
     {
       name = "lib/plugins/httpclient-4.4.1.jar";
@@ -425,10 +406,7 @@ let
     }
     {
       name = "lib/plugins/gson-2.2.4.jar";
-      path = fetchurl {
-        url = "https://repo1.maven.org/maven2/com/google/code/gson/gson/2.2.4/gson-2.2.4.jar";
-        hash = "sha256-wDKM0Hyp42OlrNAMHPSv6M9VS9bTc4NJgboFzr7Gh/s=";
-      };
+      path = "${gson_2_2_4}/gson-2.2.4.jar";
     }
   ];
   defaultImportsTxtGzB64 = ''

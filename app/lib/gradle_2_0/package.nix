@@ -10,7 +10,9 @@
   gnugrep,
   gnused,
   which,
+  ant_1_9_3,
   gradle_1_12,
+  slf4j_1_7_5,
 }:
 let
   version = "2.0";
@@ -33,11 +35,11 @@ let
   artifacts = [
     {
       path = "org/apache/ant/ant/1.9.3/ant-1.9.3.jar";
-      hash = "sha256-XhzxdgGAsK+VO6S3bg7QKiarKiqVU9L8jYJP8drZBMM=";
+      package = "${ant_1_9_3}/ant-1.9.3.jar";
     }
     {
       path = "org/apache/ant/ant-launcher/1.9.3/ant-launcher-1.9.3.jar";
-      hash = "sha256-5crzC7Yc1a56BRUlEXLFWOEDB0xg+pFpqb6bOY1z4eM=";
+      package = "${ant_1_9_3}/ant-launcher-1.9.3.jar";
     }
     {
       path = "org/codehaus/groovy/groovy-all/2.3.2/groovy-all-2.3.2.jar";
@@ -57,19 +59,19 @@ let
     }
     {
       path = "org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar";
-      hash = "sha256-/jCCUkXSM2yFncONYMD8XzZo2/Kc1YaCjStWZ+w1W5E=";
+      package = "${slf4j_1_7_5}/slf4j-api-1.7.5.jar";
     }
     {
       path = "org/slf4j/jcl-over-slf4j/1.7.5/jcl-over-slf4j-1.7.5.jar";
-      hash = "sha256-ysHInKJHZlZDM80WW2o6KFxwPfRn8BsdQmpc2Uc9ZwM=";
+      package = "${slf4j_1_7_5}/jcl-over-slf4j-1.7.5.jar";
     }
     {
       path = "org/slf4j/jul-to-slf4j/1.7.5/jul-to-slf4j-1.7.5.jar";
-      hash = "sha256-RwSh+XlTHHvxt0APG1suR1ex03ydAtpryDJ67HxviF0=";
+      package = "${slf4j_1_7_5}/jul-to-slf4j-1.7.5.jar";
     }
     {
       path = "org/slf4j/log4j-over-slf4j/1.7.5/log4j-over-slf4j-1.7.5.jar";
-      hash = "sha256-M3rnvW34zcN00w3CgkGfuGgT8yI7rBsoUWqStqtuyA0=";
+      package = "${slf4j_1_7_5}/log4j-over-slf4j-1.7.5.jar";
     }
     {
       path = "ch/qos/logback/logback-core/1.0.9/logback-core-1.0.9.jar";
@@ -182,10 +184,11 @@ let
   artifactJars = linkFarm "gradle-${version}-jars" (
     map (artifact: {
       name = baseNameOf artifact.path;
-      path = fetchurl {
-        url = "${artifact.repo or defaultRepo}/${artifact.path}";
-        hash = artifact.hash;
-      };
+      path =
+        artifact.package or (fetchurl {
+          url = "${artifact.repo or defaultRepo}/${artifact.path}";
+          hash = artifact.hash;
+        });
     }) artifacts
   );
 in

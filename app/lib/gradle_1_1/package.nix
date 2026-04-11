@@ -10,6 +10,7 @@
   gnugrep,
   gnused,
   which,
+  commons_codec_1_6,
   gradle_1_0,
 }:
 let
@@ -37,7 +38,7 @@ let
     }
     {
       path = "commons-codec/commons-codec/1.6/commons-codec-1.6.jar";
-      hash = "sha256-VLNOlBuOFBS9PkDXNu/TSBdy3CbbMpb2qkXOyfYgPYY=";
+      package = "${commons_codec_1_6}/commons-codec-1.6.jar";
     }
     {
       path = "org/apache/maven/maven-settings-builder/3.0.4/maven-settings-builder-3.0.4.jar";
@@ -92,10 +93,11 @@ let
   artifactJars = linkFarm "gradle-${version}-jars" (
     map (artifact: {
       name = baseNameOf artifact.path;
-      path = fetchurl {
-        url = "https://repo1.maven.org/maven2/${artifact.path}";
-        hash = artifact.hash;
-      };
+      path =
+        artifact.package or (fetchurl {
+          url = "https://repo1.maven.org/maven2/${artifact.path}";
+          hash = artifact.hash;
+        });
     }) artifacts
   );
 in

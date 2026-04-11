@@ -10,7 +10,9 @@
   gnugrep,
   gnused,
   which,
+  commons_codec_1_6,
   gradle_1_1,
+  javax_inject_1,
 }:
 let
   version = "1.2";
@@ -37,7 +39,7 @@ let
     }
     {
       path = "commons-codec/commons-codec/1.6/commons-codec-1.6.jar";
-      hash = "sha256-VLNOlBuOFBS9PkDXNu/TSBdy3CbbMpb2qkXOyfYgPYY=";
+      package = "${commons_codec_1_6}/commons-codec-1.6.jar";
     }
     {
       path = "org/apache/maven/maven-settings-builder/3.0.4/maven-settings-builder-3.0.4.jar";
@@ -93,17 +95,18 @@ let
     }
     {
       path = "javax/inject/javax.inject/1/javax.inject-1.jar";
-      hash = "sha256-kcdwRKUMSBY2wy2Rb9ickRinIZU5BFLIEGUID5V95/8=";
+      package = "${javax_inject_1}/javax.inject-1.jar";
     }
   ];
 
   artifactJars = linkFarm "gradle-${version}-jars" (
     map (artifact: {
       name = baseNameOf artifact.path;
-      path = fetchurl {
-        url = "https://repo1.maven.org/maven2/${artifact.path}";
-        hash = artifact.hash;
-      };
+      path =
+        artifact.package or (fetchurl {
+          url = "https://repo1.maven.org/maven2/${artifact.path}";
+          hash = artifact.hash;
+        });
     }) artifacts
   );
 in
