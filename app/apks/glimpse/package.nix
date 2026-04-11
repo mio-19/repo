@@ -5,7 +5,7 @@
   sources,
   lib,
   jdk25_headless,
-  gradle-packages,
+  mergeLock,
   apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -31,7 +31,15 @@ let
     pname = "glimpse";
     inherit version src gradle;
 
-    lockFile = ./gradle.lock;
+    lockFile = mergeLock [
+      ./gradle.lock
+      # [id: 'org.lineageos.generatebp', version: '1.28', apply: false]
+      ./more.gradle.lock
+    ];
+    postPatch = ''
+      substituteInPlace gradle/libs.versions.toml \
+        --replace-fail 'generateBp = "+"' 'generateBp = "1.28"'
+    '';
     overrides = overrides-from-source;
     buildJdk = jdk25_headless;
 
@@ -42,11 +50,6 @@ let
       apksigner
       writableTmpDirAsHomeHook
     ];
-
-    postPatch = ''
-      substituteInPlace gradle/libs.versions.toml \
-        --replace-fail 'generateBp = "+"' 'generateBp = "1.28"'
-    '';
 
     dontUseGradleConfigure = true;
 
