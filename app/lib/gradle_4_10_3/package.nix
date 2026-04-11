@@ -3,10 +3,15 @@
   asm_commons_6_2,
   asm_tree_6_2,
   brotli_dec_0_1_2,
-  gradle-legacy-bridge,
   commons_compress_1_14,
+  dd_plist_1_20,
+  fastutil_7_2_1,
+  findbugs,
+  gradle-legacy-bridge,
   gradle_4_0,
+  jdk11_headless,
   jsr305_3_0_2,
+  snakeyaml_1_6,
   xz_java_1_6,
 }:
 gradle-legacy-bridge {
@@ -14,6 +19,7 @@ gradle-legacy-bridge {
   tag = "v4.10.3";
   hash = "sha256-rpvkNqSdInehucshyQb4X1ZpROkx8n9hga95L8XkKTk=";
   bootstrapGradle = gradle_4_0;
+  jdk = jdk11_headless;
   patches = [ ./bootstrap-compat.patch ];
   patchFlags = [ "-p1" ];
   extraLibs = [
@@ -22,7 +28,11 @@ gradle-legacy-bridge {
     "${asm_tree_6_2}/asm-tree-${asm_tree_6_2.version}.jar"
     "${brotli_dec_0_1_2}/dec-${brotli_dec_0_1_2.version}.jar"
     "${commons_compress_1_14}/commons-compress-${commons_compress_1_14.version}.jar"
+    "${dd_plist_1_20}/dd-plist-${dd_plist_1_20.version}.jar"
+    "${fastutil_7_2_1}/fastutil-${fastutil_7_2_1.version}.jar"
+    "${findbugs}/share/java/findbugs.jar"
     "${jsr305_3_0_2}/jsr305-${jsr305_3_0_2.version}.jar"
+    "${snakeyaml_1_6}/snakeyaml-${snakeyaml_1_6.version}.jar"
     "${xz_java_1_6}/xz-${xz_java_1_6.version}.jar"
   ];
   sourceSubprojects = [
@@ -41,26 +51,20 @@ gradle-legacy-bridge {
     "composite-builds"
     "core"
     "core-api"
-    "dependency-management"
-    "diagnostics"
-    "ear"
-    "ide"
-    "ide-native"
     "installation-beacon"
     "ivy"
     "jacoco"
     "javascript"
     "jvm-services"
     "language-groovy"
+    "language-java"
     "language-jvm"
-    "language-native"
     "launcher"
     "logging"
     "maven"
     "messaging"
     "model-core"
     "model-groovy"
-    "native"
     "osgi"
     "persistent-cache"
     "platform-base"
@@ -68,18 +72,14 @@ gradle-legacy-bridge {
     "platform-native"
     "plugin-development"
     "plugin-use"
-    "plugins"
     "process-services"
     "publish"
     "reporting"
     "resources"
-    "resources-s3"
     "resources-sftp"
     "runtime-api-info"
     "test-kit"
     "testing-base"
-    "testing-jvm"
-    "testing-native"
     "tooling-api"
     "tooling-api-builders"
     "tooling-native"
@@ -102,7 +102,6 @@ gradle-legacy-bridge {
     "gradle-messaging"
     "gradle-model-core"
     "gradle-model-groovy"
-    "gradle-native"
     "gradle-persistent-cache"
     "gradle-process-services"
     "gradle-resources"
@@ -118,17 +117,12 @@ gradle-legacy-bridge {
     "gradle-build-init"
     "gradle-code-quality"
     "gradle-composite-builds"
-    "gradle-dependency-management"
-    "gradle-diagnostics"
-    "gradle-ear"
-    "gradle-ide"
-    "gradle-ide-native"
     "gradle-ivy"
     "gradle-jacoco"
     "gradle-javascript"
     "gradle-language-groovy"
+    "gradle-language-java"
     "gradle-language-jvm"
-    "gradle-language-native"
     "gradle-maven"
     "gradle-osgi"
     "gradle-platform-base"
@@ -136,15 +130,11 @@ gradle-legacy-bridge {
     "gradle-platform-native"
     "gradle-plugin-development"
     "gradle-plugin-use"
-    "gradle-plugins"
     "gradle-publish"
     "gradle-reporting"
-    "gradle-resources-s3"
     "gradle-resources-sftp"
     "gradle-test-kit"
     "gradle-testing-base"
-    "gradle-testing-jvm"
-    "gradle-testing-native"
     "gradle-tooling-api-builders"
     "gradle-tooling-native"
     "gradle-workers"

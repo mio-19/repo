@@ -23,6 +23,7 @@
   implementationPluginModules ? [ ],
   extraLibs ? [ ],
   extraPluginLibs ? [ ],
+  jdk ? jdk8_headless,
   buildTimestamp ? "19700101000000+0000",
   patches ? [ ],
   patchFlags ? [ ],
@@ -41,7 +42,7 @@ let
 
       passthru = {
         inherit bootstrapGradle;
-        jdk = jdk8_headless;
+        inherit jdk;
       };
 
       src = fetchFromGitHub {
@@ -53,7 +54,7 @@ let
       inherit patches patchFlags;
 
       nativeBuildInputs = [
-        jdk8_headless
+        jdk
         unzip
       ];
 
@@ -62,7 +63,7 @@ let
       buildPhase = ''
         runHook preBuild
 
-        export JAVA_HOME=${jdk8_headless}
+        export JAVA_HOME=${jdk}
         export HOME="$TMPDIR/home"
         mkdir -p "$HOME" build/lib build/all/classes build/bootstrap build/meta
 
@@ -188,7 +189,7 @@ let
 
         cat > "$out/bin/gradle" <<'EOF'
         #!${stdenv.shell}
-        export JAVA_HOME="''${JAVA_HOME:-${jdk8_headless}}"
+        export JAVA_HOME="''${JAVA_HOME:-${jdk}}"
         export PATH="${
           lib.makeBinPath [
             coreutils
@@ -196,7 +197,7 @@ let
             gnugrep
             gnused
             which
-            jdk8_headless
+            jdk
           ]
         }:''$PATH"
         exec "''$JAVA_HOME/bin/java" \
