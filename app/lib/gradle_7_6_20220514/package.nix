@@ -10,7 +10,7 @@
 gradle-from-source {
   version = "7.6.0-20220514";
   rev = "d2892b427be7c9438ea260c3aac331e318062c6b";
-  hash = "";
+  hash = "sha256-pSv7aKwRDw8Mys48A3cIR+4e28m+SIX8aVEZgARlxZA=";
   lockFile = ./gradle.lock;
   defaultJava = jdk17_headless;
   # this version specifically ask for termurin branded jdk.
@@ -21,85 +21,8 @@ gradle-from-source {
     temurin-bin-17
   ];
   # read https://github.com/tadfisher/gradle2nix/pull/88
-  /*
-    nix-shell -p javaPackages.compiler.openjdk11-bootstrap
-    rm gradle/verification-*
-    sed -i '/gradlePluginPortal()/a\
-        maven { url = uri("https://releases.jfrog.io/artifactory/oss-releases/") }' settings.gradle.kts
-    sed -i '/mavenCentral()/i\
-    maven {\
-        name = "JFrog OSS releases"\
-        url = uri("https://releases.jfrog.io/artifactory/oss-releases/")\
-    }\
-    ' build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts
-    tee -a build-logic/performance-testing/build.gradle.kts >/dev/null <<'EOF'
-
-    repositories {
-        gradlePluginPortal()
-        maven {
-            name = "JFrog OSS releases"
-            url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
-        }
-        mavenCentral()
-    }
-    EOF
-    tee -a build-logic/buildquality/build.gradle.kts >/dev/null <<'EOF'
-
-    repositories {
-        gradlePluginPortal()
-        maven {
-            name = "JFrog OSS releases"
-            url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
-        }
-        mavenCentral()
-    }
-    EOF
-    tee -a build-logic/build-platform/build.gradle.kts >/dev/null <<'EOF'
-
-    repositories {
-        gradlePluginPortal()
-        maven {
-            name = "JFrog OSS releases"
-            url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
-        }
-        mavenCentral()
-    }
-    EOF
-    tee -a build-logic/uber-plugins/build.gradle.kts >/dev/null <<'EOF'
-
-    repositories {
-        gradlePluginPortal()
-        maven {
-            name = "JFrog OSS releases"
-            url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
-        }
-        mavenCentral()
-    }
-    EOF
-    sed -i '/mavenCentral()/i\
-            jcenter {\
-                content {\
-                    includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")\
-                }\
-            }\
-    ' build-logic/settings.gradle.kts
-    sed -i '/dependencyResolutionManagement {/a\
-        repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
-    ' build-logic/settings.gradle.kts
-    sed -i '/mavenCentral()/i\
-            maven {\
-                name = "JFrog OSS release-local"\
-                url = uri("https://oss.jfrog.org/oss-release-local/")\
-            }\
-    ' build-logic/settings.gradle.kts
-    sed -i '/mavenCentral()/i\
-        jcenter {\
-            content {\
-                includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")\
-            }\
-        }\
-    ' build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts
-    nix run github:tadfisher/gradle2nix/6c0f9601ac41a1af04df09d8377ab706d07a4cf4  -- --gradle-wrapper=7.5-rc-1
-  */
+  #nix-shell -p javaPackages.compiler.openjdk11-bootstrap
+  #patch -p1 < path/to/repository.patch
+  #rm gradle/verification-*; nix run github:tadfisher/gradle2nix/6c0f9601ac41a1af04df09d8377ab706d07a4cf4  -- --gradle-wrapper=7.5-rc-1
   bootstrapGradle = gradle_7_5_rc1;
 }

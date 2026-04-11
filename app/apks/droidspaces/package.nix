@@ -2,7 +2,6 @@
   mk-apk-package,
   lib,
   jdk17_headless,
-  gradle-packages,
   stdenv,
   fetchFromGitHub,
   apksigner,

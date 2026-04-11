@@ -1,6 +1,7 @@
-diff -urN gradle-5.6.4/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java gradle-5.6.4-mod/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java
---- gradle-5.6.4/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java	2026-04-11 13:26:15.035440237 +1000
+diff --git gradle-5.6.4/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java gradle-5.6.4-mod/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java
+index 9656e8f..10e2ba4 100644
+--- gradle-5.6.4/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java
++++ gradle-5.6.4-mod/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java
 @@ -19,5 +19,5 @@
  import org.objectweb.asm.Opcodes;
  
@@ -8,22 +9,11 @@ diff -urN gradle-5.6.4/subprojects/base-services/src/main/java/org/gradle/intern
 -    public static final int ASM_LEVEL = Opcodes.ASM7;
 +    public static final int ASM_LEVEL = Opcodes.ASM6;
  }
-diff -urN gradle-5.6.4/subprojects/core/src/main/java/org/gradle/api/internal/tasks/userinput/DefaultUserInputHandler.java gradle-5.6.4-mod/subprojects/core/src/main/java/org/gradle/api/internal/tasks/userinput/DefaultUserInputHandler.java
---- gradle-5.6.4/subprojects/core/src/main/java/org/gradle/api/internal/tasks/userinput/DefaultUserInputHandler.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/core/src/main/java/org/gradle/api/internal/tasks/userinput/DefaultUserInputHandler.java	2026-04-11 13:26:15.035440237 +1000
-@@ -170,7 +170,7 @@
-     }
- 
-     private String sanitizeInput(String input) {
--        return CharMatcher.javaIsoControl().removeFrom(StringUtils.trim(input));
-+        return CharMatcher.JAVA_ISO_CONTROL.removeFrom(StringUtils.trim(input));
-     }
- 
-     private class BooleanParser implements Transformer<Boolean, String> {
-diff -urN gradle-5.6.4/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java gradle-5.6.4-mod/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java
---- gradle-5.6.4/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java	2026-04-11 13:26:15.037440238 +1000
-@@ -17,22 +17,11 @@
+diff --git gradle-5.6.4/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java gradle-5.6.4-mod/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java
+index fda6871..7753a38 100644
+--- gradle-5.6.4/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java
++++ gradle-5.6.4-mod/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java
+@@ -17,21 +17,10 @@
  package org.gradle.initialization;
  
  import com.google.common.collect.ImmutableSet;
@@ -34,7 +24,7 @@ diff -urN gradle-5.6.4/subprojects/core/src/main/java/org/gradle/initialization/
  
  public class DefaultGradleApiSpecProvider extends GradleApiSpecProvider.SpecAdapter implements GradleApiSpecProvider {
  
-     @Override
+-    @Override
 -    public Set<Class<?>> getExportedClasses() {
 -        return ImmutableSet.<Class<?>>of(
 -            FastStringServiceFactory.class,
@@ -42,11 +32,10 @@ diff -urN gradle-5.6.4/subprojects/core/src/main/java/org/gradle/initialization/
 -        );
 -    }
 -
--    @Override
+     @Override
      public Set<String> getExportedPackages() {
          return ImmutableSet.of(
-             "org.gradle",
-@@ -49,17 +38,7 @@
+@@ -49,17 +38,7 @@ public Set<String> getExportedPackages() {
  
      @Override
      public Set<String> getExportedResourcePrefixes() {
@@ -65,59 +54,11 @@ diff -urN gradle-5.6.4/subprojects/core/src/main/java/org/gradle/initialization/
      }
  
      @Override
-diff -urN gradle-5.6.4/subprojects/core/src/main/java/org/gradle/internal/filewatch/jdk7/WatchServiceFileWatcherBacking.java gradle-5.6.4-mod/subprojects/core/src/main/java/org/gradle/internal/filewatch/jdk7/WatchServiceFileWatcherBacking.java
---- gradle-5.6.4/subprojects/core/src/main/java/org/gradle/internal/filewatch/jdk7/WatchServiceFileWatcherBacking.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/core/src/main/java/org/gradle/internal/filewatch/jdk7/WatchServiceFileWatcherBacking.java	2026-04-11 13:26:15.035440237 +1000
-@@ -21,7 +21,6 @@
- import com.google.common.util.concurrent.Futures;
- import com.google.common.util.concurrent.ListenableFuture;
- import com.google.common.util.concurrent.ListeningExecutorService;
--import com.google.common.util.concurrent.MoreExecutors;
- import org.gradle.api.Action;
- import org.gradle.api.internal.file.FileSystemSubset;
- import org.gradle.internal.filewatch.FileWatcher;
-@@ -117,7 +116,7 @@
-                 public void onFailure(Throwable t) {
-                     running.set(false);
-                 }
--            }, MoreExecutors.directExecutor());
-+            });
-             return fileWatcher;
-         } else {
-             throw new IllegalStateException("file watcher is started");
-diff -urN gradle-5.6.4/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java gradle-5.6.4-mod/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java
---- gradle-5.6.4/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java	2026-04-11 13:26:15.035440237 +1000
-@@ -16,7 +16,6 @@
- 
- package org.gradle.api.tasks.util.internal;
- 
--import com.google.common.base.MoreObjects;
- import com.google.common.base.Objects;
- import com.google.common.cache.Cache;
- import com.google.common.cache.CacheBuilder;
-@@ -82,7 +81,7 @@
- 
-         @Override
-         public String toString() {
--            return MoreObjects.toStringHelper(this)
-+            return Objects.toStringHelper(this)
-                 .add("spec", spec)
-                 .toString();
-         }
-@@ -124,7 +123,7 @@
- 
-         @Override
-         public String toString() {
--            return MoreObjects.toStringHelper(this)
-+            return Objects.toStringHelper(this)
-                 .add("patterns", patterns)
-                 .add("include", include)
-                 .add("caseSensitive", caseSensitive)
-diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java
---- gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java	2026-04-11 13:26:15.035440237 +1000
-@@ -710,7 +710,7 @@
+diff --git gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java
+index ddcd8de..a455b81 100644
+--- gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java
++++ gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java
+@@ -710,7 +710,7 @@ private String[] readStringArray() throws IOException {
  
          private List<String> readStringList() throws IOException {
              int size = readCount();
@@ -126,7 +67,7 @@ diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradl
              for (int i = 0; i < size; i++) {
                  builder.add(readString());
              }
-@@ -719,7 +719,7 @@
+@@ -719,7 +719,7 @@ private List<String> readStringList() throws IOException {
  
          private Set<String> readStringSet() throws IOException {
              int size = readCount();
@@ -135,10 +76,11 @@ diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradl
              for (int i = 0; i < size; i++) {
                  builder.add(readString());
              }
-diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java
---- gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java	2026-04-11 13:26:15.035440237 +1000
-@@ -69,7 +69,7 @@
+diff --git gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java
+index 9858ad3..fb8bc10 100644
+--- gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java
++++ gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java
+@@ -69,7 +69,7 @@ public Action<? super ArtifactResolutionDetails> toContentFilter() {
      private static ImmutableList<SpecMatcher> createSpecMatchers(Set<ContentSpec> specs) {
          ImmutableList<SpecMatcher> matchers = null;
          if (specs != null) {
@@ -147,9 +89,10 @@ diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradl
              for (ContentSpec spec : specs) {
                  builder.add(spec.toMatcher());
              }
-diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java
---- gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java	2026-04-11 13:26:15.037440238 +1000
+diff --git gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java
+index 618be96..010e329 100644
+--- gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java
++++ gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java
 @@ -21,6 +21,7 @@
  import org.gradle.internal.exceptions.DefaultMultiCauseException;
  import org.gradle.internal.resource.transport.http.HttpErrorStatusCodeException;
@@ -158,7 +101,7 @@ diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradl
  import java.net.SocketTimeoutException;
  import java.util.List;
  
-@@ -48,7 +49,7 @@
+@@ -48,7 +49,7 @@ public static <E extends Throwable> boolean isLikelyTransientNetworkingIssue(E f
          }
          if (failure instanceof HttpErrorStatusCodeException) {
              HttpErrorStatusCodeException httpError = (HttpErrorStatusCodeException) failure;
@@ -167,7 +110,7 @@ diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradl
          }
          Throwable cause = failure.getCause();
          if (cause != null && cause != failure) {
-@@ -57,6 +58,16 @@
+@@ -57,6 +58,16 @@ public static <E extends Throwable> boolean isLikelyTransientNetworkingIssue(E f
          return false;
      }
  
@@ -184,10 +127,11 @@ diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradl
      private static boolean isTransientClientError(int statusCode) {
          return statusCode == HttpStatus.SC_REQUEST_TIMEOUT ||
              statusCode == 429; // Too many requests (not available through HttpStatus.XXX)
-diff -urN gradle-5.6.4/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java gradle-5.6.4-mod/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java
---- gradle-5.6.4/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java	2026-04-11 13:26:15.037440238 +1000
-@@ -111,7 +111,7 @@
+diff --git gradle-5.6.4/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java gradle-5.6.4-mod/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java
+index 646fb14..0500f0f 100644
+--- gradle-5.6.4/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java
++++ gradle-5.6.4-mod/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java
+@@ -111,7 +111,7 @@ public Set<FileSystemLocation> get() {
                  // TODO - visit the contents of this collection instead.
                  // This is just a super simple implementation for now
                  Set<File> files = getFiles();
@@ -196,10 +140,11 @@ diff -urN gradle-5.6.4/subprojects/file-collections/src/main/java/org/gradle/api
                  for (File file : files) {
                      builder.add(new DefaultFileSystemLocation(file));
                  }
-diff -urN gradle-5.6.4/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java gradle-5.6.4-mod/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java
---- gradle-5.6.4/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java	2026-04-11 13:26:15.035440237 +1000
-@@ -318,7 +318,7 @@
+diff --git gradle-5.6.4/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java gradle-5.6.4-mod/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java
+index a78fa8e..6117144 100644
+--- gradle-5.6.4/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java
++++ gradle-5.6.4-mod/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java
+@@ -318,7 +318,7 @@ public void dispatch(Object event) {
      @VisibleForTesting
      static final class ProgressListenerConfiguration {
  
@@ -208,29 +153,10 @@ diff -urN gradle-5.6.4/subprojects/launcher/src/main/java/org/gradle/tooling/int
              .put(InternalBuildProgressListener.TEST_EXECUTION, OperationType.TEST)
              .put(InternalBuildProgressListener.TASK_EXECUTION, OperationType.TASK)
              .put(InternalBuildProgressListener.WORK_ITEM_EXECUTION, OperationType.WORK_ITEM)
-diff -urN gradle-5.6.4/subprojects/logging/src/main/java/org/gradle/internal/logging/console/Cursor.java gradle-5.6.4-mod/subprojects/logging/src/main/java/org/gradle/internal/logging/console/Cursor.java
---- gradle-5.6.4/subprojects/logging/src/main/java/org/gradle/internal/logging/console/Cursor.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/logging/src/main/java/org/gradle/internal/logging/console/Cursor.java	2026-04-11 13:26:15.035440237 +1000
-@@ -16,7 +16,6 @@
- 
- package org.gradle.internal.logging.console;
- 
--import com.google.common.base.MoreObjects;
- import com.google.common.base.Objects;
- 
- /**
-@@ -62,7 +61,7 @@
- 
-     @Override
-     public String toString() {
--        return MoreObjects.toStringHelper(this.getClass())
-+        return Objects.toStringHelper(this.getClass())
-             .add("row", row)
-             .add("col", col)
-             .toString();
-diff -urN gradle-5.6.4/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java gradle-5.6.4-mod/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java
---- gradle-5.6.4/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java	2026-04-11 13:26:15.037440238 +1000
+diff --git gradle-5.6.4/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java gradle-5.6.4-mod/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java
+index 5281111..ab38df0 100644
+--- gradle-5.6.4/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java
++++ gradle-5.6.4-mod/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java
 @@ -20,6 +20,8 @@
  import org.gradle.internal.Factory;
  
@@ -240,7 +166,7 @@ diff -urN gradle-5.6.4/subprojects/model-core/src/main/java/org/gradle/util/Defe
  import java.util.concurrent.Callable;
  
  import static org.gradle.util.GUtil.uncheckedCall;
-@@ -69,12 +71,35 @@
+@@ -69,12 +71,35 @@ public static Object unpackNestableDeferred(Object deferred) {
          return current;
      }
  
@@ -278,43 +204,3 @@ diff -urN gradle-5.6.4/subprojects/model-core/src/main/java/org/gradle/util/Defe
 +        }
      }
  }
-diff -urN gradle-5.6.4/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java gradle-5.6.4-mod/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java
---- gradle-5.6.4/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java	2026-04-11 13:26:15.035440237 +1000
-@@ -16,7 +16,6 @@
- 
- package org.gradle.tooling.internal.provider.runner;
- 
--import com.google.common.base.MoreObjects;
- import org.apache.commons.io.FilenameUtils;
- import org.gradle.api.internal.ExecuteDomainObjectCollectionCallbackBuildOperationType;
- import org.gradle.api.internal.plugins.ApplyPluginBuildOperationType;
-@@ -122,7 +121,7 @@
-     private InternalBinaryPluginIdentifier toBinaryPluginIdentifier(ApplyPluginBuildOperationType.Details details) {
-         String className = details.getPluginClass().getName();
-         String pluginId = details.getPluginId();
--        String displayName = MoreObjects.firstNonNull(pluginId, className);
-+        String displayName = (pluginId != null ? pluginId : className);
-         return new DefaultBinaryPluginIdentifier(displayName, className, pluginId);
-     }
- 
-diff -urN gradle-5.6.4/subprojects/workers/src/main/java/org/gradle/workers/internal/DaemonForkOptions.java gradle-5.6.4-mod/subprojects/workers/src/main/java/org/gradle/workers/internal/DaemonForkOptions.java
---- gradle-5.6.4/subprojects/workers/src/main/java/org/gradle/workers/internal/DaemonForkOptions.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/workers/src/main/java/org/gradle/workers/internal/DaemonForkOptions.java	2026-04-11 13:26:15.035440237 +1000
-@@ -16,7 +16,6 @@
- 
- package org.gradle.workers.internal;
- 
--import com.google.common.base.MoreObjects;
- import com.google.common.base.Objects;
- import org.gradle.process.JavaForkOptions;
- import org.gradle.process.internal.JavaForkOptionsInternal;
-@@ -53,7 +52,7 @@
-     }
- 
-     public String toString() {
--        return MoreObjects.toStringHelper(this)
-+        return Objects.toStringHelper(this)
-                 .add("executable", forkOptions.getExecutable())
-                 .add("minHeapSize", forkOptions.getMinHeapSize())
-                 .add("maxHeapSize", forkOptions.getMaxHeapSize())

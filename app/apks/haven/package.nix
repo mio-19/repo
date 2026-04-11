@@ -2,8 +2,8 @@
   mk-apk-package,
   lib,
   pkgs,
-  jdk17_headless,
-  gradle_8_11_1,
+  jdk21_headless,
+  gradle_9_3_1,
   stdenv,
   stdenvNoCC,
   fetchFromGitHub,
@@ -32,7 +32,7 @@ let
       androidNdkRoot = "${androidSdkRoot}/ndk/29.0.14206865";
       aapt2 = "${androidSdkRoot}/build-tools/36.0.0/aapt2";
 
-      gradle = gradle_8_11_1;
+      gradle = gradle_9_3_1;
 
       xMobileSrc = fetchFromGitHub {
         owner = "golang";
@@ -187,14 +187,14 @@ let
 
         nativeBuildInputs = [
           go_1_26
-          jdk17_headless
+          jdk21_headless
           unzip
         ];
 
         dontConfigure = true;
 
         env = {
-          JAVA_HOME = if stdenv.isDarwin then "${jdk17_headless}" else "${jdk17_headless}/lib/openjdk";
+          JAVA_HOME = if stdenv.isDarwin then "${jdk21_headless}" else "${jdk21_headless}/lib/openjdk";
           ANDROID_HOME = androidSdkRoot;
           ANDROID_SDK_ROOT = androidSdkRoot;
           ANDROID_NDK_ROOT = androidNdkRoot;
@@ -266,14 +266,14 @@ let
     in
     {
       pname = "haven";
-      version = "4.51.11";
+      version = "4.56.0";
 
       src = fetchFromGitHub {
         owner = "GlassOnTin";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-EE0pkOBVfBGW64SUBuILZfU6Ddji2B4yPS25QIWeZuw=";
+        hash = "sha256-LU4EBaWvClUto3O9qcjmA26lS8c1bwAprNzDnp+n5y0=";
       };
 
       patches = [
@@ -304,7 +304,7 @@ let
 
       nativeBuildInputs = [
         gradle
-        jdk17_headless
+        jdk21_headless
         writableTmpDirAsHomeHook
         git
         python313
@@ -313,7 +313,7 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk17_headless;
+        JAVA_HOME = jdk21_headless;
         ANDROID_HOME = androidSdkRoot;
         ANDROID_SDK_ROOT = androidSdkRoot;
         ANDROID_NDK_ROOT = androidNdkRoot;
@@ -363,7 +363,7 @@ let
       gradleFlags = [
         "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
         "-Dandroid.aapt2FromMavenOverride=${aapt2}"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2}"
       ];
