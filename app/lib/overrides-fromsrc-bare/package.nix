@@ -775,9 +775,15 @@ in
     "javax.inject-1.jar" = _: "${javax_inject_1}/javax.inject-1.jar";
     "javax.inject-1.pom" = _: "${javax_inject_1}/javax.inject-1.pom";
   };
-  "com.google.j2objc:j2objc-annotations:1.1" =
-    mkMavenSourceJarOverride "j2objc-annotations" "1.1"
-      j2objc_annotations_1_1;
+  /*
+    > Task :app:minifyReleaseWithR8 FAILED
+    ERROR:/build/tmp.vu4FaAQiAv/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.1/4dbde2726acab552d9b73e0a5321196d497444fe/j2objc-annotations-1.1.jar: R8: java.lang.NullPointerException: Cannot invoke "String.length()" because "<parameter1>" is null
+  */
+  /*
+    "com.google.j2objc:j2objc-annotations:1.1" =
+      mkMavenSourceJarOverride "j2objc-annotations" "1.1"
+        j2objc_annotations_1_1;
+  */
   "com.google.j2objc:j2objc-annotations:1.3" =
     mkMavenSourceJarOverride "j2objc-annotations" "1.3"
       j2objc_annotations_1_3;
