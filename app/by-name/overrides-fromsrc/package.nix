@@ -1,13 +1,12 @@
 {
   overrides-fromsrc-bare,
-  deepMerge,
   callPackage,
 }:
+with callPackage ../overrides-fromsrc-bare/utils.nix { };
 let
   patches = import ./patches.nix {
     self = result;
   };
   result = deepMerge overrides-fromsrc-bare patches;
-  noAsc = callPackage ../overrides-fromsrc-bare/noAsc.nix { };
 in
 noAsc result
