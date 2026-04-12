@@ -19,6 +19,11 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-HT2yjgAeuaAXMtDJi+Bir5r1NtlCiXoMk3mEr4tCKMA=";
   };
 
+  parentPom = fetchurl {
+    url = "https://repo.maven.apache.org/maven2/org/brotli/parent/${finalAttrs.version}/parent-${finalAttrs.version}.pom";
+    hash = "sha256-EW+dZjLBPNScPzMzd2UHX876GrkR6eK3dic2ytSo9Wk=";
+  };
+
   nativeBuildInputs = [ jdk25_headless ];
 
   dontConfigure = true;
@@ -44,6 +49,7 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir -p "$out"
     install -Dm644 "$tmp/dec-${finalAttrs.version}.jar" "$out/dec-${finalAttrs.version}.jar"
     install -Dm644 "$pom" "$out/dec-${finalAttrs.version}.pom"
+    install -Dm644 "$parentPom" "$out/parent-${finalAttrs.version}.pom"
 
     runHook postInstall
   '';
