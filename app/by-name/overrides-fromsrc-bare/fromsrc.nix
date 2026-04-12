@@ -73,7 +73,6 @@
   gson_2_9_0,
   gson_2_9_1,
   gson_2_10_1,
-  gson_2_11_0,
   gson_2_8_6,
   gson_2_8_9,
   gson_2_12_1,
@@ -240,10 +239,6 @@ in
     "protobuf-bom-3.25.5.pom" = _: "${protobuf_bom_3_25_5}/protobuf-bom-3.25.5.pom";
   };
 
-  "com.google.code.gson:gson:2.11.0" = {
-    "gson-2.11.0.jar" = _: "${gson_2_11_0}/gson-2.11.0.jar";
-    "gson-2.11.0.pom" = _: "${gson_2_11_0}/gson-2.11.0.pom";
-  };
   "com.google.code.gson:gson:2.10.1" = {
     "gson-2.10.1.jar" = _: "${gson_2_10_1}/gson-2.10.1.jar";
     "gson-2.10.1.pom" = _: "${gson_2_10_1}/gson-2.10.1.pom";
