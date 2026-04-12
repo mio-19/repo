@@ -7,7 +7,7 @@
 let
   src = fetchgit {
     url = "https://gitlab.com/grapheneos/kernel_pixel_muzel.git";
-    tag = "2026040300";
+    tag = "2026040800";
     fetchSubmodules = true;
     deepClone = false;
     sparseCheckout = [ ];
