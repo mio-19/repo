@@ -10,7 +10,7 @@
   fetchFromGitHub,
   yarn-berry_4,
   nodejs,
-  apksigner,
+
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
@@ -78,7 +78,7 @@ let
         nodejs
         yarn-berry_4.yarnBerryConfigHook
         ninja
-        apksigner
+
         writableTmpDirAsHomeHook
       ];
 

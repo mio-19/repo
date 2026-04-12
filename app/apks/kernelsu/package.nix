@@ -6,7 +6,7 @@
   gradle_8_12_1,
   stdenv,
   fetchFromGitHub,
-  apksigner,
+
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   fetchurl,
@@ -133,7 +133,7 @@ let
       nativeBuildInputs = [
         gradle
         jdk21_headless
-        apksigner
+
         writableTmpDirAsHomeHook
       ];
 

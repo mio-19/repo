@@ -5,7 +5,7 @@
   gradle-packages,
   stdenv,
   fetchgit,
-  apksigner,
+
   gitMinimal,
   glslang,
   python3,
@@ -55,7 +55,7 @@ let
       nativeBuildInputs = [
         gradle
         jdk21_headless
-        apksigner
+
         gitMinimal
         glslang
         python3

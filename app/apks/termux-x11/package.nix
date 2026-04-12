@@ -8,7 +8,7 @@
   androidSdkBuilder,
   gradle_9_3_1,
   jdk17_headless,
-  apksigner,
+
   writableTmpDirAsHomeHook,
   bison,
   python3,
@@ -60,7 +60,7 @@ let
       nativeBuildInputs = [
         gradle
         jdk17_headless
-        apksigner
+
         writableTmpDirAsHomeHook
         bison
         python3

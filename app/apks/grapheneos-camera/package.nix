@@ -7,7 +7,7 @@
   jdk25_headless,
   jdk17_headless,
   gradle_9_4_0,
-  apksigner,
+
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   fetchpatch,
@@ -66,7 +66,7 @@ let
       gradle
       jdk25_headless
       jdk17_headless
-      apksigner
+
       writableTmpDirAsHomeHook
     ];
 

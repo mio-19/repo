@@ -6,7 +6,6 @@
   jdk21_headless,
   gradle_9_3_1,
   fetchgit,
-  apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   overrides-fromsrc-updated,
@@ -42,7 +41,6 @@ let
       androidSdk
       gradle
       jdk21_headless
-      apksigner
       writableTmpDirAsHomeHook
     ];
 

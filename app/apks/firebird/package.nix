@@ -10,7 +10,7 @@
   androidSdkBuilder,
   patchelf,
   qt5,
-  apksigner,
+
   p7zip,
   writableTmpDirAsHomeHook,
   fetchpatch,
@@ -177,7 +177,7 @@ let
     nativeBuildInputs = [
       gradle
       jdk17_headless
-      apksigner
+
       writableTmpDirAsHomeHook
     ];
 

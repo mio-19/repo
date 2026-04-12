@@ -1,5 +1,5 @@
 {
-  apksigner,
+
   androidSdkBuilder,
   fetchgit,
   overrides-fromsrc,
@@ -43,7 +43,7 @@ gradle2nixBuilders.buildGradlePackage rec {
   nativeBuildInputs = [
     androidSdk
     jdk25_headless
-    apksigner
+
     writableTmpDirAsHomeHook
   ];
 

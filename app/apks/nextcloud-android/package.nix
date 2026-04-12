@@ -6,7 +6,7 @@
   jdk25_headless,
   gradle_9_4_1,
   fetchFromGitHub,
-  apksigner,
+
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
@@ -45,7 +45,7 @@ let
       androidSdk
       gradle
       jdk25_headless
-      apksigner
+
       writableTmpDirAsHomeHook
     ];
 

@@ -6,7 +6,7 @@
   lib,
   jdk25_headless,
   gradle-packages,
-  apksigner,
+
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   overrides-fromsrc-updated,
@@ -39,7 +39,7 @@ let
       androidSdk
       gradle
       jdk25_headless
-      apksigner
+
       writableTmpDirAsHomeHook
     ];
 

@@ -19,7 +19,7 @@
   m4,
   which,
   python3,
-  apksigner,
+
   writableTmpDirAsHomeHook,
   unzip,
   util-linux,
@@ -107,7 +107,7 @@ let
             curl
             bash
             jdk17_headless
-            apksigner
+
             p7zip
             buildPackages.stdenv.cc
           ];
@@ -170,7 +170,7 @@ let
         unzip
         gradle
         jdk17_headless
-        apksigner
+
         writableTmpDirAsHomeHook
         util-linux
         meson
