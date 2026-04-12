@@ -2,12 +2,13 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  gradle_8_14_4,
+  gradle_9_3_1,
   jdk21_headless,
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
-  morphe-patches-gradle-plugin,
+  morphe-patches-gradle-plugin_1_3_2_dev_2,
   morphe-library-m2,
+  morphe-patches-library-m2,
   apktool-src,
   multidexlib2-src,
   morphe-patcher-src,
@@ -19,11 +20,13 @@ let
     s.platforms-android-33
     s.platforms-android-34
     s.platforms-android-35
+    s.platforms-android-36
     s.build-tools-34-0-0
     s.build-tools-35-0-0
+    s.build-tools-36-0-0
   ]);
 
-  gradle = gradle_8_14_4;
+  gradle = gradle_9_3_1;
 
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
@@ -35,13 +38,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "brosssh-patches";
-  version = "2.2.0";
+  version = "2.3.0";
 
   src = fetchFromGitHub {
     owner = "brosssh";
     repo = "morphe-patches";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-K5u/5S77ETBGZxGvHyuTyu7H/XZ13Yw+G39+Iv27kIc=";
+    hash = "sha256-vyo29jOPOrfYXBSOpv6aGC1+KsN9r0m8rIK6XdO49gA=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -55,11 +58,26 @@ stdenv.mkDerivation (finalAttrs: {
     chmod -R u+w "$root/ARSCLib"
     cp -a ${apktool-src} "$root/Apktool"
     chmod -R u+w "$root/Apktool"
+    patch -d "$root/Apktool" -p3 < ${./apktool-gradle-9.patch}
 
     cp -a ${multidexlib2-src} "$root/multidexlib2"
     chmod -R u+w "$root/multidexlib2"
+    patch -d "$root/multidexlib2" -p3 < ${./multidexlib2-gradle-9.patch}
 
     patch -d "$sourceRoot" -p0 < ${./morphe-patches-settings.patch}
+
+    printf '%s\n' \
+      'allprojects {' \
+      '    repositories {' \
+      '        mavenLocal()' \
+      '        maven { url = rootProject.layout.buildDirectory.dir("m2").get().asFile.toURI() }' \
+      '        google()' \
+      '        mavenCentral()' \
+      '        maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }' \
+      '        maven { url = uri("https://jitpack.io") }' \
+      '    }' \
+      '}' \
+      > "$sourceRoot/build.gradle.kts"
 
     cat >> "$sourceRoot/settings.gradle.kts" << 'EOF'
 
@@ -86,6 +104,15 @@ stdenv.mkDerivation (finalAttrs: {
 
     cat >> "$sourceRoot/patches/build.gradle.kts" << 'EOF'
 
+    repositories {
+        mavenLocal()
+        maven { url = rootProject.layout.buildDirectory.dir("m2").get().asFile.toURI() }
+        google()
+        mavenCentral()
+        maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }
+        maven { url = uri("https://jitpack.io") }
+    }
+
     tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
         manifest {
             attributes(
@@ -100,6 +127,18 @@ stdenv.mkDerivation (finalAttrs: {
                 "License" to "GNU General Public License v3.0, with additional GPL section 7 requirements",
             )
         }
+    }
+    EOF
+
+    cat >> "$sourceRoot/extensions/instagram/build.gradle.kts" << 'EOF'
+
+    repositories {
+        mavenLocal()
+        maven { url = rootProject.layout.buildDirectory.dir("m2").get().asFile.toURI() }
+        google()
+        mavenCentral()
+        maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }
+        maven { url = uri("https://jitpack.io") }
     }
     EOF
   '';
@@ -124,8 +163,9 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
-    MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin}";
+    MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_2_dev_2}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
+    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2}";
   };
 
   preConfigure = ''

@@ -1,0 +1,41 @@
+diff --git a/tmp/brosssh-apktool-orig/build.gradle.kts b/tmp/brosssh-apktool-mod/build.gradle.kts
+index 923fc78..1b7dfb1 100644
+--- a/tmp/brosssh-apktool-orig/build.gradle.kts
++++ b/tmp/brosssh-apktool-mod/build.gradle.kts
+@@ -1,5 +1,3 @@
+-import java.io.ByteArrayOutputStream
+-
+ val version = "2.11.2"
+ val suffix = ".r3"
+ 
+@@ -11,26 +9,20 @@ defaultTasks("build", "shadowJar", "proguard")
+ 
+ // Functions
+ val gitDescribe: String? by lazy {
+-    val stdout = ByteArrayOutputStream()
+     try {
+-        rootProject.exec {
++        providers.exec {
+             commandLine("git", "describe", "--tags")
+-            standardOutput = stdout
+-        }
+-        stdout.toString().trim().replace("-g", "-")
++        }.standardOutput.asText.get().trim().replace("-g", "-")
+     } catch (e: Exception) {
+         null
+     }
+ }
+ 
+ val gitBranch: String? by lazy {
+-    val stdout = ByteArrayOutputStream()
+     try {
+-        rootProject.exec {
++        providers.exec {
+             commandLine("git", "rev-parse", "--abbrev-ref", "HEAD")
+-            standardOutput = stdout
+-        }
+-        stdout.toString().trim()
++        }.standardOutput.asText.get().trim()
+     } catch (e: Exception) {
+         null
+     }

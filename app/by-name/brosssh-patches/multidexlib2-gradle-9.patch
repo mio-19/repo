@@ -1,0 +1,44 @@
+diff --git a/tmp/brosssh-multidexlib2-orig/build.gradle b/tmp/brosssh-multidexlib2-mod/build.gradle
+index ca9a444..e600871 100644
+--- a/tmp/brosssh-multidexlib2-orig/build.gradle
++++ b/tmp/brosssh-multidexlib2-mod/build.gradle
+@@ -23,8 +23,10 @@ version = dexlib2Version
+ ext.mainArtifact = 'multidexlib2'
+ ext.artifactName = mainArtifact
+ 
+-sourceCompatibility = JavaVersion.VERSION_1_8
+-targetCompatibility = JavaVersion.VERSION_1_8
++java {
++    sourceCompatibility = JavaVersion.VERSION_1_8
++    targetCompatibility = JavaVersion.VERSION_1_8
++}
+ 
+ repositories {
+     mavenCentral()
+diff --git a/tmp/brosssh-multidexlib2-orig/configure-artifacts.gradle b/tmp/brosssh-multidexlib2-mod/configure-artifacts.gradle
+index c3d8b44..41e88f2 100644
+--- a/tmp/brosssh-multidexlib2-orig/configure-artifacts.gradle
++++ b/tmp/brosssh-multidexlib2-mod/configure-artifacts.gradle
+@@ -22,16 +22,14 @@ processResources {
+     }
+ }
+ 
+-def sharedManifest = manifest {
+-    attributes(
+-            'Implementation-Title': artifactName,
+-            'Implementation-Version': version
+-    )
+-}
+-
+ tasks.withType(Jar).configureEach {
+     archiveBaseName.set mainArtifact
+-    manifest.from sharedManifest
++    manifest {
++        attributes(
++                'Implementation-Title': artifactName,
++                'Implementation-Version': version
++        )
++    }
+     reproducibleFileOrder = true
+     preserveFileTimestamps = false
+     duplicatesStrategy = DuplicatesStrategy.FAIL
