@@ -61,15 +61,10 @@ ant_nixpkgs.overrideAttrs (
     meta = prevAttrs.meta // {
       mavenProvides = {
         "org.apache.ant:ant:${finalAttrs.version}" = {
-          "ant-${finalAttrs.version}.jar" = "${placeholder "out"}/share/ant/lib/ant.jar";
-          "ant-${finalAttrs.version}.pom" = "${finalAttrs.src}/src/etc/poms/ant/pom.xml";
+          "ant-${finalAttrs.version}.jar" = _: "${placeholder "out"}/share/ant/lib/ant.jar";
+          "ant-${finalAttrs.version}.pom" = _: "${finalAttrs.src}/src/etc/poms/ant/pom.xml";
         };
       };
-      mavenCoordinate = "org.apache.ant:ant:${finalAttrs.version}";
-      mavenFiles = [
-        "ant-${finalAttrs.version}.jar"
-        "ant-${finalAttrs.version}.pom"
-      ];
     };
   }
 )

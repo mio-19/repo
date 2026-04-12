@@ -1,6 +1,5 @@
 {
   overrides-fromsrc-bare,
-  deepMerge,
   overrides-fromsrc,
   callPackage,
 }:
