@@ -71,8 +71,8 @@ ant_nixpkgs.overrideAttrs (
             ""
             "-launcher"
           ]
-          ++ lib.optionals (false && finalAttrs.version == "1.10.12") [
-            "-juint"
+          ++ lib.optionals (lib.strings.compareVersions finalAttrs.version "1.9.3" >= 0) [
+            "-junit"
           ]
           ++ lib.optionals (lib.strings.compareVersions finalAttrs.version "1.10.0" >= 0) [
             "-antlr"
