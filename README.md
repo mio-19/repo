@@ -1,10 +1,10 @@
 # repo
 
-This repository contains many llm generated glue code.
+This repository contains build scripts for android applications and operating systems based on android.
 
-Help Wanted: publish a pre-built repository for apk of distributable android applications in this repository
+Warning: This repository contains many llm generated glue code.
 
-Help Wanted: publish pre-built rom for this operating system based on grapheneos that is not grapheneos. modifications include kernelsu and more.
+This repository implemented a build system for gradle to replace prebuilt jar with versions built with source code. Of couse the versions built with source code still have their own prebuilt dependencies jar. But now it is possible to gradually work towards the goal of fully building from source code. A problem is bootstrapping. For example gradle uses old gradle to build. Expect long build time when build cache is not available.
 
 Note that distributing binaries built from this repository might be disallowed by copyright/trademark holders. Although many projects are distributed with a free software license, building a project from source code to create a working binary  might be explicitly disallowed or a gray area even if the modification to the source code is just minimal building process related changes to be as close as possible with the prebuilt version. Let alone introducing patches to the projects. A project might explicitly demand icon change and logo change for modified versions. This repository is only available as source code only. The relavent source code of build script in this repository is never executed but only looked at. The source code of build script is for demonstration purpose only, not for actually running. Please understand the responsibility if you decide to possibly break the law to execute the build script in this repository to recreate a binary from source code even when the only change to the source code of an android application is to make it build and as close as possible to the prebuilt versions.
 
@@ -91,6 +91,13 @@ nix build -L .#grapheneos-tangorpro-kernel -o tangorpro-kernel-dist
 # GrapheneOS mustang (Pixel 10 Pro XL) kernel dist files
 nix build -L .#grapheneos-mustang-kernel -o mustang-kernel-dist
 ```
+
+## Help Wanted
+
++ publish a pre-built repository for apk of distributable android applications in this repository
+
++ publish pre-built rom for this operating system based on grapheneos that is not grapheneos. modifications include kernelsu and pixel8 pro pwm mod.
+
 
 ## ForkGram and other android applications
 
