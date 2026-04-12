@@ -21,6 +21,7 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
+        # https://github.com/breezy-weather/breezy-weather/blob/258a4387d82c5e764df42057fd4bb8df20c61d1a/.github/workflows/push.yml#L47
         s.build-tools-36-0-0
       ]);
 
