@@ -1,10 +1,9 @@
 {
   mk-apk-package,
-  overrides-fromsrc,
   gradle2nixBuilders,
   sources,
   lib,
-  jdk25_headless,
+  jdk17_headless,
   gradle_9_4_0,
   apksigner,
   writableTmpDirAsHomeHook,
@@ -32,7 +31,7 @@ let
 
     lockFile = ./gradle.lock;
     overrides = overrides-fromsrc-updated;
-    buildJdk = jdk25_headless;
+    buildJdk = jdk17_headless;
 
     patches = [
       (fetchpatch {
@@ -53,7 +52,7 @@ let
     nativeBuildInputs = [
       androidSdk
       gradle
-      jdk25_headless
+      jdk17_headless
       apksigner
       writableTmpDirAsHomeHook
     ];
@@ -76,9 +75,9 @@ let
     '';
 
     gradleFlags = [
-      "-Dorg.gradle.java.home=${jdk25_headless.home}"
+      "-Dorg.gradle.java.home=${jdk17_headless.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
-      "-Dorg.gradle.java.installations.paths=${jdk25_headless}/lib/openjdk"
+      "-Dorg.gradle.java.installations.paths=${jdk17_headless}/lib/openjdk"
       "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
       "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
     ];
