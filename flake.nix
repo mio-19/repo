@@ -200,7 +200,11 @@
         in
         {
           _module.args = {
-            inherit pkgsPatched gradle2nixV1Patched gradle2nixPatched;
+            inherit pkgsPatched gradle2nixV1Patched;
+            gradle2nixPatched =
+              assert pkgsPatched.mitm-cache.fetch == selfLegacyPackages.mitm-cache-fetch;
+              assert pkgsPatched.mitm-cache.fetch == pkgsPatched.mitm-cache.passthru.fetch;
+              gradle2nixPatched;
           };
 
           formatter = pkgs.nixfmt;
