@@ -1,9 +1,6 @@
 { self }:
 # generally jar use newer version, pom keeps the same version.
 {
-  "com.google.code.gson:gson:2.10.1" = {
-    "gson-2.10.1.jar" = self."com.google.code.gson:gson:2.11.0"."gson-2.11.0.jar";
-  };
   "commons-io:commons-io:2.13.0" = {
     "commons-io-2.13.0.jar" = self."commons-io:commons-io:2.16.1"."commons-io-2.16.1.jar";
   };

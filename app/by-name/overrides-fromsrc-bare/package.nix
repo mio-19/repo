@@ -1,7 +1,7 @@
 {
   callPackage,
   libs,
-  lib,
+  lib,runCommand,
 }:
 with callPackage ./utils.nix { };
 let
@@ -14,7 +14,11 @@ let
     mapAttrs (
       name: value:
       assert builtins.isPath value || builtins.isString value;
-      _: value
+      let
+        # need to copy to keep their placeholder "out" in place.
+        copied = runCommand "copy-${name}" { } "cp -r ${value} $out";
+      in
+      _: copied
     ) entry
   ) adhoc;
 in
