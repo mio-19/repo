@@ -13,7 +13,7 @@
   gnugrep,
   gnused,
   which,
-  ant_1_7_0,
+  buildMavenRepository,
   commons_httpclient_3_0,
   commons_cli_1_0,
   commons_codec_1_2,
@@ -37,31 +37,31 @@ let
     }
     {
       path = "org/apache/ant/ant/1.7.0/ant-1.7.0.jar";
-      package = "${ant_1_7_0}/ant-1.7.0.jar";
+      hash = lib.fakeHash;
     }
     {
       path = "org/apache/ant/ant/1.7.0/ant-1.7.0.pom";
-      package = "${ant_1_7_0}/ant-1.7.0.pom";
+      hash = lib.fakeHash;
     }
     {
       path = "org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar";
-      package = "${ant_1_7_0}/ant-launcher-1.7.0.jar";
+      hash = lib.fakeHash;
     }
     {
       path = "org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.pom";
-      package = "${ant_1_7_0}/ant-launcher-1.7.0.pom";
+      hash = lib.fakeHash;
     }
     {
       path = "org/apache/ant/ant-junit/1.7.0/ant-junit-1.7.0.jar";
-      package = "${ant_1_7_0}/ant-junit-1.7.0.jar";
+      hash = lib.fakeHash;
     }
     {
       path = "org/apache/ant/ant-junit/1.7.0/ant-junit-1.7.0.pom";
-      package = "${ant_1_7_0}/ant-junit-1.7.0.pom";
+      hash = lib.fakeHash;
     }
     {
       path = "org/apache/ant/ant-parent/1.7.0/ant-parent-1.7.0.pom";
-      package = "${ant_1_7_0}/ant-parent-1.7.0.pom";
+      hash = lib.fakeHash;
     }
     {
       path = "org/apache/ivy/ivy/2.0.0-beta2/ivy-2.0.0-beta2.jar";
@@ -177,16 +177,22 @@ let
     }
   ];
 
-  mavenRepo = linkFarm "gradle-${version}-maven-repo" (
-    map (artifact: {
-      name = artifact.path;
-      path =
-        artifact.package or (fetchurl {
+  mavenRepo = buildMavenRepository {
+    dependencies = builtins.listToAttrs (
+      map (artifact: {
+        name = artifact.path;
+        value = {
+          layout = artifact.path;
           url = "https://repo1.maven.org/maven2/${artifact.path}";
-          hash = artifact.hash;
-        });
-    }) artifacts
-  );
+          hash = artifact.hash or lib.fakeHash;
+        }
+        // lib.optionalAttrs (artifact ? package) {
+          package = artifact.package;
+        };
+      }) artifacts
+    );
+  };
+
   postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
 in
 stdenv.mkDerivation {

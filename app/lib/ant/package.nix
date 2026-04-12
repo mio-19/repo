@@ -7,6 +7,7 @@
   callPackage,
   jdk8_headless,
   libsUtils,
+  applyPatches,
 }:
 let
   postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
@@ -23,6 +24,9 @@ ant_nixpkgs.overrideAttrs (
         jdk21_headless
       else
         jdk8_headless;
+    finalSrc = applyPatches {
+      inherit (finalAttrs) src postPatch;
+    };
   in
   {
     version = "1.10.17";
@@ -41,6 +45,10 @@ ant_nixpkgs.overrideAttrs (
       ''
       + lib.optionalString (finalAttrs.version == "1.7.0") ''
         rm src/tests/junit/org/apache/tools/ant/taskdefs/SQLExecTest.java
+      ''
+      + ''
+        sed -i 's|-SNAPSHOT||g' src/etc/poms/*/pom.xml
+        sed -i 's|-SNAPSHOT||g' src/etc/poms/pom.xml
       '';
     preBuild = lib.optionalString (lib.strings.compareVersions finalAttrs.version "1.9.6" <= 0) ''
       export CLASSPATH=${jdk}${postfix}/lib/tools.jar
@@ -64,14 +72,14 @@ ant_nixpkgs.overrideAttrs (
         let
           parent = {
             "org.apache.ant:ant-parent:${finalAttrs.version}" = {
-              "ant-parent-${finalAttrs.version}.pom" = "${finalAttrs.src}/src/etc/poms/pom.xml";
+              "ant-parent-${finalAttrs.version}.pom" = "${finalSrc}/src/etc/poms/pom.xml";
             };
           };
           postfixes = [
             ""
             "-launcher"
           ]
-          ++ lib.optionals (lib.strings.compareVersions finalAttrs.version "1.9.3" >= 0) [
+          ++ lib.optionals (lib.strings.compareVersions finalAttrs.version "1.7.0" >= 0) [
             "-junit"
           ]
           ++ lib.optionals (lib.strings.compareVersions finalAttrs.version "1.10.0" >= 0) [
@@ -80,7 +88,7 @@ ant_nixpkgs.overrideAttrs (
           name = postfix: "org.apache.ant:ant${postfix}:${finalAttrs.version}";
           value = postfix: {
             "ant${postfix}-${finalAttrs.version}.jar" = "$out/share/ant/lib/ant${postfix}.jar";
-            "ant${postfix}-${finalAttrs.version}.pom" = "${finalAttrs.src}/src/etc/poms/ant${postfix}/pom.xml";
+            "ant${postfix}-${finalAttrs.version}.pom" = "${finalSrc}/src/etc/poms/ant${postfix}/pom.xml";
           };
           child = builtins.listToAttrs (
             map (postfix: {

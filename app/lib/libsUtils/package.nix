@@ -11,15 +11,21 @@ in
         xs:
         concatMapStringsSep "\n" (
           f:
-          assert !(hasInfix "'" f);
-          ''
-            if [ -f '${f}' ]; then
-              echo 'Found expected file ${f} in mavenProvides'
-            else
-              echo >&2 'Expected file ${f} does not exist in mavenProvides'
-              exit 1
-            fi
-          ''
+          if lib.isDerivation f then
+            ""
+          else
+            (
+              assert builtins.isPath f || builtins.isString f;
+              assert !(hasInfix "'" f);
+              ''
+                if [ -f '${f}' ]; then
+                  echo 'Found expected file ${f} in mavenProvides'
+                else
+                  echo >&2 'Expected file ${f} does not exist in mavenProvides'
+                  exit 1
+                fi
+              ''
+            )
         ) xs;
       leafValues =
         set:
@@ -29,7 +35,7 @@ in
             let
               v = set.${name};
             in
-            if builtins.isAttrs v then leafValues v else [ v ]
+            if builtins.isAttrs v && !lib.isDerivation v then leafValues v else [ v ]
           ) (builtins.attrNames set)
         );
     in
@@ -43,7 +49,7 @@ in
       group: entry:
       mapAttrs (
         name: value:
-        assert builtins.isPath value || builtins.isString value;
+        assert builtins.isPath value || builtins.isString value || lib.isDerivation value;
         _:
         if builtins.isString value then
           builtins.replaceStrings [ "$out" ] [ "${finalAttrs.finalPackage}" ] value
