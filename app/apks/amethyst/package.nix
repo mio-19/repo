@@ -1,22 +1,16 @@
 {
   mk-apk-package,
-  sources,
   lib,
   jdk21_headless,
-  gradle-packages,
   stdenv,
   fetchurl,
   unzip,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   gradle_8_13,
+  fetchFromGitHub,
 }:
 let
-  inherit (sources.amethyst_android)
-    src
-    version
-    ;
-
   appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
@@ -56,7 +50,15 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "amethyst";
-      inherit version src;
+      # go to https://github.com/AngelAuraMC/Amethyst-Android/releases/latest to check the latest version. they have git tags that seem newer in number but very old.
+      version = "1.1.0";
+
+      src = fetchFromGitHub {
+        owner = "AngelAuraMC";
+        repo = "Amethyst-Android";
+        tag = finalAttrs.version;
+        hash = "sha256-tESJfGfPXdjk1Fz8jDOK7RoiBHEHfV2eg0LJhB9rCsI=";
+      };
 
       gradleBuildTask = ":app_pojavlauncher:assembleRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
@@ -82,7 +84,7 @@ let
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
         ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
-        AMETHYST_VERSION_NAME = version;
+        AMETHYST_VERSION_NAME = finalAttrs.version;
         CURSEFORGE_API_KEY = "DUMMY";
       };
 
