@@ -48,7 +48,6 @@ ant_nixpkgs.overrideAttrs (
     buildPhase = ''
       runHook preBuild
 
-      sh ./build.sh dist-lite
       mkdir out
       ANT_HOME=./out sh build.sh install-lite
 
