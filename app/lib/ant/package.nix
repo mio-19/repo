@@ -1,6 +1,7 @@
 {
   fetchFromGitHub,
   jdk25_headless,
+  jdk21_headless,
   lib,
   stdenv,
   callPackage,
@@ -14,8 +15,10 @@ ant_nixpkgs.overrideAttrs (
   finalAttrs: prevAttrs:
   let
     jdk =
-      if lib.strings.compareVersions finalAttrs.version "1.10.0" >= 0 then
+      if lib.strings.compareVersions finalAttrs.version "1.10.14" >= 0 then
         jdk25_headless
+      else if lib.strings.compareVersions finalAttrs.version "1.10.0" >= 0 then
+        jdk21_headless
       else
         jdk8_headless;
   in
