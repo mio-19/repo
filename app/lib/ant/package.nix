@@ -6,11 +6,12 @@
   stdenv,
   callPackage,
   jdk8_headless,
-  checkMavenProvides,
+  libsUtils,
 }:
 let
   postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
   ant_nixpkgs = callPackage ./nixpkgs.nix { };
+  inherit (libsUtils) checkMavenProvides exposeMavenProvides;
 in
 ant_nixpkgs.overrideAttrs (
   finalAttrs: prevAttrs:
@@ -59,7 +60,8 @@ ant_nixpkgs.overrideAttrs (
       ${checkMavenProvides finalAttrs}
     '';
     meta = prevAttrs.meta // {
-      mavenProvides =
+      mavenProvides = exposeMavenProvides finalAttrs;
+      mavenProvidesInternal =
         let
           parent = {
             "org.apache.ant:ant-parent:${finalAttrs.version}" = {
@@ -78,7 +80,7 @@ ant_nixpkgs.overrideAttrs (
           ];
           name = postfix: "org.apache.ant:ant${postfix}:${finalAttrs.version}";
           value = postfix: {
-            "ant${postfix}-${finalAttrs.version}.jar" = "${placeholder "out"}/share/ant/lib/ant${postfix}.jar";
+            "ant${postfix}-${finalAttrs.version}.jar" = "$out/share/ant/lib/ant${postfix}.jar";
             "ant${postfix}-${finalAttrs.version}.pom" = "${finalAttrs.src}/src/etc/poms/ant${postfix}/pom.xml";
           };
           child = builtins.listToAttrs (
