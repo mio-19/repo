@@ -61,11 +61,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
-    gradle2nix-v1 = {
-      url = "github:tadfisher/gradle2nix/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-    };
     mvn2nix = {
       #url = "github:fzakaria/mvn2nix";
       # https://github.com/fzakaria/mvn2nix/pull/64
@@ -98,25 +93,6 @@
         { pkgs, system, ... }:
         let
           inherit (pkgs) fetchpatch applyPatches;
-          gradle2nixV1Src = applyPatches {
-            src = inputs.gradle2nix-v1.outPath;
-            name = "gradle2nix-v1-patched";
-            patches = [
-              ./patches/gradle2nix-v1/bootstrap-modernization.patch
-            ];
-          };
-          gradle2nixV1Patched =
-            (import "${gradle2nixV1Src}/flake.nix").outputs (
-              inputs.gradle2nix-v1.inputs
-              // {
-                self = gradle2nixV1Patched;
-                inherit nixpkgs;
-              }
-            )
-            // {
-              inherit (gradle2nixV1Src) outPath;
-            };
-
           gradle2nixSrc = applyPatches {
             src = inputs.gradle2nix.outPath;
             name = "gradle2nix-patched";
@@ -200,20 +176,18 @@
         in
         {
           _module.args = {
-            inherit pkgsPatched gradle2nixV1Patched;
+            inherit pkgsPatched;
             gradle2nixPatched =
               assert pkgsPatched.mitm-cache.fetch == selfLegacyPackages.mitm-cache-fetch;
               assert pkgsPatched.mitm-cache.fetch == pkgsPatched.mitm-cache.passthru.fetch;
               gradle2nixPatched;
           };
 
-          formatter = pkgs.nixfmt;
-
-          packages.gradle2nix-v1 = gradle2nixV1Patched.packages.${system}.gradle2nix;
-          packages.gradle2nix-v1Src = gradle2nixV1Patched.outPath;
           packages.gradle2nix = gradle2nixPatched.packages.${system}.gradle2nix;
           packages.gradle2nixSrc = gradle2nixPatched.outPath;
           packages.mvn2nix = inputs.mvn2nix.packages.${system}.mvn2nix;
+
+          formatter = pkgs.nixfmt;
 
           packages.github-actions-cached = pkgs.symlinkJoin {
             name = "github-actions-cached";

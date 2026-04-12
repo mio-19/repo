@@ -198,30 +198,6 @@
         "type": "github"
       }
     },
-    "gradle2nix-v1": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1696101549,
-        "narHash": "sha256-Y9s+S2B+R9z3Q0GVovDLu+GS4OhNH2k6D4JsmKM+r/E=",
-        "owner": "tadfisher",
-        "repo": "gradle2nix",
-        "rev": "68327d0c5dc93bc97e3bb28b716da9fbbce1f942",
-        "type": "github"
-      },
-      "original": {
-        "owner": "tadfisher",
-        "ref": "master",
-        "repo": "gradle2nix",
-        "type": "github"
-      }
-    },
     "mvn2nix": {
       "inputs": {
         "nixpkgs": [
@@ -505,7 +481,6 @@
         "flake-parts": "flake-parts",
         "flake-utils": "flake-utils",
         "gradle2nix": "gradle2nix",
-        "gradle2nix-v1": "gradle2nix-v1",
         "mvn2nix": "mvn2nix",
         "nix-github-actions": "nix-github-actions",
         "nix-kernelsu-builder": "nix-kernelsu-builder",
