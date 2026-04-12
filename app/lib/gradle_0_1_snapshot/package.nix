@@ -5,7 +5,7 @@
   fetchFromGitHub,
   fetchurl,
   linkFarm,
-  ant_fromsrc,
+  ant,
   jdk8_headless,
   makeWrapper,
   coreutils,
@@ -203,7 +203,7 @@ stdenv.mkDerivation {
   patches = [ ./gradle-0.1-bootstrap.patch ];
 
   nativeBuildInputs = [
-    ant_fromsrc
+    ant
     jdk8_headless
     makeWrapper
     writableTmpDirAsHomeHook
