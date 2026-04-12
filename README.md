@@ -10,7 +10,7 @@ Warning: Using this repository may result in data loss, boot loops, bricked devi
 
 Warning: Note that distributing binaries built from this repository might be disallowed by copyright/trademark holders. Although many projects are distributed with a free software license, building a project from source code to create a working binary  might be explicitly disallowed or a gray area even if the modification to the source code is just minimal building process related changes to be as close as possible with the prebuilt version. Let alone introducing patches to the projects. A project might explicitly demand icon change and logo change for modified versions. This repository is only available as source code only. The relavent source code of build script in this repository is never executed but only looked at. The relavent source code of build script is for demonstration purpose only, not for actually running. Please understand the responsibility if you decide to possibly break the law to execute the build script in this repository to recreate a binary from source code even when the only change to the source code of an android application is to make it build and as close as possible to the prebuilt versions.
 
-Some nix files in this repository produce fully broken or mostly broken results.
+Warning: Some nix files in this repository produce fully broken or mostly broken results.
 
 I want the following freedom on my devices: `The freedom to study how the program works, and change it so it does your computing as you wish (freedom 1). Access to the source code is a precondition for this.` However it is always false on certain operating systems. Certain operating systems in principle discourage users from modifying any application.
 
