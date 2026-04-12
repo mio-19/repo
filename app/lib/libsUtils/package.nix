@@ -3,6 +3,7 @@ let
   inherit (lib) mapAttrs concatMapStringsSep;
 in
 {
+  # needs $out to avoid infinite recursion and other problems with self-references existence checks
   checkMavenProvides =
     finalAttrs:
     let
@@ -31,6 +32,7 @@ in
     builtins.replaceStrings [ "$out" ] [ (placeholder "out") ] (
       assumeExist (leafValues finalAttrs.meta.mavenProvidesInternal)
     );
+  # needs $out to avoid infinite recursion and other problems with self-references existence checks
   exposeMavenProvides =
     finalAttrs:
     mapAttrs (
