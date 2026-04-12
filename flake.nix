@@ -202,6 +202,7 @@
                 apk_joplin
                 apk_meditrak
                 apk_sunup
+                apk_forkgram.signScript
               ]
               ++ lib.optionals stdenv.isLinux [
 
