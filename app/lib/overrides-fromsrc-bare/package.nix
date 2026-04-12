@@ -45,11 +45,17 @@
   commons_codec_1_15,
   commons_codec_1_17_1,
   commons_codec_1_19_0,
+  commons_lang3_3_12_0,
   commons_lang3_3_16_0,
   commons_lang_2_6,
   commons_io_2_6,
+  commons_io_2_11_0,
   commons_io_2_13_0,
+  commons_io_2_14_0,
+  commons_io_2_15_1,
   commons_io_2_16_1,
+  commons_io_2_18_0,
+  commons_io_2_20_0,
   commons_io_2_21_0,
   commons_logging_1_2,
   commons_parent_34,
@@ -64,11 +70,15 @@
   error_prone_annotations_2_30_0,
   failureaccess_1_0_1,
   failureaccess_1_0_2,
+  gson_2_9_0,
+  gson_2_9_1,
   gson_2_10_1,
   gson_2_11_0,
   gson_2_8_6,
   gson_2_8_9,
   gson_2_12_1,
+  gson_2_13_0,
+  gson_2_13_1,
   gson_2_13_2,
   glide_5_0_5,
   flatbuffers_java_1_12_0,
@@ -256,9 +266,25 @@ in
     "gson-2.8.6.jar" = _: "${gson_2_8_6}/gson-2.8.6.jar";
     "gson-2.8.6.pom" = _: "${gson_2_8_6}/gson-2.8.6.pom";
   };
+  "com.google.code.gson:gson:2.9.0" = {
+    "gson-2.9.0.jar" = _: "${gson_2_9_0}/gson-2.9.0.jar";
+    "gson-2.9.0.pom" = _: "${gson_2_9_0}/gson-2.9.0.pom";
+  };
+  "com.google.code.gson:gson:2.9.1" = {
+    "gson-2.9.1.jar" = _: "${gson_2_9_1}/gson-2.9.1.jar";
+    "gson-2.9.1.pom" = _: "${gson_2_9_1}/gson-2.9.1.pom";
+  };
   "com.google.code.gson:gson:2.12.1" = {
     "gson-2.12.1.jar" = _: "${gson_2_12_1}/gson-2.12.1.jar";
     "gson-2.12.1.pom" = _: "${gson_2_12_1}/gson-2.12.1.pom";
+  };
+  "com.google.code.gson:gson:2.13.0" = {
+    "gson-2.13.0.jar" = _: "${gson_2_13_0}/gson-2.13.0.jar";
+    "gson-2.13.0.pom" = _: "${gson_2_13_0}/gson-2.13.0.pom";
+  };
+  "com.google.code.gson:gson:2.13.1" = {
+    "gson-2.13.1.jar" = _: "${gson_2_13_1}/gson-2.13.1.jar";
+    "gson-2.13.1.pom" = _: "${gson_2_13_1}/gson-2.13.1.pom";
   };
   "com.google.code.gson:gson:2.13.2" = {
     "gson-2.13.2.jar" = _: "${gson_2_13_2}/gson-2.13.2.jar";
@@ -276,8 +302,20 @@ in
   "com.google.code.gson:gson-parent:2.8.9" = {
     "gson-parent-2.8.9.pom" = _: "${gson_2_8_9}/gson-parent-2.8.9.pom";
   };
+  "com.google.code.gson:gson-parent:2.9.0" = {
+    "gson-parent-2.9.0.pom" = _: "${gson_2_9_0}/gson-parent-2.9.0.pom";
+  };
+  "com.google.code.gson:gson-parent:2.9.1" = {
+    "gson-parent-2.9.1.pom" = _: "${gson_2_9_1}/gson-parent-2.9.1.pom";
+  };
   "com.google.code.gson:gson-parent:2.12.1" = {
     "gson-parent-2.12.1.pom" = _: "${gson_2_12_1}/gson-parent-2.12.1.pom";
+  };
+  "com.google.code.gson:gson-parent:2.13.0" = {
+    "gson-parent-2.13.0.pom" = _: "${gson_2_13_0}/gson-parent-2.13.0.pom";
+  };
+  "com.google.code.gson:gson-parent:2.13.1" = {
+    "gson-parent-2.13.1.pom" = _: "${gson_2_13_1}/gson-parent-2.13.1.pom";
   };
   "com.google.code.gson:gson-parent:2.13.2" = {
     "gson-parent-2.13.2.pom" = _: "${gson_2_13_2}/gson-parent-2.13.2.pom";
@@ -321,14 +359,19 @@ in
     "commons-io-2.6.jar" = _: "${commons_io_2_6}/commons-io-2.6.jar";
     "commons-io-2.6.pom" = _: "${commons_io_2_6}/commons-io-2.6.pom";
   };
+  "commons-io:commons-io:2.11.0" = mkMavenSourceJarOverride "commons-io" "2.11.0" commons_io_2_11_0;
   "commons-io:commons-io:2.13.0" = {
     "commons-io-2.13.0.jar" = _: "${commons_io_2_13_0}/commons-io-2.13.0.jar";
     "commons-io-2.13.0.pom" = _: "${commons_io_2_13_0}/commons-io-2.13.0.pom";
   };
+  "commons-io:commons-io:2.14.0" = mkMavenSourceJarOverride "commons-io" "2.14.0" commons_io_2_14_0;
+  "commons-io:commons-io:2.15.1" = mkMavenSourceJarOverride "commons-io" "2.15.1" commons_io_2_15_1;
   "commons-io:commons-io:2.16.1" = {
     "commons-io-2.16.1.jar" = _: "${commons_io_2_16_1}/commons-io-2.16.1.jar";
     "commons-io-2.16.1.pom" = _: "${commons_io_2_16_1}/commons-io-2.16.1.pom";
   };
+  "commons-io:commons-io:2.18.0" = mkMavenSourceJarOverride "commons-io" "2.18.0" commons_io_2_18_0;
+  "commons-io:commons-io:2.20.0" = mkMavenSourceJarOverride "commons-io" "2.20.0" commons_io_2_20_0;
   "commons-io:commons-io:2.21.0" = {
     "commons-io-2.21.0.jar" = _: "${commons_io_2_21_0}/commons-io-2.21.0.jar";
     "commons-io-2.21.0.pom" = _: "${commons_io_2_21_0}/commons-io-2.21.0.pom";
@@ -365,6 +408,9 @@ in
     "commons-lang-2.6.jar" = _: "${commons_lang_2_6}/commons-lang-2.6.jar";
     "commons-lang-2.6.pom" = _: "${commons_lang_2_6}/commons-lang-2.6.pom";
   };
+  "org.apache.commons:commons-lang3:3.12.0" =
+    mkMavenSourceJarOverride "commons-lang3" "3.12.0"
+      commons_lang3_3_12_0;
   "org.apache.commons:commons-lang3:3.16.0" = {
     "commons-lang3-3.16.0.jar" = _: "${commons_lang3_3_16_0}/commons-lang3-3.16.0.jar";
     "commons-lang3-3.16.0.pom" = _: "${commons_lang3_3_16_0}/commons-lang3-3.16.0.pom";
