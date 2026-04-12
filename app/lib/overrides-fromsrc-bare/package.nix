@@ -4,12 +4,21 @@
   apache_33,
   apache_31,
   annotations_23_0_0,
+  antlr_2_7_7,
+  aopalliance_1_0,
+  asm_9_9,
+  asm_analysis_9_9,
   auto_service_annotations_1_0_1,
   auto_parent_6,
   auto_value_annotations_1_6_2,
   auto_value_annotations_1_6_3,
+  asm_commons_9_9,
+  asm_tree_9_9,
   checker_qual_3_33_0,
   checker_qual_3_43_0,
+  brotli_dec_0_1_2,
+  dd_plist_1_21,
+  dd_plist_1_27,
   error_prone_annotations_2_41_0,
   error_prone_annotations_2_5_1,
   error_prone_annotations_2_11_0,
@@ -17,14 +26,19 @@
   error_prone_annotations_2_3_2,
   error_prone_annotations_2_3_4,
   error_prone_annotations_2_36_0,
+  commons_codec_1_2,
   commons_codec_1_10,
   commons_codec_1_11,
   commons_codec_1_13,
   commons_codec_1_15,
   commons_codec_1_17_1,
+  commons_codec_1_19_0,
   commons_lang3_3_16_0,
+  commons_lang_2_6,
+  commons_io_2_6,
   commons_io_2_13_0,
   commons_io_2_16_1,
+  commons_io_2_21_0,
   commons_logging_1_2,
   commons_parent_34,
   commons_parent_69,
@@ -51,6 +65,7 @@
   httpcomponents_client_4_5_14,
   httpcomponents_core_4_4_16,
   istack_commons_runtime_3_0_8,
+  javax_servlet_api_3_1_0,
   java_diff_utils_4_16,
   javax_inject_1,
   javawriter_2_5_0,
@@ -74,9 +89,13 @@
   protobuf_parent_3_25_5,
   listenablefuture_1_0,
   listenablefuture_9999_0_empty_to_avoid_conflict_with_guava,
+  slf4j_1_7_2,
+  slf4j_1_7_10,
   slf4j_api_1_7_30,
   slf4j_api_1_7_36,
   slf4j_api_2_0_17,
+  xz_java_1_6,
+  xz_java_1_9,
   zxing_core_3_5_3,
   zxing_core_3_5_4,
   zoomimage_1_0_2,
@@ -107,6 +126,14 @@ let
   '';
 in
 {
+  "antlr:antlr:2.7.7" = {
+    "antlr-2.7.7.jar" = _: "${antlr_2_7_7}/antlr-2.7.7.jar";
+    "antlr-2.7.7.pom" = _: "${antlr_2_7_7}/antlr-2.7.7.pom";
+  };
+  "aopalliance:aopalliance:1.0" = {
+    "aopalliance-1.0.jar" = _: "${aopalliance_1_0}/aopalliance-1.0.jar";
+    "aopalliance-1.0.pom" = _: "${aopalliance_1_0}/aopalliance-1.0.pom";
+  };
   "gradle:gradle:8.11" = {
     "gradle-8.11.zip" = _: mkGradleZip gradle_8_11;
     "gradle-8.11.zip.asc" = _: noAsc;
@@ -238,6 +265,26 @@ in
     "annotations-23.0.0.jar" = _: "${annotations_23_0_0}/annotations-23.0.0.jar";
     "annotations-23.0.0.pom" = _: "${annotations_23_0_0}/annotations-23.0.0.pom";
   };
+  "org.ow2.asm:asm:9.9" = {
+    "asm-9.9.jar" = _: "${asm_9_9}/asm-9.9.jar";
+    "asm-9.9.pom" = _: "${asm_9_9}/asm-9.9.pom";
+  };
+  "org.ow2.asm:asm-analysis:9.9" = {
+    "asm-analysis-9.9.jar" = _: "${asm_analysis_9_9}/asm-analysis-9.9.jar";
+    "asm-analysis-9.9.pom" = _: "${asm_analysis_9_9}/asm-analysis-9.9.pom";
+  };
+  "org.ow2.asm:asm-commons:9.9" = {
+    "asm-commons-9.9.jar" = _: "${asm_commons_9_9}/asm-commons-9.9.jar";
+    "asm-commons-9.9.pom" = _: "${asm_commons_9_9}/asm-commons-9.9.pom";
+  };
+  "org.ow2.asm:asm-tree:9.9" = {
+    "asm-tree-9.9.jar" = _: "${asm_tree_9_9}/asm-tree-9.9.jar";
+    "asm-tree-9.9.pom" = _: "${asm_tree_9_9}/asm-tree-9.9.pom";
+  };
+  "commons-io:commons-io:2.6" = {
+    "commons-io-2.6.jar" = _: "${commons_io_2_6}/commons-io-2.6.jar";
+    "commons-io-2.6.pom" = _: "${commons_io_2_6}/commons-io-2.6.pom";
+  };
   "commons-io:commons-io:2.13.0" = {
     "commons-io-2.13.0.jar" = _: "${commons_io_2_13_0}/commons-io-2.13.0.jar";
     "commons-io-2.13.0.pom" = _: "${commons_io_2_13_0}/commons-io-2.13.0.pom";
@@ -245,6 +292,14 @@ in
   "commons-io:commons-io:2.16.1" = {
     "commons-io-2.16.1.jar" = _: "${commons_io_2_16_1}/commons-io-2.16.1.jar";
     "commons-io-2.16.1.pom" = _: "${commons_io_2_16_1}/commons-io-2.16.1.pom";
+  };
+  "commons-io:commons-io:2.21.0" = {
+    "commons-io-2.21.0.jar" = _: "${commons_io_2_21_0}/commons-io-2.21.0.jar";
+    "commons-io-2.21.0.pom" = _: "${commons_io_2_21_0}/commons-io-2.21.0.pom";
+  };
+  "commons-codec:commons-codec:1.2" = {
+    "commons-codec-1.2.jar" = _: "${commons_codec_1_2}/commons-codec-1.2.jar";
+    "commons-codec-1.2.pom" = _: "${commons_codec_1_2}/commons-codec-1.2.pom";
   };
   "commons-codec:commons-codec:1.10" = {
     "commons-codec-1.10.jar" = _: "${commons_codec_1_10}/commons-codec-1.10.jar";
@@ -265,6 +320,14 @@ in
   "commons-codec:commons-codec:1.17.1" = {
     "commons-codec-1.17.1.jar" = _: "${commons_codec_1_17_1}/commons-codec-1.17.1.jar";
     "commons-codec-1.17.1.pom" = _: "${commons_codec_1_17_1}/commons-codec-1.17.1.pom";
+  };
+  "commons-codec:commons-codec:1.19.0" = {
+    "commons-codec-1.19.0.jar" = _: "${commons_codec_1_19_0}/commons-codec-1.19.0.jar";
+    "commons-codec-1.19.0.pom" = _: "${commons_codec_1_19_0}/commons-codec-1.19.0.pom";
+  };
+  "commons-lang:commons-lang:2.6" = {
+    "commons-lang-2.6.jar" = _: "${commons_lang_2_6}/commons-lang-2.6.jar";
+    "commons-lang-2.6.pom" = _: "${commons_lang_2_6}/commons-lang-2.6.pom";
   };
   "org.apache.commons:commons-lang3:3.16.0" = {
     "commons-lang3-3.16.0.jar" = _: "${commons_lang3_3_16_0}/commons-lang3-3.16.0.jar";
@@ -362,6 +425,13 @@ in
     "jspecify-1.0.0.jar" = _: "${jspecify_1_0_0}/jspecify-1.0.0.jar";
     "jspecify-1.0.0.module" = _: "${jspecify_1_0_0}/jspecify-1.0.0.module";
     "jspecify-1.0.0.pom" = _: "${jspecify_1_0_0}/jspecify-1.0.0.pom";
+  };
+  "org.brotli:dec:0.1.2" = {
+    "dec-0.1.2.jar" = _: "${brotli_dec_0_1_2}/dec-0.1.2.jar";
+    "dec-0.1.2.pom" = _: "${brotli_dec_0_1_2}/dec-0.1.2.pom";
+  };
+  "org.brotli:parent:0.1.2" = {
+    "parent-0.1.2.pom" = _: "${brotli_dec_0_1_2}/parent-0.1.2.pom";
   };
   "com.google.guava:guava-parent:26.0-android" = {
     "guava-parent-26.0-android.pom" = _: "${failureaccess_1_0_1}/guava-parent-26.0-android.pom";
@@ -537,6 +607,18 @@ in
   "io.github.java-diff-utils:java-diff-utils-parent:4.16" = {
     "java-diff-utils-parent-4.16.pom" = _: "${java_diff_utils_4_16}/java-diff-utils-parent-4.16.pom";
   };
+  "com.googlecode.plist:dd-plist:1.21" = {
+    "dd-plist-1.21.jar" = _: "${dd_plist_1_21}/dd-plist-1.21.jar";
+    "dd-plist-1.21.pom" = _: "${dd_plist_1_21}/dd-plist-1.21.pom";
+  };
+  "com.googlecode.plist:dd-plist:1.27" = {
+    "dd-plist-1.27.jar" = _: "${dd_plist_1_27}/dd-plist-1.27.jar";
+    "dd-plist-1.27.pom" = _: "${dd_plist_1_27}/dd-plist-1.27.pom";
+  };
+  "javax.servlet:javax.servlet-api:3.1.0" = {
+    "javax.servlet-api-3.1.0.jar" = _: "${javax_servlet_api_3_1_0}/javax.servlet-api-3.1.0.jar";
+    "javax.servlet-api-3.1.0.pom" = _: "${javax_servlet_api_3_1_0}/javax.servlet-api-3.1.0.pom";
+  };
   "com.michael-bull.kotlin-result:kotlin-result:2.1.0" = {
     "kotlin-result-2.1.0.module" = _: "${kotlin_result_2_1_0}/kotlin-result-2.1.0.module";
     "kotlin-result-2.1.0.pom" = _: "${kotlin_result_2_1_0}/kotlin-result-2.1.0.pom";
@@ -602,9 +684,28 @@ in
     "j2objc-annotations-3.1.jar" = _: "${j2objc_annotations_3_1}/j2objc-annotations-3.1.jar";
     "j2objc-annotations-3.1.pom" = _: "${j2objc_annotations_3_1}/j2objc-annotations-3.1.pom";
   };
+  "org.tukaani:xz:1.6" = {
+    "xz-1.6.jar" = _: "${xz_java_1_6}/xz-1.6.jar";
+    "xz-1.6.pom" = _: "${xz_java_1_6}/xz-1.6.pom";
+  };
+  "org.tukaani:xz:1.9" = {
+    "xz-1.9.jar" = _: "${xz_java_1_9}/xz-1.9.jar";
+    "xz-1.9.pom" = _: "${xz_java_1_9}/xz-1.9.pom";
+  };
   "org.slf4j:slf4j-api:2.0.17" = {
     "slf4j-api-2.0.17.jar" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.jar";
     "slf4j-api-2.0.17.pom" = _: "${slf4j_api_2_0_17}/slf4j-api-2.0.17.pom";
+  };
+  "org.slf4j:slf4j-api:1.7.2" = {
+    "slf4j-api-1.7.2.jar" = _: "${slf4j_1_7_2}/slf4j-api-1.7.2.jar";
+    "slf4j-api-1.7.2.pom" = _: "${slf4j_1_7_2}/slf4j-api-1.7.2.pom";
+  };
+  "org.slf4j:slf4j-simple:1.7.10" = {
+    "slf4j-simple-1.7.10.jar" = _: "${slf4j_1_7_10}/slf4j-simple-1.7.10.jar";
+    "slf4j-simple-1.7.10.pom" = _: "${slf4j_1_7_10}/slf4j-simple-1.7.10.pom";
+  };
+  "org.slf4j:slf4j-parent:1.7.10" = {
+    "slf4j-parent-1.7.10.pom" = _: "${slf4j_1_7_10}/slf4j-parent-1.7.10.pom";
   };
   "org.slf4j:slf4j-api:1.7.30" = {
     "slf4j-api-1.7.30.jar" = _: "${slf4j_api_1_7_30}/slf4j-api-1.7.30.jar";
