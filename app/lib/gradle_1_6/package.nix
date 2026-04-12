@@ -368,6 +368,6 @@ stdenv.mkDerivation {
     homepage = "https://gradle.org/";
     license = lib.licenses.asl20;
     mainProgram = "gradle";
-    platforms = lib.platforms.linux;
+    platforms = lib.platforms.unix;
   };
 }
