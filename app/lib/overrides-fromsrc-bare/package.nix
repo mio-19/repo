@@ -15,7 +15,11 @@
   asm_commons_9_9,
   asm_tree_9_9,
   checker_qual_3_33_0,
+  checker_qual_3_41_0,
+  checker_qual_3_42_0,
   checker_qual_3_43_0,
+  checker_qual_3_49_2,
+  checker_qual_3_49_3,
   brotli_dec_0_1_2,
   dd_plist_1_21,
   dd_plist_1_27,
@@ -29,7 +33,11 @@
   error_prone_annotations_2_3_4,
   error_prone_annotations_2_26_1,
   error_prone_annotations_2_29_0,
+  error_prone_annotations_2_31_0,
   error_prone_annotations_2_36_0,
+  error_prone_annotations_2_37_0,
+  error_prone_annotations_2_38_0,
+  error_prone_annotations_2_42_0,
   commons_codec_1_2,
   commons_codec_1_10,
   commons_codec_1_11,
@@ -80,6 +88,8 @@
   jakarta_xml_bind_api_2_3_2,
   javapoet_1_13_0,
   javapoet_1_10_0,
+  j2objc_annotations_1_1,
+  j2objc_annotations_1_3,
   j2objc_annotations_2_8,
   j2objc_annotations_3_0_0,
   j2objc_annotations_3_1,
@@ -491,6 +501,9 @@ in
   "com.google.errorprone:error_prone_annotations:2.29.0" =
     mkMavenSourceJarOverride "error_prone_annotations" "2.29.0"
       error_prone_annotations_2_29_0;
+  "com.google.errorprone:error_prone_annotations:2.31.0" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.31.0"
+      error_prone_annotations_2_31_0;
   "com.google.errorprone:error_prone_annotations:2.3.1" = {
     "error_prone_annotations-2.3.1.jar" =
       _: "${error_prone_annotations_2_3_1}/error_prone_annotations-2.3.1.jar";
@@ -587,12 +600,21 @@ in
     "error_prone_parent-2.36.0.pom" =
       _: "${error_prone_annotations_2_36_0}/error_prone_parent-2.36.0.pom";
   };
+  "com.google.errorprone:error_prone_annotations:2.37.0" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.37.0"
+      error_prone_annotations_2_37_0;
+  "com.google.errorprone:error_prone_annotations:2.38.0" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.38.0"
+      error_prone_annotations_2_38_0;
   "com.google.errorprone:error_prone_annotations:2.41.0" = {
     "error_prone_annotations-2.41.0.jar" =
       _: "${error_prone_annotations_2_41_0}/error_prone_annotations-2.41.0.jar";
     "error_prone_annotations-2.41.0.pom" =
       _: "${error_prone_annotations_2_41_0}/error_prone_annotations-2.41.0.pom";
   };
+  "com.google.errorprone:error_prone_annotations:2.42.0" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.42.0"
+      error_prone_annotations_2_42_0;
   "com.google.errorprone:error_prone_parent:2.41.0" = {
     "error_prone_parent-2.41.0.pom" =
       _: "${error_prone_annotations_2_41_0}/error_prone_parent-2.41.0.pom";
@@ -707,6 +729,12 @@ in
     "javax.inject-1.jar" = _: "${javax_inject_1}/javax.inject-1.jar";
     "javax.inject-1.pom" = _: "${javax_inject_1}/javax.inject-1.pom";
   };
+  "com.google.j2objc:j2objc-annotations:1.1" =
+    mkMavenSourceJarOverride "j2objc-annotations" "1.1"
+      j2objc_annotations_1_1;
+  "com.google.j2objc:j2objc-annotations:1.3" =
+    mkMavenSourceJarOverride "j2objc-annotations" "1.3"
+      j2objc_annotations_1_3;
   "com.google.j2objc:j2objc-annotations:2.8" = {
     "j2objc-annotations-2.8.jar" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.jar";
     "j2objc-annotations-2.8.pom" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.pom";
@@ -769,10 +797,22 @@ in
   "org.checkerframework:checker-qual:3.37.0" =
     mkMavenSourceJarOverride "checker-qual" "3.37.0"
       checker_qual_3_37_0;
+  "org.checkerframework:checker-qual:3.41.0" =
+    mkMavenSourceJarOverride "checker-qual" "3.41.0"
+      checker_qual_3_41_0;
+  "org.checkerframework:checker-qual:3.42.0" =
+    mkMavenSourceJarOverride "checker-qual" "3.42.0"
+      checker_qual_3_42_0;
   "org.checkerframework:checker-qual:3.43.0" = {
     "checker-qual-3.43.0.jar" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.jar";
     "checker-qual-3.43.0.pom" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.pom";
   };
+  "org.checkerframework:checker-qual:3.49.2" =
+    mkMavenSourceJarOverride "checker-qual" "3.49.2"
+      checker_qual_3_49_2;
+  "org.checkerframework:checker-qual:3.49.3" =
+    mkMavenSourceJarOverride "checker-qual" "3.49.3"
+      checker_qual_3_49_3;
   "org.apache.commons:commons-parent:34" = {
     "commons-parent-34.pom" = _: "${commons_parent_34}/commons-parent-34.pom";
   };
