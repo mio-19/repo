@@ -10,10 +10,10 @@ in
       assumeExist =
         xs:
         concatMapStringsSep "\n" (f: ''
-          if [ -f ${f} ]; then
-            echo "Found expected file ${f} in mavenProvides"
+          if [ -f '${f}' ]; then
+            echo 'Found expected file ${f} in mavenProvides'
           else
-            echo >&2 "Expected file ${f} does not exist in mavenProvides"
+            echo >&2 'Expected file ${f} does not exist in mavenProvides'
             exit 1
           fi
         '') xs;
