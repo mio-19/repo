@@ -15,17 +15,29 @@
   asm_commons_9_9,
   asm_tree_9_9,
   checker_qual_3_33_0,
+  checker_qual_3_41_0,
+  checker_qual_3_42_0,
   checker_qual_3_43_0,
+  checker_qual_3_49_2,
+  checker_qual_3_49_3,
   brotli_dec_0_1_2,
   dd_plist_1_21,
   dd_plist_1_27,
+  checker_qual_3_37_0,
   error_prone_annotations_2_41_0,
+  error_prone_annotations_2_1_3,
   error_prone_annotations_2_5_1,
   error_prone_annotations_2_11_0,
   error_prone_annotations_2_23_0,
   error_prone_annotations_2_3_2,
   error_prone_annotations_2_3_4,
+  error_prone_annotations_2_26_1,
+  error_prone_annotations_2_29_0,
+  error_prone_annotations_2_31_0,
   error_prone_annotations_2_36_0,
+  error_prone_annotations_2_37_0,
+  error_prone_annotations_2_38_0,
+  error_prone_annotations_2_42_0,
   commons_codec_1_2,
   commons_codec_1_10,
   commons_codec_1_11,
@@ -33,11 +45,17 @@
   commons_codec_1_15,
   commons_codec_1_17_1,
   commons_codec_1_19_0,
+  commons_lang3_3_12_0,
   commons_lang3_3_16_0,
   commons_lang_2_6,
   commons_io_2_6,
+  commons_io_2_11_0,
   commons_io_2_13_0,
+  commons_io_2_14_0,
+  commons_io_2_15_1,
   commons_io_2_16_1,
+  commons_io_2_18_0,
+  commons_io_2_20_0,
   commons_io_2_21_0,
   commons_logging_1_2,
   commons_parent_34,
@@ -52,11 +70,15 @@
   error_prone_annotations_2_30_0,
   failureaccess_1_0_1,
   failureaccess_1_0_2,
+  gson_2_9_0,
+  gson_2_9_1,
   gson_2_10_1,
   gson_2_11_0,
   gson_2_8_6,
   gson_2_8_9,
   gson_2_12_1,
+  gson_2_13_0,
+  gson_2_13_1,
   gson_2_13_2,
   glide_5_0_5,
   flatbuffers_java_1_12_0,
@@ -65,6 +87,9 @@
   httpcomponents_client_4_5_14,
   httpcomponents_core_4_4_16,
   istack_commons_runtime_3_0_8,
+  javaparser_core_3_17_0,
+  javaparser_core_3_18_0,
+  javaparser_core_3_25_6,
   javax_servlet_api_3_1_0,
   java_diff_utils_4_16,
   javax_inject_1,
@@ -73,9 +98,14 @@
   jakarta_xml_bind_api_2_3_2,
   javapoet_1_13_0,
   javapoet_1_10_0,
+  j2objc_annotations_1_1,
+  j2objc_annotations_1_3,
   j2objc_annotations_2_8,
   j2objc_annotations_3_0_0,
   j2objc_annotations_3_1,
+  jcommander_1_35,
+  jcommander_1_78,
+  jcommander_1_82,
   jopt_simple_4_9,
   jdom2_2_0_6,
   jspecify_1_0_0,
@@ -124,6 +154,10 @@ let
   noAsc = runCommand "empty.asc" { } ''
     touch $out
   '';
+  mkMavenSourceJarOverride = artifactId: version: package: {
+    "${artifactId}-${version}.jar" = _: "${package}/${artifactId}-${version}.jar";
+    "${artifactId}-${version}.pom" = _: "${package}/${artifactId}-${version}.pom";
+  };
 in
 {
   "antlr:antlr:2.7.7" = {
@@ -193,6 +227,18 @@ in
     "auto-service-annotations-1.0.1.pom" =
       _: "${auto_service_annotations_1_0_1}/auto-service-annotations-1.0.1.pom";
   };
+  "com.beust:jcommander:1.35" = mkMavenSourceJarOverride "jcommander" "1.35" jcommander_1_35;
+  "com.beust:jcommander:1.78" = mkMavenSourceJarOverride "jcommander" "1.78" jcommander_1_78;
+  "com.beust:jcommander:1.82" = mkMavenSourceJarOverride "jcommander" "1.82" jcommander_1_82;
+  "com.github.javaparser:javaparser-core:3.17.0" =
+    mkMavenSourceJarOverride "javaparser-core" "3.17.0"
+      javaparser_core_3_17_0;
+  "com.github.javaparser:javaparser-core:3.18.0" =
+    mkMavenSourceJarOverride "javaparser-core" "3.18.0"
+      javaparser_core_3_18_0;
+  "com.github.javaparser:javaparser-core:3.25.6" =
+    mkMavenSourceJarOverride "javaparser-core" "3.25.6"
+      javaparser_core_3_25_6;
   "com.google.code.findbugs:jsr305:3.0.2" = {
     "jsr305-3.0.2.jar" = _: "${jsr305_3_0_2}/jsr305-3.0.2.jar";
     "jsr305-3.0.2.pom" = _: "${jsr305_3_0_2}/jsr305-3.0.2.pom";
@@ -220,9 +266,25 @@ in
     "gson-2.8.6.jar" = _: "${gson_2_8_6}/gson-2.8.6.jar";
     "gson-2.8.6.pom" = _: "${gson_2_8_6}/gson-2.8.6.pom";
   };
+  "com.google.code.gson:gson:2.9.0" = {
+    "gson-2.9.0.jar" = _: "${gson_2_9_0}/gson-2.9.0.jar";
+    "gson-2.9.0.pom" = _: "${gson_2_9_0}/gson-2.9.0.pom";
+  };
+  "com.google.code.gson:gson:2.9.1" = {
+    "gson-2.9.1.jar" = _: "${gson_2_9_1}/gson-2.9.1.jar";
+    "gson-2.9.1.pom" = _: "${gson_2_9_1}/gson-2.9.1.pom";
+  };
   "com.google.code.gson:gson:2.12.1" = {
     "gson-2.12.1.jar" = _: "${gson_2_12_1}/gson-2.12.1.jar";
     "gson-2.12.1.pom" = _: "${gson_2_12_1}/gson-2.12.1.pom";
+  };
+  "com.google.code.gson:gson:2.13.0" = {
+    "gson-2.13.0.jar" = _: "${gson_2_13_0}/gson-2.13.0.jar";
+    "gson-2.13.0.pom" = _: "${gson_2_13_0}/gson-2.13.0.pom";
+  };
+  "com.google.code.gson:gson:2.13.1" = {
+    "gson-2.13.1.jar" = _: "${gson_2_13_1}/gson-2.13.1.jar";
+    "gson-2.13.1.pom" = _: "${gson_2_13_1}/gson-2.13.1.pom";
   };
   "com.google.code.gson:gson:2.13.2" = {
     "gson-2.13.2.jar" = _: "${gson_2_13_2}/gson-2.13.2.jar";
@@ -240,8 +302,20 @@ in
   "com.google.code.gson:gson-parent:2.8.9" = {
     "gson-parent-2.8.9.pom" = _: "${gson_2_8_9}/gson-parent-2.8.9.pom";
   };
+  "com.google.code.gson:gson-parent:2.9.0" = {
+    "gson-parent-2.9.0.pom" = _: "${gson_2_9_0}/gson-parent-2.9.0.pom";
+  };
+  "com.google.code.gson:gson-parent:2.9.1" = {
+    "gson-parent-2.9.1.pom" = _: "${gson_2_9_1}/gson-parent-2.9.1.pom";
+  };
   "com.google.code.gson:gson-parent:2.12.1" = {
     "gson-parent-2.12.1.pom" = _: "${gson_2_12_1}/gson-parent-2.12.1.pom";
+  };
+  "com.google.code.gson:gson-parent:2.13.0" = {
+    "gson-parent-2.13.0.pom" = _: "${gson_2_13_0}/gson-parent-2.13.0.pom";
+  };
+  "com.google.code.gson:gson-parent:2.13.1" = {
+    "gson-parent-2.13.1.pom" = _: "${gson_2_13_1}/gson-parent-2.13.1.pom";
   };
   "com.google.code.gson:gson-parent:2.13.2" = {
     "gson-parent-2.13.2.pom" = _: "${gson_2_13_2}/gson-parent-2.13.2.pom";
@@ -285,14 +359,19 @@ in
     "commons-io-2.6.jar" = _: "${commons_io_2_6}/commons-io-2.6.jar";
     "commons-io-2.6.pom" = _: "${commons_io_2_6}/commons-io-2.6.pom";
   };
+  "commons-io:commons-io:2.11.0" = mkMavenSourceJarOverride "commons-io" "2.11.0" commons_io_2_11_0;
   "commons-io:commons-io:2.13.0" = {
     "commons-io-2.13.0.jar" = _: "${commons_io_2_13_0}/commons-io-2.13.0.jar";
     "commons-io-2.13.0.pom" = _: "${commons_io_2_13_0}/commons-io-2.13.0.pom";
   };
+  "commons-io:commons-io:2.14.0" = mkMavenSourceJarOverride "commons-io" "2.14.0" commons_io_2_14_0;
+  "commons-io:commons-io:2.15.1" = mkMavenSourceJarOverride "commons-io" "2.15.1" commons_io_2_15_1;
   "commons-io:commons-io:2.16.1" = {
     "commons-io-2.16.1.jar" = _: "${commons_io_2_16_1}/commons-io-2.16.1.jar";
     "commons-io-2.16.1.pom" = _: "${commons_io_2_16_1}/commons-io-2.16.1.pom";
   };
+  "commons-io:commons-io:2.18.0" = mkMavenSourceJarOverride "commons-io" "2.18.0" commons_io_2_18_0;
+  "commons-io:commons-io:2.20.0" = mkMavenSourceJarOverride "commons-io" "2.20.0" commons_io_2_20_0;
   "commons-io:commons-io:2.21.0" = {
     "commons-io-2.21.0.jar" = _: "${commons_io_2_21_0}/commons-io-2.21.0.jar";
     "commons-io-2.21.0.pom" = _: "${commons_io_2_21_0}/commons-io-2.21.0.pom";
@@ -329,6 +408,9 @@ in
     "commons-lang-2.6.jar" = _: "${commons_lang_2_6}/commons-lang-2.6.jar";
     "commons-lang-2.6.pom" = _: "${commons_lang_2_6}/commons-lang-2.6.pom";
   };
+  "org.apache.commons:commons-lang3:3.12.0" =
+    mkMavenSourceJarOverride "commons-lang3" "3.12.0"
+      commons_lang3_3_12_0;
   "org.apache.commons:commons-lang3:3.16.0" = {
     "commons-lang3-3.16.0.jar" = _: "${commons_lang3_3_16_0}/commons-lang3-3.16.0.jar";
     "commons-lang3-3.16.0.pom" = _: "${commons_lang3_3_16_0}/commons-lang3-3.16.0.pom";
@@ -436,6 +518,9 @@ in
   "com.google.guava:guava-parent:26.0-android" = {
     "guava-parent-26.0-android.pom" = _: "${failureaccess_1_0_1}/guava-parent-26.0-android.pom";
   };
+  "com.google.errorprone:error_prone_annotations:2.1.3" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.1.3"
+      error_prone_annotations_2_1_3;
   "com.google.errorprone:error_prone_annotations:2.27.0" = {
     "error_prone_annotations-2.27.0.jar" =
       _: "${error_prone_annotations_2_27_0}/error_prone_annotations-2.27.0.jar";
@@ -456,6 +541,15 @@ in
     "error_prone_parent-2.28.0.pom" =
       _: "${error_prone_annotations_2_28_0}/error_prone_parent-2.28.0.pom";
   };
+  "com.google.errorprone:error_prone_annotations:2.26.1" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.26.1"
+      error_prone_annotations_2_26_1;
+  "com.google.errorprone:error_prone_annotations:2.29.0" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.29.0"
+      error_prone_annotations_2_29_0;
+  "com.google.errorprone:error_prone_annotations:2.31.0" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.31.0"
+      error_prone_annotations_2_31_0;
   "com.google.errorprone:error_prone_annotations:2.3.1" = {
     "error_prone_annotations-2.3.1.jar" =
       _: "${error_prone_annotations_2_3_1}/error_prone_annotations-2.3.1.jar";
@@ -552,12 +646,21 @@ in
     "error_prone_parent-2.36.0.pom" =
       _: "${error_prone_annotations_2_36_0}/error_prone_parent-2.36.0.pom";
   };
+  "com.google.errorprone:error_prone_annotations:2.37.0" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.37.0"
+      error_prone_annotations_2_37_0;
+  "com.google.errorprone:error_prone_annotations:2.38.0" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.38.0"
+      error_prone_annotations_2_38_0;
   "com.google.errorprone:error_prone_annotations:2.41.0" = {
     "error_prone_annotations-2.41.0.jar" =
       _: "${error_prone_annotations_2_41_0}/error_prone_annotations-2.41.0.jar";
     "error_prone_annotations-2.41.0.pom" =
       _: "${error_prone_annotations_2_41_0}/error_prone_annotations-2.41.0.pom";
   };
+  "com.google.errorprone:error_prone_annotations:2.42.0" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.42.0"
+      error_prone_annotations_2_42_0;
   "com.google.errorprone:error_prone_parent:2.41.0" = {
     "error_prone_parent-2.41.0.pom" =
       _: "${error_prone_annotations_2_41_0}/error_prone_parent-2.41.0.pom";
@@ -672,6 +775,12 @@ in
     "javax.inject-1.jar" = _: "${javax_inject_1}/javax.inject-1.jar";
     "javax.inject-1.pom" = _: "${javax_inject_1}/javax.inject-1.pom";
   };
+  "com.google.j2objc:j2objc-annotations:1.1" =
+    mkMavenSourceJarOverride "j2objc-annotations" "1.1"
+      j2objc_annotations_1_1;
+  "com.google.j2objc:j2objc-annotations:1.3" =
+    mkMavenSourceJarOverride "j2objc-annotations" "1.3"
+      j2objc_annotations_1_3;
   "com.google.j2objc:j2objc-annotations:2.8" = {
     "j2objc-annotations-2.8.jar" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.jar";
     "j2objc-annotations-2.8.pom" = _: "${j2objc_annotations_2_8}/j2objc-annotations-2.8.pom";
@@ -731,10 +840,25 @@ in
     "checker-qual-3.33.0.jar" = _: "${checker_qual_3_33_0}/checker-qual-3.33.0.jar";
     "checker-qual-3.33.0.pom" = _: "${checker_qual_3_33_0}/checker-qual-3.33.0.pom";
   };
+  "org.checkerframework:checker-qual:3.37.0" =
+    mkMavenSourceJarOverride "checker-qual" "3.37.0"
+      checker_qual_3_37_0;
+  "org.checkerframework:checker-qual:3.41.0" =
+    mkMavenSourceJarOverride "checker-qual" "3.41.0"
+      checker_qual_3_41_0;
+  "org.checkerframework:checker-qual:3.42.0" =
+    mkMavenSourceJarOverride "checker-qual" "3.42.0"
+      checker_qual_3_42_0;
   "org.checkerframework:checker-qual:3.43.0" = {
     "checker-qual-3.43.0.jar" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.jar";
     "checker-qual-3.43.0.pom" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.pom";
   };
+  "org.checkerframework:checker-qual:3.49.2" =
+    mkMavenSourceJarOverride "checker-qual" "3.49.2"
+      checker_qual_3_49_2;
+  "org.checkerframework:checker-qual:3.49.3" =
+    mkMavenSourceJarOverride "checker-qual" "3.49.3"
+      checker_qual_3_49_3;
   "org.apache.commons:commons-parent:34" = {
     "commons-parent-34.pom" = _: "${commons_parent_34}/commons-parent-34.pom";
   };
