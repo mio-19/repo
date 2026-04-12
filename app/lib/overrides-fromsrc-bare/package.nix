@@ -19,12 +19,16 @@
   brotli_dec_0_1_2,
   dd_plist_1_21,
   dd_plist_1_27,
+  checker_qual_3_37_0,
   error_prone_annotations_2_41_0,
+  error_prone_annotations_2_1_3,
   error_prone_annotations_2_5_1,
   error_prone_annotations_2_11_0,
   error_prone_annotations_2_23_0,
   error_prone_annotations_2_3_2,
   error_prone_annotations_2_3_4,
+  error_prone_annotations_2_26_1,
+  error_prone_annotations_2_29_0,
   error_prone_annotations_2_36_0,
   commons_codec_1_2,
   commons_codec_1_10,
@@ -65,6 +69,9 @@
   httpcomponents_client_4_5_14,
   httpcomponents_core_4_4_16,
   istack_commons_runtime_3_0_8,
+  javaparser_core_3_17_0,
+  javaparser_core_3_18_0,
+  javaparser_core_3_25_6,
   javax_servlet_api_3_1_0,
   java_diff_utils_4_16,
   javax_inject_1,
@@ -76,6 +83,9 @@
   j2objc_annotations_2_8,
   j2objc_annotations_3_0_0,
   j2objc_annotations_3_1,
+  jcommander_1_35,
+  jcommander_1_78,
+  jcommander_1_82,
   jopt_simple_4_9,
   jdom2_2_0_6,
   jspecify_1_0_0,
@@ -124,6 +134,10 @@ let
   noAsc = runCommand "empty.asc" { } ''
     touch $out
   '';
+  mkMavenSourceJarOverride = artifactId: version: package: {
+    "${artifactId}-${version}.jar" = _: "${package}/${artifactId}-${version}.jar";
+    "${artifactId}-${version}.pom" = _: "${package}/${artifactId}-${version}.pom";
+  };
 in
 {
   "antlr:antlr:2.7.7" = {
@@ -193,6 +207,18 @@ in
     "auto-service-annotations-1.0.1.pom" =
       _: "${auto_service_annotations_1_0_1}/auto-service-annotations-1.0.1.pom";
   };
+  "com.beust:jcommander:1.35" = mkMavenSourceJarOverride "jcommander" "1.35" jcommander_1_35;
+  "com.beust:jcommander:1.78" = mkMavenSourceJarOverride "jcommander" "1.78" jcommander_1_78;
+  "com.beust:jcommander:1.82" = mkMavenSourceJarOverride "jcommander" "1.82" jcommander_1_82;
+  "com.github.javaparser:javaparser-core:3.17.0" =
+    mkMavenSourceJarOverride "javaparser-core" "3.17.0"
+      javaparser_core_3_17_0;
+  "com.github.javaparser:javaparser-core:3.18.0" =
+    mkMavenSourceJarOverride "javaparser-core" "3.18.0"
+      javaparser_core_3_18_0;
+  "com.github.javaparser:javaparser-core:3.25.6" =
+    mkMavenSourceJarOverride "javaparser-core" "3.25.6"
+      javaparser_core_3_25_6;
   "com.google.code.findbugs:jsr305:3.0.2" = {
     "jsr305-3.0.2.jar" = _: "${jsr305_3_0_2}/jsr305-3.0.2.jar";
     "jsr305-3.0.2.pom" = _: "${jsr305_3_0_2}/jsr305-3.0.2.pom";
@@ -436,6 +462,9 @@ in
   "com.google.guava:guava-parent:26.0-android" = {
     "guava-parent-26.0-android.pom" = _: "${failureaccess_1_0_1}/guava-parent-26.0-android.pom";
   };
+  "com.google.errorprone:error_prone_annotations:2.1.3" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.1.3"
+      error_prone_annotations_2_1_3;
   "com.google.errorprone:error_prone_annotations:2.27.0" = {
     "error_prone_annotations-2.27.0.jar" =
       _: "${error_prone_annotations_2_27_0}/error_prone_annotations-2.27.0.jar";
@@ -456,6 +485,12 @@ in
     "error_prone_parent-2.28.0.pom" =
       _: "${error_prone_annotations_2_28_0}/error_prone_parent-2.28.0.pom";
   };
+  "com.google.errorprone:error_prone_annotations:2.26.1" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.26.1"
+      error_prone_annotations_2_26_1;
+  "com.google.errorprone:error_prone_annotations:2.29.0" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.29.0"
+      error_prone_annotations_2_29_0;
   "com.google.errorprone:error_prone_annotations:2.3.1" = {
     "error_prone_annotations-2.3.1.jar" =
       _: "${error_prone_annotations_2_3_1}/error_prone_annotations-2.3.1.jar";
@@ -731,6 +766,9 @@ in
     "checker-qual-3.33.0.jar" = _: "${checker_qual_3_33_0}/checker-qual-3.33.0.jar";
     "checker-qual-3.33.0.pom" = _: "${checker_qual_3_33_0}/checker-qual-3.33.0.pom";
   };
+  "org.checkerframework:checker-qual:3.37.0" =
+    mkMavenSourceJarOverride "checker-qual" "3.37.0"
+      checker_qual_3_37_0;
   "org.checkerframework:checker-qual:3.43.0" = {
     "checker-qual-3.43.0.jar" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.jar";
     "checker-qual-3.43.0.pom" = _: "${checker_qual_3_43_0}/checker-qual-3.43.0.pom";
