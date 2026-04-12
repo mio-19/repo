@@ -1,7 +1,8 @@
 {
   mk-apk-package,
   lib,
-  jdk25_headless,
+  # https://github.com/breezy-weather/breezy-weather/blob/258a4387d82c5e764df42057fd4bb8df20c61d1a/.github/.java-version
+  jdk21_headless,
   gradle_9_4_1,
   stdenv,
   fetchFromGitHub,
@@ -20,11 +21,11 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
-        s.build-tools-35-0-1
+        # https://github.com/breezy-weather/breezy-weather/blob/258a4387d82c5e764df42057fd4bb8df20c61d1a/.github/workflows/push.yml#L47
         s.build-tools-36-0-0
-        s.build-tools-36-1-0
       ]);
 
+      # https://github.com/breezy-weather/breezy-weather/blob/258a4387d82c5e764df42057fd4bb8df20c61d1a/gradle/wrapper/gradle-wrapper.properties
       gradle = gradle_9_4_1;
     in
     stdenv.mkDerivation (finalAttrs: {
@@ -56,16 +57,16 @@ let
 
       nativeBuildInputs = [
         gradle
-        jdk25_headless
+        jdk21_headless
         apksigner
         writableTmpDirAsHomeHook
       ];
 
       env = {
-        JAVA_HOME = jdk25_headless;
+        JAVA_HOME = jdk21_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.1/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
       };
 
       postPatch = ''
@@ -91,7 +92,7 @@ let
         echo "breezy.metie.key=$(echo ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6STFOaUo5LmV5SnBjM01pT2lKdFpYUXRhbmQwSWl3aWMzVmlJam94TENKcFlYUWlPakUxTWpnNE1USTJNRFVzSW1WNGNDSTZOemd6TmpBeE1qWXdOWDAuTVpTQkRrU1JHMnVXZ1hfVVZLX1BhMk9mdzFMeGpVczF6Sks3TnkwM3NCUQo= | base64 -d)" >> local.properties
       '';
 
-      preConfigure = ''
+      preConfigure = lib.optionalString stdenv.isDarwin ''
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
         echo "sdk.dir=${androidSdk}/share/android-sdk" >> local.properties
@@ -101,9 +102,9 @@ let
         # Select upstream's official Breezy branding resources instead of res_fork.
         "-Pbreezy"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk25_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.1/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.1/aapt2"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
 
       installPhase = ''
