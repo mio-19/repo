@@ -9,7 +9,6 @@
   gradle_9_4_0,
   stdenv,
   fetchpatch,
-  apksigner,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   overrides-fromsrc-updated,
@@ -61,7 +60,6 @@ let
       androidSdk
       jdk25_headless
       jdk17_headless
-      apksigner
       writableTmpDirAsHomeHook
     ];
 

@@ -7,7 +7,7 @@
   jdk17_headless,
   gradle_8_13,
   fetchFromGitea,
-  apksigner,
+
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   git,
@@ -51,7 +51,7 @@ let
       androidSdk
       gradle
       jdk17_headless
-      apksigner
+
       writableTmpDirAsHomeHook
       git
     ];

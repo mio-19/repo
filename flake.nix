@@ -61,11 +61,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
-    gradle2nix-v1 = {
-      url = "github:tadfisher/gradle2nix/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-    };
     mvn2nix = {
       #url = "github:fzakaria/mvn2nix";
       # https://github.com/fzakaria/mvn2nix/pull/64
@@ -78,7 +73,6 @@
   outputs =
     inputs@{
       self,
-      nixpkgs,
       flake-parts,
       ...
     }:
@@ -96,28 +90,9 @@
         ./mc
       ];
       perSystem =
-        args@{ pkgs, system, ... }:
+        { pkgs, system, ... }:
         let
           inherit (pkgs) fetchpatch applyPatches;
-          gradle2nixV1Src = applyPatches {
-            src = inputs.gradle2nix-v1.outPath;
-            name = "gradle2nix-v1-patched";
-            patches = [
-              ./patches/gradle2nix-v1/bootstrap-modernization.patch
-            ];
-          };
-          gradle2nixV1Patched =
-            (import "${gradle2nixV1Src}/flake.nix").outputs (
-              inputs.gradle2nix-v1.inputs
-              // {
-                self = gradle2nixV1Patched;
-                inherit nixpkgs;
-              }
-            )
-            // {
-              inherit (gradle2nixV1Src) outPath;
-            };
-
           gradle2nixSrc = applyPatches {
             src = inputs.gradle2nix.outPath;
             name = "gradle2nix-patched";
@@ -171,37 +146,54 @@
             inherit system;
             overlays = [
               (final: prev: rec {
-                gradle_9 = self.packages."${system}".gradle_9_4_1;
+                ant = selfPackages.ant;
+                gradle_9 = selfPackages.gradle_9_4_1;
                 gradle_9-unwrapped = gradle_9.unwrapped;
                 gradle =
                   assert prev.gradle == prev.gradle_8;
+                  assert lib.versions.major prev.gradle.version == "8";
                   gradle_8;
                 gradle-unwrapped =
                   assert prev.gradle-unwrapped == prev.gradle_8-unwrapped;
                   gradle_8-unwrapped;
-                gradle_8 = self.packages."${system}".gradle_8_14_4;
+                gradle_8 = selfPackages.gradle_8_14_4;
                 gradle_8-unwrapped = gradle_8.unwrapped;
+                mitm-cache =
+                  assert prev.mitm-cache.fetch == prev.mitm-cache.passthru.fetch;
+                  prev.mitm-cache.overrideAttrs (old: {
+                    passthru = old.passthru // {
+                      fetch = selfLegacyPackages.mitm-cache-fetch;
+                    };
+                  });
               })
             ];
           };
+          selfPackages = self.packages."${system}";
+          selfLegacyPackages = self.legacyPackages."${system}";
+          inherit (pkgsPatched) lib stdenv;
+        in
+        let
+          pkgs = pkgsPatched;
         in
         {
           _module.args = {
-            inherit pkgsPatched gradle2nixV1Patched gradle2nixPatched;
+            inherit pkgsPatched;
+            gradle2nixPatched =
+              assert pkgsPatched.mitm-cache.fetch == selfLegacyPackages.mitm-cache-fetch;
+              assert pkgsPatched.mitm-cache.fetch == pkgsPatched.mitm-cache.passthru.fetch;
+              gradle2nixPatched;
           };
 
-          formatter = pkgs.nixfmt;
-
-          packages.gradle2nix-v1 = gradle2nixV1Patched.packages.${system}.gradle2nix;
-          packages.gradle2nix-v1Src = gradle2nixV1Patched.outPath;
           packages.gradle2nix = gradle2nixPatched.packages.${system}.gradle2nix;
           packages.gradle2nixSrc = gradle2nixPatched.outPath;
           packages.mvn2nix = inputs.mvn2nix.packages.${system}.mvn2nix;
 
+          formatter = pkgs.nixfmt;
+
           packages.github-actions-cached = pkgs.symlinkJoin {
             name = "github-actions-cached";
             paths =
-              with self.packages."${system}";
+              with selfPackages;
               [
                 gradle2nix
                 mvn2nix
@@ -211,9 +203,9 @@
                 apk_joplin
                 apk_meditrak
                 apk_sunup
+                apk_forkgram.signScript
               ]
-              ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
-
+              ++ lib.optionals stdenv.isLinux [
                 apk_nix-on-droid
               ];
           };
@@ -221,7 +213,7 @@
           packages.garnix-cached = pkgs.symlinkJoin {
             name = "garnix-cached";
             paths =
-              with self.packages."${system}";
+              with selfPackages;
               [
                 github-actions-cached
 
@@ -231,7 +223,7 @@
                 apk_gamenative
                 apk_droidspaces
               ]
-              ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+              ++ lib.optionals stdenv.isLinux [
                 apk_immich
               ];
           };

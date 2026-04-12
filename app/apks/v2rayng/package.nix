@@ -7,7 +7,7 @@
   go_1_26,
   stdenv,
   fetchFromGitHub,
-  apksigner,
+
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
@@ -176,7 +176,7 @@ let
       nativeBuildInputs = [
         gradle
         jdk25_headless
-        apksigner
+
         writableTmpDirAsHomeHook
       ];
 

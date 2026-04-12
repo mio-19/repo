@@ -8,7 +8,7 @@
   fetchFromGitHub,
   go_1_25,
   gitMinimal,
-  apksigner,
+
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
@@ -429,7 +429,7 @@ let
         gradle
         jdk21_headless
         go_1_25
-        apksigner
+
         writableTmpDirAsHomeHook
       ];
 

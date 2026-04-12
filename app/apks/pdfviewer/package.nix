@@ -10,7 +10,7 @@
   fetchpatch,
   fetchNpmDeps,
   npmHooks,
-  apksigner,
+
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   nodejs,
@@ -66,7 +66,7 @@ let
         gradle
         jdk25_headless
         jdk17_headless
-        apksigner
+
         writableTmpDirAsHomeHook
         npmHooks.npmConfigHook
         nodejs

@@ -7,7 +7,7 @@
   lib,
   jdk25_headless,
   mergeLock,
-  apksigner,
+
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   gradle_9_4_1,
@@ -55,7 +55,7 @@ let
       androidSdk
       gradle
       jdk25_headless
-      apksigner
+
       writableTmpDirAsHomeHook
     ];
 

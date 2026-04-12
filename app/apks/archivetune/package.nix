@@ -6,7 +6,6 @@
   lib,
   jdk21_headless,
   fetchFromGitHub,
-  apksigner,
   zip,
   unzip,
   writableTmpDirAsHomeHook,
@@ -47,7 +46,6 @@ let
       androidSdk
       gradle
       jdk21_headless
-      apksigner
       zip
       unzip
       writableTmpDirAsHomeHook

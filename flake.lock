@@ -198,30 +198,6 @@
         "type": "github"
       }
     },
-    "gradle2nix-v1": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1696101549,
-        "narHash": "sha256-Y9s+S2B+R9z3Q0GVovDLu+GS4OhNH2k6D4JsmKM+r/E=",
-        "owner": "tadfisher",
-        "repo": "gradle2nix",
-        "rev": "68327d0c5dc93bc97e3bb28b716da9fbbce1f942",
-        "type": "github"
-      },
-      "original": {
-        "owner": "tadfisher",
-        "ref": "master",
-        "repo": "gradle2nix",
-        "type": "github"
-      }
-    },
     "mvn2nix": {
       "inputs": {
         "nixpkgs": [
@@ -430,11 +406,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1775897508,
-        "narHash": "sha256-rBRztno6oomQfbtNnlNVqdRl6BLKOI77ywibEwPyVi0=",
+        "lastModified": 1775984227,
+        "narHash": "sha256-qM+q3+GKxgRRhFM9XEbUZ0AI2/MRRcSPSnMnCAxD6cw=",
         "owner": "astro",
         "repo": "nix-openwrt-imagebuilder",
-        "rev": "b3814c39db7177859cc0f314f0261d51c431d0a1",
+        "rev": "502eb6f7118b28eb3ec4612abd2da1ed3154ebf9",
         "type": "github"
       },
       "original": {
@@ -505,7 +481,6 @@
         "flake-parts": "flake-parts",
         "flake-utils": "flake-utils",
         "gradle2nix": "gradle2nix",
-        "gradle2nix-v1": "gradle2nix-v1",
         "mvn2nix": "mvn2nix",
         "nix-github-actions": "nix-github-actions",
         "nix-kernelsu-builder": "nix-kernelsu-builder",

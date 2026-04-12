@@ -1,5 +1,5 @@
 {
-  apksigner,
+
   androidSdkBuilder,
   fetchgit,
   overrides-fromsrc,
@@ -43,13 +43,13 @@ gradle2nixBuilders.buildGradlePackage rec {
   nativeBuildInputs = [
     androidSdk
     jdk25_headless
-    apksigner
+
     writableTmpDirAsHomeHook
   ];
 
   postPatch = ''
     rm -f gradle/verification-metadata.xml
-    echo "Removed gradle/verification-metadata.xml so the source-built Guava override is not rejected by upstream checksum verification."
+    echo "Removed gradle/verification-metadata.xml so the source-built java libraries overrides is not rejected by upstream checksum verification."
 
     pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                def agpVersion = requested.version ?: "9.1.0"\n                useModule("com.android.tools.build:gradle:''${agpVersion}")\n            }\n        }\n    }\n'
     substituteInPlace settings.gradle \

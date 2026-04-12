@@ -1,0 +1,106 @@
+{
+  fetchFromGitHub,
+  jdk25_headless,
+  jdk21_headless,
+  lib,
+  stdenv,
+  callPackage,
+  jdk8_headless,
+  libsUtils,
+  applyPatches,
+}:
+let
+  postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
+  ant_nixpkgs = callPackage ./nixpkgs.nix { };
+  inherit (libsUtils) checkMavenProvides exposeMavenProvides;
+in
+ant_nixpkgs.overrideAttrs (
+  finalAttrs: prevAttrs:
+  let
+    jdk =
+      if lib.strings.compareVersions finalAttrs.version "1.10.14" >= 0 then
+        jdk25_headless
+      else if lib.strings.compareVersions finalAttrs.version "1.10.0" >= 0 then
+        jdk21_headless
+      else
+        jdk8_headless;
+    finalSrc = applyPatches {
+      inherit (finalAttrs) src postPatch;
+    };
+  in
+  {
+    version = "1.10.17";
+    src = fetchFromGitHub {
+      owner = "apache";
+      repo = "ant";
+      tag = "rel/${finalAttrs.version}";
+      hash = "sha256-wAwS/8mu3Iq0o3uxPWFKKgP57ffX1xXQkMTAP9e8mL0=";
+    };
+    nativeBuildInputs = [ jdk ];
+    # https://ant.apache.org/manual/install.html#buildingant Since Ant 1.7.0, Ant has a hard dependency on JUnit.
+    postPatch =
+      lib.optionalString (lib.strings.compareVersions finalAttrs.version "1.7.0" < 0) ''
+        find . -name "*.jar" -print0 | xargs -0 rm
+        echo "Removed all .jar files"
+      ''
+      + lib.optionalString (finalAttrs.version == "1.7.0") ''
+        rm src/tests/junit/org/apache/tools/ant/taskdefs/SQLExecTest.java
+      ''
+      + ''
+        sed -i 's|-SNAPSHOT||g' src/etc/poms/*/pom.xml
+        sed -i 's|-SNAPSHOT||g' src/etc/poms/pom.xml
+      '';
+    preBuild = lib.optionalString (lib.strings.compareVersions finalAttrs.version "1.9.6" <= 0) ''
+      export CLASSPATH=${jdk}${postfix}/lib/tools.jar
+    '';
+    buildPhase = ''
+      runHook preBuild
+
+      mkdir out
+      ANT_HOME=./out sh build.sh install-lite
+
+      runHook postBuild
+      cd out # for installPhase
+    '';
+    doInstallCheck = true;
+    installCheckPhase = ''
+      ${checkMavenProvides finalAttrs}
+    '';
+    meta = prevAttrs.meta // {
+      mavenProvides = exposeMavenProvides finalAttrs;
+      mavenProvidesInternal =
+        let
+          parent = {
+            "org.apache.ant:ant-parent:${finalAttrs.version}" = {
+              "ant-parent-${finalAttrs.version}.pom" = "${finalSrc}/src/etc/poms/pom.xml";
+            };
+          };
+          postfixes = [
+            ""
+            "-launcher"
+          ]
+          ++ lib.optionals (lib.strings.compareVersions finalAttrs.version "1.7.0" >= 0) [
+            "-junit"
+          ]
+          ++ lib.optionals (lib.strings.compareVersions finalAttrs.version "1.7.0" == 0) [
+            "-nodeps"
+          ]
+          ++ lib.optionals (lib.strings.compareVersions finalAttrs.version "1.10.0" >= 0) [
+            "-antlr"
+          ];
+          name = postfix: "org.apache.ant:ant${postfix}:${finalAttrs.version}";
+          value = postfix: {
+            "ant${postfix}-${finalAttrs.version}.jar" = "$out/share/ant/lib/ant${postfix}.jar";
+            "ant${postfix}-${finalAttrs.version}.pom" = "${finalSrc}/src/etc/poms/ant${postfix}/pom.xml";
+          };
+          child = builtins.listToAttrs (
+            map (postfix: {
+              name = name postfix;
+              value = value postfix;
+            }) postfixes
+          );
+        in
+        parent // child;
+    };
+  }
+)

@@ -22,7 +22,7 @@
       mvn2nixMaven = pkgs.callPackage "${inputs.mvn2nix}/maven.nix" { };
       gradle2nixScope = pkgs.callPackage "${gradle2nixPatched}/nix" { };
       helpers = {
-        inherit (mvn2nixMaven) buildMavenRepositoryFromLockFile;
+        buildMavenRepositoryFromLockFile-bare = mvn2nixMaven.buildMavenRepositoryFromLockFile;
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
         gradle2nixBuilders = {
           inherit (gradle2nixScope) buildGradlePackage buildMavenRepo;
@@ -31,6 +31,7 @@
         inherit
           sources
           pkgsPatched
+          libs
           ;
         apktool-src = sources.morphe_apktool.src;
         multidexlib2-src = sources.morphe_multidexlib2.src;

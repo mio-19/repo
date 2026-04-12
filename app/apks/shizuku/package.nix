@@ -6,7 +6,7 @@
   gradle_8_14,
   stdenv,
   fetchgit,
-  apksigner,
+
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
@@ -127,7 +127,7 @@ let
         curl
         gradle
         jdk21_headless
-        apksigner
+
         writableTmpDirAsHomeHook
       ];
 

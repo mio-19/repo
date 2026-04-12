@@ -4,7 +4,7 @@ This repository contains build scripts for android applications and operating sy
 
 Warning: This repository contains many llm generated glue code. They might be written on false assumptions but happen to work. Don't trust them. See later section LLM for more details.
 
-This repository implemented a build system for gradle to replace prebuilt jar with versions built with source code. Of couse the versions built with source code still have their own prebuilt dependencies jar. But now it is possible to gradually work towards the goal of fully building from source code. A problem is bootstrapping. For example gradle uses old gradle to build. Expect long build time when build cache is not available.
+This repository implemented a build system for gradle and maven to replace prebuilt jar with versions built with source code. Of couse the versions built with source code still have their own prebuilt dependencies jar. But now it is possible to gradually work towards the goal of fully building from source code. A problem is bootstrapping. For example gradle uses old gradle to build. Expect long build time when build cache is not available.
 
 Warning: Using this repository may result in data loss, boot loops, bricked devices, injuries due to exploded devices, dead SD cards, thermonuclear war, lawsuit, banned account, money loss, or you getting fired because the alarm app failed. By proceeding, you accept full responsibility for any issues that may arise.
 
@@ -232,3 +232,7 @@ read
 + <https://github.com/osbm/nixapks>
 + <https://github.com/tiann/KernelSU/issues/2942#issuecomment-4078266560>
 + <https://www.reddit.com/r/LineageOS/comments/1oaw2hj/comment/nkisxra/>
+
+todo
+
++ patch gradle.fetchDeps to lookup overrides-fromsrc
