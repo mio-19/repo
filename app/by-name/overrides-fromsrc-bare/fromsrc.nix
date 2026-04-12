@@ -275,9 +275,6 @@ in
     "gson-2.13.2.jar" = _: "${gson_2_13_2}/gson-2.13.2.jar";
     "gson-2.13.2.pom" = _: "${gson_2_13_2}/gson-2.13.2.pom";
   };
-  "com.google.code.gson:gson-parent:2.11.0" = {
-    "gson-parent-2.11.0.pom" = _: "${gson_2_11_0}/gson-parent-2.11.0.pom";
-  };
   "com.google.code.gson:gson-parent:2.10.1" = {
     "gson-parent-2.10.1.pom" = _: "${gson_2_10_1}/gson-parent-2.10.1.pom";
   };
