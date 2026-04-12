@@ -8,17 +8,17 @@
 {
   amethyst_android = {
     pname = "amethyst_android";
-    version = "8e2269301333118f66dec09e545167bbc9e24750";
+    version = "85670cdc3fc938242ca5344b3805417c5e4938b9";
     src = fetchgit {
       url = "https://github.com/AngelAuraMC/Amethyst-Android.git";
-      rev = "8e2269301333118f66dec09e545167bbc9e24750";
+      rev = "85670cdc3fc938242ca5344b3805417c5e4938b9";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-WAPRez84JvDP4bAQMA93yxl4IccAPVAApJdiyLvtqf4=";
+      sha256 = "sha256-tESJfGfPXdjk1Fz8jDOK7RoiBHEHfV2eg0LJhB9rCsI=";
     };
-    date = "2026-04-05";
+    date = "2026-04-12";
   };
   axp_build = {
     pname = "axp_build";
@@ -832,7 +832,7 @@
     version = "6b7bf6d049e8d425611e0c6dfb4637193190e8d6";
     src = fetchurl {
       url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/6b7bf6d049e8d425611e0c6dfb4637193190e8d6/vendor_gapps-6b7bf6d049e8d425611e0c6dfb4637193190e8d6.tar.gz";
-      sha256 = "sha256-ZJPTBe8kD4bWcvQET6TL58KfjiCicVzCAo3D8v/5XNE=";
+      sha256 = "sha256-SkpawHzPB3gLJ6Lr8lNIvQ0LvrH+6UwM+QaMjsnQTjM=";
     };
     date = "2026-04-09";
   };
