@@ -25,14 +25,14 @@ ant_nixpkgs.overrideAttrs (
         jdk8_headless;
   in
   {
-    version = "1.10.15";
-    nativeBuildInputs = [ jdk ];
+    version = "1.10.17";
     src = fetchFromGitHub {
       owner = "apache";
       repo = "ant";
       tag = "rel/${finalAttrs.version}";
-      hash = "sha256-lRaDj8MMfuMqjXwHglZlKgqUmkbbs0dCTDFF61zW5Qg=";
+      hash = "sha256-wAwS/8mu3Iq0o3uxPWFKKgP57ffX1xXQkMTAP9e8mL0=";
     };
+    nativeBuildInputs = [ jdk ];
     # https://ant.apache.org/manual/install.html#buildingant Since Ant 1.7.0, Ant has a hard dependency on JUnit.
     postPatch =
       lib.optionalString (lib.strings.compareVersions finalAttrs.version "1.7.0" < 0) ''
