@@ -39,7 +39,7 @@ let
         # generateBp 1.32
         ./bp.gradle.lock
       ]
-      ++ lib.optional stdenv.isDarwin [
+      ++ lib.optionals stdenv.isDarwin [
         # com.android.tools.lint:lint-gradle:32.1.0 only needed on darwin for some reason
         ./lint.gradle.lock
       ]
