@@ -19,5 +19,5 @@
 - When fetching sources we prefer fetchFromGithub or fetchgit over a tarball provided by some party like tarball uploaded on github release. Do you remember the xz incident? it is safer to fetch from git or github.
 - app/by-name-apk are exported with `apk_` prefix so appstore becomes `nix build .#apk_appstore`
 - don't use callPackage and pkgs in a package's first arguments list which usually contan dependencies of that package. only allowed when not easy to refactor without pkgs and callPackage in argument list
-- we prefer mvn2nix & mkMavenPackageWithLock over maven.buildMavenPackage
+- we prefer mvn2nix & mkMavenPackageWithLock or buildMavenRepositoryFromLockFile over maven.buildMavenPackage
 - android gradle plugin AGP 9.x seems to have silent problem with old build-tools and old aapt&aapt2. When a result apk has no AndroidManifest.xml with AGP 9.x, check and make sure android sdk is the needed version. maybe need newer version. Specifically, build-tools-35-0-0 seems to have problem with AGP 9.x, causing corrupted apk result. build-tools-36-0-0 is working fine. Need to completly remove build-tools-35-0-0 from android sdk.

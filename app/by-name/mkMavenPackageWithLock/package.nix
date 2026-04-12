@@ -4,6 +4,7 @@
   stdenv,
   maven,
   lib,
+  writableTmpDirAsHomeHook,
 }:
 {
   pname,
@@ -33,6 +34,7 @@ stdenv.mkDerivation (
     nativeBuildInputs = [
       maven
       mvnJdk
+      writableTmpDirAsHomeHook
     ];
 
     env = {
@@ -41,9 +43,6 @@ stdenv.mkDerivation (
 
     buildPhase = ''
       runHook preBuild
-
-      export HOME="$NIX_BUILD_TOP/home"
-      mkdir -p "$HOME"
 
       mvn --offline -ntp -Dmaven.repo.local=${mavenRepository} ${lib.escapeShellArgs mvnFlags}
 
