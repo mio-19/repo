@@ -205,7 +205,6 @@
                 apk_forkgram.signScript
               ]
               ++ lib.optionals stdenv.isLinux [
-
                 apk_nix-on-droid
               ];
           };
