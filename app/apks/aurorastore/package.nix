@@ -1,6 +1,5 @@
 {
   mk-apk-package,
-  overrides-fromsrc,
   gradle2nixBuilders,
   lib,
   jdk21_headless,

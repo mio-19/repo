@@ -2,8 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  fetchurl,
-  linkFarm,
+  buildMavenRepository,
   jdk8_headless,
   writableTmpDirAsHomeHook,
   coreutils,
@@ -11,7 +10,6 @@
   gnugrep,
   gnused,
   which,
-  ant_1_7_0,
   commons_httpclient_3_0,
   commons_cli_1_0,
   commons_codec_1_2,
@@ -30,19 +28,15 @@ let
     }
     {
       path = "org/apache/ant/ant/1.7.0/ant-1.7.0.jar";
-      package = "${ant_1_7_0}/ant-1.7.0.jar";
     }
     {
       path = "org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar";
-      package = "${ant_1_7_0}/ant-launcher-1.7.0.jar";
     }
     {
       path = "org/apache/ant/ant-junit/1.7.0/ant-junit-1.7.0.jar";
-      package = "${ant_1_7_0}/ant-junit-1.7.0.jar";
     }
     {
       path = "org/apache/ant/ant-nodeps/1.7.0/ant-nodeps-1.7.0.jar";
-      package = "${ant_1_7_0}/ant-nodeps-1.7.0.jar";
     }
     {
       path = "commons-cli/commons-cli/1.0/commons-cli-1.0.jar";
@@ -94,16 +88,22 @@ let
     }
   ];
 
-  bootstrapJars = linkFarm "gradle-${version}-bootstrap-jars" (
-    map (artifact: {
-      name = baseNameOf artifact.path;
-      path =
-        artifact.package or (fetchurl {
+  bootstrapJars = buildMavenRepository {
+    dependencies = builtins.listToAttrs (
+      map (artifact: {
+        name = artifact.path;
+        value = {
+          layout = artifact.path;
           url = "https://repo1.maven.org/maven2/${artifact.path}";
-          hash = artifact.hash;
-        });
-    }) artifacts
-  );
+          hash = artifact.hash or lib.fakeHash;
+        }
+        // lib.optionalAttrs (artifact ? package) {
+          package = artifact.package;
+        };
+      }) artifacts
+    );
+    pathMap = baseNameOf;
+  };
 in
 stdenv.mkDerivation {
   pname = "gradle";

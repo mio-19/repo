@@ -2,7 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  fetchurl,
+  buildMavenRepository,
   linkFarm,
   jdk8_headless,
   coreutils,
@@ -163,16 +163,22 @@ let
     }
   ];
 
-  artifactJars = linkFarm "gradle-${version}-jars" (
-    map (artifact: {
-      name = baseNameOf artifact.path;
-      path =
-        artifact.package or (fetchurl {
-          url = "${artifact.repo or defaultRepo}/${artifact.path}";
-          hash = artifact.hash;
-        });
-    }) artifacts
-  );
+  artifactJars = buildMavenRepository {
+    dependencies = builtins.listToAttrs (
+      map (artifact: {
+        name = artifact.path;
+        value = {
+          layout = artifact.path;
+          url = "https://repo1.maven.org/maven2/${artifact.path}";
+          hash = artifact.hash or lib.fakeHash;
+        }
+        // lib.optionalAttrs (artifact ? package) {
+          package = artifact.package;
+        };
+      }) artifacts
+    );
+    pathMap = baseNameOf;
+  };
 in
 stdenv.mkDerivation {
   pname = "gradle";
