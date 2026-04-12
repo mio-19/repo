@@ -13,7 +13,7 @@ let
     group: entry:
     mapAttrs (
       name: value:
-      assert builtins.isPath value;
+      assert builtins.isPath value || builtins.isString value;
       _: value
     ) entry
   ) adhoc;
