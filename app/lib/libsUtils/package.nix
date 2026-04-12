@@ -38,7 +38,7 @@ in
       mapAttrs (
         name: value:
         assert builtins.isPath value || builtins.isString value;
-        _: builtins.replaceStrings [ "$out" ] [ finalAttrs.finalPackage ] value
+        _: builtins.replaceStrings [ "$out" ] [ "${finalAttrs.finalPackage}" ] value
       ) entry
     ) finalAttrs.meta.mavenProvidesInternal;
 }
