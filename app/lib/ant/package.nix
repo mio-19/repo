@@ -6,6 +6,7 @@
   stdenv,
   callPackage,
   jdk8_headless,
+  checkMavenProvides,
 }:
 let
   postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
@@ -53,5 +54,22 @@ ant_nixpkgs.overrideAttrs (
       runHook postBuild
       cd out # for installPhase
     '';
+    doInstallCheck = true;
+    installCheckPhase = ''
+      ${checkMavenProvides finalAttrs}
+    '';
+    meta = prevAttrs.meta // {
+      mavenProvides = {
+        "org.apache.ant:ant:${finalAttrs.version}" = {
+          "ant-${finalAttrs.version}.jar" = "${placeholder "out"}/share/ant/lib/ant.jar";
+          "ant-${finalAttrs.version}.pom" = "${finalAttrs.src}/src/etc/poms/ant/pom.xml";
+        };
+      };
+      mavenCoordinate = "org.apache.ant:ant:${finalAttrs.version}";
+      mavenFiles = [
+        "ant-${finalAttrs.version}.jar"
+        "ant-${finalAttrs.version}.pom"
+      ];
+    };
   }
 )
