@@ -82,6 +82,9 @@ ant_nixpkgs.overrideAttrs (
           ++ lib.optionals (lib.strings.compareVersions finalAttrs.version "1.7.0" >= 0) [
             "-junit"
           ]
+          ++ lib.optionals (lib.strings.compareVersions finalAttrs.version "1.7.0" == 0) [
+            "-nodeps"
+          ]
           ++ lib.optionals (lib.strings.compareVersions finalAttrs.version "1.10.0" >= 0) [
             "-antlr"
           ];

@@ -45,7 +45,10 @@ let
   #
   # @param dependencies: A attrset of dependencies to build the repository
   buildMavenRepository =
-    { dependencies }:
+    {
+      dependencies,
+      pathMap ? x: x,
+    }:
     let
       dependenciesAsDrv = (
         forEach (attrValues dependencies) (dependency: {
@@ -70,7 +73,7 @@ let
     in
     linkFarm "mvn2nix-repository" (
       forEach dependenciesAsDrv (dependency: {
-        name = dependency.layout;
+        name = pathMap dependency.layout;
         path = overrideFromSrc dependency.drv dependency.layout;
       })
     );

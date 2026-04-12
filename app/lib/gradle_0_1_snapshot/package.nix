@@ -37,31 +37,24 @@ let
     }
     {
       path = "org/apache/ant/ant/1.7.0/ant-1.7.0.jar";
-      hash = lib.fakeHash;
     }
     {
       path = "org/apache/ant/ant/1.7.0/ant-1.7.0.pom";
-      hash = lib.fakeHash;
     }
     {
       path = "org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar";
-      hash = lib.fakeHash;
     }
     {
       path = "org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.pom";
-      hash = lib.fakeHash;
     }
     {
       path = "org/apache/ant/ant-junit/1.7.0/ant-junit-1.7.0.jar";
-      hash = lib.fakeHash;
     }
     {
       path = "org/apache/ant/ant-junit/1.7.0/ant-junit-1.7.0.pom";
-      hash = lib.fakeHash;
     }
     {
       path = "org/apache/ant/ant-parent/1.7.0/ant-parent-1.7.0.pom";
-      hash = lib.fakeHash;
     }
     {
       path = "org/apache/ivy/ivy/2.0.0-beta2/ivy-2.0.0-beta2.jar";
