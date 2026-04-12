@@ -23,7 +23,4 @@ let
       ) (builtins.attrNames set)
     );
 in
-
-builtins.replaceStrings [ (placeholder "out") ] [ "$out" ] (
-  assumeExist (leafValues finalAttrs.meta.mavenProvides)
-)
+assumeExist (leafValues finalAttrs.meta.mavenProvides)

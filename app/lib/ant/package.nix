@@ -59,12 +59,36 @@ ant_nixpkgs.overrideAttrs (
       ${checkMavenProvides finalAttrs}
     '';
     meta = prevAttrs.meta // {
-      mavenProvides = {
-        "org.apache.ant:ant:${finalAttrs.version}" = {
-          "ant-${finalAttrs.version}.jar" = _: "${placeholder "out"}/share/ant/lib/ant.jar";
-          "ant-${finalAttrs.version}.pom" = _: "${finalAttrs.src}/src/etc/poms/ant/pom.xml";
-        };
-      };
+      mavenProvides =
+        let
+          parent = {
+            "org.apache.ant:ant-parent:${finalAttrs.version}" = {
+              "ant-parent-${finalAttrs.version}.pom" = "${finalAttrs.src}/src/etc/poms/pom.xml";
+            };
+          };
+          postfixes = [
+            ""
+            "-launcher"
+          ]
+          ++ lib.optionals (false && finalAttrs.version == "1.10.12") [
+            "-juint"
+          ]
+          ++ lib.optionals (lib.strings.compareVersions finalAttrs.version "1.10.0" >= 0) [
+            "-antlr"
+          ];
+          name = postfix: "org.apache.ant:ant${postfix}:${finalAttrs.version}";
+          value = postfix: {
+            "ant${postfix}-${finalAttrs.version}.jar" = "${placeholder "out"}/share/ant/lib/ant${postfix}.jar";
+            "ant${postfix}-${finalAttrs.version}.pom" = "${finalAttrs.src}/src/etc/poms/ant${postfix}/pom.xml";
+          };
+          child = builtins.listToAttrs (
+            map (postfix: {
+              name = name postfix;
+              value = value postfix;
+            }) postfixes
+          );
+        in
+        parent // child;
     };
   }
 )
