@@ -1,6 +1,6 @@
 { lib, runCommand }:
 let
-  inherit (lib) mapAttrs concatMapStringsSep;
+  inherit (lib) mapAttrs concatMapStringsSep hasInfix;
 in
 {
   # needs $out to avoid infinite recursion and other problems with self-references existence checks
@@ -9,14 +9,18 @@ in
     let
       assumeExist =
         xs:
-        concatMapStringsSep "\n" (f: ''
-          if [ -f '${f}' ]; then
-            echo 'Found expected file ${f} in mavenProvides'
-          else
-            echo >&2 'Expected file ${f} does not exist in mavenProvides'
-            exit 1
-          fi
-        '') xs;
+        concatMapStringsSep "\n" (
+          f:
+          assert !(hasInfix "'" f);
+          ''
+            if [ -f '${f}' ]; then
+              echo 'Found expected file ${f} in mavenProvides'
+            else
+              echo >&2 'Expected file ${f} does not exist in mavenProvides'
+              exit 1
+            fi
+          ''
+        ) xs;
       leafValues =
         set:
         builtins.concatLists (
