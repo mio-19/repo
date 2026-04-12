@@ -1,7 +1,7 @@
-diff --git a/app/src/main/java/org/breezyweather/BreezyWeather.kt b/app/src/main/java/org/breezyweather/BreezyWeather.kt
+diff --git a/app/src/main/kotlin/org/breezyweather/BreezyWeather.kt b/app/src/main/kotlin/org/breezyweather/BreezyWeather.kt
 index 991a5dd..830c898 100644
---- a/app/src/main/java/org/breezyweather/BreezyWeather.kt
-+++ b/app/src/main/java/org/breezyweather/BreezyWeather.kt
+--- a/app/src/main/kotlin/org/breezyweather/BreezyWeather.kt
++++ b/app/src/main/kotlin/org/breezyweather/BreezyWeather.kt
 @@ -30,7 +30,6 @@ import dagger.hilt.android.HiltAndroidApp
  import org.breezyweather.common.activities.BreezyActivity
  import org.breezyweather.common.extensions.uiModeManager
