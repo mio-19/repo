@@ -200,6 +200,7 @@
               gradle2nixPatched;
           };
 
+          # nix run github:mio-19/repo#gradle2nix
           packages.gradle2nix = gradle2nixPatched.packages.${system}.gradle2nix;
           packages.gradle2nixSrc = gradle2nixPatched.outPath;
           # nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json

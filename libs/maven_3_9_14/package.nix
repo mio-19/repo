@@ -51,6 +51,7 @@ maven_nixpkgs.overrideAttrs (
         ./mvn2nix-lock.json
         ./more.json
         (fromGradleLock ./more.lock)
+        # git clone https://github.com/diffplug/spotless.git && cd spotless && nix run github:mio-19/repo#gradle2nix
       ];
     };
     meta = prevAttrs.meta // {
