@@ -2620,11 +2620,6 @@
       "sha256": "28fc63720c4a5ff92bf0e358ed55a6f24626f35bccc13cc3e194231e158848f6",
       "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven/3.0/maven-3.0.pom"
     },
-    "org.apache.maven:maven:pom:3.9.14": {
-      "layout": "org/apache/maven/maven/3.9.14/maven-3.9.14.pom",
-      "sha256": "6f4bb954198678a528dfc8b2887a84cc3f54ae4a0b8b75c191fa28b04963e607",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven/3.9.14/maven-3.9.14.pom"
-    },
     "org.apache.rat:apache-rat-core:jar:0.16.1": {
       "layout": "org/apache/rat/apache-rat-core/0.16.1/apache-rat-core-0.16.1.jar",
       "sha256": "710620b3d2a14505e0a29885e4a8251ec0e525c617a12788f47c18cdd70fff4d",
@@ -4484,101 +4479,6 @@
       "layout": "xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.pom",
       "sha256": "7bc38e7a0f8ca20b0caed607e00cbb144dc8d006ebec4aa193f55dcf391bad50",
       "url": "https://repo.maven.apache.org/maven2/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.pom"
-    },
-    "org.apache.maven:maven-artifact:jar:3.9.14": {
-      "layout": "org/apache/maven/maven-artifact/3.9.14/maven-artifact-3.9.14.jar",
-      "sha256": "1effa70eacbf0aa4d94ad9c7b225be031ce4317fa07da59e23b02b3e4e1231a3",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-artifact/3.9.14/maven-artifact-3.9.14.jar"
-    },
-    "org.apache.maven:maven-builder-support:jar:3.9.14": {
-      "layout": "org/apache/maven/maven-builder-support/3.9.14/maven-builder-support-3.9.14.jar",
-      "sha256": "2109ff808046e4f8b356b1064060a3f224b0b0aad07ecceaf7696c3bdc0b2296",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-builder-support/3.9.14/maven-builder-support-3.9.14.jar"
-    },
-    "org.apache.maven:maven-compat:jar:3.9.14": {
-      "layout": "org/apache/maven/maven-compat/3.9.14/maven-compat-3.9.14.jar",
-      "sha256": "76887c2993185e368c0a67c628a0bdfbca8cf2100cda2bc9a8255f23db0c37bd",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-compat/3.9.14/maven-compat-3.9.14.jar"
-    },
-    "org.apache.maven:maven-core:jar:3.9.14": {
-      "layout": "org/apache/maven/maven-core/3.9.14/maven-core-3.9.14.jar",
-      "sha256": "db009d57b90a714efe86c81c7a518febb276d01ba3daf2f301e382f6560e8a58",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-core/3.9.14/maven-core-3.9.14.jar"
-    },
-    "org.apache.maven:maven-embedder:jar:3.9.14": {
-      "layout": "org/apache/maven/maven-embedder/3.9.14/maven-embedder-3.9.14.jar",
-      "sha256": "2e2f517d9835a7c57d6da98537f51983a2b016bfe4b0570074470f4ea32372c1",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-embedder/3.9.14/maven-embedder-3.9.14.jar"
-    },
-    "org.apache.maven:maven-model-builder:jar:3.9.14": {
-      "layout": "org/apache/maven/maven-model-builder/3.9.14/maven-model-builder-3.9.14.jar",
-      "sha256": "9a6f4deb11bd6fe3f8b11036ed46f34cded3b00fc638f242327537bfb53c9d3f",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-model-builder/3.9.14/maven-model-builder-3.9.14.jar"
-    },
-    "org.apache.maven:maven-model:jar:3.9.14": {
-      "layout": "org/apache/maven/maven-model/3.9.14/maven-model-3.9.14.jar",
-      "sha256": "684f573b1b37933c5d62c1c21d5da4335b049fb8b3d9754281597a38dbbc4044",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-model/3.9.14/maven-model-3.9.14.jar"
-    },
-    "org.apache.maven:maven-plugin-api:jar:3.9.14": {
-      "layout": "org/apache/maven/maven-plugin-api/3.9.14/maven-plugin-api-3.9.14.jar",
-      "sha256": "062445ef3ae988e245cca68ccec915de64703ec615badf2d9d61da9ee6f1a245",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-plugin-api/3.9.14/maven-plugin-api-3.9.14.jar"
-    },
-    "org.apache.maven:maven-repository-metadata:jar:3.9.14": {
-      "layout": "org/apache/maven/maven-repository-metadata/3.9.14/maven-repository-metadata-3.9.14.jar",
-      "sha256": "307e4920b17a8fdd764b556a7569de9bdd384d6b5f3f6a63dfb2ef186f02da2a",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-repository-metadata/3.9.14/maven-repository-metadata-3.9.14.jar"
-    },
-    "org.apache.maven:maven-resolver-provider:jar:3.9.14": {
-      "layout": "org/apache/maven/maven-resolver-provider/3.9.14/maven-resolver-provider-3.9.14.jar",
-      "sha256": "a5bc340ffe35325c55a01762feee374abb2a9e2b14191ea39c1ef646c2754f65",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-resolver-provider/3.9.14/maven-resolver-provider-3.9.14.jar"
-    },
-    "org.apache.maven:maven-settings-builder:jar:3.9.14": {
-      "layout": "org/apache/maven/maven-settings-builder/3.9.14/maven-settings-builder-3.9.14.jar",
-      "sha256": "1d3cf59f9dc6af77f7a1052aea598535b4f59926a9fe92cecce3ecfb5b91ff1f",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-settings-builder/3.9.14/maven-settings-builder-3.9.14.jar"
-    },
-    "org.apache.maven:maven-settings:jar:3.9.14": {
-      "layout": "org/apache/maven/maven-settings/3.9.14/maven-settings-3.9.14.jar",
-      "sha256": "0e5492e07136565b1ef72a981e99797999183e54f589e00aa608cbadc4cb9bda",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-settings/3.9.14/maven-settings-3.9.14.jar"
-    },
-    "org.apache.maven:maven-slf4j-provider:jar:3.9.14": {
-      "layout": "org/apache/maven/maven-slf4j-provider/3.9.14/maven-slf4j-provider-3.9.14.jar",
-      "sha256": "10b647e02f84454c150b067811b57b5beae60a2bf72ac764009aff57db1b95cb",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-slf4j-provider/3.9.14/maven-slf4j-provider-3.9.14.jar"
-    },
-    "org.apache.maven:maven-artifact:pom:3.9.14": {
-      "layout": "org/apache/maven/maven-artifact/3.9.14/maven-artifact-3.9.14.pom",
-      "sha256": "e668c936d22fd2c11edff52eac72c6e7fc13ba57c949096048be8debf0f9ffd2",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-artifact/3.9.14/maven-artifact-3.9.14.pom"
-    },
-    "org.apache.maven:maven-builder-support:pom:3.9.14": {
-      "layout": "org/apache/maven/maven-builder-support/3.9.14/maven-builder-support-3.9.14.pom",
-      "sha256": "6ed1ab2a239c5954b074dd8b75e70dbba55866840e73c53ae8b1f99a35afb7b5",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-builder-support/3.9.14/maven-builder-support-3.9.14.pom"
-    },
-    "org.apache.maven:maven-compat:pom:3.9.14": {
-      "layout": "org/apache/maven/maven-compat/3.9.14/maven-compat-3.9.14.pom",
-      "sha256": "971473ce7d355d0b007bf888c162e50209f81ca79d4230d0a7c284b1a8ae076d",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-compat/3.9.14/maven-compat-3.9.14.pom"
-    },
-    "org.apache.maven:maven-core:pom:3.9.14": {
-      "layout": "org/apache/maven/maven-core/3.9.14/maven-core-3.9.14.pom",
-      "sha256": "a7967fb392197e5fa73c7b7c3fb728f77fc50f4ad7f03679c0bbabee5c0132b3",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-core/3.9.14/maven-core-3.9.14.pom"
-    },
-    "org.apache.maven:maven-embedder:pom:3.9.14": {
-      "layout": "org/apache/maven/maven-embedder/3.9.14/maven-embedder-3.9.14.pom",
-      "sha256": "e404a5822851adba218212499470e696e46ee8133bdbd979da32753e39ea5f66",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-embedder/3.9.14/maven-embedder-3.9.14.pom"
-    },
-    "org.apache.maven:maven-model-builder:pom:3.9.14": {
-      "layout": "org/apache/maven/maven-model-builder/3.9.14/maven-model-builder-3.9.14.pom",
-      "sha256": "7548856c413b3ef5f3d35c2e812beae847dd21809f8e5d3621d5da2d7bdcfe6f",
-      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/maven-model-builder/3.9.14/maven-model-builder-3.9.14.pom"
     },
     "org.apache.maven:maven-model:jar:2.2.1": {
       "layout": "org/apache/maven/maven-model/2.2.1/maven-model-2.2.1.jar",
