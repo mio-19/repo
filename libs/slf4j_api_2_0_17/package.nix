@@ -2,9 +2,11 @@
   fetchFromGitHub,
   lib,
   mkMavenPackageWithLock,
+  maven_nixpkgs,
 }:
 
 mkMavenPackageWithLock rec {
+  maven = maven_nixpkgs;
   pname = "slf4j-api";
   version = "2.0.17";
 
