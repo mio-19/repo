@@ -1,4 +1,4 @@
-pkgs@{
+{
   buildMavenRepositoryFromLockFile,
   jdk17_headless,
   stdenv,
@@ -17,7 +17,6 @@ pkgs@{
   sourceRoot ? null,
   mvnJdk ? jdk17_headless,
   mvnFlags ? [ "package" ],
-  maven ? pkgs.maven,
 }:
 let
   mavenRepository = buildMavenRepositoryFromLockFile { file = lockFile; };

@@ -47,7 +47,6 @@ maven_nixpkgs.overrideAttrs (
         # $ nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json
         ./mvn2nix-lock.json
       ];
-      inherit maven_nixpkgs;
     };
     meta = prevAttrs.meta // {
       mavenProvides = exposeMavenProvides finalAttrs;
