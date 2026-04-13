@@ -68,6 +68,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.utils.follows = "flake-utils";
     };
+    squish-find-the-brains = {
+      url = "github:7mind/squish-find-the-brains";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
   };
 
   outputs =
@@ -171,13 +176,24 @@
           selfPackages = self.packages."${system}";
           selfLegacyPackages = self.legacyPackages."${system}";
           inherit (pkgsPatched) lib stdenv;
+          squish-find-the-brains =
+            (import "${inputs.squish-find-the-brains}/flake.nix").outputs (
+              inputs.squish-find-the-brains.inputs
+              // {
+                self = squish-find-the-brains;
+                inherit nixpkgs;
+              }
+            )
+            // {
+              inherit (inputs.squish-find-the-brains) outPath;
+            };
         in
         let
           pkgs = pkgsPatched;
         in
         {
           _module.args = {
-            inherit pkgsPatched;
+            inherit pkgsPatched squish-find-the-brains;
             gradle2nixPatched =
               assert pkgsPatched.mitm-cache.fetch == selfLegacyPackages.mitm-cache-fetch;
               assert pkgsPatched.mitm-cache.fetch == pkgsPatched.mitm-cache.passthru.fetch;
