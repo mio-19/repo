@@ -1,6 +1,6 @@
 # maven
 
-## remove .asc
+## remove .asc for gradle.lock
 ```
 jq 'walk(
   if type == "object"
@@ -23,6 +23,11 @@ jq 'walk(
   then with_entries(select(.key | endswith(".aar") | not))
   else .
   end
+)'
+```
+```
+jq 'map_values(
+  with_entries(select(.key | endswith(".jar") or endswith(".pom")))
 )'
 ```
 ## a
