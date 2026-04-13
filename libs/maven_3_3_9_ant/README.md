@@ -9,4 +9,4 @@ find . -type f -name '*.xml' -exec sed -i 's|http://repo1\.maven\.org/maven2|htt
 ant -Dmaven.home="$PWD/out/apache-maven-3.3.9"
 ```
 
-use ../maven_3_3_9_mvn/m2.py
+use ../maven_3_3_9/m2.py

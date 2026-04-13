@@ -10,7 +10,7 @@
   ant,
 }:
 let
-  maven_nixpkgs = callPackage ../maven_3_3_9_mvn/nixpkgs.nix { };
+  maven_nixpkgs = callPackage ../maven_3_3_9/nixpkgs.nix { };
   inherit (libsUtils) checkMavenProvides exposeMavenProvides;
   inherit (buildMavenRepositoryFromLockFile.passthru) mergeDeps readDeps;
 
@@ -59,7 +59,7 @@ maven_nixpkgs.overrideAttrs (
     passthru = prevAttrs.passthru // {
       mavenDeps = mergeDeps [
         ./more.json
-        ../maven_3_3_9_mvn/linux-m2.json
+        ../maven_3_3_9/linux-m2.json
       ];
     };
   }
