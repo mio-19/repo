@@ -28,3 +28,13 @@ jq -s '
   }
 ' ./dependencies-lock.json ./*/dependencies-lock.json > merged-dependencies.json
 ```
+
+## from .m2
+
+```
+rm -fr ~/.m2
+nix-shell -p jdk8 maven
+mvn -DskipITs -Dcpd.skip=true -Dpmd.skip=true -Dcheckstyle.skip=true -DskipTests -Dmaven.test.skip=true -Dspotless.apply.skip=true -Dspotless.check.skip=true -Drat.skip=true -Denforcer.skip=true package
+```
+
+use m2.py
