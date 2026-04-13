@@ -1,5 +1,5 @@
 {
-  maven_3_3_9,
+  maven_3_6_3,
   fetchFromGitHub,
   buildMavenRepositoryFromLockFile,
   jdk11_headless,
@@ -7,7 +7,7 @@
 let
   inherit (buildMavenRepositoryFromLockFile.passthru) mergeDeps fromGradleLock;
 in
-maven_3_3_9.overrideAttrs (
+maven_3_6_3.overrideAttrs (
   finalAttrs: prevAttrs: {
     version = "3.9.14";
     src = fetchFromGitHub {
@@ -16,7 +16,7 @@ maven_3_3_9.overrideAttrs (
       tag = "maven-${finalAttrs.version}";
       hash = "sha256-fCqLWXxCznnD8bzHHaBWD7r0yb3mKu+5ApxpqYP42tg=";
     };
-    #bootstrapMaven = maven_3_3_9; # TODO
+    bootstrapMaven = maven_3_6_3;
     jdk = jdk11_headless;
     passthru = prevAttrs.passthru // {
       # also run jq -S '.' on them.

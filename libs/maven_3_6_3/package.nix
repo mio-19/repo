@@ -5,7 +5,7 @@
   jdk11_headless,
 }:
 let
-  inherit (buildMavenRepositoryFromLockFile.passthru) mergeDeps fromGradleLock;
+  inherit (buildMavenRepositoryFromLockFile.passthru) mergeDeps;
 in
 maven_3_3_9.overrideAttrs (
   finalAttrs: prevAttrs: {
