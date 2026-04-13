@@ -66,7 +66,7 @@ let
                 // lib.optionalAttrs (dependency ? sha256) {
                   sha256 = dependency.sha256;
                 }
-                // lib.optionalAttrs (dependency ? hash) {
+                // lib.optionalAttrs (!(dependency ? sha256) && (dependency ? hash)) {
                   hash = dependency.hash;
                 }
               );
