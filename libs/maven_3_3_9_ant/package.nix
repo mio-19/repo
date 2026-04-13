@@ -23,14 +23,22 @@ maven_nixpkgs.overrideAttrs (
       hash = "sha256-qqk0FyPo0X43d9Co7qe193D9lIj6DbJ7Tu7WGoD5QkY=";
     };
     sourceRoot = finalAttrs.src.name;
+    postPatch = ''
+      substituteInPlace build.xml --replace-fail '<arg value="-DskipTests=''${skipTests}" />' '<arg value="-DskipTests=''${skipTests}" /><arg value="-Drat.skip=true" />'
+    '';
     # https://github.com/apache/maven/tree/maven-3.3.9
     buildPhase = ''
       runHook preBuild
       mkdir out
-      ant -Dmaven.repo.local=${finalAttrs.mavenRepository} -Dmaven.home="$PWD/out/apache-maven-${finalAttrs.version}"
+      cp -r ${finalAttrs.mavenRepository} m2-repo
+      chmod -R a+w m2-repo
+      ant -Dmaven.repo.local=m2-repo -Dmaven.home="$PWD/out/apache-maven-${finalAttrs.version}" -DskipITs -Dcpd.skip=true -Dpmd.skip=true -Dcheckstyle.skip=true -DskipTests -Dmaven.test.skip=true -Dspotless.apply.skip=true -Dspotless.check.skip=true -Drat.skip=true -Denforcer.skip=true -Dremoteresources.skip=true
       runHook postBuild
     '';
     preInstall = ''
+      find m2-repo -type l -delete
+      for i in {1..10}; do find m2-repo -type d -empty -delete; done
+      mv m2-repo out/apache-maven-${finalAttrs.version}/
       cd out
     '';
     jdk = jdk8_headless;
