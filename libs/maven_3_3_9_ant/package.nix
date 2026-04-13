@@ -3,21 +3,16 @@
   fetchFromGitHub,
   buildMavenRepositoryFromLockFile,
   buildMavenRepository,
-  libsUtils,
   jdk8_headless,
-  lib,
-  stdenv,
   ant,
 }:
 let
   maven_nixpkgs = callPackage ../maven_3_3_9/nixpkgs.nix { };
-  inherit (libsUtils) checkMavenProvides exposeMavenProvides;
   inherit (buildMavenRepositoryFromLockFile.passthru) mergeDeps readDeps;
-
-  postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
 in
 maven_nixpkgs.overrideAttrs (
   finalAttrs: prevAttrs: {
+    pname = "maven-bootstrap";
     version = "3.3.9";
     src = fetchFromGitHub {
       owner = "apache";
@@ -53,7 +48,7 @@ maven_nixpkgs.overrideAttrs (
       ant
     ];
     env = {
-      JAVA_HOME = finalAttrs.jdk + postfix;
+      JAVA_HOME = finalAttrs.jdk;
     };
     mavenRepository = buildMavenRepository { dependencies = readDeps finalAttrs.passthru.mavenDeps; };
     passthru = prevAttrs.passthru // {
