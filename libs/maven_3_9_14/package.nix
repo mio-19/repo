@@ -36,12 +36,12 @@ maven_nixpkgs.overrideAttrs (
     '';
     bootstrapMaven = maven_nixpkgs;
     nativeBuildInputs = prevAttrs.nativeBuildInputs ++ [ finalAttrs.bootstrapMaven ];
-    mavenRepository = buildMavenRepository { dependencies = finalAttrs.passthru.mavenDependencies; };
+    mavenRepository = buildMavenRepository { dependencies = finalAttrs.passthru.mavenDeps; };
     doInstallCheck = true;
     installCheckPhase = checkMavenProvides finalAttrs;
     passthru = prevAttrs.passthru // {
       # also run jq -S '.' on them.
-      mavenDependencies = mergeDeps [
+      mavenDeps = mergeDeps [
         # on darwin $ nix run github:mio-19/repo#mvn2nix -- --goals install > mvn2nix-lock.json ; manual edit to remove apache-maven-3.9.14 maven-artifact-3.9.14 and other maven*-3.9.14
         # on darwin $ nix run github:mio-19/repo#mvn2nix -- --goals dependency:resolve > mvn2nix-lock-resolve.json  # merge with jq -s 'reduce .[] as $item ({}; . * $item)'
         # on darwin cd apache-maven && nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json

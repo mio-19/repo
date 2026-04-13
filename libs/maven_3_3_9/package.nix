@@ -36,12 +36,12 @@ maven_nixpkgs.overrideAttrs (
     '';
     bootstrapMaven = maven_nixpkgs;
     nativeBuildInputs = prevAttrs.nativeBuildInputs ++ [ finalAttrs.bootstrapMaven ];
-    mavenRepository = buildMavenRepository { dependencies = finalAttrs.passthru.mavenDependencies; };
+    mavenRepository = buildMavenRepository { dependencies = finalAttrs.passthru.mavenDeps; };
     doInstallCheck = true;
     installCheckPhase = checkMavenProvides finalAttrs;
     passthru = prevAttrs.passthru // {
       # also run jq -S '.' on them.
-      mavenDependencies = mergeDeps [
+      mavenDeps = mergeDeps [
         # on darwin:
         # $ nix-shell -p jdk8
         # $ nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json

@@ -2,8 +2,12 @@
   fetchFromGitHub,
   lib,
   mkMavenPackageWithLock,
+  buildMavenRepositoryFromLockFile,
+  maven,
 }:
-
+let
+  inherit (buildMavenRepositoryFromLockFile.passthru) mergeDeps;
+in
 mkMavenPackageWithLock rec {
   pname = "slf4j-api";
   version = "2.0.17";
@@ -15,7 +19,10 @@ mkMavenPackageWithLock rec {
     hash = "sha256-MOAIvzVPxFv9Nfov4Ych774urZ0v9emscKqwIGI/3Ik=";
   };
 
-  lockFile = ./mvn2nix-lock.json;
+  lockFile = mergeDeps [
+    maven.passthru.mavenDeps
+    ./mvn2nix-lock.json
+  ];
   mvnFlags = [
     "-pl"
     "slf4j-api"
