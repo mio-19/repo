@@ -60,31 +60,6 @@
       "sha256": "02c12c3c2ae12dd475219ff691c82a4d9ea21f44bc594a181295bf6d43dcfbb0",
       "url": "https://repo.maven.apache.org/maven2/com/google/code/findbugs/jsr305/2.0.1/jsr305-2.0.1.pom"
     },
-    "com.google.guava:guava-parent:pom:10.0.1": {
-      "layout": "com/google/guava/guava-parent/10.0.1/guava-parent-10.0.1.pom",
-      "sha256": "a3a4ec4c42839308905126340a882a7f37e7e124843ae8f5ea832e1aad9661ba",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/10.0.1/guava-parent-10.0.1.pom"
-    },
-    "com.google.guava:guava-parent:pom:16.0.1": {
-      "layout": "com/google/guava/guava-parent/16.0.1/guava-parent-16.0.1.pom",
-      "sha256": "2c98892cbf7c606b91b4f0f0d1d91da26746bbf5f8595626f5b4d6a5a1914824",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/16.0.1/guava-parent-16.0.1.pom"
-    },
-    "com.google.guava:guava:jar:10.0.1": {
-      "layout": "com/google/guava/guava/10.0.1/guava-10.0.1.jar",
-      "sha256": "7d228a16b9cd0d78ac7cc1a45cd6b65c9423c32c5e26f99f9bd2577d37396baa",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/10.0.1/guava-10.0.1.jar"
-    },
-    "com.google.guava:guava:pom:10.0.1": {
-      "layout": "com/google/guava/guava/10.0.1/guava-10.0.1.pom",
-      "sha256": "66004371bf79dd1ee82716097e2d6a7245a95baf75f90cb80e0689412b26f921",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/10.0.1/guava-10.0.1.pom"
-    },
-    "com.google.guava:guava:pom:16.0.1": {
-      "layout": "com/google/guava/guava/16.0.1/guava-16.0.1.pom",
-      "sha256": "c676575845fc8ad6dcfeca0827f405066a140f5fa5434715598179c8ba1c0817",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/16.0.1/guava-16.0.1.pom"
-    },
     "com.jcraft:jsch.agentproxy.connector-factory:jar:0.0.6": {
       "layout": "com/jcraft/jsch.agentproxy.connector-factory/0.0.6/jsch.agentproxy.connector-factory-0.0.6.jar",
       "sha256": "42e02cd0d06df309c241a30e1628152373c1f76588db8a42acbaf8c1cb6ddead",
@@ -3000,111 +2975,6 @@
       "sha256": "93fa984c787d076545a275e1c9054218011d0ce4d0ecd6f5e4acac480496f80f",
       "url": "https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_type_annotations/2.27.0/error_prone_type_annotations-2.27.0.pom"
     },
-    "com.google.guava:failureaccess:jar:1.0.1": {
-      "layout": "com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar",
-      "sha256": "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar"
-    },
-    "com.google.guava:failureaccess:jar:1.0.2": {
-      "layout": "com/google/guava/failureaccess/1.0.2/failureaccess-1.0.2.jar",
-      "sha256": "8a8f81cf9b359e3f6dfa691a1e776985c061ef2f223c9b2c80753e1b458e8064",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.2/failureaccess-1.0.2.jar"
-    },
-    "com.google.guava:failureaccess:pom:1.0.1": {
-      "layout": "com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.pom",
-      "sha256": "e96042ce78fecba0da2be964522947c87b40a291b5fd3cd672a434924103c4b9",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.pom"
-    },
-    "com.google.guava:failureaccess:pom:1.0.2": {
-      "layout": "com/google/guava/failureaccess/1.0.2/failureaccess-1.0.2.pom",
-      "sha256": "19ebc6f4bdb4edbb3d07b6ee994f846b54ef295582a9b5634719ffa9f31d03b2",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.2/failureaccess-1.0.2.pom"
-    },
-    "com.google.guava:guava-parent:pom:26.0-android": {
-      "layout": "com/google/guava/guava-parent/26.0-android/guava-parent-26.0-android.pom",
-      "sha256": "f8698ab46ca996ce889c1afc8ca4f25eb8ac6b034dc898d4583742360016cc04",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/26.0-android/guava-parent-26.0-android.pom"
-    },
-    "com.google.guava:guava-parent:pom:30.1-jre": {
-      "layout": "com/google/guava/guava-parent/30.1-jre/guava-parent-30.1-jre.pom",
-      "sha256": "e2afb747ebc4fe2328d6a90fa88c5d8a83bb1e32061bb9b10ff43e2c47ad6e73",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/30.1-jre/guava-parent-30.1-jre.pom"
-    },
-    "com.google.guava:guava-parent:pom:32.0.1-jre": {
-      "layout": "com/google/guava/guava-parent/32.0.1-jre/guava-parent-32.0.1-jre.pom",
-      "sha256": "43ed0e36b353f41e5eb75cd756667c9e2df97cef06eb16066967158a1d034d2a",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/32.0.1-jre/guava-parent-32.0.1-jre.pom"
-    },
-    "com.google.guava:guava-parent:pom:32.1.1-jre": {
-      "layout": "com/google/guava/guava-parent/32.1.1-jre/guava-parent-32.1.1-jre.pom",
-      "sha256": "06aa5d1ac068f2f809530f3ff53fb5c8c940152a253623d0b53c4f53f5a13a3d",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/32.1.1-jre/guava-parent-32.1.1-jre.pom"
-    },
-    "com.google.guava:guava-parent:pom:33.0.0-android": {
-      "layout": "com/google/guava/guava-parent/33.0.0-android/guava-parent-33.0.0-android.pom",
-      "sha256": "5af483b78c49de78c49faedd2a58752784a44c8363f5e25e52e297814c09177a",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/33.0.0-android/guava-parent-33.0.0-android.pom"
-    },
-    "com.google.guava:guava-parent:pom:33.1.0-jre": {
-      "layout": "com/google/guava/guava-parent/33.1.0-jre/guava-parent-33.1.0-jre.pom",
-      "sha256": "0fbdf072cca8e056ba31542bb75f0c1490914400586d4ba422ecfc7d1dfc79c6",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/33.1.0-jre/guava-parent-33.1.0-jre.pom"
-    },
-    "com.google.guava:guava-testlib:jar:33.1.0-jre": {
-      "layout": "com/google/guava/guava-testlib/33.1.0-jre/guava-testlib-33.1.0-jre.jar",
-      "sha256": "c6db640756049bc74b0da621687da4e977d47a20ae37814668c5bf8c6a50a203",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava-testlib/33.1.0-jre/guava-testlib-33.1.0-jre.jar"
-    },
-    "com.google.guava:guava-testlib:pom:33.1.0-jre": {
-      "layout": "com/google/guava/guava-testlib/33.1.0-jre/guava-testlib-33.1.0-jre.pom",
-      "sha256": "e6ca6a1ab5bf023ce7ef1828def98a8903ff697b789159412bffc909c794d46b",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava-testlib/33.1.0-jre/guava-testlib-33.1.0-jre.pom"
-    },
-    "com.google.guava:guava:jar:32.1.1-jre": {
-      "layout": "com/google/guava/guava/32.1.1-jre/guava-32.1.1-jre.jar",
-      "sha256": "91fbba37f1c8b251cf9ea9e7d3a369eb79eb1e6a5df1d4bbf483dd0380740281",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/32.1.1-jre/guava-32.1.1-jre.jar"
-    },
-    "com.google.guava:guava:jar:33.0.0-android": {
-      "layout": "com/google/guava/guava/33.0.0-android/guava-33.0.0-android.jar",
-      "sha256": "640535014a304c50221abad19d6b22a096f13119c7c447a655cc1e009a32208d",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/33.0.0-android/guava-33.0.0-android.jar"
-    },
-    "com.google.guava:guava:pom:30.1-jre": {
-      "layout": "com/google/guava/guava/30.1-jre/guava-30.1-jre.pom",
-      "sha256": "9646d4cd50094d4abe507e555d3f76d77e34a4c5566b22fb130ef55d4ebbe927",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/30.1-jre/guava-30.1-jre.pom"
-    },
-    "com.google.guava:guava:pom:32.0.1-jre": {
-      "layout": "com/google/guava/guava/32.0.1-jre/guava-32.0.1-jre.pom",
-      "sha256": "42c257f7f736d377b31afeeee978ab26d730cd70af60dde7662e182352e2482a",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/32.0.1-jre/guava-32.0.1-jre.pom"
-    },
-    "com.google.guava:guava:pom:32.1.1-jre": {
-      "layout": "com/google/guava/guava/32.1.1-jre/guava-32.1.1-jre.pom",
-      "sha256": "2c9071d7d1522b0c762057c34e8b9bfae39927a0eb755c36aa76519721870d7b",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/32.1.1-jre/guava-32.1.1-jre.pom"
-    },
-    "com.google.guava:guava:pom:33.0.0-android": {
-      "layout": "com/google/guava/guava/33.0.0-android/guava-33.0.0-android.pom",
-      "sha256": "d11ef66b08c8012ff7682e0b0bcb72932932470a509d7252803fc621e2c965f6",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/33.0.0-android/guava-33.0.0-android.pom"
-    },
-    "com.google.guava:guava:pom:33.1.0-jre": {
-      "layout": "com/google/guava/guava/33.1.0-jre/guava-33.1.0-jre.pom",
-      "sha256": "55741ad16f98cee6e6dc0adddd438069cc5e3ff29a26e3175d4fea28769254b7",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/33.1.0-jre/guava-33.1.0-jre.pom"
-    },
-    "com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava": {
-      "layout": "com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
-      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar"
-    },
-    "com.google.guava:listenablefuture:pom:9999.0-empty-to-avoid-conflict-with-guava": {
-      "layout": "com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.pom",
-      "sha256": "18d4b1db26153d4e55079ce1f76bb1fe05cdb862ef9954a88cbcc4ff38b8679b",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.pom"
-    },
     "com.google.inject:guice-parent:pom:5.1.0": {
       "layout": "com/google/inject/guice-parent/5.1.0/guice-parent-5.1.0.pom",
       "sha256": "63d5c0c641797deba6c051c47d5f6923f3a103ef71e4ebc3a85d01c3e878596c",
@@ -4859,16 +4729,6 @@
       "layout": "com/google/errorprone/error_prone_parent/2.11.0/error_prone_parent-2.11.0.pom",
       "sha256": "8283f0cb44c624a79d330b6fd80b8b8a715a68b3685c9a951c3de837d4540551",
       "url": "https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.11.0/error_prone_parent-2.11.0.pom"
-    },
-    "com.google.guava:guava-parent:pom:30.1-android": {
-      "layout": "com/google/guava/guava-parent/30.1-android/guava-parent-30.1-android.pom",
-      "sha256": "e99bc62d55a56407c4dddc1785220914a535fbd91f9cdc68b5cc871d5670ae8f",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/30.1-android/guava-parent-30.1-android.pom"
-    },
-    "com.google.guava:guava:pom:30.1-android": {
-      "layout": "com/google/guava/guava/30.1-android/guava-30.1-android.pom",
-      "sha256": "47cc477e2fbe7075260fc01c53b0f8eab4a8ec0367421c9a2cfd9c17d55f6ea4",
-      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/30.1-android/guava-30.1-android.pom"
     },
     "com.google.inject.extensions:extensions-parent:pom:3.0": {
       "layout": "com/google/inject/extensions/extensions-parent/3.0/extensions-parent-3.0.pom",
