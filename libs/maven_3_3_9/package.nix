@@ -17,13 +17,6 @@ maven_nixpkgs.overrideAttrs (
   finalAttrs: prevAttrs:
   let
     useDistributionTargetDir = lib.strings.compareVersions finalAttrs.version "3.3.9" > 0;
-    extraFlags =
-      lib.optionals (lib.strings.compareVersions finalAttrs.version "3.3.9" <= 0) [
-        "-Dremoteresources.skip=true"
-      ]
-      ++ lib.optionals useDistributionTargetDir [
-        ''-DdistributionTargetDir="out/apache-maven-${finalAttrs.version}"''
-      ];
   in
   {
     version = "3.3.9";
@@ -34,12 +27,19 @@ maven_nixpkgs.overrideAttrs (
       hash = "sha256-qqk0FyPo0X43d9Co7qe193D9lIj6DbJ7Tu7WGoD5QkY=";
     };
     sourceRoot = finalAttrs.src.name;
+    extraFlags =
+      lib.optionals (lib.strings.compareVersions finalAttrs.version "3.3.9" <= 0) [
+        "-Dremoteresources.skip=true"
+      ]
+      ++ lib.optionals useDistributionTargetDir [
+        ''-DdistributionTargetDir="out/apache-maven-${finalAttrs.version}"''
+      ];
     # https://maven.apache.org/guides/development/guide-building-maven.html
     buildPhase = ''
       runHook preBuild
       cp -r ${finalAttrs.mavenRepository} m2-repo
       chmod -R a+w m2-repo
-      mvn --offline -Dmaven.repo.local=m2-repo -DskipITs -Dcpd.skip=true -Dpmd.skip=true -Dcheckstyle.skip=true -DskipTests -Dmaven.test.skip=true -Dspotless.apply.skip=true -Dspotless.skip=true -Dspotless.check.skip=true -Dmaven.javadoc.skip=true -Drat.skip=true -Denforcer.skip=true ${builtins.concatStringsSep " " extraFlags} install
+      mvn --offline -Dmaven.repo.local=m2-repo -DskipITs -Dcpd.skip=true -Dpmd.skip=true -Dcheckstyle.skip=true -DskipTests -Dmaven.test.skip=true -Dspotless.apply.skip=true -Dspotless.skip=true -Dspotless.check.skip=true -Dmaven.javadoc.skip=true -Drat.skip=true -Denforcer.skip=true ${builtins.concatStringsSep " " finalAttrs.extraFlags} install
       runHook postBuild
     '';
     preInstall =

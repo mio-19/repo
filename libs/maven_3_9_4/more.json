@@ -60,6 +60,11 @@
       "sha256": "b144cff9b1c6259fec4fee5bdfc0f360d69c23abd4ea6e544533a949b69e3582",
       "url": "https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.4.1/plexus-utils-3.4.1.pom"
     },
+    "org.eclipse.jgit-parent-6.5.0.202303070854-r.pom": {
+      "layout": "org/eclipse/jgit/org.eclipse.jgit-parent/6.5.0.202303070854-r/org.eclipse.jgit-parent-6.5.0.202303070854-r.pom",
+      "url": "https://plugins.gradle.org/m2/org/eclipse/jgit/org.eclipse.jgit-parent/6.5.0.202303070854-r/org.eclipse.jgit-parent-6.5.0.202303070854-r.pom",
+      "sha256": "d7cdbb0ad6bb5dc6576513cb0e4b43edd967f826017f7f2f555923477d108685"
+    },
     "org.eclipse.jgit:org.eclipse.jgit:jar:6.5.0.202303070854-r": {
       "layout": "org/eclipse/jgit/org.eclipse.jgit/6.5.0.202303070854-r/org.eclipse.jgit-6.5.0.202303070854-r.jar",
       "sha256": "9b4da8cde1651fa7a9f4d242585fe94343d40165e4c06ad5a722044a2cbe6251",
@@ -162,18 +167,63 @@
     },
     "org.jetbrains.kotlin:kotlin-stdlib-common:jar:1.5.31": {
       "layout": "org/jetbrains/kotlin/kotlin-stdlib-common/1.5.31/kotlin-stdlib-common-1.5.31.jar",
-      "sha256": "dfa2a18e26b028388ee1968d199bf6f166f737ab7049c25a5e2da614404e22ad",
-      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.5.31/kotlin-stdlib-common-1.5.31.jar"
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.5.31/kotlin-stdlib-common-1.5.31.jar",
+      "sha256": "dfa2a18e26b028388ee1968d199bf6f166f737ab7049c25a5e2da614404e22ad"
     },
     "org.jetbrains.kotlin:kotlin-stdlib-common:jar:1.6.20": {
       "layout": "org/jetbrains/kotlin/kotlin-stdlib-common/1.6.20/kotlin-stdlib-common-1.6.20.jar",
-      "sha256": "8da40a2520d30dcb1012176fe93d24e82d08a3e346c37e0343b0fb6f64f6be01",
-      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.6.20/kotlin-stdlib-common-1.6.20.jar"
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.6.20/kotlin-stdlib-common-1.6.20.jar",
+      "sha256": "8da40a2520d30dcb1012176fe93d24e82d08a3e346c37e0343b0fb6f64f6be01"
     },
     "org.jetbrains:annotations:jar:13.0": {
       "layout": "org/jetbrains/annotations/13.0/annotations-13.0.jar",
-      "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
-      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/annotations/13.0/annotations-13.0.jar"
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/annotations/13.0/annotations-13.0.jar",
+      "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
+    },
+    "org.jetbrains.kotlin:kotlin-stdlib:jar:1.5.31": {
+      "layout": "org/jetbrains/kotlin/kotlin-stdlib/1.5.31/kotlin-stdlib-1.5.31.jar",
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.5.31/kotlin-stdlib-1.5.31.jar",
+      "sha256": "4800ceacb2ec0bb9959a087154b8e35318ead1ea4eba32d4bb1b9734222a7e68"
+    },
+    "org.jetbrains.kotlin:kotlin-stdlib:pom:1.5.31": {
+      "layout": "org/jetbrains/kotlin/kotlin-stdlib/1.5.31/kotlin-stdlib-1.5.31.pom",
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.5.31/kotlin-stdlib-1.5.31.pom",
+      "sha256": "8f76760104ac4e873009c9f033dd1bad75b9d3b8f9521d63db1264d844852e6c"
+    },
+    "org.jetbrains.kotlin:kotlin-stdlib-jdk7:jar:1.5.31": {
+      "layout": "org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.5.31/kotlin-stdlib-jdk7-1.5.31.jar",
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.5.31/kotlin-stdlib-jdk7-1.5.31.jar",
+      "sha256": "a25bf47353ce899d843cbddee516d621a73473e7fba97f8d0301e7b4aed7c15f"
+    },
+    "org.jetbrains.kotlin:kotlin-stdlib-jdk7:pom:1.5.31": {
+      "layout": "org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.5.31/kotlin-stdlib-jdk7-1.5.31.pom",
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.5.31/kotlin-stdlib-jdk7-1.5.31.pom",
+      "sha256": "23138489ee293a68197068877745f700bfa11af989187bed3c3074cd8c079778"
+    },
+    "org.jetbrains.kotlin:kotlin-stdlib-common:pom:1.5.31": {
+      "layout": "org/jetbrains/kotlin/kotlin-stdlib-common/1.5.31/kotlin-stdlib-common-1.5.31.pom",
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.5.31/kotlin-stdlib-common-1.5.31.pom",
+      "sha256": "b615e946b8c3d2bea99652ecda97d57ecf83bf5f34c65d286790af23e51283c2"
+    },
+    "org.jetbrains.kotlin:kotlin-stdlib-common:pom:1.6.20": {
+      "layout": "org/jetbrains/kotlin/kotlin-stdlib-common/1.6.20/kotlin-stdlib-common-1.6.20.pom",
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib-common/1.6.20/kotlin-stdlib-common-1.6.20.pom",
+      "sha256": "3e04cc9351d5cec42a45c060f8733f6e94ebc7e3591310a518e06e88507899c8"
+    },
+    "org.jetbrains:annotations:pom:13.0": {
+      "layout": "org/jetbrains/annotations/13.0/annotations-13.0.pom",
+      "url": "https://repo.maven.apache.org/maven2/org/jetbrains/annotations/13.0/annotations-13.0.pom",
+      "sha256": "965aeb2bedff369819bdde1bf7a0b3b89b8247dd69c88b86375d76163bb8c397"
+    },
+    "com.googlecode.javaewah:JavaEWAH:jar:1.1.13": {
+      "layout": "com/googlecode/javaewah/JavaEWAH/1.1.13/JavaEWAH-1.1.13.jar",
+      "sha256": "4c0fda2b1d317750d7ea324e36c70b2bc48310c0aaae67b98df0915d696d7111",
+      "url": "https://repo.maven.apache.org/maven2/com/googlecode/javaewah/JavaEWAH/1.1.13/JavaEWAH-1.1.13.jar"
+    },
+    "com.googlecode.javaewah:JavaEWAH:pom:1.1.13": {
+      "layout": "com/googlecode/javaewah/JavaEWAH/1.1.13/JavaEWAH-1.1.13.pom",
+      "sha256": "9725b1fe9c6810d977750bb84415ea1082c4b488d4a839f9704bb4f5e8fc17f4",
+      "url": "https://repo.maven.apache.org/maven2/com/googlecode/javaewah/JavaEWAH/1.1.13/JavaEWAH-1.1.13.pom"
     }
   }
 }
