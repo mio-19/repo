@@ -203,7 +203,6 @@
                 apk_joplin
                 apk_meditrak
                 apk_sunup
-                apk_forkgram.signScript
               ]
               ++ lib.optionals stdenv.isLinux [
                 apk_nix-on-droid
@@ -222,6 +221,7 @@
                 apk_pdfviewer
                 apk_gamenative
                 apk_droidspaces
+                apk_forkgram.signScript
               ]
               ++ lib.optionals stdenv.isLinux [
                 apk_immich
