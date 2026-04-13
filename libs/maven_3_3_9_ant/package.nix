@@ -27,7 +27,10 @@ maven_nixpkgs.overrideAttrs (
     };
     sourceRoot = finalAttrs.src.name;
     postPatch = ''
-      substituteInPlace build.xml --replace-fail '<arg value="-DskipTests=''${skipTests}" />' '<arg value="-DskipTests=''${skipTests}" /><arg value="-Drat.skip=true" />'
+      substituteInPlace build.xml --replace-fail '<arg value="-DskipTests=''${skipTests}" />' '<arg value="-DskipTests=''${skipTests}" /><arg value="-Drat.skip=true" /><arg value="-Denforcer.skip=true" /><arg value="-Dremoteresources.skip=true" />'
+      substituteInPlace build.xml \
+      --replace-fail '<java fork="''${maven-compile.fork}" classname="org.apache.maven.cli.MavenCli" failonerror="true" timeout="600000"  maxmemory="''${maven-compile.maxmemory}">' \
+                     '<java fork="''${maven-compile.fork}" jvm="${finalAttrs.env.JAVA_HOME}/bin/java" classname="org.apache.maven.cli.MavenCli" failonerror="true" timeout="600000"  maxmemory="''${maven-compile.maxmemory}">'
     '';
     # https://github.com/apache/maven/tree/maven-3.3.9
     buildPhase = ''
@@ -35,7 +38,7 @@ maven_nixpkgs.overrideAttrs (
       mkdir out
       cp -r ${finalAttrs.mavenRepository} m2-repo
       chmod -R a+w m2-repo
-      ant -Dmaven.repo.local=m2-repo -Dmaven.home="$PWD/out/apache-maven-${finalAttrs.version}" -DskipITs -Dcpd.skip=true -Dpmd.skip=true -Dcheckstyle.skip=true -DskipTests -Dmaven.test.skip=true -Dspotless.apply.skip=true -Dspotless.check.skip=true -Drat.skip=true -Denforcer.skip=true -Dremoteresources.skip=true
+      ant -Dmaven.repo.local=m2-repo -Dmaven.home="$PWD/out/apache-maven-${finalAttrs.version}" -DskipTests=true -Dmaven.test.skip=true
       runHook postBuild
     '';
     preInstall = ''

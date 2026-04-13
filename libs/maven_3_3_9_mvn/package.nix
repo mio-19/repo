@@ -5,7 +5,7 @@
   buildMavenRepository,
   libsUtils,
   jdk8_headless,
-  lib,
+  lib,maven_3_3_9_ant,
 }:
 let
   maven_nixpkgs = callPackage ./nixpkgs.nix { };
@@ -55,7 +55,7 @@ maven_nixpkgs.overrideAttrs (
         mv m2-repo apache-maven/out/apache-maven-${finalAttrs.version}/
         cd apache-maven/out
       '';
-    bootstrapMaven = maven_nixpkgs;
+    bootstrapMaven = maven_3_3_9_ant;
     jdk = jdk8_headless;
     nativeBuildInputs = prevAttrs.nativeBuildInputs ++ [
       finalAttrs.bootstrapMaven
