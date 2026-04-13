@@ -38,6 +38,9 @@ jq 'to_entries
     )
   | from_entries'
 ```
+```
+jq 'with_entries(select(.key | startswith("androidx.") | not))' 
+```
 ## a
 still not helpful
 ```

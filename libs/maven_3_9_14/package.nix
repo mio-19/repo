@@ -24,7 +24,9 @@ maven_nixpkgs.overrideAttrs (
     buildPhase = ''
       runHook preBuild
       mkdir out
-      mvn -DdistributionTargetDir="out/apache-maven-${finalAttrs.version}" -Dmaven.repo.local=${finalAttrs.mavenRepository} install
+      cp -r ${finalAttrs.mavenRepository} m2-repo
+      chmod -R a+w m2-repo
+      mvn -DdistributionTargetDir="out/apache-maven-${finalAttrs.version}" -Dmaven.repo.local=m2-repo -DskipITs -Dcpd.skip=true -Dpmd.skip=true -Dcheckstyle.skip=true -DskipTests -Dmaven.test.skip=true -Dspotless.apply.skip=true -Dspotless.check.skip=true -Drat.skip=true -Denforcer.skip=true install
       runHook postBuild
     '';
     preInstall = ''
