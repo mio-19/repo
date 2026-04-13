@@ -14,7 +14,6 @@ gradle-from-source {
   hash = "sha256-mW54AY+/nhx2UVD3ML6L0Zw0lmU8R3ln9TFZ+noBkUs=";
   lockFile = mergeLock [
     gradle_8_7_20240126.unwrapped.passthru.lockFile
-    ./more.gradle.lock
   ];
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.
