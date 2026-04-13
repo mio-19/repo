@@ -71,3 +71,14 @@ jq -s '
   }
 ' ./dependencies-lock.json ./*/dependencies-lock.json > merged-dependencies.json
 ```
+
+## from .m2
+
+```
+rm -fr ~/.m2
+nix-shell -p jdk11 maven
+git checkout maven-3.9.14
+mvn -DskipITs -Dcpd.skip=true -Dpmd.skip=true -Dcheckstyle.skip=true -DskipTests -Dmaven.test.skip=true -Dspotless.apply.skip=true -Dspotless.check.skip=true -Drat.skip=true -Denforcer.skip=true install
+```
+
+use ../maven_3_3_9_mvn/m2.py
