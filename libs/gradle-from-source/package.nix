@@ -17,12 +17,11 @@
   ncurses6,
   path,
   gradle-packages,
-  stdenv,
   udev,
+  stdenv,
   unzip,
   callPackage,
-  jq,
-  runCommand,
+  buildMavenRepo,
   overrides-fromsrc,
 }:
 {
@@ -50,21 +49,32 @@ let
   additionalPostPatch = postPatch;
   additionalPatches = patches;
   toolchainPaths = lib.concatStringsSep "," javaToolchains;
-  filteredLockfile = runCommand "filtered-gradle-unwrapped-${version}.lock" { } ''
-    ${lib.getExe jq} '
-      with_entries(
-        select(
-          (
-            (.key | startswith("gradle:gradle:"))
-            or (.key | startswith("android-studio:android-studio:"))
-            or (.key | startswith("org.gradle.buildtool.internal:gradle-ide-starter:"))
-            or (.key | startswith("net.sf.docbook:docbook-xsl:"))
+  lockFile' = buildMavenRepo.passthru.readLockFile lockFile;
+  inherit (lib) hasPrefix;
+  filteredLockfile = lib.filterAttrs (
+    key: _:
+    !hasPrefix "gradle:gradle:" key
+    && !hasPrefix "android-studio:android-studio:" key
+    && !hasPrefix "org.gradle.buildtool.internal:gradle-ide-starter:" key
+    && !hasPrefix "net.sf.docbook:docbook-xsl:" key
+  ) lockFile';
+  /*
+    filteredLockfile = runCommand "filtered-gradle-unwrapped-${version}.lock" { } ''
+      ${lib.getExe jq} '
+        with_entries(
+          select(
+            (
+              (.key | startswith("gradle:gradle:"))
+              or (.key | startswith("android-studio:android-studio:"))
+              or (.key | startswith("org.gradle.buildtool.internal:gradle-ide-starter:"))
+              or (.key | startswith("net.sf.docbook:docbook-xsl:"))
+            )
+            | not
           )
-          | not
         )
-      )
-    ' ${lockFile} > $out
-  '';
+      ' ${lockFile} > $out
+    '';
+  */
   jnaLibraryPath = lib.optionalString stdenv.hostPlatform.isLinux (lib.makeLibraryPath [ udev ]);
   jnaFlag = lib.optionalString stdenv.hostPlatform.isLinux ''--add-flags "-Djna.library.path=${jnaLibraryPath}"'';
   # similar to nixpkgs mkGradle'
