@@ -33,7 +33,6 @@
   hash,
   lockFile,
   defaultJava,
-  gradleBuilders ? buildGradlePackage,
   buildJdk ? jdk17_headless,
   javaToolchains ? [
     jdk8_headless
@@ -241,7 +240,7 @@ let
         '';
 
       passthru.jdk = java;
-      passthru.lockFile = filteredLockfile;
+      passthru.lockFile = lockFile;
 
       meta = {
         platforms = [
