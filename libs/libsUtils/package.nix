@@ -1,4 +1,4 @@
-{ lib, runCommand }:
+{ lib }:
 let
   inherit (lib) mapAttrs concatMapStringsSep hasInfix;
 in

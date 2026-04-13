@@ -202,6 +202,7 @@
 
           packages.gradle2nix = gradle2nixPatched.packages.${system}.gradle2nix;
           packages.gradle2nixSrc = gradle2nixPatched.outPath;
+          # nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json
           packages.mvn2nix = inputs.mvn2nix.packages.${system}.mvn2nix;
 
           formatter = pkgs.nixfmt;
