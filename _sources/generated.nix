@@ -596,17 +596,17 @@
   };
   lineage_launcher3 = {
     pname = "lineage_launcher3";
-    version = "788d6c206b3e772b049904aa32f20abccee98256";
+    version = "fccfea35b1757692ed452f9c0ac875f168260a14";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_Launcher3.git";
-      rev = "788d6c206b3e772b049904aa32f20abccee98256";
+      rev = "fccfea35b1757692ed452f9c0ac875f168260a14";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-GIzBUbXi1tWKiW6sGNJ71G/6oXUA0Obphfhmha2zDi0=";
+      sha256 = "sha256-w/bHXD5NmFRxe9cHHxKo4NXscifDc5zW7Le7TPOfFWw=";
     };
-    date = "2026-04-01";
+    date = "2026-04-12";
   };
   lineage_prebuilts_bootmgr = {
     pname = "lineage_prebuilts_bootmgr";
@@ -818,7 +818,7 @@
     version = "6b7bf6d049e8d425611e0c6dfb4637193190e8d6";
     src = fetchurl {
       url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/6b7bf6d049e8d425611e0c6dfb4637193190e8d6/vendor_gapps-6b7bf6d049e8d425611e0c6dfb4637193190e8d6.tar.gz";
-      sha256 = "sha256-ZJPTBe8kD4bWcvQET6TL58KfjiCicVzCAo3D8v/5XNE=";
+      sha256 = "sha256-SkpawHzPB3gLJ6Lr8lNIvQ0LvrH+6UwM+QaMjsnQTjM=";
     };
     date = "2026-04-09";
   };
