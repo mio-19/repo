@@ -77,6 +77,7 @@ maven_nixpkgs.overrideAttrs (
       mavenProvidesInternal =
         let
           postfixes = [
+            ""
             "-artifact"
             "-builder-support"
             "-compat"
@@ -88,12 +89,16 @@ maven_nixpkgs.overrideAttrs (
           ++ lib.optionals (lib.strings.compareVersions finalAttrs.version "3.6.3" >= 0) [
           ];
           name = postfix: "org.apache.maven:maven${postfix}:${finalAttrs.version}";
-          value = postfix: {
-            "maven${postfix}-${finalAttrs.version}.jar" =
-              "$out/maven/m2-repo/org/apache/maven/maven${postfix}/${finalAttrs.version}/maven${postfix}-${finalAttrs.version}.jar";
-            "maven${postfix}-${finalAttrs.version}.pom" =
-              "$out/maven/m2-repo/org/apache/maven/maven${postfix}/${finalAttrs.version}/maven${postfix}-${finalAttrs.version}.pom";
-          };
+          value =
+            postfix:
+            {
+              "maven${postfix}-${finalAttrs.version}.pom" =
+                "$out/maven/m2-repo/org/apache/maven/maven${postfix}/${finalAttrs.version}/maven${postfix}-${finalAttrs.version}.pom";
+            }
+            // lib.optionalAttrs (postfix != "") {
+              "maven${postfix}-${finalAttrs.version}.jar" =
+                "$out/maven/m2-repo/org/apache/maven/maven${postfix}/${finalAttrs.version}/maven${postfix}-${finalAttrs.version}.jar";
+            };
           children = builtins.listToAttrs (
             map (postfix: {
               name = name postfix;
