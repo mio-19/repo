@@ -4,6 +4,8 @@
   fetchurl,
   linkFarm,
   overrides-fromsrc,
+  buildMavenRepo,
+  deepMerge,
 }:
 let
   inherit (lib) forEach attrValues;
@@ -78,6 +80,56 @@ let
         path = doOverrides dependency.drv dependency.layout;
       })
     );
-
 in
-buildMavenRepository
+{
+  __functor = _: buildMavenRepository;
+  passthru = {
+    fromGradleLock =
+      let
+        inherit (lib) mapAttrsToList;
+        prefixes = [
+          "https://repo.maven.apache.org/maven2/"
+          "https://dl.google.com/dl/"
+          "https://plugins.gradle.org/m2/"
+          "https://jitpack.io/"
+        ];
+        stripPrefix =
+          url: prefix:
+          let
+            prefixLen = builtins.stringLength prefix;
+            urlLen = builtins.stringLength url;
+          in
+          if builtins.substring 0 prefixLen url == prefix then
+            builtins.substring prefixLen (urlLen - prefixLen) url
+          else
+            null;
+        urlToLayout =
+          url:
+          let
+            matches = builtins.filter (x: x != null) (map (stripPrefix url) prefixes);
+          in
+          if matches != [ ] then
+            builtins.head matches
+          else
+            throw "fromGradleLock: unexpected url prefix: ${url}";
+      in
+      lockFile:
+      let
+        lock = buildMavenRepo.passthru.readLockFile lockFile;
+        doublelist = mapAttrsToList (
+          gav: files:
+          (mapAttrsToList (file: entry: {
+            name = "${gav}:${file}";
+            value = {
+              layout = urlToLayout entry.url;
+              hash = entry.hash;
+              url = entry.url;
+            };
+          }) files)
+        ) lock;
+        flattened = lib.lists.flatten doublelist;
+        dependencies = builtins.listToAttrs flattened;
+      in
+      dependencies;
+  };
+}

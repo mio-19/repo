@@ -18,5 +18,17 @@ let
       else
         rValue
     ) rhs);
+  deepMerges =
+    xs:
+    if !lib.isList xs then
+      throw "deepMerges: Expected a list"
+    else if builtins.length xs == 0 then
+      throw "deepMerges: Cannot merge an empty list"
+    else
+      builtins.foldl' deepMerge (builtins.head xs) (builtins.tail xs);
 in
-deepMerge
+{
+  __functor = _: deepMerge;
+  passthru.deepMerge = deepMerge;
+  passthru.deepMerges = deepMerges;
+}
