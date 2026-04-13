@@ -6,12 +6,15 @@
   libsUtils,
   jdk8_headless,
   lib,
+  stdenv,
   ant,
 }:
 let
   maven_nixpkgs = callPackage ../maven_3_3_9_mvn/nixpkgs.nix { };
   inherit (libsUtils) checkMavenProvides exposeMavenProvides;
   inherit (buildMavenRepositoryFromLockFile.passthru) mergeDeps readDeps;
+
+  postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
 in
 maven_nixpkgs.overrideAttrs (
   finalAttrs: prevAttrs: {
@@ -46,6 +49,9 @@ maven_nixpkgs.overrideAttrs (
       finalAttrs.jdk
       ant
     ];
+    env = {
+      JAVA_HOME = finalAttrs.jdk + postfix;
+    };
     mavenRepository = buildMavenRepository { dependencies = readDeps finalAttrs.passthru.mavenDeps; };
     passthru = prevAttrs.passthru // {
       mavenDeps = mergeDeps [

@@ -67,6 +67,7 @@ maven_nixpkgs.overrideAttrs (
     passthru = prevAttrs.passthru // {
       # also run jq -S '.' on it.
       # also need to manually remove 3.3.9 entries from linux-m2.json
+      # jq '.dependencies |= with_entries(select(.key | test("^org\\.apache\\.maven[^:]*:[^:]+:[^:]+:3\\.3\\.9(:[^:]+)?$") | not))' linux-m2.json > tmp && mv tmp linux-m2.json
       mavenDeps = ./linux-m2.json;
     };
     meta = prevAttrs.meta // {
