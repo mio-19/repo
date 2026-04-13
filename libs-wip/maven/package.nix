@@ -1,7 +1,8 @@
 {
   callPackage,
   fetchFromGitHub,
-  buildMavenRepositoryFromLockFile,libsUtils,
+  buildMavenRepositoryFromLockFile,
+  libsUtils,
 }:
 let
   maven_nixpkgs = callPackage ./nixpkgs.nix { };
@@ -35,7 +36,7 @@ maven_nixpkgs.overrideAttrs (
     '';
     meta = prevAttrs.meta // {
       mavenProvides = exposeMavenProvides finalAttrs;
-      mavenProvidesInternal = {};
+      mavenProvidesInternal = { };
     };
   }
 )
