@@ -68,6 +68,7 @@ ant_nixpkgs.overrideAttrs (
     '';
     meta = prevAttrs.meta // {
       mavenProvides = exposeMavenProvides finalAttrs;
+      # nix-repl> legacyPackages.x86_64-linux.overrides-fromsrc-bare."org.apache.ant:ant-antlr:1.10.12"."ant-antlr-1.10.12.jar" null
       mavenProvidesInternal =
         let
           parent = {
@@ -93,14 +94,14 @@ ant_nixpkgs.overrideAttrs (
             "ant${postfix}-${finalAttrs.version}.jar" = "$out/share/ant/lib/ant${postfix}.jar";
             "ant${postfix}-${finalAttrs.version}.pom" = "${finalSrc}/src/etc/poms/ant${postfix}/pom.xml";
           };
-          child = builtins.listToAttrs (
+          children = builtins.listToAttrs (
             map (postfix: {
               name = name postfix;
               value = value postfix;
             }) postfixes
           );
         in
-        parent // child;
+        parent // children;
     };
   }
 )

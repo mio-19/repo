@@ -5,7 +5,8 @@
   buildMavenRepository,
   libsUtils,
   jdk8_headless,
-  lib,maven_3_3_9_ant,
+  lib,
+  maven_3_3_9_ant,
 }:
 let
   maven_nixpkgs = callPackage ./nixpkgs.nix { };
@@ -72,8 +73,35 @@ maven_nixpkgs.overrideAttrs (
     };
     meta = prevAttrs.meta // {
       mavenProvides = exposeMavenProvides finalAttrs;
-      # TODO
-      mavenProvidesInternal = { };
+      # nix-repl> legacyPackages.x86_64-linux.overrides-fromsrc-bare."org.apache.maven:maven-model-builder:3.9.14"."maven-model-builder-3.9.14.jar" null
+      mavenProvidesInternal =
+        let
+          postfixes = [
+            "-artifact"
+            "-builder-support"
+            "-compat"
+            "-core"
+            "-model"
+            "-model-builder"
+            "-plugin-api"
+          ]
+          ++ lib.optionals (lib.strings.compareVersions finalAttrs.version "3.6.3" >= 0) [
+          ];
+          name = postfix: "org.apache.maven:maven${postfix}:${finalAttrs.version}";
+          value = postfix: {
+            "maven${postfix}-${finalAttrs.version}.jar" =
+              "$out/maven/m2-repo/org/apache/maven/maven${postfix}/${finalAttrs.version}/maven${postfix}-${finalAttrs.version}.jar";
+            "maven${postfix}-${finalAttrs.version}.pom" =
+              "$out/maven/m2-repo/org/apache/maven/maven${postfix}/${finalAttrs.version}/maven${postfix}-${finalAttrs.version}.pom";
+          };
+          children = builtins.listToAttrs (
+            map (postfix: {
+              name = name postfix;
+              value = value postfix;
+            }) postfixes
+          );
+        in
+        children;
     };
   }
 )
