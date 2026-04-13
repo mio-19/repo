@@ -45,6 +45,7 @@ maven_nixpkgs.overrideAttrs (
         # com/diffplug/spotless/spotless-maven-plugin/3.1.0/spotless-maven-plugin-3.1.0.pom  maven/plugins/maven-install-plugin/3.1.4/maven-install-plugin-3.1.4.pom
         ./messy.json
         # kotlin-stdlib-jdk8-1.9.10.pom org/eclipse/platform/org.eclipse.osgi/3.18.300 com/diffplug/spotless/spotless-lib/4.1.0/spotless-lib-4.1.0.pom com/diffplug/durian/durian-core/1.2.0/durian-core-1.2.0.pom org.eclipse.jgit:org.eclipse.jgit:7.4.0.202509020913-r and more
+        # also see README.md
         (fromGradleLock ./messy.lock)
         # on darwin cd apache-maven && nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json
         ./mvn2nix-lock.json

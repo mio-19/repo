@@ -1,4 +1,16 @@
 # maven
+
+## remove .asc
+```
+jq 'walk(
+  if type == "object"
+  then with_entries(select(.key | endswith(".asc") | not))
+  else .
+  end
+)'
+```
+
+## a
 still not helpful
 ```
 mvn se.vandmo:dependency-lock-maven-plugin:lock
