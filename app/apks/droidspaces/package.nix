@@ -14,13 +14,13 @@
 let
   appPackage =
     let
-      version = "5.9.0";
+      version = "5.9.5";
 
       srcBase = fetchFromGitHub {
         owner = "ravindu644";
         repo = "Droidspaces-OSS";
         tag = "v${version}";
-        hash = "sha256-eqwGBHYuW57k0xW8O5ifH3CUR8Jdo/QSF/KJzPjlkoc=";
+        hash = "sha256-qoBys+mwcWMJfZVenph4Bt8mbqO9rR8jOmtjlxmQ5wY=";
       };
 
       androidSdk = androidSdkBuilder (s: [
