@@ -20,8 +20,10 @@ maven_3_3_9.overrideAttrs (
     jdk = jdk11_headless;
     passthru = prevAttrs.passthru // {
       # also run jq -S '.' on it.
-      # also need to manually remove 3.6.3 entries from linux-m2.json
-      mavenDeps = ./linux-m2.json;
+      mavenDeps = mergeDeps [
+        ./more.json
+        ./linux-m2.json
+      ];
     };
   }
 )
