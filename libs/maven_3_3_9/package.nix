@@ -17,7 +17,7 @@ maven_nixpkgs.overrideAttrs (
       owner = "apache";
       repo = "maven";
       tag = "maven-${finalAttrs.version}";
-      hash = "";
+      hash = "sha256-qqk0FyPo0X43d9Co7qe193D9lIj6DbJ7Tu7WGoD5QkY=";
     };
     sourceRoot = finalAttrs.src.name;
     # https://maven.apache.org/guides/development/guide-building-maven.html
@@ -25,8 +25,9 @@ maven_nixpkgs.overrideAttrs (
       runHook preBuild
       cp -r ${finalAttrs.mavenRepository} m2-repo
       chmod -R a+w m2-repo
-      mvn -DdistributionTargetDir="out/apache-maven-${finalAttrs.version}" -Dmaven.repo.local=m2-repo -DskipITs -Dcpd.skip=true -Dpmd.skip=true -Dcheckstyle.skip=true -DskipTests -Dmaven.test.skip=true -Dspotless.apply.skip=true -Dspotless.check.skip=true -Drat.skip=true -Denforcer.skip=true install
+      mvn --offline -DdistributionTargetDir="out/apache-maven-${finalAttrs.version}" -Dmaven.repo.local=m2-repo -DskipITs -Dcpd.skip=true -Dpmd.skip=true -Dcheckstyle.skip=true -DskipTests -Dmaven.test.skip=true -Dspotless.apply.skip=true -Dspotless.check.skip=true -Drat.skip=true -Denforcer.skip=true install
     '';
+    # After deleting symlinks, left are what it published.
     preInstall = ''
       find m2-repo -type l -delete
       for i in {1..10}; do find m2-repo -type d -empty -delete; done
