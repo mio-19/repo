@@ -39,7 +39,7 @@ jq 'to_entries
   | from_entries'
 ```
 ```
-jq 'with_entries(select(.key | startswith("androidx.") | not))' 
+jq 'with_entries(select(.key | test("^(androidx\\.|com\\.android)") | not))'
 ```
 ## a
 still not helpful
