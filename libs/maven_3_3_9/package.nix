@@ -42,9 +42,6 @@ maven_nixpkgs.overrideAttrs (
     passthru = prevAttrs.passthru // {
       # also run jq -S '.' on them.
       mavenDeps = mergeDeps [
-        # on darwin:
-        # $ nix-shell -p jdk8
-        # $ nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json
         ./mvn2nix-lock.json
       ];
     };
