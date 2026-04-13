@@ -34,8 +34,8 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preBuild
     mkdir out
     cp -r ${finalAttrs.mavenRepository} m2-repo
-    ln -s ${bnd_401} m2-repo/biz/aQute/bnd/0.0.401/bnd-0.0.401.pom
     chmod -R a+w m2-repo
+    ln -s ${bnd_401} m2-repo/biz/aQute/bnd/0.0.401/bnd-0.0.401.pom
     ant -Dmaven.repo.local=$PWD/m2-repo install -DskipTests=true -DskipOsgi=true
     runHook postBuild
   '';
