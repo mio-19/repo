@@ -1,3 +1,4 @@
+# TODO: use lib.extendMkDerivation like nixpkgs does for buildRustPackage
 pkgs@{
   buildMavenRepositoryFromLockFile,
   jdk17_headless,
