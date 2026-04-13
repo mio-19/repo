@@ -6,7 +6,7 @@
   fetchFromGitHub,
   go,
   overrides-fromsrc,
-  gradle2nixBuilders,
+  buildGradlePackage,
   gperf,
   jdk21_headless,
   lib,
@@ -35,7 +35,7 @@ let
     # ndk-23-2-8568313 could not be realized under the pinned Android SDK packaging because auto-patchelf could not satisfy host libs like libsqlite3.so.0, libgdbm.so.3, libssl.so.1.0.0, and libffi.so.6.
   ]);
 in
-gradle2nixBuilders.buildGradlePackage rec {
+buildGradlePackage rec {
   pname = "forkgram";
   version = "12.6.5.0";
 

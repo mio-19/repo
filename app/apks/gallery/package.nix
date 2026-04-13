@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   overrides-fromsrc,
-  gradle2nixBuilders,
+  buildGradlePackage,
   lib,
   androidSdkBuilder,
   gradle-packages,
@@ -25,7 +25,7 @@ let
       defaultJava = jdk21_headless;
     }).wrapped;
 
-  appPackage = gradle2nixBuilders.buildGradlePackage rec {
+  appPackage = buildGradlePackage rec {
     pname = "gallery";
     inherit gradle;
     inherit (sources.google_gallery) src;

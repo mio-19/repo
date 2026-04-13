@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   overrides-fromsrc,
-  gradle2nixBuilders,
+  buildGradlePackage,
   lib,
   jdk21_headless,
   jdk17_headless,
@@ -33,7 +33,7 @@ let
 
   gradle = gradle_8_13;
 
-  appPackage = gradle2nixBuilders.buildGradlePackage rec {
+  appPackage = buildGradlePackage rec {
     pname = "sunup";
     inherit version src gradle;
 

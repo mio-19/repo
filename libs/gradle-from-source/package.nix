@@ -6,7 +6,7 @@
   findutils,
   git,
   gnused,
-  gradle2nixBuilders,
+  buildGradlePackage,
   jdk11_headless,
   jdk17_headless,
   jdk21_headless,
@@ -33,7 +33,7 @@
   hash,
   lockFile,
   defaultJava,
-  gradleBuilders ? gradle2nixBuilders,
+  gradleBuilders ? buildGradlePackage,
   buildJdk ? jdk17_headless,
   javaToolchains ? [
     jdk8_headless
@@ -74,7 +74,7 @@ let
       java ? defaultJava,
       ...
     }:
-    gradleBuilders.buildGradlePackage rec {
+    buildGradlePackage rec {
       pname = "gradle-unwrapped";
       inherit version;
       lockFile = filteredLockfile;

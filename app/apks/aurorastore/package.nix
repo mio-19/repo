@@ -1,6 +1,6 @@
 {
   mk-apk-package,
-  gradle2nixBuilders,
+  buildGradlePackage,
   lib,
   jdk21_headless,
   gradle_9_3_1,
@@ -28,7 +28,7 @@ let
 
   gradle = gradle_9_3_1;
 
-  appPackage = gradle2nixBuilders.buildGradlePackage rec {
+  appPackage = buildGradlePackage rec {
     pname = "aurorastore";
     inherit version src gradle;
 
