@@ -42,7 +42,8 @@ maven_nixpkgs.overrideAttrs (
     passthru = prevAttrs.passthru // {
       # also run jq -S '.' on them.
       mavenDeps = mergeDeps [
-        ./mvn2nix-lock.json
+        # ../maven_3_9_14/refresh-hashes.sh merged-dependencies.json
+        ./merged-dependencies.json
       ];
     };
     meta = prevAttrs.meta // {
