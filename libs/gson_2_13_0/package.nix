@@ -69,5 +69,6 @@ stdenv.mkDerivation (finalAttrs: {
     homepage = "https://github.com/google/gson";
     license = licenses.asl20;
     platforms = platforms.unix;
+    # TODO: mavenProvides
   };
 })
