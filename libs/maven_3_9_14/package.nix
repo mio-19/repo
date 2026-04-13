@@ -55,6 +55,7 @@ maven_nixpkgs.overrideAttrs (
     };
     meta = prevAttrs.meta // {
       mavenProvides = exposeMavenProvides finalAttrs;
+      # TODO
       mavenProvidesInternal = { };
     };
   }

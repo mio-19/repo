@@ -1,6 +1,6 @@
 # maven
 
-## remove .asc for gradle.lock
+## messy.lock - remove .asc for gradle.lock
 ```
 jq 'walk(
   if type == "object"
@@ -40,6 +40,9 @@ jq 'to_entries
 ```
 ```
 jq 'with_entries(select(.key | test("^(androidx\\.|com\\.android)") | not))'
+```
+```
+jq 'with_entries(select(.key | contains("-android") | not))'
 ```
 ## a
 still not helpful
