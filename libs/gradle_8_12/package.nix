@@ -23,7 +23,6 @@ else
     lockFile = mergeLock [
       gradle_8_12_rc1.unwrapped.passthru.lockFile
       ../gradle_8_12_1/gradle.lock
-      ./more.gradle.lock
     ];
     defaultJava = jdk21_headless;
     # this version specifically ask for termurin branded jdk.

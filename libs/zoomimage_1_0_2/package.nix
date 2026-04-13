@@ -1,7 +1,7 @@
 {
   androidSdkBuilder,
   fetchFromGitHub,
-  gradle2nixBuilders,
+  buildGradlePackage,
   overrides-fromsrc,
   jdk17_headless,
   lib,
@@ -20,7 +20,7 @@ let
 
   gradle = gradle_8_2;
 in
-gradle2nixBuilders.buildGradlePackage rec {
+buildGradlePackage rec {
   pname = "zoomimage";
   version = "1.0.2";
 

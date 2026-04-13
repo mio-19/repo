@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   overrides-fromsrc,
-  gradle2nixBuilders,
+  buildGradlePackage,
   lib,
   jdk25_headless,
   gradle_9_4_1,
@@ -21,7 +21,7 @@ let
 
   gradle = gradle_9_4_1;
 
-  appPackage = gradle2nixBuilders.buildGradlePackage rec {
+  appPackage = buildGradlePackage rec {
     pname = "nextcloud-android";
     version = "33.0.1";
     inherit gradle;

@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   overrides-fromsrc,
-  gradle2nixBuilders,
+  buildGradlePackage,
   sources,
   lib,
   jdk25_headless,
@@ -27,7 +27,7 @@ let
 
   gradle = gradle_9_4_0;
 
-  appPackage = gradle2nixBuilders.buildGradlePackage rec {
+  appPackage = buildGradlePackage rec {
     pname = "grapheneos-camera";
     inherit version src gradle;
 

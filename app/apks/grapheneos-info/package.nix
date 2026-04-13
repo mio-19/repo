@@ -1,6 +1,6 @@
 {
   mk-apk-package,
-  gradle2nixBuilders,
+  buildGradlePackage,
   sources,
   lib,
   jdk17_headless,
@@ -21,7 +21,7 @@ let
 
   gradle = gradle_9_4_0;
 
-  appPackage = gradle2nixBuilders.buildGradlePackage rec {
+  appPackage = buildGradlePackage rec {
     pname = "grapheneos-info";
     version = sources.grapheneos_info.date;
     inherit (sources.grapheneos_info)

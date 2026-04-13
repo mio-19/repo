@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   overrides-fromsrc,
-  gradle2nixBuilders,
+  buildGradlePackage,
   sources,
   lib,
   jdk25_headless,
@@ -29,7 +29,7 @@ let
 
       gradle = gradle_9_4_0;
     in
-    gradle2nixBuilders.buildGradlePackage rec {
+    buildGradlePackage rec {
       pname = "pdfviewer";
       inherit (sources.grapheneos_pdfviewer)
         src

@@ -3,7 +3,7 @@
   androidSdkBuilder,
   fetchgit,
   overrides-fromsrc,
-  gradle2nixBuilders,
+  buildGradlePackage,
   gradle_9_3_1,
   jdk25_headless,
   lib,
@@ -22,7 +22,7 @@ let
 
   gradle = gradle_9_3_1;
 in
-gradle2nixBuilders.buildGradlePackage rec {
+buildGradlePackage rec {
   pname = "fdroid-basic";
   version = "2.0-alpha7";
 

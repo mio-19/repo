@@ -9,15 +9,6 @@
 }:
 
 let
-  overrideFromSrc =
-    binary: url:
-    let
-      group0 = mavenUrlToGav url;
-      group = if group0 == null then "__" else group0;
-      file = fileName url;
-      entry = (overrides-fromsrc."${group}" or { })."${file}" or (_: binary);
-    in
-    entry binary;
   fileName =
     path:
     let
@@ -80,9 +71,19 @@ in
   name ? "deps",
   data,
   dontFixup ? true,
+  overrides ? overrides-fromsrc,
   ...
 }@attrs:
 let
+  doOverrides =
+    binary: url:
+    let
+      group0 = mavenUrlToGav url;
+      group = if group0 == null then "__" else group0;
+      file = fileName url;
+      entry = (overrides."${group}" or { })."${file}" or (_: binary);
+    in
+    entry binary;
   data' = removeAttrs (if builtins.isPath data then lib.importJSON data else data) [
     "!version"
   ];
@@ -109,7 +110,7 @@ let
             text = writeText name val;
           }
           .${key} or (throw "Unknown key: ${url}");
-        source = overrideFromSrc source0 url;
+        source = doOverrides source0 url;
       in
       ''
         mkdir -p "${dirOf path}"

@@ -29,14 +29,6 @@ let
       n = builtins.length parts;
     in
     builtins.elemAt parts (n - 1);
-  overrideFromSrc =
-    binary: layout:
-    let
-      group = pathToCoords layout;
-      file = fileName layout;
-      entry = (overrides-fromsrc."${group}" or { })."${file}" or (_: binary);
-    in
-    entry binary;
   # Create a maven environment from the output of the mvn2nix command
   # the resulting store path can be used as the a .m2 repository for subsequent
   # maven invocations.
@@ -48,8 +40,17 @@ let
     {
       dependencies,
       pathMap ? x: x,
+      overrides ? overrides-fromsrc,
     }:
     let
+      doOverrides =
+        binary: layout:
+        let
+          group = pathToCoords layout;
+          file = fileName layout;
+          entry = (overrides."${group}" or { })."${file}" or (_: binary);
+        in
+        entry binary;
       dependenciesAsDrv = (
         forEach (attrValues dependencies) (dependency: {
           drv =
@@ -74,7 +75,7 @@ let
     linkFarm "mvn2nix-repository" (
       forEach dependenciesAsDrv (dependency: {
         name = pathMap dependency.layout;
-        path = overrideFromSrc dependency.drv dependency.layout;
+        path = doOverrides dependency.drv dependency.layout;
       })
     );
 

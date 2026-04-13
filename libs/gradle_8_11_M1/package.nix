@@ -14,7 +14,6 @@ gradle-from-source {
     gradle_8_11_20240920_1.unwrapped.passthru.lockFile
     # org.gradle.buildtool.internal:configuration-cache-report:1.21
     ../gradle_8_12_20241015/gradle.lock
-    ./more.gradle.lock
   ];
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.
