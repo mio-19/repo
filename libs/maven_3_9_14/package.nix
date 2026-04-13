@@ -4,7 +4,6 @@
   buildMavenRepositoryFromLockFile,
   buildMavenRepository,
   libsUtils,
-  deepMerge,
 }:
 let
   maven_nixpkgs = callPackage ./nixpkgs.nix { };
@@ -40,16 +39,14 @@ maven_nixpkgs.overrideAttrs (
     '';
     passthru = prevAttrs.passthru // {
       mavenDependencies = mergeDeps [
-        # nix run github:mio-19/repo#mvn2nix -- --goals install > mvn2nix-lock.json ; manual edit to remove apache-maven-3.9.14 maven-artifact-3.9.14 and other maven*-3.9.14
-        ./mvn2nix-lock.json
-        # com/diffplug/spotless/spotless-maven-plugin/3.1.0/spotless-maven-plugin-3.1.0.pom
-        ./spotless310.json
-        # maven/plugins/maven-install-plugin/3.1.4/maven-install-plugin-3.1.4.pom
-        ../guava_31_1_android/mvn2nix-lock.json
-        # com/diffplug/spotless/spotless-lib/4.1.0/spotless-lib-4.1.0.pom com/diffplug/durian/durian-core/1.2.0/durian-core-1.2.0.pom and more
-        (fromGradleLock ./spotless410.lock)
-        # nix run github:mio-19/repo#mvn2nix -- --goals dependency:resolve > mvn2nix-lock-resolve.json 
-        ./mvn2nix-lock-resolve.json
+        # on darwin $ nix run github:mio-19/repo#mvn2nix -- --goals install > mvn2nix-lock.json ; manual edit to remove apache-maven-3.9.14 maven-artifact-3.9.14 and other maven*-3.9.14
+        # on darwin $ nix run github:mio-19/repo#mvn2nix -- --goals dependency:resolve > mvn2nix-lock-resolve.json  # merge with jq -s 'reduce .[] as $item ({}; . * $item)'
+        ./m.json
+        # com/diffplug/spotless/spotless-maven-plugin/3.1.0/spotless-maven-plugin-3.1.0.pom  maven/plugins/maven-install-plugin/3.1.4/maven-install-plugin-3.1.4.pom
+        ./messy.json
+        # kotlin-stdlib-jdk8-1.9.10.pom org/eclipse/platform/org.eclipse.osgi/3.18.300 com/diffplug/spotless/spotless-lib/4.1.0/spotless-lib-4.1.0.pom com/diffplug/durian/durian-core/1.2.0/durian-core-1.2.0.pom org.eclipse.jgit:org.eclipse.jgit:7.4.0.202509020913-r and more
+        (fromGradleLock ./messy.lock)
+        # on darwin cd apache-maven && nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json
       ];
     };
     meta = prevAttrs.meta // {

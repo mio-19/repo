@@ -151,7 +151,7 @@
             inherit system;
             overlays = [
               (final: prev: rec {
-                inherit (selfPackages) ant ;#maven;
+                inherit (selfPackages) ant; # maven;
                 gradle_9 = selfPackages.gradle_9_4_1;
                 gradle_9-unwrapped = gradle_9.unwrapped;
                 gradle =
