@@ -54,10 +54,6 @@ maven_nixpkgs.overrideAttrs (
         (fromGradleLock ./messy.lock)
         ./more.json
         (fromGradleLock ./more.lock)
-        # git clone https://github.com/diffplug/spotless.git && cd spotless && nix run github:mio-19/repo#gradle2nix
-        #(fromGradleLock ./spotless.lock)
-        # on darwin: $ git clone https://github.com/apache/maven-resolver.git && cd maven-resolver && git checkout  maven-resolver-1.9.27 && nix run github:mio-19/repo#mvn2nix > resolver.json
-        ./resolver.json
       ];
     };
     meta = prevAttrs.meta // {
