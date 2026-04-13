@@ -9,7 +9,14 @@ jq 'walk(
   end
 )'
 ```
-
+```
+jq 'walk(
+  if type == "object"
+  then with_entries(select(.key | endswith(".module") | not))
+  else .
+  end
+)'
+```
 ## a
 still not helpful
 ```
