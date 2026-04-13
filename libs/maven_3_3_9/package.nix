@@ -44,9 +44,9 @@ maven_nixpkgs.overrideAttrs (
       # also run jq -S '.' on them.
       mavenDeps = mergeDeps [
         # ../maven_3_9_14/refresh-hashes.sh merged-dependencies.json
-        ./merged-dependencies.json
-        ./messy.json
-        ./more.json
+        #./merged-dependencies.json
+        ./linux-m2.json
+        #./more.json
       ];
     };
     meta = prevAttrs.meta // {

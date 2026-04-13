@@ -34,7 +34,7 @@ jq -s '
 ```
 rm -fr ~/.m2
 nix-shell -p jdk8 maven
-mvn -DskipITs -Dcpd.skip=true -Dpmd.skip=true -Dcheckstyle.skip=true -DskipTests -Dmaven.test.skip=true -Dspotless.apply.skip=true -Dspotless.check.skip=true -Drat.skip=true -Denforcer.skip=true package
+mvn -DskipITs -Dcpd.skip=true -Dpmd.skip=true -Dcheckstyle.skip=true -DskipTests -Dmaven.test.skip=true -Dspotless.apply.skip=true -Dspotless.check.skip=true -Drat.skip=true -Denforcer.skip=true -Dremoteresources.skip=true package
 ```
 
 use m2.py
