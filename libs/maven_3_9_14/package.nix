@@ -54,7 +54,6 @@ maven_nixpkgs.overrideAttrs (
         ./more.json
         (fromGradleLock ./more.lock)
       ];
-      inherit maven_nixpkgs;
     };
     meta = prevAttrs.meta // {
       mavenProvides = exposeMavenProvides finalAttrs;
