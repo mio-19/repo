@@ -5,10 +5,20 @@
   buildMavenRepository,
   jdk8_headless,
   ant,
-  stdenv,writableTmpDirAsHomeHook,
+  stdenv,
+  writableTmpDirAsHomeHook,
+  fetchurl,
+  runCommand,
 }:
 let
   inherit (buildMavenRepositoryFromLockFile.passthru) mergeDeps readDeps;
+  bnd_384 = fetchurl {
+    url = "https://repo1.maven.org/maven2/biz/aQute/bnd/0.0.384/bnd-0.0.384.pom";
+    hash = "sha256-K1Q7NMOlTdxinjZ62KGVNRyGeBI2oB8rY1d45chT8Jo=";
+  };
+  bnd_401 = runCommand "bnd-0.0.401.pom" {} ''
+      substitute ${bnd_384} $out --replace-fail '0.0.384' '0.0.401'
+    '';
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "groovy";
@@ -24,6 +34,7 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preBuild
     mkdir out
     cp -r ${finalAttrs.mavenRepository} m2-repo
+    ln -s ${bnd_401} m2-repo/biz/aQute/bnd/0.0.401/bnd-0.0.401.pom
     chmod -R a+w m2-repo
     ant -Dmaven.repo.local=$PWD/m2-repo install -DskipTests=true -DskipOsgi=true
     runHook postBuild
@@ -34,6 +45,7 @@ stdenv.mkDerivation (finalAttrs: {
   postPatch = ''
     sed -i 's|<contains string="''${ant.version}" substring="1.1"></contains>||g' build.xml
     sed -i 's|\bParameter\b|org.codehaus.groovy.ast.Parameter|g' src/main/org/codehaus/groovy/vmplugin/v5/Java5.java
+    substituteInPlace build.gradle config/maven/groovy-tools.pom --replace-fail '0.0.401' '0.0.402'
   '';
   nativeBuildInputs = [
     ant
@@ -53,8 +65,11 @@ stdenv.mkDerivation (finalAttrs: {
   mavenRepository = buildMavenRepository { dependencies = readDeps finalAttrs.passthru.mavenDeps; };
   passthru = {
     mavenDeps = mergeDeps [
+      ./more.json
       # remove biz.aQute:bnd:jar:0.0.401 biz.aQute:bnd:pom:0.0.401
       ./linux-m2.json
+      # commons-collections:commons-collections:jar:2.1
+      ../maven_3_3_9/linux-m2.json
     ];
   };
 })
