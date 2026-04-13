@@ -38,7 +38,8 @@ maven_nixpkgs.overrideAttrs (
       runHook preBuild
       cp -r ${finalAttrs.mavenRepository} m2-repo
       chmod -R a+w m2-repo
-      mvn --offline  -Dmaven.repo.local=m2-repo -DskipITs -Dcpd.skip=true -Dpmd.skip=true -Dcheckstyle.skip=true -DskipTests -Dmaven.test.skip=true -Dspotless.apply.skip=true -Dspotless.check.skip=true -Drat.skip=true -Denforcer.skip=true ${builtins.concatStringsSep " " extraFlags} install
+      mvn --offline -Dmaven.repo.local=m2-repo -DskipITs -Dcpd.skip=true -Dpmd.skip=true -Dcheckstyle.skip=true -DskipTests -Dmaven.test.skip=true -Dspotless.apply.skip=true -Dspotless.check.skip=true -Drat.skip=true -Denforcer.skip=true ${builtins.concatStringsSep " " extraFlags} install
+      runHook postBuild
     '';
     preInstall =
       lib.optionalString (!useDistributionTargetDir) ''
@@ -52,7 +53,6 @@ maven_nixpkgs.overrideAttrs (
         find m2-repo -type l -delete
         for i in {1..10}; do find m2-repo -type d -empty -delete; done
         mv m2-repo apache-maven/out/apache-maven-${finalAttrs.version}/
-        runHook postBuild
         cd apache-maven/out
       '';
     bootstrapMaven = maven_nixpkgs;
