@@ -30,6 +30,14 @@ jq 'map_values(
   with_entries(select(.key | endswith(".jar") or endswith(".pom")))
 )'
 ```
+```
+jq 'to_entries
+  | sort_by(.key)
+  | map(
+      .value |= with_entries(select(.key | endswith(".jar") or endswith(".pom")))
+    )
+  | from_entries'
+```
 ## a
 still not helpful
 ```
