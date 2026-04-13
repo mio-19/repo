@@ -26,21 +26,19 @@ maven_nixpkgs.overrideAttrs (
       cp -r ${finalAttrs.mavenRepository} m2-repo
       chmod -R a+w m2-repo
       mvn -DdistributionTargetDir="out/apache-maven-${finalAttrs.version}" -Dmaven.repo.local=m2-repo -DskipITs -Dcpd.skip=true -Dpmd.skip=true -Dcheckstyle.skip=true -DskipTests -Dmaven.test.skip=true -Dspotless.apply.skip=true -Dspotless.check.skip=true -Drat.skip=true -Denforcer.skip=true install
+    '';
+    preInstall = ''
       find m2-repo -type l -delete
       for i in {1..10}; do find m2-repo -type d -empty -delete; done
       mv m2-repo apache-maven/out/apache-maven-${finalAttrs.version}/
       runHook postBuild
-    '';
-    preInstall = ''
       cd apache-maven/out
     '';
     bootstrapMaven = maven_nixpkgs;
     nativeBuildInputs = prevAttrs.nativeBuildInputs ++ [ finalAttrs.bootstrapMaven ];
     mavenRepository = buildMavenRepository { dependencies = finalAttrs.passthru.mavenDependencies; };
     doInstallCheck = true;
-    installCheckPhase = ''
-      ${checkMavenProvides finalAttrs}
-    '';
+    installCheckPhase = checkMavenProvides finalAttrs;
     passthru = prevAttrs.passthru // {
       mavenDependencies = mergeDeps [
         # on darwin $ nix run github:mio-19/repo#mvn2nix -- --goals install > mvn2nix-lock.json ; manual edit to remove apache-maven-3.9.14 maven-artifact-3.9.14 and other maven*-3.9.14
