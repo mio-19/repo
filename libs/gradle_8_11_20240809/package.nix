@@ -6,7 +6,7 @@
   jdk21_headless,
   gradle_8_11_20240808_2,
   gradle-from-source,
-  runCommand,
+  mergeLock,
   jq,
   lib,
 }:
@@ -16,11 +16,12 @@ gradle-from-source {
   hash = "sha256-xt5RLWbM1YAgg0IAl7OttqV1qjxpWzyRmQdGKjTXmr0=";
   # more.gradle.lock: org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:5.1.0 org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.10 org.jetbrains.kotlin:kotlin-util-io:2.0.10 org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.7.0
   # ./refresh-hashes.sh more.gradle.lock
-  lockFile = runCommand "merged-lock" { } ''
-    ${lib.getExe jq} -s '
-      reduce .[] as $item ({}; . * $item)
-    ' ${gradle_8_11_20240808_2.unwrapped.passthru.lockFile} ${../gradle_8_11/gradle.lock} ${./more.gradle.lock} ${../gradle_8_11_1/gradle.lock} > $out
-  '';
+  lockFile = mergeLock [
+    gradle_8_11_20240808_2.unwrapped.passthru.lockFile
+    ../gradle_8_11/gradle.lock
+    ./more.gradle.lock
+    ../gradle_8_11_1/gradle.lock
+  ];
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.
   buildJdk = temurin-bin-11;

@@ -24,8 +24,7 @@
       helpers = {
         buildMavenRepositoryFromLockFile-bare = mvn2nixMaven.buildMavenRepositoryFromLockFile;
         androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
-        # TODO: supply overrides-fromsrc by default for buildGradlePackage
-        buildGradlePackage = gradle2nixScope.buildGradlePackage;
+        inherit (gradle2nixScope) gradleSetupHook;
         gradle2nixV1Builders = gradle2nixV1Patched.builders.${system};
         inherit
           sources
