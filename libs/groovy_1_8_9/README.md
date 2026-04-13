@@ -28,7 +28,5 @@ ant createJars
 use ../maven_3_3_9/m2.py
 ```
 python ../maven_3_3_9/m2.py > linux-m2.json
-# also need to  remove 1.8.9 entries from linux-m2.json
-jq '.dependencies |= with_entries(select(.key | test("^org\\.apache\\.maven[^:]*:[^:]+:[^:]+:1\\.8\\.9(:[^:]+)?$") | not))' linux-m2.json > tmp && mv tmp linux-m2.json
 ../maven_3_9_14/refresh-hashes.sh linux-m2.json
 ```
