@@ -41,9 +41,8 @@ maven_nixpkgs.overrideAttrs (
     installCheckPhase = checkMavenProvides finalAttrs;
     passthru = prevAttrs.passthru // {
       mavenDependencies = mergeDeps [
-        # on darwin $ nix run github:mio-19/repo#mvn2nix -- --goals install > mvn2nix-lock.json ; manual edit to remove apache-maven-3.9.14 maven-artifact-3.9.14 and other maven*-3.9.14
-        # on darwin $ nix run github:mio-19/repo#mvn2nix -- --goals dependency:resolve > mvn2nix-lock-resolve.json  # merge with jq -s 'reduce .[] as $item ({}; . * $item)'
-        # on darwin cd apache-maven && nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json
+        # on darwin $ nix-shell -p jdk11 
+        # on darwin $ nix run github:mio-19/repo#mvn2nix  > mvn2nix-lock.json
         ./mvn2nix-lock.json
         # com/diffplug/spotless/spotless-maven-plugin/3.1.0/spotless-maven-plugin-3.1.0.pom  maven/plugins/maven-install-plugin/3.1.4/maven-install-plugin-3.1.4.pom
         ./messy.json
