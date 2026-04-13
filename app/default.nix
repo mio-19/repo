@@ -47,7 +47,7 @@
           callPackage
           newScope
           ;
-        directory = ./lib;
+        directory = ../libs;
       };
       byNameBase = lib.makeScope libBase.newScope (
         _:
