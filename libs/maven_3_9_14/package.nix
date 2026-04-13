@@ -49,6 +49,7 @@ maven_nixpkgs.overrideAttrs (
         (fromGradleLock ./messy.lock)
         # on darwin cd apache-maven && nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json
         ./mvn2nix-lock.json
+        ./more.json
       ];
     };
     meta = prevAttrs.meta // {
