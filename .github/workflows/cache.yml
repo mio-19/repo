@@ -79,8 +79,9 @@ jobs:
     # https://github.com/nix-community/nixos-apple-silicon/blob/7aad69158fc1b5bbbddac19040b6aae14daaa35c/.github/workflows/cache.yml#L45C56-L50C24
     - name: Build nix packages
       if: runner.os == 'Linux'
+      # always lost communication after 2h?
       run: |
-        timeout --signal=KILL 5h nix run nixpkgs#nix-fast-build -- --max-jobs 1 --option cores 1 \
+        timeout --signal=KILL 1h nix run nixpkgs#nix-fast-build -- --max-jobs 1 --option cores 1 \
           --no-nom \
           -f .#packages.${{ env.SYSTEM }}.github-actions-cached
     - name: Build nix packages
