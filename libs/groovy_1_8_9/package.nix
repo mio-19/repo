@@ -36,21 +36,8 @@ stdenv.mkDerivation (finalAttrs: {
   postPatch = ''
     substituteInPlace build.xml \
       --replace-fail '<contains string="''${ant.version}" substring="1.1"></contains>' ""
-    substituteInPlace src/main/org/codehaus/groovy/vmplugin/v5/Java5.java \
-      --replace-fail 'Parameter[] params = makeParameters(compileUnit, m.getGenericParameterTypes(), m.getParameterTypes(), m.getParameterAnnotations());' \
-        'org.codehaus.groovy.ast.Parameter[] params = makeParameters(compileUnit, m.getGenericParameterTypes(), m.getParameterTypes(), m.getParameterAnnotations());' \
-      --replace-fail 'Parameter[] params = makeParameters(compileUnit, ctor.getGenericParameterTypes(), ctor.getParameterTypes(), ctor.getParameterAnnotations());' \
-        'org.codehaus.groovy.ast.Parameter[] params = makeParameters(compileUnit, ctor.getGenericParameterTypes(), ctor.getParameterTypes(), ctor.getParameterAnnotations());' \
-      --replace-fail 'private Parameter[] makeParameters(CompileUnit cu, Type[] types, Class[] cls, Annotation[][] parameterAnnotations) {' \
-        'private org.codehaus.groovy.ast.Parameter[] makeParameters(CompileUnit cu, Type[] types, Class[] cls, Annotation[][] parameterAnnotations) {' \
-      --replace-fail 'Parameter[] params = Parameter.EMPTY_ARRAY;' \
-        'org.codehaus.groovy.ast.Parameter[] params = org.codehaus.groovy.ast.Parameter.EMPTY_ARRAY;' \
-      --replace-fail 'params = new Parameter[types.length];' \
-        'params = new org.codehaus.groovy.ast.Parameter[types.length];' \
-      --replace-fail 'private Parameter makeParameter(CompileUnit cu, Type type, Class cl, Annotation[] annotations, int idx) {' \
-        'private org.codehaus.groovy.ast.Parameter makeParameter(CompileUnit cu, Type type, Class cl, Annotation[] annotations, int idx) {' \
-      --replace-fail 'Parameter parameter = new Parameter(cn, "param" + idx);' \
-        'org.codehaus.groovy.ast.Parameter parameter = new org.codehaus.groovy.ast.Parameter(cn, "param" + idx);'
+    # cannot use substituteInPlace : substituteInPlace doesn't have \b
+    sed -i 's|\bParameter\b|org.codehaus.groovy.ast.Parameter|g' src/main/org/codehaus/groovy/vmplugin/v5/Java5.java
   '';
   buildPhase = ''
     runHook preBuild
