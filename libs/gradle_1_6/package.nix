@@ -159,7 +159,7 @@ let
           in
           {
             layout = artifact.path;
-            url = "${repo}/${artifact.path}";
+            url = artifact.url or "${repo}/${artifact.path}";
             hash = artifact.hash or lib.fakeHash;
           }
           // lib.optionalAttrs (artifact ? package) {
