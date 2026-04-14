@@ -220,7 +220,7 @@ stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
 
-    export JAVA_HOME=${jdk8_headless}
+    export JAVA_HOME=${jdk8_headless.passthru.home}
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME" build/lib build/runtime/classes build/plugins/classes build/stubs
 
@@ -261,16 +261,16 @@ stdenv.mkDerivation {
       subprojects/tooling-api/src/main/java \
       subprojects/wrapper/src/main/java \
       subprojects/launcher/src/main/java \
-      -type f \( -name '*.groovy' -o -name '*.java' \) | sort > build/runtime-sources.txt
+      -type f \( -name '*.groovy' -o -name '*.java' \) > build/runtime-sources.txt
     find \
       subprojects/language-base/src/main/groovy \
       subprojects/language-jvm/src/main/groovy \
       subprojects/reporting/src/main/groovy \
       subprojects/diagnostics/src/main/groovy \
       subprojects/plugins/src/main/groovy \
-      -type f \( -name '*.groovy' -o -name '*.java' \) | sort > build/plugins-sources.txt
+      -type f \( -name '*.groovy' -o -name '*.java' \) > build/plugins-sources.txt
 
-    compileClasspath="$(printf '%s:' build/lib/*.jar)''${JAVA_HOME}/lib/openjdk/lib/tools.jar"
+    compileClasspath="$(printf '%s:' build/lib/*.jar)''${JAVA_HOME}/lib/tools.jar"
     "''$JAVA_HOME/bin/java" -noverify -Dfile.encoding=UTF-8 -Xmx2300m -classpath "$compileClasspath" \
       org.codehaus.groovy.tools.FileSystemCompiler \
       --classpath "$compileClasspath" \

@@ -213,7 +213,7 @@ stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
 
-    export JAVA_HOME=${jdk8_headless}${postfix}
+    export JAVA_HOME=${jdk8_headless.passthru.home}${postfix}
     export CLASSPATH=${jdk8_headless}${postfix}/lib/tools.jar
     export mavenRepo="${mavenRepo}"
     export ANT_OPTS=-Divy.default.ivy.user.dir="$HOME/.ivy2"

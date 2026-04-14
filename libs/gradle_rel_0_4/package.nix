@@ -139,7 +139,7 @@ stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
 
-    export JAVA_HOME=${jdk8_headless}
+    export JAVA_HOME=${jdk8_headless.passthru.home}
     mkdir -p lib
 
     rm -rf buildSrc/src/test src/test
@@ -158,9 +158,12 @@ stdenv.mkDerivation {
     "$JAVA_HOME/bin/javac" -d bootstrap-support/classes bootstrap-support/src/org/gradle/api/tasks/StopActionException.java
     "$JAVA_HOME/bin/jar" cf bootstrap-support/stop-action-support.jar -C bootstrap-support/classes .
 
+    export GRADLE_USER_HOME="$HOME/.gradle"
     "''$JAVA_HOME/bin/java" \
       -classpath "bootstrap-support/stop-action-support.jar:${gradle_rel_0_3}/libexec/gradle/lib/*" \
       -Dgradle.home="${gradle_rel_0_3}/libexec/gradle" \
+      -Dgradle.user.home="$GRADLE_USER_HOME" \
+      -Duser.home="$HOME" \
       org.gradle.Main \
       -p "$PWD" \
       -b build.gradle \
@@ -186,7 +189,7 @@ stdenv.mkDerivation {
     mkdir -p "$out/bin"
     cat > "$out/bin/gradle" <<'EOF'
     #!${stdenv.shell}
-    export JAVA_HOME="''${JAVA_HOME:-${jdk8_headless}}"
+    export JAVA_HOME="''${JAVA_HOME:-${jdk8_headless.passthru.home}}"
     export PATH="${
       lib.makeBinPath [
         coreutils
