@@ -136,11 +136,11 @@ let
   bootstrapOverrides = linkFarm "gradle-${version}-bootstrap-overrides" [
     {
       name = "lib/ant-1.9.6.jar";
-      path = "${ant_1_9_6}/ant-1.9.6.jar";
+      path = "${ant_1_9_6}/share/ant/lib/ant-1.9.6.jar";
     }
     {
       name = "lib/ant-launcher-1.9.6.jar";
-      path = "${ant_1_9_6}/ant-launcher-1.9.6.jar";
+      path = "${ant_1_9_6}/share/ant/lib/ant-launcher-1.9.6.jar";
     }
     {
       name = "lib/asm-all-5.1.jar";
