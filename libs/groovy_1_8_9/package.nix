@@ -94,7 +94,7 @@ stdenv.mkDerivation (finalAttrs: {
     mavenProvidesInternal = {
       "org.codehaus.groovy:groovy:${finalAttrs.version}" = {
         "groovy-${finalAttrs.version}.jar" = "$out/lib/groovy-${finalAttrs.version}.jar";
-        #"groovy-${finalAttrs.version}.pom" = ??;
+        "groovy-${finalAttrs.version}.pom" = "${finalAttrs.src}/pom.xml";
       };
       "org.codehaus.groovy:groovy-all:${finalAttrs.version}" = {
         "groovy-all-${finalAttrs.version}.pom" = "$out/groovy-all-${finalAttrs.version}.pom";
