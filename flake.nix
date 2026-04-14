@@ -1,6 +1,7 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    #nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
     android-nixpkgs = {
@@ -136,12 +137,15 @@
                 hash = "sha256-bl1ps/YXBhhmrRb1OV40WWefTplzr1EkXvnO8neM9vI=";
               })
             ];
-            # https://github.com/NixOS/nixpkgs/pull/508847
-            postPatch = ''
-              substituteInPlace \
-                pkgs/development/tools/build-managers/gradle/setup-hook.sh \
-                --replace-fail '--console plain' '-Dorg.gradle.console=plain'
-            '';
+            /*
+              # already merged
+              # https://github.com/NixOS/nixpkgs/pull/508847
+              postPatch = ''
+                substituteInPlace \
+                  pkgs/development/tools/build-managers/gradle/setup-hook.sh \
+                  --replace-fail '--console plain' '-Dorg.gradle.console=plain'
+              '';
+            */
           };
           nixpkgs =
             (import "${nixpkgsSrc}/flake.nix").outputs (
