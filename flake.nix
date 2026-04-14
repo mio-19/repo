@@ -141,6 +141,11 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/472580.patch";
                 hash = "sha256-dtQ8pFVnvTFwmpbMxEG9mnCbi1t6wweA1E/ufBdPsws=";
               })
+              (fetchpatch {
+                name = "gradle: fix usage of update-deps script without bwrap";
+                url = "https://github.com/NixOS/nixpkgs/pull/418576.patch";
+                hash = "sha256-tbn3rDQNuD8qRCaOJ3mhiQV1YkpcOIAZZlmDEfJb0+Y=";
+              })
             ];
             /*
               # already merged
