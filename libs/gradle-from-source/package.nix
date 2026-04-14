@@ -280,17 +280,14 @@ let
         };
       }
       // lib.optionalAttrs (todo || avoidSingleUseDaemon) {
+        # https://github.com/gradle/gradle/blob/v9.4.1/platforms/core-runtime/base-services/src/main/java/org/gradle/internal/jvm/JpmsConfiguration.java#L64 - GROOVY_JPMS_ARGS_9 & configurationCacheJpmsArgs
         preBuild = ''
           if [ ! -f gradle.properties ]; then
             echo "gradle-unwrapped-${version} error: gradle.properties not found" >&2
             exit 1
           fi
-          if grep 'DEFAULT_JVM_OPTS.*javaagent' ${bootstrapGradle}/libexec/gradle/bin/gradlew ; then
-            echo "Gradle distribution has a javaagent configured, had to fork single use daemon"
-          else
-            export JAVA_OPTS="$(grep '^org\.gradle\.jvmargs=' gradle.properties | cut -d'=' -f2-)"
-            echo "Adding JVM argument to avoid single-use Gradle daemon: $JAVA_OPTS"
-          fi
+          export JAVA_OPTS="--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-opens=java.base/java.nio.charset=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.xml/javax.xml.namespace=ALL-UNNAMED $(grep '^org\.gradle\.jvmargs=' gradle.properties | cut -d'=' -f2-)"
+          echo "Adding JVM argument to avoid single-use Gradle daemon: $JAVA_OPTS"
         '';
       }
     );
