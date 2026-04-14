@@ -42,7 +42,7 @@ let
     in
     buildDartApplication.override { dart = flutter335; } (finalAttrs: {
       pname = "immich";
-      version = "2.7.4";
+      version = "2.7.5";
 
       src = applyPatches {
         src = fetchFromGitHub {
@@ -50,7 +50,7 @@ let
           repo = "immich";
           tag = "v${finalAttrs.version}";
           fetchSubmodules = true;
-          hash = "sha256-4cs1ECJUu7XAo/bEyNJM+bEcOgMjBraRiPFIm0Ro1/0=";
+          hash = "sha256-6EGJBt52SH9QKwBmaukyx71J3KeUK9UmMyQq2YPXvj8=";
         };
         patches = [
           /*

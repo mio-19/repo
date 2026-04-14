@@ -12,4 +12,5 @@ gradle-from-source {
   buildJdk = jdk17_headless;
   # nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.14.4
   bootstrapGradle = gradle_8_14_4;
+  configureOnDemand = true;
 }
