@@ -48,7 +48,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     export JAVA_HOME=${jdk25_headless}
     tmp="$(mktemp -d)"
-    
+
     cd "$tmp"
 
     find "${finalAttrs.src}/kotlin-result/src/commonMain/kotlin" -name '*.kt' | sort > common-sources.txt

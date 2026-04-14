@@ -64,7 +64,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     export JAVA_HOME=${jdk25_headless}
     tmp="$(mktemp -d)"
-    
+
     cd "$tmp"
 
     find "${finalAttrs.src}/bytestring/common/src" -name '*.kt' | sort > bytestring-common-sources.txt

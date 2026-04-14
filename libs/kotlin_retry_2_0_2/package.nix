@@ -70,7 +70,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     export JAVA_HOME=${jdk25_headless}
     tmp="$(mktemp -d)"
-    
+
     cd "$tmp"
 
     retry_cp="${finalAttrs.coroutinesCoreJvm}"

@@ -25,7 +25,7 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preInstall
 
     tmp="$(mktemp -d)"
-    
+
     mkdir -p "$tmp/src" "$tmp/classes"
     cd "$tmp/src"
     jar xf "${finalAttrs.src}"

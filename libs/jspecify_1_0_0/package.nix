@@ -36,7 +36,7 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preInstall
 
     tmp="$(mktemp -d)"
-    
+
     cd "$tmp"
 
     find "${finalAttrs.src}/src/main/java" -name '*.java' > sources.txt

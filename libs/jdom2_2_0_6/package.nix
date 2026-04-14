@@ -31,7 +31,7 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preInstall
 
     tmp="$(mktemp -d)"
-    
+
     cd "$tmp"
 
     cp -r "${finalAttrs.src}/core/src/java" src

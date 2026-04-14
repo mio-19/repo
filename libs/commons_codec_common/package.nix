@@ -29,7 +29,7 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preInstall
 
     tmp="$(mktemp -d)"
-    
+
     cd "$tmp"
 
     mkdir -p classes
