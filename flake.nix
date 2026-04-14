@@ -129,6 +129,13 @@
           nixpkgsSrc = applyPatches {
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
+            patches = [
+              (fetchpatch {
+                name = "Revert flutterPackages: refactor (#500309)#509235";
+                url = "https://github.com/NixOS/nixpkgs/pull/509235.patch";
+                hash = "sha256-bl1ps/YXBhhmrRb1OV40WWefTplzr1EkXvnO8neM9vI=";
+              })
+            ];
             # https://github.com/NixOS/nixpkgs/pull/508847
             postPatch = ''
               substituteInPlace \
