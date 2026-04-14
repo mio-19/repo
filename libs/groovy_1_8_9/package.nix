@@ -9,6 +9,7 @@
   writableTmpDirAsHomeHook,
   fetchurl,
   runCommand,
+  breakpointHook,
 }:
 let
   inherit (buildMavenRepositoryFromLockFile.passthru) mergeDeps readDeps;
@@ -41,13 +42,9 @@ stdenv.mkDerivation (finalAttrs: {
   '';
   buildPhase = ''
     runHook preBuild
-    mkdir out
-    cp -r ${finalAttrs.mavenRepository} m2-repo
-    chmod -R a+w m2-repo
-    ln -s ${bnd_401} m2-repo/biz/aQute/bnd/0.0.401/bnd-0.0.401.pom
     ${ant}/bin/ant \
       -lib ${finalAttrs.mavenRepository}/antlr/antlr/2.7.6/antlr-2.7.6.jar \
-      -Dmaven.repo.local=$PWD/m2-repo \
+      -Dmaven.repo.local=${finalAttrs.mavenRepository} \
       install -DskipTests=true -DskipOsgi=true
     runHook postBuild
   '';
@@ -57,11 +54,10 @@ stdenv.mkDerivation (finalAttrs: {
   ];
   installPhase = ''
     runHook preInstall
-    mkdir -p $out
-    cp -r target/install/. $out/
-    cp target/dist/groovy-${finalAttrs.version}.jar $out/
-    cp target/dist/groovy-all-${finalAttrs.version}.jar $out/
-    cp target/groovy-all.pom $out/groovy-all-${finalAttrs.version}.pom
+    mv target/install $out
+    mv target/dist/groovy-${finalAttrs.version}.jar $out/
+    mv target/dist/groovy-all-${finalAttrs.version}.jar $out/
+    mv target/groovy-all.pom $out/groovy-all-${finalAttrs.version}.pom
 
     runHook postInstall
   '';
@@ -73,6 +69,12 @@ stdenv.mkDerivation (finalAttrs: {
       ./linux-m2.json
       # commons-collections:commons-collections:jar:2.1
       ../maven_3_3_9/linux-m2.json
+      {
+        "biz.aQute:bnd:pom:0.0.401" = {
+          "layout" = "biz/aQute/bnd/0.0.401/bnd-0.0.401.pom";
+          package = bnd_401;
+        };
+      }
     ];
   };
 })
