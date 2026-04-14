@@ -21,7 +21,7 @@ stdenv.mkDerivation (
       owner = "JetBrains";
       repo = "kotlin";
       rev = "v${finalAttrs.version}";
-      hash = "";
+      hash = "sha256-rl0GETzs+nXwMMJLT1g8lrC+I5mCuR0eXvb8XkmPTyg=";
     };
 
     nativeBuildInputs = [

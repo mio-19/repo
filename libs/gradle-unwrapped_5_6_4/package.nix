@@ -28,6 +28,8 @@ stdenv.mkDerivation (finalAttrs: {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
     data = ./deps.json;
+    silent = false;
+    useBwrap = false;
   };
   # this is required for using mitm-cache on Darwin
   __darwinAllowLocalNetworking = true;
