@@ -95,9 +95,9 @@ pkgs.stdenvNoCC.mkDerivation {
   installPhase = ''
     runHook preInstall
     mkdir -p "$out"
-    cp -R unsigned "$out/unsigned"
-    cp -R metadata "$out/metadata"
-    cp config.yml "$out/config.yml"
+    mv unsigned "$out/unsigned"
+    mv metadata "$out/metadata"
+    mv config.yml "$out/config.yml"
     runHook postInstall
   '';
 

@@ -176,8 +176,8 @@ let
         '';
         installPhase = ''
           runHook preInstall
-          mkdir -p "$out/java"
-          cp -R sdk/src/main/java/. "$out/java/"
+          mkdir "$out"
+          mv sdk/src/main/java "$out/java"
           runHook postInstall
         '';
       };

@@ -176,7 +176,7 @@ let
         installPhase = ''
           runHook preInstall
           rm -rf "$TMPDIR/go-mod-cache/cache/download/sumdb"
-          cp -R "$TMPDIR/go-mod-cache" "$out"
+          mv "$TMPDIR/go-mod-cache" "$out"
           runHook postInstall
         '';
       };

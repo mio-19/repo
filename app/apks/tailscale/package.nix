@@ -74,7 +74,7 @@ let
 
         installPhase = ''
           runHook preInstall
-          cp -R "$TMPDIR/go-mod-cache" "$out"
+          mv "$TMPDIR/go-mod-cache" "$out"
           runHook postInstall
         '';
       };
