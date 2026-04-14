@@ -16,7 +16,7 @@
   findutils,
   gnugrep,
   gnused,
-  linkFarm,
+  buildMavenRepository,
   slf4j_1_7_10,
   which,
   unzip,
@@ -29,9 +29,6 @@ let
     "gradle-cli"
     "gradle-core"
     "gradle-docs"
-    "gradle-installation-beacon"
-    "gradle-jvm-services"
-    "gradle-launcher"
     "gradle-logging"
     "gradle-messaging"
     "gradle-model-core"
@@ -133,7 +130,56 @@ let
     "testing-native"
     "tooling-api-builders"
   ];
-  bootstrapOverrides = linkFarm "gradle-${version}-bootstrap-overrides" [
+  getLayout =
+    url:
+    let
+      prefixes = [
+        "https://repo1.maven.org/maven2/"
+      ];
+
+      hasPrefix = prefix: s: builtins.substring 0 (builtins.stringLength prefix) s == prefix;
+
+      matching = builtins.filter (p: hasPrefix p url) prefixes;
+    in
+    if matching == [ ] then
+      throw "not a recognized Maven Central URL: ${url}"
+    else
+      let
+        prefix = builtins.head matching;
+        start = builtins.stringLength prefix;
+        len = builtins.stringLength url - start;
+      in
+      builtins.substring start len url;
+  pathMap = x: if lib.hasPrefix "lib/" x then x else "lib/" + baseNameOf x;
+  bootstrapOverrides = buildMavenRepository {
+    dependencies = builtins.listToAttrs (
+      map (artifact: {
+        name = artifact.name;
+        value =
+          let
+            url =
+              if builtins.isAttrs artifact.path && !lib.hasInfix "plugins/" artifact.name then
+                artifact.path.url
+              else
+                "https://repo1.maven.org/maven2/" + artifact.name;
+            layout = getLayout url;
+          in
+          assert lib.assertMsg (
+            pathMap layout == artifact.name
+          ) "Layout path mismatch for ${artifact.name} ${layout} ${pathMap layout}";
+          {
+            layout = layout;
+            url = artifact.url or null;
+            hash = artifact.hash or lib.fakeHash;
+          }
+          // lib.optionalAttrs (artifact ? path) {
+            package = artifact.path;
+          };
+      }) dependencies
+    );
+    pathMap = pathMap;
+  };
+  dependencies = [
     {
       name = "lib/ant-1.9.6.jar";
       path = "${ant_1_9_6}/share/ant/lib/ant.jar";

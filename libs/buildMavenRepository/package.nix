@@ -22,7 +22,10 @@ let
       groupParts = lib.lists.sublist 0 (n - 3) parts;
       group = builtins.concatStringsSep "." groupParts;
     in
-    "${group}:${artifact}:${version}";
+    if (n - 3) <= 0 then
+      throw "Unexpected path format: ${path}"
+    else
+      "${group}:${artifact}:${version}";
   # "aopalliance/aopalliance/1.0/aopalliance-1.0.pom" -> "aopalliance-1.0.pom"
   fileName =
     path:
@@ -46,6 +49,12 @@ let
     }:
     let
       doOverrides =
+        binary: layout:
+        let
+          result = builtins.tryEval (doOverrides0 binary layout);
+        in
+        if result.success then result.value else binary;
+      doOverrides0 =
         binary: layout:
         let
           group = pathToCoords layout;
