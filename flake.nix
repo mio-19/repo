@@ -1,6 +1,7 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    #nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
     android-nixpkgs = {
@@ -129,12 +130,32 @@
           nixpkgsSrc = applyPatches {
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
-            # https://github.com/NixOS/nixpkgs/pull/508847
-            postPatch = ''
-              substituteInPlace \
-                pkgs/development/tools/build-managers/gradle/setup-hook.sh \
-                --replace-fail '--console plain' '-Dorg.gradle.console=plain'
-            '';
+            patches = [
+              (fetchpatch {
+                name = "Revert flutterPackages: refactor (#500309)#509235";
+                url = "https://github.com/NixOS/nixpkgs/pull/509235.patch";
+                hash = "sha256-bl1ps/YXBhhmrRb1OV40WWefTplzr1EkXvnO8neM9vI=";
+              })
+              (fetchpatch {
+                name = "gradle: reduce keytool noise";
+                url = "https://github.com/NixOS/nixpkgs/pull/472580.patch";
+                hash = "sha256-dtQ8pFVnvTFwmpbMxEG9mnCbi1t6wweA1E/ufBdPsws=";
+              })
+              (fetchpatch {
+                name = "gradle: fix usage of update-deps script without bwrap";
+                url = "https://github.com/NixOS/nixpkgs/pull/418576.patch";
+                hash = "sha256-tbn3rDQNuD8qRCaOJ3mhiQV1YkpcOIAZZlmDEfJb0+Y=";
+              })
+            ];
+            /*
+              # already merged
+              # https://github.com/NixOS/nixpkgs/pull/508847
+              postPatch = ''
+                substituteInPlace \
+                  pkgs/development/tools/build-managers/gradle/setup-hook.sh \
+                  --replace-fail '--console plain' '-Dorg.gradle.console=plain'
+              '';
+            */
           };
           nixpkgs =
             (import "${nixpkgsSrc}/flake.nix").outputs (

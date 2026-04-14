@@ -12,4 +12,5 @@ gradle-from-source {
   buildJdk = jdk17_headless;
   # nix run github:tadfisher/gradle2nix/v2 -- --gradle-dist=https://services.gradle.org/distributions/gradle-9.0-milestone-1-bin.zip
   bootstrapGradle = gradle_9_0_0_M1;
+  configureOnDemand = true;
 }

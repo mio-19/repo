@@ -25,11 +25,11 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preInstall
 
     tmp="$(mktemp -d)"
-    trap 'rm -rf "$tmp"' EXIT
+
     cd "$tmp"
 
     mkdir -p classes
-    find "${finalAttrs.src}/slf4j-api/src/main/java" -name '*.java' | sort > sources.txt
+    find "${finalAttrs.src}/slf4j-api/src/main/java" -name '*.java' > sources.txt
     javac --release 8 -d classes @sources.txt
     rm -rf classes/org/slf4j/impl
 

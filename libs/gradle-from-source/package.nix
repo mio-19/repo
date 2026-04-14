@@ -26,6 +26,7 @@
 }:
 {
   configureOnDemand ? false,
+  avoidSingleUseDaemon ? false,
   version,
   tag ? if lib.length (lib.splitString "." version) == 2 then "v${version}.0" else "v${version}",
   rev ? null,
@@ -45,10 +46,13 @@
   patches ? [ ],
 }:
 let
+  todo = false;
   additionalGradleFlags = gradleFlags;
   additionalPostPatch = postPatch;
   additionalPatches = patches;
-  toolchainPaths = lib.concatStringsSep "," javaToolchains;
+  toolchainPaths = lib.concatStringsSep "," (
+    map (x: if x ? passthru then x.passthru.home else x) javaToolchains
+  );
   lockFile' = buildMavenRepo.passthru.readLockFile lockFile;
   inherit (lib) hasPrefix;
   filteredLockfile = lib.filterAttrs (
@@ -83,193 +87,210 @@ let
       java ? defaultJava,
       ...
     }:
-    buildGradlePackage rec {
-      pname = "gradle-unwrapped";
-      inherit version;
-      lockFile = filteredLockfile;
+    buildGradlePackage (
+      rec {
+        pname = "gradle-unwrapped";
+        inherit version;
+        lockFile = filteredLockfile;
 
-      overrides = overrides-fromsrc;
+        overrides = overrides-fromsrc;
 
-      src =
-        if rev == null then
-          fetchFromGitHub {
-            owner = "gradle";
-            repo = "gradle";
-            inherit tag hash;
-          }
-        else
-          fetchFromGitHub {
-            owner = "gradle";
-            repo = "gradle";
-            inherit rev hash;
-          };
-
-      gradle = bootstrapGradle;
-      inherit buildJdk;
-
-      nativeBuildInputs = [
-        git
-        makeWrapper
-        unzip
-      ]
-      ++ lib.optionals stdenv.hostPlatform.isLinux [
-        autoPatchelfHook
-      ];
-
-      buildInputs = [
-        stdenv.cc.cc
-        ncurses5
-        ncurses6
-      ];
-
-      dontAutoPatchelf = true;
-
-      env = {
-        JAVA_HOME = buildJdk;
-      };
-
-      gradleFlags = [
-        "-PfinalRelease=true"
-        "--no-configuration-cache"
-        "--no-build-cache"
-        # for speed:
-        "--no-daemon"
-        # gradle2nix already set --parallel for us
-      ]
-      ++ (
-        if lib.versionOlder version "8.99.9" then
-          [
-            "-Porg.gradle.configuration-cache=false" # gradle 8.x?
-            "-Porg.gradle.java.installations.paths=${toolchainPaths}" # gradle 8.x
-            "-Porg.gradle.java.installations.auto-download=false" # https://docs.gradle.org/8.14.4/userguide/toolchains.html#sec:auto_detection
-          ]
-        else
-          [
-            "-Dorg.gradle.configuration-cache=false" # gradle 9.x?
-            "-Dorg.gradle.java.installations.auto-download=false" # gradle 9.x
-            "-Dorg.gradle.java.installations.paths=${toolchainPaths}" # gradle 9.x
-          ]
-      )
-      ++ lib.optionals configureOnDemand [
-        "--configure-on-demand" # breaks 8.7.0-20240118-1
-      ]
-      ++ additionalGradleFlags;
-
-      gradleBuildFlags = [ ":distributions-full:binDistributionZip" ];
-
-      gradleLibexec = "${placeholder "out"}/libexec/gradle";
-
-      postPatch = ''
-        rm -f gradle/verification-metadata.xml
-        echo "Removed gradle/verification-metadata.xml so the source-built java libraries overrides is not rejected by upstream checksum verification."
-        rm -fr gradle/wrapper .teamcity/.mvn/wrapper
-        find . -name "*.jar" -print0 | xargs -0 rm
-        echo "Removed gradle/wrapper, .teamcity/.mvn/wrapper and all .jar files"
-      ''
-      + additionalPostPatch;
-
-      patches = additionalPatches;
-
-      installPhase = ''
-        runHook preInstall
-
-        dist_zip="$(find . -path '*/build/distributions/gradle-*-bin.zip' | grep '/distributions-full/' | head -n1)"
-        test -n "$dist_zip"
-        test -f "$dist_zip"
-        mkdir dist-unpack
-        unzip -q "$dist_zip" -d dist-unpack
-        cd dist-unpack/gradle-*
-
-        mkdir -vp $gradleLibexec
-        cp -av lib/ $gradleLibexec
-        [ -f $gradleLibexec/lib/gradle-launcher-*.jar ] || { echo "No Gradle launcher jar found!" >&2; exit 1; }
-
-        echo ${lib.escapeShellArg "org.gradle.java.installations.paths=${toolchainPaths}"} > $gradleLibexec/gradle.properties
-
-        mkdir -vp $gradleLibexec/bin
-        cp -v bin/gradle $gradleLibexec/bin/gradlew
-        chmod +x $gradleLibexec/bin/gradlew
-        patchShebangs --host $gradleLibexec/bin/gradlew
-
-        mkdir -vp $out/bin
-        makeWrapper $gradleLibexec/bin/gradlew $out/bin/gradle \
-          --set-default JAVA_HOME ${java} \
-          --suffix PATH : ${
-            lib.makeBinPath [
-              coreutils
-              findutils
-              gnused
-            ]
-          } \
-          ${jnaFlag}
-
-        runHook postInstall
-      '';
-
-      dontFixup = !stdenv.hostPlatform.isLinux;
-
-      fixupPhase =
-        let
-          arch = if stdenv.hostPlatform.is64bit then "amd64" else "i386";
-          newFileEvents = toString (lib.versionAtLeast version "8.12");
-        in
-        ''
-          export PATH="${buildPackages.jdk}/bin:$PATH"
-          . ${path}/pkgs/development/tools/build-managers/gradle/patching.sh
-
-          nativeVersion="$(extractVersion native-platform $gradleLibexec/lib/native-platform-*.jar)"
-          for variant in "" "-ncurses5" "-ncurses6"; do
-            autoPatchelfInJar \
-              $gradleLibexec/lib/native-platform-linux-${arch}$variant-''${nativeVersion}.jar \
-              "${lib.getLib stdenv.cc.cc}/lib64:${
-                lib.makeLibraryPath [
-                  stdenv.cc.cc
-                  ncurses5
-                  ncurses6
-                ]
-              }"
-          done
-
-          if [ -n "${newFileEvents}" ]; then
-            fileEventsVersion="$(extractVersion gradle-fileevents $gradleLibexec/lib/gradle-fileevents-*.jar)"
-            autoPatchelfInJar \
-              $gradleLibexec/lib/gradle-fileevents-''${fileEventsVersion}.jar \
-              "${lib.getLib stdenv.cc.cc}/lib64:${lib.makeLibraryPath [ stdenv.cc.cc ]}"
+        src =
+          if rev == null then
+            fetchFromGitHub {
+              owner = "gradle";
+              repo = "gradle";
+              inherit tag hash;
+            }
           else
-            fileEventsVersion="$(extractVersion file-events $gradleLibexec/lib/file-events-*.jar)"
-            autoPatchelfInJar \
-              $gradleLibexec/lib/file-events-linux-${arch}-''${fileEventsVersion}.jar \
-              "${lib.getLib stdenv.cc.cc}/lib64:${lib.makeLibraryPath [ stdenv.cc.cc ]}"
-          fi
+            fetchFromGitHub {
+              owner = "gradle";
+              repo = "gradle";
+              inherit rev hash;
+            };
 
-          mkdir $out/nix-support
-          echo ${stdenv.cc.cc} > $out/nix-support/manual-runtime-dependencies
-          echo ${ncurses5} >> $out/nix-support/manual-runtime-dependencies
-          echo ${ncurses6} >> $out/nix-support/manual-runtime-dependencies
-          ${lib.optionalString stdenv.hostPlatform.isLinux "echo ${udev} >> $out/nix-support/manual-runtime-dependencies"}
+        gradle = bootstrapGradle;
+        inherit buildJdk;
+
+        nativeBuildInputs = [
+          git
+          makeWrapper
+          unzip
+        ]
+        ++ lib.optionals stdenv.hostPlatform.isLinux [
+          autoPatchelfHook
+        ];
+
+        buildInputs = [
+          stdenv.cc.cc
+          ncurses5
+          ncurses6
+        ];
+
+        dontAutoPatchelf = true;
+
+        env = {
+          JAVA_HOME = buildJdk.passthru.home;
+        };
+
+        gradleFlags = [
+          "-PfinalRelease=true"
+          "--no-configuration-cache"
+          "--no-build-cache"
+          # for speed:
+          "--no-daemon"
+          # gradle2nix already set --parallel for us
+        ]
+        ++ lib.optionals todo [
+          # for speed:
+          "-Dorg.gradle.vfs.watch=false"
+        ]
+        ++ (
+          if lib.versionOlder version "8.99.9" then
+            [
+              "-Porg.gradle.configuration-cache=false" # gradle 8.x?
+              "-Porg.gradle.java.installations.paths=${toolchainPaths}" # gradle 8.x
+              "-Porg.gradle.java.installations.auto-download=false" # https://docs.gradle.org/8.14.4/userguide/toolchains.html#sec:auto_detection
+            ]
+          else
+            [
+              "-Dorg.gradle.configuration-cache=false" # gradle 9.x?
+              "-Dorg.gradle.java.installations.auto-download=false" # gradle 9.x
+              "-Dorg.gradle.java.installations.paths=${toolchainPaths}" # gradle 9.x
+            ]
+        )
+        ++ lib.optionals configureOnDemand [
+          "--configure-on-demand" # breaks 8.7.0-20240118-1
+        ]
+        ++ additionalGradleFlags;
+
+        gradleBuildFlags = [ ":distributions-full:binDistributionZip" ];
+
+        gradleLibexec = "${placeholder "out"}/libexec/gradle";
+
+        postPatch = ''
+          rm -f gradle/verification-metadata.xml
+          echo "Removed gradle/verification-metadata.xml so the source-built java libraries overrides is not rejected by upstream checksum verification."
+          rm -fr gradle/wrapper .teamcity/.mvn/wrapper
+          find . -name "*.jar" -print0 | xargs -0 rm
+          echo "Removed gradle/wrapper, .teamcity/.mvn/wrapper and all .jar files"
+        ''
+        + additionalPostPatch;
+
+        patches = additionalPatches;
+
+        installPhase = ''
+          runHook preInstall
+
+          dist_zip="$(find . -path '*/build/distributions/gradle-*-bin.zip' | grep '/distributions-full/' | head -n1)"
+          test -n "$dist_zip"
+          test -f "$dist_zip"
+          mkdir dist-unpack
+          unzip -q "$dist_zip" -d dist-unpack
+          cd dist-unpack/gradle-*
+
+          mkdir -vp $gradleLibexec
+          cp -av lib/ $gradleLibexec
+          [ -f $gradleLibexec/lib/gradle-launcher-*.jar ] || { echo "No Gradle launcher jar found!" >&2; exit 1; }
+
+          echo ${lib.escapeShellArg "org.gradle.java.installations.paths=${toolchainPaths}"} > $gradleLibexec/gradle.properties
+
+          mkdir -vp $gradleLibexec/bin
+          cp -v bin/gradle $gradleLibexec/bin/gradlew
+          chmod +x $gradleLibexec/bin/gradlew
+          patchShebangs --host $gradleLibexec/bin/gradlew
+
+          mkdir -vp $out/bin
+          makeWrapper $gradleLibexec/bin/gradlew $out/bin/gradle \
+            --set-default JAVA_HOME ${java.passthru.home} \
+            --suffix PATH : ${
+              lib.makeBinPath [
+                coreutils
+                findutils
+                gnused
+              ]
+            } \
+            ${jnaFlag}
+
+          runHook postInstall
         '';
 
-      passthru.jdk = java;
-      passthru.lockFile = lockFile;
+        dontFixup = !stdenv.hostPlatform.isLinux;
 
-      meta = {
-        platforms = [
-          "aarch64-darwin"
-          "aarch64-linux"
-          "i686-windows"
-          "x86_64-cygwin"
-          "x86_64-darwin"
-          "x86_64-linux"
-          "x86_64-windows"
-        ];
-        description = "Enterprise-grade build system";
-        homepage = "https://www.gradle.org/";
-        changelog = "https://docs.gradle.org/${version}/release-notes.html";
-        sourceProvenance = with lib.sourceTypes; [ fromSource ];
-        license = lib.licenses.asl20;
-        mainProgram = "gradle";
-      };
-    };
+        fixupPhase =
+          let
+            arch = if stdenv.hostPlatform.is64bit then "amd64" else "i386";
+            newFileEvents = toString (lib.versionAtLeast version "8.12");
+          in
+          ''
+            export PATH="${buildPackages.jdk}/bin:$PATH"
+            . ${path}/pkgs/development/tools/build-managers/gradle/patching.sh
+
+            nativeVersion="$(extractVersion native-platform $gradleLibexec/lib/native-platform-*.jar)"
+            for variant in "" "-ncurses5" "-ncurses6"; do
+              autoPatchelfInJar \
+                $gradleLibexec/lib/native-platform-linux-${arch}$variant-''${nativeVersion}.jar \
+                "${lib.getLib stdenv.cc.cc}/lib64:${
+                  lib.makeLibraryPath [
+                    stdenv.cc.cc
+                    ncurses5
+                    ncurses6
+                  ]
+                }"
+            done
+
+            if [ -n "${newFileEvents}" ]; then
+              fileEventsVersion="$(extractVersion gradle-fileevents $gradleLibexec/lib/gradle-fileevents-*.jar)"
+              autoPatchelfInJar \
+                $gradleLibexec/lib/gradle-fileevents-''${fileEventsVersion}.jar \
+                "${lib.getLib stdenv.cc.cc}/lib64:${lib.makeLibraryPath [ stdenv.cc.cc ]}"
+            else
+              fileEventsVersion="$(extractVersion file-events $gradleLibexec/lib/file-events-*.jar)"
+              autoPatchelfInJar \
+                $gradleLibexec/lib/file-events-linux-${arch}-''${fileEventsVersion}.jar \
+                "${lib.getLib stdenv.cc.cc}/lib64:${lib.makeLibraryPath [ stdenv.cc.cc ]}"
+            fi
+
+            mkdir $out/nix-support
+            echo ${stdenv.cc.cc} > $out/nix-support/manual-runtime-dependencies
+            echo ${ncurses5} >> $out/nix-support/manual-runtime-dependencies
+            echo ${ncurses6} >> $out/nix-support/manual-runtime-dependencies
+            ${lib.optionalString stdenv.hostPlatform.isLinux "echo ${udev} >> $out/nix-support/manual-runtime-dependencies"}
+          '';
+
+        passthru.jdk = java;
+        passthru.lockFile = lockFile;
+
+        meta = {
+          platforms = [
+            "aarch64-darwin"
+            "aarch64-linux"
+            "i686-windows"
+            "x86_64-cygwin"
+            "x86_64-darwin"
+            "x86_64-linux"
+            "x86_64-windows"
+          ];
+          description = "Enterprise-grade build system";
+          homepage = "https://www.gradle.org/";
+          changelog = "https://docs.gradle.org/${version}/release-notes.html";
+          sourceProvenance = with lib.sourceTypes; [ fromSource ];
+          license = lib.licenses.asl20;
+          mainProgram = "gradle";
+        };
+      }
+      // lib.optionalAttrs (todo || avoidSingleUseDaemon) {
+        # https://github.com/gradle/gradle/blob/v9.4.1/platforms/core-runtime/base-services/src/main/java/org/gradle/internal/jvm/JpmsConfiguration.java#L64 - GROOVY_JPMS_ARGS_9 & configurationCacheJpmsArgs
+        preBuild = ''
+          if [ ! -f gradle.properties ]; then
+            echo "gradle-unwrapped-${version} error: gradle.properties not found" >&2
+            exit 1
+          fi
+          export JAVA_OPTS="--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-opens=java.base/java.nio.charset=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.xml/javax.xml.namespace=ALL-UNNAMED $(grep '^org\.gradle\.jvmargs=' gradle.properties | cut -d'=' -f2-)"
+          echo "Adding JVM argument to avoid single-use Gradle daemon: $JAVA_OPTS"
+        '';
+      }
+    );
 
   unwrapped = callPackage mkGradle' { };
 in

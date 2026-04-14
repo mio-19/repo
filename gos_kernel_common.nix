@@ -221,8 +221,8 @@ stdenvNoCC.mkDerivation {
 
   installPhase = ''
     runHook preInstall
-    mkdir -p "$out/${installSubdir}"
-    cp -r out/${distDir}/dist/. "$out/${installSubdir}/"
+    mkdir "$out"
+    mv out/${distDir}/dist "$out/${installSubdir}"
     runHook postInstall
   '';
 }

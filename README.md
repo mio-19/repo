@@ -106,6 +106,9 @@ Still, it is not good enough to have low quality code. When resources are availa
 
 + publish pre-built rom for this operating system based on grapheneos that is not grapheneos. modifications include kernelsu and pixel8 pro pwm mod.
 
+## Development
+
+[AGENTS](./AGENTS.md) - This document helps llm to do things better and might also be somewhat helpful for human. 
 
 ## ForkGram and other android applications
 

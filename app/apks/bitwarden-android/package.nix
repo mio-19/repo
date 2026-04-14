@@ -176,8 +176,8 @@ let
         '';
         installPhase = ''
           runHook preInstall
-          mkdir -p "$out/java"
-          cp -R sdk/src/main/java/. "$out/java/"
+          mkdir "$out"
+          mv sdk/src/main/java "$out/java"
           runHook postInstall
         '';
       };
@@ -230,7 +230,7 @@ let
         gitHubToken=
         EOF
         if [[ -n "''${IN_GRADLE_UPDATE_DEPS:-}" ]]; then
-          export GRADLE_USER_HOME="$(mktemp -d)"
+          export GRADLE_USER_HOME="$HOME/.gradle"
         fi
         substituteInPlace gradle/libs.versions.toml \
           --replace-fail 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version.ref = "bitwardenSdk" }' 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version = "LOCAL" }'

@@ -25,7 +25,7 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preInstall
 
     tmp="$(mktemp -d)"
-    trap 'rm -rf "$tmp"' EXIT
+
     cd "$tmp"
 
     mkdir -p api-classes jcl-classes jul-classes log4j-classes

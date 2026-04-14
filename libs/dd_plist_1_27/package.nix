@@ -28,12 +28,12 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preInstall
 
     tmp="$(mktemp -d)"
-    trap 'rm -rf "$tmp"' EXIT
+
     cd "$tmp"
     jar xf "$src"
 
     mkdir -p classes
-    find src/main/java -name '*.java' | sort > sources.txt
+    find src/main/java -name '*.java' > sources.txt
     javac -source 1.8 -target 1.8 -d classes @sources.txt
 
     (
