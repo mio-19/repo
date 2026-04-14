@@ -128,7 +128,7 @@ stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
 
-    export JAVA_HOME=${jdk8_headless}
+    export JAVA_HOME=${jdk8_headless.passthru.home}
     mkdir -p lib
 
     rm -rf buildSrc/src/test src/test

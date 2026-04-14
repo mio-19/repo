@@ -180,7 +180,7 @@ let
       buildPhase = ''
         runHook preBuild
 
-        export JAVA_HOME=${jdk8_headless}
+        export JAVA_HOME=${jdk8_headless.passthru.home}
         export HOME="$TMPDIR/home"
         mkdir -p "$HOME" build/lib build/all/classes build/bootstrap build/meta
 

@@ -76,7 +76,7 @@ stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
 
-    export JAVA_HOME=${jdk8_headless}
+    export JAVA_HOME=${jdk8_headless.passthru.home}
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME" build/direct-core/classes build/compile-lib build/runtime-lib
 
@@ -86,10 +86,13 @@ stdenv.mkDerivation {
 
     compileClasspath="$(printf '%s:' build/compile-lib/*.jar)''${JAVA_HOME}/lib/tools.jar"
 
+    export GRADLE_USER_HOME="$HOME/.gradle"
     "''$JAVA_HOME/bin/java" \
       -noverify \
       -Xmx1536m \
       -classpath "$compileClasspath" \
+      -Dgradle.user.home="$GRADLE_USER_HOME" \
+      -Duser.home="$HOME" \
       org.codehaus.groovy.tools.FileSystemCompiler \
       --classpath "$compileClasspath" \
       -j \

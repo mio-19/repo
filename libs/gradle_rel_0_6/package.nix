@@ -193,16 +193,19 @@ stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
 
-    export JAVA_HOME=${jdk8_headless}
+    export JAVA_HOME=${jdk8_headless.passthru.home}
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME" lib
 
     rm -rf buildSrc/src/test src/test
     cp ${bootstrapJars}/*.jar lib/
 
+    export GRADLE_USER_HOME="$HOME/.gradle"
     "''$JAVA_HOME/bin/java" \
       -classpath "${gradle_rel_0_5}/libexec/gradle/lib/*" \
       -Dgradle.home="${gradle_rel_0_5}/libexec/gradle" \
+      -Dgradle.user.home="$GRADLE_USER_HOME" \
+      -Duser.home="$HOME" \
       org.gradle.Main \
       -p "$PWD" \
       -b build.gradle \
