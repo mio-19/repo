@@ -14,6 +14,7 @@
   gradle_1_0,
 }:
 let
+  defaultRepo = "https://repo1.maven.org/maven2";
   version = "1.1";
   gradleModules = [
     "gradle-base-services"
@@ -94,14 +95,18 @@ let
     dependencies = builtins.listToAttrs (
       map (artifact: {
         name = artifact.path;
-        value = {
-          layout = artifact.path;
-          url = "https://repo1.maven.org/maven2/${artifact.path}";
-          hash = artifact.hash or lib.fakeHash;
-        }
-        // lib.optionalAttrs (artifact ? package) {
-          package = artifact.package;
-        };
+        value =
+          let
+            repo = artifact.repo or defaultRepo;
+          in
+          {
+            layout = artifact.path;
+            url = artifact.url or "${repo}/${artifact.path}";
+            hash = artifact.hash or lib.fakeHash;
+          }
+          // lib.optionalAttrs (artifact ? package) {
+            package = artifact.package;
+          };
       }) artifacts
     );
     pathMap = baseNameOf;

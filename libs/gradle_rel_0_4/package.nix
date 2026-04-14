@@ -31,19 +31,15 @@ let
     }
     {
       path = "org/apache/ant/ant/1.7.0/ant-1.7.0.jar";
-      package = "${ant_1_7_0}/ant-1.7.0.jar";
     }
     {
       path = "org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar";
-      package = "${ant_1_7_0}/ant-launcher-1.7.0.jar";
     }
     {
       path = "org/apache/ant/ant-junit/1.7.0/ant-junit-1.7.0.jar";
-      package = "${ant_1_7_0}/ant-junit-1.7.0.jar";
     }
     {
       path = "org/apache/ant/ant-nodeps/1.7.0/ant-nodeps-1.7.0.jar";
-      package = "${ant_1_7_0}/ant-nodeps-1.7.0.jar";
     }
     {
       path = "commons-cli/commons-cli/1.0/commons-cli-1.0.jar";

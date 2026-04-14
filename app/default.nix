@@ -6,6 +6,7 @@
       gradle2nixV1Patched,
       gradle2nixPatched,
       pkgsPatched,
+      squish-find-the-brains,
       ...
     }:
     let
@@ -30,6 +31,7 @@
           sources
           pkgsPatched
           libs
+          squish-find-the-brains
           ;
         apktool-src = sources.morphe_apktool.src;
         multidexlib2-src = sources.morphe_multidexlib2.src;

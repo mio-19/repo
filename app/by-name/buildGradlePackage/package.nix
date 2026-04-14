@@ -1,4 +1,5 @@
 # based on https://github.com/tadfisher/gradle2nix/blob/v2/nix/build-gradle-package.nix commit 30cfe5889188524223364ee7919d94e83d6ee44a
+# TODO: use lib.extendMkDerivation like nixpkgs does for buildRustPackage
 {
   lib,
   stdenv,

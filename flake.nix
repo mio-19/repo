@@ -68,6 +68,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.utils.follows = "flake-utils";
     };
+    squish-find-the-brains = {
+      url = "github:7mind/squish-find-the-brains";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
   };
 
   outputs =
@@ -146,7 +151,8 @@
             inherit system;
             overlays = [
               (final: prev: rec {
-                ant = selfPackages.ant;
+                inherit (selfPackages) ant;
+                maven = selfPackages.maven_3_9_14;
                 gradle_9 = selfPackages.gradle_9_4_1;
                 gradle_9-unwrapped = gradle_9.unwrapped;
                 gradle =
@@ -171,21 +177,34 @@
           selfPackages = self.packages."${system}";
           selfLegacyPackages = self.legacyPackages."${system}";
           inherit (pkgsPatched) lib stdenv;
+          squish-find-the-brains =
+            (import "${inputs.squish-find-the-brains}/flake.nix").outputs (
+              inputs.squish-find-the-brains.inputs
+              // {
+                self = squish-find-the-brains;
+                inherit nixpkgs;
+              }
+            )
+            // {
+              inherit (inputs.squish-find-the-brains) outPath;
+            };
         in
         let
           pkgs = pkgsPatched;
         in
         {
           _module.args = {
-            inherit pkgsPatched;
+            inherit pkgsPatched squish-find-the-brains;
             gradle2nixPatched =
               assert pkgsPatched.mitm-cache.fetch == selfLegacyPackages.mitm-cache-fetch;
               assert pkgsPatched.mitm-cache.fetch == pkgsPatched.mitm-cache.passthru.fetch;
               gradle2nixPatched;
           };
 
+          # nix run github:mio-19/repo#gradle2nix
           packages.gradle2nix = gradle2nixPatched.packages.${system}.gradle2nix;
           packages.gradle2nixSrc = gradle2nixPatched.outPath;
+          # nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json
           packages.mvn2nix = inputs.mvn2nix.packages.${system}.mvn2nix;
 
           formatter = pkgs.nixfmt;

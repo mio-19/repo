@@ -4,6 +4,8 @@
   fetchurl,
   linkFarm,
   overrides-fromsrc,
+  buildMavenRepo,
+  deepMerge,
 }:
 let
   inherit (lib) forEach attrValues;
@@ -20,7 +22,7 @@ let
       groupParts = lib.lists.sublist 0 (n - 3) parts;
       group = builtins.concatStringsSep "." groupParts;
     in
-    "${group}:${artifact}:${version}";
+    if (n - 3) <= 0 then throw "Unexpected path format: ${path}" else "${group}:${artifact}:${version}";
   # "aopalliance/aopalliance/1.0/aopalliance-1.0.pom" -> "aopalliance-1.0.pom"
   fileName =
     path:
@@ -40,10 +42,17 @@ let
     {
       dependencies,
       pathMap ? x: x,
+      pathMap1 ? x: pathMap x.layout,
       overrides ? overrides-fromsrc,
     }:
     let
       doOverrides =
+        binary: layout:
+        let
+          result = builtins.tryEval (doOverrides0 binary layout);
+        in
+        if result.success then result.value else binary;
+      doOverrides0 =
         binary: layout:
         let
           group = pathToCoords layout;
@@ -52,32 +61,86 @@ let
         in
         entry binary;
       dependenciesAsDrv = (
-        forEach (attrValues dependencies) (dependency: {
-          drv =
-            if dependency ? package then
-              dependency.package
-            else
-              fetchurl (
-                {
-                  url = dependency.url;
-                }
-                // lib.optionalAttrs (dependency ? sha256) {
-                  sha256 = dependency.sha256;
-                }
-                // lib.optionalAttrs (dependency ? hash) {
-                  hash = dependency.hash;
-                }
-              );
-          layout = dependency.layout;
-        })
+        forEach (attrValues dependencies) (
+          dependency:
+          dependency
+          // {
+            drv =
+              if dependency ? package then
+                dependency.package
+              else
+                fetchurl (
+                  {
+                    url = dependency.url;
+                  }
+                  // lib.optionalAttrs (dependency ? sha256) {
+                    sha256 = dependency.sha256;
+                  }
+                  // lib.optionalAttrs (!(dependency ? sha256) && (dependency ? hash)) {
+                    hash = dependency.hash;
+                  }
+                );
+            layout = dependency.layout;
+          }
+        )
       );
     in
     linkFarm "mvn2nix-repository" (
       forEach dependenciesAsDrv (dependency: {
-        name = pathMap dependency.layout;
+        name = pathMap1 dependency;
         path = doOverrides dependency.drv dependency.layout;
       })
     );
-
 in
-buildMavenRepository
+{
+  __functor = _: buildMavenRepository;
+  passthru = {
+    fromGradleLock =
+      let
+        inherit (lib) mapAttrsToList;
+        prefixes = [
+          "https://repo.maven.apache.org/maven2/"
+          "https://dl.google.com/dl/"
+          "https://plugins.gradle.org/m2/"
+          "https://jitpack.io/"
+        ];
+        stripPrefix =
+          url: prefix:
+          let
+            prefixLen = builtins.stringLength prefix;
+            urlLen = builtins.stringLength url;
+          in
+          if builtins.substring 0 prefixLen url == prefix then
+            builtins.substring prefixLen (urlLen - prefixLen) url
+          else
+            null;
+        urlToLayout =
+          url:
+          let
+            matches = builtins.filter (x: x != null) (map (stripPrefix url) prefixes);
+          in
+          if matches != [ ] then
+            builtins.head matches
+          else
+            throw "fromGradleLock: unexpected url prefix: ${url}";
+      in
+      lockFile:
+      let
+        lock = buildMavenRepo.passthru.readLockFile lockFile;
+        doublelist = mapAttrsToList (
+          gav: files:
+          (mapAttrsToList (file: entry: {
+            name = "${gav}:${file}";
+            value = {
+              layout = urlToLayout entry.url;
+              hash = entry.hash;
+              url = entry.url;
+            };
+          }) files)
+        ) lock;
+        flattened = lib.lists.flatten doublelist;
+        dependencies = builtins.listToAttrs flattened;
+      in
+      dependencies;
+  };
+}
