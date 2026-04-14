@@ -150,7 +150,6 @@ let
         len = builtins.stringLength url - start;
       in
       builtins.substring start len url;
-  pathMap = x: if lib.hasPrefix "lib/" x then x else "lib/" + baseNameOf x;
   bootstrapOverrides = buildMavenRepository {
     dependencies = builtins.listToAttrs (
       map (artifact: {
@@ -158,26 +157,24 @@ let
         value =
           let
             url =
-              if builtins.isAttrs artifact.path && !lib.hasInfix "plugins/" artifact.name then
+              if builtins.isAttrs artifact.path then
                 artifact.path.url
               else
                 "https://repo1.maven.org/maven2/" + artifact.name;
             layout = getLayout url;
           in
-          assert lib.assertMsg (
-            pathMap layout == artifact.name
-          ) "Layout path mismatch for ${artifact.name} ${layout} ${pathMap layout}";
           {
             layout = layout;
             url = artifact.url or null;
             hash = artifact.hash or lib.fakeHash;
+            where = artifact.name;
           }
           // lib.optionalAttrs (artifact ? path) {
             package = artifact.path;
           };
       }) dependencies
     );
-    pathMap = pathMap;
+    pathMap1 = entry: entry.where;
   };
   dependencies = [
     {

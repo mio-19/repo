@@ -22,10 +22,7 @@ let
       groupParts = lib.lists.sublist 0 (n - 3) parts;
       group = builtins.concatStringsSep "." groupParts;
     in
-    if (n - 3) <= 0 then
-      throw "Unexpected path format: ${path}"
-    else
-      "${group}:${artifact}:${version}";
+    if (n - 3) <= 0 then throw "Unexpected path format: ${path}" else "${group}:${artifact}:${version}";
   # "aopalliance/aopalliance/1.0/aopalliance-1.0.pom" -> "aopalliance-1.0.pom"
   fileName =
     path:
@@ -45,6 +42,7 @@ let
     {
       dependencies,
       pathMap ? x: x,
+      pathMap1 ? x: pathMap x.layout,
       overrides ? overrides-fromsrc,
     }:
     let
@@ -63,29 +61,33 @@ let
         in
         entry binary;
       dependenciesAsDrv = (
-        forEach (attrValues dependencies) (dependency: {
-          drv =
-            if dependency ? package then
-              dependency.package
-            else
-              fetchurl (
-                {
-                  url = dependency.url;
-                }
-                // lib.optionalAttrs (dependency ? sha256) {
-                  sha256 = dependency.sha256;
-                }
-                // lib.optionalAttrs (!(dependency ? sha256) && (dependency ? hash)) {
-                  hash = dependency.hash;
-                }
-              );
-          layout = dependency.layout;
-        })
+        forEach (attrValues dependencies) (
+          dependency:
+          dependency
+          // {
+            drv =
+              if dependency ? package then
+                dependency.package
+              else
+                fetchurl (
+                  {
+                    url = dependency.url;
+                  }
+                  // lib.optionalAttrs (dependency ? sha256) {
+                    sha256 = dependency.sha256;
+                  }
+                  // lib.optionalAttrs (!(dependency ? sha256) && (dependency ? hash)) {
+                    hash = dependency.hash;
+                  }
+                );
+            layout = dependency.layout;
+          }
+        )
       );
     in
     linkFarm "mvn2nix-repository" (
       forEach dependenciesAsDrv (dependency: {
-        name = pathMap dependency.layout;
+        name = pathMap1 dependency;
         path = doOverrides dependency.drv dependency.layout;
       })
     );
