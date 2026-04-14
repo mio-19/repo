@@ -68,7 +68,6 @@ stdenv.mkDerivation (finalAttrs: {
     mv target/install $out
     mv target/dist/groovy-all-${finalAttrs.version}.jar $out/
     mv target/groovy-all.pom $out/groovy-all-${finalAttrs.version}.pom
-
     runHook postInstall
   '';
   mavenRepository = buildMavenRepository { dependencies = readDeps finalAttrs.passthru.mavenDeps; };
