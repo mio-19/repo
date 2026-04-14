@@ -89,6 +89,86 @@
       "layout": "org/apache/ivy/ivy/2.1.0-rc2/ivy-2.1.0-rc2.pom",
       "sha256": "d7051e7649c363c6cf3f8c84f80fa63f69a4cca793ab4e3388699bf6b962c91c",
       "url": "https://repo.maven.apache.org/maven2/org/apache/ivy/ivy/2.1.0-rc2/ivy-2.1.0-rc2.pom"
+    },
+    "asm:asm-parent:pom:2.2.3": {
+      "layout": "asm/asm-parent/2.2.3/asm-parent-2.2.3.pom",
+      "sha256": "0f235e72252ce1c9b88e2ec0ecbcf6387658047a8aab555f1f65d04a228ae67c",
+      "url": "https://repo.maven.apache.org/maven2/asm/asm-parent/2.2.3/asm-parent-2.2.3.pom"
+    },
+    "org.apache.ant:ant-parent:pom:1.7.1": {
+      "layout": "org/apache/ant/ant-parent/1.7.1/ant-parent-1.7.1.pom",
+      "sha256": "cfd097d6eb9eb5306f4155e8ff7f4f78044619037a10ffc5495e31342d87ea60",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/ant/ant-parent/1.7.1/ant-parent-1.7.1.pom"
+    },
+    "org.livetribe:livetribe:pom:1.0": {
+      "layout": "org/livetribe/livetribe/1.0/livetribe-1.0.pom",
+      "sha256": "a792ae58a0266216d5b861e82e55fea32c232a18a51a780faead2c6bcdd956a6",
+      "url": "https://repo.maven.apache.org/maven2/org/livetribe/livetribe/1.0/livetribe-1.0.pom"
+    },
+    "com.thoughtworks.xstream:xstream-parent:pom:1.3.1": {
+      "layout": "com/thoughtworks/xstream/xstream-parent/1.3.1/xstream-parent-1.3.1.pom",
+      "sha256": "855a4bd29dfe5bb1598a18ed20d857425840e399567f85e0ba7be2ad414531ce",
+      "url": "https://repo.maven.apache.org/maven2/com/thoughtworks/xstream/xstream-parent/1.3.1/xstream-parent-1.3.1.pom"
+    },
+    "org.apache.ant:ant-junit:jar:1.7.1": {
+      "layout": "org/apache/ant/ant-junit/1.7.1/ant-junit-1.7.1.jar",
+      "sha256": "4f2b91c5afe4bdc995d6f1a5b8d38e71b766b8c5a4c0d8934cb31410bf274b3a",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/ant/ant-junit/1.7.1/ant-junit-1.7.1.jar"
+    },
+    "org.apache.ant:ant-junit:pom:1.7.1": {
+      "layout": "org/apache/ant/ant-junit/1.7.1/ant-junit-1.7.1.pom",
+      "sha256": "ad1792b7e74f580d97a63b934cedc37c6e5b9de8abd24c33b52a372c9eb37a02",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/ant/ant-junit/1.7.1/ant-junit-1.7.1.pom"
+    },
+    "org.apache.ant:ant-launcher:jar:1.7.1": {
+      "layout": "org/apache/ant/ant-launcher/1.7.1/ant-launcher-1.7.1.jar",
+      "sha256": "25eb5926c975ac6f4126feeb9d004f53f9ebf07dc117f5db9958a6bfb3110783",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/ant/ant-launcher/1.7.1/ant-launcher-1.7.1.jar"
+    },
+    "org.apache.ant:ant-launcher:pom:1.7.1": {
+      "layout": "org/apache/ant/ant-launcher/1.7.1/ant-launcher-1.7.1.pom",
+      "sha256": "17166a91c8b7d0a87da56342662b99036054c727722e3949258e2fb5596d7b38",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/ant/ant-launcher/1.7.1/ant-launcher-1.7.1.pom"
+    },
+    "asm:asm-attrs:jar:2.2.3": {
+      "layout": "asm/asm-attrs/2.2.3/asm-attrs-2.2.3.jar",
+      "sha256": "eeea9eb5e58e6f8a3d48f7b3b31a9d3f462153e7b7c8cbda496e9f1c68c23493",
+      "url": "https://repo.maven.apache.org/maven2/asm/asm-attrs/2.2.3/asm-attrs-2.2.3.jar"
+    },
+    "asm:asm-attrs:pom:2.2.3": {
+      "layout": "asm/asm-attrs/2.2.3/asm-attrs-2.2.3.pom",
+      "sha256": "b2d579cf863e19758eeb1e3146c5277fc02d6664c3546ee55cc1386aa2648196",
+      "url": "https://repo.maven.apache.org/maven2/asm/asm-attrs/2.2.3/asm-attrs-2.2.3.pom"
+    },
+    "xmlunit:xmlunit:jar:1.2": {
+      "layout": "xmlunit/xmlunit/1.2/xmlunit-1.2.jar",
+      "sha256": "73b0dbc4c9f789031b4a15198a38121387a15760b9285f64e724ab86a7fbeda9",
+      "url": "https://repo.maven.apache.org/maven2/xmlunit/xmlunit/1.2/xmlunit-1.2.jar"
+    },
+    "xmlunit:xmlunit:pom:1.2": {
+      "layout": "xmlunit/xmlunit/1.2/xmlunit-1.2.pom",
+      "sha256": "3dd82a8086175f4a7fa8b9cf82f1f38b58cf8cee780a080a02b2e8657eceb35c",
+      "url": "https://repo.maven.apache.org/maven2/xmlunit/xmlunit/1.2/xmlunit-1.2.pom"
+    },
+    "hsqldb:hsqldb:jar:1.8.0.7": {
+      "layout": "hsqldb/hsqldb/1.8.0.7/hsqldb-1.8.0.7.jar",
+      "sha256": "c57059259f92c34932a2a8285af239792e0011492f43ac16cdd74b713d86635f",
+      "url": "https://repo.maven.apache.org/maven2/hsqldb/hsqldb/1.8.0.7/hsqldb-1.8.0.7.jar"
+    },
+    "hsqldb:hsqldb:pom:1.8.0.7": {
+      "layout": "hsqldb/hsqldb/1.8.0.7/hsqldb-1.8.0.7.pom",
+      "sha256": "8bc425260e27952d795463e60f2baad3fd4236554fc0877e5f6cb69b0102bc4e",
+      "url": "https://repo.maven.apache.org/maven2/hsqldb/hsqldb/1.8.0.7/hsqldb-1.8.0.7.pom"
+    },
+    "commons-logging:commons-logging:jar:1.1": {
+      "layout": "commons-logging/commons-logging/1.1/commons-logging-1.1.jar",
+      "sha256": "9e8d01f172301b966f1f404aa6fc0bdbec478ae9197256ad95bfcad1ef927601",
+      "url": "https://repo.maven.apache.org/maven2/commons-logging/commons-logging/1.1/commons-logging-1.1.jar"
+    },
+    "commons-logging:commons-logging:pom:1.1": {
+      "layout": "commons-logging/commons-logging/1.1/commons-logging-1.1.pom",
+      "sha256": "1f68425fce1007c3343343a27c27057f1427970682cb6d33e493c111721f7cb6",
+      "url": "https://repo.maven.apache.org/maven2/commons-logging/commons-logging/1.1/commons-logging-1.1.pom"
     }
   }
 }
