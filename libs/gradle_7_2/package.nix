@@ -12,4 +12,5 @@
 
 # nix-shell -p javaPackages.compiler.openjdk11-bootstrap
 # rm gradle/verification-metadata.xml
-# nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=7.1.1
+# patch -p1 < repository.patch
+# nix run github:tadfisher/gradle2nix/6c0f9601ac41a1af04df09d8377ab706d07a4cf4  -- --gradle-wrapper=7.2-rc-3
