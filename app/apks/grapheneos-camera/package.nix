@@ -80,7 +80,7 @@ let
 
     preConfigure = ''
       export ANDROID_USER_HOME="$HOME/.android"
-      export GRADLE_USER_HOME="$(mktemp -d)"
+      export GRADLE_USER_HOME="$HOME/.gradle"
       export TERM=dumb
       mkdir -p "$ANDROID_USER_HOME"
       echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
