@@ -4,6 +4,7 @@
   stdenv,
   fetchFromGitHub,
   makeWrapper,
+  writableTmpDirAsHomeHook,
 }:
 # https://github.com/NixOS/nixpkgs/blob/4ed2dff2b5c2970997ed3a12aae50181a352f719/doc/languages-frameworks/gradle.section.md
 stdenv.mkDerivation (
@@ -25,8 +26,13 @@ stdenv.mkDerivation (
       rev = "v${finalAttrs.version}";
       hash = "sha256-rl0GETzs+nXwMMJLT1g8lrC+I5mCuR0eXvb8XkmPTyg=";
     };
+    postPatch = ''
+      rm -fr gradle/verification-metadata.xml gradle/wrapper
+    '';
+    sourceRoot = "${finalAttrs.src.name}/libraries/stdlib";
 
     nativeBuildInputs = [
+      writableTmpDirAsHomeHook
       gradle
       makeWrapper
       finalAttrs.jdk
@@ -37,14 +43,25 @@ stdenv.mkDerivation (
       pkg = finalAttrs.finalPackage;
       data = ./deps.json;
       silent = false;
-      #useBwrap = false;
+      useBwrap = false;
     };
+    env.JAVA_HOME = finalAttrs.jdk.passthru.home;
     # this is required for using mitm-cache on Darwin
     __darwinAllowLocalNetworking = true;
     gradleFlags = [
       "-Dfile.encoding=utf-8"
       "-Dorg.gradle.java.home=${finalAttrs.jdk.passthru.home}"
     ];
+    /*
+      # https://github.com/NixOS/nixpkgs/pull/383115/changes
+      gradleUpdateScript = ''
+        runHook preBuild
+        chmod -R a+w ../..
+        export GRADLE_USER_HOME=$HOME/.gradle
+        export GRADLE_OPTS='${builtins.concatStringsSep " " finalAttrs.gradleFlags}'
+        gradle ${builtins.concatStringsSep " " finalAttrs.gradleFlags} --write-verification-metadata sha256
+      '';
+    */
     installPhase = ''
       mkdir -p $out
       cp -r  build/libs/ $out/
