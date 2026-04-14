@@ -45,6 +45,7 @@
   patches ? [ ],
 }:
 let
+  todo = false;
   additionalGradleFlags = gradleFlags;
   additionalPostPatch = postPatch;
   additionalPatches = patches;
@@ -137,6 +138,10 @@ let
         # for speed:
         "--no-daemon"
         # gradle2nix already set --parallel for us
+      ]
+      ++ lib.optionals todo [
+        # for speed:
+        "-Dorg.gradle.vfs.watch=false"
       ]
       ++ (
         if lib.versionOlder version "8.99.9" then
