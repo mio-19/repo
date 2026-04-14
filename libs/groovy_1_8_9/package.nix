@@ -12,7 +12,6 @@
 }:
 let
   inherit (buildMavenRepositoryFromLockFile.passthru) mergeDeps readDeps;
-  ant_nixpkgs = callPackage ../ant/nixpkgs.nix { };
   bnd_384 = fetchurl {
     url = "https://repo1.maven.org/maven2/biz/aQute/bnd/0.0.384/bnd-0.0.384.pom";
     hash = "sha256-K1Q7NMOlTdxinjZ62KGVNRyGeBI2oB8rY1d45chT8Jo=";
@@ -59,14 +58,14 @@ stdenv.mkDerivation (finalAttrs: {
     cp -r ${finalAttrs.mavenRepository} m2-repo
     chmod -R a+w m2-repo
     ln -s ${bnd_401} m2-repo/biz/aQute/bnd/0.0.401/bnd-0.0.401.pom
-    ${ant_nixpkgs}/bin/ant \
+    ${ant}/bin/ant \
       -lib ${finalAttrs.mavenRepository}/antlr/antlr/2.7.6/antlr-2.7.6.jar \
       -Dmaven.repo.local=$PWD/m2-repo \
       install -DskipTests=true -DskipOsgi=true
     runHook postBuild
   '';
   nativeBuildInputs = [
-    ant_nixpkgs
+    ant
     jdk8_headless
   ];
   installPhase = ''

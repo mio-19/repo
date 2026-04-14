@@ -8,6 +8,7 @@
   jdk8_headless,
   libsUtils,
   applyPatches,
+  antlr_2_7_7,
 }:
 let
   postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
@@ -47,8 +48,11 @@ ant_nixpkgs.overrideAttrs (
         rm src/tests/junit/org/apache/tools/ant/taskdefs/SQLExecTest.java
       ''
       + ''
-        sed -i 's|-SNAPSHOT||g' src/etc/poms/*/pom.xml
-        sed -i 's|-SNAPSHOT||g' src/etc/poms/pom.xml
+        for pom in src/etc/poms/*/pom.xml src/etc/poms/pom.xml; do
+          if grep -q -- '-SNAPSHOT' "$pom"; then
+            substituteInPlace "$pom" --replace-fail '-SNAPSHOT' ""
+          fi
+        done
       '';
     preBuild = lib.optionalString (lib.strings.compareVersions finalAttrs.version "1.9.6" <= 0) ''
       export CLASSPATH=${jdk}${postfix}/lib/tools.jar
@@ -57,6 +61,8 @@ ant_nixpkgs.overrideAttrs (
       runHook preBuild
 
       mkdir out
+      install -Dm644 ${antlr_2_7_7}/antlr-${antlr_2_7_7.version}.jar \
+        lib/optional/antlr-${antlr_2_7_7.version}.jar
       ANT_HOME=./out sh build.sh install-lite
 
       runHook postBuild
