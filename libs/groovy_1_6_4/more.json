@@ -179,6 +179,66 @@
       "layout": "mx4j/mx4j/3.0.2/mx4j-3.0.2.pom",
       "sha256": "4f23de416f0b266bfa2bca310fcaf4141b224c5952490b552e45215b3af67f07",
       "url": "https://repo.maven.apache.org/maven2/mx4j/mx4j/3.0.2/mx4j-3.0.2.pom"
+    },
+    "com.google.code.jarjar:jarjar:jar:1.0": {
+      "layout": "com/google/code/jarjar/1.0/jarjar-1.0.jar",
+      "sha256": "afdd7e963aa52ef03a3dfc98916b58375e2b1356f6d7ea565a82d8c544eb28cf",
+      "url": "https://repository.jboss.org/com/google/code/jarjar/1.0/jarjar-1.0.jar"
+    },
+    "com.google.code.jarjar:jarjar:pom:1.0": {
+      "layout": "com/google/code/jarjar/1.0/jarjar-1.0.pom",
+      "sha256": "c83950b6d431a0ac22bc1edaab6955ccb9d90df3127d0fc892854143696115d9",
+      "url": "https://repository.jboss.org/com/google/code/jarjar/1.0/jarjar-1.0.pom"
+    },
+    "net.sourceforge.cobertura:cobertura:jar:1.9.1.1": {
+      "layout": "net/sourceforge/cobertura/cobertura/1.9.1.1/cobertura-1.9.1.1.jar",
+      "sha256": "b5531dfb1264b7d9681e553ef864f765d145c9113534d9b5f1771d7784365c85",
+      "url": "https://repo.maven.apache.org/maven2/net/sourceforge/cobertura/cobertura/1.9.1.1/cobertura-1.9.1.1.jar"
+    },
+    "net.sourceforge.cobertura:cobertura:pom:1.9.1.1": {
+      "layout": "net/sourceforge/cobertura/cobertura/1.9.1.1/cobertura-1.9.1.1.pom",
+      "sha256": "e5a3c39ed6b5457631e7edea63313cd00fa8e90015a3da72257eeab9738e903b",
+      "url": "https://repo.maven.apache.org/maven2/net/sourceforge/cobertura/cobertura/1.9.1.1/cobertura-1.9.1.1.pom"
+    },
+    "qdox:qdox:jar:1.6.1": {
+      "layout": "qdox/qdox/1.6.1/qdox-1.6.1.jar",
+      "sha256": "6ac92195a9c5568f6cac428081c9760433234dafe71bbcdc0c8ca968bcb04b05",
+      "url": "https://repo.maven.apache.org/maven2/qdox/qdox/1.6.1/qdox-1.6.1.jar"
+    },
+    "qdox:qdox:pom:1.6.1": {
+      "layout": "qdox/qdox/1.6.1/qdox-1.6.1.pom",
+      "sha256": "c1bdd4fa185fa768cd179bcd603bc971529d3226a36d479f152538b79fb1cfb6",
+      "url": "https://repo.maven.apache.org/maven2/qdox/qdox/1.6.1/qdox-1.6.1.pom"
+    },
+    "net.sf.retrotranslator:retrotranslator-transformer:jar:1.2.4": {
+      "layout": "net/sf/retrotranslator/retrotranslator-transformer/1.2.4/retrotranslator-transformer-1.2.4.jar",
+      "sha256": "65976a146363d8e50655e4110ddbc95f62774412631ccb9dfc662c34f23f3439",
+      "url": "https://repo.maven.apache.org/maven2/net/sf/retrotranslator/retrotranslator-transformer/1.2.4/retrotranslator-transformer-1.2.4.jar"
+    },
+    "net.sf.retrotranslator:retrotranslator-transformer:pom:1.2.4": {
+      "layout": "net/sf/retrotranslator/retrotranslator-transformer/1.2.4/retrotranslator-transformer-1.2.4.pom",
+      "sha256": "6bc4a69f9bf6700136098f64c19ebd105b5abcea61e31e49fa215fd0938888c2",
+      "url": "https://repo.maven.apache.org/maven2/net/sf/retrotranslator/retrotranslator-transformer/1.2.4/retrotranslator-transformer-1.2.4.pom"
+    },
+    "net.sf.retrotranslator:retrotranslator-runtime:jar:1.2.4": {
+      "layout": "net/sf/retrotranslator/retrotranslator-runtime/1.2.4/retrotranslator-runtime-1.2.4.jar",
+      "sha256": "0b982635193c3378914b05a23392c4e96b4e05cc8ca0d7099b73bd9212970c18",
+      "url": "https://repo.maven.apache.org/maven2/net/sf/retrotranslator/retrotranslator-runtime/1.2.4/retrotranslator-runtime-1.2.4.jar"
+    },
+    "net.sf.retrotranslator:retrotranslator-runtime:pom:1.2.4": {
+      "layout": "net/sf/retrotranslator/retrotranslator-runtime/1.2.4/retrotranslator-runtime-1.2.4.pom",
+      "sha256": "b2d7c0e12ff70e830219a7a61065d157a486b709886cbc48ca41551b2488c3d7",
+      "url": "https://repo.maven.apache.org/maven2/net/sf/retrotranslator/retrotranslator-runtime/1.2.4/retrotranslator-runtime-1.2.4.pom"
+    },
+    "biz.aQute:bnd:jar:0.0.323": {
+      "layout": "biz/aQute/bnd/0.0.323/bnd-0.0.323.jar",
+      "sha256": "392ae9b3e3436c76d30e96ff0282098e75ac944096c0847c7a69bc03405911cd",
+      "url": "https://web.archive.org/web/20091028000033if_/http://www.aqute.biz:80/repo/biz/aQute/bnd/0.0.323/bnd-0.0.323.jar"
+    },
+    "biz.aQute:bnd:pom:0.0.323": {
+      "layout": "biz/aQute/bnd/0.0.323/bnd-0.0.323.pom",
+      "sha256": "a8fb659440e8c9b095f7285c67864a12e5bf8d38ec0897cc9aeb17f2fc8da655",
+      "url": "https://web.archive.org/web/20091028000047if_/http://www.aqute.biz:80/repo/biz/aQute/bnd/0.0.323/bnd-0.0.323.pom"
     }
   }
 }
