@@ -48,7 +48,7 @@ let
   additionalGradleFlags = gradleFlags;
   additionalPostPatch = postPatch;
   additionalPatches = patches;
-  toolchainPaths = lib.concatStringsSep "," (map (x: x.passthru.home) javaToolchains);
+  toolchainPaths = lib.concatStringsSep "," (map (x: if x ? passthru then x.passthru.home else x) javaToolchains);
   lockFile' = buildMavenRepo.passthru.readLockFile lockFile;
   inherit (lib) hasPrefix;
   filteredLockfile = lib.filterAttrs (
