@@ -23,7 +23,7 @@ stdenv.mkDerivation (finalAttrs: {
     gradle
     makeWrapper
   ];
-# $(nix build .#gradle_5_6_4_unwrapped.mitmCache.updateScript --no-link --print-out-paths)
+# $(nix build .#gradle-unwrapped_5_6_4.mitmCache.updateScript --no-link --print-out-paths)
   mitmCache = gradle.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
