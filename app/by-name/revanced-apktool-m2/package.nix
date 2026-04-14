@@ -63,7 +63,7 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
     cd
-    mv "$HOME/.m2/repository/." "$out"
+    mv "$HOME/.m2/repository" "$out"
     runHook postInstall
   '';
 
