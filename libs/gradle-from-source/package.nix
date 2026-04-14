@@ -48,7 +48,7 @@ let
   additionalGradleFlags = gradleFlags;
   additionalPostPatch = postPatch;
   additionalPatches = patches;
-  toolchainPaths = lib.concatStringsSep "," javaToolchains;
+  toolchainPaths = lib.concatStringsSep "," (map (x: x.passthru.home) javaToolchains);
   lockFile' = buildMavenRepo.passthru.readLockFile lockFile;
   inherit (lib) hasPrefix;
   filteredLockfile = lib.filterAttrs (
@@ -125,7 +125,7 @@ let
       dontAutoPatchelf = true;
 
       env = {
-        JAVA_HOME = buildJdk;
+        JAVA_HOME = buildJdk.passthru.home;
       };
 
       gradleFlags = [
@@ -193,7 +193,7 @@ let
 
         mkdir -vp $out/bin
         makeWrapper $gradleLibexec/bin/gradlew $out/bin/gradle \
-          --set-default JAVA_HOME ${java} \
+          --set-default JAVA_HOME ${java.passthru.home} \
           --suffix PATH : ${
             lib.makeBinPath [
               coreutils
