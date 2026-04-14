@@ -26,6 +26,7 @@
 }:
 {
   configureOnDemand ? false,
+  avoidSingleUseDaemon ? true,
   version,
   tag ? if lib.length (lib.splitString "." version) == 2 then "v${version}.0" else "v${version}",
   rev ? null,
@@ -269,6 +270,15 @@ let
         license = lib.licenses.asl20;
         mainProgram = "gradle";
       };
+    }
+    // lib.optionalAttrs avoidSingleUseDaemon {
+      preBuild = ''
+        if [ ! -f gradle.properties ]; then
+          echo "gradle-unwrapped-${version} error: gradle.properties not found" >&2
+          exit 1
+        fi
+        export JAVA_OPTS="$(grep '^org\.gradle\.jvmargs=' gradle.properties | cut -d'=' -f2-)"
+      '';
     };
 
   unwrapped = callPackage mkGradle' { };
