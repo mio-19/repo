@@ -31,15 +31,25 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-pG9jsyMEUMVoeqnI04Tk5g0Y5VRxBcTxVSw4HyGqF0E=";
   };
   sourceRoot = finalAttrs.src.name;
-  patches = [
-    ./a.patch
-  ];
-  postPatch = ''
-    substituteInPlace build.xml \
-      --replace-fail '<contains string="''${ant.version}" substring="1.1"></contains>' ""
-    # cannot use substituteInPlace : substituteInPlace doesn't have \b
-    sed -i 's|\bParameter\b|org.codehaus.groovy.ast.Parameter|g' src/main/org/codehaus/groovy/vmplugin/v5/Java5.java
-  '';
+  postPatch =
+    let
+      targetP = ''<property name="targetDirectory" value="target"/>'';
+      deps = ''<artifact:dependencies useScope="@{scope}" filesetId="fs.@{scope}.@{module}" pomRefId="@{module}.pom"'';
+      pom = ''<artifact:pom file="@{file}" id="@{id}"'';
+    in
+    ''
+      substituteInPlace config/ant/build-maven.xml \
+        --replace-fail '${deps}/>' \
+          '${deps}><localRepository path="''${maven.repo.local}" /></artifact:dependencies>' \
+        --replace-fail '${pom}/>' \
+          '${pom}><localRepository path="''${maven.repo.local}" /></artifact:pom>'
+      substituteInPlace config/ant/build-setup.xml \
+        --replace-fail '${targetP}' '${targetP}<property name="maven.repo.local" value="''${user.home}/.m2/repository" />'
+      substituteInPlace build.xml \
+        --replace-fail '<contains string="''${ant.version}" substring="1.1"></contains>' ""
+      # cannot use substituteInPlace : substituteInPlace doesn't have \b
+      sed -i 's|\bParameter\b|org.codehaus.groovy.ast.Parameter|g' src/main/org/codehaus/groovy/vmplugin/v5/Java5.java
+    '';
   buildPhase = ''
     runHook preBuild
     ${ant}/bin/ant \
