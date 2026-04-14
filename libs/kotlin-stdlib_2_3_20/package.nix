@@ -17,6 +17,8 @@ stdenv.mkDerivation (
     pname = "kotlin-stdlib";
     version = "2.3.20";
 
+    jdk = jdk11_headless;
+
     src = fetchFromGitHub {
       owner = "JetBrains";
       repo = "kotlin";
@@ -27,16 +29,22 @@ stdenv.mkDerivation (
     nativeBuildInputs = [
       gradle
       makeWrapper
+      finalAttrs.jdk
     ];
     # $(nix build .#kotlin-stdlib_2_3_20.mitmCache.updateScript --no-link --print-out-paths)
     mitmCache = gradle.fetchDeps {
       inherit (finalAttrs) pname;
       pkg = finalAttrs.finalPackage;
       data = ./deps.json;
+      silent = false;
+      #useBwrap = false;
     };
     # this is required for using mitm-cache on Darwin
     __darwinAllowLocalNetworking = true;
-    gradleFlags = [ "-Dfile.encoding=utf-8" ];
+    gradleFlags = [
+      "-Dfile.encoding=utf-8"
+      "-Dorg.gradle.java.home=${finalAttrs.jdk.passthru.home}"
+    ];
     installPhase = ''
       mkdir -p $out
       cp -r  build/libs/ $out/
