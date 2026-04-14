@@ -33,11 +33,9 @@ let
   artifacts = [
     {
       path = "org/apache/ant/ant/1.9.3/ant-1.9.3.jar";
-      package = "${ant_1_9_3}/ant-1.9.3.jar";
     }
     {
       path = "org/apache/ant/ant-launcher/1.9.3/ant-launcher-1.9.3.jar";
-      package = "${ant_1_9_3}/ant-launcher-1.9.3.jar";
     }
     {
       path = "org/slf4j/slf4j-api/1.7.2/slf4j-api-1.7.2.jar";

@@ -35,11 +35,9 @@ let
   artifacts = [
     {
       path = "org/apache/ant/ant/1.9.3/ant-1.9.3.jar";
-      package = "${ant_1_9_3}/ant-1.9.3.jar";
     }
     {
       path = "org/apache/ant/ant-launcher/1.9.3/ant-launcher-1.9.3.jar";
-      package = "${ant_1_9_3}/ant-launcher-1.9.3.jar";
     }
     {
       path = "org/codehaus/groovy/groovy-all/2.3.2/groovy-all-2.3.2.jar";
