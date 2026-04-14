@@ -14,6 +14,7 @@
   gradle_rel_0_8,
 }:
 let
+  defaultRepo = "https://repo1.maven.org/maven2";
   version = "0.9";
   artifacts = [
     {

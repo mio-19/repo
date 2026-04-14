@@ -14,6 +14,7 @@
   gradle_0_9,
 }:
 let
+  defaultRepo = "https://repo1.maven.org/maven2";
   version = "1.0";
   gradleModules = [
     "gradle-base-services"

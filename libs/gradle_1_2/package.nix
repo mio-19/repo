@@ -15,6 +15,7 @@
   javax_inject_1,
 }:
 let
+  defaultRepo = "https://repo1.maven.org/maven2";
   version = "1.2";
   gradleModules = [
     "gradle-base-services"
