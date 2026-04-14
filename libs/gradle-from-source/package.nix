@@ -26,7 +26,7 @@
 }:
 {
   configureOnDemand ? false,
-  avoidSingleUseDaemon ? true,
+  avoidSingleUseDaemon ? false, # avoidSingleUseDaemon is working in progress
   version,
   tag ? if lib.length (lib.splitString "." version) == 2 then "v${version}.0" else "v${version}",
   rev ? null,
