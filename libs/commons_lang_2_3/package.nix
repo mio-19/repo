@@ -29,7 +29,7 @@ stdenv.mkDerivation (finalAttrs: {
     cd "$tmp"
 
     mkdir -p classes
-    find "${finalAttrs.src}/src/java" -name '*.java' | sort > sources.txt
+    find "${finalAttrs.src}/src/java" -name '*.java' > sources.txt
     ${jdk8_headless}/bin/javac -source 1.4 -target 1.4 -encoding ISO-8859-1 -d classes @sources.txt
 
     (

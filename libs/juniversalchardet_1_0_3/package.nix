@@ -35,7 +35,7 @@ stdenv.mkDerivation (finalAttrs: {
     cd "$tmp"
 
     mkdir -p classes
-    find "${finalAttrs.src}/src/main/java" -name '*.java' | sort > sources.txt
+    find "${finalAttrs.src}/src/main/java" -name '*.java' > sources.txt
     javac --release 8 -encoding UTF-8 -d classes @sources.txt
 
     (

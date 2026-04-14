@@ -35,7 +35,7 @@ stdenv.mkDerivation (finalAttrs: {
     cd "$tmp"
 
     mkdir -p classes
-    find "${finalAttrs.src}/activation/src/main/java" -name '*.java' | sort > sources.txt
+    find "${finalAttrs.src}/activation/src/main/java" -name '*.java' > sources.txt
     javac --release 8 -encoding UTF-8 -d classes @sources.txt
 
     resource_root="${finalAttrs.src}/activation/src/main/resources"

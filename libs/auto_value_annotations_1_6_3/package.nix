@@ -29,7 +29,7 @@ stdenv.mkDerivation (finalAttrs: {
     cd "$tmp"
 
     mkdir -p classes
-    find "${finalAttrs.src}/value/src/main/java/com/google/auto/value" -maxdepth 1 -name '*.java' | sort > sources.txt
+    find "${finalAttrs.src}/value/src/main/java/com/google/auto/value" -maxdepth 1 -name '*.java' > sources.txt
     find "${finalAttrs.src}/value/src/main/java/com/google/auto/value/extension/memoized" -maxdepth 1 -name '*.java' | sort >> sources.txt
     javac --release 8 -d classes @sources.txt
 

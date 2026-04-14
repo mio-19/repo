@@ -31,7 +31,7 @@ stdenv.mkDerivation (finalAttrs: {
     cd "$tmp"
 
     mkdir -p classes
-    find "${finalAttrs.src}/src/main/java" -name '*.java' | sort > sources.txt
+    find "${finalAttrs.src}/src/main/java" -name '*.java' > sources.txt
     javac --release 8 \
       -cp "${brotli_dec_0_1_2}/dec-${brotli_dec_0_1_2.version}.jar:${xz_java_1_6}/xz-${xz_java_1_6.version}.jar" \
       -d classes \
