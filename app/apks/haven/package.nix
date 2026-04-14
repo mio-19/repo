@@ -266,21 +266,19 @@ let
     in
     {
       pname = "haven";
-      version = "5.3.4";
+      version = "5.4.1";
 
       src = fetchFromGitHub {
         owner = "GlassOnTin";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-qQeepjIpEGj76nVvrxBtpdAE5NXW7DjbndUKH1UDwpM=";
+        hash = "sha256-hKVc1nc5+bT5l6vLC1XsFEHwXUbF/AQLxio+WI09WAo=";
       };
 
       patches = [
         # Build unsigned APK (no keystore in sandbox)
         ./remove-signing-config.patch
-        # Allow skipping Chaquopy pip requirements in reproducible/offline builds.
-        ./skip-python-requirements.patch
         # Override AGP's default NDK selection for the native local module.
         ./set-ndk-version.patch
         # Build the Rust JNI libraries in Nix instead of invoking cargo-ndk from Gradle.
