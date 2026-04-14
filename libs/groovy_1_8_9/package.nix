@@ -96,6 +96,7 @@ stdenv.mkDerivation (finalAttrs: {
         "groovy-${finalAttrs.version}.pom" = "${finalAttrs.src}/pom.xml";
       };
       "org.codehaus.groovy:groovy-all:${finalAttrs.version}" = {
+        "groovy-all-${finalAttrs.version}.jar" = "$out/groovy-all-${finalAttrs.version}.jar";
         "groovy-all-${finalAttrs.version}.pom" = "$out/groovy-all-${finalAttrs.version}.pom";
       };
     };
