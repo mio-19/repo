@@ -69,9 +69,7 @@ ant_nixpkgs.overrideAttrs (
       cd out # for installPhase
     '';
     doInstallCheck = true;
-    installCheckPhase = ''
-      ${checkMavenProvides finalAttrs}
-    '';
+    installCheckPhase = checkMavenProvides finalAttrs;
     meta = prevAttrs.meta // {
       mavenProvides = exposeMavenProvides finalAttrs;
       # nix-repl> legacyPackages.x86_64-linux.overrides-fromsrc-bare."org.apache.ant:ant-antlr:1.10.12"."ant-antlr-1.10.12.jar" null

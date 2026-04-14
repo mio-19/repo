@@ -9,7 +9,7 @@
   writableTmpDirAsHomeHook,
   fetchurl,
   runCommand,
-  breakpointHook,
+  libsUtils,
 }:
 let
   inherit (buildMavenRepositoryFromLockFile.passthru) mergeDeps readDeps;
@@ -20,6 +20,7 @@ let
   bnd_401 = runCommand "bnd-0.0.401.pom" { } ''
     substitute ${bnd_384} $out --replace-fail '0.0.384' '0.0.401'
   '';
+  inherit (libsUtils) checkMavenProvides exposeMavenProvides;
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "groovy";
@@ -65,13 +66,14 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
     mv target/install $out
-    mv target/dist/groovy-${finalAttrs.version}.jar $out/
     mv target/dist/groovy-all-${finalAttrs.version}.jar $out/
     mv target/groovy-all.pom $out/groovy-all-${finalAttrs.version}.pom
 
     runHook postInstall
   '';
   mavenRepository = buildMavenRepository { dependencies = readDeps finalAttrs.passthru.mavenDeps; };
+  doInstallCheck = true;
+  installCheckPhase = checkMavenProvides finalAttrs;
   passthru = {
     mavenDeps = mergeDeps [
       ./more.json
@@ -86,5 +88,17 @@ stdenv.mkDerivation (finalAttrs: {
         };
       }
     ];
+  };
+  meta = {
+    mavenProvides = exposeMavenProvides finalAttrs;
+    mavenProvidesInternal = {
+      "org.codehaus.groovy:groovy:${finalAttrs.version}" = {
+        "groovy-${finalAttrs.version}.jar" = "$out/lib/groovy-${finalAttrs.version}.jar";
+        #"groovy-${finalAttrs.version}.pom" = ??;
+      };
+      "org.codehaus.groovy:groovy-all:${finalAttrs.version}" = {
+        "groovy-all-${finalAttrs.version}.pom" = "$out/groovy-all-${finalAttrs.version}.pom";
+      };
+    };
   };
 })
