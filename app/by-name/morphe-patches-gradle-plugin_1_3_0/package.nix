@@ -56,7 +56,13 @@ stdenv.mkDerivation (finalAttrs: {
 
   installPhase = ''
     runHook preInstall
-    mv build/m2 "$out"
+    mkdir -p "$out"
+    echo "Current directory: $PWD"
+    echo "Checking for build/m2..."
+    ls -R build/m2 || echo "build/m2 not found"
+    if [ -d "build/m2" ]; then
+      cp -a build/m2/. "$out/"
+    fi
     find "$out" -name "*.pom"
     runHook postInstall
   '';

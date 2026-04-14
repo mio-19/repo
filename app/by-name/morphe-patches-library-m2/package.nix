@@ -120,7 +120,8 @@ stdenv.mkDerivation (finalAttrs: {
 
   installPhase = ''
     runHook preInstall
-    mv build/m2 "$out"
+    mkdir -p "$out"
+    cp -a build/m2/. "$out/"
     runHook postInstall
   '';
 
