@@ -40,7 +40,7 @@ stdenv.mkDerivation (finalAttrs: {
     jar xf "$src"
 
     mkdir -p classes
-    find org -name '*.java' | sort > sources.txt
+    find org -name '*.java' > sources.txt
     javac --release 8 \
       ${lib.optionalString (classpath != [ ]) "-cp ${lib.concatStringsSep ":" classpath}"} \
       -d classes \

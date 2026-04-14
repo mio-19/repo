@@ -34,7 +34,7 @@ stdenv.mkDerivation (finalAttrs: {
     jar xf "$src"
 
     mkdir -p classes
-    find org -name '*.java' | sort > sources.txt
+    find org -name '*.java' > sources.txt
     javac --release 8 -cp "${asm_6_2}/asm-${asm_6_2.version}.jar" -d classes @sources.txt
 
     (

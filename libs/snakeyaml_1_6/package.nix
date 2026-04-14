@@ -33,7 +33,7 @@ stdenv.mkDerivation (finalAttrs: {
     jar xf "$src"
 
     mkdir -p classes
-    find org -name '*.java' | sort > sources.txt
+    find org -name '*.java' > sources.txt
     javac --release 8 -d classes @sources.txt
 
     (

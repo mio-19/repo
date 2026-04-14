@@ -35,7 +35,7 @@ stdenv.mkDerivation (finalAttrs: {
     
     cd "$tmp"
     mkdir -p classes
-    find "${finalAttrs.src}/futures/failureaccess/src" -name '*.java' | sort > sources.txt
+    find "${finalAttrs.src}/futures/failureaccess/src" -name '*.java' > sources.txt
     javac --release 8 -d classes @sources.txt
     (
       cd classes

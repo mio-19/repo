@@ -25,3 +25,4 @@
 - When error: infinite recursion encountered happens, --show-trace, see if it is the case that a package defined unnecessary dependency causing cyclic dependency. if so just remove that dependency.
 - old code is having logic for example like `if stdenv.isDarwin then "${jdk25_headless}" else "${jdk25_headless}/lib/openjdk"`. please use .passthru.home like `jdk25_headless.passthru.home` for example for new code and optionally update old code to use .passthru.home
 - When need a home, use writableTmpDirAsHomeHook with `export GRADLE_USER_HOME="$HOME/.gradle"` `"-Dmaven.repo.local=$HOME/.m2/repository"` or similar.
+- Prefer mv in installPhase over cp because it is faster

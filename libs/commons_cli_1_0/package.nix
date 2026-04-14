@@ -30,7 +30,7 @@ stdenv.mkDerivation (finalAttrs: {
     cd "$tmp"
 
     mkdir -p classes
-    find "${finalAttrs.src}/src/java" -name '*.java' | sort > sources.txt
+    find "${finalAttrs.src}/src/java" -name '*.java' > sources.txt
     javac --release 8 -cp "${commons_lang_2_3}/commons-lang-${commons_lang_2_3.version}.jar" -d classes @sources.txt
 
     (

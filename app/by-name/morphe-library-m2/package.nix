@@ -128,15 +128,11 @@ stdenv.mkDerivation (finalAttrs: {
 
   installPhase = ''
     runHook preInstall
-    mkdir -p "$out"
-    # Copy artifacts from the local maven repo and jadb
-    # Jadb is in ../.m2/repository
-    # Library artifacts are in build/m2
     if [ -d "build/m2" ]; then
-      cp -a build/m2/. "$out/"
+      mv build/m2 "$out"
     fi
     if [ -d "../.m2/repository" ]; then
-      cp -a ../.m2/repository/. "$out/"
+      mv ../.m2/repository "$out"
     fi
     runHook postInstall
   '';
