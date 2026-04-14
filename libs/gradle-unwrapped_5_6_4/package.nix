@@ -16,14 +16,14 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "gradle";
     repo = "gradle";
     rev = "v${finalAttrs.version}";
-    hash = "";
+    hash = "sha256-sGLAyKn2PVIp4OBe1rvhU7Tact4cHvF9iaIlSZ4bGYE=";
   };
 
   nativeBuildInputs = [
     gradle
     makeWrapper
   ];
-# $(nix build .#gradle-unwrapped_5_6_4.mitmCache.updateScript --no-link --print-out-paths)
+  # $(nix build .#gradle-unwrapped_5_6_4.mitmCache.updateScript --no-link --print-out-paths)
   mitmCache = gradle.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
