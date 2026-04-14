@@ -45,10 +45,13 @@
   patches ? [ ],
 }:
 let
+  todo = false;
   additionalGradleFlags = gradleFlags;
   additionalPostPatch = postPatch;
   additionalPatches = patches;
-  toolchainPaths = lib.concatStringsSep "," javaToolchains;
+  toolchainPaths = lib.concatStringsSep "," (
+    map (x: if x ? passthru then x.passthru.home else x) javaToolchains
+  );
   lockFile' = buildMavenRepo.passthru.readLockFile lockFile;
   inherit (lib) hasPrefix;
   filteredLockfile = lib.filterAttrs (
@@ -125,7 +128,7 @@ let
       dontAutoPatchelf = true;
 
       env = {
-        JAVA_HOME = buildJdk;
+        JAVA_HOME = buildJdk.passthru.home;
       };
 
       gradleFlags = [
@@ -135,6 +138,10 @@ let
         # for speed:
         "--no-daemon"
         # gradle2nix already set --parallel for us
+      ]
+      ++ lib.optionals todo [
+        # for speed:
+        "-Dorg.gradle.vfs.watch=false"
       ]
       ++ (
         if lib.versionOlder version "8.99.9" then
@@ -193,7 +200,7 @@ let
 
         mkdir -vp $out/bin
         makeWrapper $gradleLibexec/bin/gradlew $out/bin/gradle \
-          --set-default JAVA_HOME ${java} \
+          --set-default JAVA_HOME ${java.passthru.home} \
           --suffix PATH : ${
             lib.makeBinPath [
               coreutils

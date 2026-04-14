@@ -8,31 +8,31 @@
 {
   axp_build = {
     pname = "axp_build";
-    version = "5d5342d7e95b40b70000d82ee121850751ec3b8a";
+    version = "7d166a303604efa72a32878eec8fefa78062608f";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/build.git";
-      rev = "5d5342d7e95b40b70000d82ee121850751ec3b8a";
+      rev = "7d166a303604efa72a32878eec8fefa78062608f";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-JDz0Fvy/DB8/nE+/qv/D6VogmAtmdxv/iL3BHHPvCVk=";
+      sha256 = "sha256-nsdl3fosJ04H88AF1/3CSma9nWMidJKVmvJEjwrpMb8=";
     };
-    date = "2026-04-02";
+    date = "2026-04-13";
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
-    version = "6ccd95704a8a6d77f64b78ec2b49c3e8cd6c4e30";
+    version = "9e8af6f721c855342a2f327aaef81da2ea9e4660";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
-      rev = "6ccd95704a8a6d77f64b78ec2b49c3e8cd6c4e30";
+      rev = "9e8af6f721c855342a2f327aaef81da2ea9e4660";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-SDwUOUoPcX3lBd1Jr3+uFDB4gOekLDTn+KsiKm71zPE=";
+      sha256 = "sha256-mP/hTQDk/o3BYztVic6BxhjvuHV2Gp+nUuVGkHueSoM=";
     };
-    date = "2026-04-09";
+    date = "2026-04-14";
   };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
@@ -818,7 +818,7 @@
     version = "6b7bf6d049e8d425611e0c6dfb4637193190e8d6";
     src = fetchurl {
       url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/6b7bf6d049e8d425611e0c6dfb4637193190e8d6/vendor_gapps-6b7bf6d049e8d425611e0c6dfb4637193190e8d6.tar.gz";
-      sha256 = "sha256-ZJPTBe8kD4bWcvQET6TL58KfjiCicVzCAo3D8v/5XNE=";
+      sha256 = "sha256-SkpawHzPB3gLJ6Lr8lNIvQ0LvrH+6UwM+QaMjsnQTjM=";
     };
     date = "2026-04-09";
   };

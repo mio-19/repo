@@ -28,12 +28,12 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preInstall
 
     tmp="$(mktemp -d)"
-    trap 'rm -rf "$tmp"' EXIT
+
     cd "$tmp"
     jar xf "$src"
 
     mkdir -p classes
-    find javax -name '*.java' | sort > sources.txt
+    find javax -name '*.java' > sources.txt
     javac --release 8 -encoding ISO-8859-1 -d classes @sources.txt
 
     find javax -name '*.properties' | sort | while IFS= read -r path; do

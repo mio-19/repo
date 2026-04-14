@@ -36,10 +36,10 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preInstall
 
     tmp="$(mktemp -d)"
-    trap 'rm -rf "$tmp"' EXIT
+
     cd "$tmp"
 
-    find "${finalAttrs.src}/src/main/java" -name '*.java' | sort > sources.txt
+    find "${finalAttrs.src}/src/main/java" -name '*.java' > sources.txt
     mkdir -p classes
     javac --release 9 -encoding UTF-8 -d classes @sources.txt
 
