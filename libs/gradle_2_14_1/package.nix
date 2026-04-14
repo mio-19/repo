@@ -179,7 +179,11 @@ let
   dependencies = [
     {
       name = "lib/ant-1.9.6.jar";
-      path = "${ant_1_9_6}/share/ant/lib/ant.jar";
+      path = fetchurl {
+        url = "https://repo1.maven.org/maven2/org/apache/ant/ant/1.9.6/ant-1.9.6.jar";
+        # test that this url is correctly overridden by overrides-fromsrc
+        hash = lib.fakeHash;
+      };
     }
     {
       name = "lib/ant-launcher-1.9.6.jar";
