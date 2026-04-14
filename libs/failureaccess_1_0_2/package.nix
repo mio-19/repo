@@ -32,7 +32,7 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preInstall
 
     tmp="$(mktemp -d)"
-    trap 'rm -rf "$tmp"' EXIT
+    
     cd "$tmp"
     mkdir -p classes
     find "${finalAttrs.src}/futures/failureaccess/src" -name '*.java' | sort > sources.txt
