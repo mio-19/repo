@@ -48,7 +48,7 @@ stdenv.mkDerivation (finalAttrs: {
         --replace-fail '${targetP}' '${targetP}<property name="maven.repo.local" value="''${user.home}/.m2/repository" />'
       substituteInPlace build.xml \
         --replace-fail '<contains string="''${ant.version}" substring="1.1"></contains>' ""
-      # cannot use substituteInPlace : substituteInPlace doesn't have \b
+      # cannot use substituteInPlace - substituteInPlace doesn't have \b
       sed -i 's|\bParameter\b|org.codehaus.groovy.ast.Parameter|g' src/main/org/codehaus/groovy/vmplugin/v5/Java5.java
     '';
   buildPhase = ''
