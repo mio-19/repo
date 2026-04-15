@@ -5,8 +5,13 @@
   fetchFromGitHub,
   makeWrapper,
   writableTmpDirAsHomeHook,
-  curl,lib,
+  curl,
+  lib,
+  libsUtils,
 }:
+let
+  inherit (libsUtils) checkMavenProvides exposeMavenProvides;
+in
 # https://github.com/NixOS/nixpkgs/blob/4ed2dff2b5c2970997ed3a12aae50181a352f719/doc/languages-frameworks/gradle.section.md
 stdenv.mkDerivation (
   finalAttrs:
@@ -87,6 +92,36 @@ stdenv.mkDerivation (
     installPhase = ''
       mv ~/.m2/repository $out
     '';
+    doInstallCheck = true;
+    installCheckPhase = checkMavenProvides finalAttrs;
+    meta = {
+      mavenProvides = exposeMavenProvides finalAttrs;
+      mavenProvidesInternal =
+        let
+          postfixes = [
+            ""
+            "-js"
+            "-wasm-js"
+            "-wasm-wasi"
+          ];
+          name = postfix: "org.jetbrains.kotlin:kotlin-stdlib${postfix}:${finalAttrs.version}";
+          value = postfix: {
+            "kotlin-stdlib${postfix}-${finalAttrs.version}.jar" =
+              "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.jar";
+            "kotlin-stdlib${postfix}-${finalAttrs.version}.module" =
+              "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.module";
+            "kotlin-stdlib${postfix}-${finalAttrs.version}.pom" =
+              "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.pom";
+          };
+          children = builtins.listToAttrs (
+            map (postfix: {
+              name = name postfix;
+              value = value postfix;
+            }) postfixes
+          );
+        in
+        children;
+    };
   }
 )
 # cd libraries/stdlib

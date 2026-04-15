@@ -289,7 +289,7 @@ let
       gradleBuildTask = ":app:assembleArm64Release";
       gradleUpdateTask = finalAttrs0.gradleBuildTask;
 
-    # $(nix build .#apk_haven.mitmCache.updateScript --no-link --print-out-paths)
+      # $(nix build .#apk_haven.mitmCache.updateScript --no-link --print-out-paths)
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs0) pname;
         pkg = finalAttrs0.finalPackage;
