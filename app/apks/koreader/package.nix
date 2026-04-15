@@ -12,6 +12,7 @@
   ninja,
   pkg-config,
   autoconf,
+  mkSignScript,
   automake,
   libtool,
   gettext,
@@ -216,6 +217,11 @@ stdenv.mkDerivation (
       runHook postInstall
     '';
 
+    passthru.signScript = mkSignScript {
+      name = "sign-koreader";
+      apkPath = "${placeholder "out"}/koreader.apk";
+      defaultOut = "koreader-signed.apk";
+    };
     meta = with lib; {
       description = "KOReader for Android";
       homepage = "https://github.com/koreader/koreader";
