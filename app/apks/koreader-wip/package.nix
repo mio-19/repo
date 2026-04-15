@@ -154,6 +154,10 @@ stdenv.mkDerivation (
       "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
     ];
 
+    preBuild = ''
+      export PATH="${androidSdk}/share/android-sdk/ndk/${androidNdkVersion}/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
+    '';
+
     gradleUpdateScript = ''
       runHook preBuild
       # gradle --write-verification-metadata sha256
