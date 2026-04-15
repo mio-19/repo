@@ -95,7 +95,7 @@ stdenv.mkDerivation (
     doInstallCheck = true;
     installCheckPhase = checkMavenProvides finalAttrs;
     meta = {
-      mavenProvides = exposeMavenProvides finalAttrs;
+      #mavenProvides = exposeMavenProvides finalAttrs;
       mavenProvidesInternal =
         let
           postfixes = [
