@@ -116,10 +116,14 @@ stdenv.mkDerivation (
                 "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.module";
               "kotlin-stdlib${postfix}-${finalAttrs.version}.pom" =
                 "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.pom";
+              "kotlin-stdlib${postfix}-${finalAttrs.version}.spdx.json" =
+                "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.spdx.json";
             }
             // lib.optionalAttrs (postfix == "") {
               "kotlin-stdlib${postfix}-${finalAttrs.version}.jar" =
                 "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.jar";
+              "kotlin-stdlib${postfix}-${finalAttrs.version}-all.jar" =
+                "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}-all.jar";
             }
             // lib.optionalAttrs (postfix != "") {
               "kotlin-stdlib${postfix}-${finalAttrs.version}.klib" =
