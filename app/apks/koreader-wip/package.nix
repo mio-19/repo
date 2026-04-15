@@ -31,13 +31,50 @@
   srcOnly,
   applyPatches,
 }:
+# https://github.com/NixOS/nixpkgs/blob/4ed2dff2b5c2970997ed3a12aae50181a352f719/doc/languages-frameworks/gradle.section.md
 stdenv.mkDerivation (
   finalAttrs:
-  # git clone --recurse-submodules  https://github.com/koreader/koreader.git
-  # git checkout v2026.03
   let
+    androidLauncherDir = "platform/android/luajit-launcher";
     repos = import ./repos.nix { inherit fetchgit; };
     repos-replace = repo: ''--replace-quiet "${repo.url}" "${repo}" '';
+    androidSdk = androidSdkBuilder (s: [
+      s.cmdline-tools-latest
+      s.platform-tools
+      s.platforms-android-34
+      s.platforms-android-30
+      s.build-tools-34-0-0
+      s.ndk-26-1-10909125
+    ]);
+    gradle = gradle_8_14_3;
+    androidNdkVersion = "26.1.10909125";
+    fhsEnv = buildFHSEnv {
+      name = "koreader-build-env";
+      targetPkgs =
+        p: with p; [
+          git
+          cmake
+          ninja
+          pkg-config
+          autoconf
+          automake
+          libtool
+          gettext
+          m4
+          which
+          python3
+          unzip
+          util-linux
+          meson
+          curl
+          bash
+          jdk17_headless
+
+          p7zip
+          buildPackages.stdenv.cc
+        ];
+      runScript = "${bash}/bin/bash";
+    };
   in
   {
     pname = "koreader";
@@ -57,5 +94,65 @@ stdenv.mkDerivation (
     '';
 
     passthru.srcOnly = srcOnly finalAttrs.finalPackage;
+    nativeBuildInputs = [
+      git
+      cmake
+      ninja
+      pkg-config
+      autoconf
+      automake
+      libtool
+      gettext
+      m4
+      which
+      python3
+      unzip
+      gradle
+      jdk17_headless
+
+      writableTmpDirAsHomeHook
+      util-linux
+      meson
+      curl
+      buildPackages.stdenv.cc
+      bash
+    ];
+    env = {
+      ANDROID_HOME = "${androidSdk}/share/android-sdk";
+      ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+      ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/${androidNdkVersion}";
+      JAVA_HOME = jdk17_headless;
+      CC_FOR_BUILD = "${buildPackages.stdenv.cc}/bin/cc";
+      CXX_FOR_BUILD = "${buildPackages.stdenv.cc}/bin/c++";
+      LD_FOR_BUILD = "${buildPackages.stdenv.cc}/bin/ld";
+      AR_FOR_BUILD = "${buildPackages.stdenv.cc.bintools.bintools}/bin/ar";
+      PKG_CONFIG_FOR_BUILD = "${buildPackages.pkg-config}/bin/pkg-config";
+    };
+    # $(nix build .#apk_koreader-wip.mitmCache.updateScript --no-link --print-out-paths)
+    mitmCache = finalAttrs.gradle.fetchDeps {
+      inherit (finalAttrs) pname;
+      pkg = finalAttrs.finalPackage;
+      data = ./deps.json;
+      silent = false;
+      useBwrap = false;
+    };
+    dontUseCmakeConfigure = true;
+    dontUseMesonConfigure = true;
+
+    gradleFlags = [
+      "-xlintVitalRelease"
+      "-Dorg.gradle.java.installations.auto-download=false"
+      "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
+      "-Dorg.gradle.jvmargs=-Xmx4g"
+      "-p"
+      androidLauncherDir
+      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
+    ];
+
+    gradleUpdateScript = ''
+      runHook preBuild
+      gradle --write-verification-metadata sha256
+    '';
+
   }
 )
