@@ -118,6 +118,7 @@ stdenv.mkDerivation (
                 "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.pom";
               "kotlin-stdlib${postfix}-${finalAttrs.version}.spdx.json" =
                 "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.spdx.json";
+              # TODO: -sources.jar
             }
             // lib.optionalAttrs (postfix == "") {
               "kotlin-stdlib${postfix}-${finalAttrs.version}.jar" =
