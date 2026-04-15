@@ -52,19 +52,21 @@ stdenv.mkDerivation (
       "-Dfile.encoding=utf-8"
       "-Dorg.gradle.java.home=${finalAttrs.jdk.passthru.home}"
     ];
-    /*
-      # https://github.com/NixOS/nixpkgs/pull/383115/changes
-      gradleUpdateScript = ''
-        runHook preBuild
-        chmod -R a+w ../..
-        export GRADLE_USER_HOME=$HOME/.gradle
-        export GRADLE_OPTS='${builtins.concatStringsSep " " finalAttrs.gradleFlags}'
-        gradle ${builtins.concatStringsSep " " finalAttrs.gradleFlags} --write-verification-metadata sha256
-      '';
-    */
+    preBuild = ''
+      chmod -R a+w ../..
+    '';
+    # https://github.com/NixOS/nixpkgs/pull/383115/changes
+    gradleUpdateScript = ''
+      runHook preBuild
+      export GRADLE_OPTS='${builtins.concatStringsSep " " finalAttrs.gradleFlags}'
+      gradle ${builtins.concatStringsSep " " finalAttrs.gradleFlags} --write-verification-metadata sha256
+    '';
     installPhase = ''
       mkdir -p $out
       cp -r  build/libs/ $out/
     '';
   }
 )
+# cd libraries/stdlib
+# nix-shell -p jdk17
+# nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.14
