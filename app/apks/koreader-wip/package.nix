@@ -94,7 +94,6 @@ stdenv.mkDerivation (
     sourceRoot = "${finalAttrs.src.name}";
     postPatch = ''
       substituteInPlace $(find . -name CMakeLists.txt) ${lib.concatMapStrings repos-replace repos}
-      substituteInPlace base/thirdparty/cmake_modules/koenv.sh --replace-fail 
     '';
     patches = [
       ./base.patch
