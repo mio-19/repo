@@ -129,7 +129,7 @@ stdenv.mkDerivation (
       PKG_CONFIG_FOR_BUILD = "${buildPackages.pkg-config}/bin/pkg-config";
     };
     # $(nix build .#apk_koreader-wip.mitmCache.updateScript --no-link --print-out-paths)
-    mitmCache = finalAttrs.gradle.fetchDeps {
+    mitmCache = gradle.fetchDeps {
       inherit (finalAttrs) pname;
       pkg = finalAttrs.finalPackage;
       data = ./deps.json;
