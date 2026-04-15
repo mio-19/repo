@@ -29,31 +29,33 @@
   bash,
   buildFHSEnv,
   srcOnly,
+  applyPatches,
 }:
 stdenv.mkDerivation (
   finalAttrs:
   # git clone --recurse-submodules  https://github.com/koreader/koreader.git
   # git checkout v2026.03
   let
-    koreader_src = fetchFromGitHub {
+    repos = import ./repos.nix { inherit fetchgit; };
+    repos-replace = repo: ''--replace-quiet "${repo.url}" "${repo}" '';
+  in
+  {
+    pname = "koreader";
+    version = "2026.03";
+    src = fetchFromGitHub {
       name = "koreader";
       owner = "koreader";
       repo = "koreader";
       tag = "v${finalAttrs.version}";
       leaveDotGit = true;
-      hash = "";
+      hash = "sha256-Ww2DBPkr7Q5Is+HHrmjt9WfIordHRGdMuunFfB+G2hg=";
       fetchSubmodules = true;
     };
-    repos = import ./repos.nix { inherit fetchgit; };
-  in
-  {
-    pname = "koreader";
-    version = "2026.03";
+    sourceRoot = "${finalAttrs.src.name}";
+    postPatch = ''
+      substituteInPlace $(find . -name CMakeLists.txt) ${lib.concatMapStrings repos-replace repos}
+    '';
 
-    srcs = [
-      koreader_src
-    ]
-    ++ repos;
     passthru.srcOnly = srcOnly finalAttrs.finalPackage;
   }
 )
