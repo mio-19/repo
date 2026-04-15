@@ -104,9 +104,9 @@ stdenv.mkDerivation (
         let
           postfixes = [
             ""
-            "-js"
-            "-wasm-js"
-            "-wasm-wasi"
+            #"-js"
+            #"-wasm-js"
+            #"-wasm-wasi"
           ];
           name = postfix: "org.jetbrains.kotlin:kotlin-stdlib${postfix}:${finalAttrs.version}";
           value = postfix: {
