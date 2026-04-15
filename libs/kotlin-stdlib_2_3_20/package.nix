@@ -32,15 +32,20 @@ stdenv.mkDerivation (
       rev = "v${finalAttrs.version}";
       hash = "sha256-rl0GETzs+nXwMMJLT1g8lrC+I5mCuR0eXvb8XkmPTyg=";
     };
+    sourceRoot = "${finalAttrs.src.name}/libraries/stdlib";
     postPatch = ''
-      rm -fr gradle/verification-metadata.xml gradle/wrapper
+      base_path=$(pwd)
+      cd ../..
+      chmod -R a+w .
+      rm gradle/verification-metadata.xml
+      rm -r gradle/wrapper
       snapshot_version=$(awk -F= '/^defaultSnapshotVersion=/{print $2}'  gradle.properties)
       substituteInPlace gradle.properties \
         --replace-fail "$snapshot_version" "${finalAttrs.version}"
       substituteInPlace $(find . -name gradle.properties) $(find . -name pom.xml) \
         --replace-quiet "$snapshot_version" "${finalAttrs.version}"
+      cd "$base_path"
     '';
-    sourceRoot = "${finalAttrs.src.name}/libraries/stdlib";
 
     nativeBuildInputs = [
       writableTmpDirAsHomeHook
@@ -49,7 +54,7 @@ stdenv.mkDerivation (
       finalAttrs.jdk
     ];
     # $(nix build .#kotlin-stdlib_2_3_20.mitmCache.updateScript --no-link --print-out-paths)
-    mitmCache = gradle.fetchDeps {
+    mitmCache = finalAttrs.gradle.fetchDeps {
       inherit (finalAttrs) pname;
       pkg = finalAttrs.finalPackage;
       data = ./deps.json;
@@ -78,7 +83,6 @@ stdenv.mkDerivation (
     # https://github.com/NixOS/nixpkgs/pull/383115/changes
     gradleUpdateScript = ''
       runHook preBuild
-      export GRADLE_OPTS='${builtins.concatStringsSep " " finalAttrs.gradleFlags}'
       gradle ${builtins.concatStringsSep " " finalAttrs.gradleFlags} --write-verification-metadata sha256
       # maybe todo: # ${lib.getExe curl} https://kotlin-build-properties.labs.jb.gg/setup.json
     '';
@@ -95,7 +99,7 @@ stdenv.mkDerivation (
     doInstallCheck = true;
     installCheckPhase = checkMavenProvides finalAttrs;
     meta = {
-      #mavenProvides = exposeMavenProvides finalAttrs;
+      mavenProvides = exposeMavenProvides finalAttrs;
       mavenProvidesInternal =
         let
           postfixes = [
@@ -105,14 +109,27 @@ stdenv.mkDerivation (
             "-wasm-wasi"
           ];
           name = postfix: "org.jetbrains.kotlin:kotlin-stdlib${postfix}:${finalAttrs.version}";
-          value = postfix: {
-            "kotlin-stdlib${postfix}-${finalAttrs.version}.jar" =
-              "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.jar";
-            "kotlin-stdlib${postfix}-${finalAttrs.version}.module" =
-              "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.module";
-            "kotlin-stdlib${postfix}-${finalAttrs.version}.pom" =
-              "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.pom";
-          };
+          value =
+            postfix:
+            {
+              "kotlin-stdlib${postfix}-${finalAttrs.version}.module" =
+                "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.module";
+              "kotlin-stdlib${postfix}-${finalAttrs.version}.pom" =
+                "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.pom";
+              "kotlin-stdlib${postfix}-${finalAttrs.version}.spdx.json" =
+                "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.spdx.json";
+              # TODO: -sources.jar
+            }
+            // lib.optionalAttrs (postfix == "") {
+              "kotlin-stdlib${postfix}-${finalAttrs.version}.jar" =
+                "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.jar";
+              "kotlin-stdlib${postfix}-${finalAttrs.version}-all.jar" =
+                "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}-all.jar";
+            }
+            // lib.optionalAttrs (postfix != "") {
+              "kotlin-stdlib${postfix}-${finalAttrs.version}.klib" =
+                "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.klib";
+            };
           children = builtins.listToAttrs (
             map (postfix: {
               name = name postfix;
