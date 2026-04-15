@@ -25,6 +25,10 @@ let
       prefixes = [
         "https://repo.maven.apache.org/maven2/"
         "https://plugins.gradle.org/m2/"
+        "https://cache-redirector.jetbrains.com/maven-central/"
+        "https://cache-redirector.jetbrains.com/redirector.kotlinlang.org/maven/bootstrap/"
+        "https://dl.google.com/dl/"
+        "https://jitpack.io/"
       ];
 
       prefix = lib.findFirst (p: lib.hasPrefix p url) null prefixes;

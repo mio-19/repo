@@ -49,7 +49,7 @@ stdenv.mkDerivation (
       finalAttrs.jdk
     ];
     # $(nix build .#kotlin-stdlib_2_3_20.mitmCache.updateScript --no-link --print-out-paths)
-    mitmCache = gradle.fetchDeps {
+    mitmCache = finalAttrs.gradle.fetchDeps {
       inherit (finalAttrs) pname;
       pkg = finalAttrs.finalPackage;
       data = ./deps.json;
@@ -78,7 +78,6 @@ stdenv.mkDerivation (
     # https://github.com/NixOS/nixpkgs/pull/383115/changes
     gradleUpdateScript = ''
       runHook preBuild
-      export GRADLE_OPTS='${builtins.concatStringsSep " " finalAttrs.gradleFlags}'
       gradle ${builtins.concatStringsSep " " finalAttrs.gradleFlags} --write-verification-metadata sha256
       # maybe todo: # ${lib.getExe curl} https://kotlin-build-properties.labs.jb.gg/setup.json
     '';

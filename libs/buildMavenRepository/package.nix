@@ -100,8 +100,10 @@ in
         inherit (lib) mapAttrsToList;
         prefixes = [
           "https://repo.maven.apache.org/maven2/"
-          "https://dl.google.com/dl/"
           "https://plugins.gradle.org/m2/"
+          "https://cache-redirector.jetbrains.com/maven-central/"
+          "https://cache-redirector.jetbrains.com/redirector.kotlinlang.org/maven/bootstrap/"
+          "https://dl.google.com/dl/"
           "https://jitpack.io/"
         ];
         stripPrefix =
