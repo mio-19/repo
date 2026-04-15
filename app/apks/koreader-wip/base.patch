@@ -1,0 +1,23 @@
+diff --git a/base/thirdparty/cmake_modules/koenv.sh b/base/thirdparty/cmake_modules/koenv.sh
+index 32c3b464..6882f45b 100644
+--- a/base/thirdparty/cmake_modules/koenv.sh
++++ b/base/thirdparty/cmake_modules/koenv.sh
+@@ -222,16 +222,13 @@ clone_git_repo() { (
+                     git -C "${repo}" remote add origin "${remote}" && git -C "${repo}" fetch --unshallow --tags || :
+                     ;;
+                 3)
+-                    # Game over…
+-                    err 'failed to checkout revision'
+-                    return 1
++                    echo 'we already checked out correct tag in nix repos.nix'
+                     ;;
+             esac
+         done
+         # Update submodules.
+         if ! git -C "${repo}" submodule update --depth ${clone_depth} --force --init --recursive "$@"; then
+-            err 'failed to update submodules'
+-            return 1
++            echo 'we already checked out submodules in nix repos.nix'
+         fi
+         git -C "${repo}" submodule foreach --recursive git sparse-checkout init
+     ) 9>"${repo}.lock"
