@@ -50,6 +50,8 @@ stdenv.mkDerivation (
     # this is required for using mitm-cache on Darwin
     __darwinAllowLocalNetworking = true;
     gradleFlags = [
+      "--no-daemon"
+      "--parallel"
       "--no-configuration-cache"
       "-Dfile.encoding=utf-8"
       "-Dorg.gradle.java.home=${finalAttrs.jdk.passthru.home}"
