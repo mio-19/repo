@@ -28,22 +28,42 @@
   buildPackages,
   bash,
   buildFHSEnv,
+  srcOnly,
 }:
-stdenv.mkDerivation (finalAttrs:
-let koreader_src = fetchFromGitHub {
+stdenv.mkDerivation (
+  finalAttrs:
+  # git clone --recurse-submodules  https://github.com/koreader/koreader.git
+  # git checkout v2026.03
+  let
+    koreader_src = fetchFromGitHub {
       name = "koreader";
-    owner = "koreader";
-    repo = "koreader";
-    tag = "v${finalAttrs.version}";
-    leaveDotGit = true;
-    hash = "";
-    fetchSubmodules = true;
-    }; in{
-  pname = "koreader";
-  version = "2026.03";
+      owner = "koreader";
+      repo = "koreader";
+      tag = "v${finalAttrs.version}";
+      leaveDotGit = true;
+      hash = "";
+      fetchSubmodules = true;
+    };
+    repos_json = builtins.fromJSON (builtins.readFile ./repos.json);
+    repos = map (
+      repo:
+      fetchgit {
+        url = repo.url;
+        rev = repo.ref;
+        hash = repo.hash;
+        leaveDotGit = true;
+        fetchSubmodules = true;
+      }
+    ) repos_json;
+  in
+  {
+    pname = "koreader";
+    version = "2026.03";
 
-  srcs = [
-    (koreader_src)
-  ];
-
-})
+    srcs = [
+      (koreader_src)
+    ]
+    ++ repos;
+    passthru.srcOnly = srcOnly finalAttrs.finalPackage;
+  }
+)
