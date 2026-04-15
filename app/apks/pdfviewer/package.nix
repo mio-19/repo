@@ -104,7 +104,7 @@ let
         substituteInPlace settings.gradle.kts \
           --replace-fail "pluginManagement {" "$pluginResolutionBlock"
 
-        rm app/src/main/res/values/strings.xml.orig
+        rm app/src/main/res/values/strings.xml.orig || true
         substituteInPlace app/build.gradle.kts \
               --replace-fail \
               'commandLine(getCommand("npm"), "ci", "--ignore-scripts")' \
