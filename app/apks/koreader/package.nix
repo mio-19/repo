@@ -227,6 +227,7 @@ stdenv.mkDerivation (
       homepage = "https://github.com/koreader/koreader";
       license = licenses.agpl3Only;
       platforms = platforms.unix;
+      mainApk = "koreader.apk";
       appId = "org.koreader.launcher.fdroid";
       metadataYml = ''
         Categories:
