@@ -103,8 +103,12 @@ in
           "https://plugins.gradle.org/m2/"
           "https://cache-redirector.jetbrains.com/maven-central/"
           "https://cache-redirector.jetbrains.com/redirector.kotlinlang.org/maven/bootstrap/"
+          "https://cache-redirector.jetbrains.com/redirector.kotlinlang.org/maven/kotlin-ide-plugin-dependencies/"
+          "https://cache-redirector.jetbrains.com/redirector.kotlinlang.org/maven/kotlin-ide-plugin-dependencies/"
+          "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/plan/litmuskt/"
           "https://dl.google.com/dl/"
           "https://jitpack.io/"
+          "https://redirector.kotlinlang.org/maven/kotlin-dependencies/"
         ];
         stripPrefix =
           url: prefix:
