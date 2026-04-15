@@ -38,18 +38,20 @@ stdenv.mkDerivation (
     androidLauncherDir = "platform/android/luajit-launcher";
     repos = import ./repos.nix { inherit fetchgit; };
     repos-replace = repo: ''--replace-quiet "${repo.url}" "${repo}" '';
-    # https://github.com/koreader/android-luajit-launcher/blob/dc24a50aae4f69dd3a9708e8eb8e141b5e1c1c03/app/build.gradle#L6
-    androidNdkVersion = "23.2.8568313";
     androidSdk = androidSdkBuilder (s: [
       s.cmdline-tools-latest
       s.platform-tools
       s.platforms-android-34
       s.platforms-android-30
       s.build-tools-34-0-0
-      s.ndk-23-2-8568313
+      # Tried NDK 27.3.13750724 here, but KOReader's android-luajit-launcher
+      # still uses ALooper_pollAll, which the newer headers mark unavailable,
+      # so this stays on the baseline NDK until the native source is updated.
+      s.ndk-26-1-10909125
     ]);
     # upstream use older 8.x : https://github.com/koreader/android-luajit-launcher/blob/dc24a50aae4f69dd3a9708e8eb8e141b5e1c1c03/gradle/wrapper/gradle-wrapper.properties
     gradle = gradle_8_14_3;
+    androidNdkVersion = "26.1.10909125"; # cannot install upstream's ndk version.
     androidArch = "arm64";
     androidFlavor = "Fdroid";
     fhsEnv = buildFHSEnv {
@@ -99,7 +101,7 @@ stdenv.mkDerivation (
         # "clang" to form "aarch64-linux-android21-clang". But HOST_CC (used to
         # compile host tools minilua/buildvm) must be the native build compiler
         # since NDK's clang is an Android cross-compiler without Linux headers.
-        substituteInPlace base/thirdparty/luajit/CMakeLists.txt \
+      substituteInPlace base/thirdparty/luajit/CMakeLists.txt \
           --replace-fail \
             'set(HOST_CC ''${HOSTCC})' \
             'if(DEFINED ENV{CC_FOR_BUILD})
@@ -107,6 +109,10 @@ stdenv.mkDerivation (
         else()
           set(HOST_CC ''${HOSTCC})
         endif()'
+      substituteInPlace ${androidLauncherDir}/app/build.gradle \
+          --replace-fail \
+            "ndkVersion '23.2.8568313'" \
+            "ndkVersion '${androidNdkVersion}'"
     '';
     patches = [
       ./base.patch
