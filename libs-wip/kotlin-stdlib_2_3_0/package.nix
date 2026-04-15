@@ -4,12 +4,12 @@
 }:
 kotlin-stdlib_2_3_20.overrideAttrs (
   finalAttrs: prevAttrs: {
-    version = "2.3.20";
+    version = "2.3.0";
     src = fetchFromGitHub {
       owner = "JetBrains";
       repo = "kotlin";
       rev = "v${finalAttrs.version}";
-      hash = "sha256-rl0GETzs+nXwMMJLT1g8lrC+I5mCuR0eXvb8XkmPTyg=";
+      hash = "";
     };
     # $(nix build .#kotlin-stdlib_2_3_20.mitmCache.updateScript --no-link --print-out-paths)
     mitmCache = finalAttrs.gradle.fetchDeps {
