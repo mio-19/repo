@@ -4,7 +4,6 @@ note: lspatch patched app might need cleaning cache after updating
 
 broken but can compile and install:
 
-+ koreader crash when tapping top area
 + kernelsu cannot communicate with the kernel because of the need to change KSU_EXPECTED_HASH
 + rednote crashed
 + twitter cannot login
