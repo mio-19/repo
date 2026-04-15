@@ -32,15 +32,20 @@ stdenv.mkDerivation (
       rev = "v${finalAttrs.version}";
       hash = "sha256-rl0GETzs+nXwMMJLT1g8lrC+I5mCuR0eXvb8XkmPTyg=";
     };
+    sourceRoot = "${finalAttrs.src.name}/libraries/stdlib";
     postPatch = ''
-      rm -fr gradle/verification-metadata.xml gradle/wrapper
+      base_path=$(pwd)
+      cd ../..
+      chmod -R a+w .
+      rm gradle/verification-metadata.xml
+      rm -r gradle/wrapper
       snapshot_version=$(awk -F= '/^defaultSnapshotVersion=/{print $2}'  gradle.properties)
       substituteInPlace gradle.properties \
         --replace-fail "$snapshot_version" "${finalAttrs.version}"
       substituteInPlace $(find . -name gradle.properties) $(find . -name pom.xml) \
         --replace-quiet "$snapshot_version" "${finalAttrs.version}"
+      cd "$base_path"
     '';
-    sourceRoot = "${finalAttrs.src.name}/libraries/stdlib";
 
     nativeBuildInputs = [
       writableTmpDirAsHomeHook
