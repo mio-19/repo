@@ -44,24 +44,14 @@ stdenv.mkDerivation (
       hash = "";
       fetchSubmodules = true;
     };
-    repos_json = builtins.fromJSON (builtins.readFile ./repos.json);
-    repos = map (
-      repo:
-      fetchgit {
-        url = repo.url;
-        rev = repo.ref;
-        hash = repo.hash;
-        leaveDotGit = true;
-        fetchSubmodules = true;
-      }
-    ) repos_json;
+    repos = import ./repos.nix { inherit fetchgit; };
   in
   {
     pname = "koreader";
     version = "2026.03";
 
     srcs = [
-      (koreader_src)
+      koreader_src
     ]
     ++ repos;
     passthru.srcOnly = srcOnly finalAttrs.finalPackage;
