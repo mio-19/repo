@@ -48,6 +48,8 @@ stdenv.mkDerivation (
     ]);
     gradle = gradle_8_14_3;
     androidNdkVersion = "26.1.10909125";
+    androidArch = "arm64";
+    androidFlavor = "Fdroid";
     fhsEnv = buildFHSEnv {
       name = "koreader-build-env";
       targetPkgs =
@@ -140,7 +142,6 @@ stdenv.mkDerivation (
     dontUseMesonConfigure = true;
 
     gradleFlags = [
-      "-xlintVitalRelease"
       "-Dorg.gradle.java.installations.auto-download=false"
       "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
       "-Dorg.gradle.jvmargs=-Xmx4g"
@@ -151,7 +152,11 @@ stdenv.mkDerivation (
 
     gradleUpdateScript = ''
       runHook preBuild
-      gradle --write-verification-metadata sha256
+      # gradle --write-verification-metadata sha256
+      ${fhsEnv}/bin/koreader-build-env -c "
+        set -e
+        bash ./kodev release -i android-${androidArch}
+      "
     '';
 
   }
