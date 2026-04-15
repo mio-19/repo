@@ -133,10 +133,12 @@ stdenv.mkDerivation (
     ];
 
     passthru.srcOnly = srcOnly finalAttrs.finalPackage;
-    passthru.srcs = map (repo: {
-      name = repo.name;
-      path = repo;
-    }) (repos ++ [ finalAttrs.src ]);
+    passthru.srcs = linkFarm "koreader-srcs" (
+      map (repo: {
+        name = repo.name;
+        path = repo;
+      }) (repos ++ [ finalAttrs.src ])
+    );
     nativeBuildInputs = [
       git
       cmake
