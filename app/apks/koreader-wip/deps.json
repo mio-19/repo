@@ -1,1 +1,105 @@
-{}
+{
+ "!comment": "This is a nixpkgs Gradle dependency lockfile. For more details, refer to the Gradle section in the nixpkgs manual.",
+ "!version": 1,
+ "http:/": {
+  "dkolf.de/dkjson-lua/dkjson-2.8": {
+   "tar.gz": "sha256-JOjNO+uRwchh63uz+8m9QYu/+a1KpdBHGBYlgjajFTI="
+  },
+  "ftpmirror.gnu.org/libiconv/libiconv-1.15": {
+   "tar.gz": "sha256-zPU2YgpFRY0muoOIepg7loJwAekqE4R7ReSSXMiRMXg="
+  }
+ },
+ "https://cdn.openbsd.org": {
+  "pub/OpenBSD/LibreSSL/libressl-4.2.1": {
+   "tar.gz": "sha256-bVwvWFg1iOp5H0yGRQBAcdAN+lVKW/eIoAbKHrWr1ws="
+  }
+ },
+ "https://download.gnome.org": {
+  "sources/glib/2.82/glib-2.82.1": {
+   "tar.xz": "sha256-R4Y0RAv1LuTsRCjVWHhzmMC+awQ8UhvrMIM0s9tEiaY="
+  }
+ },
+ "https://github.com": {
+  "ArtifexSoftware/mupdf-downloads/releases/download/1.26.12/mupdf-1.26.12-source": {
+   "tar.lz": "sha256-VJYWPjlRavdnXBnV1DUGroFdq9t2PipNokPE9CfqsV0="
+  },
+  "Cyan4973/xxHash/archive/refs/tags/v0.8.3": {
+   "tar.gz": "sha256-quYI3+ghPf0F2QmldxjvgvMHIsOSNEWD0/OQUMfymoA="
+  },
+  "DanBloomberg/leptonica/releases/download/1.87.0/leptonica-1.87.0": {
+   "tar.gz": "sha256-xzNjOX+W6xKVYCv0TXCKmUrUIEbHkb8D6gUF2Cm9tqc="
+  },
+  "Dushistov/sdcv/archive/refs/tags/v0.5.5": {
+   "tar.gz": "sha256-TSUZ6PhHm5MB3JHpzaPh7v7xmXDs4OjAXwx7et5dyUs="
+  },
+  "JuliaStrings/utf8proc/archive/refs/tags/v2.11.3": {
+   "tar.gz": "sha256-q/7VC21NpRNFcTZhNwKQ9PR0cmPuc9yQNWKZ38eZDHg="
+  },
+  "adah1972/libunibreak/releases/download/libunibreak_6_1/libunibreak-6.1": {
+   "tar.gz": "sha256-zE3gCZz3/wUAXOq/9K/tTFgqc2q8OAM+cP2shjNc6T8="
+  },
+  "facebook/zstd/releases/download/v1.5.7/zstd-1.5.7": {
+   "tar.gz": "sha256-6zPlH0mhXgI5UM14Jcp0pKK0Pbg1SCWsJPwbfuCeb6M="
+  },
+  "freetype/freetype/archive/refs/tags/VER-2-14-1": {
+   "tar.gz": "sha256-RL1p0fB1BgNBDP1PJvHFUjxaOgh6LfqGObdX3Hxmd74="
+  },
+  "fribidi/fribidi/releases/download/v1.0.16/fribidi-1.0.16": {
+   "tar.xz": "sha256-GxzeWyNdQEeekb4vDoijCeMhTIq0cOyKJ0TYKlqeoFw="
+  },
+  "frida/proxy-libintl/archive/refs/tags/0.4": {
+   "tar.gz": "sha256-E+8+6go7wN9VKTvjaN+8/1qN1fR1koDyjgMNFJSl3/s="
+  },
+  "google/brotli/archive/refs/tags/v1.1.0": {
+   "tar.gz": "sha256-5yCmyilCi4A/StFlNxdx9TmPq6OX7fZ3iDehhZnqE/8="
+  },
+  "google/cpu_features/archive/refs/tags/v0.10.1": {
+   "tar.gz": "sha256-UmObOA/O0R1zj4sVHb/uY/uUlXcx0H8ZZsgS5bkMutQ="
+  },
+  "harfbuzz/harfbuzz/releases/download/12.3.2/harfbuzz-12.3.2": {
+   "tar.xz": "sha256-b22xZDWaLaWoTvgmYVtEizPmMGBnrYKdhdWwv5NvG7g="
+  },
+  "libarchive/libarchive/releases/download/v3.8.5/libarchive-3.8.5": {
+   "tar.xz": "sha256-1oBo50vu46DsDdBK7pA31XV/zGUVkabc8bbVQvsVpwM="
+  },
+  "madler/zlib/releases/download/v1.3.2/zlib-1.3.2": {
+   "tar.xz": "sha256-16BlR4Ok2lKdG7eTt62cMxgCCvd2Z7yuNfldDkKnkvM="
+  },
+  "mity/md4c/archive/refs/tags/release-0.5.2": {
+   "tar.gz": "sha256-VdARHUj7EYg6rukUZeZCuLZAd1pNaZPC0OeoCSdY7yE="
+  },
+  "pnggroup/libpng/archive/refs/tags/v1.6.55": {
+   "tar.gz": "sha256-caLFsSGPYMTG0vGVTH6yATIVbK6QvbkLVmwk2wAngqY="
+  },
+  "roberto-ieru/LPeg/archive/refs/tags/v1.1.0": {
+   "tar.gz": "sha256-ibzVbGy30AHBL9LAxIbAbKgoP4tYmG9ZPWLMJuFFjeQ="
+  },
+  "tesseract-ocr/tesseract/archive/refs/tags/5.5.2": {
+   "tar.gz": "sha256-YjXqDa5F6hN/WcCTIEBvWIg4N0GSTZiFW9LODRa1TyE="
+  },
+  "tukaani-project/xz/releases/download/v5.8.2/xz-5.8.2": {
+   "tar.xz": "sha256-iQlm7D9dXMFRB3h54VfAWTUApSL0E6xQuibSKpoUUhQ="
+  },
+  "zeromq/czmq/releases/download/v4.2.1/czmq-4.2.1": {
+   "tar.gz": "sha256-XXIKIEwqWGRdb3ZDrxXVY6cS2tmMnTLB7ZEzd9qmrDk="
+  },
+  "zeromq/libzmq/releases/download/v4.3.5/zeromq-4.3.5": {
+   "tar.gz": "sha256-ZlPvWRDxeVSGH+cjMuaLA8puTZxxYOs6jeWlqRO/q0M="
+  }
+ },
+ "https://sourceforge.net": {
+  "projects/giflib/files/giflib-5.2.2": {
+   "tar.gz": "sha256-vn/70FfK3r4qoURUL9kMaDjGoIO16KkEi47jtmsp1fs="
+  }
+ },
+ "https://storage.googleapis.com": {
+  "downloads.webmproject.org/releases/webp/libwebp-1.6.0": {
+   "tar.gz": "sha256-5KtwCb8GKf0RmC1MKqg5ZM8kTP+6c0fs05AZqeOMRWQ="
+  }
+ },
+ "https://www.sqlite.org": {
+  "2026/sqlite-amalgamation-3510200": {
+   "zip": "sha256-biqEWkkwJr260GGLK1oM9IWE+qtHOESA7Z9ZLZEvI+w="
+  }
+ }
+}
