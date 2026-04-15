@@ -104,19 +104,27 @@ stdenv.mkDerivation (
         let
           postfixes = [
             ""
-            #"-js"
-            #"-wasm-js"
-            #"-wasm-wasi"
+            "-js"
+            "-wasm-js"
+            "-wasm-wasi"
           ];
           name = postfix: "org.jetbrains.kotlin:kotlin-stdlib${postfix}:${finalAttrs.version}";
-          value = postfix: {
-            "kotlin-stdlib${postfix}-${finalAttrs.version}.jar" =
-              "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.jar";
-            "kotlin-stdlib${postfix}-${finalAttrs.version}.module" =
-              "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.module";
-            "kotlin-stdlib${postfix}-${finalAttrs.version}.pom" =
-              "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.pom";
-          };
+          value =
+            postfix:
+            {
+              "kotlin-stdlib${postfix}-${finalAttrs.version}.module" =
+                "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.module";
+              "kotlin-stdlib${postfix}-${finalAttrs.version}.pom" =
+                "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.pom";
+            }
+            // lib.optionalAttrs (postfix == "") {
+              "kotlin-stdlib${postfix}-${finalAttrs.version}.jar" =
+                "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.jar";
+            }
+            // lib.optionalAttrs (postfix != "") {
+              "kotlin-stdlib${postfix}-${finalAttrs.version}.klib" =
+                "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.klib";
+            };
           children = builtins.listToAttrs (
             map (postfix: {
               name = name postfix;
