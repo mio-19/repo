@@ -434,12 +434,23 @@
    "module": "sha256-/M1qjQ0z/PfDJ3vEPrRSxzgD7GIFl8gdvEp54pCnGpc=",
    "pom": "sha256-zANiZTJAcIoBDeUP7oyviEphD7sQtgE+hmlNd8Q/68c="
   },
+  "androidx/compose/material3#material3-window-size-class-android/1.4.0": {
+   "module": "sha256-MzQvrwqVy3zScAuVznwCJDSkds5V1FNKCn+M8Es5pkk=",
+   "pom": "sha256-btgFvujWNcF3YIJ+Yj8DOYfMdETglgyazNeyT8+0Adg="
+  },
+  "androidx/compose/material3#material3-window-size-class/1.4.0": {
+   "module": "sha256-c68lgq76kcCyycEFVvPIFj4ceiO/LGQzSt92dqU0v8A=",
+   "pom": "sha256-hKjPCF2D2uKbC+0tMzjjSxi+RbZMEZH9qRz2M4CKA/A="
+  },
   "androidx/compose/material3#material3/1.4.0": {
    "module": "sha256-dXCB0Sja+IAcHdmsxDH6UmnmVrKKCkkK6YzO5o6cNFI=",
    "pom": "sha256-ZytDH1nI4KhSJpCy9G8beWZxBjiJPGDDHF8Z+EctYsw="
   },
   "androidx/compose/material3/material3-android/1.4.0/material3-android-1.4.0": {
    "aar": "sha256-Ojfos23zgi/h5gWfD5+v2ogAOIhgR3YkrBuUIsQYo24="
+  },
+  "androidx/compose/material3/material3-window-size-class-android/1.4.0/material3-window-size-class-android-1.4.0": {
+   "aar": "sha256-l7MqOn0JxozLcp7F3Ft4DkwPT16B2CxkVXxtrsKs6zU="
   },
   "androidx/compose/runtime#runtime-android/1.10.2": {
    "module": "sha256-/OSONI5rGiwXNtCThxHgLGHy6htJafiDV9BiUDYOluA=",
@@ -2270,46 +2281,6 @@
   }
  },
  "https://repo.maven.apache.org/maven2": {
-  "com/chaquo/python#com.chaquo.python.gradle.plugin/17.0.0": {
-   "pom": "sha256-UMxCW7v7iXT1Nktssgm7R1y7ueXUApolGbyYfKBX5o8="
-  },
-  "com/chaquo/python#gradle/17.0.0": {
-   "jar": "sha256-xSjPAXed4W25Bosxyjzf1524wefdKnZjXREWVhR3gMU=",
-   "module": "sha256-N7JePwYIubWJ7rw3ZEbCyblt+RUvfE05jZvN8P1Dx8A=",
-   "pom": "sha256-ONmzF7eLibdUF3RHRcaTWqDrFOxC7x6GVyVkvfcQWSA="
-  },
-  "com/chaquo/python#target/3.13.9-0": {
-   "pom": "sha256-OYLLayQ5WCnOKfLZ9ZJ9iy/iA6ASYZXHbZ3+fPNjAvo="
-  },
-  "com/chaquo/python/runtime#bootstrap/17.0.0": {
-   "pom": "sha256-B2iw+I+ZcT/jM24VgYbjBqj28NG7trvij+nAyXl/ZQw="
-  },
-  "com/chaquo/python/runtime#chaquopy/17.0.0": {
-   "pom": "sha256-rVboinn8NsygkmaC67ob1orImwR5IPLoy7jM3QddaB0="
-  },
-  "com/chaquo/python/runtime#chaquopy_java/17.0.0": {
-   "jar": "sha256-BO7WJg5lY0rBwgMdLKj9+Q1Y2iJrLwcBMqZsbjr545s=",
-   "module": "sha256-0MA8T+BPCq4v5awNbAenEv110maznXtYWxBxeBZD2BE=",
-   "pom": "sha256-3GnPWf9deWfJRDgzttrTPu5Nhu4OAQl/LkplilBTEKo="
-  },
-  "com/chaquo/python/runtime#libchaquopy_java/17.0.0": {
-   "pom": "sha256-GiIqjLiNw2w0bOU7PoyDzni3l6iv3WQ0vuzA8CR9Gss="
-  },
-  "com/chaquo/python/runtime/bootstrap/17.0.0/bootstrap-17.0.0-3.13": {
-   "imy": "sha256-KMMDVrEjq46jDJFUOiE5EeAcPzRcyLqHVHKtPswb+Q4="
-  },
-  "com/chaquo/python/runtime/chaquopy/17.0.0/chaquopy-17.0.0-3.13-arm64-v8a": {
-   "so": "sha256-JP3s5G9E1aADcZEjXTP3ANZc1nYXQrdH3XWUxbwJJK0="
-  },
-  "com/chaquo/python/runtime/libchaquopy_java/17.0.0/libchaquopy_java-17.0.0-3.13-arm64-v8a": {
-   "so": "sha256-r8knoHu2Lt0QgxXtBi/lJ2Ap576+aSRl+pWuF//x46I="
-  },
-  "com/chaquo/python/target/3.13.9-0/target-3.13.9-0-arm64-v8a": {
-   "zip": "sha256-wZ85/sraCzkyq3phsPIUwSEgaMu64Nwiwq+jik81S44="
-  },
-  "com/chaquo/python/target/3.13.9-0/target-3.13.9-0-stdlib-pyc": {
-   "zip": "sha256-1XZZU9Btw0EsKSXSEfGIaD4ceTbMqYWjCRtBgwUfBYc="
-  },
   "com/fasterxml#oss-parent/38": {
    "pom": "sha256-yD+PRd/cqNC2s2YcYLP4R4D2cbEuBvka1dHBodH5Zug="
   },
@@ -3014,9 +2985,6 @@
   "org/apache#apache/18": {
    "pom": "sha256-eDEwcoX9R1u8NrIK4454gvEcMVOx1ZMPhS1E7ajzPBc="
   },
-  "org/apache#apache/19": {
-   "pom": "sha256-kfejMJbqabrCy69tAf65NMrAAsSNjIz6nCQLQPHsId8="
-  },
   "org/apache#apache/21": {
    "pom": "sha256-rxDBCNoBTxfK+se1KytLWjocGCZfoq+XoyXZFDU3s4A="
   },
@@ -3060,9 +3028,6 @@
    "jar": "sha256-djrNpKaViMnqiBepUoUf8ML8S/+h0IHCVl3EB/KdV5Q=",
    "pom": "sha256-R4DmHoeBbu4fIdGE7Jl7Zfk9tfS5BCwXitsp4j50JdY="
   },
-  "org/apache/commons#commons-compress/1.18": {
-   "pom": "sha256-Zyxf6SvT6rQ+jVMzjK1coHO2Up3k6ys4hZo+qmyegRk="
-  },
   "org/apache/commons#commons-compress/1.21": {
    "jar": "sha256-auz9VFlyillWAc+gcljRMZcv/Dm0kutIvdWWV3ovJEo=",
    "pom": "sha256-Z1uwI8m+7d4yMpSZebl0Kl/qlGKApVobRi1Mp4AQiM0="
@@ -3088,9 +3053,6 @@
   },
   "org/apache/commons#commons-parent/42": {
    "pom": "sha256-zTE0lMZwtIPsJWlyrxaYszDlmPgHACNU63ZUefYEsJw="
-  },
-  "org/apache/commons#commons-parent/47": {
-   "pom": "sha256-io7LVwVTv58f+uIRqNTKnuYwwXr+WSkzaPunvZtC/Lc="
   },
   "org/apache/commons#commons-parent/52": {
    "pom": "sha256-ddvo806Y5MP/QtquSi+etMvNO18QR9VEYKzpBtu0UC4="
@@ -3897,10 +3859,6 @@
   },
   "org/jetbrains/kotlinx/kover#org.jetbrains.kotlinx.kover.gradle.plugin/0.7.6": {
    "pom": "sha256-BqD4vzQusEkEtwi+KEHnFqE3xGMKPd6+BIvFkafh04g="
-  },
-  "org/json#json/20160810": {
-   "jar": "sha256-v1HJATEoyxUgEiXlFHb2CtkRaBNykEBlWiONKCmu+Lg=",
-   "pom": "sha256-OEuB0E9vAv+COO6rv1nbrkwl5MpqhzE2gHaq1bokHDA="
   },
   "org/jspecify#jspecify/1.0.0": {
    "jar": "sha256-H61ua+dVd4Hk0zcp1Jrhzcj92m/kd7sMxozjUer9+6s=",

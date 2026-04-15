@@ -176,6 +176,7 @@ let
         installPhase = ''
           runHook preInstall
           rm -rf "$TMPDIR/go-mod-cache/cache/download/sumdb"
+          chmod -R u+w "$TMPDIR/go-mod-cache"
           mv "$TMPDIR/go-mod-cache" "$out"
           runHook postInstall
         '';
@@ -194,7 +195,7 @@ let
         dontConfigure = true;
 
         env = {
-          JAVA_HOME = if stdenv.isDarwin then "${jdk21_headless}" else "${jdk21_headless}/lib/openjdk";
+          JAVA_HOME = jdk21_headless.passthru.home;
           ANDROID_HOME = androidSdkRoot;
           ANDROID_SDK_ROOT = androidSdkRoot;
           ANDROID_NDK_ROOT = androidNdkRoot;
@@ -266,14 +267,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.4.1";
+      version = "5.5.1";
 
       src = fetchFromGitHub {
         owner = "GlassOnTin";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-hKVc1nc5+bT5l6vLC1XsFEHwXUbF/AQLxio+WI09WAo=";
+        hash = "sha256-4rRHbQrUmQK4BaG9uMGwJWelGL+QLvBIlO+z+tfuI4c=";
       };
 
       patches = [
@@ -288,10 +289,7 @@ let
       gradleBuildTask = ":app:assembleArm64Release";
       gradleUpdateTask = finalAttrs0.gradleBuildTask;
 
-      # Lock refresh steps:
-      # 1. Build the updater:
-      #    nix build --impure .#haven.mitmCache.updateScript
-      # 2. Copy the resulting fetch-deps.sh, set outPath=haven_deps.json, run from repo root.
+      # $(nix build .#apk_haven.mitmCache.updateScript --no-link --print-out-paths)
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs0) pname;
         pkg = finalAttrs0.finalPackage;
@@ -350,8 +348,6 @@ let
 
       preBuild = lib.optionalString stdenv.isDarwin ''
         # AGP writes SDK metadata under ~/.android; /var/empty is read-only on Darwin sandboxes.
-        export HOME="$TMPDIR/home"
-        mkdir -p "$HOME"
         export ANDROID_USER_HOME="$HOME/.android"
         export GRADLE_USER_HOME="$HOME/.gradle"
         mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"

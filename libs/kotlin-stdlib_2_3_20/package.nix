@@ -5,7 +5,13 @@
   fetchFromGitHub,
   makeWrapper,
   writableTmpDirAsHomeHook,
+  curl,
+  lib,
+  libsUtils,
 }:
+let
+  inherit (libsUtils) checkMavenProvides exposeMavenProvides;
+in
 # https://github.com/NixOS/nixpkgs/blob/4ed2dff2b5c2970997ed3a12aae50181a352f719/doc/languages-frameworks/gradle.section.md
 stdenv.mkDerivation (
   finalAttrs:
@@ -28,6 +34,11 @@ stdenv.mkDerivation (
     };
     postPatch = ''
       rm -fr gradle/verification-metadata.xml gradle/wrapper
+      snapshot_version=$(awk -F= '/^defaultSnapshotVersion=/{print $2}'  gradle.properties)
+      substituteInPlace gradle.properties \
+        --replace-fail "$snapshot_version" "${finalAttrs.version}"
+      substituteInPlace $(find . -name gradle.properties) $(find . -name pom.xml) \
+        --replace-quiet "$snapshot_version" "${finalAttrs.version}"
     '';
     sourceRoot = "${finalAttrs.src.name}/libraries/stdlib";
 
@@ -49,26 +60,68 @@ stdenv.mkDerivation (
     # this is required for using mitm-cache on Darwin
     __darwinAllowLocalNetworking = true;
     gradleFlags = [
+      "--no-daemon"
+      "--parallel"
+      "--no-configuration-cache"
       "-Dfile.encoding=utf-8"
       "-Dorg.gradle.java.home=${finalAttrs.jdk.passthru.home}"
+      "-Dbuild.number=${finalAttrs.version}"
+      "-DdeployVersion=${finalAttrs.version}"
     ];
     preBuild = ''
-      chmod -R a+w ../..
+      chmod -R a+w ../.. || true
+      chmod -R a+w ../../.. || true
+      export GRADLE_USER_HOME="$HOME/.gradle"
+      gradleFlagsArray+=("-Dgradle.user.home=$GRADLE_USER_HOME"  --gradle-user-home "$GRADLE_USER_HOME" "-Dmaven.repo.local=$HOME/.m2/repository") 
+      export MAVEN_OPTS="-Dmaven.repo.local=$HOME/.m2/repository"
     '';
     # https://github.com/NixOS/nixpkgs/pull/383115/changes
     gradleUpdateScript = ''
       runHook preBuild
       export GRADLE_OPTS='${builtins.concatStringsSep " " finalAttrs.gradleFlags}'
       gradle ${builtins.concatStringsSep " " finalAttrs.gradleFlags} --write-verification-metadata sha256
+      # maybe todo: # ${lib.getExe curl} https://kotlin-build-properties.labs.jb.gg/setup.json
     '';
     # github.com/JetBrains/kotlin/tree/v2.3.20/libraries/stdlib
     buildPhase = ''
+      runHook preBuild
       gradle :tools:kotlin-stdlib-gen:run
+      gradle install
+      runHook postBuild
     '';
     installPhase = ''
-      mkdir -p $out
-      cp -r  build/libs/ $out/
+      mv ~/.m2/repository $out
     '';
+    doInstallCheck = true;
+    installCheckPhase = checkMavenProvides finalAttrs;
+    meta = {
+      #mavenProvides = exposeMavenProvides finalAttrs;
+      mavenProvidesInternal =
+        let
+          postfixes = [
+            ""
+            "-js"
+            "-wasm-js"
+            "-wasm-wasi"
+          ];
+          name = postfix: "org.jetbrains.kotlin:kotlin-stdlib${postfix}:${finalAttrs.version}";
+          value = postfix: {
+            "kotlin-stdlib${postfix}-${finalAttrs.version}.jar" =
+              "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.jar";
+            "kotlin-stdlib${postfix}-${finalAttrs.version}.module" =
+              "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.module";
+            "kotlin-stdlib${postfix}-${finalAttrs.version}.pom" =
+              "$out/org/jetbrains/kotlin/kotlin-stdlib${postfix}/${finalAttrs.version}/kotlin-stdlib${postfix}-${finalAttrs.version}.pom";
+          };
+          children = builtins.listToAttrs (
+            map (postfix: {
+              name = name postfix;
+              value = value postfix;
+            }) postfixes
+          );
+        in
+        children;
+    };
   }
 )
 # cd libraries/stdlib

@@ -8,17 +8,17 @@
 {
   axp_build = {
     pname = "axp_build";
-    version = "7d166a303604efa72a32878eec8fefa78062608f";
+    version = "c49b917903fb6a883e8cb24eaa94a1a8f48b421e";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/build.git";
-      rev = "7d166a303604efa72a32878eec8fefa78062608f";
+      rev = "c49b917903fb6a883e8cb24eaa94a1a8f48b421e";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-nsdl3fosJ04H88AF1/3CSma9nWMidJKVmvJEjwrpMb8=";
+      sha256 = "sha256-gb15Aq+8n2lYN0GK5wbil1SYsIDrWOPmikd5x012LGw=";
     };
-    date = "2026-04-13";
+    date = "2026-04-14";
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
@@ -288,17 +288,17 @@
   };
   grapheneos_pdfviewer = {
     pname = "grapheneos_pdfviewer";
-    version = "10eb5b2aab0f193e8547ca8d9df49e8f9bcaedc2";
+    version = "5a87b69db1c65c128307f798179a5b7963ea1cc8";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/PdfViewer.git";
-      rev = "10eb5b2aab0f193e8547ca8d9df49e8f9bcaedc2";
+      rev = "5a87b69db1c65c128307f798179a5b7963ea1cc8";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-PqNn5JOyqTCzCvnmDFZz9/sz8TxYesaRi2n3yHMy2QY=";
+      sha256 = "sha256-fNpMceC6kcKR++63YWkSAJX9aMQVBql9+Q6IhUtXiOY=";
     };
-    date = "2026-04-02";
+    date = "2026-04-14";
   };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
