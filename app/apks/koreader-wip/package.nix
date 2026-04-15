@@ -127,7 +127,7 @@ stdenv.mkDerivation (
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
       ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/${androidNdkVersion}";
-      JAVA_HOME = jdk17_headless;
+      JAVA_HOME = jdk17_headless.passthru.home;
       CC_FOR_BUILD = "${buildPackages.stdenv.cc}/bin/cc";
       CXX_FOR_BUILD = "${buildPackages.stdenv.cc}/bin/c++";
       LD_FOR_BUILD = "${buildPackages.stdenv.cc}/bin/ld";
