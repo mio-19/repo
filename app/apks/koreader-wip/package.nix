@@ -123,8 +123,8 @@ stdenv.mkDerivation (
       substituteInPlace base/thirdparty/kpvcrlib/crengine/thirdparty/chmlib/src/chm_lib.c \
           --replace-fail \
             '#if __sun || __sgi
-        #include <strings.h>
-        #endif' \
+      #include <strings.h>
+      #endif' \
             '#include <strings.h>'
     '';
     patches = [
