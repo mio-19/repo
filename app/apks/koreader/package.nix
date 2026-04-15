@@ -136,7 +136,7 @@ stdenv.mkDerivation (
     passthru.srcs = map (repo: {
       name = repo.name;
       path = repo;
-    }) (repos + [ finalAttrs.src ]);
+    }) (repos ++ [ finalAttrs.src ]);
     nativeBuildInputs = [
       git
       cmake
