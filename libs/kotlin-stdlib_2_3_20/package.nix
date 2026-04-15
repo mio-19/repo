@@ -65,7 +65,7 @@ stdenv.mkDerivation (
       runHook preBuild
       export GRADLE_OPTS='${builtins.concatStringsSep " " finalAttrs.gradleFlags}'
       gradle ${builtins.concatStringsSep " " finalAttrs.gradleFlags} --write-verification-metadata sha256
-      ${lib.getExe curl} https://kotlin-build-properties.labs.jb.gg/setup.json
+      # maybe todo: # ${lib.getExe curl} https://kotlin-build-properties.labs.jb.gg/setup.json
     '';
     # github.com/JetBrains/kotlin/tree/v2.3.20/libraries/stdlib
     buildPhase = ''
