@@ -38,6 +38,8 @@ stdenv.mkDerivation (
     androidLauncherDir = "platform/android/luajit-launcher";
     repos = import ./repos.nix { inherit fetchgit; };
     repos-replace = repo: ''--replace-quiet "${repo.url}" "${repo}" '';
+    # https://github.com/koreader/android-luajit-launcher/blob/dc24a50aae4f69dd3a9708e8eb8e141b5e1c1c03/app/build.gradle#L6
+    androidNdkVersion = "23.2.8568313";
     androidSdk = androidSdkBuilder (s: [
       s.cmdline-tools-latest
       s.platform-tools
@@ -48,7 +50,6 @@ stdenv.mkDerivation (
     ]);
     # upstream use older 8.x : https://github.com/koreader/android-luajit-launcher/blob/dc24a50aae4f69dd3a9708e8eb8e141b5e1c1c03/gradle/wrapper/gradle-wrapper.properties
     gradle = gradle_8_14_3;
-    androidNdkVersion = "23.2.8568313";
     androidArch = "arm64";
     androidFlavor = "Fdroid";
     fhsEnv = buildFHSEnv {

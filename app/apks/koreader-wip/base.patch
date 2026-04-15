@@ -24,3 +24,16 @@ index 32c3b464..e5d58e6e 100644
      ) 9>"${repo}.lock"
  ); }
  
+@@ -250,9 +247,9 @@ checkout_git_repo() { (
+     export GIT_DIR="${tree}/.git"
+     # Note: order matters; trying to `checkout --force` without disabling
+     # the sparse-checkouts first will for some reason deinit submodules…
+-    git -C "${tree}" sparse-checkout disable || return 1
+-    git -C "${tree}" submodule foreach --recursive git sparse-checkout disable || return 1
+-    git -C "${tree}" -c advice.detachedHead=false checkout --force --recurse-submodules "${revision}" --
++    git -C "${tree}" sparse-checkout disable || echo 'we already initialized submodules in nix repos.nix'
++    git -C "${tree}" submodule foreach --recursive git sparse-checkout disable || echo 'we already initialized submodules in nix repos.nix'
++    git -C "${tree}" -c advice.detachedHead=false checkout --force --recurse-submodules "${revision}" -- || echo 'we already initialized submodules in nix repos.nix'
+ ); }
+ 
+ make() { (
