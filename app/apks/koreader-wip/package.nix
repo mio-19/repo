@@ -114,12 +114,18 @@ stdenv.mkDerivation (
             "ndkVersion '23.2.8568313'" \
             "ndkVersion '${androidNdkVersion}'"
       cp ${./meson-native.ini} base/meson-native.ini
-
       substituteInPlace base/cmake/CMakeLists.txt \
           --replace-fail \
             '--wrap-mode=nodownload' \
             "--wrap-mode=nodownload --native-file=$PWD/base/meson-native.ini"
-
+        # chmlib's ffs() is only included on __sun || __sgi; Android clang
+        # fails with -Wimplicit-function-declaration. Add strings.h unconditionally.
+      substituteInPlace base/thirdparty/kpvcrlib/crengine/thirdparty/chmlib/src/chm_lib.c \
+          --replace-fail \
+            '#if __sun || __sgi
+        #include <strings.h>
+        #endif' \
+            '#include <strings.h>'
     '';
     patches = [
       ./base.patch
