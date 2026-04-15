@@ -5,6 +5,7 @@
   fetchFromGitHub,
   makeWrapper,
   writableTmpDirAsHomeHook,
+  curl,lib,
 }:
 # https://github.com/NixOS/nixpkgs/blob/4ed2dff2b5c2970997ed3a12aae50181a352f719/doc/languages-frameworks/gradle.section.md
 stdenv.mkDerivation (
@@ -64,16 +65,17 @@ stdenv.mkDerivation (
       runHook preBuild
       export GRADLE_OPTS='${builtins.concatStringsSep " " finalAttrs.gradleFlags}'
       gradle ${builtins.concatStringsSep " " finalAttrs.gradleFlags} --write-verification-metadata sha256
+      ${lib.getExe curl} https://kotlin-build-properties.labs.jb.gg/setup.json
     '';
     # github.com/JetBrains/kotlin/tree/v2.3.20/libraries/stdlib
     buildPhase = ''
       runHook preBuild
       gradle :tools:kotlin-stdlib-gen:run
+      gradle install
       runHook postBuild
     '';
     installPhase = ''
-      mkdir -p $out
-      cp -r  build/libs/ $out/
+      mv ~/.m2/repository $out
     '';
   }
 )
