@@ -62,7 +62,7 @@ def main():
             if expr:
                 exprs.append(f"({expr})")
 
-    print("[")
+    print("{fetchgit}: [")
     for expr in exprs:
         print(f"  {expr}")
     print("]")
