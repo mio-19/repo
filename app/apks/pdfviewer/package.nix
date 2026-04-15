@@ -1,6 +1,5 @@
 {
   mk-apk-package,
-  overrides-fromsrc,
   buildGradlePackage,
   sources,
   lib,
@@ -45,7 +44,7 @@ let
       npmDeps = fetchNpmDeps {
         pname = "npm-deps-${pname}";
         inherit version src;
-        hash = "sha256-XbFZycYjXiX9AV4cwwvcMuQk82wlExh8bVkVQFOZ/es=";
+        hash = "sha256-TrOs+rcjBBc9GY/TsmEnde0YLRRNKd8v0eQiWc5hR+E=";
       };
 
       patches = [
@@ -54,11 +53,14 @@ let
           url = "https://github.com/GrapheneOS/PdfViewer/pull/598.diff";
           hash = "sha256-xE8bc5u2IoRhfay8eJo+vUzzQEr4jGTWNEuciNT5W1U=";
         })
-        (fetchpatch {
-          name = "feat: Search (Fixes #4)";
-          url = "https://github.com/GrapheneOS/PdfViewer/pull/579.diff";
-          hash = "sha256-COVebkjyEIrQf7Q1VBLaRwthO2bG+/Uy/tBqoLueqwY=";
-        })
+        /*
+          TODO: fix merge conflicts
+          (fetchpatch {
+            name = "feat: Search (Fixes #4)";
+            url = "https://github.com/GrapheneOS/PdfViewer/pull/579.diff";
+            hash = "sha256-COVebkjyEIrQf7Q1VBLaRwthO2bG+/Uy/tBqoLueqwY=";
+          })
+        */
       ];
 
       nativeBuildInputs = [
@@ -102,7 +104,7 @@ let
         substituteInPlace settings.gradle.kts \
           --replace-fail "pluginManagement {" "$pluginResolutionBlock"
 
-        rm app/src/main/res/values/strings.xml.orig
+        rm app/src/main/res/values/strings.xml.orig || true
         substituteInPlace app/build.gradle.kts \
               --replace-fail \
               'commandLine(getCommand("npm"), "ci", "--ignore-scripts")' \

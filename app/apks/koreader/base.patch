@@ -1,0 +1,39 @@
+diff --git a/base/thirdparty/cmake_modules/koenv.sh b/base/thirdparty/cmake_modules/koenv.sh
+index 32c3b464..e5d58e6e 100644
+--- a/base/thirdparty/cmake_modules/koenv.sh
++++ b/base/thirdparty/cmake_modules/koenv.sh
+@@ -222,18 +222,15 @@ clone_git_repo() { (
+                     git -C "${repo}" remote add origin "${remote}" && git -C "${repo}" fetch --unshallow --tags || :
+                     ;;
+                 3)
+-                    # Game over…
+-                    err 'failed to checkout revision'
+-                    return 1
++                    echo 'we already checked out correct tag in nix repos.nix'
+                     ;;
+             esac
+         done
+         # Update submodules.
+         if ! git -C "${repo}" submodule update --depth ${clone_depth} --force --init --recursive "$@"; then
+-            err 'failed to update submodules'
+-            return 1
++            echo 'we already checked out submodules in nix repos.nix'
+         fi
+-        git -C "${repo}" submodule foreach --recursive git sparse-checkout init
++        git -C "${repo}" submodule foreach --recursive git sparse-checkout init || echo 'we already initialized submodules in nix repos.nix'
+     ) 9>"${repo}.lock"
+ ); }
+ 
+@@ -250,9 +247,9 @@ checkout_git_repo() { (
+     export GIT_DIR="${tree}/.git"
+     # Note: order matters; trying to `checkout --force` without disabling
+     # the sparse-checkouts first will for some reason deinit submodules…
+-    git -C "${tree}" sparse-checkout disable || return 1
+-    git -C "${tree}" submodule foreach --recursive git sparse-checkout disable || return 1
+-    git -C "${tree}" -c advice.detachedHead=false checkout --force --recurse-submodules "${revision}" --
++    git -C "${tree}" sparse-checkout disable || echo 'we already initialized submodules in nix repos.nix'
++    git -C "${tree}" submodule foreach --recursive git sparse-checkout disable || echo 'we already initialized submodules in nix repos.nix'
++    git -C "${tree}" -c advice.detachedHead=false checkout --force --recurse-submodules "${revision}" -- || echo 'we already initialized submodules in nix repos.nix'
+ ); }
+ 
+ make() { (
