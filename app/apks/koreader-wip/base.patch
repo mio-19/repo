@@ -1,8 +1,8 @@
 diff --git a/base/thirdparty/cmake_modules/koenv.sh b/base/thirdparty/cmake_modules/koenv.sh
-index 32c3b464..6882f45b 100644
+index 32c3b464..e5d58e6e 100644
 --- a/base/thirdparty/cmake_modules/koenv.sh
 +++ b/base/thirdparty/cmake_modules/koenv.sh
-@@ -222,16 +222,13 @@ clone_git_repo() { (
+@@ -222,18 +222,15 @@ clone_git_repo() { (
                      git -C "${repo}" remote add origin "${remote}" && git -C "${repo}" fetch --unshallow --tags || :
                      ;;
                  3)
@@ -19,5 +19,8 @@ index 32c3b464..6882f45b 100644
 -            return 1
 +            echo 'we already checked out submodules in nix repos.nix'
          fi
-         git -C "${repo}" submodule foreach --recursive git sparse-checkout init
+-        git -C "${repo}" submodule foreach --recursive git sparse-checkout init
++        git -C "${repo}" submodule foreach --recursive git sparse-checkout init || echo 'we already initialized submodules in nix repos.nix'
      ) 9>"${repo}.lock"
+ ); }
+ 
