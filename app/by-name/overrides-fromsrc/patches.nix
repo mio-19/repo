@@ -1,18 +1,20 @@
 { self }:
 # generally jar use newer version, pom keeps the same version.
 {
-  "org.jetbrains.kotlin:kotlin-stdlib:2.3.0-RC"."kotlin-stdlib-2.3.0-RC.jar" =
-    self."org.jetbrains.kotlin:kotlin-stdlib:2.3.0"."kotlin-stdlib-2.3.0.jar";
-  "org.jetbrains.kotlin:kotlin-stdlib:2.3.0-RC"."kotlin-stdlib-2.3.0-RC.module" =
-    self."org.jetbrains.kotlin:kotlin-stdlib:2.3.0"."kotlin-stdlib-2.3.0.module";
-  "org.jetbrains.kotlin:kotlin-stdlib:2.3.0"."kotlin-stdlib-2.3.0.jar" =
-    self."org.jetbrains.kotlin:kotlin-stdlib:2.3.10"."kotlin-stdlib-2.3.10.jar";
-  "org.jetbrains.kotlin:kotlin-stdlib:2.3.0"."kotlin-stdlib-2.3.0.module" =
-    self."org.jetbrains.kotlin:kotlin-stdlib:2.3.10"."kotlin-stdlib-2.3.10.module";
-  "org.jetbrains.kotlin:kotlin-stdlib:2.3.10"."kotlin-stdlib-2.3.10.jar" =
-    self."org.jetbrains.kotlin:kotlin-stdlib:2.3.20"."kotlin-stdlib-2.3.20.jar";
-  "org.jetbrains.kotlin:kotlin-stdlib:2.3.10"."kotlin-stdlib-2.3.10.module" =
-    self."org.jetbrains.kotlin:kotlin-stdlib:2.3.20"."kotlin-stdlib-2.3.20.module";
+  /*
+    "org.jetbrains.kotlin:kotlin-stdlib:2.3.0-RC"."kotlin-stdlib-2.3.0-RC.jar" =
+      self."org.jetbrains.kotlin:kotlin-stdlib:2.3.0"."kotlin-stdlib-2.3.0.jar";
+    "org.jetbrains.kotlin:kotlin-stdlib:2.3.0-RC"."kotlin-stdlib-2.3.0-RC.module" =
+      self."org.jetbrains.kotlin:kotlin-stdlib:2.3.0"."kotlin-stdlib-2.3.0.module";
+    "org.jetbrains.kotlin:kotlin-stdlib:2.3.0"."kotlin-stdlib-2.3.0.jar" =
+      self."org.jetbrains.kotlin:kotlin-stdlib:2.3.10"."kotlin-stdlib-2.3.10.jar";
+    "org.jetbrains.kotlin:kotlin-stdlib:2.3.0"."kotlin-stdlib-2.3.0.module" =
+      self."org.jetbrains.kotlin:kotlin-stdlib:2.3.10"."kotlin-stdlib-2.3.10.module";
+    "org.jetbrains.kotlin:kotlin-stdlib:2.3.10"."kotlin-stdlib-2.3.10.jar" =
+      self."org.jetbrains.kotlin:kotlin-stdlib:2.3.20"."kotlin-stdlib-2.3.20.jar";
+    "org.jetbrains.kotlin:kotlin-stdlib:2.3.10"."kotlin-stdlib-2.3.10.module" =
+      self."org.jetbrains.kotlin:kotlin-stdlib:2.3.20"."kotlin-stdlib-2.3.20.module";
+  */
   "com.google.zxing:core:3.5.3"."core-3.5.3.jar" =
     self."com.google.zxing:core:3.5.4"."core-3.5.4.jar";
   "com.google.guava:failureaccess:1.0.1"."failureaccess-1.0.1.jar" =
