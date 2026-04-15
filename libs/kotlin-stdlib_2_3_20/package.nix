@@ -53,12 +53,15 @@ stdenv.mkDerivation (
       "--no-configuration-cache"
       "-Dfile.encoding=utf-8"
       "-Dorg.gradle.java.home=${finalAttrs.jdk.passthru.home}"
+      "-Dbuild.number=${finalAttrs.version}"
+      "-DdeployVersion=${finalAttrs.version}"
     ];
     preBuild = ''
-      chmod -R a+w ../..
+      chmod -R a+w ../.. || true
       chmod -R a+w ../../.. || true
       export GRADLE_USER_HOME="$HOME/.gradle"
-      gradleFlagsArray+=("-Dgradle.user.home=$GRADLE_USER_HOME"  --gradle-user-home "$GRADLE_USER_HOME") 
+      gradleFlagsArray+=("-Dgradle.user.home=$GRADLE_USER_HOME"  --gradle-user-home "$GRADLE_USER_HOME" "-Dmaven.repo.local=$HOME/.m2/repository") 
+      export MAVEN_OPTS="-Dmaven.repo.local=$HOME/.m2/repository"
     '';
     # https://github.com/NixOS/nixpkgs/pull/383115/changes
     gradleUpdateScript = ''
