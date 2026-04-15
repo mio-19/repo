@@ -113,6 +113,13 @@ stdenv.mkDerivation (
           --replace-fail \
             "ndkVersion '23.2.8568313'" \
             "ndkVersion '${androidNdkVersion}'"
+      cp ${./meson-native.ini} base/meson-native.ini
+
+      substituteInPlace base/cmake/CMakeLists.txt \
+          --replace-fail \
+            '--wrap-mode=nodownload' \
+            "--wrap-mode=nodownload --native-file=$PWD/base/meson-native.ini"
+
     '';
     patches = [
       ./base.patch
