@@ -198,6 +198,10 @@ stdenv.mkDerivation (
         bash ./kodev release -i android-${androidArch}
       "
     '';
+    buildPhase = ''
+      ${finalAttrs.gradleUpdateScript}
+      runHook postBuild
+    '';
 
   }
 )
