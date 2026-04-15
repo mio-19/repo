@@ -61,6 +61,10 @@ stdenv.mkDerivation (
       export GRADLE_OPTS='${builtins.concatStringsSep " " finalAttrs.gradleFlags}'
       gradle ${builtins.concatStringsSep " " finalAttrs.gradleFlags} --write-verification-metadata sha256
     '';
+    # github.com/JetBrains/kotlin/tree/v2.3.20/libraries/stdlib
+    buildPhase = ''
+      gradle :tools:kotlin-stdlib-gen:run
+    '';
     installPhase = ''
       mkdir -p $out
       cp -r  build/libs/ $out/
