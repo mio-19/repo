@@ -46,6 +46,7 @@ stdenv.mkDerivation (
       s.build-tools-34-0-0
       s.ndk-26-1-10909125
     ]);
+    # upstream use older 8.x : https://github.com/koreader/android-luajit-launcher/blob/dc24a50aae4f69dd3a9708e8eb8e141b5e1c1c03/gradle/wrapper/gradle-wrapper.properties
     gradle = gradle_8_14_3;
     androidNdkVersion = "26.1.10909125";
     androidArch = "arm64";
