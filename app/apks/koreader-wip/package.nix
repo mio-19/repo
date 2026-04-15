@@ -126,7 +126,7 @@ stdenv.mkDerivation (
       #include <strings.h>
       #endif' \
             '#include <strings.h>'
-      substituteInPlace make/android.mk --replace-fail '$(ANDROID_LAUNCHER_DIR)/gradlew' 'gradle'
+      substituteInPlace make/android.mk --replace-fail '$(ANDROID_LAUNCHER_DIR)/gradlew' 'gradlecustom'
     '';
     patches = [
       ./base.patch
@@ -166,6 +166,7 @@ stdenv.mkDerivation (
       LD_FOR_BUILD = "${buildPackages.stdenv.cc}/bin/ld";
       AR_FOR_BUILD = "${buildPackages.stdenv.cc.bintools.bintools}/bin/ar";
       PKG_CONFIG_FOR_BUILD = "${buildPackages.pkg-config}/bin/pkg-config";
+      ANDROID_FLAVOR="${androidFlavor}";
     };
     # $(nix build .#apk_koreader-wip.mitmCache.updateScript --no-link --print-out-paths)
     mitmCache = gradle.fetchDeps {
@@ -193,10 +194,11 @@ stdenv.mkDerivation (
       runHook preBuild
       # gradle --write-verification-metadata sha256
       tmpbin=$(mktemp -d)
-      tee > "$tmpbin/gradle" << EOF
+      tee > "$tmpbin/gradlecustom" << EOF
       #! ${runtimeShell}
       exec ${gradle}/bin/gradle ''${gradleFlags[@]}  ''${gradleFlagsArray[@]} "\$@"
       EOF
+      chmod +x "$tmpbin/gradlecustom"
       export PATH="$tmpbin:$PATH"
       ${fhsEnv}/bin/koreader-build-env -c "
         set -e
