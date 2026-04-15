@@ -1,5 +1,5 @@
 {
-  mk-apk-package,
+  linkFarm,
   lib,
   stdenv,
   fetchFromGitHub,
@@ -30,7 +30,6 @@
   bash,
   buildFHSEnv,
   srcOnly,
-  applyPatches,
 }:
 # https://github.com/NixOS/nixpkgs/blob/4ed2dff2b5c2970997ed3a12aae50181a352f719/doc/languages-frameworks/gradle.section.md
 stdenv.mkDerivation (
@@ -134,6 +133,10 @@ stdenv.mkDerivation (
     ];
 
     passthru.srcOnly = srcOnly finalAttrs.finalPackage;
+    passthru.srcs = map (repo: {
+      name = repo.name;
+      path = repo;
+    }) (repos + [ finalAttrs.src ]);
     nativeBuildInputs = [
       git
       cmake
