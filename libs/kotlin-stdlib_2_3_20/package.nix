@@ -29,6 +29,11 @@ stdenv.mkDerivation (
     };
     postPatch = ''
       rm -fr gradle/verification-metadata.xml gradle/wrapper
+      snapshot_version=$(awk -F= '/^defaultSnapshotVersion=/{print $2}'  gradle.properties)
+      substituteInPlace gradle.properties \
+        --replace-fail "$snapshot_version" "${finalAttrs.version}"
+      substituteInPlace $(find . -name gradle.properties) $(find . -name pom.xml) \
+        --replace-quiet "$snapshot_version" "${finalAttrs.version}"
     '';
     sourceRoot = "${finalAttrs.src.name}/libraries/stdlib";
 
