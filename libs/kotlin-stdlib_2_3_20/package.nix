@@ -49,11 +49,15 @@ stdenv.mkDerivation (
     # this is required for using mitm-cache on Darwin
     __darwinAllowLocalNetworking = true;
     gradleFlags = [
+      "--no-configuration-cache"
       "-Dfile.encoding=utf-8"
       "-Dorg.gradle.java.home=${finalAttrs.jdk.passthru.home}"
     ];
     preBuild = ''
       chmod -R a+w ../..
+      chmod -R a+w ../../.. || true
+      export GRADLE_USER_HOME="$HOME/.gradle"
+      gradleFlagsArray+=("-Dgradle.user.home=$GRADLE_USER_HOME"  --gradle-user-home "$GRADLE_USER_HOME") 
     '';
     # https://github.com/NixOS/nixpkgs/pull/383115/changes
     gradleUpdateScript = ''
@@ -63,7 +67,9 @@ stdenv.mkDerivation (
     '';
     # github.com/JetBrains/kotlin/tree/v2.3.20/libraries/stdlib
     buildPhase = ''
+      runHook preBuild
       gradle :tools:kotlin-stdlib-gen:run
+      runHook postBuild
     '';
     installPhase = ''
       mkdir -p $out
