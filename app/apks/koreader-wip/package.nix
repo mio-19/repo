@@ -203,5 +203,17 @@ stdenv.mkDerivation (
       runHook postBuild
     '';
 
+    installPhase = ''
+      runHook preInstall
+      install -Dm644 koreader-android-*.apk $out/koreader.apk
+      runHook postInstall
+    '';
+
+    meta = with lib; {
+      description = "KOReader for Android";
+      homepage = "https://github.com/koreader/koreader";
+      license = licenses.agpl3Only;
+      platforms = platforms.unix;
+    };
   }
 )
