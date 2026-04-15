@@ -53,6 +53,7 @@ stdenv.mkDerivation (
       "--no-configuration-cache"
       "-Dfile.encoding=utf-8"
       "-Dorg.gradle.java.home=${finalAttrs.jdk.passthru.home}"
+      "-Dbuild.number=${finalAttrs.version}"
     ];
     preBuild = ''
       chmod -R a+w ../.. || true
