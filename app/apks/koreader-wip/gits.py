@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -19,9 +19,24 @@ def extract_block(text, start):
     return None
 
 
+def run_nurl(url, rev):
+    cmd = [
+        "nurl",
+        "--fetcher=fetchgit",
+        "--arg", "leaveDotGit", "true",
+        "--arg", "fetchSubmodules", "true",
+        url,
+        rev,
+    ]
+    try:
+        return subprocess.check_output(cmd, text=True).strip()
+    except subprocess.CalledProcessError:
+        return None
+
+
 def main():
     root = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
-    results = []
+    exprs = []
 
     for path in root.rglob("CMakeLists.txt"):
         try:
@@ -40,18 +55,17 @@ def main():
 
             ref_match = re.search(r"\bDOWNLOAD\s+GIT\s+([^\s)]+)", block, re.IGNORECASE)
             url_match = re.search(r"\bhttps?://[^\s)]+", block, re.IGNORECASE)
+            if not (ref_match and url_match):
+                continue
 
-            if ref_match and url_match:
-                results.append(
-                    {
-                        "file": str(path),
-                        "ref": ref_match.group(1),
-                        "url": url_match.group(0),
-                        "hash": "",
-                    }
-                )
+            expr = run_nurl(url_match.group(0), ref_match.group(1))
+            if expr:
+                exprs.append(f"({expr})")
 
-    print(json.dumps(results, indent=2))
+    print("[")
+    for expr in exprs:
+        print(f"  {expr}")
+    print("]")
 
 
 if __name__ == "__main__":
