@@ -3,7 +3,6 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  fetchurl,
   fetchgit,
   androidSdkBuilder,
   gradle_8_14_3,
@@ -19,6 +18,7 @@
   m4,
   which,
   python3,
+  runtimeShell,
 
   writableTmpDirAsHomeHook,
   unzip,
@@ -97,10 +97,10 @@ stdenv.mkDerivation (
     sourceRoot = "${finalAttrs.src.name}";
     postPatch = ''
       substituteInPlace $(find . -name CMakeLists.txt) ${lib.concatMapStrings repos-replace repos}
-        # LuaJIT uses CROSS+CC for the cross-compiler (TARGET_CC), so CC must be
-        # "clang" to form "aarch64-linux-android21-clang". But HOST_CC (used to
-        # compile host tools minilua/buildvm) must be the native build compiler
-        # since NDK's clang is an Android cross-compiler without Linux headers.
+      # LuaJIT uses CROSS+CC for the cross-compiler (TARGET_CC), so CC must be
+      # "clang" to form "aarch64-linux-android21-clang". But HOST_CC (used to
+      # compile host tools minilua/buildvm) must be the native build compiler
+      # since NDK's clang is an Android cross-compiler without Linux headers.
       substituteInPlace base/thirdparty/luajit/CMakeLists.txt \
           --replace-fail \
             'set(HOST_CC ''${HOSTCC})' \
@@ -126,6 +126,7 @@ stdenv.mkDerivation (
       #include <strings.h>
       #endif' \
             '#include <strings.h>'
+      substituteInPlace make/android.mk --replace-fail '$(ANDROID_LAUNCHER_DIR)/gradlew' 'gradle'
     '';
     patches = [
       ./base.patch
@@ -181,18 +182,22 @@ stdenv.mkDerivation (
       "-Dorg.gradle.java.installations.auto-download=false"
       "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
       "-Dorg.gradle.jvmargs=-Xmx4g"
-      "-p"
-      androidLauncherDir
       "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
     ];
 
     preBuild = ''
-      export PATH="${androidSdk}/share/android-sdk/ndk/${androidNdkVersion}/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
+      #export PATH="${androidSdk}/share/android-sdk/ndk/${androidNdkVersion}/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH"
     '';
 
     gradleUpdateScript = ''
       runHook preBuild
       # gradle --write-verification-metadata sha256
+      tmpbin=$(mktemp -d)
+      tee > "$tmpbin/gradle" << EOF
+      #! ${runtimeShell}
+      exec ${gradle}/bin/gradle ''${gradleFlags[@]}  ''${gradleFlagsArray[@]} "\$@"
+      EOF
+      export PATH="$tmpbin:$PATH"
       ${fhsEnv}/bin/koreader-build-env -c "
         set -e
         bash ./kodev release -i android-${androidArch}
