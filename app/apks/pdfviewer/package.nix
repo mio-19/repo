@@ -1,6 +1,5 @@
 {
   mk-apk-package,
-  overrides-fromsrc,
   buildGradlePackage,
   sources,
   lib,
@@ -54,11 +53,14 @@ let
           url = "https://github.com/GrapheneOS/PdfViewer/pull/598.diff";
           hash = "sha256-xE8bc5u2IoRhfay8eJo+vUzzQEr4jGTWNEuciNT5W1U=";
         })
-        (fetchpatch {
-          name = "feat: Search (Fixes #4)";
-          url = "https://github.com/GrapheneOS/PdfViewer/pull/579.diff";
-          hash = "sha256-COVebkjyEIrQf7Q1VBLaRwthO2bG+/Uy/tBqoLueqwY=";
-        })
+        /*
+          TODO: fix merge conflicts
+          (fetchpatch {
+            name = "feat: Search (Fixes #4)";
+            url = "https://github.com/GrapheneOS/PdfViewer/pull/579.diff";
+            hash = "sha256-COVebkjyEIrQf7Q1VBLaRwthO2bG+/Uy/tBqoLueqwY=";
+          })
+        */
       ];
 
       nativeBuildInputs = [
