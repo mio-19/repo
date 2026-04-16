@@ -7,6 +7,8 @@
   gradle-packages,
   jdk21_headless,
   runCommand,
+  fetchurl,
+  jq,
   writableTmpDirAsHomeHook,
   sources,
 }:
@@ -24,6 +26,41 @@ let
       hash = "sha256-McVXE+QCM6gwOCfOtCykikcmegrUurkXcSMSHnFSTCY=";
       defaultJava = jdk21_headless;
     }).wrapped;
+
+  upstreamAllowlist = fetchurl {
+    url = "https://raw.githubusercontent.com/google-ai-edge/gallery/refs/heads/main/model_allowlists/1_0_11.json";
+    hash = "sha256-jY0Vcws3j3eQK9mzUemFI06KAf98PCalK/bHA+4Us5s=";
+  };
+
+  patchedAllowlist = runCommand "gallery-model-allowlist.json" { nativeBuildInputs = [ jq ]; } ''
+    jq '
+      .models += [
+        {
+          "name": "Gemma-4-E2B-it-abliterated",
+          "modelId": "nqd145/Gemma-4-E2B-it-abliterated-litertlm",
+          "modelFile": "Gemma-4-E2B-it-abliterated.litertlm",
+          "description": "An abliterated variant of Gemma 4 E2B ready for deployment on Android using LiteRT-LM. It is based on the official Gemma 4 E2B model.",
+          "sizeInBytes": 5065244672,
+          "minDeviceMemoryInGb": 8,
+          "commitHash": "7c778c0c415a10ad518cf6f2ac21931610e0d223",
+          "llmSupportThinking": true,
+          "defaultConfig": {
+            "topK": 64,
+            "topP": 0.95,
+            "temperature": 1.0,
+            "maxContextLength": 32000,
+            "maxTokens": 4000,
+            "accelerators": "gpu,cpu"
+          },
+          "taskTypes": [
+            "llm_chat",
+            "llm_prompt_lab",
+            "llm_agent_chat"
+          ]
+        }
+      ]
+    ' ${upstreamAllowlist} > "$out"
+  '';
 
   appPackage = buildGradlePackage rec {
     pname = "gallery";
@@ -47,6 +84,7 @@ let
     nativeBuildInputs = [
       gradle
       jdk21_headless
+      jq
       writableTmpDirAsHomeHook
     ];
 
@@ -76,7 +114,16 @@ let
         --replace-fail 'applicationId = "com.google.aiedge.gallery"' 'applicationId = "com.google.ai.edge.gallery"'
       substituteInPlace app/src/main/java/com/google/ai/edge/gallery/common/ProjectConfig.kt \
         --replace-fail "REPLACE_WITH_YOUR_CLIENT_ID_IN_HUGGINGFACE_APP" "$(echo MWYwNTA3YzAtNWRiMi00MTc5LWFhYTEtYjVmZTRjNDhmYjU5Cg== | base64 -d | tr -d '\n')" \
-        --replace-fail "REPLACE_WITH_YOUR_REDIRECT_URI_IN_HUGGINGFACE_APP" "com.google.ai.edge.gallery.oauthredirect://oauth_redirect" \
+        --replace-fail "REPLACE_WITH_YOUR_REDIRECT_URI_IN_HUGGINGFACE_APP" "com.google.ai.edge.gallery.oauthredirect://oauth_redirect"
+
+      install -Dm644 ${patchedAllowlist} app/src/main/assets/model_allowlist.json
+
+      substituteInPlace app/src/main/java/com/google/ai/edge/gallery/ui/modelmanager/ModelManagerViewModel.kt \
+        --replace-fail 'import java.io.File' $'import java.io.File\nimport java.io.InputStreamReader' \
+        --replace-fail '        if (modelAllowlist == null) {' $'        if (modelAllowlist == null) {\n          try {\n            Log.d(TAG, "Loading bundled model allowlist from assets.")\n            context.assets.open(MODEL_ALLOWLIST_FILENAME).use { input ->\n              InputStreamReader(input).use { reader ->\n                modelAllowlist = Gson().fromJson(reader, ModelAllowlist::class.java)\n              }\n            }\n          } catch (e: Exception) {\n            Log.w(TAG, "Failed to load bundled model allowlist from assets", e)\n          }\n        }\n\n        if (modelAllowlist == null) {' \
+        --replace-fail '        Log.d(TAG, "Allowlist: $modelAllowlist")' $'        val resolvedModelAllowlist = modelAllowlist!!\n\n        Log.d(TAG, "Allowlist: $resolvedModelAllowlist")' \
+        --replace-fail '            modelAllowlist.aicoreRequirements' '            resolvedModelAllowlist.aicoreRequirements' \
+        --replace-fail '        for (allowedModel in modelAllowlist.models) {' '        for (allowedModel in resolvedModelAllowlist.models) {' \
     '';
 
     gradleFlags = [
