@@ -44,6 +44,8 @@ lib.extendMkDerivation {
       }
       // args.env or { };
 
+      inherit mavenRepository;
+
       nativeBuildInputs = nativeBuildInputs ++ [
         maven
         mvnJdk
