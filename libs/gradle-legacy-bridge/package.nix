@@ -32,6 +32,7 @@ lib.extendMkDerivation {
     "bootstrapCompileExcludeJars"
     "sourceSubprojects"
     "kotlinSourceSubprojects"
+    "kotlinSourcePaths"
     "builtRuntimeModules"
     "builtPluginModules"
     "pluginClasspathModules"
@@ -64,6 +65,7 @@ lib.extendMkDerivation {
       bootstrapCompileExcludeJars ? [ ],
       sourceSubprojects,
       kotlinSourceSubprojects ? sourceSubprojects,
+      kotlinSourcePaths ? [ ],
       builtRuntimeModules,
       builtPluginModules,
       pluginClasspathModules ? [ ],
@@ -163,6 +165,13 @@ lib.extendMkDerivation {
             find "$dir" -type f -name '*.kt' | sort >> build/all-kotlin-sources.txt
           fi
         done
+        for path in ${lib.escapeShellArgs kotlinSourcePaths}; do
+          if [ -d "$path" ]; then
+            find "$path" -type f -name '*.kt' | sort >> build/all-kotlin-sources.txt
+          elif [ -f "$path" ]; then
+            printf '%s\n' "$path" >> build/all-kotlin-sources.txt
+          fi
+        done
         sort -u build/all-sources.txt -o build/all-sources.txt
         sort -u build/all-kotlin-sources.txt -o build/all-kotlin-sources.txt
 
@@ -256,7 +265,7 @@ lib.extendMkDerivation {
           }/*.jar build/lib/
           chmod u+w build/lib/*.jar
           kotlinCompileClasspath="build/all/classes:$(printf '%s:' build/lib/*.jar)''${JAVA_HOME}/lib/tools.jar"
-          "''$JAVA_HOME/bin/java" -Dfile.encoding=UTF-8 -Xmx3000m -cp "$kotlinCompileClasspath" \
+          "''$JAVA_HOME/bin/java" -Dfile.encoding=UTF-8 -Xms256m -Xmx2048m -cp "$kotlinCompileClasspath" \
             org.jetbrains.kotlin.cli.jvm.K2JVMCompiler \
             -no-stdlib \
             -no-reflect \
@@ -382,6 +391,14 @@ lib.extendMkDerivation {
           mkdir -p build/all/classes/org/gradle/api/internal/runtimeshaded
           : > build/all/classes/org/gradle/api/internal/runtimeshaded/api-relocated.txt
           : > build/all/classes/org/gradle/api/internal/runtimeshaded/test-kit-relocated.txt
+        fi
+
+        serviceRegistryFile="build/all/classes/META-INF/services/org.gradle.internal.service.scopes.PluginServiceRegistry"
+        if [ -f "$serviceRegistryFile" ]; then
+          tmpServiceRegistry="$(mktemp)"
+          grep -vx 'org.gradle.instantexecution.InstantExecutionServices' \
+            "$serviceRegistryFile" > "$tmpServiceRegistry" || true
+          mv "$tmpServiceRegistry" "$serviceRegistryFile"
         fi
 
         (
