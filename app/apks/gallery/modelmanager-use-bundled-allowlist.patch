@@ -1,0 +1,58 @@
+--- app/src/main/java/com/google/ai/edge/gallery/ui/modelmanager/ModelManagerViewModel.kt
++++ app/src/main/java/com/google/ai/edge/gallery/ui/modelmanager/ModelManagerViewModel.kt
+@@ -59,6 +59,7 @@
+ import dagger.hilt.android.lifecycle.HiltViewModel
+ import dagger.hilt.android.qualifiers.ApplicationContext
+ import java.io.File
++import java.io.InputStreamReader
+ import java.net.HttpURLConnection
+ import java.net.URL
+ import javax.inject.Inject
+@@ -893,6 +894,19 @@
+         }
+ 
+         if (modelAllowlist == null) {
++          try {
++            Log.d(TAG, "Loading bundled model allowlist from assets.")
++            context.assets.open("model_allowlist.json").use { input ->
++              InputStreamReader(input).use { reader ->
++                modelAllowlist = Gson().fromJson(reader, ModelAllowlist::class.java)
++              }
++            }
++          } catch (e: Exception) {
++            Log.w(TAG, "Failed to load bundled model allowlist from assets", e)
++          }
++        }
++
++        if (modelAllowlist == null) {
+           // Load from github.
+           var version = BuildConfig.VERSION_NAME.replace(".", "_")
+           val url = getAllowlistUrl(version)
+@@ -916,14 +930,16 @@
+           return@launch
+         }
+ 
+-        Log.d(TAG, "Allowlist: $modelAllowlist")
++        val resolvedModelAllowlist = modelAllowlist!!
++
++        Log.d(TAG, "Allowlist: $resolvedModelAllowlist")
+ 
+         val isAICoreAvailable by lazy {
+           // Build a fast-lookup set of all supported device models.
+           // This extracts the models from all allowed groups, flattens them into a single stream,
+           // lowercases them for case-insensitive matching, and stores them in a Set.
+           val allowedDeviceModelsSet =
+-            modelAllowlist.aicoreRequirements
++            resolvedModelAllowlist.aicoreRequirements
+               ?.allowedDeviceGroups
+               ?.asSequence()
+               ?.flatMap { it.deviceModels }
+@@ -935,7 +951,7 @@
+         // Convert models in the allowlist.
+         val curTasks = getActiveCustomTasks().map { it.task }
+         val nameToModel = mutableMapOf<String, Model>()
+-        for (allowedModel in modelAllowlist.models) {
++        for (allowedModel in resolvedModelAllowlist.models) {
+           if (allowedModel.disabled == true) {
+             continue
+           }
