@@ -14,7 +14,7 @@
          if (modelAllowlist == null) {
 +          try {
 +            Log.d(TAG, "Loading bundled model allowlist from assets.")
-+            context.assets.open(MODEL_ALLOWLIST_FILENAME).use { input ->
++            context.assets.open("model_allowlist.json").use { input ->
 +              InputStreamReader(input).use { reader ->
 +                modelAllowlist = Gson().fromJson(reader, ModelAllowlist::class.java)
 +              }

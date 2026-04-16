@@ -1,7 +1,7 @@
 {
   inputs = {
-    #nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    #nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
     android-nixpkgs = {
@@ -145,6 +145,11 @@
                 name = "gradle: fix usage of update-deps script without bwrap";
                 url = "https://github.com/NixOS/nixpkgs/pull/418576.patch";
                 hash = "sha256-tbn3rDQNuD8qRCaOJ3mhiQV1YkpcOIAZZlmDEfJb0+Y=";
+              })
+              (fetchpatch {
+                name = "zulu17: 17.0.12 -> 17.0.18";
+                url = "https://github.com/NixOS/nixpkgs/pull/500710.diff";
+                hash = "sha256-dKXr/+Il/hQinii1W/Fv/IC8hml9xlDaQZOdpvVMGr8=";
               })
             ];
             /*
