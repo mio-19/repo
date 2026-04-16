@@ -1,5 +1,6 @@
 {
   callPackage,
+  buildMavenRepository,
   lib,
   stdenv,
   fetchFromGitHub,
@@ -13,37 +14,76 @@
   unzip,
   zip,
 }:
-{
-  version,
-  tag,
-  hash,
-  bootstrapGradle,
-  bootstrapDistZip ? null,
-  bootstrapDistLibJars ? [ ],
-  bootstrapDistPluginJars ? [ ],
-  sourceSubprojects,
-  builtRuntimeModules,
-  builtPluginModules,
-  pluginClasspathModules ? [ ],
-  implementationPluginModules ? [ ],
-  extraLibs ? [ ],
-  extraPluginLibs ? [ ],
-  jdk ? jdk8_headless,
-  buildTimestamp ? "19700101000000+0000",
-  buildTimestampIso ? "1970-01-01 00\\:00\\:00 UTC",
-  kotlinDslVersion ? null,
-  patches ? [ ],
-  patchFlags ? [ ],
-}:
-let
-  pluginsPropertyModules = builtPluginModules ++ pluginClasspathModules ++ [ "gradle-wrapper" ];
-  implementationPluginsPropertyModules = implementationPluginModules;
+lib.extendMkDerivation {
+  constructDrv = stdenv.mkDerivation;
 
-  mkGradle' =
+  excludeDrvArgNames = [
+    "version"
+    "tag"
+    "hash"
+    "bootstrapGradle"
+    "bootstrapDistZip"
+    "bootstrapDistLibJars"
+    "bootstrapDistPluginJars"
+    "bootstrapDistInstallLibJars"
+    "bootstrapDistInstallPluginJars"
+    "preserveBootstrapRuntimeModules"
+    "preserveBootstrapPluginModules"
+    "bootstrapCompileExcludeJars"
+    "sourceSubprojects"
+    "kotlinSourceSubprojects"
+    "builtRuntimeModules"
+    "builtPluginModules"
+    "pluginClasspathModules"
+    "implementationPluginModules"
+    "extraLibs"
+    "extraPluginLibs"
+    "jdk"
+    "buildTimestamp"
+    "buildTimestampIso"
+    "kotlinDslVersion"
+    "patches"
+    "patchFlags"
+    "kotlinBootstrapRepo"
+  ];
+
+  extendDrvArgs =
+    finalAttrs:
     {
+      version,
+      tag,
+      hash,
+      bootstrapGradle,
+      bootstrapDistZip ? null,
+      bootstrapDistLibJars ? [ ],
+      bootstrapDistPluginJars ? [ ],
+      bootstrapDistInstallLibJars ? [ ],
+      bootstrapDistInstallPluginJars ? [ ],
+      preserveBootstrapRuntimeModules ? [ ],
+      preserveBootstrapPluginModules ? [ ],
+      bootstrapCompileExcludeJars ? [ ],
+      sourceSubprojects,
+      kotlinSourceSubprojects ? sourceSubprojects,
+      builtRuntimeModules,
+      builtPluginModules,
+      pluginClasspathModules ? [ ],
+      implementationPluginModules ? [ ],
+      extraLibs ? [ ],
+      extraPluginLibs ? [ ],
+      jdk ? jdk8_headless,
+      buildTimestamp ? "19700101000000+0000",
+      buildTimestampIso ? "1970-01-01 00\\:00\\:00 UTC",
+      kotlinDslVersion ? null,
+      patches ? [ ],
+      patchFlags ? [ ],
+      kotlinBootstrapRepo ? null,
       ...
     }:
-    stdenv.mkDerivation {
+    let
+      pluginsPropertyModules = builtPluginModules ++ pluginClasspathModules ++ [ "gradle-wrapper" ];
+      implementationPluginsPropertyModules = implementationPluginModules;
+    in
+    {
       pname = "gradle";
       inherit version;
 
@@ -81,10 +121,14 @@ let
         if [ -n "${if bootstrapDistZip == null then "" else builtins.toString bootstrapDistZip}" ]; then
           bootstrapZip="${if bootstrapDistZip == null then "" else builtins.toString bootstrapDistZip}"
           for jar in ${lib.escapeShellArgs bootstrapDistLibJars}; do
-            unzip -oq "$bootstrapZip" "gradle-${version}/lib/$jar" -d build/bootstrap
+            if unzip -Z1 "$bootstrapZip" "gradle-${version}/lib/$jar" >/dev/null 2>&1; then
+              unzip -oq "$bootstrapZip" "gradle-${version}/lib/$jar" -d build/bootstrap
+            fi
           done
           for jar in ${lib.escapeShellArgs bootstrapDistPluginJars}; do
-            unzip -oq "$bootstrapZip" "gradle-${version}/lib/plugins/$jar" -d build/bootstrap
+            if unzip -Z1 "$bootstrapZip" "gradle-${version}/lib/plugins/$jar" >/dev/null 2>&1; then
+              unzip -oq "$bootstrapZip" "gradle-${version}/lib/plugins/$jar" -d build/bootstrap
+            fi
           done
         fi
         rm -f build/bootstrap/gradle-${version}/lib/logback-classic-*.jar
@@ -94,6 +138,9 @@ let
         cp build/bootstrap/gradle-${version}/lib/*.jar build/lib/
         cp build/bootstrap/gradle-${version}/lib/plugins/*.jar build/lib/
         chmod u+w build/lib/*.jar
+        for jar in ${lib.escapeShellArgs bootstrapCompileExcludeJars}; do
+          rm -f build/lib/"$jar"
+        done
         for module in ${lib.escapeShellArgs builtRuntimeModules}; do
           rm -f build/lib/"$module"-*.jar
         done
@@ -102,6 +149,7 @@ let
         done
 
         : > build/all-sources.txt
+        : > build/all-kotlin-sources.txt
         for subproject in ${lib.escapeShellArgs sourceSubprojects}; do
           for dir in "subprojects/$subproject/src/main/java" "subprojects/$subproject/src/main/groovy"; do
             if [ -d "$dir" ]; then
@@ -109,7 +157,14 @@ let
             fi
           done
         done
+        for subproject in ${lib.escapeShellArgs kotlinSourceSubprojects}; do
+          dir="subprojects/$subproject/src/main/kotlin"
+          if [ -d "$dir" ]; then
+            find "$dir" -type f -name '*.kt' | sort >> build/all-kotlin-sources.txt
+          fi
+        done
         sort -u build/all-sources.txt -o build/all-sources.txt
+        sort -u build/all-kotlin-sources.txt -o build/all-kotlin-sources.txt
 
         tmpSources="$(mktemp)"
         declare -A seenPackageInfo=()
@@ -159,6 +214,32 @@ let
           printf '%s\n' build/generated-src/org/gradle/bootstrap/NoOpInstantExecution.java >> build/all-sources.txt
         fi
 
+        if [ -n "${if kotlinDslVersion == null then "" else builtins.toString kotlinDslVersion}" ]; then
+          mkdir -p build/generated-kotlin/org/gradle/kotlin/dsl
+          embeddedKotlinVersion="${
+            if kotlinDslVersion == null then "" else builtins.toString kotlinDslVersion
+          }"
+          cat > build/generated-kotlin/org/gradle/kotlin/dsl/KotlinDependencyExtensions.kt <<EOF
+        package org.gradle.kotlin.dsl
+
+        import org.gradle.api.artifacts.dsl.DependencyHandler
+        import org.gradle.plugin.use.PluginDependenciesSpec
+        import org.gradle.plugin.use.PluginDependencySpec
+
+        val embeddedKotlinVersion = "$embeddedKotlinVersion"
+
+        fun DependencyHandler.embeddedKotlin(module: String): Any =
+            kotlin(module, embeddedKotlinVersion)
+
+        fun DependencyHandler.kotlin(module: String, version: String? = null): Any =
+            "org.jetbrains.kotlin:kotlin-''${module}''${version?.let { \":\$it\" } ?: \"\"}"
+
+        fun PluginDependenciesSpec.kotlin(module: String): PluginDependencySpec =
+            id("org.jetbrains.kotlin.''${module}")
+        EOF
+          printf '%s\n' build/generated-kotlin/org/gradle/kotlin/dsl/KotlinDependencyExtensions.kt >> build/all-kotlin-sources.txt
+        fi
+
         compileClasspath="$(printf '%s:' build/lib/*.jar)''${JAVA_HOME}/lib/tools.jar"
         "''$JAVA_HOME/bin/java" -noverify -Dfile.encoding=UTF-8 -Xmx3000m -classpath "$compileClasspath" \
           org.codehaus.groovy.tools.FileSystemCompiler \
@@ -167,6 +248,23 @@ let
           -j \
           -d build/all/classes \
           @build/all-sources.txt
+
+        if [ -n "${if kotlinBootstrapRepo == null then "" else builtins.toString kotlinBootstrapRepo}" ] \
+          && [ -s build/all-kotlin-sources.txt ]; then
+          cp ${
+            if kotlinBootstrapRepo == null then "/dev/null" else "${kotlinBootstrapRepo}"
+          }/*.jar build/lib/
+          chmod u+w build/lib/*.jar
+          kotlinCompileClasspath="build/all/classes:$(printf '%s:' build/lib/*.jar)''${JAVA_HOME}/lib/tools.jar"
+          "''$JAVA_HOME/bin/java" -Dfile.encoding=UTF-8 -Xmx3000m -cp "$kotlinCompileClasspath" \
+            org.jetbrains.kotlin.cli.jvm.K2JVMCompiler \
+            -no-stdlib \
+            -no-reflect \
+            -jvm-target 1.8 \
+            -classpath "$kotlinCompileClasspath" \
+            -d build/all/classes \
+            @build/all-kotlin-sources.txt
+        fi
 
         for subproject in ${lib.escapeShellArgs sourceSubprojects}; do
           if [ -d "subprojects/$subproject/src/main/resources" ]; then
@@ -223,20 +321,61 @@ let
           }" > build/all/classes/gradle-kotlin-dsl-versions.properties
         fi
 
+        if [ -n "${if bootstrapDistZip == null then "" else builtins.toString bootstrapDistZip}" ]; then
+          bootstrapZip="${if bootstrapDistZip == null then "" else builtins.toString bootstrapDistZip}"
+          preserveModuleProperties() {
+            local jarPath="$1"
+            local propertyName="$3"
+            if unzip -Z1 "$bootstrapZip" "$jarPath" >/dev/null 2>&1; then
+              local preserveTmp
+              preserveTmp="$(mktemp -d)"
+              unzip -oq "$bootstrapZip" "$jarPath" -d "$preserveTmp"
+              unzip -p "$preserveTmp/$jarPath" "$propertyName" > "build/all/classes/$propertyName"
+              rm -rf "$preserveTmp"
+            fi
+          }
+
+          for module in ${lib.escapeShellArgs preserveBootstrapRuntimeModules}; do
+            preserveModuleProperties "gradle-${version}/lib/$module-${version}.jar" "$module" "$module-classpath.properties"
+          done
+          for module in ${lib.escapeShellArgs preserveBootstrapPluginModules}; do
+            preserveModuleProperties "gradle-${version}/lib/plugins/$module-${version}.jar" "$module" "$module-classpath.properties"
+          done
+          preserveModuleProperties \
+            "gradle-${version}/lib/gradle-kotlin-dsl-${version}.jar" \
+            "gradle-kotlin-dsl" \
+            "gradle-kotlin-dsl-versions.properties"
+        fi
+
         runtime="$(cd build/bootstrap/gradle-${version}/lib && ls *.jar | grep -v '^gradle-' | paste -sd, -)"
         pluginRuntime="$(cd build/bootstrap/gradle-${version}/lib/plugins && ls *.jar | grep -v '^gradle-' | paste -sd, -)"
+        if [ -n "${
+          if kotlinBootstrapRepo == null then "" else builtins.toString kotlinBootstrapRepo
+        }" ]; then
+          kotlinRuntime="$(cd ${
+            if kotlinBootstrapRepo == null then "/dev/null" else "${kotlinBootstrapRepo}"
+          } && ls *.jar | paste -sd, -)"
+          if [ -n "$kotlinRuntime" ]; then
+            runtime="$runtime,$kotlinRuntime"
+            pluginRuntime="$pluginRuntime,$kotlinRuntime"
+          fi
+        fi
 
         for module in ${lib.escapeShellArgs builtRuntimeModules}; do
-          {
-            printf 'runtime=%s\n' "$runtime"
-            printf 'projects=\n'
-          } > "build/all/classes/$module-classpath.properties"
+          if [ ! -f "build/all/classes/$module-classpath.properties" ]; then
+            {
+              printf 'runtime=%s\n' "$runtime"
+              printf 'projects=\n'
+            } > "build/all/classes/$module-classpath.properties"
+          fi
         done
         for module in ${lib.escapeShellArgs builtPluginModules}; do
-          {
-            printf 'runtime=%s\n' "$pluginRuntime"
-            printf 'projects=\n'
-          } > "build/all/classes/$module-classpath.properties"
+          if [ ! -f "build/all/classes/$module-classpath.properties" ]; then
+            {
+              printf 'runtime=%s\n' "$pluginRuntime"
+              printf 'projects=\n'
+            } > "build/all/classes/$module-classpath.properties"
+          fi
         done
 
         if printf '%s\n' ${lib.escapeShellArgs builtRuntimeModules} | grep -qx 'gradle-runtime-api-info'; then
@@ -261,6 +400,37 @@ let
 
         cp build/bootstrap/gradle-${version}/lib/*.jar "$gradleHome/lib/"
         cp build/bootstrap/gradle-${version}/lib/plugins/*.jar "$gradleHome/lib/plugins/"
+
+        if [ -n "${
+          if kotlinBootstrapRepo == null then "" else builtins.toString kotlinBootstrapRepo
+        }" ]; then
+          cp ${
+            if kotlinBootstrapRepo == null then "/dev/null" else "${kotlinBootstrapRepo}"
+          }/*.jar "$gradleHome/lib/"
+        fi
+
+        if [ -n "${if bootstrapDistZip == null then "" else builtins.toString bootstrapDistZip}" ]; then
+          find "$gradleHome/lib" -maxdepth 1 -type f -name 'gradle-*.jar' ! -name "*-${version}.jar" -delete
+          find "$gradleHome/lib/plugins" -maxdepth 1 -type f -name 'gradle-*.jar' ! -name "*-${version}.jar" -delete
+        fi
+
+        if [ -n "${if bootstrapDistZip == null then "" else builtins.toString bootstrapDistZip}" ]; then
+          bootstrapZip="${if bootstrapDistZip == null then "" else builtins.toString bootstrapDistZip}"
+          installOverlay="$(mktemp -d)"
+          for jar in ${lib.escapeShellArgs bootstrapDistInstallLibJars}; do
+            if unzip -Z1 "$bootstrapZip" "gradle-${version}/lib/$jar" >/dev/null 2>&1; then
+              unzip -oq "$bootstrapZip" "gradle-${version}/lib/$jar" -d "$installOverlay"
+              cp "$installOverlay/gradle-${version}/lib/$jar" "$gradleHome/lib/"
+            fi
+          done
+          for jar in ${lib.escapeShellArgs bootstrapDistInstallPluginJars}; do
+            if unzip -Z1 "$bootstrapZip" "gradle-${version}/lib/plugins/$jar" >/dev/null 2>&1; then
+              unzip -oq "$bootstrapZip" "gradle-${version}/lib/plugins/$jar" -d "$installOverlay"
+              cp "$installOverlay/gradle-${version}/lib/plugins/$jar" "$gradleHome/lib/plugins/"
+            fi
+          done
+          rm -rf "$installOverlay"
+        fi
 
         for module in ${lib.escapeShellArgs builtRuntimeModules}; do
           rm -f "$gradleHome/lib/$module"-*.jar
@@ -308,9 +478,4 @@ let
         platforms = lib.platforms.unix;
       };
     };
-
-  unwrapped = callPackage mkGradle' { };
-in
-callPackage gradle-packages.wrapGradle {
-  gradle-unwrapped = unwrapped;
 }

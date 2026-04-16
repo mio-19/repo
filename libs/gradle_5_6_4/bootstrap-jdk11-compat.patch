@@ -9,6 +9,29 @@ index 9656e8f0..10e2ba46 100644
 -    public static final int ASM_LEVEL = Opcodes.ASM7;
 +    public static final int ASM_LEVEL = Opcodes.ASM6;
  }
+diff --git a/subprojects/resources-http/src/main/java/org/gradle/internal/resource/transport/http/HttpHeaderSchemeFactory.java b/subprojects/resources-http/src/main/java/org/gradle/internal/resource/transport/http/HttpHeaderSchemeFactory.java
+index 91ea3f57..511cae13 100644
+--- a/subprojects/resources-http/src/main/java/org/gradle/internal/resource/transport/http/HttpHeaderSchemeFactory.java
++++ b/subprojects/resources-http/src/main/java/org/gradle/internal/resource/transport/http/HttpHeaderSchemeFactory.java
+@@ -16,8 +16,7 @@
+ 
+ package org.gradle.internal.resource.transport.http;
+ 
+-import org.apache.http.annotation.Contract;
+-import org.apache.http.annotation.ThreadingBehavior;
++import org.apache.http.annotation.Immutable;
+ import org.apache.http.auth.AuthScheme;
+ import org.apache.http.auth.AuthSchemeFactory;
+ import org.apache.http.auth.AuthSchemeProvider;
+@@ -26,7 +25,7 @@
+ 
+ import java.nio.charset.Charset;
+ 
+-@Contract(threading = ThreadingBehavior.IMMUTABLE)
++@Immutable
+ public class HttpHeaderSchemeFactory implements AuthSchemeFactory, AuthSchemeProvider {
+ 
+     public HttpHeaderSchemeFactory(final Charset charset) {
 diff --git a/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java b/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java
 index b4c2dba0..a1d5605e 100644
 --- a/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java
