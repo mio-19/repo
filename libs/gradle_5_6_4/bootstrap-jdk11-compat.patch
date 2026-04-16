@@ -1,6 +1,7 @@
-diff -urN gradle-5.6.4/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java gradle-5.6.4-mod/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java
---- gradle-5.6.4/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java	2026-04-11 13:26:15.035440237 +1000
+diff --git a/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java b/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java
+index 9656e8f0..10e2ba46 100644
+--- a/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java
++++ b/subprojects/base-services/src/main/java/org/gradle/internal/classanalysis/AsmConstants.java
 @@ -19,5 +19,5 @@
  import org.objectweb.asm.Opcodes;
  
@@ -8,10 +9,67 @@ diff -urN gradle-5.6.4/subprojects/base-services/src/main/java/org/gradle/intern
 -    public static final int ASM_LEVEL = Opcodes.ASM7;
 +    public static final int ASM_LEVEL = Opcodes.ASM6;
  }
-diff -urN gradle-5.6.4/subprojects/core/src/main/java/org/gradle/api/internal/tasks/userinput/DefaultUserInputHandler.java gradle-5.6.4-mod/subprojects/core/src/main/java/org/gradle/api/internal/tasks/userinput/DefaultUserInputHandler.java
---- gradle-5.6.4/subprojects/core/src/main/java/org/gradle/api/internal/tasks/userinput/DefaultUserInputHandler.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/core/src/main/java/org/gradle/api/internal/tasks/userinput/DefaultUserInputHandler.java	2026-04-11 13:26:15.035440237 +1000
-@@ -170,7 +170,7 @@
+diff --git a/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java b/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java
+index b4c2dba0..a1d5605e 100644
+--- a/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java
++++ b/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java
+@@ -16,7 +16,6 @@
+ 
+ package org.gradle.api.tasks.util.internal;
+ 
+-import com.google.common.base.MoreObjects;
+ import com.google.common.base.Objects;
+ import com.google.common.cache.Cache;
+ import com.google.common.cache.CacheBuilder;
+@@ -82,7 +81,7 @@ public Boolean call() {
+ 
+         @Override
+         public String toString() {
+-            return MoreObjects.toStringHelper(this)
++            return Objects.toStringHelper(this)
+                 .add("spec", spec)
+                 .toString();
+         }
+@@ -124,7 +123,7 @@ public int hashCode() {
+ 
+         @Override
+         public String toString() {
+-            return MoreObjects.toStringHelper(this)
++            return Objects.toStringHelper(this)
+                 .add("patterns", patterns)
+                 .add("include", include)
+                 .add("caseSensitive", caseSensitive)
+diff --git a/subprojects/core/src/main/java/org/gradle/api/internal/tasks/properties/DefaultTypeMetadataStore.java b/subprojects/core/src/main/java/org/gradle/api/internal/tasks/properties/DefaultTypeMetadataStore.java
+index 2cda891a..90981fa0 100644
+--- a/subprojects/core/src/main/java/org/gradle/api/internal/tasks/properties/DefaultTypeMetadataStore.java
++++ b/subprojects/core/src/main/java/org/gradle/api/internal/tasks/properties/DefaultTypeMetadataStore.java
+@@ -110,7 +110,7 @@ private <T> TypeMetadata createTypeMetadata(Class<T> type) {
+             }
+         }
+ 
+-        ImmutableSet.Builder<PropertyMetadata> effectiveProperties = ImmutableSet.builderWithExpectedSize(annotationMetadata.getPropertiesAnnotationMetadata().size());
++        ImmutableSet.Builder<PropertyMetadata> effectiveProperties = ImmutableSet.builder();
+         for (PropertyAnnotationMetadata propertyAnnotationMetadata : annotationMetadata.getPropertiesAnnotationMetadata()) {
+             Map<AnnotationCategory, Annotation> propertyAnnotations = propertyAnnotationMetadata.getAnnotations();
+             Annotation typeAnnotation = propertyAnnotations.get(TYPE);
+diff --git a/subprojects/core/src/main/java/org/gradle/api/internal/tasks/properties/InspectionSchemeFactory.java b/subprojects/core/src/main/java/org/gradle/api/internal/tasks/properties/InspectionSchemeFactory.java
+index 6813d930..e8a59fc7 100644
+--- a/subprojects/core/src/main/java/org/gradle/api/internal/tasks/properties/InspectionSchemeFactory.java
++++ b/subprojects/core/src/main/java/org/gradle/api/internal/tasks/properties/InspectionSchemeFactory.java
+@@ -56,7 +56,7 @@ public InspectionSchemeFactory(
+      * Creates a new {@link InspectionScheme} with the given annotations enabled and using the given instantiation scheme.
+      */
+     public InspectionScheme inspectionScheme(Collection<Class<? extends Annotation>> annotations, Collection<Class<? extends Annotation>> propertyModifiers, InstantiationScheme instantiationScheme) {
+-        ImmutableList.Builder<PropertyAnnotationHandler> propertyHandlers = ImmutableList.builderWithExpectedSize(annotations.size());
++        ImmutableList.Builder<PropertyAnnotationHandler> propertyHandlers = ImmutableList.builder();
+         for (Class<? extends Annotation> annotation : annotations) {
+             PropertyAnnotationHandler propertyHandler = allKnownPropertyHandlers.get(annotation);
+             if (propertyHandler == null) {
+diff --git a/subprojects/core/src/main/java/org/gradle/api/internal/tasks/userinput/DefaultUserInputHandler.java b/subprojects/core/src/main/java/org/gradle/api/internal/tasks/userinput/DefaultUserInputHandler.java
+index a2c2feb9..5a3e4094 100644
+--- a/subprojects/core/src/main/java/org/gradle/api/internal/tasks/userinput/DefaultUserInputHandler.java
++++ b/subprojects/core/src/main/java/org/gradle/api/internal/tasks/userinput/DefaultUserInputHandler.java
+@@ -170,7 +170,7 @@ private void sendPrompt(String prompt) {
      }
  
      private String sanitizeInput(String input) {
@@ -20,10 +78,11 @@ diff -urN gradle-5.6.4/subprojects/core/src/main/java/org/gradle/api/internal/ta
      }
  
      private class BooleanParser implements Transformer<Boolean, String> {
-diff -urN gradle-5.6.4/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java gradle-5.6.4-mod/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java
---- gradle-5.6.4/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java	2026-04-11 13:26:15.037440238 +1000
-@@ -17,22 +17,11 @@
+diff --git a/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java b/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java
+index fda68716..7753a38f 100644
+--- a/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java
++++ b/subprojects/core/src/main/java/org/gradle/initialization/DefaultGradleApiSpecProvider.java
+@@ -17,21 +17,10 @@
  package org.gradle.initialization;
  
  import com.google.common.collect.ImmutableSet;
@@ -34,7 +93,7 @@ diff -urN gradle-5.6.4/subprojects/core/src/main/java/org/gradle/initialization/
  
  public class DefaultGradleApiSpecProvider extends GradleApiSpecProvider.SpecAdapter implements GradleApiSpecProvider {
  
-     @Override
+-    @Override
 -    public Set<Class<?>> getExportedClasses() {
 -        return ImmutableSet.<Class<?>>of(
 -            FastStringServiceFactory.class,
@@ -42,11 +101,10 @@ diff -urN gradle-5.6.4/subprojects/core/src/main/java/org/gradle/initialization/
 -        );
 -    }
 -
--    @Override
+     @Override
      public Set<String> getExportedPackages() {
          return ImmutableSet.of(
-             "org.gradle",
-@@ -49,17 +38,7 @@
+@@ -49,17 +38,7 @@ public Set<String> getExportedPackages() {
  
      @Override
      public Set<String> getExportedResourcePrefixes() {
@@ -65,18 +123,11 @@ diff -urN gradle-5.6.4/subprojects/core/src/main/java/org/gradle/initialization/
      }
  
      @Override
-diff -urN gradle-5.6.4/subprojects/core/src/main/java/org/gradle/internal/filewatch/jdk7/WatchServiceFileWatcherBacking.java gradle-5.6.4-mod/subprojects/core/src/main/java/org/gradle/internal/filewatch/jdk7/WatchServiceFileWatcherBacking.java
---- gradle-5.6.4/subprojects/core/src/main/java/org/gradle/internal/filewatch/jdk7/WatchServiceFileWatcherBacking.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/core/src/main/java/org/gradle/internal/filewatch/jdk7/WatchServiceFileWatcherBacking.java	2026-04-11 13:26:15.035440237 +1000
-@@ -21,7 +21,6 @@
- import com.google.common.util.concurrent.Futures;
- import com.google.common.util.concurrent.ListenableFuture;
- import com.google.common.util.concurrent.ListeningExecutorService;
--import com.google.common.util.concurrent.MoreExecutors;
- import org.gradle.api.Action;
- import org.gradle.api.internal.file.FileSystemSubset;
- import org.gradle.internal.filewatch.FileWatcher;
-@@ -117,7 +116,7 @@
+diff --git a/subprojects/core/src/main/java/org/gradle/internal/filewatch/jdk7/WatchServiceFileWatcherBacking.java b/subprojects/core/src/main/java/org/gradle/internal/filewatch/jdk7/WatchServiceFileWatcherBacking.java
+index cdc08002..48e56f06 100644
+--- a/subprojects/core/src/main/java/org/gradle/internal/filewatch/jdk7/WatchServiceFileWatcherBacking.java
++++ b/subprojects/core/src/main/java/org/gradle/internal/filewatch/jdk7/WatchServiceFileWatcherBacking.java
+@@ -117,7 +117,7 @@ public void onSuccess(Object result) {
                  public void onFailure(Throwable t) {
                      running.set(false);
                  }
@@ -85,39 +136,60 @@ diff -urN gradle-5.6.4/subprojects/core/src/main/java/org/gradle/internal/filewa
              return fileWatcher;
          } else {
              throw new IllegalStateException("file watcher is started");
-diff -urN gradle-5.6.4/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java gradle-5.6.4-mod/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java
---- gradle-5.6.4/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/core-api/src/main/java/org/gradle/api/tasks/util/internal/CachingPatternSpecFactory.java	2026-04-11 13:26:15.035440237 +1000
-@@ -16,7 +16,6 @@
+diff --git a/subprojects/core/src/main/java/org/gradle/internal/service/scopes/ExecutionGlobalServices.java b/subprojects/core/src/main/java/org/gradle/internal/service/scopes/ExecutionGlobalServices.java
+index e41f1875..e697f364 100644
+--- a/subprojects/core/src/main/java/org/gradle/internal/service/scopes/ExecutionGlobalServices.java
++++ b/subprojects/core/src/main/java/org/gradle/internal/service/scopes/ExecutionGlobalServices.java
+@@ -17,7 +17,6 @@
  
- package org.gradle.api.tasks.util.internal;
- 
--import com.google.common.base.MoreObjects;
- import com.google.common.base.Objects;
- import com.google.common.cache.Cache;
- import com.google.common.cache.CacheBuilder;
-@@ -82,7 +81,7 @@
- 
-         @Override
-         public String toString() {
--            return MoreObjects.toStringHelper(this)
-+            return Objects.toStringHelper(this)
-                 .add("spec", spec)
-                 .toString();
+ import com.google.common.collect.ImmutableSet;
+ import groovy.lang.GroovyObject;
+-import groovy.transform.Generated;
+ import org.gradle.api.DefaultTask;
+ import org.gradle.api.Task;
+ import org.gradle.api.artifacts.transform.CacheableTransform;
+@@ -137,7 +136,7 @@ TypeAnnotationMetadataStore createAnnotationMetadataStore(CrossBuildInMemoryCach
+             new Predicate<Method>() {
+                 @Override
+                 public boolean test(Method method) {
+-                    return method.isAnnotationPresent(Generated.class);
++                    return false;
+                 }
+             },
+             cacheFactory);
+diff --git a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ModuleComponentSelectorSerializer.java b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ModuleComponentSelectorSerializer.java
+index 254080f0..f5c242bd 100644
+--- a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ModuleComponentSelectorSerializer.java
++++ b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ModuleComponentSelectorSerializer.java
+@@ -107,7 +107,7 @@ private List<Capability> readCapabilities(Decoder decoder) throws IOException {
+         if (size == 0) {
+             return Collections.emptyList();
          }
-@@ -124,7 +123,7 @@
+-        ImmutableList.Builder<Capability> builder = ImmutableList.builderWithExpectedSize(size);
++        ImmutableList.Builder<Capability> builder = ImmutableList.builder();
+         for (int i=0; i<size; i++) {
+             builder.add(new ImmutableCapability(decoder.readString(), decoder.readString(), decoder.readNullableString()));
+         }
+diff --git a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/ivyresolve/parser/GradleModuleMetadataParser.java b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/ivyresolve/parser/GradleModuleMetadataParser.java
+index e7b094fd..58d9e12c 100644
+--- a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/ivyresolve/parser/GradleModuleMetadataParser.java
++++ b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/ivyresolve/parser/GradleModuleMetadataParser.java
+@@ -523,9 +523,7 @@ private void consumeAny(JsonReader reader) throws IOException {
  
-         @Override
-         public String toString() {
--            return MoreObjects.toStringHelper(this)
-+            return Objects.toStringHelper(this)
-                 .add("patterns", patterns)
-                 .add("include", include)
-                 .add("caseSensitive", caseSensitive)
-diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java
---- gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java	2026-04-11 13:26:15.035440237 +1000
-@@ -710,7 +710,7 @@
+     private void assertDefined(JsonReader reader, String attribute, String value) {
+         if (StringUtils.isEmpty(value)) {
+-            String path = reader.getPath();
+-            // remove leading '$', remove last child segment, use '/' as separator
+-            throw new RuntimeException("missing '" + attribute + "' at " + path.substring(1, path.lastIndexOf('.')).replace('.', '/'));
++            throw new RuntimeException("missing '" + attribute + "' in module metadata");
+         }
+     }
+ 
+diff --git a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java
+index ddcd8dec..a455b81f 100644
+--- a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java
++++ b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/modulecache/ModuleMetadataSerializer.java
+@@ -710,7 +710,7 @@ private String[] readStringArray() throws IOException {
  
          private List<String> readStringList() throws IOException {
              int size = readCount();
@@ -126,7 +198,7 @@ diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradl
              for (int i = 0; i < size; i++) {
                  builder.add(readString());
              }
-@@ -719,7 +719,7 @@
+@@ -719,7 +719,7 @@ private List<String> readStringList() throws IOException {
  
          private Set<String> readStringSet() throws IOException {
              int size = readCount();
@@ -135,10 +207,84 @@ diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradl
              for (int i = 0; i < size; i++) {
                  builder.add(readString());
              }
-diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java
---- gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java	2026-04-11 13:26:15.035440237 +1000
-@@ -69,7 +69,7 @@
+diff --git a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/excludes/factories/NormalizingExcludeFactory.java b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/excludes/factories/NormalizingExcludeFactory.java
+index 74fb62a9..225deba4 100644
+--- a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/excludes/factories/NormalizingExcludeFactory.java
++++ b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/excludes/factories/NormalizingExcludeFactory.java
+@@ -187,10 +187,7 @@ private ExcludeSpec doUnion(Set<ExcludeSpec> specs) {
+         if (moduleSetExcludes.size() > 1) {
+             moduleSetExcludes = ImmutableList.of(delegate.moduleSet(moduleSetExcludes.stream().flatMap(e -> e.getModules().stream()).collect(toSet())));
+         }
+-        ImmutableSet.Builder<ExcludeSpec> builder = ImmutableSet.builderWithExpectedSize(
+-            moduleIdExcludes.size() + groupExcludes.size() + moduleExcludes.size() +
+-                moduleIdSetsExcludes.size() + groupSetExcludes.size() + moduleSetExcludes.size() + other.size()
+-        );
++        ImmutableSet.Builder<ExcludeSpec> builder = ImmutableSet.builder();
+         builder.addAll(moduleIdExcludes);
+         builder.addAll(groupExcludes);
+         builder.addAll(moduleExcludes);
+diff --git a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/graph/builder/DependencyGraphBuilder.java b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/graph/builder/DependencyGraphBuilder.java
+index 50ba31d9..b843b3aa 100644
+--- a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/graph/builder/DependencyGraphBuilder.java
++++ b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/graph/builder/DependencyGraphBuilder.java
+@@ -378,9 +378,12 @@ private void validateMultipleNodeSelection(ModuleResolveState module, ComponentS
+         if (selectedNodes.size()<2) {
+             return;
+         }
+-        Set<Set<NodeState>> combinations = Sets.combinations(selectedNodes, 2);
++        Set<Set<NodeState>> combinations = Sets.powerSet(selectedNodes);
+         Set<NodeState> incompatibleNodes = Sets.newHashSet();
+         for (Set<NodeState> combination : combinations) {
++            if (combination.size() != 2) {
++                continue;
++            }
+             Iterator<NodeState> it = combination.iterator();
+             NodeState first = it.next();
+             NodeState second = it.next();
+diff --git a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/result/ComponentResultSerializer.java b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/result/ComponentResultSerializer.java
+index c193b65e..07a7a3e0 100644
+--- a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/result/ComponentResultSerializer.java
++++ b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/result/ComponentResultSerializer.java
+@@ -62,7 +62,7 @@ public ResolvedGraphComponent read(Decoder decoder) throws IOException {
+ 
+     private List<ResolvedVariantResult> readResolvedVariants(Decoder decoder) throws IOException {
+         int size = decoder.readSmallInt();
+-        ImmutableList.Builder<ResolvedVariantResult> builder = ImmutableList.builderWithExpectedSize(size);
++        ImmutableList.Builder<ResolvedVariantResult> builder = ImmutableList.builder();
+         for (int i=0; i<size; i++) {
+             builder.add(resolvedVariantResultSerializer.read(decoder));
+         }
+diff --git a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/result/ComponentSelectorSerializer.java b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/result/ComponentSelectorSerializer.java
+index 3628099c..46b29913 100644
+--- a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/result/ComponentSelectorSerializer.java
++++ b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/result/ComponentSelectorSerializer.java
+@@ -109,7 +109,7 @@ private List<Capability> readCapabilities(Decoder decoder) throws IOException {
+         if (size == 0) {
+             return Collections.emptyList();
+         }
+-        ImmutableList.Builder<Capability> builder = ImmutableList.builderWithExpectedSize(size);
++        ImmutableList.Builder<Capability> builder = ImmutableList.builder();
+         for (int i=0; i<size; i++) {
+             builder.add(new ImmutableCapability(decoder.readString(), decoder.readString(), decoder.readNullableString()));
+         }
+diff --git a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/result/ResolvedVariantResultSerializer.java b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/result/ResolvedVariantResultSerializer.java
+index df68feaa..7b6e7f56 100644
+--- a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/result/ResolvedVariantResultSerializer.java
++++ b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/ivyservice/resolveengine/result/ResolvedVariantResultSerializer.java
+@@ -64,7 +64,7 @@ private List<Capability> readCapabilities(Decoder decoder) throws IOException {
+         if (size == 0) {
+             return ImmutableList.of();
+         }
+-        ImmutableList.Builder<Capability> capabilities = ImmutableList.builderWithExpectedSize(size);
++        ImmutableList.Builder<Capability> capabilities = ImmutableList.builder();
+         for (int i = 0; i < size; i++) {
+             String group = decoder.readString();
+             String name = decoder.readString();
+diff --git a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java
+index 9858ad3f..fb8bc100 100644
+--- a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java
++++ b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/DefaultRepositoryContentDescriptor.java
+@@ -69,7 +69,7 @@ public Action<? super ArtifactResolutionDetails> toContentFilter() {
      private static ImmutableList<SpecMatcher> createSpecMatchers(Set<ContentSpec> specs) {
          ImmutableList<SpecMatcher> matchers = null;
          if (specs != null) {
@@ -147,9 +293,10 @@ diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradl
              for (ContentSpec spec : specs) {
                  builder.add(spec.toMatcher());
              }
-diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java
---- gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java	2026-04-11 13:26:15.037440238 +1000
+diff --git a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java
+index 618be96d..010e3297 100644
+--- a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java
++++ b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/repositories/transport/NetworkingIssueVerifier.java
 @@ -21,6 +21,7 @@
  import org.gradle.internal.exceptions.DefaultMultiCauseException;
  import org.gradle.internal.resource.transport.http.HttpErrorStatusCodeException;
@@ -158,7 +305,7 @@ diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradl
  import java.net.SocketTimeoutException;
  import java.util.List;
  
-@@ -48,7 +49,7 @@
+@@ -48,7 +49,7 @@ public static <E extends Throwable> boolean isLikelyTransientNetworkingIssue(E f
          }
          if (failure instanceof HttpErrorStatusCodeException) {
              HttpErrorStatusCodeException httpError = (HttpErrorStatusCodeException) failure;
@@ -167,7 +314,7 @@ diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradl
          }
          Throwable cause = failure.getCause();
          if (cause != null && cause != failure) {
-@@ -57,6 +58,16 @@
+@@ -57,6 +58,16 @@ public static <E extends Throwable> boolean isLikelyTransientNetworkingIssue(E f
          return false;
      }
  
@@ -184,10 +331,50 @@ diff -urN gradle-5.6.4/subprojects/dependency-management/src/main/java/org/gradl
      private static boolean isTransientClientError(int statusCode) {
          return statusCode == HttpStatus.SC_REQUEST_TIMEOUT ||
              statusCode == 429; // Too many requests (not available through HttpStatus.XXX)
-diff -urN gradle-5.6.4/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java gradle-5.6.4-mod/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java
---- gradle-5.6.4/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java	2026-04-11 13:26:15.037440238 +1000
-@@ -111,7 +111,7 @@
+diff --git a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/transform/DefaultTransformer.java b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/transform/DefaultTransformer.java
+index 0c971a4a..94af9466 100644
+--- a/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/transform/DefaultTransformer.java
++++ b/subprojects/dependency-management/src/main/java/org/gradle/api/internal/artifacts/transform/DefaultTransformer.java
+@@ -323,7 +323,7 @@ public TransformServiceLookup(Provider<FileSystemLocation> inputFileProvider, @N
+         private Object find(Type serviceType, @Nullable Class<? extends Annotation> annotatedWith) {
+             TypeToken<?> serviceTypeToken = TypeToken.of(serviceType);
+             for (InjectionPoint injectionPoint : injectionPoints) {
+-                if (annotatedWith == injectionPoint.getAnnotation() && serviceTypeToken.isSupertypeOf(injectionPoint.getInjectedType())) {
++                if (annotatedWith == injectionPoint.getAnnotation() && serviceTypeToken.isAssignableFrom(TypeToken.of(injectionPoint.getInjectedType()))) {
+                     return injectionPoint.getValueToInject();
+                 }
+             }
+diff --git a/subprojects/dependency-management/src/main/java/org/gradle/internal/component/external/model/ivy/IvyDependencyDescriptor.java b/subprojects/dependency-management/src/main/java/org/gradle/internal/component/external/model/ivy/IvyDependencyDescriptor.java
+index f20345a4..5b852094 100644
+--- a/subprojects/dependency-management/src/main/java/org/gradle/internal/component/external/model/ivy/IvyDependencyDescriptor.java
++++ b/subprojects/dependency-management/src/main/java/org/gradle/internal/component/external/model/ivy/IvyDependencyDescriptor.java
+@@ -226,7 +226,7 @@ public List<ExcludeMetadata> getConfigurationExcludes(Collection<String> configu
+         if (excludes.isEmpty()) {
+             return ImmutableList.of();
+         }
+-        ImmutableList.Builder<ExcludeMetadata> rules = ImmutableList.builderWithExpectedSize(excludes.size());
++        ImmutableList.Builder<ExcludeMetadata> rules = ImmutableList.builder();
+         for (Exclude exclude : excludes) {
+             Set<String> ruleConfigurations = exclude.getConfigurations();
+             if (include(ruleConfigurations, configurations)) {
+diff --git a/subprojects/dependency-management/src/main/java/org/gradle/internal/component/model/AttributeConfigurationSelector.java b/subprojects/dependency-management/src/main/java/org/gradle/internal/component/model/AttributeConfigurationSelector.java
+index a8257f96..0e9e2acf 100644
+--- a/subprojects/dependency-management/src/main/java/org/gradle/internal/component/model/AttributeConfigurationSelector.java
++++ b/subprojects/dependency-management/src/main/java/org/gradle/internal/component/model/AttributeConfigurationSelector.java
+@@ -128,7 +128,7 @@ private static ImmutableList<ConfigurationMetadata> filterVariantsByRequestedCap
+         if (consumableConfigurations.isEmpty()) {
+             return ImmutableList.of();
+         }
+-        ImmutableList.Builder<ConfigurationMetadata> builder = ImmutableList.builderWithExpectedSize(consumableConfigurations.size());
++        ImmutableList.Builder<ConfigurationMetadata> builder = ImmutableList.builder();
+         boolean explicitlyRequested = !explicitRequestedCapabilities.isEmpty();
+         for (ConfigurationMetadata configuration : consumableConfigurations) {
+             CapabilitiesMetadata capabilitiesMetadata = configuration.getCapabilities();
+diff --git a/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java b/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java
+index 646fb14d..0500f0f6 100644
+--- a/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java
++++ b/subprojects/file-collections/src/main/java/org/gradle/api/internal/file/AbstractFileCollection.java
+@@ -111,7 +111,7 @@ public Set<FileSystemLocation> get() {
                  // TODO - visit the contents of this collection instead.
                  // This is just a super simple implementation for now
                  Set<File> files = getFiles();
@@ -196,10 +383,33 @@ diff -urN gradle-5.6.4/subprojects/file-collections/src/main/java/org/gradle/api
                  for (File file : files) {
                      builder.add(new DefaultFileSystemLocation(file));
                  }
-diff -urN gradle-5.6.4/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java gradle-5.6.4-mod/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java
---- gradle-5.6.4/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java	2026-04-11 13:26:15.035440237 +1000
-@@ -318,7 +318,7 @@
+diff --git a/subprojects/language-java/src/main/java/org/gradle/api/internal/tasks/compile/incremental/recomp/JavaRecompilationSpecProvider.java b/subprojects/language-java/src/main/java/org/gradle/api/internal/tasks/compile/incremental/recomp/JavaRecompilationSpecProvider.java
+index cd4f5306..e4f1fdb8 100644
+--- a/subprojects/language-java/src/main/java/org/gradle/api/internal/tasks/compile/incremental/recomp/JavaRecompilationSpecProvider.java
++++ b/subprojects/language-java/src/main/java/org/gradle/api/internal/tasks/compile/incremental/recomp/JavaRecompilationSpecProvider.java
+@@ -16,7 +16,7 @@
+ 
+ package org.gradle.api.internal.tasks.compile.incremental.recomp;
+ 
+-import com.google.common.base.MoreObjects;
++import com.google.common.base.Objects;
+ import com.google.common.collect.ImmutableSet;
+ import org.gradle.api.file.FileTree;
+ import org.gradle.api.internal.file.FileOperations;
+@@ -80,7 +80,7 @@ public void initializeCompilation(JavaCompileSpec spec, RecompilationSpec recomp
+         Map<GeneratedResource.Location, PatternSet> resourcesToDelete = prepareResourcePatterns(recompilationSpec.getResourcesToGenerate(), patternSetFactory);
+         deleteStaleFilesIn(resourcesToDelete.get(GeneratedResource.Location.CLASS_OUTPUT), spec.getDestinationDir());
+         // If the client has not set a location for SOURCE_OUTPUT, javac outputs those files to the CLASS_OUTPUT directory, so clean that instead.
+-        deleteStaleFilesIn(resourcesToDelete.get(GeneratedResource.Location.SOURCE_OUTPUT), MoreObjects.firstNonNull(spec.getCompileOptions().getAnnotationProcessorGeneratedSourcesDirectory(), spec.getDestinationDir()));
++        deleteStaleFilesIn(resourcesToDelete.get(GeneratedResource.Location.SOURCE_OUTPUT), Objects.firstNonNull(spec.getCompileOptions().getAnnotationProcessorGeneratedSourcesDirectory(), spec.getDestinationDir()));
+         // In the same situation with NATIVE_HEADER_OUTPUT, javac just NPEs.  Don't bother.
+         deleteStaleFilesIn(resourcesToDelete.get(GeneratedResource.Location.NATIVE_HEADER_OUTPUT), spec.getCompileOptions().getHeaderOutputDirectory());
+     }
+diff --git a/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java b/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java
+index a78fa8e6..61171447 100644
+--- a/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java
++++ b/subprojects/launcher/src/main/java/org/gradle/tooling/internal/provider/ProviderConnection.java
+@@ -318,7 +318,7 @@ public void dispatch(Object event) {
      @VisibleForTesting
      static final class ProgressListenerConfiguration {
  
@@ -208,9 +418,10 @@ diff -urN gradle-5.6.4/subprojects/launcher/src/main/java/org/gradle/tooling/int
              .put(InternalBuildProgressListener.TEST_EXECUTION, OperationType.TEST)
              .put(InternalBuildProgressListener.TASK_EXECUTION, OperationType.TASK)
              .put(InternalBuildProgressListener.WORK_ITEM_EXECUTION, OperationType.WORK_ITEM)
-diff -urN gradle-5.6.4/subprojects/logging/src/main/java/org/gradle/internal/logging/console/Cursor.java gradle-5.6.4-mod/subprojects/logging/src/main/java/org/gradle/internal/logging/console/Cursor.java
---- gradle-5.6.4/subprojects/logging/src/main/java/org/gradle/internal/logging/console/Cursor.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/logging/src/main/java/org/gradle/internal/logging/console/Cursor.java	2026-04-11 13:26:15.035440237 +1000
+diff --git a/subprojects/logging/src/main/java/org/gradle/internal/logging/console/Cursor.java b/subprojects/logging/src/main/java/org/gradle/internal/logging/console/Cursor.java
+index 91609d6c..b7bf942c 100644
+--- a/subprojects/logging/src/main/java/org/gradle/internal/logging/console/Cursor.java
++++ b/subprojects/logging/src/main/java/org/gradle/internal/logging/console/Cursor.java
 @@ -16,7 +16,6 @@
  
  package org.gradle.internal.logging.console;
@@ -219,7 +430,7 @@ diff -urN gradle-5.6.4/subprojects/logging/src/main/java/org/gradle/internal/log
  import com.google.common.base.Objects;
  
  /**
-@@ -62,7 +61,7 @@
+@@ -62,7 +61,7 @@ public int hashCode() {
  
      @Override
      public String toString() {
@@ -228,9 +439,254 @@ diff -urN gradle-5.6.4/subprojects/logging/src/main/java/org/gradle/internal/log
              .add("row", row)
              .add("col", col)
              .toString();
-diff -urN gradle-5.6.4/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java gradle-5.6.4-mod/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java
---- gradle-5.6.4/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java	2026-04-11 13:26:15.037440238 +1000
+diff --git a/subprojects/model-core/src/main/java/org/gradle/internal/instantiation/AbstractClassGenerator.java b/subprojects/model-core/src/main/java/org/gradle/internal/instantiation/AbstractClassGenerator.java
+index 8df11dc0..b3a4d8fe 100644
+--- a/subprojects/model-core/src/main/java/org/gradle/internal/instantiation/AbstractClassGenerator.java
++++ b/subprojects/model-core/src/main/java/org/gradle/internal/instantiation/AbstractClassGenerator.java
+@@ -358,7 +358,7 @@ public GeneratedClassImpl(Class<?> generatedClass, @Nullable Class<?> outerType,
+             this.outerType = outerType;
+             this.injectedServices = injectedServices;
+             this.annotationsTriggeringServiceInjection = annotationsTriggeringServiceInjection;
+-            ImmutableList.Builder<GeneratedConstructor<Object>> builder = ImmutableList.builderWithExpectedSize(generatedClass.getDeclaredConstructors().length);
++            ImmutableList.Builder<GeneratedConstructor<Object>> builder = ImmutableList.builder();
+             for (final Constructor<?> constructor : generatedClass.getDeclaredConstructors()) {
+                 if (!constructor.isSynthetic()) {
+                     builder.add(new GeneratedConstructorImpl(constructor));
+@@ -1034,7 +1034,7 @@ private void validateMethod(Method method, PropertyAccessorType accessorType, Cl
+             if (!allowedTypes.isEmpty()) {
+                 Type returnType = method.getGenericReturnType();
+                 for (TypeToken<?> allowedType : allowedTypes) {
+-                    if (allowedType.isSubtypeOf(returnType)) {
++                    if (TypeToken.of(returnType).isAssignableFrom(allowedType)) {
+                         return;
+                     }
+                 }
+@@ -1120,7 +1120,7 @@ void applyTo(ClassInspectionVisitor visitor) {
+         }
+ 
+         public List<Class<?>> getInjectedServices() {
+-            ImmutableList.Builder<Class<?>> services = ImmutableList.builderWithExpectedSize(serviceInjectionProperties.size());
++            ImmutableList.Builder<Class<?>> services = ImmutableList.builder();
+             for (PropertyMetadata property : serviceInjectionProperties) {
+                 services.add(property.getType());
+             }
+diff --git a/subprojects/model-core/src/main/java/org/gradle/internal/instantiation/DefaultInstantiatorFactory.java b/subprojects/model-core/src/main/java/org/gradle/internal/instantiation/DefaultInstantiatorFactory.java
+index fae9e6f6..507005d9 100644
+--- a/subprojects/model-core/src/main/java/org/gradle/internal/instantiation/DefaultInstantiatorFactory.java
++++ b/subprojects/model-core/src/main/java/org/gradle/internal/instantiation/DefaultInstantiatorFactory.java
+@@ -89,7 +89,7 @@ public InstantiationScheme injectScheme(Collection<Class<? extends Annotation>>
+ 
+         ClassGenerator classGenerator = AsmBackedClassGenerator.injectOnly(annotationHandlers, ImmutableSet.copyOf(injectAnnotations), cacheFactory, MANAGED_FACTORY_ID);
+         Jsr330ConstructorSelector constructorSelector = new Jsr330ConstructorSelector(classGenerator, cacheFactory.newClassCache());
+-        ImmutableSet.Builder<Class<? extends Annotation>> builder = ImmutableSet.builderWithExpectedSize(injectAnnotations.size() + 1);
++        ImmutableSet.Builder<Class<? extends Annotation>> builder = ImmutableSet.builder();
+         builder.addAll(injectAnnotations);
+         builder.add(Inject.class);
+         return new DefaultInstantiationScheme(constructorSelector, defaultServices, builder.build(), cacheFactory);
+diff --git a/subprojects/model-core/src/main/java/org/gradle/internal/reflect/annotations/impl/DefaultPropertyAnnotationMetadata.java b/subprojects/model-core/src/main/java/org/gradle/internal/reflect/annotations/impl/DefaultPropertyAnnotationMetadata.java
+index 8bc3562b..2e627103 100644
+--- a/subprojects/model-core/src/main/java/org/gradle/internal/reflect/annotations/impl/DefaultPropertyAnnotationMetadata.java
++++ b/subprojects/model-core/src/main/java/org/gradle/internal/reflect/annotations/impl/DefaultPropertyAnnotationMetadata.java
+@@ -22,7 +22,6 @@
+ import org.gradle.internal.reflect.AnnotationCategory;
+ import org.gradle.internal.reflect.ParameterValidationContext;
+ import org.gradle.internal.reflect.annotations.PropertyAnnotationMetadata;
+-import org.jetbrains.annotations.NotNull;
+ 
+ import javax.annotation.Nullable;
+ import java.lang.annotation.Annotation;
+@@ -44,7 +43,7 @@ public DefaultPropertyAnnotationMetadata(String propertyName, Method method, Imm
+     }
+ 
+     private static ImmutableSet<Class<? extends Annotation>> collectAnnotationTypes(ImmutableMap<AnnotationCategory, Annotation> annotations) {
+-        ImmutableSet.Builder<Class<? extends Annotation>> builder = ImmutableSet.builderWithExpectedSize(annotations.size());
++        ImmutableSet.Builder<Class<? extends Annotation>> builder = ImmutableSet.builder();
+         for (Annotation value : annotations.values()) {
+             builder.add(value.annotationType());
+         }
+@@ -77,7 +76,7 @@ public void visitValidationFailures(@Nullable String ownerPath, ParameterValidat
+     }
+ 
+     @Override
+-    public int compareTo(@NotNull PropertyAnnotationMetadata o) {
++    public int compareTo(PropertyAnnotationMetadata o) {
+         return method.getName().compareTo(o.getMethod().getName());
+     }
+ 
+diff --git a/subprojects/model-core/src/main/java/org/gradle/internal/reflect/annotations/impl/DefaultTypeAnnotationMetadataStore.java b/subprojects/model-core/src/main/java/org/gradle/internal/reflect/annotations/impl/DefaultTypeAnnotationMetadataStore.java
+index 36e01592..f369488b 100644
+--- a/subprojects/model-core/src/main/java/org/gradle/internal/reflect/annotations/impl/DefaultTypeAnnotationMetadataStore.java
++++ b/subprojects/model-core/src/main/java/org/gradle/internal/reflect/annotations/impl/DefaultTypeAnnotationMetadataStore.java
+@@ -262,7 +262,7 @@ private ImmutableMap<String, ImmutableMap<Class<? extends Annotation>, Annotatio
+ 
+     private ImmutableSortedSet<PropertyAnnotationMetadata> mergePropertiesAndFieldMetadata(ImmutableList<PropertyAnnotationMetadataBuilder> propertyBuilders, ImmutableMap<String, ImmutableMap<Class<? extends Annotation>, Annotation>> fieldAnnotationsByPropertyName, ValidationErrorsBuilder errorsBuilder) {
+         ImmutableSortedSet.Builder<PropertyAnnotationMetadata> propertiesMetadataBuilder = ImmutableSortedSet.naturalOrder();
+-        ImmutableSet.Builder<String> fieldsSeenBuilder = ImmutableSet.builderWithExpectedSize(fieldAnnotationsByPropertyName.size());
++        ImmutableSet.Builder<String> fieldsSeenBuilder = ImmutableSet.builder();
+         for (PropertyAnnotationMetadataBuilder metadataBuilder : propertyBuilders) {
+             String propertyName = metadataBuilder.getPropertyName();
+             ImmutableMap<Class<? extends Annotation>, Annotation> fieldAnnotations = fieldAnnotationsByPropertyName.get(propertyName);
+@@ -408,7 +408,7 @@ private ImmutableMap<Class<? extends Annotation>, Annotation> collectRelevantAnn
+         if (annotations.length == 0) {
+             return ImmutableMap.of();
+         }
+-        ImmutableMap.Builder<Class<? extends Annotation>, Annotation> relevantAnnotations = ImmutableMap.builderWithExpectedSize(annotations.length);
++        ImmutableMap.Builder<Class<? extends Annotation>, Annotation> relevantAnnotations = ImmutableMap.builder();
+         for (Annotation annotation : annotations) {
+             Class<? extends Annotation> annotationType = annotation.annotationType();
+             if (propertyAnnotationCategories.containsKey(annotationType)
+diff --git a/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/AbstractIsolatedMap.java b/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/AbstractIsolatedMap.java
+index 00645f55..d20b3a8c 100644
+--- a/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/AbstractIsolatedMap.java
++++ b/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/AbstractIsolatedMap.java
+@@ -31,7 +31,7 @@ public AbstractIsolatedMap(ImmutableList<MapEntrySnapshot<Isolatable<?>>> entrie
+ 
+     @Override
+     public ValueSnapshot asSnapshot() {
+-        ImmutableList.Builder<MapEntrySnapshot<ValueSnapshot>> builder = ImmutableList.builderWithExpectedSize(entries.size());
++        ImmutableList.Builder<MapEntrySnapshot<ValueSnapshot>> builder = ImmutableList.builder();
+         for (MapEntrySnapshot<Isolatable<?>> entry : entries) {
+             builder.add(new MapEntrySnapshot<ValueSnapshot>(entry.getKey().asSnapshot(), entry.getValue().asSnapshot()));
+         }
+diff --git a/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/DefaultValueSnapshotter.java b/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/DefaultValueSnapshotter.java
+index 3e4299c2..8c183cc8 100644
+--- a/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/DefaultValueSnapshotter.java
++++ b/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/DefaultValueSnapshotter.java
+@@ -83,7 +83,7 @@ private <T> T processValue(@Nullable Object value, ValueVisitor<T> visitor) {
+             if (list.size() == 0) {
+                 return visitor.emptyList();
+             }
+-            ImmutableList.Builder<T> builder = ImmutableList.builderWithExpectedSize(list.size());
++            ImmutableList.Builder<T> builder = ImmutableList.builder();
+             for (Object element : list) {
+                 builder.add(processValue(element, visitor));
+             }
+@@ -112,7 +112,7 @@ private <T> T processValue(@Nullable Object value, ValueVisitor<T> visitor) {
+         }
+         if (value instanceof Set) {
+             Set<?> set = (Set<?>) value;
+-            ImmutableSet.Builder<T> builder = ImmutableSet.builderWithExpectedSize(set.size());
++            ImmutableSet.Builder<T> builder = ImmutableSet.builder();
+             for (Object element : set) {
+                 builder.add(processValue(element, visitor));
+             }
+@@ -120,7 +120,7 @@ private <T> T processValue(@Nullable Object value, ValueVisitor<T> visitor) {
+         }
+         if (value instanceof Map) {
+             Map<?, ?> map = (Map<?, ?>) value;
+-            ImmutableList.Builder<MapEntrySnapshot<T>> builder = ImmutableList.builderWithExpectedSize(map.size());
++            ImmutableList.Builder<MapEntrySnapshot<T>> builder = ImmutableList.builder();
+             for (Map.Entry<?, ?> entry : map.entrySet()) {
+                 builder.add(new MapEntrySnapshot<T>(processValue(entry.getKey(), visitor), processValue(entry.getValue(), visitor)));
+             }
+@@ -135,7 +135,7 @@ private <T> T processValue(@Nullable Object value, ValueVisitor<T> visitor) {
+             if (length == 0) {
+                 return visitor.emptyArray(value.getClass().getComponentType());
+             }
+-            ImmutableList.Builder<T> builder = ImmutableList.builderWithExpectedSize(length);
++            ImmutableList.Builder<T> builder = ImmutableList.builder();
+             for (int i = 0; i < length; i++) {
+                 Object element = Array.get(value, i);
+                 builder.add(processValue(element, visitor));
+diff --git a/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/IsolatedArray.java b/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/IsolatedArray.java
+index bbf7f997..c862ed15 100644
+--- a/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/IsolatedArray.java
++++ b/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/IsolatedArray.java
+@@ -37,7 +37,7 @@ public ValueSnapshot asSnapshot() {
+         if (elements.isEmpty()) {
+             return ArrayValueSnapshot.EMPTY;
+         }
+-        ImmutableList.Builder<ValueSnapshot> builder = ImmutableList.builderWithExpectedSize(elements.size());
++        ImmutableList.Builder<ValueSnapshot> builder = ImmutableList.builder();
+         for (Isolatable<?> element : elements) {
+             builder.add(element.asSnapshot());
+         }
+diff --git a/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/IsolatedList.java b/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/IsolatedList.java
+index 09f9ae5b..41977b7a 100644
+--- a/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/IsolatedList.java
++++ b/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/IsolatedList.java
+@@ -36,7 +36,7 @@ public ValueSnapshot asSnapshot() {
+         if (elements.isEmpty()) {
+             return ListValueSnapshot.EMPTY;
+         }
+-        ImmutableList.Builder<ValueSnapshot> builder = ImmutableList.builderWithExpectedSize(elements.size());
++        ImmutableList.Builder<ValueSnapshot> builder = ImmutableList.builder();
+         for (Isolatable<?> element : elements) {
+             builder.add(element.asSnapshot());
+         }
+diff --git a/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/IsolatedSet.java b/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/IsolatedSet.java
+index c38c62a6..2d190196 100644
+--- a/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/IsolatedSet.java
++++ b/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/IsolatedSet.java
+@@ -31,7 +31,7 @@ public IsolatedSet(ImmutableSet<Isolatable<?>> elements) {
+ 
+     @Override
+     public ValueSnapshot asSnapshot() {
+-        ImmutableSet.Builder<ValueSnapshot> builder = ImmutableSet.builderWithExpectedSize(elements.size());
++        ImmutableSet.Builder<ValueSnapshot> builder = ImmutableSet.builder();
+         for (Isolatable<?> element : elements) {
+             builder.add(element.asSnapshot());
+         }
+diff --git a/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/ListValueSnapshot.java b/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/ListValueSnapshot.java
+index effa869c..8b9435a1 100644
+--- a/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/ListValueSnapshot.java
++++ b/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/ListValueSnapshot.java
+@@ -58,7 +58,7 @@ private ValueSnapshot processList(Object value, ValueSnapshotter snapshotter) {
+         }
+ 
+         // Copy the snapshots whose values are the same, then snapshot remaining values
+-        ImmutableList.Builder<ValueSnapshot> newElements = ImmutableList.builderWithExpectedSize(list.size());
++        ImmutableList.Builder<ValueSnapshot> newElements = ImmutableList.builder();
+         for (int i = 0; i < pos; i++) {
+             newElements.add(elements.get(i));
+         }
+diff --git a/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/SnapshotSerializer.java b/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/SnapshotSerializer.java
+index 3d5dce62..21a2cf54 100644
+--- a/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/SnapshotSerializer.java
++++ b/subprojects/model-core/src/main/java/org/gradle/internal/snapshot/impl/SnapshotSerializer.java
+@@ -93,7 +93,7 @@ public ValueSnapshot read(Decoder decoder) throws Exception {
+                 return new SetValueSnapshot(setBuilder.build());
+             case MAP_SNAPSHOT:
+                 size = decoder.readSmallInt();
+-                ImmutableList.Builder<MapEntrySnapshot<ValueSnapshot>> mapBuilder = ImmutableList.builderWithExpectedSize(size);
++                ImmutableList.Builder<MapEntrySnapshot<ValueSnapshot>> mapBuilder = ImmutableList.builder();
+                 for (int i = 0; i < size; i++) {
+                     mapBuilder.add(new MapEntrySnapshot<ValueSnapshot>(read(decoder), read(decoder)));
+                 }
+@@ -116,7 +116,7 @@ public ValueSnapshot read(Decoder decoder) throws Exception {
+     }
+ 
+     private ImmutableList<ValueSnapshot> readList(Decoder decoder, int size) throws Exception {
+-        ImmutableList.Builder<ValueSnapshot> arrayElements = ImmutableList.builderWithExpectedSize(size);
++        ImmutableList.Builder<ValueSnapshot> arrayElements = ImmutableList.builder();
+         for (int i = 0; i < size; i++) {
+             arrayElements.add(read(decoder));
+         }
+diff --git a/subprojects/model-core/src/main/java/org/gradle/model/internal/asm/ClassGeneratorSuffixRegistry.java b/subprojects/model-core/src/main/java/org/gradle/model/internal/asm/ClassGeneratorSuffixRegistry.java
+index 69ca5365..7c103e5c 100644
+--- a/subprojects/model-core/src/main/java/org/gradle/model/internal/asm/ClassGeneratorSuffixRegistry.java
++++ b/subprojects/model-core/src/main/java/org/gradle/model/internal/asm/ClassGeneratorSuffixRegistry.java
+@@ -16,8 +16,6 @@
+ 
+ package org.gradle.model.internal.asm;
+ 
+-import org.jetbrains.annotations.NotNull;
+-
+ import java.util.Map;
+ import java.util.concurrent.ConcurrentHashMap;
+ 
+@@ -54,7 +52,6 @@ public static String assign(String suffix) {
+         }
+     }
+ 
+-    @NotNull
+     private static RuntimeException markerForSuffix(String suffix) {
+         return new RuntimeException("Class generated with suffix '" + suffix + "' registered.");
+     }
+diff --git a/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java b/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java
+index 52811118..b50c8024 100644
+--- a/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java
++++ b/subprojects/model-core/src/main/java/org/gradle/util/DeferredUtil.java
 @@ -20,6 +20,8 @@
  import org.gradle.internal.Factory;
  
@@ -240,17 +696,16 @@ diff -urN gradle-5.6.4/subprojects/model-core/src/main/java/org/gradle/util/Defe
  import java.util.concurrent.Callable;
  
  import static org.gradle.util.GUtil.uncheckedCall;
-@@ -69,12 +71,35 @@
-         return current;
+@@ -70,11 +72,34 @@ public static Object unpackNestableDeferred(Object deferred) {
      }
  
-+    private static Class<?> kotlinFunction0Class = null;
-+    private static Method kotlinFunction0InvokeMethod = null;
-+
      private static boolean isKotlinFunction0Deferrable(@Nullable Object value) {
 -        return value instanceof kotlin.jvm.functions.Function0;
 +        return value != null && kotlinFunction0CanBeLoaded() && kotlinFunction0Class.isInstance(value);
 +    }
++
++    private static Class<?> kotlinFunction0Class = null;
++    private static Method kotlinFunction0InvokeMethod = null;
 +
 +    private static boolean kotlinFunction0CanBeLoaded() {
 +        if (kotlinFunction0Class == null) {
@@ -278,29 +733,113 @@ diff -urN gradle-5.6.4/subprojects/model-core/src/main/java/org/gradle/util/Defe
 +        }
      }
  }
-diff -urN gradle-5.6.4/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java gradle-5.6.4-mod/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java
---- gradle-5.6.4/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java	2026-04-11 13:26:15.035440237 +1000
-@@ -16,7 +16,6 @@
+diff --git a/subprojects/platform-base/src/main/java/org/gradle/language/base/internal/model/BinarySourceTransformations.java b/subprojects/platform-base/src/main/java/org/gradle/language/base/internal/model/BinarySourceTransformations.java
+index 166e2155..cf217833 100644
+--- a/subprojects/platform-base/src/main/java/org/gradle/language/base/internal/model/BinarySourceTransformations.java
++++ b/subprojects/platform-base/src/main/java/org/gradle/language/base/internal/model/BinarySourceTransformations.java
+@@ -18,7 +18,6 @@
+ 
+ import com.google.common.collect.Lists;
+ import com.google.common.collect.Sets;
+-import com.google.common.primitives.Booleans;
+ import org.gradle.api.Task;
+ import org.gradle.api.tasks.TaskContainer;
+ import org.gradle.internal.service.ServiceRegistry;
+@@ -105,7 +104,7 @@ public void createTasksFor(BinarySpecInternal binary) {
+             public int compare(LanguageTransform<?, ?> o1, LanguageTransform<?, ?> o2) {
+                 boolean joint1 = o1.getTransformTask() instanceof JointCompileTaskConfig;
+                 boolean joint2 = o2.getTransformTask() instanceof JointCompileTaskConfig;
+-                return Booleans.trueFirst().compare(joint1, joint2);
++                return joint1 == joint2 ? 0 : (joint1 ? -1 : 1);
+             }
+         });
+         return prioritized;
+diff --git a/subprojects/plugins/src/main/java/org/gradle/api/internal/java/JavaLibrary.java b/subprojects/plugins/src/main/java/org/gradle/api/internal/java/JavaLibrary.java
+index 807b7744..c4078a0f 100644
+--- a/subprojects/plugins/src/main/java/org/gradle/api/internal/java/JavaLibrary.java
++++ b/subprojects/plugins/src/main/java/org/gradle/api/internal/java/JavaLibrary.java
+@@ -80,7 +80,7 @@ public Set<UsageContext> getUsages() {
+         if (featureVariants == null) {
+             return ImmutableSet.of(runtimeUsage, compileUsage);
+         }
+-        ImmutableSet.Builder<UsageContext> builder = ImmutableSet.builderWithExpectedSize(2 + featureVariants.size());
++        ImmutableSet.Builder<UsageContext> builder = ImmutableSet.builder();
+         builder.add(runtimeUsage);
+         builder.add(compileUsage);
+         for (ConfigurationVariantMapping mapping : featureVariants) {
+diff --git a/subprojects/plugins/src/main/java/org/gradle/api/plugins/internal/JvmPluginsHelper.java b/subprojects/plugins/src/main/java/org/gradle/api/plugins/internal/JvmPluginsHelper.java
+index 2999c046..7a596f93 100644
+--- a/subprojects/plugins/src/main/java/org/gradle/api/plugins/internal/JvmPluginsHelper.java
++++ b/subprojects/plugins/src/main/java/org/gradle/api/plugins/internal/JvmPluginsHelper.java
+@@ -65,7 +65,7 @@ public List<PublishArtifact> create() {
+                 Set<File> classesDirs = sourceSet.getOutput().getClassesDirs().getFiles();
+                 DefaultSourceSetOutput output = Cast.uncheckedCast(sourceSet.getOutput());
+                 TaskDependency compileDependencies = output.getCompileDependencies();
+-                ImmutableList.Builder<PublishArtifact> artifacts = ImmutableList.builderWithExpectedSize(classesDirs.size());
++                ImmutableList.Builder<PublishArtifact> artifacts = ImmutableList.builder();
+                 for (File classesDir : classesDirs) {
+                     // this is an approximation: all "compiled" sources will use the same task dependency
+                     artifacts.add(new IntermediateJavaArtifact(ArtifactTypeDefinition.JVM_CLASS_DIRECTORY, compileDependencies) {
+diff --git a/subprojects/snapshots/src/main/java/org/gradle/internal/fingerprint/FingerprintHashingStrategy.java b/subprojects/snapshots/src/main/java/org/gradle/internal/fingerprint/FingerprintHashingStrategy.java
+index 03e3ec1b..70b6e4f6 100644
+--- a/subprojects/snapshots/src/main/java/org/gradle/internal/fingerprint/FingerprintHashingStrategy.java
++++ b/subprojects/snapshots/src/main/java/org/gradle/internal/fingerprint/FingerprintHashingStrategy.java
+@@ -17,6 +17,7 @@
+ package org.gradle.internal.fingerprint;
+ 
+ import com.google.common.collect.ImmutableList;
++import com.google.common.collect.Ordering;
+ import org.gradle.internal.hash.Hasher;
+ 
+ import java.util.Collection;
+@@ -28,7 +29,7 @@ public enum FingerprintHashingStrategy {
+     SORT {
+         @Override
+         public void appendToHasher(Hasher hasher, Collection<FileSystemLocationFingerprint> fingerprints) {
+-            ImmutableList<FileSystemLocationFingerprint> sortedFingerprints = ImmutableList.sortedCopyOf(fingerprints);
++            ImmutableList<FileSystemLocationFingerprint> sortedFingerprints = Ordering.natural().immutableSortedCopy(fingerprints);
+             appendCollectionToHasherKeepingOrder(hasher, sortedFingerprints);
+         }
+     },
+diff --git a/subprojects/testing-jvm/src/main/java/org/gradle/api/internal/tasks/testing/testng/TestNGTestResultProcessorAdapter.java b/subprojects/testing-jvm/src/main/java/org/gradle/api/internal/tasks/testing/testng/TestNGTestResultProcessorAdapter.java
+index 4cc8ca7e..546b355b 100644
+--- a/subprojects/testing-jvm/src/main/java/org/gradle/api/internal/tasks/testing/testng/TestNGTestResultProcessorAdapter.java
++++ b/subprojects/testing-jvm/src/main/java/org/gradle/api/internal/tasks/testing/testng/TestNGTestResultProcessorAdapter.java
+@@ -100,7 +100,7 @@ public void onBeforeClass(ITestClass testClass) {
+             } else {
+                 testInternal = new DefaultTestClassDescriptor(idGenerator.generateId(), testClass.getName());
+                 testClassInfo.put(testClass, new TestClassInfo(testInternal.getId()));
+-                parentId = xmlTestIds.get(testClass.getXmlTest());
++                parentId = null;
+                 for (ITestNGMethod method : testClass.getTestMethods()) {
+                     testMethodParentId.put(method, testInternal.getId());
+                 }
+diff --git a/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java b/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java
+index 7c617d9c..adfe1302 100644
+--- a/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java
++++ b/subprojects/tooling-api-builders/src/main/java/org/gradle/tooling/internal/provider/runner/PluginApplicationTracker.java
+@@ -16,7 +16,7 @@
  
  package org.gradle.tooling.internal.provider.runner;
  
 -import com.google.common.base.MoreObjects;
++import com.google.common.base.Objects;
  import org.apache.commons.io.FilenameUtils;
  import org.gradle.api.internal.ExecuteDomainObjectCollectionCallbackBuildOperationType;
  import org.gradle.api.internal.plugins.ApplyPluginBuildOperationType;
-@@ -122,7 +121,7 @@
+@@ -122,7 +122,7 @@ public void finished(BuildOperationDescriptor buildOperation, OperationFinishEve
      private InternalBinaryPluginIdentifier toBinaryPluginIdentifier(ApplyPluginBuildOperationType.Details details) {
          String className = details.getPluginClass().getName();
          String pluginId = details.getPluginId();
 -        String displayName = MoreObjects.firstNonNull(pluginId, className);
-+        String displayName = (pluginId != null ? pluginId : className);
++        String displayName = Objects.firstNonNull(pluginId, className);
          return new DefaultBinaryPluginIdentifier(displayName, className, pluginId);
      }
  
-diff -urN gradle-5.6.4/subprojects/workers/src/main/java/org/gradle/workers/internal/DaemonForkOptions.java gradle-5.6.4-mod/subprojects/workers/src/main/java/org/gradle/workers/internal/DaemonForkOptions.java
---- gradle-5.6.4/subprojects/workers/src/main/java/org/gradle/workers/internal/DaemonForkOptions.java	2019-11-01 06:23:52.000000000 +1100
-+++ gradle-5.6.4-mod/subprojects/workers/src/main/java/org/gradle/workers/internal/DaemonForkOptions.java	2026-04-11 13:26:15.035440237 +1000
+diff --git a/subprojects/workers/src/main/java/org/gradle/workers/internal/DaemonForkOptions.java b/subprojects/workers/src/main/java/org/gradle/workers/internal/DaemonForkOptions.java
+index 72212cf8..3cd7bf9b 100644
+--- a/subprojects/workers/src/main/java/org/gradle/workers/internal/DaemonForkOptions.java
++++ b/subprojects/workers/src/main/java/org/gradle/workers/internal/DaemonForkOptions.java
 @@ -16,7 +16,6 @@
  
  package org.gradle.workers.internal;
@@ -309,7 +848,7 @@ diff -urN gradle-5.6.4/subprojects/workers/src/main/java/org/gradle/workers/inte
  import com.google.common.base.Objects;
  import org.gradle.process.JavaForkOptions;
  import org.gradle.process.internal.JavaForkOptionsInternal;
-@@ -53,7 +52,7 @@
+@@ -53,7 +52,7 @@ public boolean isCompatibleWith(DaemonForkOptions other) {
      }
  
      public String toString() {

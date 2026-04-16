@@ -1,4 +1,3 @@
-# TODO: still broken
 {
   gradle-legacy-bridge,
   gradle_5_1_1,
@@ -11,6 +10,7 @@ gradle-legacy-bridge {
   bootstrapGradle = gradle_5_1_1;
   jdk = jdk11_headless;
   patches = [
+    ./bootstrap-compat.patch
     ./bootstrap-jdk11-compat.patch
   ];
   patchFlags = [ "-p1" ];
@@ -19,6 +19,7 @@ gradle-legacy-bridge {
     "api-metadata"
     "base-services"
     "base-services-groovy"
+    "bootstrap"
     "build-cache"
     "build-cache-packaging"
     "build-comparison"
@@ -39,6 +40,7 @@ gradle-legacy-bridge {
     "ivy"
     "jacoco"
     "javascript"
+    "language-java"
     "jvm-services"
     "language-jvm"
     "launcher"
@@ -48,9 +50,11 @@ gradle-legacy-bridge {
     "model-core"
     "model-groovy"
     "native"
+    "pineapple"
     "persistent-cache"
     "platform-base"
     "platform-jvm"
+    "plugins"
     "plugin-use"
     "process-services"
     "publish"
@@ -61,9 +65,9 @@ gradle-legacy-bridge {
     "snapshots"
     "test-kit"
     "testing-base"
+    "testing-jvm"
     "tooling-api"
     "tooling-api-builders"
-    "version-control"
     "worker-processes"
     "workers"
     "wrapper"
@@ -95,7 +99,6 @@ gradle-legacy-bridge {
     "gradle-resources"
     "gradle-runtime-api-info"
     "gradle-tooling-api"
-    "gradle-version-control"
     "gradle-worker-processes"
     "gradle-wrapper"
   ];
@@ -110,6 +113,7 @@ gradle-legacy-bridge {
     "gradle-ivy"
     "gradle-jacoco"
     "gradle-javascript"
+    "gradle-language-java"
     "gradle-language-jvm"
     "gradle-maven"
     "gradle-platform-base"
@@ -120,6 +124,7 @@ gradle-legacy-bridge {
     "gradle-resources-sftp"
     "gradle-test-kit"
     "gradle-testing-base"
+    "gradle-testing-jvm"
     "gradle-tooling-api-builders"
     "gradle-workers"
   ];
