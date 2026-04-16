@@ -238,4 +238,4 @@ read
 
 todo
 
-+ patch gradle.fetchDeps to lookup overrides-fromsrc
++ Change apkPath placeholder out to finalpackage
