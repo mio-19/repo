@@ -84,7 +84,7 @@ stdenv.mkDerivation (
     gradleUpdateScript = ''
       runHook preBuild
       gradle :tools:kotlin-stdlib-gen:run
-      gradle ${builtins.concatStringsSep " " finalAttrs.gradleFlags} --write-verification-metadata sha256
+      gradle --write-verification-metadata sha256
       # maybe todo: # ${lib.getExe curl} https://kotlin-build-properties.labs.jb.gg/setup.json
     '';
     # github.com/JetBrains/kotlin/tree/v2.3.20/libraries/stdlib
