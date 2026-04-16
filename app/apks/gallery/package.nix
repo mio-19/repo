@@ -116,14 +116,9 @@ let
         --replace-fail "REPLACE_WITH_YOUR_CLIENT_ID_IN_HUGGINGFACE_APP" "$(echo MWYwNTA3YzAtNWRiMi00MTc5LWFhYTEtYjVmZTRjNDhmYjU5Cg== | base64 -d | tr -d '\n')" \
         --replace-fail "REPLACE_WITH_YOUR_REDIRECT_URI_IN_HUGGINGFACE_APP" "com.google.ai.edge.gallery.oauthredirect://oauth_redirect"
 
-      install -Dm644 ${patchedAllowlist} app/src/main/assets/model_allowlist.json
+      patch -p0 < ${./modelmanager-use-bundled-allowlist.patch}
 
-      substituteInPlace app/src/main/java/com/google/ai/edge/gallery/ui/modelmanager/ModelManagerViewModel.kt \
-        --replace-fail 'import java.io.File' $'import java.io.File\nimport java.io.InputStreamReader' \
-        --replace-fail '        if (modelAllowlist == null) {' $'        if (modelAllowlist == null) {\n          try {\n            Log.d(TAG, "Loading bundled model allowlist from assets.")\n            context.assets.open(MODEL_ALLOWLIST_FILENAME).use { input ->\n              InputStreamReader(input).use { reader ->\n                modelAllowlist = Gson().fromJson(reader, ModelAllowlist::class.java)\n              }\n            }\n          } catch (e: Exception) {\n            Log.w(TAG, "Failed to load bundled model allowlist from assets", e)\n          }\n        }\n\n        if (modelAllowlist == null) {' \
-        --replace-fail '        Log.d(TAG, "Allowlist: $modelAllowlist")' $'        val resolvedModelAllowlist = modelAllowlist!!\n\n        Log.d(TAG, "Allowlist: $resolvedModelAllowlist")' \
-        --replace-fail '            modelAllowlist.aicoreRequirements' '            resolvedModelAllowlist.aicoreRequirements' \
-        --replace-fail '        for (allowedModel in modelAllowlist.models) {' '        for (allowedModel in resolvedModelAllowlist.models) {' \
+      install -Dm644 ${patchedAllowlist} app/src/main/assets/model_allowlist.json
     '';
 
     gradleFlags = [
