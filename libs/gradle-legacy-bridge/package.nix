@@ -11,26 +11,32 @@
   gnused,
   which,
   unzip,
+  zip,
 }:
 {
   version,
   tag,
   hash,
   bootstrapGradle,
+  bootstrapDistZip ? null,
+  bootstrapDistLibJars ? [ ],
+  bootstrapDistPluginJars ? [ ],
   sourceSubprojects,
   builtRuntimeModules,
   builtPluginModules,
+  pluginClasspathModules ? [ ],
   implementationPluginModules ? [ ],
   extraLibs ? [ ],
   extraPluginLibs ? [ ],
   jdk ? jdk8_headless,
   buildTimestamp ? "19700101000000+0000",
   buildTimestampIso ? "1970-01-01 00\\:00\\:00 UTC",
+  kotlinDslVersion ? null,
   patches ? [ ],
   patchFlags ? [ ],
 }:
 let
-  pluginsPropertyModules = builtPluginModules ++ [ "gradle-wrapper" ];
+  pluginsPropertyModules = builtPluginModules ++ pluginClasspathModules ++ [ "gradle-wrapper" ];
   implementationPluginsPropertyModules = implementationPluginModules;
 
   mkGradle' =
@@ -57,6 +63,7 @@ let
       nativeBuildInputs = [
         jdk
         unzip
+        zip
       ];
 
       dontConfigure = true;
@@ -71,6 +78,16 @@ let
         cp -a --dereference ${bootstrapGradle}/libexec/gradle/. build/bootstrap/gradle-${version}/
         chmod -R u+w build/bootstrap/gradle-${version}
         mkdir -p build/bootstrap/gradle-${version}/lib/plugins
+        if [ -n "${if bootstrapDistZip == null then "" else builtins.toString bootstrapDistZip}" ]; then
+          bootstrapZip="${if bootstrapDistZip == null then "" else builtins.toString bootstrapDistZip}"
+          for jar in ${lib.escapeShellArgs bootstrapDistLibJars}; do
+            unzip -oq "$bootstrapZip" "gradle-${version}/lib/$jar" -d build/bootstrap
+          done
+          for jar in ${lib.escapeShellArgs bootstrapDistPluginJars}; do
+            unzip -oq "$bootstrapZip" "gradle-${version}/lib/plugins/$jar" -d build/bootstrap
+          done
+        fi
+        rm -f build/bootstrap/gradle-${version}/lib/logback-classic-*.jar
         cp ${lib.escapeShellArgs extraLibs} build/bootstrap/gradle-${version}/lib/ 2>/dev/null || true
         cp ${lib.escapeShellArgs extraPluginLibs} build/bootstrap/gradle-${version}/lib/plugins/ 2>/dev/null || true
 
@@ -108,6 +125,40 @@ let
         done < build/all-sources.txt
         mv "$tmpSources" build/all-sources.txt
 
+        if [ -f subprojects/core/src/main/java/org/gradle/initialization/InstantExecution.java ]; then
+          mkdir -p build/generated-src/org/gradle/bootstrap
+          cat > build/generated-src/org/gradle/bootstrap/NoOpInstantExecution.java <<'EOF'
+        package org.gradle.bootstrap;
+
+        import org.gradle.initialization.InstantExecution;
+        import org.gradle.internal.service.ServiceRegistration;
+        import org.gradle.internal.service.scopes.AbstractPluginServiceRegistry;
+
+        public class NoOpInstantExecution implements InstantExecution {
+            @Override
+            public boolean canExecuteInstantaneously() {
+                return false;
+            }
+
+            @Override
+            public void saveTaskGraph() {
+            }
+
+            @Override
+            public void loadTaskGraph() {
+            }
+
+            public static class Services extends AbstractPluginServiceRegistry {
+                @Override
+                public void registerGradleServices(ServiceRegistration registration) {
+                    registration.add(InstantExecution.class, new NoOpInstantExecution());
+                }
+            }
+        }
+        EOF
+          printf '%s\n' build/generated-src/org/gradle/bootstrap/NoOpInstantExecution.java >> build/all-sources.txt
+        fi
+
         compileClasspath="$(printf '%s:' build/lib/*.jar)''${JAVA_HOME}/lib/tools.jar"
         "''$JAVA_HOME/bin/java" -noverify -Dfile.encoding=UTF-8 -Xmx3000m -classpath "$compileClasspath" \
           org.codehaus.groovy.tools.FileSystemCompiler \
@@ -123,6 +174,35 @@ let
           fi
         done
 
+        serviceFile="META-INF/services/org.gradle.internal.service.scopes.PluginServiceRegistry"
+        mkdir -p "build/all/classes/$(dirname "$serviceFile")"
+        : > "build/all/classes/$serviceFile"
+        for subproject in ${lib.escapeShellArgs sourceSubprojects}; do
+          srcService="subprojects/$subproject/src/main/resources/$serviceFile"
+          if [ -f "$srcService" ]; then
+            cat "$srcService" >> "build/all/classes/$serviceFile"
+            printf '\n' >> "build/all/classes/$serviceFile"
+          fi
+        done
+        grep -v '^\s*#' "build/all/classes/$serviceFile" | grep -v '^\s*$' | sort -u > build/plugin-service-registry.txt
+        mv build/plugin-service-registry.txt "build/all/classes/$serviceFile"
+
+        if [ -f build/all/classes/org/gradle/bootstrap/NoOpInstantExecution.class ]; then
+          printf '%s\n' org.gradle.bootstrap.NoOpInstantExecution\$Services >> "build/all/classes/$serviceFile"
+          sort -u "build/all/classes/$serviceFile" -o "build/all/classes/$serviceFile"
+        fi
+
+        docsJar="$(find build/bootstrap/gradle-${version}/lib -maxdepth 1 -name 'gradle-docs-*.jar' | head -n1)"
+        if [ -n "$docsJar" ]; then
+          for resource in default-imports.txt api-mapping.txt; do
+            if unzip -p "$docsJar" "$resource" > "build/all/classes/$resource"; then
+              :
+            else
+              rm -f "build/all/classes/$resource"
+            fi
+          done
+        fi
+
         mkdir -p build/all/classes/org/gradle
         cat > build/all/classes/org/gradle/build-receipt.properties <<EOF
         baseVersion=${version}
@@ -136,6 +216,12 @@ let
 
         printf 'plugins=%s\n' "${lib.concatStringsSep "," pluginsPropertyModules}" > build/all/classes/gradle-plugins.properties
         printf 'plugins=%s\n' "${lib.concatStringsSep "," implementationPluginsPropertyModules}" > build/all/classes/gradle-implementation-plugins.properties
+
+        if [ -n "${if kotlinDslVersion == null then "" else kotlinDslVersion}" ]; then
+          printf 'kotlin=%s\n' "${
+            if kotlinDslVersion == null then "" else kotlinDslVersion
+          }" > build/all/classes/gradle-kotlin-dsl-versions.properties
+        fi
 
         runtime="$(cd build/bootstrap/gradle-${version}/lib && ls *.jar | grep -v '^gradle-' | paste -sd, -)"
         pluginRuntime="$(cd build/bootstrap/gradle-${version}/lib/plugins && ls *.jar | grep -v '^gradle-' | paste -sd, -)"

@@ -1,0 +1,352 @@
+diff -urN orig/subprojects/logging/src/main/java/org/gradle/api/logging/Logging.java mod/subprojects/logging/src/main/java/org/gradle/api/logging/Logging.java
+--- a/subprojects/logging/src/main/java/org/gradle/api/logging/Logging.java	2026-04-16 18:40:07.083315059 +1000
++++ b/subprojects/logging/src/main/java/org/gradle/api/logging/Logging.java	2026-04-16 18:40:07.103314956 +1000
+@@ -19,6 +19,7 @@
+ import org.slf4j.LoggerFactory;
+ import org.slf4j.Marker;
+ import org.slf4j.MarkerFactory;
++import org.slf4j.helpers.NOPLogger;
+ 
+ /**
+  * <p>The main entry point for Gradle's logging system. Gradle routes all logging via SLF4J. You can use either an SLF4J
+@@ -35,7 +36,7 @@
+      * @return the logger. Never returns null.
+      */
+     public static Logger getLogger(Class c) {
+-        return (Logger) LoggerFactory.getLogger(c);
++        return asGradleLogger(LoggerFactory.getLogger(c));
+     }
+ 
+     /**
+@@ -45,6 +46,330 @@
+      * @return the logger. Never returns null.
+      */
+     public static Logger getLogger(String name) {
+-        return (Logger) LoggerFactory.getLogger(name);
++        return asGradleLogger(LoggerFactory.getLogger(name));
++    }
++
++    private static Logger asGradleLogger(org.slf4j.Logger logger) {
++        if (logger instanceof Logger) {
++            return (Logger) logger;
++        }
++        if (logger instanceof NOPLogger) {
++            return new NoOpLoggerAdapter(logger.getName());
++        }
++        throw new IllegalStateException("Unsupported SLF4J logger implementation: " + logger.getClass().getName());
++    }
++
++    private static class NoOpLoggerAdapter implements Logger {
++        private final String name;
++
++        NoOpLoggerAdapter(String name) {
++            this.name = name;
++        }
++
++        @Override
++        public String getName() {
++            return name;
++        }
++
++        @Override
++        public boolean isTraceEnabled() {
++            return false;
++        }
++
++        @Override
++        public void trace(String msg) {
++        }
++
++        @Override
++        public void trace(String format, Object arg) {
++        }
++
++        @Override
++        public void trace(String format, Object arg1, Object arg2) {
++        }
++
++        @Override
++        public void trace(String format, Object... arguments) {
++        }
++
++        @Override
++        public void trace(String msg, Throwable t) {
++        }
++
++        @Override
++        public boolean isTraceEnabled(org.slf4j.Marker marker) {
++            return false;
++        }
++
++        @Override
++        public void trace(org.slf4j.Marker marker, String msg) {
++        }
++
++        @Override
++        public void trace(org.slf4j.Marker marker, String format, Object arg) {
++        }
++
++        @Override
++        public void trace(org.slf4j.Marker marker, String format, Object arg1, Object arg2) {
++        }
++
++        @Override
++        public void trace(org.slf4j.Marker marker, String format, Object... argArray) {
++        }
++
++        @Override
++        public void trace(org.slf4j.Marker marker, String msg, Throwable t) {
++        }
++
++        @Override
++        public boolean isDebugEnabled() {
++            return false;
++        }
++
++        @Override
++        public void debug(String msg) {
++        }
++
++        @Override
++        public void debug(String format, Object arg) {
++        }
++
++        @Override
++        public void debug(String format, Object arg1, Object arg2) {
++        }
++
++        @Override
++        public void debug(String message, Object... objects) {
++        }
++
++        @Override
++        public void debug(String msg, Throwable t) {
++        }
++
++        @Override
++        public boolean isDebugEnabled(org.slf4j.Marker marker) {
++            return false;
++        }
++
++        @Override
++        public void debug(org.slf4j.Marker marker, String msg) {
++        }
++
++        @Override
++        public void debug(org.slf4j.Marker marker, String format, Object arg) {
++        }
++
++        @Override
++        public void debug(org.slf4j.Marker marker, String format, Object arg1, Object arg2) {
++        }
++
++        @Override
++        public void debug(org.slf4j.Marker marker, String format, Object... arguments) {
++        }
++
++        @Override
++        public void debug(org.slf4j.Marker marker, String msg, Throwable t) {
++        }
++
++        @Override
++        public boolean isInfoEnabled() {
++            return false;
++        }
++
++        @Override
++        public void info(String msg) {
++        }
++
++        @Override
++        public void info(String format, Object arg) {
++        }
++
++        @Override
++        public void info(String format, Object arg1, Object arg2) {
++        }
++
++        @Override
++        public void info(String message, Object... objects) {
++        }
++
++        @Override
++        public void info(String msg, Throwable t) {
++        }
++
++        @Override
++        public boolean isInfoEnabled(org.slf4j.Marker marker) {
++            return false;
++        }
++
++        @Override
++        public void info(org.slf4j.Marker marker, String msg) {
++        }
++
++        @Override
++        public void info(org.slf4j.Marker marker, String format, Object arg) {
++        }
++
++        @Override
++        public void info(org.slf4j.Marker marker, String format, Object arg1, Object arg2) {
++        }
++
++        @Override
++        public void info(org.slf4j.Marker marker, String format, Object... arguments) {
++        }
++
++        @Override
++        public void info(org.slf4j.Marker marker, String msg, Throwable t) {
++        }
++
++        @Override
++        public boolean isLifecycleEnabled() {
++            return false;
++        }
++
++        @Override
++        public void lifecycle(String message) {
++        }
++
++        @Override
++        public void lifecycle(String message, Object... objects) {
++        }
++
++        @Override
++        public void lifecycle(String message, Throwable throwable) {
++        }
++
++        @Override
++        public boolean isWarnEnabled() {
++            return false;
++        }
++
++        @Override
++        public void warn(String msg) {
++        }
++
++        @Override
++        public void warn(String format, Object arg) {
++        }
++
++        @Override
++        public void warn(String format, Object arg1, Object arg2) {
++        }
++
++        @Override
++        public void warn(String format, Object... arguments) {
++        }
++
++        @Override
++        public void warn(String msg, Throwable t) {
++        }
++
++        @Override
++        public boolean isWarnEnabled(org.slf4j.Marker marker) {
++            return false;
++        }
++
++        @Override
++        public void warn(org.slf4j.Marker marker, String msg) {
++        }
++
++        @Override
++        public void warn(org.slf4j.Marker marker, String format, Object arg) {
++        }
++
++        @Override
++        public void warn(org.slf4j.Marker marker, String format, Object arg1, Object arg2) {
++        }
++
++        @Override
++        public void warn(org.slf4j.Marker marker, String format, Object... arguments) {
++        }
++
++        @Override
++        public void warn(org.slf4j.Marker marker, String msg, Throwable t) {
++        }
++
++        @Override
++        public boolean isErrorEnabled() {
++            return false;
++        }
++
++        @Override
++        public void error(String msg) {
++        }
++
++        @Override
++        public void error(String format, Object arg) {
++        }
++
++        @Override
++        public void error(String format, Object arg1, Object arg2) {
++        }
++
++        @Override
++        public void error(String format, Object... arguments) {
++        }
++
++        @Override
++        public void error(String msg, Throwable t) {
++        }
++
++        @Override
++        public boolean isErrorEnabled(org.slf4j.Marker marker) {
++            return false;
++        }
++
++        @Override
++        public void error(org.slf4j.Marker marker, String msg) {
++        }
++
++        @Override
++        public void error(org.slf4j.Marker marker, String format, Object arg) {
++        }
++
++        @Override
++        public void error(org.slf4j.Marker marker, String format, Object arg1, Object arg2) {
++        }
++
++        @Override
++        public void error(org.slf4j.Marker marker, String format, Object... arguments) {
++        }
++
++        @Override
++        public void error(org.slf4j.Marker marker, String msg, Throwable t) {
++        }
++
++        @Override
++        public boolean isQuietEnabled() {
++            return false;
++        }
++
++        @Override
++        public void quiet(String message) {
++        }
++
++        @Override
++        public void quiet(String message, Object... objects) {
++        }
++
++        @Override
++        public void quiet(String message, Throwable throwable) {
++        }
++
++        @Override
++        public boolean isEnabled(LogLevel level) {
++            return false;
++        }
++
++        @Override
++        public void log(LogLevel level, String message) {
++        }
++
++        @Override
++        public void log(LogLevel level, String message, Object... objects) {
++        }
++
++        @Override
++        public void log(LogLevel level, String message, Throwable throwable) {
++        }
+     }
+ }

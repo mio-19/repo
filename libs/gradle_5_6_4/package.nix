@@ -1,6 +1,7 @@
 {
   gradle-legacy-bridge,
   gradle_5_1_1,
+  fetchurl,
   jdk11_headless,
 }:
 gradle-legacy-bridge {
@@ -8,9 +9,35 @@ gradle-legacy-bridge {
   tag = "v5.6.4";
   hash = "sha256-sGLAyKn2PVIp4OBe1rvhU7Tact4cHvF9iaIlSZ4bGYE=";
   bootstrapGradle = gradle_5_1_1;
+  bootstrapDistZip = fetchurl {
+    url = "https://services.gradle.org/distributions/gradle-5.6.4-bin.zip";
+    hash = "sha256-HzBnBzBBvERVTQ7+XUAqM7w9PJPMOatoTzCFhtcyqA0=";
+  };
+  bootstrapDistLibJars = [
+    "gradle-docs-5.6.4.jar"
+    "gradle-instant-execution-5.6.4.jar"
+    "gradle-kotlin-dsl-5.6.4.jar"
+    "gradle-kotlin-dsl-tooling-models-5.6.4.jar"
+    "kotlin-compiler-embeddable-1.3.41-patched-for-gradle-5.6.4.jar"
+    "kotlin-reflect-1.3.41.jar"
+    "kotlin-script-runtime-1.3.41.jar"
+    "kotlin-scripting-compiler-embeddable-1.3.41.jar"
+    "kotlin-scripting-compiler-impl-embeddable-1.3.41.jar"
+    "kotlin-stdlib-1.3.41.jar"
+    "kotlin-stdlib-common-1.3.41.jar"
+    "kotlin-stdlib-jdk7-1.3.41.jar"
+    "kotlin-stdlib-jdk8-1.3.41.jar"
+  ];
+  bootstrapDistPluginJars = [
+    "gradle-kotlin-dsl-provider-plugins-5.6.4.jar"
+    "gradle-kotlin-dsl-tooling-builders-5.6.4.jar"
+    "gradle-resources-http-5.6.4.jar"
+  ];
   jdk = jdk11_headless;
+  kotlinDslVersion = "1.3.41";
   patches = [
     ./bootstrap-compat.patch
+    ./bootstrap-logging-compat.patch
     ./bootstrap-jdk11-compat.patch
   ];
   patchFlags = [ "-p1" ];
@@ -128,5 +155,6 @@ gradle-legacy-bridge {
     "gradle-tooling-api-builders"
     "gradle-workers"
   ];
+  pluginClasspathModules = [ "gradle-resources-http" ];
   implementationPluginModules = [ "gradle-tooling-api-builders" ];
 }
