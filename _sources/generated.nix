@@ -8,31 +8,31 @@
 {
   axp_build = {
     pname = "axp_build";
-    version = "c49b917903fb6a883e8cb24eaa94a1a8f48b421e";
+    version = "375a9ba315c02aee5d44d5a108e021cbd1caec3c";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/build.git";
-      rev = "c49b917903fb6a883e8cb24eaa94a1a8f48b421e";
+      rev = "375a9ba315c02aee5d44d5a108e021cbd1caec3c";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-gb15Aq+8n2lYN0GK5wbil1SYsIDrWOPmikd5x012LGw=";
+      sha256 = "sha256-SYBw/1mdG4MH0Z0k8qO1ETZU4HX6IOcr5K85eU+9KpM=";
     };
-    date = "2026-04-14";
+    date = "2026-04-15";
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
-    version = "9e8af6f721c855342a2f327aaef81da2ea9e4660";
+    version = "c396ddc2aada57b73c57d513613335c58bd9ff69";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
-      rev = "9e8af6f721c855342a2f327aaef81da2ea9e4660";
+      rev = "c396ddc2aada57b73c57d513613335c58bd9ff69";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-mP/hTQDk/o3BYztVic6BxhjvuHV2Gp+nUuVGkHueSoM=";
+      sha256 = "sha256-h0Ee3ecVuaEdaHkc+CJFgrxxJJ746tDbdBk1bmJTzdI=";
     };
-    date = "2026-04-14";
+    date = "2026-04-16";
   };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
@@ -134,17 +134,17 @@
   };
   derpfest16_device_oneplus_enchilada = {
     pname = "derpfest16_device_oneplus_enchilada";
-    version = "983aa8010f76c978e838e80d987bbd5a9990da03";
+    version = "0ffb6826a8e39b6208d03e430320bf1b782185f6";
     src = fetchgit {
       url = "https://github.com/ppanzenboeck/device_oneplus_enchilada.git";
-      rev = "983aa8010f76c978e838e80d987bbd5a9990da03";
+      rev = "0ffb6826a8e39b6208d03e430320bf1b782185f6";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-S1lKJS+maEpdbKQ6cMMsh8kTuwLpkJ+jKADxpgGBb2M=";
+      sha256 = "sha256-wG8YT+g2o1Rb0bDrjJ1D9+gDTa6AsKmMZLhaE6iUseg=";
     };
-    date = "2026-02-03";
+    date = "2026-04-15";
   };
   derpfest16_device_oneplus_sdm845_common = {
     pname = "derpfest16_device_oneplus_sdm845_common";
@@ -232,17 +232,17 @@
   };
   google_gallery = {
     pname = "google_gallery";
-    version = "34324280e681de437b3e020db725bf2f8fc135ed";
+    version = "2ccb6035539b7d43726c3dcdd79cd2e3e02a9afd";
     src = fetchgit {
       url = "https://github.com/google-ai-edge/gallery.git";
-      rev = "34324280e681de437b3e020db725bf2f8fc135ed";
+      rev = "2ccb6035539b7d43726c3dcdd79cd2e3e02a9afd";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-2nnEvx4xhI1WSPxs26uUV0LXtA+pe7ZqEHKssoBXu2Y=";
+      sha256 = "sha256-bCQH+yXRg8ZXPZA6Fb2585+xw6rnaIWWegAGyZxSNRY=";
     };
-    date = "2026-04-08";
+    date = "2026-04-15";
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
@@ -344,17 +344,17 @@
   };
   lineage_deskclock = {
     pname = "lineage_deskclock";
-    version = "737ad290160a7dfb80da642a1772cf9d5002b12a";
+    version = "59bbbdc8f2aafaf336036e55b036bef98d31ac4f";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_DeskClock.git";
-      rev = "737ad290160a7dfb80da642a1772cf9d5002b12a";
+      rev = "59bbbdc8f2aafaf336036e55b036bef98d31ac4f";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-LxJVF2bsfPrWh+r9HuBkNlBMgMbM3AmkzGblk588r+o=";
+      sha256 = "sha256-ohe0vXm555dZ01pyVt8uoI1YfoWkBtvH2Vo48GXc5r0=";
     };
-    date = "2026-04-09";
+    date = "2026-04-15";
   };
   lineage_device_mainline_common = {
     pname = "lineage_device_mainline_common";
@@ -526,17 +526,17 @@
   };
   lineage_glimpse = {
     pname = "lineage_glimpse";
-    version = "6148672c51d4c0508bf0b5df953b06ed4d96c343";
+    version = "a77329ff82147c0fb9472d8a26657b9e2cf0bba3";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_Glimpse.git";
-      rev = "6148672c51d4c0508bf0b5df953b06ed4d96c343";
+      rev = "a77329ff82147c0fb9472d8a26657b9e2cf0bba3";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-MUS3QYywdZL+3dvoUJqdMwEwXcBCYD7drb8Xuuj3UNw=";
+      sha256 = "sha256-x91Etd8hZ68ZkxSX8Dl1EsCQLBNh7RHm3eYeQWgAyBY=";
     };
-    date = "2026-04-10";
+    date = "2026-04-15";
   };
   lineage_hardware_mainline_common = {
     pname = "lineage_hardware_mainline_common";
@@ -582,31 +582,31 @@
   };
   lineage_latinime = {
     pname = "lineage_latinime";
-    version = "acb68018c2151f81e77d01aab0254896cbe9788b";
+    version = "5a091397bcfcac8e479f62d5a43815753fb6c2a8";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git";
-      rev = "acb68018c2151f81e77d01aab0254896cbe9788b";
+      rev = "5a091397bcfcac8e479f62d5a43815753fb6c2a8";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-cSN2BWUcCTVqZuZzNj19WoPsqyQl823nM6QzjiKGe9A=";
+      sha256 = "sha256-mQHCZF3FZ49PjALwS2SRcL1R6cR0xG0aTL2/mguiacU=";
     };
-    date = "2026-04-09";
+    date = "2026-04-15";
   };
   lineage_launcher3 = {
     pname = "lineage_launcher3";
-    version = "fccfea35b1757692ed452f9c0ac875f168260a14";
+    version = "0215a4d74ad83c8a221cf5ba49224a7084101edc";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_Launcher3.git";
-      rev = "fccfea35b1757692ed452f9c0ac875f168260a14";
+      rev = "0215a4d74ad83c8a221cf5ba49224a7084101edc";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-w/bHXD5NmFRxe9cHHxKo4NXscifDc5zW7Le7TPOfFWw=";
+      sha256 = "sha256-n6jxLtbChni/ZDbA9hzpTBwbC8z4FN6tjLNQrVwmgAM=";
     };
-    date = "2026-04-12";
+    date = "2026-04-15";
   };
   lineage_prebuilts_bootmgr = {
     pname = "lineage_prebuilts_bootmgr";
