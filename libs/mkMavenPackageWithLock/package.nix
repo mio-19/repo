@@ -1,4 +1,3 @@
-# TODO: use lib.extendMkDerivation like nixpkgs does for buildRustPackage
 pkgs@{
   buildMavenRepositoryFromLockFile,
   jdk17_headless,
@@ -7,53 +6,61 @@ pkgs@{
   lib,
   writableTmpDirAsHomeHook,
 }:
-{
-  pname,
-  version,
-  src,
-  lockFile,
-  installPhase,
-  meta,
-  patches ? [ ],
-  sourceRoot ? null,
-  mvnJdk ? jdk17_headless,
-  mvnFlags ? [ "package" ],
-  maven ? pkgs.maven,
-}:
-let
-  mavenRepository = buildMavenRepositoryFromLockFile { file = lockFile; };
-in
-stdenv.mkDerivation (
-  {
-    inherit
-      pname
-      version
-      src
-      patches
-      installPhase
-      ;
+lib.extendMkDerivation {
+  constructDrv = stdenv.mkDerivation;
 
-    nativeBuildInputs = [
-      maven
-      mvnJdk
-      writableTmpDirAsHomeHook
-    ];
+  excludeDrvArgNames = [
+    "lockFile"
+  ];
 
-    env = {
-      JAVA_HOME = if stdenv.isDarwin then "${mvnJdk}" else "${mvnJdk}/lib/openjdk";
+  extendDrvArgs =
+    finalAttrs:
+    {
+      name ? "${args.pname}-${args.version}",
+
+      src ? null,
+      srcs ? null,
+      preUnpack ? null,
+      unpackPhase ? null,
+      postUnpack ? null,
+      cargoPatches ? [ ],
+      patches ? [ ],
+      sourceRoot ? null,
+      cargoRoot ? null,
+      logLevel ? "",
+      buildInputs ? [ ],
+      nativeBuildInputs ? [ ],
+      mvnJdk ? jdk17_headless,
+      mvnFlags ? [ "package" ],
+      maven ? pkgs.maven,
+      lockFile ? null,
+      mavenRepository ? buildMavenRepositoryFromLockFile { file = lockFile; },
+      ...
+    }@args:
+    {
+
+      env = {
+        JAVA_HOME = mvnJdk.passthru.home;
+      }
+      // args.env or { };
+
+      nativeBuildInputs = nativeBuildInputs ++ [
+        maven
+        mvnJdk
+        writableTmpDirAsHomeHook
+      ];
+      buildPhase =
+        args.buildPhase or ''
+          runHook preBuild
+
+          mvn --offline -ntp -Dmaven.repo.local=${mavenRepository} ${lib.escapeShellArgs mvnFlags}
+
+          runHook postBuild
+        '';
+
+      meta = {
+        platforms = lib.platforms.unix;
+      }
+      // args.meta or { };
     };
-
-    buildPhase = ''
-      runHook preBuild
-
-      mvn --offline -ntp -Dmaven.repo.local=${mavenRepository} ${lib.escapeShellArgs mvnFlags}
-
-      runHook postBuild
-    '';
-
-    meta = meta // {
-      platforms = meta.platforms or lib.platforms.unix;
-    };
-  }
-  // lib.optionalAttrs (sourceRoot != null) { inherit sourceRoot; }
-)
+}
