@@ -5,6 +5,9 @@
   gradle_8_13,
   stdenv,
   fetchFromGitHub,
+  writeShellScript,
+  _experimental-update-script-combinators,
+  nix-update-script,
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -54,7 +57,26 @@ let
         useBwrap = false;
       };
 
-      passthru.updateScript = finalAttrs.mitmCache.updateScript;
+      passthru.updateScript =
+        (_experimental-update-script-combinators.sequence [
+          (nix-update-script {
+            attrPath = "apk_luanti";
+            extraArgs = [ "--flake" ];
+          })
+          {
+            command = [
+              "${writeShellScript "update-apk-luanti-gradle-deps" ''
+                set -euo pipefail
+                system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+                "$(nix build ".#legacyPackages.$system.apk_luanti.mitmCache.updateScript" --no-link --print-out-paths)"
+              ''}"
+            ];
+            supportedFeatures = [ ];
+          }
+        ])
+        // {
+          attrPath = "apk_luanti";
+        };
 
       nativeBuildInputs = [
         gradle

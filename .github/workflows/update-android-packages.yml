@@ -1,4 +1,4 @@
-name: "Update Gradle deps"
+name: "Update Android packages"
 on:
   schedule:
     - cron: "21 2 * * *"
@@ -44,37 +44,72 @@ jobs:
             trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g= mio-repo.cachix.org-1:+l5kqQn5w9e3i3tDZY9o3pVQABC0Z/d0kAqhQpqKP8g=
             substituters = https://cache.nixos.org/ https://cache.garnix.io https://mio-repo.cachix.org/
 
-      - name: Refresh Gradle dependency locks
+      - name: Update package versions and Gradle locks
         run: |
           set -euo pipefail
+          run_update_script() {
+            local attr="$1"
+            local expr runner
+            expr="$(cat <<EOF
+          let
+            flake = builtins.getFlake (toString ./.);
+            pkgs = import flake.inputs.nixpkgs { system = "x86_64-linux"; };
+            script = flake.legacyPackages.x86_64-linux.${attr}.passthru.updateScript;
+            command = script.command or script;
+            args = if builtins.isList command then command else [ command ];
+          in
+            pkgs.writeShellScript "run-${attr}-update" ''
+              set -euo pipefail
+              exec \${pkgs.lib.escapeShellArgs (map toString args)}
+            ''
+          EOF
+          )"
+            runner="$(nix build --impure --no-link --print-out-paths --expr "$expr")"
+            "$runner"
+          }
+
           for attr in apk_haven apk_luanti; do
-            script="$(nix build ".#legacyPackages.x86_64-linux.${attr}.passthru.updateScript" --no-link --print-out-paths)"
-            "$script"
+            run_update_script "$attr"
           done
+          nix run nixpkgs#nixfmt -- app/apks/haven/package.nix app/apks/luanti/package.nix
+
+      - name: Build updated packages
+        run: nix build .#apk_haven .#apk_luanti --no-link --keep-going
 
       - name: Create pull request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: updates/haven-luanti-gradle-deps
+          BRANCH: updates/haven-luanti
         run: |
           set -euo pipefail
-          if git diff --quiet -- app/apks/haven/haven_deps.json app/apks/luanti/luanti_deps.json; then
-            echo "No Gradle dependency updates."
+          paths=(
+            app/apks/haven/package.nix
+            app/apks/haven/haven_deps.json
+            app/apks/luanti/package.nix
+            app/apks/luanti/luanti_deps.json
+          )
+
+          if git diff --quiet -- "${paths[@]}"; then
+            echo "No Haven or Luanti updates."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c "$BRANCH"
-          git add app/apks/haven/haven_deps.json app/apks/luanti/luanti_deps.json
-          git commit -m "update haven and luanti gradle deps"
+          git add "${paths[@]}"
+          git commit -m "update haven and luanti"
+          git fetch origin "$BRANCH" || true
           git push --force-with-lease origin "$BRANCH"
 
-          gh pr create \
-            --base "${{ github.event.repository.default_branch }}" \
-            --head "$BRANCH" \
-            --title "update haven and luanti gradle deps" \
-            --body "Automated Gradle dependency lock refresh for Haven and Luanti." \
-            || gh pr edit "$BRANCH" \
-              --title "update haven and luanti gradle deps" \
-              --body "Automated Gradle dependency lock refresh for Haven and Luanti."
+          if gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
+            gh pr edit "$BRANCH" \
+              --title "update haven and luanti" \
+              --body "Automated source and Gradle dependency refresh for Haven and Luanti."
+          else
+            gh pr create \
+              --base "${{ github.event.repository.default_branch }}" \
+              --head "$BRANCH" \
+              --title "update haven and luanti" \
+              --body "Automated source and Gradle dependency refresh for Haven and Luanti."
+          fi

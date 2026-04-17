@@ -7,6 +7,9 @@
   stdenv,
   stdenvNoCC,
   fetchFromGitHub,
+  writeShellScript,
+  _experimental-update-script-combinators,
+  nix-update-script,
   rustPlatform,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -299,7 +302,29 @@ let
         useBwrap = false;
       };
 
-      passthru.updateScript = finalAttrs0.mitmCache.updateScript;
+      passthru.updateScript =
+        (_experimental-update-script-combinators.sequence [
+          (nix-update-script {
+            attrPath = "apk_haven";
+            extraArgs = [
+              "--flake"
+              "--version-regex=^v?([0-9]+\\.[0-9]+\\.[0-9]+(-rc[0-9]+)?)$"
+            ];
+          })
+          {
+            command = [
+              "${writeShellScript "update-apk-haven-gradle-deps" ''
+                set -euo pipefail
+                system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+                "$(nix build ".#legacyPackages.$system.apk_haven.mitmCache.updateScript" --no-link --print-out-paths)"
+              ''}"
+            ];
+            supportedFeatures = [ ];
+          }
+        ])
+        // {
+          attrPath = "apk_haven";
+        };
 
       nativeBuildInputs = [
         gradle
