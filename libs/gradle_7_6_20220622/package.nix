@@ -9,9 +9,9 @@
   mergeLock,
 }:
 gradle-from-source {
-  version = "7.6.0-20220624";
-  rev = "9e244e0ace2e7698374f5199570e09295950683a";
-  hash = "sha256-Dw9YoD5eDsSQphD9kuS/20SlMNfcbncPN0QaJeAfBJQ=";
+  version = "7.6.0-20220622";
+  rev = "82ec2431087d492694581b96c396d02a67392cac";
+  hash = "sha256-WNhTKPB+7Vof0+iE3zzX9Ui3Ck7tQN8266OhW3i8Gso=";
   lockFile = mergeLock [
     gradle_7_6_20220514.unwrapped.passthru.lockFile
     # [id: 'com.gradle.enterprise', version: '3.10.2'] org.jsoup:jsoup:1.15.1 org.gradle:test-retry-gradle-plugin:1.4.0 com.gradle.publish:plugin-publish-plugin:1.0.0-rc-3 com.fasterxml.jackson.core:jackson-core:2.13.3
