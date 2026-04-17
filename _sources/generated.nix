@@ -232,17 +232,17 @@
   };
   google_gallery = {
     pname = "google_gallery";
-    version = "2ccb6035539b7d43726c3dcdd79cd2e3e02a9afd";
+    version = "b4e332e8ecbd3e26cd0f8f33aa92cd540fa1d18b";
     src = fetchgit {
       url = "https://github.com/google-ai-edge/gallery.git";
-      rev = "2ccb6035539b7d43726c3dcdd79cd2e3e02a9afd";
+      rev = "b4e332e8ecbd3e26cd0f8f33aa92cd540fa1d18b";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-bCQH+yXRg8ZXPZA6Fb2585+xw6rnaIWWegAGyZxSNRY=";
+      sha256 = "sha256-IFQ8cTK5++fsHO1yKqCmd+e0+ZxY0+PlmnHZ5oSo2V4=";
     };
-    date = "2026-04-15";
+    date = "2026-04-16";
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
