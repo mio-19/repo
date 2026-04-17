@@ -1,0 +1,11 @@
+--- a/build-logic/buildquality/src/main/kotlin/gradlebuild.arch-test.gradle.kts	2026-04-17 12:00:00.000000000 +1000
++++ b/build-logic/buildquality/src/main/kotlin/gradlebuild.arch-test.gradle.kts	2026-04-17 12:00:00.000000000 +1000
+@@ -51,7 +51,7 @@
+                 implementation(project)
+                 notForAccessorGeneration {
+                     implementation(project.dependencies.platform(project(":distributions-dependencies")))
+-                    implementation(project(":internal-architecture-testing"))
++                    implementation(project.dependencies.create(project(":internal-architecture-testing")))
+                 }
+             }
+             targets {
