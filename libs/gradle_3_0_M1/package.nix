@@ -148,7 +148,7 @@ let
   ];
   builtRuntimeModules = builtins.filter (m: !(builtins.elem m binaryRuntimeModules)) gradleModules;
   builtPluginModules = builtins.filter (m: !(builtins.elem m binaryPluginModules)) pluginModules;
-  pluginsPropertyModules = builtPluginModules ++ [ "gradle-wrapper" ];
+  pluginsPropertyModules = pluginModules ++ [ "gradle-wrapper" ];
 
   mkGradle' =
     {
@@ -186,6 +186,7 @@ let
 
         cp -a --dereference ${gradle_2_14_1}/libexec/gradle/. build/bootstrap/gradle-${version}/
         chmod -R u+w build/bootstrap/gradle-${version}
+        rm -f build/bootstrap/gradle-${version}/lib/logback-classic-*.jar
 
         cp build/bootstrap/gradle-${version}/lib/*.jar build/lib/
         cp build/bootstrap/gradle-${version}/lib/plugins/*.jar build/lib/
@@ -222,6 +223,30 @@ let
           fi
         done
 
+        serviceFile="META-INF/services/org.gradle.internal.service.scopes.PluginServiceRegistry"
+        mkdir -p "build/all/classes/$(dirname "$serviceFile")"
+        : > "build/all/classes/$serviceFile"
+        for subproject in ${lib.escapeShellArgs sourceSubprojects}; do
+          srcService="subprojects/$subproject/src/main/resources/$serviceFile"
+          if [ -f "$srcService" ]; then
+            cat "$srcService" >> "build/all/classes/$serviceFile"
+            printf '\n' >> "build/all/classes/$serviceFile"
+          fi
+        done
+        grep -v '^\s*#' "build/all/classes/$serviceFile" | grep -v '^\s*$' | sort -u > build/plugin-service-registry.txt
+        mv build/plugin-service-registry.txt "build/all/classes/$serviceFile"
+
+        docsJar="$(find build/bootstrap/gradle-${version}/lib -maxdepth 1 -name 'gradle-docs-*.jar' | head -n1)"
+        if [ -n "$docsJar" ]; then
+          for resource in default-imports.txt api-mapping.txt; do
+            if unzip -p "$docsJar" "$resource" > "build/all/classes/$resource"; then
+              :
+            else
+              rm -f "build/all/classes/$resource"
+            fi
+          done
+        fi
+
         mkdir -p build/all/classes/org/gradle
         cat > build/all/classes/org/gradle/build-receipt.properties <<EOF
         buildTimestamp=20160410000000+0000
@@ -249,6 +274,10 @@ let
           } > "build/all/classes/$module-classpath.properties"
         done
 
+        mkdir -p build/all/classes/org/gradle/api/internal/runtimeshaded
+        : > build/all/classes/org/gradle/api/internal/runtimeshaded/api-relocated.txt
+        : > build/all/classes/org/gradle/api/internal/runtimeshaded/test-kit-relocated.txt
+
         (
           cd build/all/classes
           "''$JAVA_HOME/bin/jar" cf ../gradle-bootstrap-${version}.jar .
@@ -265,6 +294,7 @@ let
 
         cp build/bootstrap/gradle-${version}/lib/*.jar "$gradleHome/lib/"
         cp build/bootstrap/gradle-${version}/lib/plugins/*.jar "$gradleHome/lib/plugins/"
+        rm -f "$gradleHome/lib"/logback-classic-*.jar
 
         for module in ${lib.escapeShellArgs builtRuntimeModules}; do
           rm -f "$gradleHome/lib/$module"-*.jar

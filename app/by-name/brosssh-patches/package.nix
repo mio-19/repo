@@ -38,13 +38,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "brosssh-patches";
-  version = "2.3.0";
+  version = "2.4.0";
 
   src = fetchFromGitHub {
     owner = "brosssh";
     repo = "morphe-patches";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-vyo29jOPOrfYXBSOpv6aGC1+KsN9r0m8rIK6XdO49gA=";
+    hash = "sha256-ySIc61jKFgQGC65GQPL7dj1u7qb0WGqfOcczU9tswS8=";
   };
 
   gradleBuildTask = "generatePatchesList";
