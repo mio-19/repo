@@ -1,5 +1,6 @@
 {
   gradle_5_6_4,
+  gradle_8_14_4,
   jdk11_headless,
   stdenv,
   fetchFromGitHub,
@@ -7,7 +8,8 @@
   runtimeShell,
 }:
 let
-  gradle = gradle_5_6_4;
+  gradleRunner = gradle_5_6_4;
+  gradleFetchDeps = gradle_8_14_4.fetchDeps;
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "gradle-unwrapped";
@@ -24,12 +26,12 @@ stdenv.mkDerivation (finalAttrs: {
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 
   nativeBuildInputs = [
-    gradle
+    gradleRunner
     makeWrapper
     jdk11_headless
   ];
 
-  mitmCache = gradle.fetchDeps {
+  mitmCache = gradleFetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
     data = ./deps.json;
@@ -85,7 +87,7 @@ stdenv.mkDerivation (finalAttrs: {
     tmpbin=$(mktemp -d)
     tee > "$tmpbin/gradlecustom" << EOF
     #! ${runtimeShell}
-    exec ${gradle}/bin/gradle ''${gradleFlags[@]} ''${gradleFlagsArray[@]} "\$@"
+    exec ${gradleRunner}/bin/gradle ''${gradleFlags[@]} ''${gradleFlagsArray[@]} "\$@"
     EOF
     chmod +x "$tmpbin/gradlecustom"
     export PATH="$tmpbin:$PATH"
@@ -98,7 +100,7 @@ stdenv.mkDerivation (finalAttrs: {
     tmpbin=$(mktemp -d)
     tee > "$tmpbin/gradlecustom" << EOF
     #! ${runtimeShell}
-    exec ${gradle}/bin/gradle ''${gradleFlags[@]} ''${gradleFlagsArray[@]} "\$@"
+    exec ${gradleRunner}/bin/gradle ''${gradleFlags[@]} ''${gradleFlagsArray[@]} "\$@"
     EOF
     chmod +x "$tmpbin/gradlecustom"
     export PATH="$tmpbin:$PATH"
