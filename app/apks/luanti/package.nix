@@ -47,11 +47,14 @@ let
 
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
+        attrPath = "apk_luanti";
         pkg = finalAttrs.finalPackage;
         data = ./luanti_deps.json;
         silent = false;
         useBwrap = false;
       };
+
+      passthru.updateScript = finalAttrs.mitmCache.updateScript;
 
       nativeBuildInputs = [
         gradle

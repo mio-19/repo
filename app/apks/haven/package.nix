@@ -267,14 +267,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.17.0";
+      version = "5.20.0-rc1";
 
       src = fetchFromGitHub {
         owner = "GlassOnTin";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-BCAvUXVWYYgwGx71gTNPIXL3E86s0EoV5cKzwYqdIKc=";
+        hash = "sha256-zKvD81Vw30lrCwswNvpDrDJxO8/0l342sjo9I3QO8Yw=";
       };
 
       patches = [
@@ -292,11 +292,14 @@ let
       # $(nix build .#apk_haven.mitmCache.updateScript --no-link --print-out-paths)
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs0) pname;
+        attrPath = "apk_haven";
         pkg = finalAttrs0.finalPackage;
         data = ./haven_deps.json;
         silent = false;
         useBwrap = false;
       };
+
+      passthru.updateScript = finalAttrs0.mitmCache.updateScript;
 
       nativeBuildInputs = [
         gradle
