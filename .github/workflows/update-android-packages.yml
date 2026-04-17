@@ -68,18 +68,18 @@ jobs:
             "$runner"
           }
 
-          for attr in apk_haven apk_luanti; do
+          for attr in apk_haven apk_luanti apk_zotero-android; do
             run_update_script "$attr"
           done
-          nix run nixpkgs#nixfmt -- app/apks/haven/package.nix app/apks/luanti/package.nix
+          nix run nixpkgs#nixfmt -- app/apks/haven/package.nix app/apks/luanti/package.nix app/apks/zotero-android/package.nix
 
       - name: Build updated packages
-        run: nix build .#apk_haven .#apk_luanti --no-link --keep-going
+        run: nix build .#apk_haven .#apk_luanti .#apk_zotero-android --no-link --keep-going
 
       - name: Create pull request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: updates/haven-luanti
+          BRANCH: updates/android-packages
         run: |
           set -euo pipefail
           paths=(
@@ -87,10 +87,12 @@ jobs:
             app/apks/haven/haven_deps.json
             app/apks/luanti/package.nix
             app/apks/luanti/luanti_deps.json
+            app/apks/zotero-android/package.nix
+            app/apks/zotero-android/zotero_android_deps.json
           )
 
           if git diff --quiet -- "${paths[@]}"; then
-            echo "No Haven or Luanti updates."
+            echo "No Android package updates."
             exit 0
           fi
 
@@ -98,18 +100,18 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c "$BRANCH"
           git add "${paths[@]}"
-          git commit -m "update haven and luanti"
+          git commit -m "update android packages"
           git fetch origin "$BRANCH" || true
           git push --force-with-lease origin "$BRANCH"
 
           if gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
             gh pr edit "$BRANCH" \
-              --title "update haven and luanti" \
-              --body "Automated source and Gradle dependency refresh for Haven and Luanti."
+              --title "update android packages" \
+              --body "Automated source and Gradle dependency refresh for Haven, Luanti, and Zotero."
           else
             gh pr create \
               --base "${{ github.event.repository.default_branch }}" \
               --head "$BRANCH" \
-              --title "update haven and luanti" \
-              --body "Automated source and Gradle dependency refresh for Haven and Luanti."
+              --title "update android packages" \
+              --body "Automated source and Gradle dependency refresh for Haven, Luanti, and Zotero."
           fi

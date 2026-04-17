@@ -5,6 +5,8 @@
   gradle-packages,
   stdenv,
   fetchFromGitHub,
+  writeShellScript,
+  nix-update,
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -31,7 +33,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "zotero-android";
-      version = "1.0.0-237";
+      version = "1.0.0-239";
 
       src = fetchFromGitHub {
         owner = "zotero";
@@ -42,7 +44,7 @@ let
         # latest 1.0.0-* tag by time, not raw version ordering:
         # https://github.com/zotero/zotero-android/tags
         tag = finalAttrs.version;
-        hash = "sha256-9o/zPRoJWezbPXCsfirYqYvhB71VW+dBbNefwInIGQI=";
+        hash = "sha256-kYKlDCiyQHDRbyrsID+tFZUJhcbjXUzdC8/Dm+S5LqY=";
       };
 
       patches = [
@@ -63,10 +65,45 @@ let
 
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
+        attrPath = "apk_zotero-android";
         pkg = finalAttrs.finalPackage;
         data = ./zotero_android_deps.json;
         silent = false;
         useBwrap = false;
+      };
+
+      passthru.updateScript = {
+        command = [
+          "${writeShellScript "update-apk-zotero-android" ''
+            set -euo pipefail
+            tmp="$(mktemp -d)"
+            cleanup() {
+              rm -rf "$tmp"
+            }
+            trap cleanup EXIT
+
+            ${lib.getExe git} -C "$tmp" init --bare repo >/dev/null
+            ${lib.getExe git} -C "$tmp/repo" remote add origin https://github.com/zotero/zotero-android.git
+            ${lib.getExe git} -C "$tmp/repo" fetch --quiet --depth=1 origin '+refs/tags/1.0.0-*:refs/tags/1.0.0-*'
+            latest="$(
+              ${lib.getExe git} -C "$tmp/repo" for-each-ref refs/tags \
+                --format='%(creatordate:unix)%09%(refname:short)' \
+                | sort -n \
+                | tail -n 1 \
+                | cut -f2
+            )"
+            if [[ -z "$latest" ]]; then
+              echo "No matching Zotero Android 1.0.0-* release found" >&2
+              exit 1
+            fi
+
+            ${lib.getExe nix-update} --flake --version="$latest" apk_zotero-android
+            system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+            "$(nix build ".#legacyPackages.$system.apk_zotero-android.mitmCache.updateScript" --no-link --print-out-paths)"
+          ''}"
+        ];
+        attrPath = "apk_zotero-android";
+        supportedFeatures = [ ];
       };
 
       nativeBuildInputs = [
