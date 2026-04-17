@@ -31,9 +31,7 @@ let
   allowlistVersion = lib.replaceStrings [ "." ] [ "_" ] appVersionName;
 
   upstreamAllowlist = fetchurl {
-    #url = "https://raw.githubusercontent.com/google-ai-edge/gallery/refs/heads/main/model_allowlists/${allowlistVersion}.json";
-    # they haven't updated the allowlist for 1.0.12 yet
-    url = "https://raw.githubusercontent.com/google-ai-edge/gallery/refs/heads/main/model_allowlists/1_0_11.json";
+    url = "https://raw.githubusercontent.com/google-ai-edge/gallery/refs/heads/main/model_allowlists/${allowlistVersion}.json";
     hash = "sha256-jY0Vcws3j3eQK9mzUemFI06KAf98PCalK/bHA+4Us5s=";
   };
 
