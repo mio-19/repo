@@ -5,6 +5,9 @@
   gradle_8_13,
   stdenv,
   fetchFromGitHub,
+  writeShellScript,
+  _experimental-update-script-combinators,
+  nix-update-script,
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -13,7 +16,7 @@
 let
   appPackage =
     let
-      version = "5.15.1";
+      version = "5.15.2";
 
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -36,7 +39,7 @@ let
         owner = "luanti-org";
         repo = "luanti";
         tag = version;
-        hash = "sha256-aW/DSF0sBEHJmhxRcWVqMFDOmP24CkAMr/eEsCUN5B0=";
+        hash = "sha256-E7YkUFuDvEuJpmn7ReasKZnQHucl6YbTk8InUtzTi9U=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/android";
@@ -47,11 +50,33 @@ let
 
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
+        attrPath = "apk_luanti";
         pkg = finalAttrs.finalPackage;
         data = ./luanti_deps.json;
         silent = false;
         useBwrap = false;
       };
+
+      passthru.updateScript =
+        (_experimental-update-script-combinators.sequence [
+          (nix-update-script {
+            attrPath = "apk_luanti";
+            extraArgs = [ "--flake" ];
+          })
+          {
+            command = [
+              "${writeShellScript "update-apk-luanti-gradle-deps" ''
+                set -euo pipefail
+                system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+                "$(nix build ".#legacyPackages.$system.apk_luanti.mitmCache.updateScript" --no-link --print-out-paths)"
+              ''}"
+            ];
+            supportedFeatures = [ ];
+          }
+        ])
+        // {
+          attrPath = "apk_luanti";
+        };
 
       nativeBuildInputs = [
         gradle

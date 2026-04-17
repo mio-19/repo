@@ -19,6 +19,7 @@ let
     s.platforms-android-33
     s.platforms-android-34
     s.platforms-android-35
+    s.platforms-android-36
     s.build-tools-34-0-0
     s.build-tools-35-0-0
   ]);
@@ -35,13 +36,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "hoodles-patches";
-  version = "1.22.0";
+  version = "1.24.0";
 
   src = fetchFromGitHub {
     owner = "hoo-dles";
     repo = "morphe-patches";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-JUYUXJlr4blm/eWnHhtUNAJkWf9akZFudLHrxl1htTk=";
+    hash = "sha256-sF4FHYeG7xHbpN72M9Ssx1v5VRaSxFysY4MV5M6UhA0=";
   };
 
   gradleBuildTask = "generatePatchesList";

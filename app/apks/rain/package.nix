@@ -4,7 +4,7 @@
   buildDartApplication,
   runCommand,
   fetchFromGitHub,
-  flutter338,
+  flutter341,
   jdk17_headless,
   python3,
   gradle_8_13,
@@ -23,7 +23,7 @@ let
         s.build-tools-34-0-0
         s.build-tools-35-0-0
         s.build-tools-36-1-0
-        s.ndk-29-0-14206865
+        s.ndk-28-2-13676358
         s.cmake-3-31-6
       ]);
 
@@ -31,15 +31,15 @@ let
 
       pythonWithYaml = python3.withPackages (ps: [ ps.pyyaml ]);
     in
-    buildDartApplication.override { dart = flutter338; } (finalAttrs: {
+    buildDartApplication.override { dart = flutter341; } (finalAttrs: {
       pname = "rain";
-      version = "1.3.9-unstable-20260402";
+      version = "1.3.10";
 
       src = fetchFromGitHub {
         owner = "darkmoonight";
         repo = "Rain";
-        rev = "8ac2440f1bb628996621bce459161ae51dd8ee41";
-        hash = "sha256-MHn71xBdb5YRVl+BmirGB7jFQaPEfpd87GWzJaFZZgE=";
+        tag = "v${finalAttrs.version}";
+        hash = "sha256-j7b7LzNpEmXBuMP5VqGN+ltzpFi8DTVsAij4aDTJA5Y=";
       };
 
       patches = [
@@ -54,8 +54,8 @@ let
           name:
           runCommand "flutter-sdk-${name}" { passthru.packageRoot = "."; } ''
             for path in \
-              '${flutter338}/packages/${name}' \
-              '${flutter338}/bin/cache/pkg/${name}'; do
+              '${flutter341}/packages/${name}' \
+              '${flutter341}/bin/cache/pkg/${name}'; do
               if [ -d "$path" ]; then
                 ln -s "$path" "$out"
                 break
@@ -92,6 +92,8 @@ let
         JAVA_HOME = jdk17_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
+        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
       };
 
@@ -109,7 +111,7 @@ let
       ];
 
       postPatch = ''
-        cp -LR ${flutter338} flutter-sdk
+        cp -LR ${flutter341} flutter-sdk
         chmod -R u+w flutter-sdk
         touch flutter-sdk/bin/cache/engine.realm # https://github.com/NixOS/nixpkgs/pull/500309#issuecomment-4192628176
 
@@ -129,6 +131,8 @@ let
           substituteInPlace android/app/build.gradle \
             --replace-fail 'signingConfig = signingConfigs.release' 'signingConfig = signingConfigs.debug'
         fi
+        substituteInPlace android/app/build.gradle \
+          --replace-fail "ndkVersion = '29.0.14206865'" "ndkVersion = '28.2.13676358'"
 
       '';
 
@@ -138,6 +142,7 @@ let
 
         echo "sdk.dir=${androidSdk}/share/android-sdk" > android/local.properties
         echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6" >> android/local.properties
+        echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/28.2.13676358" >> android/local.properties
         echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
       '';
 
@@ -157,6 +162,47 @@ let
         fi
         export FLUTTER_ROOT="$PWD/flutter-sdk"
         export GRADLE_OPTS
+
+        mkdir -p .dart-patched
+        ${python3}/bin/python3 - <<'PY' > dart_package_dirs.sh
+        import json
+        import shlex
+        import urllib.parse
+
+        wanted = {
+            "jni": "JNI_DIR",
+            "jni_flutter": "JNI_FLUTTER_DIR",
+        }
+        found = {env_name: "" for env_name in wanted.values()}
+
+        with open(".dart_tool/package_config.json") as f:
+            data = json.load(f)
+
+        for pkg in data["packages"]:
+            env_name = wanted.get(pkg["name"])
+            if env_name:
+                found[env_name] = urllib.parse.urlparse(pkg["rootUri"]).path.removesuffix("/.")
+
+        for env_name, path in found.items():
+            print(f"export {env_name}={shlex.quote(path)}")
+        PY
+        . ./dart_package_dirs.sh
+
+        remap_dart_package() {
+          local original_dir="$1"
+          local package_name="$2"
+          local patched_dir="$PWD/.dart-patched/$package_name"
+
+          if [ -n "$original_dir" ] && [ -d "$original_dir" ]; then
+            cp -LR "$original_dir" "$patched_dir"
+            chmod -R u+w "$patched_dir"
+            substituteInPlace .dart_tool/package_config.json \
+              --replace-fail "$original_dir" "$patched_dir"
+          fi
+        }
+
+        remap_dart_package "$JNI_DIR" jni
+        remap_dart_package "$JNI_FLUTTER_DIR" jni_flutter
 
         ${pythonWithYaml}/bin/python3 ${../_shared/generate-flutter-plugins.py}
       '';

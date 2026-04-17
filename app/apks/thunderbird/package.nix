@@ -9,7 +9,7 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   fetchpatch,
-  gradle_9_1_0,
+  gradle_9_3_1,
 }:
 let
   appPackage =
@@ -18,21 +18,21 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
-        # AGP 8.12.3 with compileSdk=36 resolves aapt2 from build-tools 35.0.0.
         s.build-tools-35-0-0
+        s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_1_0;
+      gradle = gradle_9_3_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "thunderbird-android";
-      version = "17.0";
+      version = "18.0";
 
       src = fetchFromGitHub {
         owner = "thunderbird";
         repo = "thunderbird-android";
-        tag = "THUNDERBIRD_17_0";
-        hash = "sha256-sDUWRfHpyj9VcPWjyatdOAVZK8jYv4a5BckE+js3BLs=";
+        tag = "THUNDERBIRD_18_0";
+        hash = "sha256-99NGl5/65JPA+B2rhxCPDdSW1WaRaeoq+xOGXQxC8FU=";
       };
 
       patches = [
@@ -85,7 +85,7 @@ let
         JAVA_HOME = jdk25_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
       };
 
       preConfigure = ''
@@ -98,8 +98,8 @@ let
         "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk25_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
 
       installPhase = ''

@@ -1,0 +1,115 @@
+name: "Update Android packages"
+on:
+  schedule:
+    - cron: "21 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Maximize build space
+        uses: mio-19/maximize-build-space@patch-1
+        with:
+          root-reserve-mb: 512
+          swap-size-mb: 12000
+          overprovision-lvm: "true"
+          remove-dotnet: "true"
+          remove-android: "true"
+          remove-haskell: "true"
+          remove-codeql: "true"
+          remove-docker-images: "true"
+          build-mount-path: /nix
+
+      - run: sudo sysctl kernel.apparmor_restrict_unprivileged_userns=0
+      - run: sudo sysctl kernel.apparmor_restrict_unprivileged_unconfined=0
+      - run: sudo sysctl kernel.unprivileged_userns_clone=1
+
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Install nix
+        uses: cachix/install-nix-action@616559265b40713947b9c190a8ff4b507b5df49b
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            system-features = gccarch-x86-64-v3 benchmark big-parallel kvm nixos-test uid-range
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g= mio-repo.cachix.org-1:+l5kqQn5w9e3i3tDZY9o3pVQABC0Z/d0kAqhQpqKP8g=
+            substituters = https://cache.nixos.org/ https://cache.garnix.io https://mio-repo.cachix.org/
+
+      - name: Update package versions and Gradle locks
+        run: |
+          set -euo pipefail
+          run_update_script() {
+            local attr="$1"
+            local expr runner
+            expr="$(cat <<EOF
+          let
+            flake = builtins.getFlake (toString ./.);
+            pkgs = import flake.inputs.nixpkgs { system = "x86_64-linux"; };
+            script = flake.legacyPackages.x86_64-linux.${attr}.passthru.updateScript;
+            command = script.command or script;
+            args = if builtins.isList command then command else [ command ];
+          in
+            pkgs.writeShellScript "run-${attr}-update" ''
+              set -euo pipefail
+              exec \${pkgs.lib.escapeShellArgs (map toString args)}
+            ''
+          EOF
+          )"
+            runner="$(nix build --impure --no-link --print-out-paths --expr "$expr")"
+            "$runner"
+          }
+
+          for attr in apk_haven apk_luanti; do
+            run_update_script "$attr"
+          done
+          nix run nixpkgs#nixfmt -- app/apks/haven/package.nix app/apks/luanti/package.nix
+
+      - name: Build updated packages
+        run: nix build .#apk_haven .#apk_luanti --no-link --keep-going
+
+      - name: Create pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: updates/haven-luanti
+        run: |
+          set -euo pipefail
+          paths=(
+            app/apks/haven/package.nix
+            app/apks/haven/haven_deps.json
+            app/apks/luanti/package.nix
+            app/apks/luanti/luanti_deps.json
+          )
+
+          if git diff --quiet -- "${paths[@]}"; then
+            echo "No Haven or Luanti updates."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$BRANCH"
+          git add "${paths[@]}"
+          git commit -m "update haven and luanti"
+          git fetch origin "$BRANCH" || true
+          git push --force-with-lease origin "$BRANCH"
+
+          if gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
+            gh pr edit "$BRANCH" \
+              --title "update haven and luanti" \
+              --body "Automated source and Gradle dependency refresh for Haven and Luanti."
+          else
+            gh pr create \
+              --base "${{ github.event.repository.default_branch }}" \
+              --head "$BRANCH" \
+              --title "update haven and luanti" \
+              --body "Automated source and Gradle dependency refresh for Haven and Luanti."
+          fi

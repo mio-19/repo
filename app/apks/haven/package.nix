@@ -7,6 +7,9 @@
   stdenv,
   stdenvNoCC,
   fetchFromGitHub,
+  writeShellScript,
+  _experimental-update-script-combinators,
+  nix-update-script,
   rustPlatform,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -267,14 +270,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.8.4";
+      version = "5.20.0-rc1";
 
       src = fetchFromGitHub {
         owner = "GlassOnTin";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-Qp7XqFPwqReDlN+/4TuT7BH3JxRhHKsk2oPGjOeMjUk=";
+        hash = "sha256-zKvD81Vw30lrCwswNvpDrDJxO8/0l342sjo9I3QO8Yw=";
       };
 
       patches = [
@@ -292,11 +295,36 @@ let
       # $(nix build .#apk_haven.mitmCache.updateScript --no-link --print-out-paths)
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs0) pname;
+        attrPath = "apk_haven";
         pkg = finalAttrs0.finalPackage;
         data = ./haven_deps.json;
         silent = false;
         useBwrap = false;
       };
+
+      passthru.updateScript =
+        (_experimental-update-script-combinators.sequence [
+          (nix-update-script {
+            attrPath = "apk_haven";
+            extraArgs = [
+              "--flake"
+              "--version-regex=^v?([0-9]+\\.[0-9]+\\.[0-9]+(-rc[0-9]+)?)$"
+            ];
+          })
+          {
+            command = [
+              "${writeShellScript "update-apk-haven-gradle-deps" ''
+                set -euo pipefail
+                system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+                "$(nix build ".#legacyPackages.$system.apk_haven.mitmCache.updateScript" --no-link --print-out-paths)"
+              ''}"
+            ];
+            supportedFeatures = [ ];
+          }
+        ])
+        // {
+          attrPath = "apk_haven";
+        };
 
       nativeBuildInputs = [
         gradle
