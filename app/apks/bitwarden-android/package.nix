@@ -29,7 +29,7 @@ let
 
       gradle = gradle_9_3_1;
 
-      # https://github.com/bitwarden/android/blob/v2026.3.1-bwpm/gradle/libs.versions.toml#L33 bitwardenSdk = "2.0.0-5676-14521973"
+      # https://github.com/bitwarden/android/blob/v2026.4.0-bwpm/gradle/libs.versions.toml#L33 bitwardenSdk = "2.0.0-5676-14521973"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
@@ -185,13 +185,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-android";
-      version = "2026.3.1";
+      version = "2026.4.0";
 
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
         tag = "v${finalAttrs.version}-bwpm";
-        hash = "sha256-8XXP3Ve3Uj+kwqRR8aWHnFOsC8wMAfs14CGA+E8Lny8=";
+        hash = "sha256-LQKa3kQowDKGC5Nu6aWXW7B6/FFWoo0A42GEsu8PA8U=";
       };
 
       gradleBuildTask = ":app:assembleFdroidRelease";

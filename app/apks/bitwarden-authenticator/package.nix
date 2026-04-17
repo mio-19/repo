@@ -29,7 +29,7 @@ let
 
       gradle = gradle_9_3_1;
 
-      # https://github.com/bitwarden/android/blob/v2026.3.1-bwa/gradle/libs.versions.toml#L33 bitwardenSdk = "2.0.0-5676-14521973"
+      # https://github.com/bitwarden/android/blob/v2026.4.0-bwa/gradle/libs.versions.toml#L33 bitwardenSdk = "2.0.0-5676-14521973"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
@@ -185,13 +185,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-authenticator";
-      version = "2026.3.1";
+      version = "2026.4.0";
 
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
         tag = "v${finalAttrs.version}-bwa";
-        hash = "sha256-8XXP3Ve3Uj+kwqRR8aWHnFOsC8wMAfs14CGA+E8Lny8=";
+        hash = "sha256-LQKa3kQowDKGC5Nu6aWXW7B6/FFWoo0A42GEsu8PA8U=";
       };
 
       gradleBuildTask = ":authenticator:assembleRelease";
@@ -346,7 +346,14 @@ let
                   --replace-fail "id 'kotlinx-serialization'" "id 'org.jetbrains.kotlin.plugin.serialization'"
                 substituteInPlace "$repoRoot/authenticator/build.gradle.kts" \
                   --replace-fail "    alias(libs.plugins.crashlytics)" "" \
-                  --replace-fail "    alias(libs.plugins.google.services)" ""
+                  --replace-fail "    alias(libs.plugins.google.services)" "" \
+                  --replace-fail "    implementation(platform(libs.google.firebase.bom))" "" \
+                  --replace-fail "    implementation(libs.google.firebase.cloud.messaging)" "" \
+                  --replace-fail "    implementation(libs.google.firebase.crashlytics)" ""
+                substituteInPlace "$repoRoot/authenticator/src/main/kotlin/com/bitwarden/authenticator/data/platform/manager/CrashLogsManagerImpl.kt" \
+                  --replace-fail "import com.google.firebase.Firebase" "" \
+                  --replace-fail "import com.google.firebase.crashlytics.crashlytics" "" \
+                  --replace-fail "            Firebase.crashlytics.setCrashlyticsCollectionEnabled(value)" ""
                 substituteInPlace sdk/build.gradle \
                   --replace-fail "id 'org.jetbrains.kotlin.android'" "" \
                   --replace-fail "    kotlinOptions {
