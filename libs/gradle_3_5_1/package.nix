@@ -54,6 +54,35 @@ stdenv.mkDerivation (finalAttrs: {
     org.gradle.daemon=false
     org.gradle.jvmargs=-Xmx1024m -Dfile.encoding=UTF-8
     EOF
+    export gradleInitScript="$PWD/init-build-compat.gradle"
+    cat > "$gradleInitScript" <<'EOF'
+    gradle.projectsLoaded {
+      rootProject.allprojects {
+        tasks.withType(AbstractArchiveTask) {
+          if (it.hasProperty('preserveFileTimestamps')) {
+            preserveFileTimestamps = false
+          }
+          if (it.hasProperty('reproducibleFileOrder')) {
+            reproducibleFileOrder = true
+          }
+        }
+      }
+    }
+    EOF
+    filteredGradleFlagsArray=()
+    skipNext=
+    for arg in "''${gradleFlagsArray[@]}"; do
+      if [ -n "$skipNext" ]; then
+        skipNext=
+        continue
+      fi
+      if [ "$arg" = "--init-script" ]; then
+        skipNext=1
+        continue
+      fi
+      filteredGradleFlagsArray+=("$arg")
+    done
+    gradleFlagsArray=("''${filteredGradleFlagsArray[@]}" --init-script "$gradleInitScript")
   '';
 
   gradleFlags = [

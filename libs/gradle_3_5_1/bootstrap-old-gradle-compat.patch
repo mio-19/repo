@@ -1,6 +1,6 @@
-diff -urN orig/build.gradle mod/build.gradle
---- a/build.gradle	2026-04-17 18:34:53.993162184 +1000
-+++ b/build.gradle	2026-04-17 18:34:54.023162075 +1000
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/build.gradle gradle351probe/build.gradle
+--- gradle351orig/build.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/build.gradle	2026-04-17 23:36:45.246589343 +1000
 @@ -197,7 +197,9 @@
  }
  
@@ -12,10 +12,104 @@ diff -urN orig/build.gradle mod/build.gradle
  apply from: "gradle/incomingDistributions.gradle"
  apply from: "gradle/versioning.gradle"
  apply from: "gradle/dependencies.gradle"
-diff -urN orig/buildSrc/build.gradle mod/buildSrc/build.gradle
---- a/buildSrc/build.gradle	2026-04-17 18:34:53.993162184 +1000
-+++ b/buildSrc/build.gradle	2026-04-17 18:34:54.023162075 +1000
-@@ -50,8 +50,12 @@
+@@ -218,6 +220,9 @@
+     repositories {
+         maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+         maven { url 'https://repo.gradle.org/gradle/libs-milestones' }
++        if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++            mavenCentral()
++        }
+     }
+ 
+     // Force clean tasks to run before any other tasks
+@@ -235,6 +240,46 @@
+ subprojects {
+     version = rootProject.version
+ 
++    if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++        if (tasks.findByName('codeQuality') == null) {
++            task codeQuality
++        }
++        plugins.withType(JavaPlugin) {
++            def compileCfg = configurations.findByName('compile') ?: configurations.create('compile')
++            def runtimeCfg = configurations.findByName('runtime') ?: configurations.create('runtime')
++            def apiCfg = configurations.findByName('api') ?: configurations.create('api')
++            def implementationCfg = configurations.findByName('implementation') ?: configurations.create('implementation')
++            def compileOnlyCfg = configurations.findByName('compileOnly') ?: configurations.create('compileOnly')
++            def runtimeOnlyCfg = configurations.findByName('runtimeOnly') ?: configurations.create('runtimeOnly')
++            def testCompileCfg = configurations.findByName('testCompile') ?: configurations.create('testCompile')
++            def testRuntimeCfg = configurations.findByName('testRuntime') ?: configurations.create('testRuntime')
++            def testImplementationCfg = configurations.findByName('testImplementation') ?: configurations.create('testImplementation')
++            def testRuntimeOnlyCfg = configurations.findByName('testRuntimeOnly') ?: configurations.create('testRuntimeOnly')
++            compileCfg.extendsFrom apiCfg, implementationCfg
++            runtimeCfg.extendsFrom compileCfg, apiCfg, implementationCfg, runtimeOnlyCfg
++            testCompileCfg.extendsFrom testImplementationCfg
++            testRuntimeCfg.extendsFrom testCompileCfg, testImplementationCfg, testRuntimeOnlyCfg
++            configurations.matching { it.name.endsWith('Compile') }.all { cfg ->
++                def stem = cfg.name.substring(0, cfg.name.length() - 'Compile'.length())
++                def apiName = "${stem}Api".toString()
++                def implName = "${stem}Implementation".toString()
++                def apiCfg2 = configurations.findByName(apiName) ?: configurations.create(apiName)
++                def implCfg = configurations.findByName(implName) ?: configurations.create(implName)
++                cfg.extendsFrom apiCfg2, implCfg
++            }
++            configurations.matching { it.name.endsWith('Runtime') }.all { cfg ->
++                def stem = cfg.name.substring(0, cfg.name.length() - 'Runtime'.length())
++                def apiName = "${stem}Api".toString()
++                def implName = "${stem}Implementation".toString()
++                def runtimeOnlyName = "${stem}RuntimeOnly".toString()
++                def apiCfg2 = configurations.findByName(apiName) ?: configurations.create(apiName)
++                def implCfg = configurations.findByName(implName) ?: configurations.create(implName)
++                def runtimeOnlyCfg2 = configurations.findByName(runtimeOnlyName) ?: configurations.create(runtimeOnlyName)
++                cfg.extendsFrom apiCfg2, implCfg, runtimeOnlyCfg2
++            }
++        }
++    }
++
+     if (project in groovyProjects) {
+         apply from: "$rootDir/gradle/groovyProject.gradle"
+         apply from: "$rootDir/gradle/testWithUnknownOS.gradle"
+@@ -247,7 +292,9 @@
+         apply from: "$rootDir/gradle/publish.gradle"
+     }
+ 
+-    apply from: "$rootDir/gradle/codeQuality.gradle"
++    if (!project.hasProperty("bootstrapWithGradle3_0") && !Boolean.getBoolean("bootstrapWithGradle3_0")) {
++        apply from: "$rootDir/gradle/codeQuality.gradle"
++    }
+ 
+     if (isCiServer) {
+         reporting.baseDir "$rootProject.reporting.baseDir/${path.replaceFirst(':', '').replaceAll(':', '.')}"
+@@ -402,4 +449,3 @@
+         }
+     }
+ }
+-
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/buildSrc/build.gradle gradle351probe/buildSrc/build.gradle
+--- gradle351orig/buildSrc/build.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/buildSrc/build.gradle	2026-04-17 18:57:57.665403257 +1000
+@@ -23,6 +23,9 @@
+ 
+ repositories {
+     maven { url 'https://repo.gradle.org/gradle/libs-releases' }
++    if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++        mavenCentral()
++    }
+ }
+ 
+ dependencies {
+@@ -31,10 +34,6 @@
+     compile 'com.google.guava:guava-jdk5:14.0.1@jar'
+     compile 'commons-lang:commons-lang:2.6@jar'
+     compile localGroovy()
+-    compile('org.codehaus.groovy.modules.http-builder:http-builder:0.7.2') {
+-        exclude(module: 'groovy')
+-        exclude(module: 'xercesImpl')
+-    }
+     testCompile 'junit:junit:4.12@jar'
+     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4@jar', 'cglib:cglib-nodep:2.2', 'org.objenesis:objenesis:1.2'
+     testCompile 'org.hamcrest:hamcrest-core:1.3'
+@@ -50,8 +49,16 @@
  apply from: '../gradle/dependencies.gradle'
  apply from: '../gradle/classycle.gradle'
  apply from: '../gradle/buildScanUserData.gradle'
@@ -29,21 +123,272 @@ diff -urN orig/buildSrc/build.gradle mod/buildSrc/build.gradle
 +    if (!project.hasProperty('bootstrapWithGradle3_0') && !Boolean.getBoolean('bootstrapWithGradle3_0')) {
 +        apply from: '../gradle/codeQuality.gradle'
 +    }
++}
++
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    tasks.matching { it.name in ['test', 'check'] }.all { enabled = false }
  }
-@@ -247,7 +251,9 @@
-     if (project in publishedProjects) {
-         apply from: "$rootDir/gradle/publish.gradle"
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/buildSrc/src/main/groovy/org/gradle/ShadedJar.java gradle351probe/buildSrc/src/main/groovy/org/gradle/ShadedJar.java
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/ShadedJar.java	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/ShadedJar.java	2026-04-17 18:59:11.745084640 +1000
+@@ -120,7 +120,6 @@
+     /**
+      * The source files to generate the jar from.
+      */
+-    @Classpath
+     public FileCollection getSourceFiles() {
+         return sourceFiles;
+     }
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/buildSrc/src/main/groovy/org/gradle/modules/PatchExternalModules.groovy gradle351probe/buildSrc/src/main/groovy/org/gradle/modules/PatchExternalModules.groovy
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/modules/PatchExternalModules.groovy	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/modules/PatchExternalModules.groovy	2026-04-17 18:59:43.202949315 +1000
+@@ -35,11 +35,9 @@
+         externalModules.dependencies*.name as Set
      }
  
--    apply from: "$rootDir/gradle/codeQuality.gradle"
-+    if (!project.hasProperty("bootstrapWithGradle3_0") && !Boolean.getBoolean("bootstrapWithGradle3_0")) {
-+        apply from: "$rootDir/gradle/codeQuality.gradle"
-+    }
+-    @Classpath
+-    Configuration externalModulesRuntime
++        Configuration externalModulesRuntime
  
-     if (isCiServer) {
-diff -urN orig/gradle/buildScanUserData.gradle mod/gradle/buildScanUserData.gradle
---- a/gradle/buildScanUserData.gradle	2026-04-17 18:34:53.991162192 +1000
-+++ b/gradle/buildScanUserData.gradle	2026-04-17 18:34:54.023162075 +1000
+-    @Classpath
+-    Configuration coreRuntime
++        Configuration coreRuntime
+ 
+     @OutputDirectory
+     File destination
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/buildSrc/src/main/groovy/org/gradle/plugins/classycle/Classycle.groovy gradle351probe/buildSrc/src/main/groovy/org/gradle/plugins/classycle/Classycle.groovy
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/plugins/classycle/Classycle.groovy	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/plugins/classycle/Classycle.groovy	2026-04-17 18:59:43.206949298 +1000
+@@ -23,8 +23,6 @@
+ import org.gradle.api.tasks.InputDirectory
+ import org.gradle.api.tasks.Internal
+ import org.gradle.api.tasks.OutputFile
+-import org.gradle.api.tasks.PathSensitive
+-import org.gradle.api.tasks.PathSensitivity
+ import org.gradle.api.tasks.SkipWhenEmpty
+ import org.gradle.api.tasks.TaskAction
+ 
+@@ -35,8 +33,7 @@
+ 
+     @InputDirectory
+     @SkipWhenEmpty
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    File classesDir
++        File classesDir
+ 
+     @Input
+     String reportName
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/buildSrc/src/main/groovy/org/gradle/plugins/pegdown/PegDown.groovy gradle351probe/buildSrc/src/main/groovy/org/gradle/plugins/pegdown/PegDown.groovy
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/plugins/pegdown/PegDown.groovy	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/plugins/pegdown/PegDown.groovy	2026-04-17 18:59:43.206949298 +1000
+@@ -30,8 +30,7 @@
+     @Input
+     String outputEncoding
+ 
+-    @PathSensitive(PathSensitivity.NONE)
+-    @InputFile
++        @InputFile
+     File markdownFile
+ 
+     @OutputFile
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy gradle351probe/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy	2026-04-17 18:59:43.202949315 +1000
+@@ -22,8 +22,6 @@
+ import groovy.transform.TypeChecked
+ import groovy.transform.TypeCheckingMode
+ import groovy.xml.XmlUtil
+-import groovyx.net.http.ContentType
+-import groovyx.net.http.RESTClient
+ import org.gradle.api.GradleException
+ import org.gradle.api.tasks.Input
+ import org.gradle.api.tasks.Optional
+@@ -73,7 +71,7 @@
+     @OutputFile
+     File scenarioReport
+ 
+-    RESTClient client
++    Object client
+ 
+     List<String> scheduledBuilds = Lists.newArrayList()
+ 
+@@ -160,36 +158,7 @@
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private void schedule(Scenario scenario, String lastChangeId) {
+-        def buildRequest = """
+-                <build${branchName ? " branchName=\"${branchName}\"" : ""}>
+-                    <buildType id="${buildTypeId}"/>
+-                    <properties>
+-                        <property name="scenario" value="${scenario.id}"/>
+-                        <property name="templates" value="${scenario.templates.join(' ')}"/>
+-                        <property name="baselines" value="${baselines?:'defaults'}"/>
+-                        <property name="warmups" value="${warmups!=null?:'defaults'}"/>
+-                        <property name="runs" value="${runs!=null?:'defaults'}"/>
+-                        <property name="checks" value="${checks?:'all'}"/>
+-                        <property name="channel" value="${channel?:'commits'}"/>
+-                    </properties>
+-                    ${renderLastChange(lastChangeId)}
+-                </build>
+-            """
+-        logger.info("Scheduling $scenario.id, estimated runtime: $scenario.estimatedRuntime, coordinatorBuildId: $coordinatorBuildId, lastChangeId: $lastChangeId, build request: $buildRequest")
+-        def response = client.post(
+-            path: "buildQueue",
+-            requestContentType: ContentType.XML,
+-            body: buildRequest
+-        )
+-        if (!response.success) {
+-            throw new RuntimeException("Cannot schedule build job. build request: $buildRequest\nresponse: ${xmlToString(response.data)}")
+-        }
+-        def workerBuildId = response.data.@id
+-        def scheduledChangeId = findLastChangeIdInXml(response.data)
+-        if (lastChangeId && scheduledChangeId != lastChangeId) {
+-            throw new RuntimeException("The requested change id is different than the actual one. requested change id: $lastChangeId in coordinatorBuildId: $coordinatorBuildId , actual change id: $scheduledChangeId in workerBuildId: $workerBuildId\nresponse: ${xmlToString(response.data)}")
+-        }
+-        scheduledBuilds += workerBuildId
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+@@ -234,24 +203,7 @@
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private void join(String jobId) {
+-        def finished = false
+-        def response
+-        while (!finished) {
+-            response = client.get(path: "builds/id:$jobId")
+-            finished = response.data.@state == "finished"
+-            if (!finished) {
+-                sleep(TimeUnit.MINUTES.toMillis(1))
+-            }
+-        }
+-        finishedBuilds += response.data
+-
+-        try {
+-            def results = fetchTestResults(jobId, response.data)
+-            testResultFilesForBuild.put(jobId, results)
+-            fireTestListener(results, response.data)
+-        } catch (e) {
+-            e.printStackTrace(System.err)
+-        }
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+ 
+     private void fireTestListener(List<File> results, Object build) {
+@@ -263,26 +215,7 @@
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private def fetchTestResults(String jobId, buildData) {
+-        def unzippedFiles = []
+-        def artifactsUri = buildData?.artifacts?.@href?.text()
+-        if (artifactsUri) {
+-            def resultArtifacts = client.get(path: "${artifactsUri}/results/${project.name}/build/")
+-            if (resultArtifacts.success) {
+-                def zipName = "test-results-${workerTestTaskName}.zip".toString()
+-                def fileNode = resultArtifacts.data.file.find {
+-                    it.@name.text() == zipName
+-                }
+-                if (fileNode) {
+-                    def resultsDirectory = new File(workerTestResultsTempDir, jobId)
+-                    def contentUri = fileNode.content.@href.text()
+-                    client.get(path: contentUri, contentType: ContentType.BINARY) {
+-                        resp, inputStream ->
+-                            unzippedFiles = unzipToDirectory(inputStream, resultsDirectory)
+-                    }
+-                }
+-            }
+-        }
+-        unzippedFiles
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+@@ -320,11 +253,8 @@
+         }
+     }
+ 
+-    private RESTClient createClient() {
+-        client = new RESTClient("$teamCityUrl/httpAuth/app/rest/9.1")
+-        client.auth.basic(teamCityUsername, teamCityPassword)
+-        client.headers['Origin'] = teamCityUrl
+-        client
++    private Object createClient() {
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+ 
+ 
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/buildSrc/src/main/groovy/org/gradle/testing/DistributionTest.groovy gradle351probe/buildSrc/src/main/groovy/org/gradle/testing/DistributionTest.groovy
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/testing/DistributionTest.groovy	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/testing/DistributionTest.groovy	2026-04-17 18:59:43.202949315 +1000
+@@ -17,14 +17,11 @@
+ package org.gradle.testing
+ 
+ import groovy.transform.CompileStatic
+-import org.gradle.api.tasks.Classpath
+ import org.gradle.api.tasks.Input
+ import org.gradle.api.tasks.InputDirectory
+ import org.gradle.api.tasks.Internal
+ import org.gradle.api.tasks.Nested
+ import org.gradle.api.tasks.Optional
+-import org.gradle.api.tasks.PathSensitive
+-import org.gradle.api.tasks.PathSensitivity
+ import org.gradle.api.tasks.testing.Test
+ import org.gradle.build.GradleDistribution
+ import org.gradle.internal.os.OperatingSystem
+@@ -110,15 +107,13 @@
+         this.toolingApiShadedJarDir = fileSystemProperty('integTest.toolingApiShadedJarDir', toolingApiShadedJarDir)
+     }
+ 
+-    @Classpath
+-    Set<File> getToolingApiShadedJar() {
++        Set<File> getToolingApiShadedJar() {
+         return toolingApiShadedJarDir ? project.fileTree(toolingApiShadedJarDir).files : null
+     }
+ 
+     @Optional
+     @InputDirectory
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    File distsDir
++        File distsDir
+ 
+     @Input
+     boolean requiresDists
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/buildSrc/src/main/groovy/org/gradle/testing/IntegrationTest.groovy gradle351probe/buildSrc/src/main/groovy/org/gradle/testing/IntegrationTest.groovy
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/testing/IntegrationTest.groovy	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/testing/IntegrationTest.groovy	2026-04-17 18:59:43.202949315 +1000
+@@ -22,8 +22,6 @@
+ import org.gradle.api.tasks.InputDirectory
+ import org.gradle.api.tasks.InputFile
+ import org.gradle.api.tasks.Optional
+-import org.gradle.api.tasks.PathSensitive
+-import org.gradle.api.tasks.PathSensitivity
+ 
+ /**
+  * Verifies the correct behavior of a feature, as opposed to just a small unit of code.
+@@ -43,8 +41,7 @@
+ 
+     @Optional
+     @InputFile
+-    @PathSensitive(PathSensitivity.NAME_ONLY)
+-    File samplesXml
++        File samplesXml
+ 
+     void setSamplesXml(File samplesXml) {
+         this.samplesXml = samplesXml
+@@ -53,8 +50,7 @@
+ 
+     @Optional
+     @InputDirectory
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    File userGuideOutputDir
++        File userGuideOutputDir
+ 
+     void setUserGuideOutputDir(File userGuideOutputDir) {
+         this.userGuideOutputDir = userGuideOutputDir
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/gradle/buildScanUserData.gradle gradle351probe/gradle/buildScanUserData.gradle
+--- gradle351orig/gradle/buildScanUserData.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/gradle/buildScanUserData.gradle	2026-04-17 18:57:57.665403257 +1000
 @@ -14,6 +14,17 @@
   * limitations under the License.
   */
@@ -80,64 +425,848 @@ diff -urN orig/gradle/buildScanUserData.gradle mod/gradle/buildScanUserData.grad
              if (state.failure && task.reports.xml.destination.exists()) {
                  def codenarc = new XmlSlurper().parse(task.reports.xml.destination)
                  def errors = codenarc.Package.collect {
-diff -urN orig/gradle/codeQuality.gradle mod/gradle/codeQuality.gradle
---- a/gradle/codeQuality.gradle	2026-04-17 18:34:53.991162192 +1000
-+++ b/gradle/codeQuality.gradle	2026-04-17 18:34:54.023162075 +1000
-@@ -1,6 +1,17 @@
- apply plugin: 'checkstyle'
- apply plugin: 'codenarc'
- 
-+boolean hasTypeNamed(task, String className) {
-+    Class<?> type = task?.getClass()
-+    while (type != null) {
-+        if (type.name == className) {
-+            return true
-+        }
-+        type = type.superclass
-+    }
-+    return false
-+}
-+
- plugins.withType(JavaBasePlugin) {
-     // Apply to all projects depending on :core
-     configurations.compile.dependencies.withType(ProjectDependency).matching { it.dependencyProject == project(":core") }.all {
-@@ -21,15 +32,16 @@
-     configFile = new File(configDir, "codenarc.xml")
+@@ -112,4 +123,3 @@
+         }
+     }
+ }
+-
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/gradle/dependencies.gradle gradle351probe/gradle/dependencies.gradle
+--- gradle351orig/gradle/dependencies.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/gradle/dependencies.gradle	2026-04-17 23:41:51.334951011 +1000
+@@ -73,7 +73,7 @@
  }
  
--tasks.withType(CodeNarc) {
--    reports.xml.enabled = true
-+tasks.matching { hasTypeNamed(it, 'org.gradle.api.plugins.quality.CodeNarc') }.all { task ->
-+    task.reports.xml.enabled = true
- }
+ libraries.commons_codec = "commons-codec:commons-codec:1.6@jar"
+-libraries.jcifs = "org.samba.jcifs:jcifs:1.3.17@jar"
++libraries.jcifs = "jcifs:jcifs:1.3.17@jar"
+ libraries.commons_httpclient = dependencies.module('org.apache.httpcomponents:httpclient:4.4.1') {
+     dependency "org.apache.httpcomponents:httpcore:4.4.4@jar"
+     dependency libraries.jcl_to_slf4j
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/gradle/testFixtures.gradle gradle351probe/gradle/testFixtures.gradle
+--- gradle351orig/gradle/testFixtures.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/gradle/testFixtures.gradle	2026-04-17 19:00:26.116764709 +1000
+@@ -26,8 +26,8 @@
  
- configurations.codenarc.resolutionStrategy.force(libraries.groovy)
- 
- plugins.withType(GroovyBasePlugin) {
-     sourceSets.all { sourceSet ->
--        task "${sourceSet.getTaskName('checkstyle', 'groovy')}"(type: Checkstyle) {
-+        task "${sourceSet.getTaskName('checkstyle', 'groovy')}" {
-+            type = Class.forName('org.gradle.api.plugins.quality.Checkstyle')
-             configFile = new File(checkstyleConfigDir, "checkstyle-groovy.xml")
-             source sourceSet.allGroovy
-             classpath = sourceSet.compileClasspath
-@@ -38,11 +50,17 @@
+ sourceSets {
+     testFixtures {
+-        compileClasspath = sourceSets.main.output + configurations.testFixturesCompileClasspath
+-        runtimeClasspath = output + compileClasspath + configurations.testFixturesRuntimeClasspath
++        compileClasspath = sourceSets.main.output + (configurations.findByName('testFixturesCompileClasspath') ?: configurations.testFixturesCompile)
++        runtimeClasspath = output + compileClasspath + (configurations.findByName('testFixturesRuntimeClasspath') ?: configurations.testFixturesRuntime)
      }
  }
  
-+def codeQualityTaskTypes = [
-+    'org.gradle.api.plugins.quality.CodeNarc',
-+    'org.gradle.api.plugins.quality.Checkstyle',
-+    'org.gradle.plugin.devel.tasks.ValidateTaskProperties'
-+]
-+
- def codeQualityTasks = tasks.matching { task ->
--    [org.gradle.api.plugins.quality.CodeNarc, org.gradle.api.plugins.quality.Checkstyle, org.gradle.plugin.devel.tasks.ValidateTaskProperties].any { it.isInstance(task) }
-+    codeQualityTaskTypes.any { hasTypeNamed(task, it) }
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/base-services/base-services.gradle gradle351probe/subprojects/base-services/base-services.gradle
+--- gradle351orig/subprojects/base-services/base-services.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/base-services/base-services.gradle	2026-04-17 19:04:07.723811417 +1000
+@@ -4,7 +4,11 @@
+  * Should have a very small set of dependencies, and should be appropriate to embed in an external
+  * application (eg as part of the tooling API).
+  */
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ sourceCompatibility = javaVersion.java9Compatible ? 1.6 : 1.5
+ 
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/base-services-groovy/base-services-groovy.gradle gradle351probe/subprojects/base-services-groovy/base-services-groovy.gradle
+--- gradle351orig/subprojects/base-services-groovy/base-services-groovy.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/base-services-groovy/base-services-groovy.gradle	2026-04-17 19:04:07.725811408 +1000
+@@ -13,7 +13,11 @@
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ sourceCompatibility = javaVersion.java9Compatible ? 1.6 : 1.5
+ 
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/cli/cli.gradle gradle351probe/subprojects/cli/cli.gradle
+--- gradle351orig/subprojects/cli/cli.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/cli/cli.gradle	2026-04-17 19:04:07.723811417 +1000
+@@ -20,7 +20,11 @@
+     It's packaged separately because it's used by multiple “applications” (i.e. gradle core and the wrapper).
+     It has no dependencies, and should never have any.
+ */
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ sourceCompatibility = javaVersion.java9Compatible ? 1.6 : 1.5
+ 
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/core/core.gradle gradle351probe/subprojects/core/core.gradle
+--- gradle351orig/subprojects/core/core.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/core/core.gradle	2026-04-17 23:33:39.269584765 +1000
+@@ -13,7 +13,11 @@
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ apply from: "$rootDir/gradle/taskProperties.gradle"
+ 
+ sourceCompatibility = javaVersion.java9Compatible ? 1.6 : 1.5
+@@ -90,11 +94,22 @@
+ }
+ sourceSets.main.output.dir generatedResourcesDir, builtBy: deleteBuildReceiptResource
+ 
+-task pluginsManifest(type: WriteProperties) {
+-    property("plugins") {
+-        project.pluginProjects.collect { it.archivesBaseName }.sort().join(',')
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    task pluginsManifest {
++        outputs.file new File(project.generatedResourcesDir, "gradle-plugins.properties")
++        doLast {
++            def outputFile = outputs.files.singleFile
++            outputFile.parentFile.mkdirs()
++            outputFile.text = "plugins=${project.pluginProjects.collect { it.archivesBaseName }.sort().join(',')}\n"
++        }
++    }
++} else {
++    task pluginsManifest(type: WriteProperties) {
++        property("plugins") {
++            project.pluginProjects.collect { it.archivesBaseName }.sort().join(',')
++        }
++        outputFile = new File(project.generatedResourcesDir, "gradle-plugins.properties")
+     }
+-    outputFile = new File(project.generatedResourcesDir, "gradle-plugins.properties")
  }
  
--tasks.withType(Checkstyle) { task ->
-+tasks.matching { hasTypeNamed(it, 'org.gradle.api.plugins.quality.Checkstyle') }.all { task ->
-     // We add an absolute path to configProperties for every checkstyle path
-     // In order to make the task relocatable and therefore cacheable between machines
-     // we need to remove the absolute path from the input and "do the right thing",
+ sourceSets.main.output.dir generatedResourcesDir, builtBy: pluginsManifest
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/diagnostics/diagnostics.gradle gradle351probe/subprojects/diagnostics/diagnostics.gradle
+--- gradle351orig/subprojects/diagnostics/diagnostics.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/diagnostics/diagnostics.gradle	2026-04-17 19:04:07.725811408 +1000
+@@ -13,7 +13,11 @@
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ sourceCompatibility = 1.6
+ 
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/docs/docs.gradle gradle351probe/subprojects/docs/docs.gradle
+--- gradle351orig/subprojects/docs/docs.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/docs/docs.gradle	2026-04-17 23:43:37.846380936 +1000
+@@ -14,8 +14,13 @@
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+-plugins {
+-    id 'org.asciidoctor.convert' version '1.5.3'
++buildscript {
++    repositories {
++        maven { url 'https://plugins.gradle.org/m2' }
++    }
++    dependencies {
++        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
++    }
+ }
+ 
+ import javax.xml.transform.TransformerFactory
+@@ -39,6 +44,7 @@
+ import org.gradle.plugins.pegdown.PegDown
+ 
+ apply plugin: 'base'
++apply plugin: 'org.asciidoctor.convert'
+ apply plugin: 'pegdown'
+ apply plugin: 'jsoup'
+ apply plugin: 'javascript-base'
+@@ -161,7 +161,7 @@
+     snippetsDir = samples.snippetsDir
+     linksFile = dslDocbook.linksFile
+     websiteUrl = 'http://www.gradle.org'
+-    outputs.doNotCacheIf('Has an ever changing version as an input') { true }
++    if (!(project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0'))) outputs.doNotCacheIf { true }
+ 
+     if (name in ["pdfUserguideDocbook", "userguideFragmentSrc"]) {
+         // These will only be valid for releases, but that's ok
+@@ -183,7 +183,7 @@
+             [it.name, it.bytes.encodeBase64().toString()]
+         }
+ 
+-        def fonts = configurations.fonts.resolvedConfiguration.resolvedArtifacts.collectEntries {
++        def fonts = (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) ? [:] : configurations.fonts.resolvedConfiguration.resolvedArtifacts.collectEntries {
+             def id = it.moduleVersion.id
+             ["${id.group}-${id.name}".toString(), it.file.bytes.encodeBase64().toString()]
+         }
+@@ -313,7 +313,7 @@
+         include '*.js'
+     }
+     ext.entryPoint = "$destDir/index.html"
+-    outputs.doNotCacheIf('Depends on the output of dslStandaloneDocbook, which contains an ever changing version') { true }
++    if (!(project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0'))) outputs.doNotCacheIf { true }
+ }
+ 
+ task checkSectionIds(type: UserGuideSectionVerifier) {
+@@ -370,7 +370,7 @@
+     stylesheetName = 'userGuideHtml.xsl'
+     resources = resourceFiles
+     ext.entryPoint = "$destDir/userguide.html"
+-    outputs.doNotCacheIf('Depends on the output of userguideDocbook, which contains an ever changing version') { true }
++    if (!(project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0'))) outputs.doNotCacheIf { true }
+ }
+ 
+ task userguideSingleHtml(type: Docbook2Xhtml) {
+@@ -380,7 +380,7 @@
+     stylesheetName = 'userGuideSingleHtml.xsl'
+     resources = resourceFiles
+     ext.entryPoint = destFile
+-    outputs.doNotCacheIf('Depends on the output of userguideDocbook, which contains an ever changing version') { true }
++    if (!(project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0'))) outputs.doNotCacheIf { true }
+ }
+ 
+ task pdfUserguideXhtml(type: Docbook2Xhtml) {
+@@ -389,7 +389,7 @@
+     stylesheetName = 'userGuidePdf.xsl'
+     resources = resourceFiles
+     ext.entryPoint = destFile
+-    outputs.doNotCacheIf('Depends on the output of pdfUserguideDocbook, which contains an ever changing version') { true }
++    if (!(project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0'))) outputs.doNotCacheIf { true }
+ }
+ 
+ task userguidePdf(type: Xhtml2Pdf, dependsOn: pdfUserguideXhtml) {
+@@ -397,7 +397,7 @@
+     destFile = new File(userguideDir, 'userguide.pdf')
+     classpath = configurations.userGuideTask
+     resources = resourceFiles
+-    outputs.doNotCacheIf('Depends on the output of pdfUserguideXhtml, which contains an ever changing version') { true }
++    if (!(project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0'))) outputs.doNotCacheIf { true }
+ }
+ 
+ def javaApiUrl = "https://docs.oracle.com/javase/7/docs/api"
+@@ -406,8 +406,12 @@
+ 
+ task javadocAll(type: Javadoc) {
+     ext.stylesheetFile = file("src/docs/css/javadoc.css")
+-    inputs.file stylesheetFile withPropertyName "stylesheetFile" withPathSensitivity PathSensitivity.NAME_ONLY
+-    outputs.doNotCacheIf('Title contains an ever changing version') { true }
++    if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++        inputs.file stylesheetFile withPropertyName "stylesheetFile"
++    } else {
++        inputs.file stylesheetFile withPropertyName "stylesheetFile" withPathSensitivity PathSensitivity.NAME_ONLY
++    }
++    if (!(project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0'))) outputs.doNotCacheIf { true }
+ 
+     group = 'documentation'
+     options.encoding = 'utf-8'
+@@ -452,11 +456,15 @@
+     ext.entryPoint = "$destinationDir/index.html"
+ }
+ 
+-task checkstyleApi(type: Checkstyle) {
+-    source javadocAll.source
+-    configFile = file("$checkstyleConfigDir/checkstyle-api.xml")
+-    classpath = files()
+-    reports.xml.destination = file("$checkstyle.reportsDir/checkstyle-api.xml")
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    task checkstyleApi
++} else {
++    task checkstyleApi(type: Checkstyle) {
++        source javadocAll.source
++        configFile = file("$checkstyleConfigDir/checkstyle-api.xml")
++        classpath = files()
++        reports.xml.destination = file("$checkstyle.reportsDir/checkstyle-api.xml")
++    }
+ }
+ 
+ task userguideFragmentSrc(type: UserGuideTransformTask, dependsOn: [userguideStyleSheets]) {
+@@ -469,7 +477,7 @@
+     source userguideFragmentSrc
+     destFile = new File(distDocsDir, 'getting-started.html')
+     stylesheetName = 'standaloneHtml.xsl'
+-    outputs.doNotCacheIf('Depends on the output of userguideFragmentSrc, which contains an ever changing version') { true }
++    if (!(project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0'))) outputs.doNotCacheIf { true }
+ }
+ 
+ task userguide {
+@@ -522,13 +530,21 @@
+ ['test', 'java9Test'].each {
+     tasks[it].configure {
+         dependsOn releaseNotes
+-        inputs.files releaseNotesMarkdown.markdownFile withPropertyName "releaseNotesSource" withPathSensitivity PathSensitivity.NONE
+-        inputs.dir releaseNotes.destinationDir withPropertyName "releaseNotesRendered" withPathSensitivity PathSensitivity.NONE
++        if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++            inputs.files releaseNotesMarkdown.markdownFile withPropertyName "releaseNotesSource"
++        } else {
++            inputs.files releaseNotesMarkdown.markdownFile withPropertyName "releaseNotesSource" withPathSensitivity PathSensitivity.NONE
++        }
++        if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++            inputs.dir releaseNotes.destinationDir withPropertyName "releaseNotesRendered"
++        } else {
++            inputs.dir releaseNotes.destinationDir withPropertyName "releaseNotesRendered" withPathSensitivity PathSensitivity.NONE
++        }
+         inputs.property "systemProperties", [:]
+         systemProperty "org.gradle.docs.releasenotes.source", releaseNotesMarkdown.markdownFile
+         systemProperty "org.gradle.docs.releasenotes.rendered", new File(releaseNotes.destinationDir, releaseNotes.fileName)
+ 
+-        outputs.doNotCacheIf('Has release notes as an input, which contains an ever changing version') { true }
++        if (!(project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0'))) outputs.doNotCacheIf { true }
+     }
+ }
+ 
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/jvm-services/jvm-services.gradle gradle351probe/subprojects/jvm-services/jvm-services.gradle
+--- gradle351orig/subprojects/jvm-services/jvm-services.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/jvm-services/jvm-services.gradle	2026-04-17 19:04:07.727811400 +1000
+@@ -1,7 +1,11 @@
+ /**
+  * JVM invocation and inspection abstractions.
+  */
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ sourceCompatibility = javaVersion.java9Compatible ? 1.6 : 1.5
+ 
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/logging/logging.gradle gradle351probe/subprojects/logging/logging.gradle
+--- gradle351orig/subprojects/logging/logging.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/logging/logging.gradle	2026-04-17 19:04:07.727811400 +1000
+@@ -1,7 +1,11 @@
+ /**
+  * Logging infrastructure.
+  */
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ sourceCompatibility = javaVersion.java9Compatible ? 1.6 : 1.5
+ 
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/messaging/messaging.gradle gradle351probe/subprojects/messaging/messaging.gradle
+--- gradle351orig/subprojects/messaging/messaging.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/messaging/messaging.gradle	2026-04-17 19:04:07.721811425 +1000
+@@ -1,4 +1,8 @@
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ sourceCompatibility = javaVersion.java9Compatible ? 1.6 : 1.5
+ 
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/model-core/model-core.gradle gradle351probe/subprojects/model-core/model-core.gradle
+--- gradle351orig/subprojects/model-core/model-core.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/model-core/model-core.gradle	2026-04-17 19:04:07.723811417 +1000
+@@ -17,7 +17,11 @@
+ /*
+  * The model management core.
+  */
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ sourceCompatibility = javaVersion.java9Compatible ? 1.6 : 1.5
+ 
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/model-groovy/model-groovy.gradle gradle351probe/subprojects/model-groovy/model-groovy.gradle
+--- gradle351orig/subprojects/model-groovy/model-groovy.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/model-groovy/model-groovy.gradle	2026-04-17 19:04:07.725811408 +1000
+@@ -18,7 +18,11 @@
+ /*
+  * Groovy specific adaptions to the model management.
+  */
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ sourceCompatibility = javaVersion.java9Compatible ? 1.6 : 1.5
+ 
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/native/native.gradle gradle351probe/subprojects/native/native.gradle
+--- gradle351orig/subprojects/native/native.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/native/native.gradle	2026-04-17 19:04:07.723811417 +1000
+@@ -1,7 +1,11 @@
+ /*
+     This project contains various native operating system integration utilities.
+ */
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ sourceCompatibility = javaVersion.java9Compatible ? 1.6 : 1.5
+ 
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/process-services/process-services.gradle gradle351probe/subprojects/process-services/process-services.gradle
+--- gradle351orig/subprojects/process-services/process-services.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/process-services/process-services.gradle	2026-04-17 19:04:07.725811408 +1000
+@@ -1,7 +1,11 @@
+ /**
+  * Process execution abstractions.
+  */
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ sourceCompatibility = javaVersion.java9Compatible ? 1.6 : 1.5
+ 
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/resources/resources.gradle gradle351probe/subprojects/resources/resources.gradle
+--- gradle351orig/subprojects/resources/resources.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/resources/resources.gradle	2026-04-17 19:04:07.725811408 +1000
+@@ -1,7 +1,11 @@
+ /*
+  * A set of general-purpose resource abstractions.
+  */
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ sourceCompatibility = javaVersion.java9Compatible ? 1.6 : 1.5
+ 
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/resources-http/resources-http.gradle gradle351probe/subprojects/resources-http/resources-http.gradle
+--- gradle351orig/subprojects/resources-http/resources-http.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/resources-http/resources-http.gradle	2026-04-17 19:04:07.723811417 +1000
+@@ -13,7 +13,11 @@
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ dependencies {
+     api project(':resources')
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/resources-s3/resources-s3.gradle gradle351probe/subprojects/resources-s3/resources-s3.gradle
+--- gradle351orig/subprojects/resources-s3/resources-s3.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/resources-s3/resources-s3.gradle	2026-04-17 19:04:07.727811400 +1000
+@@ -1,4 +1,8 @@
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ dependencies {
+     api project(':core')
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/resources-sftp/resources-sftp.gradle gradle351probe/subprojects/resources-sftp/resources-sftp.gradle
+--- gradle351orig/subprojects/resources-sftp/resources-sftp.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/resources-sftp/resources-sftp.gradle	2026-04-17 19:04:07.721811425 +1000
+@@ -13,7 +13,11 @@
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+-apply plugin: 'java-library'
++if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply plugin: 'java'
++} else {
++    apply plugin: 'java-library'
++}
+ 
+ dependencies {
+     api project(':resources')
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/tooling-api/tooling-api.gradle gradle351probe/subprojects/tooling-api/tooling-api.gradle
+--- gradle351orig/subprojects/tooling-api/tooling-api.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/tooling-api/tooling-api.gradle	2026-04-17 23:34:39.059264741 +1000
+@@ -105,7 +105,11 @@
+     dependsOn generatePom
+     ext.fixedVersionPomFile = new File(temporaryDir, 'pom.xml')
+     outputs.files(fixedVersionPomFile)
+-    inputs.file { generatePom.pomFile } withPropertyName 'pomFile' withPathSensitivity PathSensitivity.NONE
++    if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++        inputs.file { generatePom.pomFile } withPropertyName 'pomFile'
++    } else {
++        inputs.file { generatePom.pomFile } withPropertyName 'pomFile' withPathSensitivity PathSensitivity.NONE
++    }
+     inputs.property("testedVersion", { testedVersion })
+     doLast {
+         def xml = new XmlParser().parse(generatePom.pomFile)
+@@ -142,4 +146,3 @@
+ }
+ 
+ verifyTestFilesCleanup.errorWhenNotEmpty = false
+-
+diff -ruN '--exclude=.gradle' '--exclude=.home' '--exclude=build' '--exclude=.gradle-*' gradle351orig/subprojects/wrapper/wrapper.gradle gradle351probe/subprojects/wrapper/wrapper.gradle
+--- gradle351orig/subprojects/wrapper/wrapper.gradle	1970-01-01 10:00:01.000000000 +1000
++++ gradle351probe/subprojects/wrapper/wrapper.gradle	2026-04-17 23:34:13.315402531 +1000
+@@ -42,8 +42,10 @@
+ 
+ task executableJar(type: Jar) {
+     // gradle-wrapper.jar will be part of the plugins.jar - so it needs to be identical for now
+-    reproducibleFileOrder = true
+-    preserveFileTimestamps = false
++    if (!(project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0'))) {
++        reproducibleFileOrder = true
++        preserveFileTimestamps = false
++    }
+     archiveName = 'gradle-wrapper.jar'
+     from sourceSets.main.output
+     from configurations.runtime.allDependencies.withType(ProjectDependency).collect { it.dependencyProject.sourceSets.main.output }
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/build/ClasspathManifest.groovy
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/build/ClasspathManifest.groovy
+@@ -7,7 +7,6 @@
+ import org.gradle.api.artifacts.ProjectDependency
+ import org.gradle.api.file.FileCollection
+ import org.gradle.api.tasks.CacheableTask
+-import org.gradle.api.tasks.Classpath
+ import org.gradle.api.tasks.Input
+ import org.gradle.api.tasks.Internal
+ import org.gradle.api.tasks.OutputFile
+@@ -31,8 +30,7 @@
+ @CacheableTask
+ class ClasspathManifest extends DefaultTask {
+ 
+-    @Classpath
+-    FileCollection input = project.configurations.runtimeClasspath
++    FileCollection input = project.configurations.findByName('runtimeClasspath') ?: project.configurations.getByName('runtime')
+ 
+     @Input
+     List<String> optionalProjects = []
+
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/build/GradleDistribution.groovy
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/build/GradleDistribution.groovy
+@@ -19,26 +19,19 @@
+ import groovy.transform.CompileStatic
+ import org.gradle.api.Project
+ import org.gradle.api.file.ConfigurableFileTree
+-import org.gradle.api.tasks.Classpath
+ import org.gradle.api.tasks.InputDirectory
+-import org.gradle.api.tasks.PathSensitive
+-import org.gradle.api.tasks.PathSensitivity
+ 
+ @CompileStatic
+ class GradleDistribution {
+     @InputDirectory
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    ConfigurableFileTree staticContent
++        ConfigurableFileTree staticContent
+ 
+     @InputDirectory
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    ConfigurableFileTree samples
++        ConfigurableFileTree samples
+ 
+-    @Classpath
+-    SortedSet<File> core
++        SortedSet<File> core
+ 
+-    @Classpath
+-    SortedSet<File> plugins
++        SortedSet<File> plugins
+ 
+     GradleDistribution(Project project, File gradleHome) {
+         staticContent  = project.fileTree(gradleHome)
+
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/build/docs/AssembleSamplesDocTask.groovy
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/build/docs/AssembleSamplesDocTask.groovy
+@@ -36,8 +36,7 @@
+     File destFile
+ 
+     @Override
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    public FileTree getSource() {
++        public FileTree getSource() {
+         return super.getSource()
+     }
+ 
+
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/build/docs/Docbook2Xhtml.groovy
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/build/docs/Docbook2Xhtml.groovy
+@@ -25,8 +25,7 @@
+ 
+ @CacheableTask
+ class Docbook2Xhtml extends SourceTask {
+-    @Classpath
+-    FileCollection classpath
++        FileCollection classpath
+ 
+     @OutputFile @Optional
+     File destFile
+@@ -34,27 +33,23 @@
+     @OutputDirectory @Optional
+     File destDir
+ 
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    @InputDirectory
++        @InputDirectory
+     File stylesheetsDir
+ 
+     @Internal
+     String stylesheetName
+ 
+-    @PathSensitive(PathSensitivity.NONE)
+-    @InputFile
++        @InputFile
+     File getStylesheetFile() {
+         new File(stylesheetsDir, stylesheetName)
+     }
+ 
+     @Override
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    FileTree getSource() {
++        FileTree getSource() {
+         return super.getSource()
+     }
+ 
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    @Optional
++        @Optional
+     @InputFiles
+     FileCollection resources
+ 
+
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/build/docs/ExtractSamplesTask.groovy
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/build/docs/ExtractSamplesTask.groovy
+@@ -21,8 +21,6 @@
+ import org.gradle.api.tasks.InputDirectory
+ import org.gradle.api.tasks.InputFile
+ import org.gradle.api.tasks.OutputFile
+-import org.gradle.api.tasks.PathSensitive
+-import org.gradle.api.tasks.PathSensitivity
+ import org.gradle.api.tasks.TaskAction
+ import org.w3c.dom.Document
+ import org.w3c.dom.Element
+@@ -34,12 +32,10 @@
+ class ExtractSamplesTask extends DefaultTask {
+ 
+     @InputFile
+-    @PathSensitive(PathSensitivity.NONE)
+-    File sourceFile
++        File sourceFile
+ 
+     @InputDirectory
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    File getUserguideSrc() {
++        File getUserguideSrc() {
+         sourceFile?.parentFile
+     }
+ 
+
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/build/docs/ExtractSnippetsTask.groovy
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/build/docs/ExtractSnippetsTask.groovy
+@@ -18,8 +18,6 @@
+ import org.gradle.api.file.FileTree
+ import org.gradle.api.file.FileVisitDetails
+ import org.gradle.api.tasks.CacheableTask
+-import org.gradle.api.tasks.PathSensitive
+-import org.gradle.api.tasks.PathSensitivity
+ import org.gradle.api.tasks.OutputDirectory
+ import org.gradle.api.tasks.SourceTask
+ import org.gradle.api.tasks.TaskAction
+@@ -37,8 +35,7 @@
+     File snippetsDir
+ 
+     @Override
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    public FileTree getSource() {
++        public FileTree getSource() {
+         return super.getSource()
+     }
+ 
+
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/build/docs/UserGuideTransformTask.groovy
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/build/docs/UserGuideTransformTask.groovy
+@@ -27,8 +27,6 @@
+ import org.gradle.api.tasks.InputFiles
+ import org.gradle.api.tasks.Optional
+ import org.gradle.api.tasks.OutputFile
+-import org.gradle.api.tasks.PathSensitive
+-import org.gradle.api.tasks.PathSensitivity
+ import org.gradle.api.tasks.TaskAction
+ import org.gradle.build.docs.dsl.links.ClassLinkMetaData
+ import org.gradle.build.docs.dsl.links.LinkMetaData
+@@ -56,23 +54,19 @@
+     def dsldocUrl
+     def websiteUrl
+ 
+-    @PathSensitive(PathSensitivity.NONE)
+-    @InputFile
++        @InputFile
+     File sourceFile
+ 
+-    @PathSensitive(PathSensitivity.NONE)
+-    @InputFile
++        @InputFile
+     File linksFile
+ 
+     @OutputFile
+     File destFile
+ 
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    @InputDirectory
++        @InputDirectory
+     File snippetsDir
+ 
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    @InputFiles
++        @InputFiles
+     @Optional
+     FileCollection includes
+ 
+
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/build/docs/Xhtml2Pdf.groovy
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/build/docs/Xhtml2Pdf.groovy
+@@ -18,30 +18,24 @@
+ 
+ import org.gradle.api.DefaultTask
+ import org.gradle.api.file.FileCollection
+-import org.gradle.api.tasks.Classpath
+ import org.gradle.api.tasks.InputFile
+ import org.gradle.api.tasks.InputFiles
+ import org.gradle.api.tasks.OutputFile
+-import org.gradle.api.tasks.PathSensitive
+-import org.gradle.api.tasks.PathSensitivity
+ import org.gradle.api.tasks.TaskAction
+ /**
+  * Converts an Xhtml document into a PDF
+  */
+ class Xhtml2Pdf extends DefaultTask {
+     @InputFile
+-    @PathSensitive(PathSensitivity.NONE)
+-    File sourceFile
++        File sourceFile
+ 
+     @OutputFile
+     File destFile
+ 
+-    @Classpath
+-    FileCollection classpath
++        FileCollection classpath
+ 
+     @InputFiles
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    FileCollection resources
++        FileCollection resources
+ 
+     @TaskAction
+     def transform() {
+
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/build/docs/dsl/docbook/AssembleDslDocTask.groovy
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/build/docs/dsl/docbook/AssembleDslDocTask.groovy
+@@ -24,8 +24,6 @@
+ import org.gradle.api.tasks.InputFile
+ import org.gradle.api.tasks.InputFiles
+ import org.gradle.api.tasks.OutputFile
+-import org.gradle.api.tasks.PathSensitive
+-import org.gradle.api.tasks.PathSensitivity
+ import org.gradle.api.tasks.TaskAction
+ import org.gradle.build.docs.BuildableDOMCategory
+ import org.gradle.build.docs.DocGenerationException
+@@ -61,20 +59,16 @@
+  */
+ @CacheableTask
+ class AssembleDslDocTask extends DefaultTask {
+-    @PathSensitive(PathSensitivity.NONE)
+-    @InputFile
++        @InputFile
+     File sourceFile
+ 
+-    @PathSensitive(PathSensitivity.NONE)
+-    @InputFile
++        @InputFile
+     File classMetaDataFile
+ 
+-    @PathSensitive(PathSensitivity.NONE)
+-    @InputFile
++        @InputFile
+     File pluginsMetaDataFile
+ 
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    @InputDirectory
++        @InputDirectory
+     File classDocbookDir
+ 
+     @OutputFile
+@@ -83,8 +77,7 @@
+     @OutputFile
+     File linksFile
+ 
+-    @PathSensitive(PathSensitivity.RELATIVE)
+-    @InputFiles
++        @InputFiles
+     FileCollection sources
+ 
+     @TaskAction
+
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/build/docs/dsl/source/ExtractDslMetaDataTask.groovy
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/build/docs/dsl/source/ExtractDslMetaDataTask.groovy
+@@ -31,8 +31,6 @@
+ import org.gradle.api.file.FileTree
+ import org.gradle.api.tasks.CacheableTask
+ import org.gradle.api.tasks.OutputFile
+-import org.gradle.api.tasks.PathSensitive
+-import org.gradle.api.tasks.PathSensitivity
+ import org.gradle.api.tasks.SourceTask
+ import org.gradle.api.tasks.TaskAction
+ import org.gradle.build.docs.dsl.source.model.ClassMetaData
+@@ -56,8 +54,7 @@
+      * {@inheritDoc}
+      */
+     @Override
+-    @PathSensitive(PathSensitivity.NAME_ONLY)
+-    public FileTree getSource() {
++        public FileTree getSource() {
+         return super.getSource();
+     }
+ 
+
+--- gradle351orig/buildSrc/src/main/groovy/org/gradle/build/docs/dsl/source/GenerateDefaultImportsTask.java
++++ gradle351probe/buildSrc/src/main/groovy/org/gradle/build/docs/dsl/source/GenerateDefaultImportsTask.java
+@@ -24,8 +24,6 @@
+ import org.gradle.api.tasks.Input;
+ import org.gradle.api.tasks.InputFile;
+ import org.gradle.api.tasks.OutputFile;
+-import org.gradle.api.tasks.PathSensitive;
+-import org.gradle.api.tasks.PathSensitivity;
+ import org.gradle.api.tasks.TaskAction;
+ import org.gradle.build.docs.dsl.source.model.ClassMetaData;
+ import org.gradle.build.docs.model.SimpleClassMetaDataRepository;
+@@ -44,7 +42,6 @@
+     private Set<String> excludePatterns = new LinkedHashSet<String>();
+     private Set<String> extraPackages = new LinkedHashSet<String>();
+ 
+-    @PathSensitive(PathSensitivity.NONE)
+     @InputFile
+     public File getMetaDataFile() {
+         return metaDataFile;
+
+--- gradle351orig/gradle/distributionTesting.gradle
++++ gradle351probe/gradle/distributionTesting.gradle
+@@ -295,6 +295,9 @@
+     }
+     task killExistingDaemons {
+         doLast {
++            if (project.hasProperty('bootstrapWithGradle3_0') || Boolean.getBoolean('bootstrapWithGradle3_0')) {
++                return
++            }
+             didWork = false
+             forEachJavaProcess { pid, process ->
+                 logger.warn("A process wasn't shutdown properly in a previous Gradle run. Killing process with PID $pid (Command line: $process)")
