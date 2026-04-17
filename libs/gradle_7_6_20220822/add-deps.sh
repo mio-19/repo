@@ -8,7 +8,6 @@ cp "$input" "$tmp"
 # Add com.gradle.enterprise.gradle.plugin:3.11.1
 enterprise_files=(
   "com.gradle.enterprise.gradle.plugin-3.11.1.pom"
-  "com.gradle.enterprise.gradle.plugin-3.11.1.pom.asc"
 )
 
 for filename in "${enterprise_files[@]}"; do
