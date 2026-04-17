@@ -1,0 +1,143 @@
+diff -urN orig/build.gradle mod/build.gradle
+--- a/build.gradle	2026-04-17 18:34:53.993162184 +1000
++++ b/build.gradle	2026-04-17 18:34:54.023162075 +1000
+@@ -197,7 +197,9 @@
+ }
+ 
+ apply from: "gradle/buildScanUserData.gradle"
+-apply from: "gradle/taskCacheBuildScanUserData.gradle"
++if (!project.hasProperty("bootstrapWithGradle3_0") && !Boolean.getBoolean("bootstrapWithGradle3_0")) {
++    apply from: "gradle/taskCacheBuildScanUserData.gradle"
++}
+ apply from: "gradle/incomingDistributions.gradle"
+ apply from: "gradle/versioning.gradle"
+ apply from: "gradle/dependencies.gradle"
+diff -urN orig/buildSrc/build.gradle mod/buildSrc/build.gradle
+--- a/buildSrc/build.gradle	2026-04-17 18:34:53.993162184 +1000
++++ b/buildSrc/build.gradle	2026-04-17 18:34:54.023162075 +1000
+@@ -50,8 +50,12 @@
+ apply from: '../gradle/dependencies.gradle'
+ apply from: '../gradle/classycle.gradle'
+ apply from: '../gradle/buildScanUserData.gradle'
+-apply from: '../gradle/taskCacheBuildScanUserData.gradle'
++if (!project.hasProperty('bootstrapWithGradle3_0') && !Boolean.getBoolean('bootstrapWithGradle3_0')) {
++    apply from: '../gradle/taskCacheBuildScanUserData.gradle'
++}
+ 
+ if (!isCiServer || (isCiServer && Boolean.getBoolean('enableCodeQuality'))) {
+-    apply from: '../gradle/codeQuality.gradle'
++    if (!project.hasProperty('bootstrapWithGradle3_0') && !Boolean.getBoolean('bootstrapWithGradle3_0')) {
++        apply from: '../gradle/codeQuality.gradle'
++    }
+ }
+@@ -247,7 +251,9 @@
+     if (project in publishedProjects) {
+         apply from: "$rootDir/gradle/publish.gradle"
+     }
+ 
+-    apply from: "$rootDir/gradle/codeQuality.gradle"
++    if (!project.hasProperty("bootstrapWithGradle3_0") && !Boolean.getBoolean("bootstrapWithGradle3_0")) {
++        apply from: "$rootDir/gradle/codeQuality.gradle"
++    }
+ 
+     if (isCiServer) {
+diff -urN orig/gradle/buildScanUserData.gradle mod/gradle/buildScanUserData.gradle
+--- a/gradle/buildScanUserData.gradle	2026-04-17 18:34:53.991162192 +1000
++++ b/gradle/buildScanUserData.gradle	2026-04-17 18:34:54.023162075 +1000
+@@ -14,6 +14,17 @@
+  * limitations under the License.
+  */
+ 
++boolean hasTypeNamed(task, String className) {
++    Class<?> type = task?.getClass()
++    while (type != null) {
++        if (type.name == className) {
++            return true
++        }
++        type = type.superclass
++    }
++    return false
++}
++
+ pluginManager.withPlugin("com.gradle.build-scan") {
+     if (gradle.startParameter.taskNames == ["verifyTestFilesCleanup"]) {
+         buildScan.publishOnFailure()
+@@ -84,7 +95,7 @@
+ 
+     // Capture individual issues for some reports
+     gradle.taskGraph.afterTask { Task task, TaskState state ->
+-        if (task instanceof Checkstyle) {
++        if (hasTypeNamed(task, 'org.gradle.api.plugins.quality.Checkstyle')) {
+             if (state.failure && task.reports.xml.destination.exists()) {
+                 def checkstyle = new XmlSlurper().parse(task.reports.xml.destination)
+                 def errors = checkstyle.file.collect { fileTag ->
+@@ -96,7 +107,7 @@
+                 errors.each { task.project.buildScan.value 'Checkstyle Issue', it }
+             }
+         }
+-        if (task instanceof CodeNarc) {
++        if (hasTypeNamed(task, 'org.gradle.api.plugins.quality.CodeNarc')) {
+             if (state.failure && task.reports.xml.destination.exists()) {
+                 def codenarc = new XmlSlurper().parse(task.reports.xml.destination)
+                 def errors = codenarc.Package.collect {
+diff -urN orig/gradle/codeQuality.gradle mod/gradle/codeQuality.gradle
+--- a/gradle/codeQuality.gradle	2026-04-17 18:34:53.991162192 +1000
++++ b/gradle/codeQuality.gradle	2026-04-17 18:34:54.023162075 +1000
+@@ -1,6 +1,17 @@
+ apply plugin: 'checkstyle'
+ apply plugin: 'codenarc'
+ 
++boolean hasTypeNamed(task, String className) {
++    Class<?> type = task?.getClass()
++    while (type != null) {
++        if (type.name == className) {
++            return true
++        }
++        type = type.superclass
++    }
++    return false
++}
++
+ plugins.withType(JavaBasePlugin) {
+     // Apply to all projects depending on :core
+     configurations.compile.dependencies.withType(ProjectDependency).matching { it.dependencyProject == project(":core") }.all {
+@@ -21,15 +32,16 @@
+     configFile = new File(configDir, "codenarc.xml")
+ }
+ 
+-tasks.withType(CodeNarc) {
+-    reports.xml.enabled = true
++tasks.matching { hasTypeNamed(it, 'org.gradle.api.plugins.quality.CodeNarc') }.all { task ->
++    task.reports.xml.enabled = true
+ }
+ 
+ configurations.codenarc.resolutionStrategy.force(libraries.groovy)
+ 
+ plugins.withType(GroovyBasePlugin) {
+     sourceSets.all { sourceSet ->
+-        task "${sourceSet.getTaskName('checkstyle', 'groovy')}"(type: Checkstyle) {
++        task "${sourceSet.getTaskName('checkstyle', 'groovy')}" {
++            type = Class.forName('org.gradle.api.plugins.quality.Checkstyle')
+             configFile = new File(checkstyleConfigDir, "checkstyle-groovy.xml")
+             source sourceSet.allGroovy
+             classpath = sourceSet.compileClasspath
+@@ -38,11 +50,17 @@
+     }
+ }
+ 
++def codeQualityTaskTypes = [
++    'org.gradle.api.plugins.quality.CodeNarc',
++    'org.gradle.api.plugins.quality.Checkstyle',
++    'org.gradle.plugin.devel.tasks.ValidateTaskProperties'
++]
++
+ def codeQualityTasks = tasks.matching { task ->
+-    [org.gradle.api.plugins.quality.CodeNarc, org.gradle.api.plugins.quality.Checkstyle, org.gradle.plugin.devel.tasks.ValidateTaskProperties].any { it.isInstance(task) }
++    codeQualityTaskTypes.any { hasTypeNamed(task, it) }
+ }
+ 
+-tasks.withType(Checkstyle) { task ->
++tasks.matching { hasTypeNamed(it, 'org.gradle.api.plugins.quality.Checkstyle') }.all { task ->
+     // We add an absolute path to configProperties for every checkstyle path
+     // In order to make the task relocatable and therefore cacheable between machines
+     // we need to remove the absolute path from the input and "do the right thing",
