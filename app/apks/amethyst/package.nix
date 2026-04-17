@@ -51,13 +51,13 @@ let
     stdenv.mkDerivation (finalAttrs: {
       pname = "amethyst";
       # go to https://github.com/AngelAuraMC/Amethyst-Android/releases/latest to check the latest version. they have git tags that seem newer in number but very old.
-      version = "1.1.1";
+      version = "1.1.2";
 
       src = fetchFromGitHub {
         owner = "AngelAuraMC";
         repo = "Amethyst-Android";
         tag = finalAttrs.version;
-        hash = "sha256-vcTm/7CgLNJ8Qcx7q4t5tR1dDWV44uXlotiQnqSzLMw=";
+        hash = "sha256-E70dxAn3oN/dme6phvmM6+xtvJ2T2vAeuXiws+qWrp8=";
       };
 
       gradleBuildTask = ":app_pojavlauncher:assembleRelease";

@@ -31,7 +31,7 @@ let
       src = fetchFromGitHub {
         owner = "MorpheApp";
         repo = "MicroG-RE";
-        rev = "ba8ec46d2e90779c52615ef09e0d80911bb128a6";
+        tag = finalAttrs.version;
         hash = "sha256-2IO9HYWKgFTK3kLxL9+Ff67O61OmCJc1cr5uz+7otUQ=";
       };
 
