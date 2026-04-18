@@ -1,11 +1,11 @@
 {
-  withSystem,
   self,
-  inputs,
+  inputsPatched,
+  pkgsPatched,
   ...
 }:
 let
-  inherit (inputs) nixpkgs robotnix nix-github-actions;
+  inherit (inputsPatched) nixpkgs robotnix nix-github-actions;
   mkGos =
     { ccache }:
     let
@@ -13,10 +13,7 @@ let
         f:
         args@{ pkgs, ... }:
         {
-          _module.args.pkgs-unfree = import nixpkgs {
-            system = pkgs.stdenv.hostPlatform.system;
-            config.allowUnfree = true;
-          };
+          _module.args.pkgs-unfree = pkgsPatched;
           _module.args.robotnix = robotnix;
           _module.args.self = self;
           imports = [ f ];
@@ -39,10 +36,7 @@ let
         f:
         args@{ pkgs, ... }:
         {
-          _module.args.pkgs-unfree = import nixpkgs {
-            system = pkgs.stdenv.hostPlatform.system;
-            config.allowUnfree = true;
-          };
+          _module.args.pkgs-unfree = pkgsPatched;
           _module.args.robotnix = robotnix;
           _module.args.self = self;
           imports = [ f ];
