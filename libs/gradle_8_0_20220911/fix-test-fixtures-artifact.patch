@@ -1,0 +1,46 @@
+--- a/build-logic/integration-testing/src/main/kotlin/gradlebuild.test-fixtures.gradle.kts	2026-04-17 11:26:54.121414773 +1000
++++ b/build-logic/integration-testing/src/main/kotlin/gradlebuild.test-fixtures.gradle.kts	2026-04-17 11:26:54.165414530 +1000
+@@ -16,8 +16,9 @@
+ 
+ import gradlebuild.basics.accessors.groovy
+ 
+-import org.gradle.api.plugins.internal.JvmPluginsHelper
++import org.gradle.api.internal.artifacts.publish.AbstractPublishArtifact
+ import org.gradle.plugins.ide.idea.model.IdeaModel
++import java.util.Date
+ 
+ /**
+  * Test Fixtures Plugin.
+@@ -77,7 +78,31 @@
+     attributes.attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+     attributes.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.RESOURCES))
+ 
+-    artifact(object : JvmPluginsHelper.IntermediateJavaArtifact(ArtifactTypeDefinition.JVM_RESOURCES_DIRECTORY, processResources) {
++    artifact(object : AbstractPublishArtifact(processResources) {
++        override fun getName(): String {
++            return getFile().name
++        }
++
++        override fun getExtension(): String {
++            return ""
++        }
++
++        override fun getType(): String {
++            return ArtifactTypeDefinition.JVM_RESOURCES_DIRECTORY
++        }
++
++        override fun getClassifier(): String? {
++            return null
++        }
++
++        override fun getDate(): Date? {
++            return null
++        }
++
++        override fun shouldBePublished(): Boolean {
++            return true
++        }
++
+         override fun getFile(): File {
+             return processResources.get().destinationDir
+         }
