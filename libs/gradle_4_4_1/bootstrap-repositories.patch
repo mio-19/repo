@@ -1,0 +1,261 @@
+diff --git a/build.gradle b/build.gradle
+index aea7a65..a2e3eac 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -196,6 +196,7 @@ allprojects {
+     repositories {
+         maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+         maven { url 'https://repo.gradle.org/gradle/libs-milestones' }
++        mavenCentral()
+         maven { url "https://repo.gradle.org/gradle/libs-snapshots" }
+     }
+
+diff --git a/buildSrc/build.gradle b/buildSrc/build.gradle
+index bdf01f6..5629208 100644
+--- a/buildSrc/build.gradle
++++ b/buildSrc/build.gradle
+@@ -29,6 +29,7 @@ repositories {
+     maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+     maven { url "https://repo.gradle.org/gradle/libs-snapshots" }
+     maven { url "https://plugins.gradle.org/m2/" }
++    mavenCentral()
+ }
+
+ dependencies {
+@@ -37,10 +38,6 @@ dependencies {
+     compile 'com.google.guava:guava-jdk5:14.0.1@jar'
+     compile 'commons-lang:commons-lang:2.6@jar'
+     compile localGroovy()
+-    compile('org.codehaus.groovy.modules.http-builder:http-builder:0.7.2') {
+-        exclude(module: 'groovy')
+-        exclude(module: 'xercesImpl')
+-    }
+     testCompile 'junit:junit:4.12@jar'
+     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4@jar', 'cglib:cglib-nodep:3.2.5', 'org.objenesis:objenesis:1.2'
+     testCompile 'org.hamcrest:hamcrest-core:1.3'
+@@ -51,7 +47,7 @@ dependencies {
+     compile 'com.github.javaparser:javaparser-core:2.4.0'
+ }
+
+-ext.isCiServer = System.getenv().containsKey("CI")
++ext.isCiServer = true
+
+ apply from: '../gradle/compile.gradle'
+ apply from: '../gradle/dependencies.gradle'
+diff --git a/subprojects/docs/docs.gradle b/subprojects/docs/docs.gradle
+index d12f4f3..07a198a 100644
+--- a/subprojects/docs/docs.gradle
++++ b/subprojects/docs/docs.gradle
+@@ -76,7 +76,8 @@ dependencies {
+     jquery "jquery:jquery.min:1.8.0@js"
+     jqueryTipTip "com.drewwilson.code:jquery.tipTip:1.3:minified@js"
+
+-    fonts \
++    if (!Boolean.getBoolean('bootstrapWithGradle4_3_1')) {
++        fonts \
+         "lato:regular:6:v0SdcGFAl2aezM9Vq_aFTQ@ttf",
+         "lato:regular-italic:6:LqowQDslGv4DmUBAfWa2Vw@ttf",
+         "lato:bold:6:DvlFBScYIYoYw@ttf",
+@@ -85,6 +86,7 @@ dependencies {
+         "ubuntumono:regular:3:ViZhet7Ak-LRXZMXzuAfkZ0EAVxt0G0biEntp43Qt6E@ttf",
+         "ubuntumono:regular-italic:3:KAKuHXAHZOeECOWAHsRKA-LrC4Du4e_yfTJ8Ol60xk0@ttf",
+         "ubuntumono:bold:3:ceqTZGKHipo8pJj4molytp_TkvowlIOtbR7ePgFOpF4@ttf",
+         "ubuntumono:bold-italic:3:n_d8tv_JOIiYyMXR4eaV9WsGzsqhEorxQDpu60nfWEc@ttf"
++    }
+
+     testCompile "org.pegdown:pegdown:1.1.0"
+     testCompile libraries.jsoup
+diff --git a/gradle/dependencies.gradle b/gradle/dependencies.gradle
+index 0b5e7f9..f2e5af5 100644
+--- a/gradle/dependencies.gradle
++++ b/gradle/dependencies.gradle
+@@ -80,7 +80,7 @@ libraries.jetty = dependencies.module("org.mortbay.jetty:jetty:6.1.26") {
+ }
+
+ libraries.commons_codec = "commons-codec:commons-codec:1.6@jar"
+-libraries.jcifs = "org.samba.jcifs:jcifs:1.3.17@jar"
++libraries.jcifs = "jcifs:jcifs:1.3.17@jar"
+ libraries.commons_httpclient = dependencies.module('org.apache.httpcomponents:httpclient:4.4.1') {
+     dependency "org.apache.httpcomponents:httpcore:4.4.4@jar"
+     dependency libraries.jcl_to_slf4j
+diff --git a/buildSrc/src/main/groovy/org/gradle/modules/PatchExternalModules.groovy b/buildSrc/src/main/groovy/org/gradle/modules/PatchExternalModules.groovy
+index 16dca1e..a12d123 100644
+--- a/buildSrc/src/main/groovy/org/gradle/modules/PatchExternalModules.groovy
++++ b/buildSrc/src/main/groovy/org/gradle/modules/PatchExternalModules.groovy
+@@ -86,13 +86,15 @@ class PatchExternalModules extends DefaultTask {
+             .writePatchedFilesTo(destination)
+
+         // TODO: Should this be configurable?
+-        new JarPatcher(project.rootProject, temporaryDir, allModules, "kotlin-compiler-embeddable")
+-            .exclude("META-INF/services/java.nio.charset.spi.CharsetProvider")
+-            .exclude("net/rubygrapefruit/platform/**")
+-            .exclude("org/fusesource/jansi/**")
+-            .exclude("META-INF/native/**/*jansi.*")
+-            .includeJar("native-platform-")
+-            .includeJar("jansi-", "META-INF/native/**", "org/fusesource/jansi/internal/CLibrary*.class")
+-            .writePatchedFilesTo(destination)
++        if (!Boolean.getBoolean('bootstrapWithGradle4_3_1')) {
++            new JarPatcher(project.rootProject, temporaryDir, allModules, "kotlin-compiler-embeddable")
++                .exclude("META-INF/services/java.nio.charset.spi.CharsetProvider")
++                .exclude("net/rubygrapefruit/platform/**")
++                .exclude("org/fusesource/jansi/**")
++                .exclude("META-INF/native/**/*jansi.*")
++                .includeJar("native-platform-")
++                .includeJar("jansi-", "META-INF/native/**", "org/fusesource/jansi/internal/CLibrary*.class")
++                .writePatchedFilesTo(destination)
++        }
+     }
+ }
+diff --git a/subprojects/distributions/distributions.gradle b/subprojects/distributions/distributions.gradle
+index f0d0ed5..fa09a51 100644
+--- a/subprojects/distributions/distributions.gradle
++++ b/subprojects/distributions/distributions.gradle
+@@ -56,7 +56,9 @@ ext {
+
+     binWithDistDocImage = copySpec {
+         with binDistImage
+-        from project(':docs').outputs.distDocs
++        if (!Boolean.getBoolean('bootstrapWithGradle4_3_1')) {
++            from project(':docs').outputs.distDocs
++        }
+     }
+
+     allDistImage = copySpec {
+diff --git a/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy b/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy
+index 500aa69..ba42974 100644
+--- a/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy
++++ b/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy
+@@ -22,8 +22,6 @@ import groovy.transform.CompileStatic
+ import groovy.transform.TypeChecked
+ import groovy.transform.TypeCheckingMode
+ import groovy.xml.XmlUtil
+-import groovyx.net.http.ContentType
+-import groovyx.net.http.RESTClient
+ import org.gradle.api.GradleException
+ import org.gradle.api.tasks.Input
+ import org.gradle.api.tasks.Optional
+@@ -73,7 +71,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+     @OutputFile
+     File scenarioReport
+
+-    RESTClient client
++    Object client
+
+     List<String> scheduledBuilds = Lists.newArrayList()
+
+@@ -160,36 +158,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private void schedule(Scenario scenario, String lastChangeId) {
+-        def buildRequest = """
+-                <build${branchName ? " branchName=\"${branchName}\"" : ""}>
+-                    <buildType id="${buildTypeId}"/>
+-                    <properties>
+-                        <property name="scenario" value="${scenario.id}"/>
+-                        <property name="templates" value="${scenario.templates.join(' ')}"/>
+-                        <property name="baselines" value="${baselines?:'defaults'}"/>
+-                        <property name="warmups" value="${warmups!=null?:'defaults'}"/>
+-                        <property name="runs" value="${runs!=null?:'defaults'}"/>
+-                        <property name="checks" value="${checks?:'all'}"/>
+-                        <property name="channel" value="${channel?:'commits'}"/>
+-                    </properties>
+-                    ${renderLastChange(lastChangeId)}
+-                </build>
+-            """
+-        logger.info("Scheduling $scenario.id, estimated runtime: $scenario.estimatedRuntime, coordinatorBuildId: $coordinatorBuildId, lastChangeId: $lastChangeId, build request: $buildRequest")
+-        def response = client.post(
+-            path: "buildQueue",
+-            requestContentType: ContentType.XML,
+-            body: buildRequest
+-        )
+-        if (!response.success) {
+-            throw new RuntimeException("Cannot schedule build job. build request: $buildRequest\nresponse: ${xmlToString(response.data)}")
+-        }
+-        def workerBuildId = response.data.@id
+-        def scheduledChangeId = findLastChangeIdInXml(response.data)
+-        if (lastChangeId && scheduledChangeId != lastChangeId) {
+-            throw new RuntimeException("The requested change id is different than the actual one. requested change id: $lastChangeId in coordinatorBuildId: $coordinatorBuildId , actual change id: $scheduledChangeId in workerBuildId: $workerBuildId\nresponse: ${xmlToString(response.data)}")
+-        }
+-        scheduledBuilds += workerBuildId
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+
+     @TypeChecked(TypeCheckingMode.SKIP)
+@@ -219,10 +188,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private CoordinatorBuild resolveCoordinatorBuild() {
+         if (coordinatorBuildId) {
+-            def response = client.get(path: "builds/id:$coordinatorBuildId")
+-            if (response.success) {
+-                return new CoordinatorBuild(id: coordinatorBuildId, lastChangeId: findLastChangeIdInXml(response.data), buildTypeId: response.data.@buildTypeId.text())
+-            }
++            throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+         }
+         return null
+     }
+@@ -234,24 +200,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private void join(String jobId) {
+-        def finished = false
+-        def response
+-        while (!finished) {
+-            response = client.get(path: "builds/id:$jobId")
+-            finished = response.data.@state == "finished"
+-            if (!finished) {
+-                sleep(TimeUnit.MINUTES.toMillis(1))
+-            }
+-        }
+-        finishedBuilds += response.data
+-
+-        try {
+-            def results = fetchTestResults(jobId, response.data)
+-            testResultFilesForBuild.put(jobId, results)
+-            fireTestListener(results, response.data)
+-        } catch (e) {
+-            e.printStackTrace(System.err)
+-        }
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+
+     private void fireTestListener(List<File> results, Object build) {
+@@ -263,26 +212,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private def fetchTestResults(String jobId, buildData) {
+-        def unzippedFiles = []
+-        def artifactsUri = buildData?.artifacts?.@href?.text()
+-        if (artifactsUri) {
+-            def resultArtifacts = client.get(path: "${artifactsUri}/results/${project.name}/build/")
+-            if (resultArtifacts.success) {
+-                def zipName = "test-results-${workerTestTaskName}.zip".toString()
+-                def fileNode = resultArtifacts.data.file.find {
+-                    it.@name.text() == zipName
+-                }
+-                if (fileNode) {
+-                    def resultsDirectory = new File(workerTestResultsTempDir, jobId)
+-                    def contentUri = fileNode.content.@href.text()
+-                    client.get(path: contentUri, contentType: ContentType.BINARY) {
+-                        resp, inputStream ->
+-                            unzippedFiles = unzipToDirectory(inputStream, resultsDirectory)
+-                    }
+-                }
+-            }
+-        }
+-        unzippedFiles
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+
+     @TypeChecked(TypeCheckingMode.SKIP)
+@@ -320,11 +250,8 @@ class DistributedPerformanceTest extends PerformanceTest {
+         }
+     }
+
+-    private RESTClient createClient() {
+-        client = new RESTClient("$teamCityUrl/httpAuth/app/rest/9.1")
+-        client.auth.basic(teamCityUsername, teamCityPassword)
+-        client.headers['Origin'] = teamCityUrl
+-        client
++    private Object createClient() {
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
