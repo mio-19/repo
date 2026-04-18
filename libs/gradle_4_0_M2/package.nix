@@ -2,7 +2,7 @@
   callPackage,
   fetchFromGitHub,
   gradle-packages,
-  gradle_3_5_1,
+  gradle_4_0_M1,
   jdk8_headless,
   makeWrapper,
   runtimeShell,
@@ -13,7 +13,7 @@ let
   mkGradle' =
     {
       fetchFromGitHub,
-      gradle_3_5_1,
+      gradle_4_0_M1,
       jdk8_headless,
       makeWrapper,
       runtimeShell,
@@ -22,17 +22,17 @@ let
       ...
     }:
     let
-      gradleRunner = gradle_3_5_1;
+      gradleRunner = gradle_4_0_M1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gradle-unwrapped";
-      version = "4.0-milestone-1";
+      version = "4.0-milestone-2";
 
       src = fetchFromGitHub {
         owner = "gradle";
         repo = "gradle";
-        tag = "v4.0.0-M1";
-        hash = "sha256-l/eCYo5gw6aQMSHc70V6R9YY/TMyeGG4d1BWH+IeX4E=";
+        tag = "v4.0.0-M2";
+        hash = "sha256-qcjxqHA0sChrT+pFpEfyxWMgaTk0LtaktZ+o6iEVRyw=";
       };
 
       gradleBuildTask = ":distributions:binZip";
@@ -103,7 +103,10 @@ let
       gradleFlags = [
         "-PfinalRelease=true"
         "-PbootstrapWithGradle3_5_1=true"
+        "-PbootstrapWithGradle4_0_M1=true"
+        "-PpromotionCommitId=v4.0.0-M2"
         "-DbootstrapWithGradle3_5_1=true"
+        "-DbootstrapWithGradle4_0_M1=true"
         "-Dfile.encoding=UTF-8"
       ];
 
