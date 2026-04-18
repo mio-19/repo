@@ -2,7 +2,7 @@
   callPackage,
   fetchFromGitHub,
   gradle-packages,
-  gradle_3_0,
+  gradle_4_0_M1,
   jdk8_headless,
   makeWrapper,
   runtimeShell,
@@ -13,7 +13,7 @@ let
   mkGradle' =
     {
       fetchFromGitHub,
-      gradle_3_0,
+      gradle_4_0_M1,
       jdk8_headless,
       makeWrapper,
       runtimeShell,
@@ -22,17 +22,17 @@ let
       ...
     }:
     let
-      gradleRunner = gradle_3_0;
+      gradleRunner = gradle_4_0_M1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gradle-unwrapped";
-      version = "3.5.1";
+      version = "4.0-milestone-2";
 
       src = fetchFromGitHub {
         owner = "gradle";
         repo = "gradle";
-        tag = "v${finalAttrs.version}";
-        hash = "sha256-Z/l0RhNaWRWyUekvbh8+juAKgJjVbn175cA2vtrPIDU=";
+        tag = "v4.0.0-M2";
+        hash = "sha256-qcjxqHA0sChrT+pFpEfyxWMgaTk0LtaktZ+o6iEVRyw=";
       };
 
       gradleBuildTask = ":distributions:binZip";
@@ -45,7 +45,7 @@ let
         unzip
       ];
 
-      patches = [ ./bootstrap-old-gradle-compat.patch ];
+      patches = [ ./bootstrap-repositories.patch ];
       patchFlags = [ "-p1" ];
 
       mitmCache = gradleRunner.fetchDeps {
@@ -102,8 +102,11 @@ let
 
       gradleFlags = [
         "-PfinalRelease=true"
-        "-PbootstrapWithGradle3_0=true"
-        "-DbootstrapWithGradle3_0=true"
+        "-PbootstrapWithGradle3_5_1=true"
+        "-PbootstrapWithGradle4_0_M1=true"
+        "-PpromotionCommitId=v4.0.0-M2"
+        "-DbootstrapWithGradle3_5_1=true"
+        "-DbootstrapWithGradle4_0_M1=true"
         "-Dfile.encoding=UTF-8"
       ];
 
@@ -161,13 +164,18 @@ let
       '';
 
       passthru = {
-        inherit (finalAttrs) jdk;
+        inherit (finalAttrs) jdk mitmCache;
         tests = { };
       };
     });
 
   unwrapped = callPackage mkGradle' { };
 in
-callPackage gradle-packages.wrapGradle {
+(callPackage gradle-packages.wrapGradle {
   gradle-unwrapped = unwrapped;
-}
+}).overrideAttrs
+  (old: {
+    passthru = old.passthru // {
+      inherit (unwrapped) mitmCache;
+    };
+  })
