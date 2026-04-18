@@ -4,7 +4,7 @@
   temurin-bin-11,
   temurin-bin-17,
   jdk21_headless,
-  gradle_7_6,
+  gradle_7_6_20220909,
   gradle-from-source,
 }:
 gradle-from-source {
@@ -24,8 +24,9 @@ gradle-from-source {
   /*
     nix-shell -p temurin-bin-11
     patch -p1 < repository.patch
+    patch -p1 < fix-test-fixtures-artifact.patch
     rm gradle/verification-*
-    nix run github:tadfisher/gradle2nix/6c0f9601ac41a1af04df09d8377ab706d07a4cf4  -- --gradle-wrapper=7.6
+    nix run github:tadfisher/gradle2nix/6c0f9601ac41a1af04df09d8377ab706d07a4cf4  -- --gradle-wrapper=7.6-milestone-1
   */
-  bootstrapGradle = gradle_7_6;
+  bootstrapGradle = gradle_7_6_20220909;
 }
