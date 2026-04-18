@@ -24,6 +24,7 @@ gradle-from-source {
   /*
     nix-shell -p temurin-bin-11
     patch -p1 < repository.patch
+    rm gradle/verification-*
     nix run github:tadfisher/gradle2nix/6c0f9601ac41a1af04df09d8377ab706d07a4cf4  -- --gradle-wrapper=7.6
   */
   bootstrapGradle = gradle_7_6;
