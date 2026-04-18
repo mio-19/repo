@@ -20,6 +20,9 @@ gradle-from-source {
     temurin-bin-11
     temurin-bin-17
   ];
+  patches = [
+    #./fix-test-fixtures-artifact.patch
+  ];
   # read https://github.com/tadfisher/gradle2nix/pull/88
   /*
     nix-shell -p temurin-bin-11
