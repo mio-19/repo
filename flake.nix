@@ -99,6 +99,29 @@
         { pkgs, system, ... }:
         let
           inherit (pkgs) fetchpatch applyPatches;
+          robotSrc = applyPatches {
+            src = inputs.robotnix.outPath;
+            name = "robotnix-patched";
+            patches = [
+              (fetchpatch {
+                name = "lineageos: bump to 2026-04-05";
+                url = "https://github.com/nix-community/robotnix/pull/377.patch";
+                hash = "sha256-TA54W8lHLQZorxPlmv68G36hlvuWhNswGKbaTxQU0fo=";
+              })
+            ];
+          };
+          robotnixPatched =
+            (import "${robotSrc}/flake.nix").outputs (
+              inputs.robotnix.inputs
+              // {
+                self = robotnixPatched;
+                inherit nixpkgs;
+              }
+            )
+            // {
+              inherit (robotSrc) outPath;
+            };
+
           gradle2nixSrc = applyPatches {
             src = inputs.gradle2nix.outPath;
             name = "gradle2nix-patched";
@@ -173,7 +196,9 @@
               inherit (nixpkgsSrc) outPath;
             };
           pkgsPatched = import nixpkgs {
-            inherit (pkgs) config;
+            config = pkgs.config // {
+              allowUnfree = true;
+            };
             inherit system;
             overlays = [
               (final: prev: rec {
@@ -200,6 +225,11 @@
               })
             ];
           };
+          inputsPatched = inputs // {
+            nixpkgs = nixpkgs;
+            robotnix = robotnixPatched;
+            gradle2nix = gradle2nixPatched;
+          };
           selfPackages = self.packages."${system}";
           selfLegacyPackages = self.legacyPackages."${system}";
           inherit (pkgsPatched) lib stdenv;
@@ -220,7 +250,7 @@
         in
         {
           _module.args = {
-            inherit pkgsPatched squish-find-the-brains;
+            inherit pkgsPatched squish-find-the-brains inputsPatched;
             gradle2nixPatched =
               assert pkgsPatched.mitm-cache.fetch == selfLegacyPackages.mitm-cache-fetch;
               assert pkgsPatched.mitm-cache.fetch == pkgsPatched.mitm-cache.passthru.fetch;
