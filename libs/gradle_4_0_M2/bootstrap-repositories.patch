@@ -1,0 +1,407 @@
+diff --git a/build.gradle b/build.gradle
+index 17cbdf8..c788fcf 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -201,8 +201,12 @@ ext {
+     removedProjects = ['sonar']
+ }
+
+-apply from: "gradle/buildScanUserData.gradle"
+-apply from: "gradle/taskCacheBuildScanUserData.gradle"
++def bootstrapWithGradle4_0_M1 = project.hasProperty('bootstrapWithGradle4_0_M1') || Boolean.getBoolean('bootstrapWithGradle4_0_M1')
++
++if (!bootstrapWithGradle4_0_M1) {
++    apply from: "gradle/buildScanUserData.gradle"
++    apply from: "gradle/taskCacheBuildScanUserData.gradle"
++}
+ apply from: "gradle/incomingDistributions.gradle"
+ apply from: "gradle/versioning.gradle"
+ apply from: "gradle/dependencies.gradle"
+@@ -223,12 +227,15 @@ allprojects {
+         maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+         maven { url 'https://repo.gradle.org/gradle/libs-milestones' }
+         maven { url "https://repo.gradle.org/gradle/libs-snapshots" }
++        mavenCentral()
+     }
+
+-    // patchExternalModules lives in the root project - we need to activate normalization there, too.
+-    normalization {
+-        runtimeClasspath {
+-            ignore 'org/gradle/build-receipt.properties'
++    if (!bootstrapWithGradle4_0_M1) {
++        // patchExternalModules lives in the root project - we need to activate normalization there, too.
++        normalization {
++            runtimeClasspath {
++                ignore 'org/gradle/build-receipt.properties'
++            }
+         }
+     }
+ }
+@@ -241,14 +248,18 @@ subprojects {
+         apply from: "$rootDir/gradle/testWithUnknownOS.gradle"
+         apply from: "$rootDir/gradle/java9.gradle"
+         check.dependsOn ":docs:checkstyleApi"
+-        check.dependsOn "codeQuality"
++        if (!bootstrapWithGradle4_0_M1) {
++            check.dependsOn "codeQuality"
++        }
+     }
+
+     if (project in publishedProjects) {
+         apply from: "$rootDir/gradle/publish.gradle"
+     }
+
+-    apply from: "$rootDir/gradle/codeQuality.gradle"
++    if (!bootstrapWithGradle4_0_M1) {
++        apply from: "$rootDir/gradle/codeQuality.gradle"
++    }
+
+     if (isCiServer) {
+         reporting.baseDir "$rootProject.reporting.baseDir/${path.replaceFirst(':', '').replaceAll(':', '.')}"
+diff --git a/buildSrc/build.gradle b/buildSrc/build.gradle
+index 34f76dc..a2ad6e5 100644
+--- a/buildSrc/build.gradle
++++ b/buildSrc/build.gradle
+@@ -24,6 +24,7 @@ targetCompatibility = '1.7'
+ repositories {
+     maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+     maven { url "https://repo.gradle.org/gradle/libs-snapshots" }
++    mavenCentral()
+ }
+
+ dependencies {
+@@ -32,10 +33,6 @@ dependencies {
+     compile 'com.google.guava:guava-jdk5:14.0.1@jar'
+     compile 'commons-lang:commons-lang:2.6@jar'
+     compile localGroovy()
+-    compile('org.codehaus.groovy.modules.http-builder:http-builder:0.7.2') {
+-        exclude(module: 'groovy')
+-        exclude(module: 'xercesImpl')
+-    }
+     testCompile 'junit:junit:4.12@jar'
+     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4@jar', 'cglib:cglib-nodep:2.2', 'org.objenesis:objenesis:1.2'
+     testCompile 'org.hamcrest:hamcrest-core:1.3'
+@@ -50,8 +47,16 @@ apply from: '../gradle/compile.gradle'
+ apply from: '../gradle/dependencies.gradle'
+ apply from: '../gradle/classycle.gradle'
+ apply from: '../gradle/buildScanUserData.gradle'
+-apply from: '../gradle/taskCacheBuildScanUserData.gradle'
++if (!project.hasProperty('bootstrapWithGradle3_5_1') && !Boolean.getBoolean('bootstrapWithGradle3_5_1')) {
++    apply from: '../gradle/taskCacheBuildScanUserData.gradle'
++}
+
+ if (!isCiServer || (isCiServer && Boolean.getBoolean('enableCodeQuality'))) {
+-    apply from: '../gradle/codeQuality.gradle'
++    if (!project.hasProperty('bootstrapWithGradle3_5_1') && !Boolean.getBoolean('bootstrapWithGradle3_5_1')) {
++        apply from: '../gradle/codeQuality.gradle'
++    }
++}
++
++if (project.hasProperty('bootstrapWithGradle3_5_1') || Boolean.getBoolean('bootstrapWithGradle3_5_1')) {
++    tasks.matching { it.name in ['test', 'check'] }.all { enabled = false }
+ }
+diff --git a/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy b/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy
+index 500aa69..6b7724e 100644
+--- a/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy
++++ b/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy
+@@ -22,8 +22,6 @@ import groovy.transform.CompileStatic
+ import groovy.transform.TypeChecked
+ import groovy.transform.TypeCheckingMode
+ import groovy.xml.XmlUtil
+-import groovyx.net.http.ContentType
+-import groovyx.net.http.RESTClient
+ import org.gradle.api.GradleException
+ import org.gradle.api.tasks.Input
+ import org.gradle.api.tasks.Optional
+@@ -73,7 +71,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+     @OutputFile
+     File scenarioReport
+
+-    RESTClient client
++    Object client
+
+     List<String> scheduledBuilds = Lists.newArrayList()
+
+@@ -160,36 +158,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private void schedule(Scenario scenario, String lastChangeId) {
+-        def buildRequest = """
+-                <build${branchName ? " branchName=\"${branchName}\"" : ""}>
+-                    <buildType id="${buildTypeId}"/>
+-                    <properties>
+-                        <property name="scenario" value="${scenario.id}"/>
+-                        <property name="templates" value="${scenario.templates.join(' ')}"/>
+-                        <property name="baselines" value="${baselines?:'defaults'}"/>
+-                        <property name="warmups" value="${warmups!=null?:'defaults'}"/>
+-                        <property name="runs" value="${runs!=null?:'defaults'}"/>
+-                        <property name="checks" value="${checks?:'all'}"/>
+-                        <property name="channel" value="${channel?:'commits'}"/>
+-                    </properties>
+-                    ${renderLastChange(lastChangeId)}
+-                </build>
+-            """
+-        logger.info("Scheduling $scenario.id, estimated runtime: $scenario.estimatedRuntime, coordinatorBuildId: $coordinatorBuildId, lastChangeId: $lastChangeId, build request: $buildRequest")
+-        def response = client.post(
+-            path: "buildQueue",
+-            requestContentType: ContentType.XML,
+-            body: buildRequest
+-        )
+-        if (!response.success) {
+-            throw new RuntimeException("Cannot schedule build job. build request: $buildRequest\nresponse: ${xmlToString(response.data)}")
+-        }
+-        def workerBuildId = response.data.@id
+-        def scheduledChangeId = findLastChangeIdInXml(response.data)
+-        if (lastChangeId && scheduledChangeId != lastChangeId) {
+-            throw new RuntimeException("The requested change id is different than the actual one. requested change id: $lastChangeId in coordinatorBuildId: $coordinatorBuildId , actual change id: $scheduledChangeId in workerBuildId: $workerBuildId\nresponse: ${xmlToString(response.data)}")
+-        }
+-        scheduledBuilds += workerBuildId
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+
+     @TypeChecked(TypeCheckingMode.SKIP)
+@@ -234,24 +203,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private void join(String jobId) {
+-        def finished = false
+-        def response
+-        while (!finished) {
+-            response = client.get(path: "builds/id:$jobId")
+-            finished = response.data.@state == "finished"
+-            if (!finished) {
+-                sleep(TimeUnit.MINUTES.toMillis(1))
+-            }
+-        }
+-        finishedBuilds += response.data
+-
+-        try {
+-            def results = fetchTestResults(jobId, response.data)
+-            testResultFilesForBuild.put(jobId, results)
+-            fireTestListener(results, response.data)
+-        } catch (e) {
+-            e.printStackTrace(System.err)
+-        }
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+
+     private void fireTestListener(List<File> results, Object build) {
+@@ -263,26 +215,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private def fetchTestResults(String jobId, buildData) {
+-        def unzippedFiles = []
+-        def artifactsUri = buildData?.artifacts?.@href?.text()
+-        if (artifactsUri) {
+-            def resultArtifacts = client.get(path: "${artifactsUri}/results/${project.name}/build/")
+-            if (resultArtifacts.success) {
+-                def zipName = "test-results-${workerTestTaskName}.zip".toString()
+-                def fileNode = resultArtifacts.data.file.find {
+-                    it.@name.text() == zipName
+-                }
+-                if (fileNode) {
+-                    def resultsDirectory = new File(workerTestResultsTempDir, jobId)
+-                    def contentUri = fileNode.content.@href.text()
+-                    client.get(path: contentUri, contentType: ContentType.BINARY) {
+-                        resp, inputStream ->
+-                            unzippedFiles = unzipToDirectory(inputStream, resultsDirectory)
+-                    }
+-                }
+-            }
+-        }
+-        unzippedFiles
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+
+     @TypeChecked(TypeCheckingMode.SKIP)
+@@ -320,11 +253,8 @@ class DistributedPerformanceTest extends PerformanceTest {
+         }
+     }
+
+-    private RESTClient createClient() {
+-        client = new RESTClient("$teamCityUrl/httpAuth/app/rest/9.1")
+-        client.auth.basic(teamCityUsername, teamCityPassword)
+-        client.headers['Origin'] = teamCityUrl
+-        client
++    private Object createClient() {
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+
+
+diff --git a/gradle/classycle.gradle b/gradle/classycle.gradle
+index ba44bdf..cb29911 100644
+--- a/gradle/classycle.gradle
++++ b/gradle/classycle.gradle
+@@ -1,5 +1,8 @@
+ allprojects {
+     ext.useClassycle = { params = [:] ->
++        if (rootProject.hasProperty('bootstrapWithGradle4_0_M1') || Boolean.getBoolean('bootstrapWithGradle4_0_M1')) {
++            return
++        }
+         def excludePatterns = params.exclude ?: []
+
+         apply plugin: org.gradle.plugins.classycle.ClassyclePlugin
+diff --git a/gradle/dependencies.gradle b/gradle/dependencies.gradle
+index d7e9e35..c4c7962 100755
+--- a/gradle/dependencies.gradle
++++ b/gradle/dependencies.gradle
+@@ -73,7 +73,7 @@ libraries.jetty = dependencies.module("org.mortbay.jetty:jetty:6.1.26") {
+ }
+
+ libraries.commons_codec = "commons-codec:commons-codec:1.6@jar"
+-libraries.jcifs = "org.samba.jcifs:jcifs:1.3.17@jar"
++libraries.jcifs = "jcifs:jcifs:1.3.17@jar"
+ libraries.commons_httpclient = dependencies.module('org.apache.httpcomponents:httpclient:4.4.1') {
+     dependency "org.apache.httpcomponents:httpcore:4.4.4@jar"
+     dependency libraries.jcl_to_slf4j
+diff --git a/gradle/integTest.gradle b/gradle/integTest.gradle
+index adb8659..0f23927 100644
+--- a/gradle/integTest.gradle
++++ b/gradle/integTest.gradle
+@@ -31,7 +31,11 @@ ext.integTestTasks = tasks.withType(IntegrationTest)
+
+ integTestTasks.all { IntegrationTest task ->
+     group = "verification"
+-    testClassesDirs = sourceSets.integTest.output.classesDirs
++    if (rootProject.hasProperty('bootstrapWithGradle4_0_M1') || Boolean.getBoolean('bootstrapWithGradle4_0_M1')) {
++        testClassesDir = sourceSets.integTest.output.classesDir
++    } else {
++        testClassesDirs = sourceSets.integTest.output.classesDirs
++    }
+     classpath = sourceSets.integTest.runtimeClasspath
+ }
+
+diff --git a/gradle/performanceTest.gradle b/gradle/performanceTest.gradle
+index d7030a2..bca469e 100644
+--- a/gradle/performanceTest.gradle
++++ b/gradle/performanceTest.gradle
+@@ -122,7 +122,11 @@ ext.performanceTestTasks = tasks.withType(PerformanceTest)
+
+ performanceTestTasks.all { PerformanceTest task ->
+     withPerformanceDb(task)
+-    testClassesDirs = sourceSets.performanceTest.output.classesDirs
++    if (rootProject.hasProperty('bootstrapWithGradle4_0_M1') || Boolean.getBoolean('bootstrapWithGradle4_0_M1')) {
++        testClassesDir = sourceSets.performanceTest.output.classesDir
++    } else {
++        testClassesDirs = sourceSets.performanceTest.output.classesDirs
++    }
+     classpath = sourceSets.performanceTest.runtimeClasspath
+     dependsOn prepareSamples
+     requiresBinZip = true
+diff --git a/gradle/taskProperties.gradle b/gradle/taskProperties.gradle
+index 38d6003..7c4913b 100644
+--- a/gradle/taskProperties.gradle
++++ b/gradle/taskProperties.gradle
+@@ -1,4 +1,7 @@
+ afterEvaluate {
++    if (rootProject.hasProperty('bootstrapWithGradle4_0_M1') || Boolean.getBoolean('bootstrapWithGradle4_0_M1')) {
++        return
++    }
+     task validateTaskProperties(type: org.gradle.plugin.devel.tasks.ValidateTaskProperties) { validator ->
+         validator.dependsOn sourceSets.main.output
+         validator.classes = sourceSets.main.output.classesDirs
+diff --git a/subprojects/docs/docs.gradle b/subprojects/docs/docs.gradle
+index 7b3b521..63e1c79 100755
+--- a/subprojects/docs/docs.gradle
++++ b/subprojects/docs/docs.gradle
+@@ -14,8 +14,13 @@
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+-plugins {
+-    id 'org.asciidoctor.convert' version '1.5.3'
++buildscript {
++    repositories {
++        maven { url 'https://plugins.gradle.org/m2' }
++    }
++    dependencies {
++        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
++    }
+ }
+
+ import javax.xml.transform.TransformerFactory
+@@ -39,6 +44,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
+ import org.gradle.plugins.pegdown.PegDown
+
+ apply plugin: 'base'
++apply plugin: 'org.asciidoctor.convert'
+ apply plugin: 'pegdown'
+ apply plugin: 'jsoup'
+ apply plugin: 'javascript-base'
+@@ -189,7 +195,7 @@ task configureCss {
+             [it.name, it.bytes.encodeBase64().toString()]
+         }
+
+-        def fonts = configurations.fonts.resolvedConfiguration.resolvedArtifacts.collectEntries {
++        def fonts = (project.hasProperty('bootstrapWithGradle3_5_1') || Boolean.getBoolean('bootstrapWithGradle3_5_1')) ? [:] : configurations.fonts.resolvedConfiguration.resolvedArtifacts.collectEntries {
+             def id = it.moduleVersion.id
+             ["${id.group}-${id.name}".toString(), it.file.bytes.encodeBase64().toString()]
+         }
+@@ -460,9 +466,13 @@ task javadocAll(type: Javadoc) {
+
+ task checkstyleApi(type: Checkstyle) {
+     source javadocAll.source
+-    configFile = new File(checkstyle.configDir, "checkstyle-api.xml")
++    if (rootProject.hasProperty('bootstrapWithGradle4_0_M1') || Boolean.getBoolean('bootstrapWithGradle4_0_M1')) {
++        configFile = new File(rootProject.file("config/checkstyle"), "checkstyle-api.xml")
++    } else {
++        configFile = new File(checkstyle.configDir, "checkstyle-api.xml")
++    }
+     classpath = files()
+-    reports.xml.destination = file("$checkstyle.reportsDir/checkstyle-api.xml")
++    reports.xml.destination = rootProject.hasProperty('bootstrapWithGradle4_0_M1') || Boolean.getBoolean('bootstrapWithGradle4_0_M1') ? file("$buildDir/reports/checkstyle/checkstyle-api.xml") : file("$checkstyle.reportsDir/checkstyle-api.xml")
+ }
+
+ task userguideFragmentSrc(type: UserGuideTransformTask, dependsOn: [userguideStyleSheets]) {
+diff --git a/subprojects/smoke-test/smoke-test.gradle b/subprojects/smoke-test/smoke-test.gradle
+index eb246b1..a8738ae 100644
+--- a/subprojects/smoke-test/smoke-test.gradle
++++ b/subprojects/smoke-test/smoke-test.gradle
+@@ -30,7 +30,11 @@ processSmokeTestResources {
+ tasks.create('smokeTest', SmokeTest) { SmokeTest task ->
+     group = "Verification"
+     description = "Runs Smoke tests"
+-    testClassesDirs = sourceSets.smokeTest.output.classesDirs
++    if (rootProject.hasProperty('bootstrapWithGradle4_0_M1') || Boolean.getBoolean('bootstrapWithGradle4_0_M1')) {
++        testClassesDir = sourceSets.smokeTest.output.classesDir
++    } else {
++        testClassesDirs = sourceSets.smokeTest.output.classesDirs
++    }
+     classpath = sourceSets.smokeTest.runtimeClasspath
+ }
+
+diff --git a/subprojects/soak/soak.gradle b/subprojects/soak/soak.gradle
+index 451b721..9845750 100644
+--- a/subprojects/soak/soak.gradle
++++ b/subprojects/soak/soak.gradle
+@@ -13,7 +13,11 @@ tasks.matching { it.name in [ 'integTest', 'java9IntegTest'] }.all {
+ }
+
+ task('soakTest', type: org.gradle.testing.SoakTest) {
+-    testClassesDirs = sourceSets.integTest.output.classesDirs
++    if (rootProject.hasProperty('bootstrapWithGradle4_0_M1') || Boolean.getBoolean('bootstrapWithGradle4_0_M1')) {
++        testClassesDir = sourceSets.integTest.output.classesDir
++    } else {
++        testClassesDirs = sourceSets.integTest.output.classesDirs
++    }
+     classpath = sourceSets.integTest.runtimeClasspath
+     systemProperties['org.gradle.soaktest'] = 'true'
+     options {
+diff --git a/subprojects/wrapper/wrapper.gradle b/subprojects/wrapper/wrapper.gradle
+index 76ff8c1..7a43351 100644
+--- a/subprojects/wrapper/wrapper.gradle
++++ b/subprojects/wrapper/wrapper.gradle
+@@ -29,9 +29,11 @@ ext {
+     wrapperBuildReceipt = "build-receipt.properties"
+ }
+
+-normalization {
+-    runtimeClasspath {
+-        ignore wrapperBuildReceipt
++if (!rootProject.hasProperty('bootstrapWithGradle4_0_M1') && !Boolean.getBoolean('bootstrapWithGradle4_0_M1')) {
++    normalization {
++        runtimeClasspath {
++            ignore wrapperBuildReceipt
++        }
+     }
+ }
