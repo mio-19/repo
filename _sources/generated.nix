@@ -232,17 +232,17 @@
   };
   google_gallery = {
     pname = "google_gallery";
-    version = "b4e332e8ecbd3e26cd0f8f33aa92cd540fa1d18b";
+    version = "2f7d6ad1e02db5cb2f18856632d6c2c5a42bfc6c";
     src = fetchgit {
       url = "https://github.com/google-ai-edge/gallery.git";
-      rev = "b4e332e8ecbd3e26cd0f8f33aa92cd540fa1d18b";
+      rev = "2f7d6ad1e02db5cb2f18856632d6c2c5a42bfc6c";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-IFQ8cTK5++fsHO1yKqCmd+e0+ZxY0+PlmnHZ5oSo2V4=";
+      sha256 = "sha256-2FJj3VVoNs5II1mdSWcpRw8rNEMmfkOK6I+r2ecZ054=";
     };
-    date = "2026-04-16";
+    date = "2026-04-17";
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
@@ -428,17 +428,17 @@
   };
   lineage_exactcalculator = {
     pname = "lineage_exactcalculator";
-    version = "019027c96d58e4afa267cdef2849b6f3e5696485";
+    version = "d42422531caf2b5b553aba50061eba5f650c6973";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_ExactCalculator.git";
-      rev = "019027c96d58e4afa267cdef2849b6f3e5696485";
+      rev = "d42422531caf2b5b553aba50061eba5f650c6973";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-VvUHk3xYY8hMvO7/6Mk6C2nKocBJ6z7/br46rQYRSgQ=";
+      sha256 = "sha256-BkZYU6+RLACcmFtymA/H2GQ1+WgOL4/DksVP6Fu94rw=";
     };
-    date = "2026-04-09";
+    date = "2026-04-16";
   };
   lineage_external_drm_hwcomposer_upstream = {
     pname = "lineage_external_drm_hwcomposer_upstream";
