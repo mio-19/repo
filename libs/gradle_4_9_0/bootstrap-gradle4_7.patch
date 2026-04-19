@@ -1,0 +1,3364 @@
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 2b81d7e7..758069a6 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -44,107 +44,26 @@ defaultTasks("assemble")
+ 
+ base.archivesBaseName = "gradle"
+ 
+-buildTypes {
+-    create("sanityCheck") {
+-        tasks(
+-            "classes", "doc:checkstyleApi", "codeQuality",
+-            "docs:check", "distribution:checkBinaryCompatibility", "javadocAll")
+-        projectProperties("ignoreIncomingBuildReceipt" to true)
+-    }
+-
+-    // Used by the first phase of the build pipeline, running only last version on multiversion - tests
+-    create("quickTest") {
+-        tasks("test", "integTest", "crossVersionTest")
+-    }
+-
+-    // Used for builds to run all tests, but not necessarily on all platforms
+-    create("fullTest") {
+-        tasks("test", "forkingIntegTest", "forkingCrossVersionTest")
+-        projectProperties("testAllVersions" to true)
+-    }
+-
+-    // Used for builds to test the code on certain platforms
+-    create("platformTest") {
+-        tasks("test", "forkingIntegTest", "forkingCrossVersionTest")
+-        projectProperties(
+-            "testAllVersions" to true,
+-            "testAllPlatforms" to true
+-        )
+-    }
+-
+-    // Tests not using the daemon mode
+-    create("noDaemonTest") {
+-        tasks("noDaemonIntegTest")
+-        projectProperties("useAllDistribution" to true)
+-    }
+-
+-    // Run the integration tests using the parallel executer
+-    create("parallelTest") {
+-        tasks("parallelIntegTest")
+-    }
+-
+-    create("performanceTests") {
+-        tasks("performance:performanceTest")
+-    }
+-
+-    create("performanceExperiments") {
+-        tasks("performance:performanceExperiments")
+-    }
+-
+-    create("fullPerformanceTests") {
+-        tasks("performance:fullPerformanceTest")
+-    }
+-
+-    create("distributedPerformanceTests") {
+-        tasks("performance:distributedPerformanceTest")
+-    }
+-
+-    create("distributedPerformanceExperiments") {
+-        tasks("performance:distributedPerformanceExperiment")
+-    }
+-
+-    create("distributedFullPerformanceTests") {
+-        tasks("performance:distributedFullPerformanceTest")
+-    }
+-
+-    // Used for cross version tests on CI
+-    create("allVersionsCrossVersionTest") {
+-        tasks("allVersionsCrossVersionTests")
+-    }
+-
+-    create("quickFeedbackCrossVersionTest") {
+-        tasks("quickFeedbackCrossVersionTests")
+-    }
+-
+-    // Used to build production distros and smoke test them
+-    create("packageBuild") {
+-        tasks(
+-            "verifyIsProductionBuildEnvironment", "clean", "buildDists",
+-            "distributions:integTest")
+-    }
+-
+-    // Used to build production distros and smoke test them
+-    create("promotionBuild") {
+-        tasks(
+-            "verifyIsProductionBuildEnvironment", "clean", "docs:check",
+-            "buildDists", "distributions:integTest", "uploadArchives")
+-    }
+-
+-    create("soakTest") {
+-        tasks("soak:soakTest")
+-        projectProperties("testAllVersions" to true)
+-    }
+-}
++// CI build type tasks are not needed for the bootstrap distribution build.
+ 
+ allprojects {
+     group = "org.gradle"
+ 
+     repositories {
++        mavenCentral()
+         maven(url = "https://repo.gradle.org/gradle/libs-releases")
+         maven(url = "https://repo.gradle.org/gradle/libs-milestones")
+         maven(url = "https://repo.gradle.org/gradle/libs-snapshots")
+     }
+ 
++    configurations.all {
++        resolutionStrategy.force("org.apache.ivy:ivy:2.2.0")
++        resolutionStrategy.force("xml-apis:xml-apis:1.4.01")
++        resolutionStrategy.force("org.yaml:snakeyaml:1.6")
++        resolutionStrategy.force("org.testng:testng:6.3.1")
++        exclude(mapOf("group" to "org.sonatype.sisu", "module" to "sisu-inject-plexus"))
++    }
++
+     // patchExternalModules lives in the root project - we need to activate normalization there, too.
+     normalization {
+         runtimeClasspath {
+@@ -155,7 +74,7 @@ allprojects {
+ 
+ apply(plugin = "gradlebuild.cleanup")
+ apply(plugin = "gradlebuild.available-java-installations")
+-apply(plugin = "gradlebuild.buildscan")
++// Build scan metadata is not needed for the bootstrap distribution build.
+ apply(from = "gradle/versioning.gradle")
+ apply(from = "gradle/dependencies.gradle")
+ apply(plugin = "gradlebuild.minify")
+@@ -176,11 +95,9 @@ subprojects {
+         apply(plugin = "gradlebuild.dependencies-metadata-rules")
+     }
+ 
+-    if (project in publishedProjects) {
+-        apply(plugin = "gradlebuild.publish-public-libraries")
+-    }
++    // Publishing configuration is not needed for the bootstrap distribution build.
+ 
+-    apply(from = "$rootDir/gradle/shared-with-buildSrc/code-quality-configuration.gradle.kts")
++    // Code quality tasks are not needed for the bootstrap distribution build.
+     apply(plugin = "gradlebuild.task-properties-validation")
+     apply(plugin = "gradlebuild.test-files-cleanup")
+ }
+diff --git a/buildSrc/build.gradle.kts b/buildSrc/build.gradle.kts
+index 9ff4ec11..67ec8ae0 100644
+--- a/buildSrc/build.gradle.kts
++++ b/buildSrc/build.gradle.kts
+@@ -81,6 +81,17 @@ allprojects {
+         maven(url = "https://repo.gradle.org/gradle/libs-releases")
+         maven(url = "https://repo.gradle.org/gradle/libs-snapshots")
+         gradlePluginPortal()
++        maven(url = "https://repo.maven.apache.org/maven2")
++    }
++    tasks.matching { it.name.startsWith("ktlint") }.all {
++        enabled = false
++    }
++    if (System.getProperty("bootstrapWithGradle4_7_0") == "true") {
++        tasks.matching {
++            it.name == "test" || it.name.startsWith("compileTest") || it.name.startsWith("processTest")
++        }.all {
++            enabled = false
++        }
+     }
+ }
+ 
+@@ -92,7 +103,8 @@ dependencies {
+ 
+ // TODO Avoid duplication of what defines a CI Server with BuildEnvironment
+ val isCiServer: Boolean by extra { "CI" in System.getenv() }
+-if (!isCiServer || System.getProperty("enableCodeQuality")?.toLowerCase() == "true") {
++val isBootstrapWithGradle4_7_0 = System.getProperty("bootstrapWithGradle4_7_0") == "true"
++if (!isBootstrapWithGradle4_7_0 && (!isCiServer || System.getProperty("enableCodeQuality")?.toLowerCase() == "true")) {
+     apply { from("../gradle/shared-with-buildSrc/code-quality-configuration.gradle.kts") }
+ }
+ 
+diff --git a/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/AddVerifyProductionEnvironmentTaskPlugin.kt b/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/AddVerifyProductionEnvironmentTaskPlugin.kt
+index 492d2a40..0b7a2b31 100644
+--- a/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/AddVerifyProductionEnvironmentTaskPlugin.kt
++++ b/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/AddVerifyProductionEnvironmentTaskPlugin.kt
+@@ -1,23 +1,6 @@
+ package org.gradle.gradlebuild.buildquality
+ 
+-import availableJavaInstallations
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+-import java.nio.charset.Charset
+ 
+-
+-open class AddVerifyProductionEnvironmentTaskPlugin : Plugin<Project> {
+-    override fun apply(project: Project): Unit = project.run {
+-        tasks.register("verifyIsProductionBuildEnvironment") {
+-            doLast {
+-                rootProject.availableJavaInstallations {
+-                    validateProductionEnvironment()
+-                }
+-                val systemCharset = Charset.defaultCharset().name()
+-                assert(systemCharset == "UTF-8") {
+-                    "Platform encoding must be UTF-8. Is currently $systemCharset. Set -Dfile.encoding=UTF-8"
+-                }
+-            }
+-        }
+-    }
+-}
++class AddVerifyProductionEnvironmentTaskPlugin : Plugin<Project> { override fun apply(project: Project) = Unit }
+diff --git a/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/TaskPropertyValidationPlugin.kt b/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/TaskPropertyValidationPlugin.kt
+index 645c69d3..6d5adf8c 100644
+--- a/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/TaskPropertyValidationPlugin.kt
++++ b/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/TaskPropertyValidationPlugin.kt
+@@ -1,95 +1,6 @@
+-/*
+- * Copyright 2018 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+ package org.gradle.gradlebuild.buildquality
+ 
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+-import org.gradle.api.artifacts.Configuration
+-import org.gradle.api.artifacts.ProjectDependency
+-import org.gradle.api.plugins.JavaBasePlugin
+-import org.gradle.api.plugins.JavaLibraryPlugin
+-import org.gradle.api.tasks.testing.Test
+-import org.gradle.plugin.devel.tasks.ValidateTaskProperties
+ 
+-import accessors.java
+-import accessors.reporting
+-
+-import org.gradle.kotlin.dsl.*
+-
+-
+-private
+-const val validateTaskName = "validateTaskProperties"
+-
+-
+-private
+-const val reportFileName = "task-properties/report.txt"
+-
+-
+-open class TaskPropertyValidationPlugin : Plugin<Project> {
+-
+-    override fun apply(project: Project): Unit = project.run {
+-        plugins.withType<JavaBasePlugin> {
+-            validateTaskPropertiesForConfiguration(configurations["compile"])
+-        }
+-
+-        plugins.withType<JavaLibraryPlugin> {
+-            validateTaskPropertiesForConfiguration(configurations["api"])
+-        }
+-    }
+-}
+-
+-
+-private
+-fun Project.validateTaskPropertiesForConfiguration(configuration: Configuration) =
+-    project(":core").let { coreProject ->
+-        // Apply to all projects depending on :core
+-        // TODO Add a comment on why those projects.
+-        when (this) {
+-            coreProject -> addValidateTask()
+-            else -> {
+-                configuration.dependencies.withType<ProjectDependency>()
+-                    .matching { it.dependencyProject == coreProject }
+-                    .all {
+-                        addValidateTask()
+-                    }
+-            }
+-        }
+-    }
+-
+-
+-private
+-fun Project.addValidateTask() =
+-    afterEvaluate {
+-        // This block gets called twice for the core project as core applies the base as well as the library plugin. That is why we need to check
+-        // whether the task already exists.
+-        if (tasks.findByName(validateTaskName) == null) {
+-            val validateTask = tasks.register(validateTaskName, ValidateTaskProperties::class.java) {
+-                val main by java.sourceSets
+-                dependsOn(main.output)
+-                classes = main.output.classesDirs
+-                classpath = main.runtimeClasspath
+-                // TODO Should we provide a more intuitive way in the task definition to configure this property from Kotlin?
+-                outputFile.set(reporting.baseDirectory.file(reportFileName))
+-                failOnWarning = true
+-            }
+-            tasks.named("codeQuality").configure {
+-                dependsOn(validateTask)
+-            }
+-            tasks.withType(Test::class.java).configureEach {
+-                shouldRunAfter(validateTask)
+-            }
+-        }
+-    }
++class TaskPropertyValidationPlugin : Plugin<Project> { override fun apply(project: Project) = Unit }
+diff --git a/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/classycle/Classycle.kt b/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/classycle/Classycle.kt
+index e3d874a5..44c44cc5 100644
+--- a/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/classycle/Classycle.kt
++++ b/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/classycle/Classycle.kt
+@@ -1,134 +1,13 @@
+-/*
+- * Copyright 2016 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+ package org.gradle.gradlebuild.buildquality.classycle
+ 
+ import org.gradle.api.DefaultTask
+-import org.gradle.api.file.FileCollection
+-import org.gradle.api.file.RegularFile
+-import org.gradle.api.internal.project.IsolatedAntBuilder
+-import org.gradle.api.internal.project.antbuilder.AntBuilderDelegate
+-import org.gradle.api.provider.Provider
+-import org.gradle.api.tasks.CacheableTask
+-import org.gradle.api.tasks.Input
+-import org.gradle.api.tasks.InputFile
+-import org.gradle.api.tasks.InputFiles
+-import org.gradle.api.tasks.Internal
+ import org.gradle.api.tasks.OutputFile
+-import org.gradle.api.tasks.PathSensitive
+-import org.gradle.api.tasks.PathSensitivity
+-import org.gradle.api.tasks.SkipWhenEmpty
+-import org.gradle.api.tasks.TaskAction
+-
+-import org.gradle.kotlin.dsl.*
+ 
+ import java.io.File
+-import java.net.URI
+-import javax.inject.Inject
+-
+-
+-@CacheableTask
+-open class Classycle @Inject constructor(
+-    @get:Internal val classesDirs: FileCollection,
+-    @get:Input val excludePatterns: Provider<List<String>>,
+-    @get:Input val reportName: String,
+-    @get:Internal val reportDir: File,
+-    @get:InputFile @get:PathSensitive(PathSensitivity.NONE) val reportResourcesZip: Provider<RegularFile>
+-) : DefaultTask() {
+ 
+-    @get:InputFiles
+-    @get:SkipWhenEmpty
+-    @get:PathSensitive(PathSensitivity.RELATIVE)
+-    val existingClassesDir: FileCollection
+-        get() = classesDirs.filter(File::exists)
+ 
++open class Classycle : DefaultTask() {
+     @get:OutputFile
+     val reportFile
+-        get() = File(reportDir, "$reportName.txt")
+-
+-    private
+-    val analysisFile: File
+-        get() = File(reportDir, "${reportName}_analysis.xml")
+-
+-    @get:Inject
+-    protected
+-    open val antBuilder: IsolatedAntBuilder
+-        get() = throw UnsupportedOperationException()
+-
+-    @TaskAction
+-    fun generate() = project.run {
+-        val classesDirs = existingClassesDir
+-        val classpath = configurations[classycleBaseName].files
+-        reportFile.parentFile.mkdirs()
+-        antBuilder.withClasspath(classpath).execute(closureOf<AntBuilderDelegate> {
+-            ant.withGroovyBuilder {
+-                "taskdef"(
+-                    "name" to "classycleDependencyCheck",
+-                    "classname" to "classycle.ant.DependencyCheckingTask")
+-                "taskdef"(
+-                    "name" to "classycleReport",
+-                    "classname" to "classycle.ant.ReportTask")
+-                try {
+-                    "classycleDependencyCheck"(
+-                        mapOf(
+-                            "reportFile" to reportFile,
+-                            "failOnUnwantedDependencies" to true,
+-                            "mergeInnerClasses" to true),
+-                        """
+-                            show allResults
+-                            check absenceOfPackageCycles > 1 in org.gradle.*
+-                        """) {
+-
+-                        withFilesetOf(classesDirs, excludePatterns.get())
+-                    }
+-                } catch (ex: Exception) {
+-                    try {
+-                        "unzip"(
+-                            "src" to reportResourcesZip.get().asFile,
+-                            "dest" to reportDir)
+-                        "classycleReport"(
+-                            "reportFile" to analysisFile,
+-                            "reportType" to "xml",
+-                            "mergeInnerClasses" to true,
+-                            "title" to "$name $reportName ($path)") {
+-
+-                            withFilesetOf(classesDirs, excludePatterns.get())
+-                        }
+-                    } catch (ex: Exception) {
+-                        ex.printStackTrace()
+-                    }
+-                    throw RuntimeException("Classycle check failed: $ex.message. " +
+-                        "See failure report at ${clickableUrl(reportFile)} and analysis report at ${clickableUrl(analysisFile)}", ex)
+-                }
+-            }
+-        })
+-    }
++        get() = File(temporaryDir, "classycle.txt")
+ }
+-
+-
+-private
+-fun GroovyBuilderScope.withFilesetOf(classesDirs: FileCollection, excludePatterns: List<String>) =
+-    classesDirs.forEach { classesDir ->
+-        "fileset"("dir" to classesDir) {
+-            excludePatterns.forEach { excludePattern ->
+-                "exclude"("name" to excludePattern)
+-            }
+-        }
+-    }
+-
+-
+-private
+-fun clickableUrl(file: File) =
+-    URI("file", "", file.toURI().path, null, null).toString()
+diff --git a/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/classycle/ClassycleExtension.kt b/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/classycle/ClassycleExtension.kt
+index 1550430b..3699803d 100644
+--- a/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/classycle/ClassycleExtension.kt
++++ b/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/classycle/ClassycleExtension.kt
+@@ -1,32 +1,9 @@
+-/*
+- * Copyright 2016 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+ package org.gradle.gradlebuild.buildquality.classycle
+ 
+-import org.gradle.api.Project
+-import org.gradle.api.file.RegularFileProperty
+-import org.gradle.api.provider.ListProperty
++import java.io.File
+ 
+-import org.gradle.kotlin.dsl.*
+-
+-
+-open class ClassycleExtension(project: Project) {
+-
+-    val excludePatterns: ListProperty<String> = project.objects.listProperty()
+-
+-    val reportResourcesZip: RegularFileProperty = project.layout.fileProperty().also {
+-        it.set(project.rootProject.file("config/classycle_report_resources.zip"))
+-    }
++open class ClassycleExtension {
++    var excludePatterns: List<String> = emptyList()
++    var reportResourcesZip: File? = null
++    var classycleBaseName: String = ""
+ }
+diff --git a/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/classycle/ClassyclePlugin.kt b/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/classycle/ClassyclePlugin.kt
+index e1ad8e4f..3bd4c429 100644
+--- a/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/classycle/ClassyclePlugin.kt
++++ b/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/classycle/ClassyclePlugin.kt
+@@ -1,56 +1,10 @@
+-/*
+- * Copyright 2016 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+ package org.gradle.gradlebuild.buildquality.classycle
+ 
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+ 
+-import org.gradle.kotlin.dsl.*
+-
+-import accessors.java
+-import accessors.reporting
+-
+-
+-internal
+-val classycleBaseName = "classycle"
+-
+-
+-@Suppress("unused")
+-// TODO move into buildquality
+-open class ClassyclePlugin : Plugin<Project> {
+-
+-    override fun apply(project: Project): Unit = project.run {
+-        val extension = extensions.create<ClassycleExtension>(classycleBaseName, project)
+-        configurations.create(classycleBaseName)
+-        dependencies.add(classycleBaseName, "classycle:classycle:1.4@jar")
+-        val classycle = tasks.register("classycle")
+-        java.sourceSets.all {
+-            val taskName = getTaskName("classycle", null)
+-            val sourceSetTask = project.tasks.register(
+-                taskName,
+-                Classycle::class.java,
+-                output.classesDirs,
+-                extension.excludePatterns,
+-                name,
+-                reporting.file("classycle"),
+-                extension.reportResourcesZip
+-            )
+-        classycle.configure { dependsOn(sourceSetTask) }
+-        tasks.named("check").configure { dependsOn(sourceSetTask) }
+-        tasks.named("codeQuality").configure { dependsOn(sourceSetTask) }
+-        }
++class ClassyclePlugin : Plugin<Project> {
++    override fun apply(project: Project) {
++        project.extensions.create("classycle", ClassycleExtension::class.java)
+     }
+ }
+diff --git a/buildSrc/subprojects/cleanup/src/main/kotlin/org/gradle/gradlebuild/testing/integrationtests/cleanup/CleanupPlugin.kt b/buildSrc/subprojects/cleanup/src/main/kotlin/org/gradle/gradlebuild/testing/integrationtests/cleanup/CleanupPlugin.kt
+index 4a3eb156..1b12b1b6 100644
+--- a/buildSrc/subprojects/cleanup/src/main/kotlin/org/gradle/gradlebuild/testing/integrationtests/cleanup/CleanupPlugin.kt
++++ b/buildSrc/subprojects/cleanup/src/main/kotlin/org/gradle/gradlebuild/testing/integrationtests/cleanup/CleanupPlugin.kt
+@@ -24,12 +24,12 @@ import org.gradle.kotlin.dsl.*
+ class CleanupPlugin : Plugin<Project> {
+ 
+     override fun apply(project: Project): Unit = project.run {
+-        tasks.register("cleanUpCaches", CleanUpCaches::class.java) {
++        tasks.create("cleanUpCaches", CleanUpCaches::class.java) {
+             dependsOn(":createBuildReceipt")
+         }
+-        tasks.register("cleanUpDaemons", CleanUpDaemons::class.java)
++        tasks.create("cleanUpDaemons", CleanUpDaemons::class.java)
+ 
+-        val killExistingProcessesStartedByGradle = tasks.register("killExistingProcessesStartedByGradle", KillLeakingJavaProcesses::class.java)
++        val killExistingProcessesStartedByGradle = tasks.create("killExistingProcessesStartedByGradle", KillLeakingJavaProcesses::class.java)
+ 
+         if (BuildEnvironment.isCiServer) {
+             tasks {
+@@ -37,7 +37,7 @@ class CleanupPlugin : Plugin<Project> {
+                     dependsOn(killExistingProcessesStartedByGradle)
+                 }
+                 subprojects {
+-                    this.tasks.configureEach {
++                    this.tasks.all {
+                         mustRunAfter(killExistingProcessesStartedByGradle)
+                     }
+                 }
+diff --git a/buildSrc/subprojects/cleanup/src/main/kotlin/org/gradle/gradlebuild/testing/integrationtests/cleanup/TestFilesCleanUpPlugin.kt b/buildSrc/subprojects/cleanup/src/main/kotlin/org/gradle/gradlebuild/testing/integrationtests/cleanup/TestFilesCleanUpPlugin.kt
+index 4c0d6136..9c30b6e4 100644
+--- a/buildSrc/subprojects/cleanup/src/main/kotlin/org/gradle/gradlebuild/testing/integrationtests/cleanup/TestFilesCleanUpPlugin.kt
++++ b/buildSrc/subprojects/cleanup/src/main/kotlin/org/gradle/gradlebuild/testing/integrationtests/cleanup/TestFilesCleanUpPlugin.kt
+@@ -18,7 +18,7 @@ package org.gradle.gradlebuild.testing.integrationtests.cleanup
+ 
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+-import org.gradle.kotlin.dsl.create
++import org.gradle.kotlin.dsl.*
+ 
+ 
+ /**
+@@ -30,7 +30,7 @@ open class TestFilesCleanUpPlugin : Plugin<Project> {
+         val testFilesCleanup = extensions.create<TestFileCleanUpExtension>("testFilesCleanup", objects)
+         testFilesCleanup.policy.set(WhenNotEmpty.FAIL)
+ 
+-        tasks.register("verifyTestFilesCleanup", EmptyDirectoryCheck::class.java) {
++        tasks.create("verifyTestFilesCleanup", EmptyDirectoryCheck::class.java) {
+             targetDirectory.set(layout.buildDirectory.dir("tmp/test files"))
+             reportFile.set(layout.buildDirectory.file("reports/remains.txt"))
+             policy.set(testFilesCleanup.policy)
+diff --git a/buildSrc/subprojects/configuration/src/main/kotlin/org/gradle/gradlebuild/dependencies/DependenciesMetadataRulesPlugin.kt b/buildSrc/subprojects/configuration/src/main/kotlin/org/gradle/gradlebuild/dependencies/DependenciesMetadataRulesPlugin.kt
+index 53f72ada..362cf51a 100644
+--- a/buildSrc/subprojects/configuration/src/main/kotlin/org/gradle/gradlebuild/dependencies/DependenciesMetadataRulesPlugin.kt
++++ b/buildSrc/subprojects/configuration/src/main/kotlin/org/gradle/gradlebuild/dependencies/DependenciesMetadataRulesPlugin.kt
+@@ -15,256 +15,12 @@
+  */
+ package org.gradle.gradlebuild.dependencies
+ 
+-import com.google.gson.Gson
+-import com.google.gson.reflect.TypeToken
+-import com.google.gson.stream.JsonReader
+-import library
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+-import org.gradle.api.artifacts.ComponentMetadataContext
+-import org.gradle.api.artifacts.ComponentMetadataRule
+-import org.gradle.api.artifacts.ConfigurationContainer
+-import org.gradle.api.artifacts.dsl.ComponentMetadataHandler
+-import org.gradle.kotlin.dsl.dependencies
+-import java.io.File
+-import javax.inject.Inject
+-import kotlin.reflect.KClass
+-
+ 
+ open class DependenciesMetadataRulesPlugin : Plugin<Project> {
+-    override fun apply(project: Project): Unit = project.run {
+-        dependencies {
+-            components {
+-                // Gradle distribution - minify: remove unused transitive dependencies
+-                withModule(library("maven3"), MavenDependencyCleaningRule::class.java)
+-                withLibraryDependencies(library("awsS3_core"), DependencyRemovalByNameRule::class, setOf("jackson-dataformat-cbor"))
+-                withLibraryDependencies(library("jgit"), DependencyRemovalByGroupRule::class, setOf("com.googlecode.javaewah"))
+-                withLibraryDependencies(library("maven3_wagon_http_shared4"), DependencyRemovalByGroupRule::class, setOf("org.jsoup"))
+-                withLibraryDependencies(library("aether_connector"), DependencyRemovalByGroupRule::class, setOf("org.sonatype.sisu"))
+-                withLibraryDependencies(library("maven3_compat"), DependencyRemovalByGroupRule::class, setOf("org.sonatype.sisu"))
+-                withLibraryDependencies(library("maven3_plugin_api"), DependencyRemovalByGroupRule::class, setOf("org.sonatype.sisu"))
+-
+-                // Read capabilities declared in capabilities.json
+-                readCapabilitiesFromJson()
+-
+-                withModule("org.spockframework:spock-core", ReplaceCglibNodepWithCglibRule::class.java)
+-                withModule("org.jmock:jmock-legacy", ReplaceCglibNodepWithCglibRule::class.java)
+-
+-                //TODO check if we can upgrade the following dependencies and remove the rules
+-                withModule("org.codehaus.groovy:groovy-all", DowngradeIvyRule::class.java)
+-                withModule("org.codehaus.groovy:groovy-all", DowngradeTestNGRule::class.java)
+-
+-                withModule("jaxen:jaxen", DowngradeXmlApisRule::class.java)
+-                withModule("jdom:jdom", DowngradeXmlApisRule::class.java)
+-                withModule("xalan:xalan", DowngradeXmlApisRule::class.java)
+-                withModule("jaxen:jaxen", DowngradeXmlApisRule::class.java)
+-
+-                // Test dependencies - minify: remove unused transitive dependencies
+-                withLibraryDependencies("org.littleshoot:littleproxy", DependencyRemovalByNameRule::class,
+-                    setOf("barchart-udt-bundle", "guava", "commons-cli"))
+-            }
+-        }
+-    }
+-
+-    private
+-    fun Project.readCapabilitiesFromJson() {
+-        val capabilitiesFile = gradle.rootProject.file("gradle/dependency-management/capabilities.json")
+-        if (capabilitiesFile.exists()) {
+-            readCapabilities(capabilitiesFile).forEach {
+-                it.configure(dependencies.components, configurations)
+-            }
+-        }
+-    }
+-
+-    private
+-    fun readCapabilities(source: File): List<CapabilitySpec> {
+-        val gson = Gson()
+-        val reader = JsonReader(source.reader(Charsets.UTF_8))
+-        try {
+-            reader.isLenient = true
+-            return gson.fromJson<List<CapabilitySpec>>(reader)
+-        } finally {
+-            reader.close()
+-        }
+-    }
+-}
+-
+-
+-inline
+-fun <reified T> Gson.fromJson(json: JsonReader) = this.fromJson<T>(json, object : TypeToken<T>() {}.type)
+-
+-
+-open class CapabilityRule @Inject constructor(
+-    val name: String,
+-    val version: String
+-) : ComponentMetadataRule {
+-    override fun execute(context: ComponentMetadataContext) {
+-        context.details.allVariants {
+-            withCapabilities {
+-                addCapability("org.gradle.internal.capability", name, version)
+-            }
+-        }
+-    }
+-}
+-
+-
+-class CapabilitySpec {
+-    lateinit var name: String
+-    lateinit var providedBy: List<String>
+-    lateinit var selected: String
+-    var upgrade: String? = null
+-
+-    internal
+-    fun configure(components: ComponentMetadataHandler, configurations: ConfigurationContainer) {
+-        if (upgrade != null) {
+-            configurations.forceUpgrade(selected, upgrade!!)
+-        } else {
+-            providedBy.forEachIndexed { idx, provider ->
+-                if (provider != selected) {
+-                    components.declareSyntheticCapability(provider, idx.toString())
+-                }
+-            }
+-            components.declareCapabilityPreference(selected)
+-        }
+-    }
+-
+-    private
+-    fun ComponentMetadataHandler.declareSyntheticCapability(provider: String, version: String) {
+-        withModule(provider, CapabilityRule::class.java, {
+-            params(name)
+-            params(version)
+-        })
+-    }
+-
+-    private
+-    fun ComponentMetadataHandler.declareCapabilityPreference(module: String) {
+-        withModule(module, CapabilityRule::class.java, {
+-            params(name)
+-            params("${providedBy.size + 1}")
+-        })
+-    }
+-
+-    /**
+-     * For all modules providing a capability, always use the preferred module, even if there's no conflict.
+-     * In other words, will forcefully upgrade all modules providing a capability to a selected module.
+-     *
+-     * @param to the preferred module
+-     */
+-    private
+-    fun ConfigurationContainer.forceUpgrade(to: String, version: String) = all {
+-        resolutionStrategy.dependencySubstitution {
+-            providedBy.forEach { source ->
+-                substitute(module(source))
+-                    .because("Forceful upgrade of capability $name")
+-                    .with(module("$to:$version"))
+-            }
+-        }
+-    }
+-}
+-
+-
+-open class DependencyRemovalByNameRule @Inject constructor(
+-    val moduleToRemove: Set<String>
+-) : ComponentMetadataRule {
+-    override fun execute(context: ComponentMetadataContext) {
+-        context.details.allVariants {
+-            withDependencies {
+-                removeAll { moduleToRemove.contains(it.name) }
+-            }
+-        }
+-    }
+-}
+-
+-
+-open class DependencyRemovalByGroupRule @Inject constructor(
+-    val groupsToRemove: Set<String>
+-) : ComponentMetadataRule {
+-    override fun execute(context: ComponentMetadataContext) {
+-        context.details.allVariants {
+-            withDependencies {
+-                removeAll { groupsToRemove.contains(it.group) }
+-            }
+-        }
+-    }
+-}
+-
+-
+-open class MavenDependencyCleaningRule : ComponentMetadataRule {
+-    override fun execute(context: ComponentMetadataContext) {
+-        context.details.allVariants {
+-            withDependencies {
+-                removeAll {
+-                    it.name != "maven-settings-builder" &&
+-                        it.name != "maven-model" &&
+-                        it.name != "maven-model-builder" &&
+-                        it.name != "maven-artifact" &&
+-                        it.name != "maven-aether-provider" &&
+-                        it.group != "org.sonatype.aether"
+-                }
+-            }
+-        }
+-    }
+-}
+-
+-
+-fun ComponentMetadataHandler.withLibraryDependencies(module: String, kClass: KClass<out ComponentMetadataRule>, modulesToRemove: Set<String>) {
+-    withModule(module, kClass.java, {
+-        params(modulesToRemove)
+-    })
+-}
+-
+-
+-open class DowngradeIvyRule : ComponentMetadataRule {
+-    override fun execute(context: ComponentMetadataContext) {
+-        context.details.allVariants {
+-            withDependencyConstraints {
+-                filter { it.group == "org.apache.ivy" }.forEach {
+-                    it.version { prefer("2.2.0") }
+-                    it.because("Gradle depends on ivy implementation details which changed with newer versions")
+-                }
+-            }
+-        }
+-    }
+-}
+-
+-
+-open class DowngradeTestNGRule : ComponentMetadataRule {
+-    override fun execute(context: ComponentMetadataContext) {
+-        context.details.allVariants {
+-            withDependencyConstraints {
+-                filter { it.group == "org.testng" }.forEach {
+-                    it.version { prefer("6.3.1") }
+-                    it.because("6.3.1 is required by Gradle and part of the distribution")
+-                }
+-            }
+-        }
+-    }
+-}
+-
+-
+-open class DowngradeXmlApisRule : ComponentMetadataRule {
+-    override fun execute(context: ComponentMetadataContext) {
+-        context.details.allVariants {
+-            withDependencies {
+-                filter { it.group == "xml-apis" }.forEach {
+-                    it.version { prefer("1.4.01") }
+-                    it.because("Gradle has trouble with the versioning scheme and pom redirects in higher versions")
+-                }
+-            }
+-        }
+-    }
+-}
+-
+-
+-open class ReplaceCglibNodepWithCglibRule : ComponentMetadataRule {
+-    override fun execute(context: ComponentMetadataContext) {
+-        context.details.allVariants {
+-            withDependencies {
+-                filter { it.name == "cglib-nodep" }.forEach {
+-                    add("${it.group}:cglib:3.2.6")
+-                }
+-                removeAll { it.name == "cglib-nodep" }
+-            }
+-        }
++    override fun apply(project: Project) {
++        // Component metadata rules used by Gradle 4.9 require APIs newer than the
++        // Gradle 4.7 bootstrap runner. They are not needed to assemble binZip.
+     }
+ }
+diff --git a/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/fixtures/IntTestImagePlugin.kt b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/fixtures/IntTestImagePlugin.kt
+index 279eb2d6..52c365c4 100644
+--- a/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/fixtures/IntTestImagePlugin.kt
++++ b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/fixtures/IntTestImagePlugin.kt
+@@ -1,128 +1,9 @@
+-/*
+- * Copyright 2017 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+ package org.gradle.gradlebuild.test.fixtures
+ 
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+-import org.gradle.api.attributes.Usage
+-import org.gradle.api.file.FileCollection
+-import org.gradle.api.tasks.Sync
+-import org.gradle.api.tasks.bundling.Zip
+-import org.gradle.gradlebuild.test.integrationtests.DistributionTest
+-import org.gradle.kotlin.dsl.*
+-import useAllDistribution
+-import java.util.concurrent.Callable
+ 
+-
+-/**
+- * Test Fixtures Plugin.
+- *
+- * Configures the Project as a test fixtures producer if `src/testFixtures` is a directory:
+- * - adds a new `testFixtures` source set which should contain utilities/fixtures to assist in unit testing
+- *   classes from the main source set,
+- * - the test fixtures are automatically made available to the test classpath.
+- *
+- * Configures the Project as a test fixtures consumer according to the `testFixtures` extension configuration.
+- */
+ @Suppress("unused")
+ open class IntTestImagePlugin : Plugin<Project> {
+-
+-    override fun apply(project: Project): Unit = project.run {
+-        val intTestImage = tasks.register("intTestImage", Sync::class.java) {
+-            group = "Verification"
+-            into(file("$buildDir/integ test"))
+-        }
+-
+-        tasks.withType<DistributionTest>().configureEach {
+-            dependsOn(intTestImage)
+-        }
+-
+-        val partialDistribution by configurations.creating {
+-            attributes {
+-                attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage::class.java, Usage.JAVA_RUNTIME))
+-            }
+-            isCanBeResolved = true
+-            isCanBeConsumed = false
+-        }
+-
+-        if (useAllDistribution) {
+-            val unpackedPath = layout.buildDirectory.dir("tmp/unpacked-all-distribution")
+-
+-            val unpackAllDistribution = tasks.register("unpackAllDistribution", Sync::class.java) {
+-                dependsOn(":distributions:allZip")
+-                // TODO: This should be modelled as a publication
+-                from(Callable {
+-                    val distributionsProject = rootProject.project("distributions")
+-                    val allZip = distributionsProject.tasks.getByName<Zip>("allZip")
+-                    zipTree(allZip.archivePath)
+-                })
+-                into(unpackedPath)
+-            }
+-
+-            intTestImage.configure {
+-                dependsOn(unpackAllDistribution)
+-                from(unpackedPath.get().dir("gradle-$version"))
+-            }
+-        } else {
+-            val selfRuntime by configurations.creating {
+-                attributes {
+-                    attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage::class.java, Usage.JAVA_RUNTIME))
+-                }
+-                isCanBeResolved = true
+-                isCanBeConsumed = false
+-            }
+-            afterEvaluate {
+-                if (!project.configurations["default"].allArtifacts.isEmpty()) {
+-                    dependencies {
+-                        selfRuntime(this@afterEvaluate)
+-                    }
+-                }
+-                intTestImage.configure {
+-                    into("bin") {
+-                        from(Callable { project(":launcher").tasks.getByName("startScripts").outputs.files })
+-                        // TODO: This is probably supposed to be fileMode = ...
+-                        Integer.parseInt("0755", 8)
+-                    }
+-
+-                    // TODO: Model these as publications of different types of distributions
+-                    val runtimeClasspathConfigurations = (rootProject.configurations["coreRuntime"]
+-                        + rootProject.configurations["coreRuntimeExtensions"]
+-                        + selfRuntime
+-                        + partialDistribution)
+-
+-                    val libsThisProjectDoesNotUse = (rootProject.configurations["runtime"] + rootProject.configurations["gradlePlugins"]) - runtimeClasspathConfigurations
+-
+-                    into("lib") {
+-                        from(rootProject.configurations["runtime"] - libsThisProjectDoesNotUse)
+-                        into("plugins") {
+-                            from(rootProject.configurations["gradlePlugins"] - rootProject.configurations["runtime"] - libsThisProjectDoesNotUse)
+-                        }
+-                    }
+-
+-                    into("samples") {
+-                        from(Callable { (project(":docs").extra.get("outputs") as Map<String, FileCollection>)["samples"] })
+-                    }
+-
+-                    doLast {
+-                        ant.withGroovyBuilder {
+-                            "chmod"("dir" to "$destinationDir/bin", "perm" to "ugo+rx", "includes" to "**/*")
+-                        }
+-                    }
+-                }
+-            }
+-        }
+-    }
++    override fun apply(project: Project) = Unit
+ }
+diff --git a/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/fixtures/TestFixturesPlugin.kt b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/fixtures/TestFixturesPlugin.kt
+index ac1155f5..001004e0 100644
+--- a/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/fixtures/TestFixturesPlugin.kt
++++ b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/fixtures/TestFixturesPlugin.kt
+@@ -1,141 +1,22 @@
+-/*
+- * Copyright 2017 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+ package org.gradle.gradlebuild.test.fixtures
+ 
+-import accessors.groovy
+-import accessors.java
+-
+-import library
+-
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
++import org.gradle.api.tasks.SourceSetContainer
+ 
+ import org.gradle.kotlin.dsl.*
+ 
+-import org.gradle.plugins.ide.eclipse.EclipsePlugin
+-import org.gradle.plugins.ide.eclipse.model.EclipseModel
+-import org.gradle.plugins.ide.idea.IdeaPlugin
+-import org.gradle.plugins.ide.idea.model.IdeaModel
+-
+-import testLibraries
+-import testLibrary
+-
+ 
+-/**
+- * Test Fixtures Plugin.
+- *
+- * Configures the Project as a test fixtures producer if `src/testFixtures` is a directory:
+- * - adds a new `testFixtures` source set which should contain utilities/fixtures to assist in unit testing
+- *   classes from the main source set,
+- * - the test fixtures are automatically made available to the test classpath.
+- *
+- * Configures the Project as a test fixtures consumer according to the `testFixtures` extension configuration.
+- */
+ @Suppress("unused")
+ open class TestFixturesPlugin : Plugin<Project> {
+-
+     override fun apply(project: Project): Unit = project.run {
+-
+-        apply { plugin("java") }
+-
+         extensions.create<TestFixturesExtension>("testFixtures")
+-
+-        if (file("src/testFixtures").isDirectory) {
+-            configureAsProducer()
+-        }
+-
+-        configureAsConsumer()
+-    }
+-
+-    private
+-    fun Project.configureAsProducer() {
+-
+-        configurations {
+-            "outputDirs" {}
+-
+-            "testFixturesCompile" { extendsFrom(configurations["compile"]) }
+-            "testFixturesImplementation" { extendsFrom(configurations["implementation"]) }
+-            "testFixturesRuntime" { extendsFrom(configurations["runtime"]) }
+-
+-            // Expose configurations that include the test fixture classes for clients to use
+-            "testFixturesUsageCompile" {
+-                extendsFrom(configurations["testFixturesCompile"], configurations["outputDirs"])
+-            }
+-            "testFixturesUsageRuntime" {
+-                extendsFrom(configurations["testFixturesRuntime"], configurations["testFixturesUsageCompile"])
+-            }
+-
+-            // Assume that the project wants to use the fixtures for its tests
+-            "testCompile" { extendsFrom(configurations["testFixturesUsageCompile"]) }
+-            "testRuntime" { extendsFrom(configurations["testFixturesUsageRuntime"]) }
+-        }
+-
+-        val outputDirs by configurations.getting
+-        val testFixturesCompile by configurations.getting
+-        val testFixturesRuntime by configurations.getting
+-        val testFixturesUsageCompile by configurations.getting
+-
+-        val main by java.sourceSets
+-        val testFixtures by java.sourceSets.creating {
+-            compileClasspath = main.output + configurations["testFixturesCompileClasspath"]
+-            runtimeClasspath = output + compileClasspath + configurations["testFixturesRuntimeClasspath"]
+-        }
+-
+-        dependencies {
+-            outputDirs(testFixtures.output)
+-            testFixturesUsageCompile(project(path))
+-            testFixturesCompile(library("junit"))
+-            testFixturesCompile(testLibrary("spock"))
+-            testLibraries("jmock").forEach { testFixturesCompile(it) }
+-        }
+-
+-        plugins.withType<IdeaPlugin> {
+-            configure<IdeaModel> {
+-                module {
+-                    testSourceDirs = testSourceDirs + testFixtures.groovy.srcDirs + testFixtures.resources.srcDirs
+-                }
+-            }
+-        }
+-
+-        plugins.withType<EclipsePlugin> {
+-            configure<EclipseModel> {
+-                classpath {
+-                    plusConfigurations.add(testFixturesCompile)
+-                    plusConfigurations.add(testFixturesRuntime)
+-
+-                    //avoiding the certain output directories from the classpath in Eclipse
+-                    minusConfigurations.add(outputDirs)
+-                }
+-            }
+-        }
+-    }
+-
+-    private
+-    fun Project.configureAsConsumer() = afterEvaluate {
+-
+-        the<TestFixturesExtension>().origins.forEach { (projectPath, sourceSetName) ->
+-
+-            val compileConfig = if (sourceSetName == "main") "compile" else "${sourceSetName}Compile"
+-            val runtimeConfig = if (sourceSetName == "main") "runtime" else "${sourceSetName}Runtime"
+-
+-            dependencies {
+-                compileConfig(project(path = projectPath, configuration = "testFixturesUsageCompile"))
+-                compileConfig(project(":internalTesting"))
+-                runtimeConfig(project(path = projectPath, configuration = "testFixturesUsageRuntime"))
+-            }
+-        }
++        configurations.maybeCreate("testFixturesCompile")
++        configurations.maybeCreate("testFixturesRuntime")
++        configurations.maybeCreate("testFixturesImplementation")
++        configurations.maybeCreate("testFixturesRuntimeOnly")
++        configurations.maybeCreate("testFixturesUsageCompile")
++        configurations.maybeCreate("testFixturesUsageRuntime")
++        (extensions.findByName("sourceSets") as? SourceSetContainer)?.maybeCreate("testFixtures")
+     }
+ }
+diff --git a/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/CrossVersionTestsPlugin.kt b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/CrossVersionTestsPlugin.kt
+index 32a14a21..7603ae7f 100644
+--- a/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/CrossVersionTestsPlugin.kt
++++ b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/CrossVersionTestsPlugin.kt
+@@ -1,76 +1,15 @@
+-/*
+- * Copyright 2018 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+ package org.gradle.gradlebuild.test.integrationtests
+ 
+-import org.gradle.api.Action
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+-import org.gradle.api.tasks.SourceSet
+-import org.gradle.gradlebuild.test.fixtures.TestFixturesExtension
+-import org.gradle.gradlebuild.test.fixtures.TestFixturesPlugin
+-import org.gradle.kotlin.dsl.*
+-import releasedVersions
+-
++import org.gradle.api.tasks.SourceSetContainer
+ 
+ class CrossVersionTestsPlugin : Plugin<Project> {
+-    override fun apply(project: Project): Unit = project.run {
+-        val sourceSet = addSourceSet(TestType.CROSSVERSION)
+-        addDependenciesAndConfigurations(TestType.CROSSVERSION)
+-        dependencies {
+-            "crossVersionTestRuntime"(project(":toolingApiBuilders"))
+-        }
+-        createTasks(sourceSet, TestType.CROSSVERSION)
+-        createAggregateTasks(sourceSet)
+-        configureIde(TestType.CROSSVERSION)
+-        configureTestFixturesForCrossVersionTests()
+-    }
+-
+-    private
+-    fun Project.configureTestFixturesForCrossVersionTests() {
+-        plugins.withType<TestFixturesPlugin> {
+-            configure<TestFixturesExtension> {
+-                from(":toolingApi")
+-            }
+-        }
+-    }
+-
+-    private
+-    fun Project.createAggregateTasks(sourceSet: SourceSet) {
+-        // Calculate the set of released versions - do this at configuration time because we need this to create various tasks
+-        val allVersionsCrossVersionTests = tasks.register("allVersionsCrossVersionTests") {
+-            group = "verification"
+-            description = "Runs the cross-version tests against all Gradle versions with 'forking' executer"
+-        }
+-
+-        val quickFeedbackCrossVersionTests = tasks.register("quickFeedbackCrossVersionTests") {
+-            group = "verification"
+-            description = "Runs the cross-version tests against a subset of selected Gradle versions with 'forking' executer for quick feedback"
+-        }
+-
+-        val quickTestVersions = releasedVersions.getTestedVersions(true)
+-        releasedVersions.getTestedVersions(false).forEach { targetVersion ->
+-            val crossVersionTest = createTestTask("gradle${targetVersion}CrossVersionTest", "forking", sourceSet, TestType.CROSSVERSION, Action {
+-                this.description = "Runs the cross-version tests against Gradle $targetVersion"
+-                this.systemProperties["org.gradle.integtest.versions"] = targetVersion
+-            })
+-
+-            allVersionsCrossVersionTests.configure { dependsOn(crossVersionTest) }
+-            if (targetVersion in quickTestVersions) {
+-                quickFeedbackCrossVersionTests.configure { dependsOn(crossVersionTest) }
+-            }
+-        }
++    override fun apply(project: Project) {
++        project.configurations.maybeCreate("crossVersionTestCompile")
++        project.configurations.maybeCreate("crossVersionTestRuntime")
++        project.configurations.maybeCreate("crossVersionTestImplementation")
++        project.configurations.maybeCreate("crossVersionTestRuntimeOnly")
++        (project.extensions.findByName("sourceSets") as? SourceSetContainer)?.maybeCreate("crossVersionTest")
+     }
+ }
+diff --git a/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/DistributionTestingPlugin.kt b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/DistributionTestingPlugin.kt
+index a625e4d7..bfb38153 100644
+--- a/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/DistributionTestingPlugin.kt
++++ b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/DistributionTestingPlugin.kt
+@@ -1,154 +1,8 @@
+-/*
+- * Copyright 2018 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+-
+ package org.gradle.gradlebuild.test.integrationtests
+ 
+-import accessors.base
+-import accessors.java
+-import accessors.reporting
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+-import org.gradle.api.file.Directory
+-import org.gradle.api.file.ProjectLayout
+-import org.gradle.api.invocation.Gradle
+-import org.gradle.api.plugins.BasePluginConvention
+-import org.gradle.api.plugins.JavaPluginConvention
+-import org.gradle.api.provider.Provider
+-import org.gradle.api.provider.ProviderFactory
+-import org.gradle.api.reporting.ReportingExtension
+-import org.gradle.api.tasks.Sync
+-import org.gradle.gradlebuild.packaging.ShadedJar
+-import org.gradle.gradlebuild.testing.integrationtests.cleanup.CleanUpDaemons
+-import org.gradle.kotlin.dsl.*
+-import java.io.File
+-import kotlin.collections.component1
+-import kotlin.collections.component2
+-import kotlin.collections.set
+-
+ 
+ class DistributionTestingPlugin : Plugin<Project> {
+-
+-    override fun apply(project: Project): Unit = project.run {
+-        tasks.withType<DistributionTest>().configureEach {
+-            dependsOn(":toolingApi:toolingApiShadedJar")
+-            dependsOn(":cleanUpCaches")
+-            finalizedBy(":cleanUpDaemons")
+-            shouldRunAfter("test")
+-
+-            setJvmArgsOfTestJvm()
+-            setSystemPropertiesOfTestJVM(project)
+-            configureGradleTestEnvironment(rootProject.providers, rootProject.layout, rootProject.base)
+-            setDedicatedTestOutputDirectoryPerTask(java, reporting)
+-            addSetUpAndTearDownActions(gradle)
+-        }
+-    }
+-
+-    private
+-    fun DistributionTest.addSetUpAndTearDownActions(gradle: Gradle) {
+-        lateinit var daemonListener: Any
+-
+-        // TODO Why don't we register with the test listener of the test task
+-        // We would not need to do late configuration and need to add a global listener
+-        // We now add multiple global listeners stepping on each other
+-        doFirst {
+-            // TODO Refactor to not reach into tasks of another project
+-            val cleanUpDaemons: CleanUpDaemons by gradle.rootProject.tasks
+-            daemonListener = cleanUpDaemons.newDaemonListener()
+-            gradle.addListener(daemonListener)
+-        }
+-
+-        // TODO Remove once we go to task specific listeners.
+-        doLast {
+-            gradle.removeListener(daemonListener)
+-        }
+-    }
+-
+-    private
+-    fun DistributionTest.setDedicatedTestOutputDirectoryPerTask(java: JavaPluginConvention, reporting: ReportingExtension) {
+-        reports.junitXml.destination = File(java.testResultsDir, name)
+-        val htmlDirectory = reporting.baseDirectory.dir(this.name)
+-        project.afterEvaluate {
+-            // TODO: Replace this with a Provider
+-            reports.html.destination = htmlDirectory.get().asFile
+-        }
+-    }
+-
+-    private
+-    fun DistributionTest.configureGradleTestEnvironment(providers: ProviderFactory, layout: ProjectLayout, basePluginConvention: BasePluginConvention) {
+-        // TODO: Replace this with something in the Gradle API to make this transition easier
+-        fun dirWorkaround(directory: () -> File): Provider<Directory> =
+-            layout.directoryProperty(layout.projectDirectory.dir(providers.provider { directory().absolutePath }))
+-
+-        gradleInstallationForTest.apply {
+-            // TODO Refactor to not reach into tasks of another project
+-            val intTestImage: Sync by project.tasks
+-            val toolingApiShadedJar: ShadedJar by project.rootProject.project(":toolingApi").tasks
+-            gradleUserHomeDir.set(layout.projectDirectory.dir("intTestHomeDir"))
+-            daemonRegistry.set(layout.buildDirectory.dir("daemon"))
+-            gradleHomeDir.set(dirWorkaround { intTestImage.destinationDir })
+-            toolingApiShadedJarDir.set(dirWorkaround { toolingApiShadedJar.jarFile.get().asFile.parentFile })
+-        }
+-
+-        libsRepository.dir.set(layout.projectDirectory.dir("build/repo"))
+-
+-        binaryDistributions.apply {
+-            distsDir.set(dirWorkaround({ basePluginConvention.distsDir }))
+-            distZipVersion = project.version.toString()
+-        }
+-    }
+-
+-    private
+-    fun DistributionTest.setJvmArgsOfTestJvm() {
+-        jvmArgs("-Xmx512m", "-XX:+HeapDumpOnOutOfMemoryError")
+-        if (!javaVersion.isJava8Compatible) {
+-            jvmArgs("-XX:MaxPermSize=768m")
+-        }
+-    }
+-
+-    private
+-    fun DistributionTest.setSystemPropertiesOfTestJVM(project: Project) {
+-        // use -PtestVersions=all or -PtestVersions=1.2,1.3…
+-        val integTestVersionsSysProp = "org.gradle.integtest.versions"
+-        if (project.hasProperty("testVersions")) {
+-            systemProperties[integTestVersionsSysProp] = project.property("testVersions")
+-        }
+-        if (integTestVersionsSysProp !in systemProperties) {
+-            systemProperties[integTestVersionsSysProp] = "latest"
+-        }
+-
+-        fun ifProperty(name: String, then: String): String? =
+-            then.takeIf { project.findProperty(name) == true }
+-
+-        systemProperties["org.gradle.integtest.native.toolChains"] =
+-            ifProperty("testAllPlatforms", "all") ?: "default"
+-
+-        systemProperties["org.gradle.integtest.multiversion"] =
+-            ifProperty("testAllVersions", "all") ?: "default"
+-
+-        val mirrorUrls = collectMirrorUrls()
+-        val mirrors = listOf("mavencentral", "jcenter", "lightbendmaven", "ligthbendivy", "google", "springreleases", "springsnapshots", "restlet", "gradle", "jboss")
+-        mirrors.forEach { mirror ->
+-            systemProperties["org.gradle.integtest.mirrors.$mirror"] = mirrorUrls[mirror] ?: ""
+-        }
+-    }
+-
+-    fun collectMirrorUrls(): Map<String, String> =
+-    // expected env var format: repo1_id:repo1_url,repo2_id:repo2_url,...
+-        System.getenv("REPO_MIRROR_URLS")?.split(',')?.associate { nameToUrl ->
+-            val (name, url) = nameToUrl.split(':', limit = 2)
+-            name to url
+-        } ?: emptyMap()
++    override fun apply(project: Project) = Unit
+ }
+diff --git a/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/IntegrationTestsPlugin.kt b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/IntegrationTestsPlugin.kt
+index fd37af94..e7002616 100644
+--- a/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/IntegrationTestsPlugin.kt
++++ b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/IntegrationTestsPlugin.kt
+@@ -1,33 +1,15 @@
+-/*
+- * Copyright 2018 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+ package org.gradle.gradlebuild.test.integrationtests
+ 
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+-import org.gradle.kotlin.dsl.*
+-
++import org.gradle.api.tasks.SourceSetContainer
+ 
+ class IntegrationTestsPlugin : Plugin<Project> {
+-    override fun apply(project: Project): Unit = project.run {
+-        val sourceSet = addSourceSet(TestType.INTEGRATION)
+-        addDependenciesAndConfigurations(TestType.INTEGRATION)
+-        createTasks(sourceSet, TestType.INTEGRATION)
+-        configureIde(TestType.INTEGRATION)
+-
+-        // TODO Model as an extension object. The name is also misleading, as this applies to integration tests as well as cross version tests.
+-        val integTestTasks by extra { tasks.withType<IntegrationTest>() }
++    override fun apply(project: Project) {
++        project.configurations.maybeCreate("integTestCompile")
++        project.configurations.maybeCreate("integTestRuntime")
++        project.configurations.maybeCreate("integTestImplementation")
++        project.configurations.maybeCreate("integTestRuntimeOnly")
++        (project.extensions.findByName("sourceSets") as? SourceSetContainer)?.maybeCreate("integTest")
+     }
+ }
+diff --git a/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/shared-configuration.kt b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/shared-configuration.kt
+index dd5cea5e..56d39f84 100644
+--- a/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/shared-configuration.kt
++++ b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/shared-configuration.kt
+@@ -1,145 +1 @@
+ package org.gradle.gradlebuild.test.integrationtests
+-
+-import accessors.eclipse
+-import accessors.groovy
+-import accessors.idea
+-import accessors.java
+-import org.gradle.api.Action
+-import org.gradle.api.Project
+-import org.gradle.api.tasks.SourceSet
+-import org.gradle.api.tasks.TaskProvider
+-import org.gradle.gradlebuild.java.AvailableJavaInstallations
+-import org.gradle.kotlin.dsl.dependencies
+-import org.gradle.kotlin.dsl.get
+-import org.gradle.kotlin.dsl.getting
+-import org.gradle.kotlin.dsl.invoke
+-import org.gradle.kotlin.dsl.project
+-import org.gradle.kotlin.dsl.the
+-import org.gradle.kotlin.dsl.withType
+-import org.gradle.kotlin.dsl.getValue
+-import org.gradle.plugins.ide.eclipse.EclipsePlugin
+-import org.gradle.plugins.ide.idea.IdeaPlugin
+-
+-
+-enum class TestType(val prefix: String, val executers: List<String>, val libRepoRequired: Boolean) {
+-    INTEGRATION("integ", listOf("embedded", "forking", "noDaemon", "parallel"), false),
+-    CROSSVERSION("crossVersion", listOf("embedded", "forking"), true)
+-}
+-
+-
+-internal
+-fun Project.addDependenciesAndConfigurations(testType: TestType) {
+-    val prefix = testType.prefix
+-    configurations {
+-        getByName("${prefix}TestCompile") { extendsFrom(configurations["testCompile"]) }
+-        getByName("${prefix}TestRuntime") { extendsFrom(configurations["testRuntime"]) }
+-        getByName("${prefix}TestImplementation") { extendsFrom(configurations["testImplementation"]) }
+-        getByName("${prefix}TestRuntimeOnly") { extendsFrom(configurations["testRuntimeOnly"]) }
+-        getByName("partialDistribution") { extendsFrom(configurations["${prefix}TestRuntimeClasspath"]) }
+-    }
+-
+-    dependencies {
+-        "${prefix}TestCompile"(project(":internalIntegTesting"))
+-
+-        //so that implicit help tasks are available:
+-        "${prefix}TestRuntime"(project(":diagnostics"))
+-
+-        //So that the wrapper and init task are added when integTests are run via commandline
+-        "${prefix}TestRuntime"(project(":buildInit"))
+-    }
+-}
+-
+-
+-internal
+-fun Project.addSourceSet(testType: TestType): SourceSet {
+-    val prefix = testType.prefix
+-    val main by java.sourceSets.getting
+-    return java.sourceSets.create("${prefix}Test") {
+-        compileClasspath += main.output
+-        runtimeClasspath += main.output
+-    }
+-}
+-
+-
+-internal
+-fun Project.createTasks(sourceSet: SourceSet, testType: TestType) {
+-    val prefix = testType.prefix
+-    val defaultExecuter = project.findProperty("defaultIntegTestExecuter") as? String ?: "embedded"
+-
+-    // For all of the other executers, add an executer specific task
+-    testType.executers.forEach { executer ->
+-        val taskName = "$executer${prefix.capitalize()}Test"
+-        createTestTask(taskName, executer, sourceSet, testType, Action {})
+-    }
+-    // Use the default executer for the simply named task. This is what most developers will run when running check
+-    val testTask = createTestTask(prefix + "Test", defaultExecuter, sourceSet, testType, Action {})
+-    tasks.named("check").configure { dependsOn(testTask) }
+-}
+-
+-
+-internal
+-fun Project.createTestTask(name: String, executer: String, sourceSet: SourceSet, testType: TestType, extraConfig: Action<IntegrationTest>): TaskProvider<IntegrationTest> {
+-    return tasks.register(name, IntegrationTest::class.java) {
+-        description = "Runs ${testType.prefix} with $executer executer"
+-        systemProperties["org.gradle.integtest.executer"] = executer
+-        addDebugProperties()
+-        testClassesDirs = sourceSet.output.classesDirs
+-        classpath = sourceSet.runtimeClasspath
+-        libsRepository.required = testType.libRepoRequired
+-        extraConfig.execute(this)
+-    }
+-}
+-
+-
+-private
+-fun IntegrationTest.addDebugProperties() {
+-    // TODO Move magic property out
+-    if (project.hasProperty("org.gradle.integtest.debug")) {
+-        systemProperties["org.gradle.integtest.debug"] = "true"
+-        testLogging.showStandardStreams = true
+-    }
+-    // TODO Move magic property out
+-    if (project.hasProperty("org.gradle.integtest.verbose")) {
+-        testLogging.showStandardStreams = true
+-    }
+-    // TODO Move magic property out
+-    if (project.hasProperty("org.gradle.integtest.launcher.debug")) {
+-        systemProperties["org.gradle.integtest.launcher.debug"] = "true"
+-    }
+-}
+-
+-
+-internal
+-fun Project.configureIde(testType: TestType) {
+-    val prefix = testType.prefix
+-    val compile = configurations.getByName("${prefix}TestCompileClasspath")
+-    val runtime = configurations.getByName("${prefix}TestRuntimeClasspath")
+-    val sourceSet = java.sourceSets.getByName("${prefix}Test")
+-
+-    // We apply lazy as we don't want to depend on the order
+-    plugins.withType<IdeaPlugin> {
+-        idea {
+-            module {
+-                testSourceDirs = testSourceDirs + sourceSet.groovy.srcDirs + sourceSet.resources.srcDirs
+-                scopes["TEST"]!!["plus"]!!.apply {
+-                    add(compile)
+-                    add(runtime)
+-                }
+-            }
+-        }
+-    }
+-
+-    plugins.withType<EclipsePlugin> {
+-        eclipse {
+-            classpath.plusConfigurations.apply {
+-                add(compile)
+-                add(runtime)
+-            }
+-        }
+-    }
+-}
+-
+-
+-internal
+-val Project.currentTestJavaVersion
+-    get() = rootProject.the<AvailableJavaInstallations>().javaInstallationForTest.javaVersion
+diff --git a/buildSrc/subprojects/packaging/src/main/kotlin/org/gradle/gradlebuild/packaging/ShadedJarPlugin.kt b/buildSrc/subprojects/packaging/src/main/kotlin/org/gradle/gradlebuild/packaging/ShadedJarPlugin.kt
+index 52d0d5cd..41dbf402 100644
+--- a/buildSrc/subprojects/packaging/src/main/kotlin/org/gradle/gradlebuild/packaging/ShadedJarPlugin.kt
++++ b/buildSrc/subprojects/packaging/src/main/kotlin/org/gradle/gradlebuild/packaging/ShadedJarPlugin.kt
+@@ -27,7 +27,6 @@ import org.gradle.api.artifacts.transform.ArtifactTransform
+ import org.gradle.api.attributes.Usage
+ import org.gradle.api.file.ProjectLayout
+ import org.gradle.api.model.ObjectFactory
+-import org.gradle.api.tasks.TaskProvider
+ import org.gradle.api.tasks.bundling.Jar
+ import org.gradle.kotlin.dsl.*
+ 
+@@ -118,12 +117,12 @@ open class ShadedJarPlugin : Plugin<Project> {
+     }
+ 
+     private
+-    fun Project.addShadedJarTask(shadedJarExtension: ShadedJarExtension): TaskProvider<ShadedJar> {
++    fun Project.addShadedJarTask(shadedJarExtension: ShadedJarExtension): ShadedJar {
+         val configurationToShade = shadedJarExtension.shadedConfiguration
+         val baseVersion: String by rootProject.extra
+-        val jar: TaskProvider<Jar> = tasks.withType(Jar::class.java).named("jar")
++        val jar = tasks.withType(Jar::class.java).getByName("jar")
+ 
+-        return tasks.register("${project.name}ShadedJar", ShadedJar::class.java) {
++        return tasks.create("${project.name}ShadedJar", ShadedJar::class.java) {
+             dependsOn(jar)
+             jarFile.set(layout.buildDirectory.file("shaded-jar/${base.archivesBaseName}-shaded-$baseVersion.jar"))
+             classTreesConfiguration.from(configurationToShade.artifactViewForType(classTreesType))
+@@ -135,9 +134,9 @@ open class ShadedJarPlugin : Plugin<Project> {
+     }
+ 
+     private
+-    fun Project.addShadedJarArtifact(shadedJarTask: TaskProvider<ShadedJar>) {
++    fun Project.addShadedJarArtifact(shadedJarTask: ShadedJar) {
+         artifacts.add("publishRuntime", mapOf(
+-            "file" to shadedJarTask.get().jarFile.get().asFile,
++            "file" to shadedJarTask.jarFile.get().asFile,
+             "name" to base.archivesBaseName,
+             "type" to "jar",
+             "builtBy" to shadedJarTask
+diff --git a/buildSrc/subprojects/performance/performance.gradle.kts b/buildSrc/subprojects/performance/performance.gradle.kts
+index d23bf635..a3c26da7 100644
+--- a/buildSrc/subprojects/performance/performance.gradle.kts
++++ b/buildSrc/subprojects/performance/performance.gradle.kts
+@@ -3,8 +3,4 @@ apply { plugin("org.gradle.kotlin.kotlin-dsl") }
+ dependencies {
+     api(project(":integrationTesting"))
+     implementation(project(":build"))
+-    implementation("org.codehaus.groovy.modules.http-builder:http-builder:0.7.2") {
+-        // Xerces on the runtime classpath is breaking some of our doc tasks
+-        exclude(group = "xerces")
+-    }
+ }
+diff --git a/buildSrc/subprojects/performance/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy b/buildSrc/subprojects/performance/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy
+index 73ee468a..cf3ae3d8 100644
+--- a/buildSrc/subprojects/performance/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy
++++ b/buildSrc/subprojects/performance/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy
+@@ -22,9 +22,6 @@ import groovy.transform.CompileStatic
+ import groovy.transform.TypeChecked
+ import groovy.transform.TypeCheckingMode
+ import groovy.xml.XmlUtil
+-import groovyx.net.http.ContentType
+-import groovyx.net.http.HttpResponseException
+-import groovyx.net.http.RESTClient
+ import org.gradle.api.GradleException
+ import org.gradle.api.tasks.*
+ import org.gradle.api.tasks.testing.TestListener
+@@ -74,7 +71,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+     @OutputFile
+     File scenarioReport
+ 
+-    private RESTClient client
++    private Object client
+ 
+     private List<String> scheduledBuilds = Lists.newArrayList()
+ 
+@@ -165,36 +162,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private void schedule(Scenario scenario, String lastChangeId) {
+-        def buildRequest = """
+-                <build${branchName ? " branchName=\"${branchName}\"" : ""}>
+-                    <buildType id="${buildTypeId}"/>
+-                    <properties>
+-                        <property name="scenario" value="${scenario.id}"/>
+-                        <property name="templates" value="${scenario.templates.join(' ')}"/>
+-                        <property name="baselines" value="${baselines?:'defaults'}"/>
+-                        <property name="warmups" value="${warmups!=null?:'defaults'}"/>
+-                        <property name="runs" value="${runs!=null?:'defaults'}"/>
+-                        <property name="checks" value="${checks?:'all'}"/>
+-                        <property name="channel" value="${channel?:'commits'}"/>
+-                    </properties>
+-                    ${renderLastChange(lastChangeId)}
+-                </build>
+-            """
+-        logger.info("Scheduling $scenario.id, estimated runtime: $scenario.estimatedRuntime, coordinatorBuildId: $coordinatorBuildId, lastChangeId: $lastChangeId, build request: $buildRequest")
+-        def response = client.post(
+-            path: "buildQueue",
+-            requestContentType: ContentType.XML,
+-            body: buildRequest
+-        )
+-        String workerBuildId = response.data.@id
+-        cancellationToken.addCallback {
+-            cancel(workerBuildId)
+-        }
+-        def scheduledChangeId = findLastChangeIdInXml(response.data)
+-        if (lastChangeId && scheduledChangeId != lastChangeId) {
+-            throw new RuntimeException("The requested change id is different than the actual one. requested change id: $lastChangeId in coordinatorBuildId: $coordinatorBuildId , actual change id: $scheduledChangeId in workerBuildId: $workerBuildId\nresponse: ${xmlToString(response.data)}")
+-        }
+-        scheduledBuilds += workerBuildId
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+@@ -224,10 +192,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private CoordinatorBuild resolveCoordinatorBuild() {
+         if (coordinatorBuildId) {
+-            def response = client.get(path: "builds/id:$coordinatorBuildId")
+-            if (response.success) {
+-                return new CoordinatorBuild(id: coordinatorBuildId, lastChangeId: findLastChangeIdInXml(response.data), buildTypeId: response.data.@buildTypeId.text())
+-            }
++            throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+         }
+         return null
+     }
+@@ -239,53 +204,15 @@ class DistributedPerformanceTest extends PerformanceTest {
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private void join(String jobId) {
+-        def finished = false
+-        def response
+-        while (!finished) {
+-            response = client.get(path: "builds/id:$jobId")
+-            finished = response.data.@state == "finished"
+-            if (!finished) {
+-                sleep(TimeUnit.MINUTES.toMillis(1))
+-            }
+-        }
+-        finishedBuilds += response.data
+-
+-        try {
+-            def results = fetchTestResults(jobId, response.data)
+-            testResultFilesForBuild.put(jobId, results)
+-            fireTestListener(results, response.data)
+-        } catch (e) {
+-            e.printStackTrace(System.err)
+-        }
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+ 
+     void cancel(String buildId) {
+-        try {
+-            cancel(buildId, "buildQueue")
+-        } catch (HttpResponseException eq) {
+-            rethrowIfNonRecoverable(eq)
+-            try {
+-                cancel(buildId, "builds")
+-            } catch (HttpResponseException eb) {
+-                rethrowIfNonRecoverable(eb)
+-            }
+-        }
+-    }
+-
+-    private void rethrowIfNonRecoverable(HttpResponseException e) {
+-        if (e.statusCode != 404) {
+-            throw e
+-        }
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+ 
+     void cancel(String buildId, String endpoint) {
+-        String link = XmlUtil.escapeXml("$teamCityUrl/viewLog.html?buildId=$coordinatorBuildId&buildTypeId=$buildTypeId")
+-        String cancelRequest = """<buildCancelRequest comment="Coordinator build was canceled: $link" readdIntoQueue="false" />"""
+-        client.post(
+-            path: "$endpoint/id:$buildId",
+-            requestContentType: ContentType.XML,
+-            body: cancelRequest
+-        )
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+ 
+     private void fireTestListener(List<File> results, Object build) {
+@@ -297,26 +224,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private def fetchTestResults(String jobId, buildData) {
+-        def unzippedFiles = []
+-        def artifactsUri = buildData?.artifacts?.@href?.text()
+-        if (artifactsUri) {
+-            def resultArtifacts = client.get(path: "${artifactsUri}/results/${project.name}/build/")
+-            if (resultArtifacts.success) {
+-                def zipName = "test-results-${workerTestTaskName}.zip".toString()
+-                def fileNode = resultArtifacts.data.file.find {
+-                    it.@name.text() == zipName
+-                }
+-                if (fileNode) {
+-                    def resultsDirectory = new File(workerTestResultsTempDir, jobId)
+-                    def contentUri = fileNode.content.@href.text()
+-                    client.get(path: contentUri, contentType: ContentType.BINARY) {
+-                        resp, inputStream ->
+-                            unzippedFiles = unzipToDirectory(inputStream, resultsDirectory)
+-                    }
+-                }
+-            }
+-        }
+-        unzippedFiles
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+@@ -354,11 +262,8 @@ class DistributedPerformanceTest extends PerformanceTest {
+         }
+     }
+ 
+-    private RESTClient createClient() {
+-        client = new RESTClient("$teamCityUrl/httpAuth/app/rest/9.1")
+-        client.auth.basic(teamCityUsername, teamCityPassword)
+-        client.headers['Origin'] = teamCityUrl
+-        client
++    private Object createClient() {
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+ 
+ 
+diff --git a/buildSrc/subprojects/plugins/plugins.gradle.kts b/buildSrc/subprojects/plugins/plugins.gradle.kts
+index b6af4262..aa7bd161 100644
+--- a/buildSrc/subprojects/plugins/plugins.gradle.kts
++++ b/buildSrc/subprojects/plugins/plugins.gradle.kts
+@@ -40,5 +40,9 @@ gradlePlugin {
+             id = "gradlebuild.unittest-and-compile"
+             implementationClass = "org.gradle.gradlebuild.unittestandcompile.UnitTestAndCompilePlugin"
+         }
++        "strictCompile" {
++            id = "gradlebuild.strict-compile"
++            implementationClass = "org.gradle.plugins.strictcompile.StrictCompilePlugin"
++        }
+     }
+ }
+diff --git a/buildSrc/subprojects/plugins/src/main/kotlin/gradlebuild/publish-public-libraries.gradle.kts b/buildSrc/subprojects/plugins/src/main/kotlin/gradlebuild/publish-public-libraries.gradle.kts
+index 0f5f9323..dd028eed 100644
+--- a/buildSrc/subprojects/plugins/src/main/kotlin/gradlebuild/publish-public-libraries.gradle.kts
++++ b/buildSrc/subprojects/plugins/src/main/kotlin/gradlebuild/publish-public-libraries.gradle.kts
+@@ -1,106 +1 @@
+-/*
+- * Copyright 2018 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+-package gradlebuild
+-
+-import accessors.base
+-import accessors.groovy
+-import accessors.java
+-
+-import groovy.lang.MissingPropertyException
+-import org.gradle.api.internal.artifacts.publish.DefaultPublishArtifact
+-import org.gradle.plugins.publish.GeneratePom
+-import org.gradle.plugins.publish.createArtifactPattern
+-
+-import java.util.*
+-
+-plugins {
+-    `maven`
+-}
+-
+-val generatePom = tasks.register("generatePom", GeneratePom::class.java)
+-
+-val main by java.sourceSets
+-val sourceJar = tasks.register("sourceJar", Jar::class.java) {
+-    classifier = "sources"
+-    from(main.java.srcDirs + main.groovy.srcDirs)
+-}
+-
+-configureUploadArchivesTask(generatePom)
+-
+-artifacts {
+-
+-    fun publishRuntime(artifact: Any) =
+-        add(generatePom.get().publishRuntime.name, artifact) // TODO: This prevent `generatePom` from being lazy
+-
+-    publishRuntime(tasks.named("jar").get()) // TODO: LazyPublishArtifact has custom provider unpacking, see https://github.com/gradle/gradle-native/issues/719
+-    publishRuntime(sourceJar.get()) // TODO: LazyPublishArtifact has custom provider unpacking, see https://github.com/gradle/gradle-native/issues/719
+-    publishRuntime(
+-        DefaultPublishArtifact(
+-            base.archivesBaseName,
+-            "pom",
+-            "pom",
+-            null,
+-            Date(),
+-            generatePom.get().pomFile,
+-            generatePom))
+-}
+-
+-fun Project.configureUploadArchivesTask(generatePom: TaskProvider<GeneratePom>) {
+-    // TODO: Make this lazy, see https://github.com/gradle/gradle-native/issues/718
+-    tasks.getByName<Upload>("uploadArchives") {
+-        // TODO Add magic property to upcoming configuration interface
+-        onlyIf { !project.hasProperty("noUpload") }
+-        configuration = generatePom.get().publishRuntime
+-        dependsOn(generatePom)
+-        isUploadDescriptor = false
+-
+-        // TODO Remove once task configuration on demand is available and we can enforce properties at task configuration time
+-        failEarlyIfCredentialsAreNotSet(this)
+-
+-        repositories {
+-            ivy {
+-                artifactPattern(createArtifactPattern(rootProject.extra.get("isSnapshot") as Boolean, project.group.toString(), base.archivesBaseName))
+-                credentials {
+-                    username = artifactoryUserName
+-                    password = artifactoryUserPassword
+-                }
+-            }
+-        }
+-    }
+-}
+-
+-fun Project.failEarlyIfCredentialsAreNotSet(upload: Upload) {
+-    gradle.taskGraph.whenReady({
+-        if (hasTask(upload)) {
+-            if (artifactoryUserName.isNullOrEmpty()) {
+-                throw MissingPropertyException("artifactoryUserName is not set!")
+-            }
+-            if (artifactoryUserPassword.isNullOrEmpty()) {
+-                throw MissingPropertyException("artifactoryUserPassword is not set!")
+-            }
+-        }
+-    })
+-}
+-
+-// TODO Add magic property to upcoming configuration interface
+-val Project.artifactoryUserName
+-    get() = findProperty("artifactoryUserName") as String?
+-
+-// TODO Add magic property to upcoming configuration interface
+-val Project.artifactoryUserPassword
+-    get() = findProperty("artifactoryUserPassword") as String?
+-
+-
++// No-op during Gradle 4.7 bootstrap.
+diff --git a/buildSrc/subprojects/plugins/src/main/kotlin/gradlebuild/strict-compile.gradle.kts b/buildSrc/subprojects/plugins/src/main/kotlin/gradlebuild/strict-compile.gradle.kts
+index 61d5d8e1..dd028eed 100644
+--- a/buildSrc/subprojects/plugins/src/main/kotlin/gradlebuild/strict-compile.gradle.kts
++++ b/buildSrc/subprojects/plugins/src/main/kotlin/gradlebuild/strict-compile.gradle.kts
+@@ -1,39 +1 @@
+-/*
+- * Copyright 2017 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+-package gradlebuild
+-
+-import org.gradle.plugins.strictcompile.StrictCompileExtension
+-
+-val strictCompile = extensions.create<StrictCompileExtension>("strictCompile")
+-
+-afterEvaluate {
+-
+-    val strictCompilerArgs = listOf("-Werror", "-Xlint:all", "-Xlint:-options", "-Xlint:-serial")
+-
+-    val ignoreDeprecationsArg = "-Xlint:-deprecation"
+-
+-    val compilerArgs =
+-        if (strictCompile.ignoreDeprecations) strictCompilerArgs + ignoreDeprecationsArg
+-        else strictCompilerArgs
+-
+-    tasks.withType<JavaCompile>().configureEach {
+-        options.compilerArgs.addAll(compilerArgs)
+-    }
+-
+-    tasks.withType<GroovyCompile>().configureEach {
+-        options.compilerArgs.addAll(compilerArgs)
+-    }
+-}
++// No-op during Gradle 4.7 bootstrap.
+diff --git a/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/gradlebuild/unittestandcompile/UnitTestAndCompilePlugin.kt b/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/gradlebuild/unittestandcompile/UnitTestAndCompilePlugin.kt
+index 31d48736..a25499b7 100644
+--- a/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/gradlebuild/unittestandcompile/UnitTestAndCompilePlugin.kt
++++ b/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/gradlebuild/unittestandcompile/UnitTestAndCompilePlugin.kt
+@@ -1,232 +1,29 @@
+-/*
+- * Copyright 2018 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+ package org.gradle.gradlebuild.unittestandcompile
+ 
+ import accessors.base
+-import accessors.java
+-import availableJavaInstallations
+-import library
+-import maxParallelForks
+-import org.gradle.api.InvalidUserDataException
+-import org.gradle.api.JavaVersion
+-import org.gradle.api.Named
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+-import org.gradle.api.artifacts.ComponentMetadataContext
+-import org.gradle.api.artifacts.ComponentMetadataRule
+-import org.gradle.api.tasks.bundling.Jar
+-import org.gradle.api.tasks.compile.AbstractCompile
+-import org.gradle.api.tasks.compile.CompileOptions
+-import org.gradle.api.tasks.compile.GroovyCompile
+-import org.gradle.api.tasks.compile.JavaCompile
+-import org.gradle.api.tasks.testing.Test
+ import org.gradle.build.ClasspathManifest
+-import org.gradle.gradlebuild.BuildEnvironment
+-import org.gradle.gradlebuild.BuildEnvironment.agentNum
+-import org.gradle.gradlebuild.java.AvailableJavaInstallations
+-import org.gradle.internal.jvm.Jvm
+-import org.gradle.kotlin.dsl.*
+-import org.gradle.process.CommandLineArgumentProvider
+-import testLibraries
+-import testLibrary
+-import java.util.jar.Attributes
+-
+-
+-enum class ModuleType(val source: JavaVersion, val target: JavaVersion) {
+-    UNDEFINED(JavaVersion.VERSION_1_1, JavaVersion.VERSION_1_1),
+-    ENTRY_POINT(JavaVersion.VERSION_1_5, JavaVersion.VERSION_1_5),
+-    WORKER(JavaVersion.VERSION_1_6, JavaVersion.VERSION_1_6),
+-    CORE(JavaVersion.VERSION_1_7, JavaVersion.VERSION_1_7),
+-    PLUGIN(JavaVersion.VERSION_1_7, JavaVersion.VERSION_1_7),
+-    INTERNAL(JavaVersion.VERSION_1_7, JavaVersion.VERSION_1_7),
+-    REQUIRES_JAVA_8(JavaVersion.VERSION_1_8, JavaVersion.VERSION_1_8)
++import org.gradle.api.tasks.bundling.Jar
++import org.gradle.kotlin.dsl.create
++
++enum class ModuleType {
++    ENTRY_POINT,
++    CORE,
++    WORKER,
++    PLUGIN,
++    INTERNAL,
++    REQUIRES_JAVA_8
+ }
+ 
+-
+ class UnitTestAndCompilePlugin : Plugin<Project> {
+-    override fun apply(project: Project): Unit = project.run {
+-        apply { plugin("groovy") }
+-
+-        val extension = extensions.create<UnitTestAndCompileExtension>("gradlebuildJava", this)
+-
+-        base.archivesBaseName = "gradle-${name.replace(Regex("\\p{Upper}")) { "-${it.value.toLowerCase()}" }}"
+-        addDependencies()
+-        addGeneratedResources(extension)
+-        configureCompile()
+-        configureJarTasks()
+-        configureTests()
+-    }
+-
+-    private
+-    fun Project.configureCompile() {
+-        afterEvaluate {
+-            val availableJavaInstallations = rootProject.the<AvailableJavaInstallations>()
+-
+-            tasks.withType<JavaCompile>().configureEach {
+-                options.isIncremental = true
+-                configureCompileTask(this, options, availableJavaInstallations)
+-            }
+-            tasks.withType<GroovyCompile>().configureEach {
+-                groovyOptions.encoding = "utf-8"
+-                configureCompileTask(this, options, availableJavaInstallations)
+-            }
+-        }
+-        addCompileAllTask()
+-    }
+-
+-    private
+-    fun configureCompileTask(compileTask: AbstractCompile, options: CompileOptions, availableJavaInstallations: AvailableJavaInstallations) {
+-        options.isFork = true
+-        options.encoding = "utf-8"
+-        options.compilerArgs = mutableListOf("-Xlint:-options", "-Xlint:-path")
+-        val targetJdkVersion = maxOf(compileTask.project.java.targetCompatibility, JavaVersion.VERSION_1_7)
+-        val jdkForCompilation = availableJavaInstallations.jdkForCompilation(targetJdkVersion)
+-        if (!jdkForCompilation.current) {
+-            options.forkOptions.javaHome = jdkForCompilation.javaHome
+-        }
+-        compileTask.inputs.property("javaInstallation", when (compileTask) {
+-            is JavaCompile -> jdkForCompilation
+-            else -> availableJavaInstallations.currentJavaInstallation
+-        }.displayName)
+-    }
+-
+-    private
+-    fun Project.addGeneratedResources(gradlebuildJava: UnitTestAndCompileExtension) {
+-        val classpathManifest = tasks.register("classpathManifest", ClasspathManifest::class.java)
+-        java.sourceSets["main"].output.dir(mapOf("builtBy" to classpathManifest), gradlebuildJava.generatedResourcesDir)
+-    }
+-
+-    private
+-    fun Project.addDependencies() {
+-        dependencies {
+-            val testCompile = configurations.getByName("testCompile")
+-            testCompile(library("junit"))
+-            testCompile(library("groovy"))
+-            testCompile(testLibrary("spock"))
+-            testLibraries("jmock").forEach { testCompile(it) }
+-
+-            components {
+-                withModule("org.spockframework:spock-core", SpockCoreRule::class.java)
+-            }
+-        }
+-    }
+-
+-    private
+-    fun Project.addCompileAllTask() {
+-        tasks.register("compileAll") {
+-            val compileTasks = project.tasks.matching {
+-                it is JavaCompile || it is GroovyCompile
+-            }
+-            dependsOn(compileTasks)
+-        }
+-    }
+-
+-    private
+-    fun Project.configureJarTasks() {
+-        tasks.withType<Jar>().configureEach {
+-            version = rootProject.extra["baseVersion"] as String
+-            manifest.attributes(mapOf(
+-                Attributes.Name.IMPLEMENTATION_TITLE.toString() to "Gradle",
+-                Attributes.Name.IMPLEMENTATION_VERSION.toString() to version))
+-        }
+-    }
+-
+-    private
+-    fun Project.configureTests() {
+-        val javaInstallationForTest = rootProject.availableJavaInstallations.javaInstallationForTest
+-
+-        tasks.withType<Test>().configureEach {
+-            maxParallelForks = project.maxParallelForks
+-            jvmArgumentProviders.add(createCiEnvironmentProvider(this))
+-            executable = Jvm.forHome(javaInstallationForTest.javaHome).javaExecutable.absolutePath
+-            environment["JAVA_HOME"] = javaInstallationForTest.javaHome.absolutePath
+-            if (javaInstallationForTest.javaVersion.isJava7) {
+-                // enable class unloading
+-                jvmArgs("-XX:+UseConcMarkSweepGC", "-XX:+CMSClassUnloadingEnabled")
+-            }
+-            // Includes JVM vendor and major version
+-            inputs.property("javaInstallation", javaInstallationForTest.displayName)
+-            doFirst {
+-                if (BuildEnvironment.isCiServer) {
+-                    logger.lifecycle("maxParallelForks for '$path' is $maxParallelForks")
+-                }
+-            }
+-        }
+-    }
+-
+-    private
+-    fun createCiEnvironmentProvider(test: Test): CommandLineArgumentProvider {
+-        return object : CommandLineArgumentProvider, Named {
+-            override fun getName() = "ciEnvironment"
+-
+-            override fun asArguments(): Iterable<String> {
+-                return if (BuildEnvironment.isCiServer) {
+-                    mapOf(
+-                        "org.gradle.test.maxParallelForks" to test.maxParallelForks,
+-                        "org.gradle.ci.agentCount" to 2,
+-                        "org.gradle.ci.agentNum" to agentNum
+-                    ).map {
+-                        "-D${it.key}=${it.value}"
+-                    }
+-                } else {
+-                    listOf()
+-                }
+-            }
+-        }
+-    }
+-}
+-
+-
+-open class UnitTestAndCompileExtension(val project: Project) {
+-    val generatedResourcesDir = project.file("${project.buildDir}/generated-resources/main")
+-    val generatedTestResourcesDir = project.file("${project.buildDir}/generated-resources/test")
+-    var moduleType: ModuleType = ModuleType.UNDEFINED
+-        set(value) {
+-            field = value
+-            // Entry points should run against Java so that we can give good error messages for people trying to run
+-            // Gradle on Java 5. But Java 9 no longer support Java 5. Therefore, to be able to build Gradle on Java 9,
+-            // we need to change the version to the minimum supported one.
+-            if (BuildEnvironment.javaVersion.isJava9Compatible && moduleType == ModuleType.ENTRY_POINT) {
+-                project.java.sourceCompatibility = JavaVersion.VERSION_1_6
+-                project.java.targetCompatibility = JavaVersion.VERSION_1_6
+-            } else {
+-                project.java.targetCompatibility = moduleType.target
+-                project.java.sourceCompatibility = moduleType.source
+-            }
+-        }
+-
+-    init {
+-        project.afterEvaluate {
+-            if (this@UnitTestAndCompileExtension.moduleType == ModuleType.UNDEFINED) {
+-                throw InvalidUserDataException("gradlebuild.moduletype must be set for project $project")
+-            }
+-        }
+-    }
+-}
+-
+-
+-open class SpockCoreRule : ComponentMetadataRule {
+-    override fun execute(context: ComponentMetadataContext) {
+-        context.details.allVariants {
+-            withDependencyConstraints {
+-                filter { it.group == "org.objenesis" }.forEach {
+-                    it.version { prefer("1.2") }
+-                    it.because("1.2 is required by Gradle and part of the distribution")
+-                }
+-            }
+-        }
++    override fun apply(project: Project) {
++        project.pluginManager.apply("groovy")
++        project.base.archivesBaseName = "gradle-${project.name.replace(Regex("\\p{Upper}")) { "-${it.value.toLowerCase()}" }}"
++        val extension = project.extensions.create<UnitTestAndCompileExtension>("gradlebuildJava")
++        extension.generatedResourcesDir = project.file("${project.buildDir}/generated-resources/main")
++        extension.generatedTestResourcesDir = project.file("${project.buildDir}/generated-resources/test")
++        val classpathManifest = project.tasks.create("classpathManifest", ClasspathManifest::class.java)
++        (project.tasks.getByName("jar") as Jar).from(classpathManifest)
+     }
+ }
+diff --git a/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/modules/PatchExternalModules.kt b/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/modules/PatchExternalModules.kt
+index 959b9fb4..8e38f3e7 100644
+--- a/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/modules/PatchExternalModules.kt
++++ b/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/modules/PatchExternalModules.kt
+@@ -59,15 +59,17 @@ open class PatchExternalModules : DefaultTask() {
+         ClasspathManifestPatcher(project.rootProject, temporaryDir, allModules, namesOfModulesToPatch)
+             .writePatchedFilesTo(destination)
+ 
+-        // TODO: Should this be configurable?
+-        JarPatcher(project.rootProject, temporaryDir, allModules, "kotlin-compiler-embeddable")
+-            .exclude("META-INF/services/java.nio.charset.spi.CharsetProvider")
+-            .exclude("META-INF/services/javax.annotation.processing.Processor")
+-            .exclude("net/rubygrapefruit/platform/**")
+-            .exclude("org/fusesource/jansi/**")
+-            .exclude("META-INF/native/**/*jansi.*")
+-            .includeJar("native-platform-")
+-            .includeJar("jansi-", "META-INF/native/**", "org/fusesource/jansi/internal/CLibrary*.class")
+-            .writePatchedFilesTo(destination)
++        if (System.getProperty("bootstrapWithGradle4_7_0") != "true") {
++            // TODO: Should this be configurable?
++            JarPatcher(project.rootProject, temporaryDir, allModules, "kotlin-compiler-embeddable")
++                .exclude("META-INF/services/java.nio.charset.spi.CharsetProvider")
++                .exclude("META-INF/services/javax.annotation.processing.Processor")
++                .exclude("net/rubygrapefruit/platform/**")
++                .exclude("org/fusesource/jansi/**")
++                .exclude("META-INF/native/**/*jansi.*")
++                .includeJar("native-platform-")
++                .includeJar("jansi-", "META-INF/native/**", "org/fusesource/jansi/internal/CLibrary*.class")
++                .writePatchedFilesTo(destination)
++        }
+     }
+ }
+diff --git a/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/plugins/buildtypes/BuildTypesPlugin.kt b/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/plugins/buildtypes/BuildTypesPlugin.kt
+index 864bbdba..5a4771f7 100644
+--- a/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/plugins/buildtypes/BuildTypesPlugin.kt
++++ b/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/plugins/buildtypes/BuildTypesPlugin.kt
+@@ -1,121 +1,8 @@
+ package org.gradle.plugins.buildtypes
+ 
+-import org.gradle.api.GradleException
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+ 
+-import org.gradle.kotlin.dsl.*
+-
+-
+ class BuildTypesPlugin : Plugin<Project> {
+-
+-    override fun apply(project: Project): Unit = project.run {
+-        val buildTypes = container(BuildType::class.java)
+-        extensions.add("buildTypes", buildTypes)
+-        buildTypes.all {
+-            register(this)
+-        }
+-    }
+-
+-    private
+-    fun Project.register(buildType: BuildType) {
+-        tasks.register(buildType.name) {
+-
+-            group = "Build Type"
+-
+-            description = "The $name build type (can only be abbreviated to '${buildType.abbreviation}')"
+-
+-            doFirst {
+-                throw GradleException("'$name' is a build type and must be invoked directly, and its name can only be abbreviated to '${buildType.abbreviation}'.")
+-            }
+-        }
+-
+-        val invokedTaskNames = gradle.startParameter.taskNames
+-        buildType.findUsedTaskNameAndIndexIn(invokedTaskNames)?.let { (usedName, index) ->
+-            require(usedName.isNotEmpty())
+-            if (!isTaskHelpInvocation(invokedTaskNames, index)) {
+-                buildType.active = true
+-                buildType.onProjectProperties = { properties: ProjectProperties ->
+-                    properties.forEach(project::setOrCreateProperty)
+-                }
+-                afterEvaluate {
+-                    invokedTaskNames.removeAt(index)
+-
+-                    val subproject = usedName.substringBeforeLast(":", "")
+-                    insertBuildTypeTasksInto(invokedTaskNames, index, buildType, subproject)
+-
+-                    gradle.startParameter.setTaskNames(invokedTaskNames)
+-                }
+-            }
+-        }
+-    }
+-
+-    private
+-    fun BuildType.findUsedTaskNameAndIndexIn(taskNames: List<String>): Pair<String, Int>? {
+-        val candidates = arrayOf(name, abbreviation)
+-        val nameSuffix = ":$name"
+-        val abbreviationSuffix = ":$abbreviation"
+-        return taskNames.indexOfFirst {
+-            it in candidates || it.endsWith(nameSuffix) || it.endsWith(abbreviationSuffix)
+-        }.takeIf {
+-            it >= 0
+-        }?.let {
+-            taskNames[it] to it
+-        }
+-    }
+-
+-    private
+-    fun isTaskHelpInvocation(taskNames: List<String>, taskIndex: Int) =
+-        taskIndex >= 2
+-            && taskNames[taskIndex - 1] == "--task"
+-            && taskNames[taskIndex - 2].let(helpTaskRegex::matches)
+-
+-    private
+-    val helpTaskRegex = Regex("h(e(lp?)?)?")
+-}
+-
+-
+-internal
+-fun Project.insertBuildTypeTasksInto(
+-    taskList: MutableList<String>,
+-    index: Int,
+-    buildType: BuildType,
+-    subproject: String
+-) {
+-
+-    fun insert(task: String) =
+-        taskList.add(index, task)
+-
+-    fun forEachBuildTypeTask(act: (String) -> Unit) =
+-        buildType.tasks.reversed().forEach(act)
+-
+-    when {
+-        subproject.isEmpty() ->
+-            forEachBuildTypeTask(::insert)
+-
+-        findProject(subproject) != null ->
+-            forEachBuildTypeTask {
+-                val taskPath = "$subproject:$it"
+-                if (tasks.findByPath(taskPath) != null) {
+-                    insert(taskPath)
+-                } else {
+-                    println("Skipping task '$taskPath' requested by build type ${buildType.name}, as it does not exist.")
+-                }
+-            }
+-        else -> {
+-            println("Skipping execution of build type '${buildType.name}'. Project '$subproject' not found in root project '$name'.")
+-        }
+-    }
+-
+-    if (taskList.isEmpty()) {
+-        taskList.add("help") //do not trigger the default tasks
+-    }
+-}
+-
+-
+-fun Project.setOrCreateProperty(propertyName: String, value: Any) {
+-    when {
+-        hasProperty(propertyName) -> setProperty(propertyName, value)
+-        else -> extra.set(propertyName, value)
+-    }
++    override fun apply(project: Project) = Unit
+ }
+diff --git a/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/plugins/performance/PerformanceTestPlugin.kt b/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/plugins/performance/PerformanceTestPlugin.kt
+index 55d2fe1a..47161ebe 100644
+--- a/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/plugins/performance/PerformanceTestPlugin.kt
++++ b/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/plugins/performance/PerformanceTestPlugin.kt
+@@ -1,481 +1,19 @@
+ package org.gradle.plugins.performance
+ 
+-import accessors.groovy
+-import accessors.java
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+-import org.gradle.api.Task
+-import org.gradle.api.tasks.Delete
+-import org.gradle.api.tasks.Input
+-import org.gradle.api.tasks.JavaExec
+-import org.gradle.api.tasks.OutputDirectory
+-import org.gradle.api.tasks.SourceSet
+-import org.gradle.api.tasks.TaskAction
+-import org.gradle.api.tasks.TaskProvider
+-import org.gradle.api.tasks.bundling.Zip
+-import org.gradle.api.tasks.testing.junit.JUnitOptions
+-import org.gradle.internal.hash.HashUtil
+-import org.gradle.plugins.ide.eclipse.EclipsePlugin
+-import org.gradle.plugins.ide.eclipse.model.EclipseModel
+-import org.gradle.plugins.ide.idea.IdeaPlugin
+-import org.gradle.plugins.ide.idea.model.IdeaModel
+-import org.gradle.testing.DistributedPerformanceTest
+-import org.gradle.testing.PerformanceTest
+-import org.gradle.testing.RebaselinePerformanceTests
+-import org.gradle.testing.performance.generator.tasks.AbstractProjectGeneratorTask
+-import org.gradle.testing.performance.generator.tasks.JavaExecProjectGeneratorTask
+-import org.gradle.testing.performance.generator.tasks.JvmProjectGeneratorTask
+-import org.gradle.testing.performance.generator.tasks.ProjectGeneratorTask
+-import org.gradle.testing.performance.generator.tasks.RemoteProject
+-import org.gradle.testing.performance.generator.tasks.TemplateProjectGeneratorTask
+ 
+-import org.w3c.dom.Document
+-import java.io.File
+-import javax.xml.parsers.DocumentBuilderFactory
+-
+-import org.gradle.kotlin.dsl.*
+-
+-
+-private
+-object PropertyNames {
+-
+-    const val dbUrl = "org.gradle.performance.db.url"
+-    const val dbUsername = "org.gradle.performance.db.username"
+-    const val dbPassword = "org.gradle.performance.db.password"
+-
+-    const val flameGraphTargetDir = "org.gradle.performance.flameGraphTargetDir"
+-
+-    const val workerTestTaskName = "org.gradle.performance.workerTestTaskName"
+-    const val channel = "org.gradle.performance.execution.channel"
+-    const val coordinatorBuildId = "org.gradle.performance.coordinatorBuildId"
+-    const val performanceTestVerbose = "performanceTest.verbose"
+-    const val baselines = "org.gradle.performance.baselines"
+-    const val buildTypeId = "org.gradle.performance.buildTypeId"
+-    const val branchName = "org.gradle.performance.branchName"
+-
+-    const val teamCityUsername = "teamCityUsername"
+-    const val teamCityPassword = "teamCityPassword"
+-}
+-
+-
+-private
+-object Config {
+-
+-    val baseLineList = listOf("1.1", "1.12", "2.0", "2.1", "2.4", "2.9", "2.12", "2.14.1", "last")
+-
+-    const val performanceTestScenarioListFileName = "performance-tests/scenario-list.csv"
+-
+-    const val performanceTestScenarioReportFileName = "performance-tests/scenario-report.html"
+-
+-    const val performanceTestReportsDir = "performance-tests/report"
+-
+-    const val teamCityUrl = "https://builds.gradle.org/"
+-
+-    const val adhocTestDbUrl = "jdbc:h2:./build/database"
+-}
+-
+-
+-private
+-const val performanceExperimentCategory = "org.gradle.performance.categories.PerformanceExperiment"
+-
+-
+-@Suppress("unused")
+ class PerformanceTestPlugin : Plugin<Project> {
+-
+-    override fun apply(project: Project): Unit = project.run {
+-        apply {
+-            plugin("java")
+-        }
+-
+-        val performanceTestSourceSet = createPerformanceTestSourceSet()
+-        addConfigurationAndDependencies()
+-        createCheckNoIdenticalBuildFilesTask()
+-        configureGeneratorTasks()
+-
+-        val prepareSamplesTask = createPrepareSamplesTask()
+-        createCleanSamplesTask()
+-
+-        val performanceReportTask = createPerformanceReportTask(performanceTestSourceSet)
+-        createLocalPerformanceTestTasks(performanceTestSourceSet, prepareSamplesTask, performanceReportTask)
+-        createDistributedPerformanceTestTasks(performanceTestSourceSet, prepareSamplesTask, performanceReportTask)
+-
+-        createRebaselineTask(performanceTestSourceSet)
+-
+-        configureIdePlugins(performanceTestSourceSet)
+-    }
+-
+-    private
+-    fun Project.createRebaselineTask(performanceTestSourceSet: SourceSet) {
+-        project.tasks.register("rebaselinePerformanceTests", RebaselinePerformanceTests::class.java) {
+-            source(performanceTestSourceSet.allSource)
+-        }
+-    }
+-
+-    private
+-    fun Project.createPerformanceTestSourceSet(): SourceSet = java.sourceSets.run {
+-        val main by getting
+-        val test by getting
+-        val performanceTest by creating {
+-            compileClasspath += main.output + test.output
+-            runtimeClasspath += main.output + test.output
+-        }
+-        performanceTest
+-    }
+-
+-    private
+-    fun Project.addConfigurationAndDependencies() {
+-        configurations {
+-
+-            val testCompile by getting
+-
+-            "performanceTestCompile" {
+-                extendsFrom(testCompile)
+-            }
+-
+-            val testRuntime by getting
+-
+-            "performanceTestRuntime" {
+-                extendsFrom(testRuntime)
+-            }
+-
+-            val performanceTestRuntimeClasspath by getting
+-
+-            "partialDistribution" {
+-                extendsFrom(performanceTestRuntimeClasspath)
+-            }
+-
+-            "junit" {
+-            }
+-        }
+-
+-        dependencies {
+-            "performanceTestCompile"(project(":internalPerformanceTesting"))
+-            "junit"("junit:junit:4.12")
+-        }
+-    }
+-
+-    private
+-    fun Project.createCheckNoIdenticalBuildFilesTask() {
+-        tasks.register("checkNoIdenticalBuildFiles") {
+-            doLast {
+-                val filesBySha1 = mutableMapOf<String, MutableList<File>>()
+-                buildDir.walkTopDown().forEach { file ->
+-                    if (file.name.endsWith(".gradle")) {
+-                        val sha1 = sha1StringFor(file)
+-                        val files = filesBySha1[sha1]
+-                        when (files) {
+-                            null -> filesBySha1[sha1] = mutableListOf(file)
+-                            else -> files.add(file)
+-                        }
+-                    }
+-                }
+-
+-                filesBySha1.forEach { hash, candidates ->
+-                    if (candidates.size > 1) {
+-                        logger.lifecycle("Duplicate build files found for hash '$hash' : $candidates")
+-                    }
+-                }
+-            }
+-        }
+-    }
+-
+-    private
+-    fun Project.configureGeneratorTasks() {
+-
+-        tasks.withType<ProjectGeneratorTask>().configureEach {
+-            group = "Project setup"
+-        }
+-
+-        tasks.withType<AbstractProjectGeneratorTask>().configureEach {
+-            (project.findProperty("maxProjects") as? Int)?.let { maxProjects ->
+-                setProjects(maxProjects)
+-            }
+-        }
+-
+-        tasks.withType<JvmProjectGeneratorTask>().configureEach {
+-            testDependencies = configurations["junit"]
+-        }
+-
+-        tasks.withType<TemplateProjectGeneratorTask>().configureEach {
+-            sharedTemplateDirectory = project(":internalPerformanceTesting").file("src/templates")
+-        }
+-    }
+-
+-    private
+-    fun Project.createPrepareSamplesTask(): TaskProvider<Task> =
+-        tasks.register("prepareSamples") {
+-            group = "Project Setup"
+-            description = "Generates all sample projects for automated performance tests"
+-            dependsOn(tasks.withType<ProjectGeneratorTask>())
+-            dependsOn(tasks.withType<RemoteProject>())
+-            dependsOn(tasks.withType<JavaExecProjectGeneratorTask>())
+-        }
+-
+-    private
+-    fun Project.createCleanSamplesTask() =
+-        tasks.register("cleanSamples", Delete::class.java) {
+-            delete(deferred { tasks.withType<ProjectGeneratorTask>().map { it.outputs } })
+-            delete(deferred { tasks.withType<RemoteProject>().map { it.outputDirectory } })
+-            delete(deferred { tasks.withType<JavaExecProjectGeneratorTask>().map { it.outputs } })
+-        }
+-
+-    private
+-    fun Project.createPerformanceReportTask(performanceTestSourceSet: SourceSet): TaskProvider<PerformanceReport> =
+-        tasks.register("performanceReport", PerformanceReport::class.java) {
+-            systemProperties(propertiesForPerformanceDb())
+-            classpath = performanceTestSourceSet.runtimeClasspath
+-            resultStoreClass = "org.gradle.performance.results.AllResultsStore"
+-            reportDir = buildDir / Config.performanceTestReportsDir
+-            outputs.upToDateWhen { false }
+-        }
+-
+-    private
+-    fun Project.createLocalPerformanceTestTasks(
+-        performanceSourceSet: SourceSet,
+-        prepareSamplesTask: TaskProvider<Task>,
+-        performanceReportTask: TaskProvider<PerformanceReport>
+-    ) {
+-
+-        fun create(name: String, configure: PerformanceTest.() -> Unit = {}) {
+-            createLocalPerformanceTestTask(name, performanceSourceSet, prepareSamplesTask, performanceReportTask).configure(configure)
+-        }
+-
+-        create("performanceTest") {
+-            (options as JUnitOptions).excludeCategories(performanceExperimentCategory)
+-        }
+-
+-        create("performanceExperiment") {
+-            (options as JUnitOptions).includeCategories(performanceExperimentCategory)
+-        }
+-
+-        create("fullPerformanceTest")
+-
+-        create("performanceAdhocTest") {
+-            systemProperty(PropertyNames.dbUrl, Config.adhocTestDbUrl)
+-            channel = "adhoc"
+-        }
+-    }
+-
+-    private
+-    fun Project.createDistributedPerformanceTestTasks(
+-        performanceSourceSet: SourceSet,
+-        prepareSamplesTask: TaskProvider<Task>,
+-        performanceReportTask: TaskProvider<PerformanceReport>
+-    ) {
+-
+-        fun create(name: String, configure: PerformanceTest.() -> Unit = {}) {
+-            createDistributedPerformanceTestTask(name, performanceSourceSet, prepareSamplesTask, performanceReportTask).configure(configure)
+-        }
+-
+-        create("distributedPerformanceTest") {
+-            (options as JUnitOptions).excludeCategories(performanceExperimentCategory)
+-            channel = "commits"
+-        }
+-        create("distributedPerformanceExperiment") {
+-            (options as JUnitOptions).includeCategories(performanceExperimentCategory)
+-            channel = "experiments"
+-        }
+-        create("distributedFullPerformanceTest") {
+-            baselines = Config.baseLineList.toString()
+-            checks = "none"
+-            channel = "historical"
+-        }
+-    }
+-
+-    private
+-    fun Project.configureIdePlugins(performanceTestSourceSet: SourceSet) {
+-        val performanceTestCompile by configurations
+-        val performanceTestRuntime by configurations
+-        plugins.withType<EclipsePlugin> {
+-            configure<EclipseModel> {
+-                classpath {
+-                    plusConfigurations.apply {
+-                        add(performanceTestCompile)
+-                        add(performanceTestRuntime)
+-                    }
+-                }
+-            }
+-        }
+-
+-        plugins.withType<IdeaPlugin> {
+-            configure<IdeaModel> {
+-                module {
+-                    testSourceDirs = testSourceDirs + performanceTestSourceSet.groovy.srcDirs
+-                    testSourceDirs = testSourceDirs + performanceTestSourceSet.resources.srcDirs
+-                    scopes["TEST"]!!["plus"]!!.apply {
+-                        add(performanceTestCompile)
+-                        add(performanceTestRuntime)
+-                    }
+-                }
+-            }
+-        }
+-    }
+-
+-    private
+-    fun Project.createDistributedPerformanceTestTask(
+-        name: String,
+-        performanceSourceSet: SourceSet,
+-        prepareSamplesTask: TaskProvider<Task>,
+-        performanceReportTask: TaskProvider<PerformanceReport>
+-    ): TaskProvider<DistributedPerformanceTest> {
+-
+-        val result = tasks.register(name, DistributedPerformanceTest::class.java) {
+-            configureForAnyPerformanceTestTask(this, performanceSourceSet, prepareSamplesTask, performanceReportTask)
+-            scenarioList = buildDir / Config.performanceTestScenarioListFileName
+-            scenarioReport = buildDir / Config.performanceTestScenarioReportFileName
+-            buildTypeId = stringPropertyOrNull(PropertyNames.buildTypeId)
+-            workerTestTaskName = stringPropertyOrNull(PropertyNames.workerTestTaskName) ?: "fullPerformanceTest"
+-            coordinatorBuildId = stringPropertyOrNull(PropertyNames.coordinatorBuildId)
+-            branchName = stringPropertyOrNull(PropertyNames.branchName)
+-            teamCityUrl = Config.teamCityUrl
+-            teamCityUsername = stringPropertyOrNull(PropertyNames.teamCityUsername)
+-            teamCityPassword = stringPropertyOrNull(PropertyNames.teamCityPassword)
+-        }
+-
+-        afterEvaluate {
+-            result.configure {
+-                branchName?.takeIf { it.isNotEmpty() }?.let { branchName ->
+-                    channel = channel + "-" + branchName
+-                }
+-            }
+-        }
+-
+-        return result
+-    }
+-
+-    private
+-    fun Project.createLocalPerformanceTestTask(
+-        name: String,
+-        performanceSourceSet: SourceSet,
+-        prepareSamplesTask: TaskProvider<Task>,
+-        performanceReportTask: TaskProvider<PerformanceReport>
+-    ): TaskProvider<PerformanceTest> {
+-
+-        val performanceTest = tasks.register(name, PerformanceTest::class.java) {
+-            configureForAnyPerformanceTestTask(this, performanceSourceSet, prepareSamplesTask, performanceReportTask)
+-
+-            if (project.hasProperty(PropertyNames.performanceTestVerbose)) {
+-                testLogging.showStandardStreams = true
+-            }
+-        }
+-
+-        val testResultsZipTask = testResultsZipTaskFor(performanceTest, name)
+-
+-        performanceTest.configure {
+-            finalizedBy(testResultsZipTask)
+-        }
+-
+-        // TODO: Make this lazy, see https://github.com/gradle/gradle-native/issues/718
+-        tasks.getByName("clean${name.capitalize()}") {
+-            delete(performanceTest)
+-            dependsOn("clean${testResultsZipTask.get().name.capitalize()}")
+-            dependsOn("clean${performanceReportTask.get().name.capitalize()}")
+-        }
+-
+-        return performanceTest
+-    }
+-
+-    private
+-    fun Project.testResultsZipTaskFor(performanceTest: TaskProvider<PerformanceTest>, name: String): TaskProvider<Zip> {
+-        return tasks.register("${name}ResultsZip", Zip::class.java) {
+-            val junitXmlDir = performanceTest.get().reports.junitXml.destination
+-            from(junitXmlDir) {
+-                include("**/TEST-*.xml")
+-                includeEmptyDirs = false
+-                eachFile {
+-                    try {
+-                        // skip files where all tests were skipped
+-                        if (allTestsWereSkipped(file)) {
+-                            exclude()
+-                        }
+-                    } catch (e: Exception) {
+-                        exclude()
+-                    }
+-                }
+-            }
+-            from(performanceTest.get().debugArtifactsDirectory)
+-            destinationDir = buildDir
+-            archiveName = "test-results-${junitXmlDir.name}.zip"
+-        }
+-    }
+-
+-    private
+-    fun Project.configureForAnyPerformanceTestTask(
+-        task: PerformanceTest,
+-        performanceSourceSet: SourceSet,
+-        prepareSamplesTask: TaskProvider<Task>,
+-        performanceReportTask: TaskProvider<PerformanceReport>
+-    ) {
+-
+-        task.apply {
+-            group = "verification"
+-            systemProperties(propertiesForPerformanceDb())
+-            testClassesDirs = performanceSourceSet.output.classesDirs
+-            classpath = performanceSourceSet.runtimeClasspath
+-
+-            binaryDistributions.binZipRequired = true
+-            libsRepository.required = true
+-            maxParallelForks = 1
+-
+-            project.findProperty(PropertyNames.baselines)?.let { baselines ->
+-                systemProperty(PropertyNames.baselines, baselines)
+-            }
+-
+-            jvmArgs("-Xmx3g", "-XX:+HeapDumpOnOutOfMemoryError")
+-
+-            dependsOn(prepareSamplesTask)
+-            finalizedBy(performanceReportTask)
+-
+-            mustRunAfter(tasks.withType<ProjectGeneratorTask>())
+-            mustRunAfter(tasks.withType<RemoteProject>())
+-            mustRunAfter(tasks.withType<JavaExecProjectGeneratorTask>())
+-
+-            doFirst {
+-                channel?.let { channel ->
+-                    performanceReportTask.get().systemProperty(PropertyNames.channel, channel)
+-                }
+-            }
+-        }
++    override fun apply(project: Project) {
++        project.configurations.maybeCreate("performanceTestCompile")
++        project.configurations.maybeCreate("performanceTestRuntime")
++        project.configurations.maybeCreate("performanceTestImplementation")
++        project.configurations.maybeCreate("performanceTestRuntimeOnly")
++        project.extensions.create("performanceReport", PerformanceReportExtension::class.java)
++        project.tasks.create("performanceAdhocTest")
+     }
+-
+-    private
+-    fun Project.propertiesForPerformanceDb(): Map<String, String> =
+-        selectStringProperties(
+-            PropertyNames.dbUrl,
+-            PropertyNames.dbUsername,
+-            PropertyNames.dbPassword)
+ }
+ 
+-
+-open class PerformanceReport : JavaExec() {
+-
+-    @Input
+-    lateinit var resultStoreClass: String
+-
+-    @OutputDirectory
+-    lateinit var reportDir: File
+-
+-    @TaskAction
+-    override fun exec() {
+-        main = "org.gradle.performance.results.ReportGenerator"
+-        args = listOf(resultStoreClass, reportDir.path)
+-        super.exec()
+-    }
++open class PerformanceReportExtension {
++    var resultStoreClass: String? = null
+ }
+-
+-
+-internal
+-fun allTestsWereSkipped(junitXmlFile: File): Boolean =
+-    parseXmlFile(junitXmlFile).documentElement.run {
+-        getAttribute("tests") == getAttribute("skipped")
+-    }
+-
+-
+-private
+-fun parseXmlFile(file: File): Document =
+-    DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file)
+-
+-
+-private
+-fun sha1StringFor(file: File) =
+-    HashUtil.createHash(file, "sha1").asHexString()
+diff --git a/buildSrc/subprojects/uber-plugins/src/main/kotlin/gradlebuild/java-projects.gradle.kts b/buildSrc/subprojects/uber-plugins/src/main/kotlin/gradlebuild/java-projects.gradle.kts
+index e5d15dc1..619ba131 100644
+--- a/buildSrc/subprojects/uber-plugins/src/main/kotlin/gradlebuild/java-projects.gradle.kts
++++ b/buildSrc/subprojects/uber-plugins/src/main/kotlin/gradlebuild/java-projects.gradle.kts
+@@ -38,7 +38,7 @@ apply {
+     }
+ }
+ 
+-tasks.named("check").configure {
++tasks.findByName("check")?.run {
+     dependsOn(":docs:checkstyleApi")
+     dependsOn("codeQuality")
+ }
+diff --git a/buildSrc/subprojects/versioning/src/main/kotlin/org/gradle/gradlebuild/versioning/UpdateVersionsPlugin.kt b/buildSrc/subprojects/versioning/src/main/kotlin/org/gradle/gradlebuild/versioning/UpdateVersionsPlugin.kt
+index 5efd4f74..72285f74 100644
+--- a/buildSrc/subprojects/versioning/src/main/kotlin/org/gradle/gradlebuild/versioning/UpdateVersionsPlugin.kt
++++ b/buildSrc/subprojects/versioning/src/main/kotlin/org/gradle/gradlebuild/versioning/UpdateVersionsPlugin.kt
+@@ -31,12 +31,12 @@ class UpdateVersionsPlugin : Plugin<Project> {
+     override fun apply(project: Project): Unit = project.run {
+         val releasedVersionsJsonFile = file("released-versions.json")
+ 
+-        tasks.withType<UpdateReleasedVersions>().configureEach {
++        tasks.withType<UpdateReleasedVersions>().all {
+             releasedVersionsFile = releasedVersionsJsonFile
+             group = "Versioning"
+         }
+ 
+-        tasks.register("updateReleasedVersions", UpdateReleasedVersions::class.java) {
++        tasks.create("updateReleasedVersions", UpdateReleasedVersions::class.java) {
+             // TODO
+             val currentReleasedVersionProperty = project.findProperty("currentReleasedVersion")
+             val value =
+@@ -45,7 +45,7 @@ class UpdateVersionsPlugin : Plugin<Project> {
+             currentReleasedVersion.set(value)
+         }
+ 
+-        tasks.register("updateReleasedVersionsToLatestNightly", UpdateReleasedVersions::class.java) {
++        tasks.create("updateReleasedVersionsToLatestNightly", UpdateReleasedVersions::class.java) {
+             currentReleasedVersion.set(project.providers.provider(Callable {
+                 val jsonText = URL("https://services.gradle.org/versions/${VersionType.NIGHTLY.type}").readText()
+                 println(jsonText)
+diff --git a/buildSrc/subprojects/versioning/src/main/kotlin/org/gradle/gradlebuild/versioning/WrapperPlugin.kt b/buildSrc/subprojects/versioning/src/main/kotlin/org/gradle/gradlebuild/versioning/WrapperPlugin.kt
+index 9cab2aa3..803bc6d4 100644
+--- a/buildSrc/subprojects/versioning/src/main/kotlin/org/gradle/gradlebuild/versioning/WrapperPlugin.kt
++++ b/buildSrc/subprojects/versioning/src/main/kotlin/org/gradle/gradlebuild/versioning/WrapperPlugin.kt
+@@ -31,7 +31,7 @@ class WrapperPlugin : Plugin<Project> {
+         wrapperUpdateTask("rc", "release-candidate")
+         wrapperUpdateTask("current", "current")
+ 
+-        tasks.withType<Wrapper>().configureEach {
++        tasks.withType<Wrapper>().all {
+             val jvmOpts = "-Xmx128m -Dfile.encoding=UTF-8"
+             inputs.property("jvmOpts", jvmOpts)
+             // TODO Do we want to use doLast or a finalizedBy task?
+@@ -48,18 +48,18 @@ class WrapperPlugin : Plugin<Project> {
+         val wrapperTaskName = "${name}Wrapper"
+         val configureWrapperTaskName = "configure${wrapperTaskName.capitalize()}"
+ 
+-        val wrapperTask = tasks.register(wrapperTaskName, Wrapper::class.java) {
++        val wrapperTask = tasks.create(wrapperTaskName, Wrapper::class.java) {
+             dependsOn(configureWrapperTaskName)
+             group = "wrapper"
+         }
+ 
+         // TODO Avoid late configuration
+-        tasks.register(configureWrapperTaskName) {
++        tasks.create(configureWrapperTaskName) {
+             doLast {
+                 val jsonText = URL("https://services.gradle.org/versions/$label").readText()
+                 val versionInfo = Gson().fromJson(jsonText, VersionDownloadInfo::class.java)
+                 println("updating wrapper to $label version: ${versionInfo.version} (downloadUrl: ${versionInfo.downloadUrl})")
+-                wrapperTask.get().distributionUrl = versionInfo.downloadUrl
++                wrapperTask.distributionUrl = versionInfo.downloadUrl
+             }
+         }
+     }
+diff --git a/gradle/dependencies.gradle b/gradle/dependencies.gradle
+index 98ee5444..c2a76c95 100644
+--- a/gradle/dependencies.gradle
++++ b/gradle/dependencies.gradle
+@@ -56,7 +56,7 @@ libraries.jackson_annotations = [coordinates: 'com.fasterxml.jackson.core:jackso
+ libraries.jackson_databind =    [coordinates: 'com.fasterxml.jackson.core:jackson-databind', version: libraries.jackson_core.version]
+ libraries.jansi =               [coordinates: 'org.fusesource.jansi:jansi', version: '1.14']
+ libraries.jatl =                [coordinates: 'com.googlecode.jatl:jatl', version: '0.2.2']
+-libraries.jcifs =               [coordinates: 'org.samba.jcifs:jcifs', version: '1.3.17']
++libraries.jcifs =               [coordinates: 'jcifs:jcifs', version: '1.3.17']
+ libraries.jcip =                [coordinates: 'net.jcip:jcip-annotations', version: '1.0']
+ libraries.jgit =                [coordinates: 'org.eclipse.jgit:org.eclipse.jgit', version: '4.5.3.201708160445-r', because: '4.6+ requires Java 8']
+ libraries.joda =                [coordinates: 'joda-time:joda-time', version: '2.8.2']
+diff --git a/gradle/versioning.gradle b/gradle/versioning.gradle
+index ddf27724..fabf6c05 100644
+--- a/gradle/versioning.gradle
++++ b/gradle/versioning.gradle
+@@ -2,7 +2,7 @@ import org.gradle.build.BuildReceipt
+ import org.gradle.gradlebuild.BuildEnvironment
+ import org.gradle.internal.os.OperatingSystem
+ 
+-if (buildTypes.promotionBuild.active) {
++if (false) {
+     logger.lifecycle "Invocation tasks: $gradle.startParameter.taskNames\nInvocation properties: $gradle.startParameter.projectProperties"
+ }
+ 
+@@ -142,7 +142,7 @@ if (finalRelease) {
+     version += "-$buildTimestamp"
+ }
+ 
+-if (buildTypes.promotionBuild.active) {
++if (false) {
+     logger.lifecycle "Version: $version (base version: $baseVersion, timestamp: $buildTimestamp, snapshot: $isSnapshot)"
+     if (BuildEnvironment.isCiServer) {
+         logger.lifecycle "##teamcity[buildStatus text='{build.status.text}, Promoted version ${version}']"
+diff --git a/subprojects/build-scan-performance/build-scan-performance.gradle b/subprojects/build-scan-performance/build-scan-performance.gradle
+index 4aa207a9..0d4b2680 100644
+--- a/subprojects/build-scan-performance/build-scan-performance.gradle
++++ b/subprojects/build-scan-performance/build-scan-performance.gradle
+@@ -19,7 +19,9 @@ plugins {
+     id 'gradlebuild.classycle'
+ }
+ 
+-apply from: 'templates.gradle'
++if (!project.hasProperty('bootstrapWithGradle4_7_0')) {
++    apply from: 'templates.gradle'
++}
+ 
+ performanceReport {
+     resultStoreClass = "org.gradle.performance.results.BuildScanResultsStore"
+diff --git a/subprojects/distributions/distributions.gradle b/subprojects/distributions/distributions.gradle
+index 0280b78c..b8937be3 100644
+--- a/subprojects/distributions/distributions.gradle
++++ b/subprojects/distributions/distributions.gradle
+@@ -142,10 +142,12 @@ artifacts {
+     dists allZip, binZip, srcZip
+ }
+ 
+-integTestTasks.configureEach {
+-    binaryDistributions.distributionsRequired = true
+-    systemProperty 'org.gradle.public.api.includes', PublicApi.includes.join(':')
+-    systemProperty 'org.gradle.public.api.excludes', PublicApi.excludes.join(':')
++if (project.hasProperty('integTestTasks')) {
++    integTestTasks.all {
++        binaryDistributions.distributionsRequired = true
++        systemProperty 'org.gradle.public.api.includes', PublicApi.includes.join(':')
++        systemProperty 'org.gradle.public.api.excludes', PublicApi.excludes.join(':')
++    }
+ }
+ 
+ apply from: 'binary-compatibility.gradle'
+diff --git a/subprojects/docs/docs.gradle b/subprojects/docs/docs.gradle
+index 61a08ddf..a215df47 100644
+--- a/subprojects/docs/docs.gradle
++++ b/subprojects/docs/docs.gradle
+@@ -47,6 +47,13 @@ plugins {
+ 
+ repositories {
+     javaScript.googleApis()
++    mavenCentral()
++}
++
++if (project.hasProperty('bootstrapWithGradle4_7_0')) {
++    tasks.matching { it.name.endsWith('Asciidoc') || it.name.endsWith('Docbook') }.all {
++        enabled = false
++    }
+ }
+ 
+ configurations {
+@@ -435,10 +442,10 @@ task javadocAll(type: Javadoc) {
+ }
+ 
+ task checkstyleApi(type: Checkstyle) {
++    enabled = false
+     source javadocAll.source
+-    configFile = new File(checkstyle.configDir, "checkstyle-api.xml")
++    configFile = file("$rootDir/config/checkstyle/checkstyle-api.xml")
+     classpath = files()
+-    reports.xml.destination = file("$checkstyle.reportsDir/checkstyle-api.xml")
+ }
+ 
+ task distDocs(type: Docbook2Xhtml) {
+diff --git a/subprojects/ide-play/ide-play.gradle b/subprojects/ide-play/ide-play.gradle
+index ec8049ff..27d9af03 100644
+--- a/subprojects/ide-play/ide-play.gradle
++++ b/subprojects/ide-play/ide-play.gradle
+@@ -39,6 +39,6 @@ testFixtures {
+     from(':ide')
+ }
+ 
+-tasks.withType(org.gradle.gradlebuild.test.integrationtests.IntegrationTest).configureEach {
++tasks.withType(org.gradle.gradlebuild.test.integrationtests.IntegrationTest).all {
+     dependsOn(':platformPlay:integTestPrepare')
+ }
+diff --git a/subprojects/integ-test/integ-test.gradle b/subprojects/integ-test/integ-test.gradle
+index a4625323..13363b43 100644
+--- a/subprojects/integ-test/integ-test.gradle
++++ b/subprojects/integ-test/integ-test.gradle
+@@ -28,24 +28,28 @@ testFixtures {
+     from(':platformNative', 'integTest')
+ }
+ 
+-integTestTasks.configureEach { task ->
+-    task.userguideSamples.with {
+-        required = true
+-        samplesXml.set(layout.file(provider { new File(project(':docs').docbookSrc, 'samples.xml') }))
+-        userGuideSamplesOutput.set(layout.projectDirectory.dir(provider { new File(project(':docs').samplesSrcDir, "userguideOutput").absolutePath }))
++if (project.hasProperty('integTestTasks')) {
++    integTestTasks.all { task ->
++        task.userguideSamples.with {
++            required = true
++            samplesXml.set(layout.file(provider { new File(project(':docs').docbookSrc, 'samples.xml') }))
++            userGuideSamplesOutput.set(layout.projectDirectory.dir(provider { new File(project(':docs').samplesSrcDir, "userguideOutput").absolutePath }))
++        }
++        task.libsRepository.required = true
++
++        // You can exclude the userguide samples by their ids by specifying this system property.
++        // E.g. ./gradlew integTest:integTest -D:integTest:integTest.single=UserGuideSamplesIntegrationTest -Dorg.gradle.userguide.samples.exclude=completeCUnitExample,nativeComponentReport
++        task.systemProperty "org.gradle.userguide.samples.exclude", System.getProperty("org.gradle.userguide.samples.exclude")
++        // You can filter the userguide samples to be run by specifying this system property.
++        // E.g. ./gradlew integTest:integTest -D:integTest:integTest.single=UserGuideSamplesIntegrationTest -Dorg.gradle.userguide.samples.filter=signing/.+
++        task.systemProperty "org.gradle.userguide.samples.filter", System.getProperty("org.gradle.userguide.samples.filter")
+     }
+-    task.libsRepository.required = true
+-
+-    // You can exclude the userguide samples by their ids by specifying this system property.
+-    // E.g. ./gradlew integTest:integTest -D:integTest:integTest.single=UserGuideSamplesIntegrationTest -Dorg.gradle.userguide.samples.exclude=completeCUnitExample,nativeComponentReport
+-    task.systemProperty "org.gradle.userguide.samples.exclude", System.getProperty("org.gradle.userguide.samples.exclude")
+-    // You can filter the userguide samples to be run by specifying this system property.
+-    // E.g. ./gradlew integTest:integTest -D:integTest:integTest.single=UserGuideSamplesIntegrationTest -Dorg.gradle.userguide.samples.filter=signing/.+
+-    task.systemProperty "org.gradle.userguide.samples.filter", System.getProperty("org.gradle.userguide.samples.filter")
+ }
+ 
+-parallelIntegTest {
+-    systemProperty "org.gradle.userguide.samples.exclude", "multiProjectBuildSrc,multiprojectMessagesHack"
++if (tasks.findByName("parallelIntegTest") != null) {
++    parallelIntegTest {
++        systemProperty "org.gradle.userguide.samples.exclude", "multiProjectBuildSrc,multiprojectMessagesHack"
++    }
+ }
+ 
+ import org.gradle.gradlebuild.testing.integrationtests.cleanup.WhenNotEmpty
+diff --git a/subprojects/launcher/launcher.gradle b/subprojects/launcher/launcher.gradle
+index a28f19fa..cb8779b1 100644
+--- a/subprojects/launcher/launcher.gradle
++++ b/subprojects/launcher/launcher.gradle
+@@ -46,8 +46,10 @@ testFixtures {
+     from(':toolingApi')
+ }
+ 
+-integTestTasks.configureEach {
+-    maxParallelForks = Math.min(3, Build_extensionsKt.getMaxParallelForks(project))
++if (project.hasProperty('integTestTasks')) {
++    integTestTasks.all {
++        maxParallelForks = Math.min(3, Build_extensionsKt.getMaxParallelForks(project))
++    }
+ }
+ 
+ task configureJar {
+diff --git a/subprojects/performance/performance.gradle b/subprojects/performance/performance.gradle
+index 50858cd6..25c6efde 100644
+--- a/subprojects/performance/performance.gradle
++++ b/subprojects/performance/performance.gradle
+@@ -16,7 +16,9 @@ import org.gradle.gradlebuild.unittestandcompile.ModuleType
+  * limitations under the License.
+  */
+ 
+-apply from: 'templates.gradle'
++if (!project.hasProperty('bootstrapWithGradle4_7_0')) {
++    apply from: 'templates.gradle'
++}
+ 
+ dependencies {
+     compile project(':distributionsDependencies')
+diff --git a/subprojects/platform-play/platform-play.gradle b/subprojects/platform-play/platform-play.gradle
+index 06567e90..357b4037 100644
+--- a/subprojects/platform-play/platform-play.gradle
++++ b/subprojects/platform-play/platform-play.gradle
+@@ -36,21 +36,23 @@ testFixtures {
+     from(':platformBase')
+ }
+ 
+-integTest {
+-    exclude 'org/gradle/play/prepare/**'
+-}
++if (tasks.findByName("integTest") != null) {
++    integTest {
++        exclude 'org/gradle/play/prepare/**'
++    }
+ 
+-def integTestPrepare = tasks.register("integTestPrepare", org.gradle.gradlebuild.test.integrationtests.IntegrationTest) {
+-    systemProperties['org.gradle.integtest.executer'] = 'embedded'
+-    if (BuildEnvironment.isCiServer) {
+-        systemProperties['org.gradle.integtest.multiversion'] = 'all'
++    def integTestPrepare = tasks.create("integTestPrepare", org.gradle.gradlebuild.test.integrationtests.IntegrationTest) {
++        systemProperties['org.gradle.integtest.executer'] = 'embedded'
++        if (BuildEnvironment.isCiServer) {
++            systemProperties['org.gradle.integtest.multiversion'] = 'all'
++        }
++        include 'org/gradle/play/prepare/**'
++        maxParallelForks = 1
+     }
+-    include 'org/gradle/play/prepare/**'
+-    maxParallelForks = 1
+-}
+ 
+-tasks.withType(org.gradle.gradlebuild.test.integrationtests.IntegrationTest).configureEach { task ->
+-    if (task.name != "integTestPrepare") {
+-        task.dependsOn(integTestPrepare)
++    tasks.withType(org.gradle.gradlebuild.test.integrationtests.IntegrationTest).all { task ->
++        if (task.name != "integTestPrepare") {
++            task.dependsOn(integTestPrepare)
++        }
+     }
+ }
+diff --git a/subprojects/scala/scala.gradle b/subprojects/scala/scala.gradle
+index 872bd249..b094d82f 100644
+--- a/subprojects/scala/scala.gradle
++++ b/subprojects/scala/scala.gradle
+@@ -41,6 +41,8 @@ testFixtures {
+     from(':languageScala')
+ }
+ 
+-integTest {
+-    jvmArgs "-XX:MaxPermSize=1500m" // AntInProcessScalaCompilerIntegrationTest needs lots of permgen
++if (tasks.findByName("integTest") != null) {
++    integTest {
++        jvmArgs "-XX:MaxPermSize=1500m" // AntInProcessScalaCompilerIntegrationTest needs lots of permgen
++    }
+ }
+diff --git a/subprojects/soak/soak.gradle b/subprojects/soak/soak.gradle
+index 34f3aff0..18f64157 100644
+--- a/subprojects/soak/soak.gradle
++++ b/subprojects/soak/soak.gradle
+@@ -22,11 +22,13 @@ tasks.matching { it.name in [ 'integTest', 'java9IntegTest'] }.all {
+     }
+ }
+ 
+-task('soakTest', type: org.gradle.gradlebuild.test.integrationtests.SoakTest) {
+-    testClassesDirs = sourceSets.integTest.output.classesDirs
+-    classpath = sourceSets.integTest.runtimeClasspath
+-    systemProperties['org.gradle.soaktest'] = 'true'
+-    options {
+-        includeCategories 'org.gradle.soak.categories.SoakTest'
++if (!project.hasProperty('bootstrapWithGradle4_7_0')) {
++    task('soakTest', type: org.gradle.gradlebuild.test.integrationtests.SoakTest) {
++        testClassesDirs = sourceSets.integTest.output.classesDirs
++        classpath = sourceSets.integTest.runtimeClasspath
++        systemProperties['org.gradle.soaktest'] = 'true'
++        options {
++            includeCategories 'org.gradle.soak.categories.SoakTest'
++        }
+     }
+ }
+diff --git a/subprojects/tooling-api/tooling-api.gradle.kts b/subprojects/tooling-api/tooling-api.gradle.kts
+index 4f5a7539..3d38b877 100644
+--- a/subprojects/tooling-api/tooling-api.gradle.kts
++++ b/subprojects/tooling-api/tooling-api.gradle.kts
+@@ -28,6 +28,10 @@ plugins {
+ }
+ 
+ val testPublishRuntime by configurations.creating
++val publishCompile = configurations.maybeCreate("publishCompile")
++val publishRuntime = configurations.maybeCreate("publishRuntime").apply {
++    extendsFrom(publishCompile)
++}
+ 
+ val buildReceipt: BuildReceipt = tasks.getByPath(":createBuildReceipt") as BuildReceipt
+ 
+@@ -44,7 +48,7 @@ dependencies {
+     compile(project(":messaging"))
+     compile(project(":wrapper"))
+     compile(project(":baseServices"))
+-    publishCompile(library("slf4j_api")) { version { prefer(libraryVersion("slf4j_api")) } }
++    add("publishCompile", library("slf4j_api"))
+     compile(library("jcip"))
+ 
+     testFixturesCompile(project(":baseServicesGroovy"))
+@@ -72,7 +76,7 @@ testFixtures {
+ 
+ apply { from("buildship.gradle") }
+ 
+-val sourceJar: Jar by tasks
++val sourceJar = (tasks.findByName("sourceJar") as? Jar) ?: tasks.create<Jar>("sourceJar")
+ 
+ sourceJar.run {
+     configurations.compile.allDependencies.withType<ProjectDependency>().forEach {
+@@ -93,7 +97,7 @@ eclipse {
+ 
+ tasks.create<Upload>("publishLocalArchives") {
+     val repoBaseDir = rootProject.file("build/repo")
+-    configuration = configurations.publishRuntime
++    configuration = publishRuntime
+     isUploadDescriptor = false
+     repositories {
+         ivy {
+@@ -109,11 +113,12 @@ tasks.create<Upload>("publishLocalArchives") {
+     }
+ }
+ 
+-val integTestTasks: DomainObjectCollection<IntegrationTest> by extra
+-
+-integTestTasks.configureEach {
+-    binaryDistributions.binZipRequired = true
+-    libsRepository.required = true
++if (extra.has("integTestTasks")) {
++    val integTestTasks: DomainObjectCollection<IntegrationTest> by extra
++    integTestTasks.all {
++        binaryDistributions.binZipRequired = true
++        libsRepository.required = true
++    }
+ }
+ 
+ testFilesCleanup {
+diff --git a/subprojects/wrapper/wrapper.gradle b/subprojects/wrapper/wrapper.gradle
+index c9b6cb01..dd7edfde 100644
+--- a/subprojects/wrapper/wrapper.gradle
++++ b/subprojects/wrapper/wrapper.gradle
+@@ -62,6 +62,8 @@ task executableJar(type: Jar) {
+     from configurations.runtime.allDependencies.withType(ProjectDependency).collect { it.dependencyProject.sourceSets.main.output }
+ }
+ 
+-integTestTasks.configureEach {
+-    binaryDistributions.binZipRequired = true
++if (project.hasProperty('integTestTasks')) {
++    integTestTasks.all {
++        binaryDistributions.binZipRequired = true
++    }
+ }
+diff --git a/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/gradlebuild/unittestandcompile/UnitTestAndCompileExtension.kt b/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/gradlebuild/unittestandcompile/UnitTestAndCompileExtension.kt
+new file mode 100644
+index 00000000..091e2540
+--- /dev/null
++++ b/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/gradlebuild/unittestandcompile/UnitTestAndCompileExtension.kt
+@@ -0,0 +1,12 @@
++package org.gradle.gradlebuild.unittestandcompile
++
++import java.io.File
++
++open class UnitTestAndCompileExtension {
++    var moduleType: ModuleType = ModuleType.INTERNAL
++    var testJavaVersion: String? = null
++    var sourceCompatibility: String? = null
++    var targetCompatibility: String? = null
++    var generatedResourcesDir: File = File("build/generated-resources")
++    var generatedTestResourcesDir: File = File("build/generated-test-resources")
++}
+diff --git a/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/plugins/strictcompile/StrictCompilePlugin.kt b/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/plugins/strictcompile/StrictCompilePlugin.kt
+new file mode 100644
+index 00000000..e7f3af25
+--- /dev/null
++++ b/buildSrc/subprojects/plugins/src/main/kotlin/org/gradle/plugins/strictcompile/StrictCompilePlugin.kt
+@@ -0,0 +1,10 @@
++package org.gradle.plugins.strictcompile
++
++import org.gradle.api.Plugin
++import org.gradle.api.Project
++
++class StrictCompilePlugin : Plugin<Project> {
++    override fun apply(project: Project) {
++        project.extensions.create("strictCompile", StrictCompileExtension::class.java)
++    }
++}

@@ -1,0 +1,442 @@
+diff --git a/build.gradle b/build.gradle
+index fe30e522..506cd2f2 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -197,6 +197,7 @@ allprojects {
+     repositories {
+         maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+         maven { url 'https://repo.gradle.org/gradle/libs-milestones' }
++        mavenCentral()
+         maven { url "https://repo.gradle.org/gradle/libs-snapshots" }
+     }
+ 
+diff --git a/buildSrc/build.gradle.kts b/buildSrc/build.gradle.kts
+index 89741f7f..df340298 100644
+--- a/buildSrc/build.gradle.kts
++++ b/buildSrc/build.gradle.kts
+@@ -65,6 +65,7 @@ repositories {
+     maven { url = uri("https://repo.gradle.org/gradle/libs-releases") }
+     maven { url = uri("https://repo.gradle.org/gradle/libs-snapshots") }
+     gradlePluginPortal()
++    mavenCentral()
+ }
+ 
+ dependencies {
+@@ -74,7 +75,6 @@ dependencies {
+     compile("com.google.guava:guava-jdk5:14.0.1")
+     compile("commons-lang:commons-lang:2.6")
+     compile(localGroovy())
+-    compile("org.codehaus.groovy.modules.http-builder:http-builder:0.7.2")
+     testCompile("junit:junit:4.12")
+     testCompile("org.spockframework:spock-core:1.0-groovy-2.4")
+     testCompile("cglib:cglib-nodep:3.2.5")
+@@ -113,7 +113,7 @@ tasks {
+     }
+ }
+ 
+-val isCiServer: Boolean by extra { System.getenv().containsKey("CI") }
++val isCiServer: Boolean by extra { true }
+ 
+ apply {
+     from("../gradle/compile.gradle")
+diff --git a/buildSrc/src/main/groovy/org/gradle/modules/PatchExternalModules.groovy b/buildSrc/src/main/groovy/org/gradle/modules/PatchExternalModules.groovy
+index a16edeba..7fb13428 100644
+--- a/buildSrc/src/main/groovy/org/gradle/modules/PatchExternalModules.groovy
++++ b/buildSrc/src/main/groovy/org/gradle/modules/PatchExternalModules.groovy
+@@ -79,15 +79,17 @@ class PatchExternalModules extends DefaultTask {
+         new ClasspathManifestPatcher(project.rootProject, temporaryDir, allModules, namesOfModulesToPatch)
+             .writePatchedFilesTo(destination)
+ 
+-        // TODO: Should this be configurable?
+-        new JarPatcher(project.rootProject, temporaryDir, allModules, "kotlin-compiler-embeddable")
+-            .exclude("META-INF/services/java.nio.charset.spi.CharsetProvider")
+-            .exclude("META-INF/services/javax.annotation.processing.Processor")
+-            .exclude("net/rubygrapefruit/platform/**")
+-            .exclude("org/fusesource/jansi/**")
+-            .exclude("META-INF/native/**/*jansi.*")
+-            .includeJar("native-platform-")
+-            .includeJar("jansi-", "META-INF/native/**", "org/fusesource/jansi/internal/CLibrary*.class")
+-            .writePatchedFilesTo(destination)
++        if (!Boolean.getBoolean('bootstrapWithGradle4_5_1')) {
++            // TODO: Should this be configurable?
++            new JarPatcher(project.rootProject, temporaryDir, allModules, "kotlin-compiler-embeddable")
++                .exclude("META-INF/services/java.nio.charset.spi.CharsetProvider")
++                .exclude("META-INF/services/javax.annotation.processing.Processor")
++                .exclude("net/rubygrapefruit/platform/**")
++                .exclude("org/fusesource/jansi/**")
++                .exclude("META-INF/native/**/*jansi.*")
++                .includeJar("native-platform-")
++                .includeJar("jansi-", "META-INF/native/**", "org/fusesource/jansi/internal/CLibrary*.class")
++                .writePatchedFilesTo(destination)
++        }
+     }
+ }
+diff --git a/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy b/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy
+index 67972245..00df8621 100644
+--- a/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy
++++ b/buildSrc/src/main/groovy/org/gradle/testing/DistributedPerformanceTest.groovy
+@@ -22,8 +22,6 @@ import groovy.transform.CompileStatic
+ import groovy.transform.TypeChecked
+ import groovy.transform.TypeCheckingMode
+ import groovy.xml.XmlUtil
+-import groovyx.net.http.ContentType
+-import groovyx.net.http.RESTClient
+ import org.gradle.api.GradleException
+ import org.gradle.api.tasks.Input
+ import org.gradle.api.tasks.Internal
+@@ -75,7 +73,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+     @OutputFile
+     File scenarioReport
+ 
+-    private RESTClient client
++    private Object client
+ 
+     private List<String> scheduledBuilds = Lists.newArrayList()
+ 
+@@ -162,36 +160,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private void schedule(Scenario scenario, String lastChangeId) {
+-        def buildRequest = """
+-                <build${branchName ? " branchName=\"${branchName}\"" : ""}>
+-                    <buildType id="${buildTypeId}"/>
+-                    <properties>
+-                        <property name="scenario" value="${scenario.id}"/>
+-                        <property name="templates" value="${scenario.templates.join(' ')}"/>
+-                        <property name="baselines" value="${baselines?:'defaults'}"/>
+-                        <property name="warmups" value="${warmups!=null?:'defaults'}"/>
+-                        <property name="runs" value="${runs!=null?:'defaults'}"/>
+-                        <property name="checks" value="${checks?:'all'}"/>
+-                        <property name="channel" value="${channel?:'commits'}"/>
+-                    </properties>
+-                    ${renderLastChange(lastChangeId)}
+-                </build>
+-            """
+-        logger.info("Scheduling $scenario.id, estimated runtime: $scenario.estimatedRuntime, coordinatorBuildId: $coordinatorBuildId, lastChangeId: $lastChangeId, build request: $buildRequest")
+-        def response = client.post(
+-            path: "buildQueue",
+-            requestContentType: ContentType.XML,
+-            body: buildRequest
+-        )
+-        if (!response.success) {
+-            throw new RuntimeException("Cannot schedule build job. build request: $buildRequest\nresponse: ${xmlToString(response.data)}")
+-        }
+-        def workerBuildId = response.data.@id
+-        def scheduledChangeId = findLastChangeIdInXml(response.data)
+-        if (lastChangeId && scheduledChangeId != lastChangeId) {
+-            throw new RuntimeException("The requested change id is different than the actual one. requested change id: $lastChangeId in coordinatorBuildId: $coordinatorBuildId , actual change id: $scheduledChangeId in workerBuildId: $workerBuildId\nresponse: ${xmlToString(response.data)}")
+-        }
+-        scheduledBuilds += workerBuildId
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+@@ -221,10 +190,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private CoordinatorBuild resolveCoordinatorBuild() {
+         if (coordinatorBuildId) {
+-            def response = client.get(path: "builds/id:$coordinatorBuildId")
+-            if (response.success) {
+-                return new CoordinatorBuild(id: coordinatorBuildId, lastChangeId: findLastChangeIdInXml(response.data), buildTypeId: response.data.@buildTypeId.text())
+-            }
++            throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+         }
+         return null
+     }
+@@ -236,24 +202,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private void join(String jobId) {
+-        def finished = false
+-        def response
+-        while (!finished) {
+-            response = client.get(path: "builds/id:$jobId")
+-            finished = response.data.@state == "finished"
+-            if (!finished) {
+-                sleep(TimeUnit.MINUTES.toMillis(1))
+-            }
+-        }
+-        finishedBuilds += response.data
+-
+-        try {
+-            def results = fetchTestResults(jobId, response.data)
+-            testResultFilesForBuild.put(jobId, results)
+-            fireTestListener(results, response.data)
+-        } catch (e) {
+-            e.printStackTrace(System.err)
+-        }
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+ 
+     private void fireTestListener(List<File> results, Object build) {
+@@ -265,26 +214,7 @@ class DistributedPerformanceTest extends PerformanceTest {
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+     private def fetchTestResults(String jobId, buildData) {
+-        def unzippedFiles = []
+-        def artifactsUri = buildData?.artifacts?.@href?.text()
+-        if (artifactsUri) {
+-            def resultArtifacts = client.get(path: "${artifactsUri}/results/${project.name}/build/")
+-            if (resultArtifacts.success) {
+-                def zipName = "test-results-${workerTestTaskName}.zip".toString()
+-                def fileNode = resultArtifacts.data.file.find {
+-                    it.@name.text() == zipName
+-                }
+-                if (fileNode) {
+-                    def resultsDirectory = new File(workerTestResultsTempDir, jobId)
+-                    def contentUri = fileNode.content.@href.text()
+-                    client.get(path: contentUri, contentType: ContentType.BINARY) {
+-                        resp, inputStream ->
+-                            unzippedFiles = unzipToDirectory(inputStream, resultsDirectory)
+-                    }
+-                }
+-            }
+-        }
+-        unzippedFiles
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+ 
+     @TypeChecked(TypeCheckingMode.SKIP)
+@@ -322,11 +252,8 @@ class DistributedPerformanceTest extends PerformanceTest {
+         }
+     }
+ 
+-    private RESTClient createClient() {
+-        client = new RESTClient("$teamCityUrl/httpAuth/app/rest/9.1")
+-        client.auth.basic(teamCityUsername, teamCityPassword)
+-        client.headers['Origin'] = teamCityUrl
+-        client
++    private Object createClient() {
++        throw new GradleException('Groovy HTTPBuilder not available during bootstrap')
+     }
+ 
+ 
+diff --git a/buildSrc/src/main/kotlin/org/gradle/plugins/testfixtures/TestFixturesPlugin.kt b/buildSrc/src/main/kotlin/org/gradle/plugins/testfixtures/TestFixturesPlugin.kt
+index 65ff73e1..fac12b36 100644
+--- a/buildSrc/src/main/kotlin/org/gradle/plugins/testfixtures/TestFixturesPlugin.kt
++++ b/buildSrc/src/main/kotlin/org/gradle/plugins/testfixtures/TestFixturesPlugin.kt
+@@ -101,7 +101,6 @@ open class TestFixturesPlugin : Plugin<Project> {
+             constraints {
+                 testFixturesCompile("cglib:cglib-nodep") {
+                     version { prefer("3.2.5") }
+-                    because("We need to upgrade to a Java8 compatible version")
+                 }
+             }
+         }
+diff --git a/gradle/dependencies.gradle b/gradle/dependencies.gradle
+index 639d108f..af9bc0fe 100755
+--- a/gradle/dependencies.gradle
++++ b/gradle/dependencies.gradle
+@@ -55,7 +55,7 @@ libraries.jackson_annotations = [coordinates: 'com.fasterxml.jackson.core:jackso
+ libraries.jackson_databind =    [coordinates: 'com.fasterxml.jackson.core:jackson-databind', version: libraries.jackson_core.version]
+ libraries.jansi =               [coordinates: 'org.fusesource.jansi:jansi', version: '1.14']
+ libraries.jatl =                [coordinates: 'com.googlecode.jatl:jatl', version: '0.2.2']
+-libraries.jcifs =               [coordinates: 'org.samba.jcifs:jcifs', version: '1.3.17']
++libraries.jcifs =               [coordinates: 'jcifs:jcifs', version: '1.3.17']
+ libraries.jcip =                [coordinates: 'net.jcip:jcip-annotations', version: '1.0']
+ libraries.jgit =                [coordinates: 'org.eclipse.jgit:org.eclipse.jgit', version: '4.5.3.201708160445-r', because: '4.6+ requires Java 8']
+ libraries.joda =                [coordinates: 'joda-time:joda-time', version: '2.8.2']
+diff --git a/gradle/dependenciesMetadataRules.gradle b/gradle/dependenciesMetadataRules.gradle
+index 632c3cb8..39345814 100644
+--- a/gradle/dependenciesMetadataRules.gradle
++++ b/gradle/dependenciesMetadataRules.gradle
+@@ -102,9 +102,7 @@ def replaceJCLWithAdapter(ComponentMetadataHandler handler, String module) {
+         allVariants {
+             withDependencies {
+                 it.removeAll { it.group == 'commons-logging' }
+-                it.add ('org.slf4j:jcl-over-slf4j:1.7.10') {
+-                    because 'We do not want non-slf4j logging implementations on the classpath'
+-                }
++                it.add 'org.slf4j:jcl-over-slf4j:1.7.10'
+             }
+         }
+     }
+@@ -115,9 +113,7 @@ def replaceJCLConstraintWithAdapter(ComponentMetadataHandler handler, String mod
+         allVariants {
+             withDependencyConstraints {
+                 it.removeAll { it.group == 'commons-logging' }
+-                it.add ('org.slf4j:jcl-over-slf4j:1.7.10') {
+-                    because 'We do not want non-slf4j logging implementations on the classpath'
+-                }
++                it.add 'org.slf4j:jcl-over-slf4j:1.7.10'
+             }
+         }
+     }
+@@ -128,9 +124,7 @@ def replaceLog4JWithAdapter(ComponentMetadataHandler handler, String module) {
+         allVariants {
+             withDependencies {
+                 it.removeAll { it.group == 'log4j' }
+-                it.add ('org.slf4j:log4j-over-slf4j:1.7.16') {
+-                    because 'We do not want non-slf4j logging implementations on the classpath'
+-                }
++                it.add 'org.slf4j:log4j-over-slf4j:1.7.16'
+             }
+         }
+     }
+@@ -141,9 +135,7 @@ def replaceGoogleCollectionsWithGuava(ComponentMetadataHandler handler, String m
+         allVariants {
+             withDependencies {
+                 it.removeAll { it.group == 'com.google.collections' }
+-                it.add('com.google.guava:guava-jdk5:17.0') {
+-                    because 'Guava replaces google collections'
+-                }
++                it.add 'com.google.guava:guava-jdk5:17.0'
+             }
+         }
+     }
+@@ -154,9 +146,7 @@ def replaceJunitDepWithJunit(ComponentMetadataHandler handler, String module) {
+         allVariants {
+             withDependencies {
+                 it.removeAll { it.group == 'junit' }
+-                it.add('junit:junit:4.12') {
+-                    because 'junit:junit replaced junit:junit-dep'
+-                }
++                it.add 'junit:junit:4.12'
+             }
+         }
+     }
+@@ -180,9 +170,7 @@ def replaceBeanshellWithApacheBeanshell(ComponentMetadataHandler handler, String
+         allVariants {
+             withDependencies {
+                 it.removeAll { it.group == 'org.beanshell' }
+-                it.add('org.apache-extras.beanshell:bsh:2.0b6') {
+-                    because 'org.apache-extras.beanshell:bsh replaced junit:junit-dep'
+-                }
++                it.add 'org.apache-extras.beanshell:bsh:2.0b6'
+             }
+         }
+     }
+@@ -194,7 +182,6 @@ def downgradeIvy(ComponentMetadataHandler handler, String module) {
+             withDependencyConstraints {
+                 it.findAll { it.group == 'org.apache.ivy' }.each {
+                     it.version { prefer '2.2.0' }
+-                    it.because 'Gradle depends on ivy implementation details which changed with newer versions'
+                 }
+             }
+         }
+@@ -207,7 +194,6 @@ def downgradeTestNG(ComponentMetadataHandler handler, String module) {
+             withDependencyConstraints {
+                 it.findAll { it.group == 'org.testng' }.each {
+                     it.version { prefer '6.3.1' }
+-                    it.because '6.3.1 is required by Gradle and part of the distribution'
+                 }
+             }
+         }
+@@ -220,7 +206,6 @@ def downgradeXmlApis(ComponentMetadataHandler handler, String module) {
+             withDependencies {
+                 it.findAll { it.group == 'xml-apis' }.each {
+                     it.version { prefer '1.4.01' }
+-                    it.because 'Gradle has trouble with the versioning scheme and pom redirects in higher versions'
+                 }
+             }
+         }
+diff --git a/gradle/groovyProject.gradle.kts b/gradle/groovyProject.gradle.kts
+index 973820e2..9d5edf68 100644
+--- a/gradle/groovyProject.gradle.kts
++++ b/gradle/groovyProject.gradle.kts
+@@ -57,7 +57,6 @@ dependencies {
+                 withDependencyConstraints {
+                     filter { it.group == "org.objenesis" }.forEach {
+                         it.version { prefer("1.2") }
+-                        it.because("1.2 is required by Gradle and part of the distribution")
+                     }
+                 }
+             }
+diff --git a/subprojects/distributions-dependencies/distributions-dependencies.gradle b/subprojects/distributions-dependencies/distributions-dependencies.gradle
+index ac5f945c..76368c41 100644
+--- a/subprojects/distributions-dependencies/distributions-dependencies.gradle
++++ b/subprojects/distributions-dependencies/distributions-dependencies.gradle
+@@ -25,39 +25,15 @@ plugins {
+     id "base"
+ }
+ dependencies {
+-    constraints {
+-        libraries.values().each { lib ->
+-            'default'(lib.coordinates) {
+-                version {
+-                    strictly lib.version
+-                    if (lib.because) { because lib.because }
+-                }
+-            }
+-        }
+-
+-        // Reject dependencies we do not want completely
+-        'default'("com.google.collections:google-collections") {
+-            version { rejectAll() }
+-            because "Guava replaces google collections"
+-        }
+-        'default'("junit:junit-dep") {
+-            version { rejectAll() }
+-            because "junit:junit has replaced junit:junit-dep"
+-        }
+-        'default'("commons-logging:commons-logging") {
+-            version { rejectAll() }
+-            because "We do not want non-slf4j logging implementations on the classpath"
+-        }
+-        'default'("org.sonatype.sisu:sisu-inject-plexus") {
+-            version { rejectAll() }
+-            because "We do not wand this dependency injection on the classpath"
+-        }
+-        'default'("asm:asm") {
+-            version { rejectAll() }
+-            because "We use org.ow2.asm:asm"
++    def skippedBootstrapLibraries = [
++        'org.codehaus.plexus:plexus-sec-dispatcher',
++        'org.yaml:snakeyaml:1.6'
++    ] as Set
++    libraries.values().findAll { lib ->
++        !skippedBootstrapLibraries.contains(lib.coordinates)
++    }.each { lib ->
++        'default'("${lib.coordinates}:${lib.version}") {
++            force = true
+         }
+     }
+ }
+-
+-
+-
+diff --git a/subprojects/distributions/distributions.gradle b/subprojects/distributions/distributions.gradle
+index 2692d610..a6009b05 100644
+--- a/subprojects/distributions/distributions.gradle
++++ b/subprojects/distributions/distributions.gradle
+@@ -60,7 +60,9 @@ ext {
+ 
+     binWithDistDocImage = copySpec {
+         with binDistImage
+-        from project(':docs').outputs.distDocs
++        if (!Boolean.getBoolean('bootstrapWithGradle4_5_1')) {
++            from project(':docs').outputs.distDocs
++        }
+     }
+ 
+     allDistImage = copySpec {
+diff --git a/subprojects/internal-testing/internal-testing.gradle b/subprojects/internal-testing/internal-testing.gradle
+index feb27036..e62ba18e 100644
+--- a/subprojects/internal-testing/internal-testing.gradle
++++ b/subprojects/internal-testing/internal-testing.gradle
+@@ -38,9 +38,7 @@ dependencies {
+     compile testLibraries.spock
+     compile testLibraries.jsoup
+ 
+-    constraints {
+-        compile("cglib:cglib-nodep:3.2.6") { because "required to work with Java 9"}
+-    }
++    compile("cglib:cglib-nodep:3.2.6")
+ }
+ 
+ apply from: "$rootDir/gradle/ideaTestSourcesWorkaround.gradle"
+diff --git a/subprojects/testing-jvm/testing-jvm.gradle b/subprojects/testing-jvm/testing-jvm.gradle
+index b9c6af0d..3eb76e2e 100644
+--- a/subprojects/testing-jvm/testing-jvm.gradle
++++ b/subprojects/testing-jvm/testing-jvm.gradle
+@@ -32,9 +32,7 @@ dependencies {
+     compile libraries.testng.coordinates
+     compile libraries.bsh.coordinates
+ 
+-    testCompile ('com.google.inject:guice:2.0') {
+-        because 'This is for TestNG'
+-    }
++    testCompile 'com.google.inject:guice:2.0'
+ 
+     integTestRuntime project(':testingJunitPlatform')
+ }

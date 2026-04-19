@@ -2,8 +2,7 @@
   callPackage,
   fetchFromGitHub,
   gradle-packages,
-  gradle_4_9_0,
-  jdk11_headless,
+  gradle_4_6_0,
   jdk8_headless,
   makeWrapper,
   runtimeShell,
@@ -14,8 +13,7 @@ let
   mkGradle' =
     {
       fetchFromGitHub,
-      gradle_4_9_0,
-      jdk11_headless,
+      gradle_4_6_0,
       jdk8_headless,
       makeWrapper,
       runtimeShell,
@@ -24,31 +22,31 @@ let
       ...
     }:
     let
-      gradleRunner = gradle_4_9_0;
+      gradleRunner = gradle_4_6_0;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gradle-unwrapped";
-      version = "4.10.3";
+      version = "4.7";
 
       src = fetchFromGitHub {
         owner = "gradle";
         repo = "gradle";
-        tag = "v4.10.3";
-        hash = "sha256-rpvkNqSdInehucshyQb4X1ZpROkx8n9hga95L8XkKTk=";
+        tag = "v4.7.0";
+        hash = "sha256-kr6MMEJBS1XXzVbn0l3PZFhcwpIgsUQqAYeGRt656F8=";
       };
-
-      patches = [ ./bootstrap-gradle4_9.patch ];
 
       gradleBuildTask = ":distributions:binZip";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
 
       nativeBuildInputs = [
         gradleRunner
-        jdk11_headless
         jdk8_headless
         makeWrapper
         unzip
       ];
+
+      patches = [ ./bootstrap-httpbuilder.patch ];
+      patchFlags = [ "-p1" ];
 
       mitmCache = gradleRunner.fetchDeps {
         inherit (finalAttrs) pname;
@@ -111,10 +109,7 @@ let
         "-PbootstrapWithGradle4_4_1=true"
         "-PbootstrapWithGradle4_5_1=true"
         "-PbootstrapWithGradle4_6_0=true"
-        "-PbootstrapWithGradle4_7_0=true"
-        "-PbootstrapWithGradle4_9_0=true"
-        "-PpromotionCommitId=v4.10.3"
-        "-Pjava9Home=${jdk11_headless.passthru.home}"
+        "-PpromotionCommitId=v4.7.0"
         "-DbootstrapWithGradle3_5_1=true"
         "-DbootstrapWithGradle4_0_M1=true"
         "-DbootstrapWithGradle4_0=true"
@@ -122,9 +117,6 @@ let
         "-DbootstrapWithGradle4_4_1=true"
         "-DbootstrapWithGradle4_5_1=true"
         "-DbootstrapWithGradle4_6_0=true"
-        "-DbootstrapWithGradle4_7_0=true"
-        "-DbootstrapWithGradle4_9_0=true"
-        "-Djava9Home=${jdk11_headless.passthru.home}"
         "-Dfile.encoding=UTF-8"
       ];
 
@@ -174,10 +166,6 @@ let
         mkdir -p "$out/libexec/gradle" "$out/bin"
         mv lib "$out/libexec/gradle/"
         mv bin "$out/libexec/gradle/"
-        substituteInPlace "$out/libexec/gradle/bin/gradle" \
-          --replace-fail \
-            'CLASSPATH=$APP_HOME/lib/gradle-launcher-4.10.3.jar' \
-            'CLASSPATH=$APP_HOME/lib/gradle-launcher-4.10.3.jar:$APP_HOME/lib/*:$APP_HOME/lib/plugins/*'
 
         makeWrapper "$out/libexec/gradle/bin/gradle" "$out/bin/gradle" \
           --set-default JAVA_HOME "${finalAttrs.env.JAVA_HOME}"

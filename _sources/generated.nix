@@ -8,17 +8,17 @@
 {
   axp_build = {
     pname = "axp_build";
-    version = "375a9ba315c02aee5d44d5a108e021cbd1caec3c";
+    version = "67792ebd80ed5a27e120efa3eab956a8c44ee4b6";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/build.git";
-      rev = "375a9ba315c02aee5d44d5a108e021cbd1caec3c";
+      rev = "67792ebd80ed5a27e120efa3eab956a8c44ee4b6";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-SYBw/1mdG4MH0Z0k8qO1ETZU4HX6IOcr5K85eU+9KpM=";
+      sha256 = "sha256-2hcAczs4wcDhznprGSaILMJwf/8WPV0g7QjT24+6ccY=";
     };
-    date = "2026-04-15";
+    date = "2026-04-18";
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
@@ -428,17 +428,17 @@
   };
   lineage_exactcalculator = {
     pname = "lineage_exactcalculator";
-    version = "d42422531caf2b5b553aba50061eba5f650c6973";
+    version = "9768d91368a41d2409b3b6de38ef003c51b09f15";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_ExactCalculator.git";
-      rev = "d42422531caf2b5b553aba50061eba5f650c6973";
+      rev = "9768d91368a41d2409b3b6de38ef003c51b09f15";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-BkZYU6+RLACcmFtymA/H2GQ1+WgOL4/DksVP6Fu94rw=";
+      sha256 = "sha256-EKSgIdsr+eFdjRAB9a4ab2rrRdtFaqujcz4E1VaDBas=";
     };
-    date = "2026-04-16";
+    date = "2026-04-17";
   };
   lineage_external_drm_hwcomposer_upstream = {
     pname = "lineage_external_drm_hwcomposer_upstream";
