@@ -1,5 +1,5 @@
 {
-  jdk8_home,
+  jdk8,
   jdk11_headless,
   jdk17_headless,
   jdk21_headless,
@@ -13,7 +13,7 @@ gradle-from-source {
   defaultJava = jdk21_headless;
   buildJdk = jdk17_headless;
   javaToolchains = [
-    jdk8_home
+    jdk8
     jdk11_headless
     jdk17_headless
   ];
