@@ -1,13 +1,6 @@
 {
   callPackage,
-  fetchFromGitHub,
   gradle-packages,
-  gradle_4_0,
-  jdk8_headless,
-  makeWrapper,
-  runtimeShell,
-  stdenv,
-  unzip,
 }:
 let
   mkGradle' =
