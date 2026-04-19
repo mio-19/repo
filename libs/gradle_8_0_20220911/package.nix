@@ -6,12 +6,16 @@
   jdk21_headless,
   gradle_7_6_20220909,
   gradle-from-source,
+  mergeLock,
 }:
 gradle-from-source {
   version = "8.0.0-20220911";
   rev = "d528065a014f833d01cb45632bbd6cc381c3685e";
   hash = "sha256-mo+CZDabwNLDHRqCprq912nsQSpKvl+IdkLg+wPNdSc=";
-  lockFile = ./gradle.lock;
+  lockFile = mergeLock [
+    gradle_7_6_20220909.unwrapped.passthru.lockFile
+    ./gradle.lock
+  ];
   defaultJava = jdk21_headless;
   # this version specifically ask for termurin branded jdk.
   buildJdk = temurin-bin-11;
@@ -21,7 +25,8 @@ gradle-from-source {
     temurin-bin-17
   ];
   patches = [
-    #./fix-test-fixtures-artifact.patch
+    ./repository.patch
+    ./fix-test-fixtures-artifact.patch
   ];
   # read https://github.com/tadfisher/gradle2nix/pull/88
   /*
