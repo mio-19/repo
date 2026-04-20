@@ -7,6 +7,7 @@
       gradle2nixPatched,
       pkgsPatched,
       squish-find-the-brains,
+      inputsPatched,
       ...
     }:
     let
@@ -22,9 +23,26 @@
       };
       mvn2nixMaven = pkgs.callPackage "${inputs.mvn2nix}/maven.nix" { };
       gradle2nixScope = pkgs.callPackage "${gradle2nixPatched}/nix" { };
+      sourceBuiltNdkHelper = pkgs.callPackage ./source-built-ndk.nix {
+        robotnix = inputsPatched.robotnix;
+      };
       helpers = {
         buildMavenRepositoryFromLockFile-bare = mvn2nixMaven.buildMavenRepositoryFromLockFile;
-        androidSdkBuilder = inputs.android-nixpkgs.sdk.${system};
+        androidSdkBuilder =
+          selector:
+          inputs.android-nixpkgs.sdk.${system} (
+            s:
+            let
+              selected = selector s;
+            in
+            map (
+              pkg:
+              if lib.isDerivation pkg && lib.hasPrefix "ndk-" (pkg.pname or "") then
+                sourceBuiltNdkHelper.mkSourceBuiltNdk pkg
+              else
+                pkg
+            ) selected
+          );
         inherit (gradle2nixScope) gradleSetupHook;
         gradle2nixV1Builders = gradle2nixV1Patched.builders.${system};
         inherit
