@@ -106,7 +106,7 @@
               (fetchpatch {
                 name = "lineageos: bump to 2026-04-05";
                 url = "https://github.com/nix-community/robotnix/pull/377.patch";
-                hash = "sha256-TA54W8lHLQZorxPlmv68G36hlvuWhNswGKbaTxQU0fo=";
+                hash = "sha256-AcBWbrqc/GlwjY/5VBdRp5yqaAb0A5pmViaxV2kM2N0=";
               })
             ];
           };
