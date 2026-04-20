@@ -149,7 +149,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-bOB7/2FWasLfSOhKK0s5q5HKmHXoX/gPtWzUdwR3v1M=";
+        outputHash = "sha256-y1jL6ipHOid3BIWHGYSVsoGsA1U1bhBBUf6NC3y7si0=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -270,14 +270,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.21.0-rc1";
+      version = "5.23.0";
 
       src = fetchFromGitHub {
         owner = "GlassOnTin";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-IibTUyq2RnQtNTWdW80kNz25fIMJeqb4e9dx+fLiCZY=";
+        hash = "sha256-/wgTvaCpcIhA6VH1N01ODDODLOU/SKZy7WzbTzFGzKc=";
       };
 
       patches = [
@@ -308,6 +308,7 @@ let
             attrPath = "apk_haven";
             extraArgs = [
               "--flake"
+              "--src-only"
               "--version-regex=^v?([0-9]+\\.[0-9]+\\.[0-9]+(-rc[0-9]+)?)$"
             ];
           })
