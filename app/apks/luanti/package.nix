@@ -61,7 +61,10 @@ let
         (_experimental-update-script-combinators.sequence [
           (nix-update-script {
             attrPath = "apk_luanti";
-            extraArgs = [ "--flake" ];
+            extraArgs = [
+              "--flake"
+              "--src-only"
+            ];
           })
           {
             command = [
