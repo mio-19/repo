@@ -1,6 +1,6 @@
 {
   ant,
-  fetchurl,
+  buildMavenRepository,
   jdk8,
   lib,
   makeWrapper,
@@ -10,44 +10,49 @@
 }:
 
 let
-  jlineJar = fetchurl {
-    url = "https://repo1.maven.org/maven2/jline/jline/2.12.1/jline-2.12.1.jar";
-    hash = "sha256-wx8dzyzvRvim+K6orlwpXMlpEOj46kxAKRaV1k0ulA8=";
-  };
-
-  jansiJar = fetchurl {
-    url = "https://repo1.maven.org/maven2/org/fusesource/jansi/jansi/1.11/jansi-1.11.jar";
-    hash = "sha256-noIWPtL8Ylf+YnEyzlVHJueW7e5OXv6dnlI67iF9YLg=";
-  };
-
-  jarjarJar = fetchurl {
-    url = "https://repo1.maven.org/maven2/org/sonatype/plugins/jarjar-maven-plugin/1.9/jarjar-maven-plugin-1.9.jar";
-    hash = "sha256-zBBuZfcC0BHmJgSDBjMeTELNRaGl6z+OfNG8gROPkMU=";
-  };
-
-  antContribJar = fetchurl {
-    url = "https://repo1.maven.org/maven2/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar";
-    hash = "sha256-vjOmmBgxC1xV5B3BHUjNiV9fEp2ksNKML0xsPhy88/w=";
-  };
-
-  kotlinJdkAnnotationsJar = fetchurl {
-    url = "https://teamcity.jetbrains.com/guestAuth/repository/download/Kotlin_KAnnotator_InferJdkAnnotations/shipWithKotlin.tcbuildtag/kotlin-jdk-annotations.jar";
-    hash = "sha256-pLCHif/n05A27kNHsbVTmuvdsqevc59c3GSemn+0G2s=";
-  };
-
-  kotlinAndroidSdkAnnotationsJar = fetchurl {
-    url = "https://teamcity.jetbrains.com/guestAuth/repository/download/Kotlin_KAnnotator_InferJdkAnnotations/shipWithKotlin.tcbuildtag/kotlin-android-sdk-annotations.jar";
-    hash = "sha256-68ziQ2ByeaFv1EnQTouv9nkcyurYZDHvm8v7TcPqgq8=";
-  };
-
-  nativePlatformCommonJar = fetchurl {
-    url = "https://repo.gradle.org/gradle/libs-releases/net/rubygrapefruit/native-platform/0.10/native-platform-0.10.jar";
-    hash = "sha256-WwYqIGc54rsrpD6ho55IzVB/GQM//54p+As54j7SqZM=";
-  };
-
-  nativePlatformLinuxAmd64Jar = fetchurl {
-    url = "https://repo.gradle.org/gradle/libs-releases/net/rubygrapefruit/native-platform-linux-amd64/0.10/native-platform-linux-amd64-0.10.jar";
-    hash = "sha256-2uZzlDsSuxrMZo4vWZy/FCc7xSbHVHnBJ2pejCvplvs=";
+  bootstrapJars = buildMavenRepository {
+    dependencies = {
+      "jline:jline:2.12.1:jar" = {
+        url = "https://repo1.maven.org/maven2/jline/jline/2.12.1/jline-2.12.1.jar";
+        hash = "sha256-wx8dzyzvRvim+K6orlwpXMlpEOj46kxAKRaV1k0ulA8=";
+        layout = "jline/jline/2.12.1/jline-2.12.1.jar";
+      };
+      "org.fusesource.jansi:jansi:1.11:jar" = {
+        url = "https://repo1.maven.org/maven2/org/fusesource/jansi/jansi/1.11/jansi-1.11.jar";
+        hash = "sha256-noIWPtL8Ylf+YnEyzlVHJueW7e5OXv6dnlI67iF9YLg=";
+        layout = "org/fusesource/jansi/jansi/1.11/jansi-1.11.jar";
+      };
+      "org.sonatype.plugins:jarjar-maven-plugin:1.9:jar" = {
+        url = "https://repo1.maven.org/maven2/org/sonatype/plugins/jarjar-maven-plugin/1.9/jarjar-maven-plugin-1.9.jar";
+        hash = "sha256-zBBuZfcC0BHmJgSDBjMeTELNRaGl6z+OfNG8gROPkMU=";
+        layout = "org/sonatype/plugins/jarjar-maven-plugin/1.9/jarjar-maven-plugin-1.9.jar";
+      };
+      "ant-contrib:ant-contrib:1.0b3:jar" = {
+        url = "https://repo1.maven.org/maven2/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar";
+        hash = "sha256-vjOmmBgxC1xV5B3BHUjNiV9fEp2ksNKML0xsPhy88/w=";
+        layout = "ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar";
+      };
+      "kotlin:kotlin-jdk-annotations:1.0:jar" = {
+        url = "https://teamcity.jetbrains.com/guestAuth/repository/download/Kotlin_KAnnotator_InferJdkAnnotations/shipWithKotlin.tcbuildtag/kotlin-jdk-annotations.jar";
+        hash = "sha256-pLCHif/n05A27kNHsbVTmuvdsqevc59c3GSemn+0G2s=";
+        layout = "kotlin/kotlin-jdk-annotations/1.0/kotlin-jdk-annotations-1.0.jar";
+      };
+      "kotlin:kotlin-android-sdk-annotations:1.0:jar" = {
+        url = "https://teamcity.jetbrains.com/guestAuth/repository/download/Kotlin_KAnnotator_InferJdkAnnotations/shipWithKotlin.tcbuildtag/kotlin-android-sdk-annotations.jar";
+        hash = "sha256-68ziQ2ByeaFv1EnQTouv9nkcyurYZDHvm8v7TcPqgq8=";
+        layout = "kotlin/kotlin-android-sdk-annotations/1.0/kotlin-android-sdk-annotations-1.0.jar";
+      };
+      "net.rubygrapefruit:native-platform:0.10:jar" = {
+        url = "https://repo.gradle.org/gradle/libs-releases/net/rubygrapefruit/native-platform/0.10/native-platform-0.10.jar";
+        hash = "sha256-WwYqIGc54rsrpD6ho55IzVB/GQM//54p+As54j7SqZM=";
+        layout = "net/rubygrapefruit/native-platform/0.10/native-platform-0.10.jar";
+      };
+      "net.rubygrapefruit:native-platform-linux-amd64:0.10:jar" = {
+        url = "https://repo.gradle.org/gradle/libs-releases/net/rubygrapefruit/native-platform-linux-amd64/0.10/native-platform-linux-amd64-0.10.jar";
+        hash = "sha256-2uZzlDsSuxrMZo4vWZy/FCc7xSbHVHnBJ2pejCvplvs=";
+        layout = "net/rubygrapefruit/native-platform-linux-amd64/0.10/native-platform-linux-amd64-0.10.jar";
+      };
+    };
   };
 
   buildKotlin =
@@ -131,19 +136,19 @@ let
         cp ${intellijSdk}/artifacts/core/cli-parser-1.1.jar  dependencies/cli-parser-1.1.1.jar || true
         cp ${intellijSdk}/artifacts/core/picocontainer.jar   ideaSDK/core/ || true
         
-        cp ${jlineJar} dependencies/jline.jar
-        cp ${jansiJar} dependencies/jansi.jar
-        cp ${jarjarJar} dependencies/jarjar.jar
-        cp ${antContribJar} dependencies/ant-contrib.jar
-        cp ${kotlinJdkAnnotationsJar} dependencies/annotations/kotlin-jdk-annotations.jar
-        cp ${kotlinAndroidSdkAnnotationsJar} dependencies/annotations/kotlin-android-sdk-annotations.jar
+        cp ${bootstrapJars}/jline/jline/2.12.1/jline-2.12.1.jar dependencies/jline.jar
+        cp ${bootstrapJars}/org/fusesource/jansi/jansi/1.11/jansi-1.11.jar dependencies/jansi.jar
+        cp ${bootstrapJars}/org/sonatype/plugins/jarjar-maven-plugin/1.9/jarjar-maven-plugin-1.9.jar dependencies/jarjar.jar
+        cp ${bootstrapJars}/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar dependencies/ant-contrib.jar
+        cp ${bootstrapJars}/kotlin/kotlin-jdk-annotations/1.0/kotlin-jdk-annotations-1.0.jar dependencies/annotations/kotlin-jdk-annotations.jar
+        cp ${bootstrapJars}/kotlin/kotlin-android-sdk-annotations/1.0/kotlin-android-sdk-annotations-1.0.jar dependencies/annotations/kotlin-android-sdk-annotations.jar
         
         # Native platform uberjar
         mkdir -p native-platform-tmp
         (
           cd native-platform-tmp
-          "''${JAVA_HOME}/bin/jar" xf ${nativePlatformCommonJar}
-          "''${JAVA_HOME}/bin/jar" xf ${nativePlatformLinuxAmd64Jar}
+          "''${JAVA_HOME}/bin/jar" xf ${bootstrapJars}/net/rubygrapefruit/native-platform/0.10/native-platform-0.10.jar
+          "''${JAVA_HOME}/bin/jar" xf ${bootstrapJars}/net/rubygrapefruit/native-platform-linux-amd64/0.10/native-platform-linux-amd64-0.10.jar
           "''${JAVA_HOME}/bin/jar" cf ../dependencies/native-platform-uberjar.jar .
         )
 
