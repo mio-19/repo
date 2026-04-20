@@ -90,7 +90,7 @@ let
         skipNext=
         for arg in "''${gradleFlagsArray[@]}"; do
           if [ -n "$skipNext" ]; then
-            skipNext=
+            skipNext=1
             continue
           fi
           if [ "$arg" = "--init-script" ]; then
