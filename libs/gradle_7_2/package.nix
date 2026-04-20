@@ -27,7 +27,10 @@ gradle-from-source {
     temurin-bin-17
   ];
   bootstrapGradle = bootstrapGradle;
-  patches = [ ./repository.patch ];
+  patches = [
+    ./repository.patch
+    ./configuration-cache-jdk11-compat.patch
+  ];
   postPatch = ''
     # remove strict toolchain vendor and implementation requirements
     find . -name "*.gradle" -o -name "*.gradle.kts" -print0 | xargs -0 sed -i -E \
@@ -63,9 +66,5 @@ gradle.rootProject {
     }
 }
 EOF
-    # remove problematic Java 11+ methods in ObjectInputStreamAdapter
-    sed -i '/override fun readNBytes/,/}/d' subprojects/configuration-cache/src/main/kotlin/org/gradle/configurationcache/serialization/codecs/jos/ObjectInputStreamAdapter.kt
-    sed -i '/override fun transferTo/,/}/d' subprojects/configuration-cache/src/main/kotlin/org/gradle/configurationcache/serialization/codecs/jos/ObjectInputStreamAdapter.kt
-    sed -i '/override fun readAllBytes/,/}/d' subprojects/configuration-cache/src/main/kotlin/org/gradle/configurationcache/serialization/codecs/jos/ObjectInputStreamAdapter.kt
   '';
 }
