@@ -37,7 +37,7 @@
             in
             map (
               pkg:
-              if lib.isDerivation pkg && (pkg.pname or "") == "ndk-29-0-14206865" then
+              if lib.isDerivation pkg && lib.hasPrefix "ndk-" (pkg.pname or "") then
                 sourceBuiltNdkHelper.mkSourceBuiltNdk pkg
               else
                 pkg
