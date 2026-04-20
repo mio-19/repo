@@ -1,5 +1,5 @@
---- gradle-4.10.3-src/subprojects/logging/src/main/java/org/gradle/internal/logging/sink/AnsiConsoleUtil.java	2026-04-10 22:50:42.982736605 +1000
-+++ gradle-4.10.3-src-patched/subprojects/logging/src/main/java/org/gradle/internal/logging/sink/AnsiConsoleUtil.java	2026-04-10 22:55:26.065911070 +1000
+--- gradle-5.0-m1-src/subprojects/logging/src/main/java/org/gradle/internal/logging/sink/AnsiConsoleUtil.java	2026-04-10 22:50:43.858727861 +1000
++++ gradle-5.0-m1-src-patched/subprojects/logging/src/main/java/org/gradle/internal/logging/sink/AnsiConsoleUtil.java	2026-04-10 22:56:23.831334499 +1000
 @@ -17,30 +17,22 @@
  package org.gradle.internal.logging.sink;
  
@@ -416,8 +416,8 @@
 -        }
 -    }
  }
---- gradle-4.10.3-src/subprojects/logging/src/main/java/org/gradle/internal/logging/console/DefaultColorMap.java	2026-04-10 22:50:42.980736625 +1000
-+++ gradle-4.10.3-src-patched/subprojects/logging/src/main/java/org/gradle/internal/logging/console/DefaultColorMap.java	2026-04-10 22:55:26.065911070 +1000
+--- gradle-5.0-m1-src/subprojects/logging/src/main/java/org/gradle/internal/logging/console/DefaultColorMap.java	2026-04-10 22:50:43.854727901 +1000
++++ gradle-5.0-m1-src-patched/subprojects/logging/src/main/java/org/gradle/internal/logging/console/DefaultColorMap.java	2026-04-10 22:56:23.831334499 +1000
 @@ -32,25 +32,10 @@
  import static org.gradle.internal.logging.text.StyledTextOutput.Style.Error;
  
@@ -579,9 +579,9 @@
          }
  
          public void off(Ansi ansi) {
---- gradle-4.10.3-src/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedFileMetadataAccessor.java	2026-04-10 22:50:43.036736065 +1000
-+++ gradle-4.10.3-src-patched/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedFileMetadataAccessor.java	2026-04-10 22:55:26.065911070 +1000
-@@ -16,41 +16,21 @@
+--- gradle-5.0-m1-src/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedFileMetadataAccessor.java	2026-04-10 22:50:43.916727282 +1000
++++ gradle-5.0-m1-src-patched/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedFileMetadataAccessor.java	2026-04-10 22:56:23.831334499 +1000
+@@ -16,40 +16,21 @@
  
  package org.gradle.internal.nativeintegration.filesystem.services;
  
@@ -621,7 +621,6 @@
 -    }
 -
 -    @Override
--    @SuppressWarnings("Since15")
 -    public FileMetadataSnapshot stat(Path path) throws IOException {
 -        return stat(path.toFile());
 +        if (f.isDirectory()) {
@@ -630,8 +629,8 @@
 +        return DefaultFileMetadata.file(f.lastModified(), f.length());
      }
  }
---- gradle-4.10.3-src/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedSymlink.java	2026-04-10 22:50:43.036736065 +1000
-+++ gradle-4.10.3-src-patched/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedSymlink.java	2026-04-10 22:55:26.065911070 +1000
+--- gradle-5.0-m1-src/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedSymlink.java	2026-04-10 22:50:43.916727282 +1000
++++ gradle-5.0-m1-src-patched/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedSymlink.java	2026-04-10 22:56:23.831334499 +1000
 @@ -16,7 +16,7 @@
  
  package org.gradle.internal.nativeintegration.filesystem.services;
@@ -649,8 +648,8 @@
 +        return posixFiles.stat(suspect).getType() == PosixFile.Type.Symlink;
      }
  }
---- gradle-4.10.3-src/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/processenvironment/NativePlatformBackedProcessEnvironment.java	2026-04-10 22:50:43.036736065 +1000
-+++ gradle-4.10.3-src-patched/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/processenvironment/NativePlatformBackedProcessEnvironment.java	2026-04-10 22:55:26.065911070 +1000
+--- gradle-5.0-m1-src/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/processenvironment/NativePlatformBackedProcessEnvironment.java	2026-04-10 22:50:43.916727282 +1000
++++ gradle-5.0-m1-src-patched/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/processenvironment/NativePlatformBackedProcessEnvironment.java	2026-04-10 22:56:23.831334499 +1000
 @@ -18,6 +18,7 @@
  import net.rubygrapefruit.platform.Process;
  
@@ -674,8 +673,8 @@
 +        }
      }
  }
---- gradle-4.10.3-src/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/services/NativeServices.java	2026-04-10 22:50:43.036736065 +1000
-+++ gradle-4.10.3-src-patched/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/services/NativeServices.java	2026-04-10 22:55:26.065911070 +1000
+--- gradle-5.0-m1-src/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/services/NativeServices.java	2026-04-10 22:50:43.916727282 +1000
++++ gradle-5.0-m1-src-patched/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/services/NativeServices.java	2026-04-10 22:56:23.835334459 +1000
 @@ -15,8 +15,6 @@
   */
  package org.gradle.internal.nativeintegration.services;
@@ -729,8 +728,8 @@
              } catch (NativeIntegrationUnavailableException e) {
                  LOGGER.debug("Native-platform files integration is not available. Continuing with fallback.");
              }
---- gradle-4.10.3-src/subprojects/process-services/src/main/java/org/gradle/process/internal/health/memory/NativeOsxAvailableMemory.java	2026-04-10 22:50:43.230734129 +1000
-+++ gradle-4.10.3-src-patched/subprojects/process-services/src/main/java/org/gradle/process/internal/health/memory/NativeOsxAvailableMemory.java	2026-04-10 22:55:26.067911049 +1000
+--- gradle-5.0-m1-src/subprojects/process-services/src/main/java/org/gradle/process/internal/health/memory/NativeOsxAvailableMemory.java	2026-04-10 22:50:44.044726005 +1000
++++ gradle-5.0-m1-src-patched/subprojects/process-services/src/main/java/org/gradle/process/internal/health/memory/NativeOsxAvailableMemory.java	2026-04-10 22:56:23.835334459 +1000
 @@ -16,21 +16,9 @@
  
  package org.gradle.process.internal.health.memory;
