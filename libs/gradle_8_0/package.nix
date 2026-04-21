@@ -31,5 +31,5 @@ gradle-from-source {
     temurin-bin-11
     temurin-bin-17
   ];
-  bootstrapGradle = gradle_8_0_M1;
+  bootstrapGradle = bootstrapGradle;
 }
