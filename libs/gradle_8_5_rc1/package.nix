@@ -4,24 +4,18 @@
   temurin-bin-17,
   jdk21_headless,
   gradle_8_4,
-  gradle-packages,
   gradle-from-source,
   mergeLock,
 }:
-let
-  bootstrapGradle =
-    (gradle-packages.mkGradle {
-      version = "8.5-rc-1";
-      hash = "sha256-jHRGKx2D+LF8SDjJJfxMRtH7tEZ7GLihf1zaruRbfwk=";
-      defaultJava = jdk21_headless;
-    }).wrapped;
-in
 gradle-from-source {
   version = "8.5.0-RC1";
   hash = "sha256-UGzP4x2FaeMvh7XdT6zT2m4/fJJqd9LsP7Fo/+kVfK4=";
   lockFile = mergeLock [
     gradle_8_4.unwrapped.passthru.lockFile
     ./gradle.lock
+  ];
+  patches = [
+    ./disable-dependency-verification.patch
   ];
   defaultJava = jdk21_headless;
   buildJdk = temurin-bin-11;
@@ -30,6 +24,8 @@ gradle-from-source {
     temurin-bin-11
     temurin-bin-17
   ];
-  # nix run .#gradle2nix -- --gradle-wrapper=8.5-rc-1
-  bootstrapGradle = bootstrapGradle;
+  gradleFlags = [
+    "-PbuildKotlinVersion=1.9.20"
+  ];
+  bootstrapGradle = gradle_8_4;
 }

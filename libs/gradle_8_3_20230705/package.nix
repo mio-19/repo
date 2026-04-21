@@ -3,30 +3,27 @@
   temurin-bin-11,
   temurin-bin-17,
   jdk21_headless,
-  gradle_8_3,
+  gradle_8_2,
   gradle-from-source,
   mergeLock,
 }:
 gradle-from-source {
-  version = "8.4";
-  hash = "sha256-RPDvx2Whyg5yY8aHmdjMAghpBe497/F4QOxUopqh97k=";
+  version = "8.3.0-20230705";
+  rev = "5c999293af0b1d5f254582c661de699ec84ec608";
+  hash = "sha256-a1Pw5qtb8ycUBrqAlAxm89TMJWGQ4lODOIKV1CGWrJs=";
   lockFile = mergeLock [
-    gradle_8_3.unwrapped.passthru.lockFile
+    gradle_8_2.unwrapped.passthru.lockFile
     ./gradle.lock
   ];
-  patches = [
-    ./disable-dependency-verification.patch
-  ];
   defaultJava = jdk21_headless;
-  # this version specifically ask for termurin branded jdk.
   buildJdk = temurin-bin-11;
   javaToolchains = [
     temurin-bin-8
     temurin-bin-11
     temurin-bin-17
   ];
+  bootstrapGradle = gradle_8_2;
   gradleFlags = [
-    "-PbuildKotlinVersion=1.9.10"
+    "-PbuildKotlinVersion=1.8.21"
   ];
-  bootstrapGradle = gradle_8_3;
 }
