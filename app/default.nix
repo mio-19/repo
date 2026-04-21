@@ -23,14 +23,16 @@
       };
       mvn2nixMaven = pkgs.callPackage "${inputs.mvn2nix}/maven.nix" { };
       gradle2nixScope = pkgs.callPackage "${gradle2nixPatched}/nix" { };
+      androidSdkBuilderRaw = inputs.android-nixpkgs.sdk.${system};
       sourceBuiltNdkHelper = pkgs.callPackage ./source-built-ndk.nix {
         robotnix = inputsPatched.robotnix;
+        androidSdkBuilder = androidSdkBuilderRaw;
       };
       helpers = {
         buildMavenRepositoryFromLockFile-bare = mvn2nixMaven.buildMavenRepositoryFromLockFile;
         androidSdkBuilder =
           selector:
-          inputs.android-nixpkgs.sdk.${system} (
+          androidSdkBuilderRaw (
             s:
             let
               selected = selector s;
