@@ -32,4 +32,14 @@ gradle-from-source {
     temurin-bin-17
   ];
   bootstrapGradle = bootstrapGradle;
+  postPatch = ''
+    substituteInPlace \
+      build-logic/jvm/src/main/kotlin/gradlebuild.unittest-and-compile.gradle.kts \
+      build-logic-commons/code-quality-rules/build.gradle.kts \
+      build-logic-commons/commons/build.gradle.kts \
+      build-logic-commons/commons/src/main/kotlin/common.kt \
+      build-logic-commons/gradle-plugin/build.gradle.kts \
+      --replace-fail 'languageVersion = JavaLanguageVersion.of(11)' 'languageVersion.set(JavaLanguageVersion.of(11))' \
+      --replace-fail 'vendor = JvmVendorSpec.ADOPTIUM' 'vendor.set(JvmVendorSpec.ADOPTIUM)'
+  '';
 }

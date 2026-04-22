@@ -1,0 +1,22 @@
+--- a/subprojects/configuration-cache/src/main/kotlin/org/gradle/configurationcache/serialization/codecs/jos/ObjectInputStreamAdapter.kt
++++ b/subprojects/configuration-cache/src/main/kotlin/org/gradle/configurationcache/serialization/codecs/jos/ObjectInputStreamAdapter.kt
+@@ -93,8 +93,6 @@
+     // TODO:configuration-cache override Java 11 API for compatibility with Java 11
+     // override fun readNBytes(len: Int): ByteArray = inputStream.readNBytes(len)
+ 
+-    override fun readNBytes(b: ByteArray, off: Int, len: Int): Int = inputStream.readNBytes(b, off, len)
+-
+     override fun skip(n: Long): Long = inputStream.skip(n)
+ 
+     override fun registerValidation(obj: ObjectInputValidation?, prio: Int) = Unit
+@@ -117,10 +115,6 @@
+ 
+     override fun readFields(): GetField = unsupported("ObjectInputStream.readFields")
+ 
+-    override fun transferTo(out: OutputStream): Long = unsupported("ObjectInputStream.transferTo")
+-
+-    override fun readAllBytes(): ByteArray = unsupported("ObjectInputStream.readAllBytes")
+-
+     private
+     val inputStream: InputStream
+         get() = readContext.inputStream
