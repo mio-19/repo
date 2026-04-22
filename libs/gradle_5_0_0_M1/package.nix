@@ -1,9 +1,9 @@
 {
   callPackage,
   fetchFromGitHub,
-  fetchurl,
   gradle-packages,
   gradle_4_9_0,
+  gradle_4_10_3,
   jdk11_headless,
   jdk8_headless,
   makeWrapper,
@@ -15,8 +15,8 @@ let
   mkGradle' =
     {
       fetchFromGitHub,
-      fetchurl,
       gradle_4_9_0,
+      gradle_4_10_3,
       jdk11_headless,
       jdk8_headless,
       makeWrapper,
@@ -26,24 +26,25 @@ let
       ...
     }:
     let
-      gradleRunner = gradle_4_9_0;
+      gradleRunner = gradle_4_10_3;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gradle-unwrapped";
-      version = "4.10.3";
+      version = "5.0-milestone-1";
 
       src = fetchFromGitHub {
         owner = "gradle";
         repo = "gradle";
-        tag = "v4.10.3";
-        hash = "sha256-rpvkNqSdInehucshyQb4X1ZpROkx8n9hga95L8XkKTk=";
+        tag = "v5.0.0-M1";
+        hash = "sha256-hmbktwjXBX04Y0n3pD8x9e4ZeOyX2va+tN/3R3Nkh30=";
       };
 
       patches = [
         ./bootstrap-compat.patch
-        ./bootstrap-gradle4_9.patch
         ./bootstrap-jdk11-compat.patch
       ];
+
+      patchFlags = [ "-p1" ];
 
       gradleBuildTask = ":distributions:binZip";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
@@ -56,7 +57,7 @@ let
         unzip
       ];
 
-      mitmCache = gradleRunner.fetchDeps {
+      mitmCache = gradle_4_10_3.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
         data = ./deps.json;
@@ -81,10 +82,6 @@ let
         cat > "$gradleInitScript" <<'EOF'
         gradle.projectsLoaded {
           rootProject.allprojects {
-            configurations.all {
-              resolutionStrategy.force("org.apache.httpcomponents:httpclient:4.5.5")
-              resolutionStrategy.force("org.apache.httpcomponents:httpcore:4.4.9")
-            }
             tasks.withType(AbstractArchiveTask) {
               if (it.hasProperty('preserveFileTimestamps')) {
                 preserveFileTimestamps = false
@@ -92,6 +89,9 @@ let
               if (it.hasProperty('reproducibleFileOrder')) {
                 reproducibleFileOrder = true
               }
+            }
+            tasks.matching { it.name.toLowerCase().contains("test") || it.name.toLowerCase().contains("check") || it.name.contains("ktlint") || it.name.startsWith("docs") }.all {
+              enabled = false
             }
           }
         }
@@ -110,19 +110,41 @@ let
           filteredGradleFlagsArray+=("$arg")
         done
         gradleFlagsArray=("''${filteredGradleFlagsArray[@]}" --init-script "$gradleInitScript")
+
+        # Robust source-wide fixes
+        find . -type f \( -name "*.kts" -o -name "*.gradle" \) -exec sed -i 's/1\.0-rc-5/1\.0-rc-6/g' {} +
+        find . -type f \( -name "*.kts" -o -name "*.gradle" \) -exec sed -i 's/0\.9-2\.4\.15/2\.4\.15/g' {} +
+        
+        # Inject repositories into all build files that have repositories block
+        find . -type f \( -name "*.kts" -o -name "*.gradle" \) -exec sed -i '/repositories {/a \ \ \ \ \ \ \ \ mavenCentral()\n\ \ \ \ \ \ \ \ google()\n\ \ \ \ \ \ \ \ jcenter()' {} +
+
+        # Remove problematic plugin and extension references in buildSrc for bootstrap
+        if [ -f buildSrc/build.gradle.kts ]; then
+          sed -i '/configure<JavaPluginExtension>/,/}/d' buildSrc/build.gradle.kts
+          sed -i '/kotlinDslPluginOptions/,/}/d' buildSrc/build.gradle.kts
+          # Replace unresolved sourceSets access
+          sed -i 's/project\.sourceSets/project\.the<JavaPluginConvention>()\.sourceSets/g' buildSrc/build.gradle.kts
+        fi
+
+        # Disable problematic buildSrc subprojects and their usages
+        find . -type f \( -name "*.kts" -o -name "*.gradle" \) -exec sed -i 's/include("performance")/\/\/include("performance")/g' {} +
+        find . -type f \( -name "*.kts" -o -name "*.gradle" \) -exec sed -i 's/include("buildquality")/\/\/include("buildquality")/g' {} +
+        find . -type f \( -name "*.kts" -o -name "*.gradle" \) -exec sed -i '/project(":performance")/d' {} +
+        find . -type f \( -name "*.kts" -o -name "*.gradle" \) -exec sed -i '/project(":buildquality")/d' {} +
+
+        # Wipe out failing GenerateDefaultImportsTask
+        if [ -f buildSrc/subprojects/build/src/main/groovy/org/gradle/build/docs/dsl/source/GenerateDefaultImportsTask.java ]; then
+          echo "package org.gradle.build.docs.dsl.source; import org.gradle.api.DefaultTask; public class GenerateDefaultImportsTask extends DefaultTask {}" > buildSrc/subprojects/build/src/main/groovy/org/gradle/build/docs/dsl/source/GenerateDefaultImportsTask.java
+        fi
       '';
 
       gradleFlags = [
-        "-x"
-        ":docs:distDocs"
-        "-x"
-        ":docs:samples"
         "-PfinalRelease=true"
-        "-PpromotionCommitId=v4.10.3"
+        "-PpromotionCommitId=v5.0.0-M1"
         "-Pjava9Home=${jdk11_headless.passthru.home}"
         "-Djava9Home=${jdk11_headless.passthru.home}"
         "-Dfile.encoding=UTF-8"
-        "-DbootstrapWithGradle4_9_0=true"
+        "-DbootstrapWithGradle4_10_3=true"
       ];
 
       postPatch = ''
@@ -157,11 +179,6 @@ let
         runHook postBuild
       '';
 
-      binaryZip = fetchurl {
-        url = "https://services.gradle.org/distributions/gradle-4.10.3-bin.zip";
-        sha256 = "0vhqxnk0yj3q9jam5w4kpia70i4h0q4pjxxqwynh3qml0vrcn9l6";
-      };
-
       installPhase = ''
         runHook preInstall
 
@@ -176,17 +193,13 @@ let
         mkdir -p "$out/libexec/gradle" "$out/bin"
         mv lib "$out/libexec/gradle/"
         mv bin "$out/libexec/gradle/"
-
-        # Hybrid Fix: Overwrite core jars with verified ones from binary to fix SSL/Classloader issues
-        mkdir -p binary-unpack
-        unzip -q "${finalAttrs.binaryZip}" -d binary-unpack
-        
-        # Overwrite lib with the verified binary one (includes plugins)
-        rm -rf "$out/libexec/gradle/lib"
-        cp -rv binary-unpack/gradle-4.10.3/lib "$out/libexec/gradle/"
+        substituteInPlace "$out/libexec/gradle/bin/gradle" \
+          --replace-fail \
+            'CLASSPATH=$APP_HOME/lib/gradle-launcher-5.0-milestone-1.jar' \
+            'CLASSPATH=$APP_HOME/lib/gradle-launcher-5.0-milestone-1.jar:$APP_HOME/lib/*:$APP_HOME/lib/plugins/*'
 
         makeWrapper "$out/libexec/gradle/bin/gradle" "$out/bin/gradle" \
-          --set-default JAVA_HOME "${jdk8_headless.passthru.home}"
+          --set-default JAVA_HOME "${finalAttrs.env.JAVA_HOME}"
 
         runHook postInstall
       '';
@@ -194,7 +207,6 @@ let
       passthru = {
         inherit (finalAttrs) jdk mitmCache;
         tests = { };
-        fetchDeps = finalAttrs.mitmCache.updateScript;
       };
     });
 

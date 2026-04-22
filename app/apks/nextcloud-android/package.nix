@@ -23,6 +23,7 @@ let
 
   appPackage = buildGradlePackage rec {
     pname = "nextcloud-android";
+    # Go to https://github.com/nextcloud/android/releases/latest to see latest release.
     version = "33.0.1";
     inherit gradle;
 

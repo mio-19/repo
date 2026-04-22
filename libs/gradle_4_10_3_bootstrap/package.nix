@@ -1,7 +1,6 @@
 {
   callPackage,
   fetchFromGitHub,
-  fetchurl,
   gradle-packages,
   gradle_4_9_0,
   jdk11_headless,
@@ -15,7 +14,6 @@ let
   mkGradle' =
     {
       fetchFromGitHub,
-      fetchurl,
       gradle_4_9_0,
       jdk11_headless,
       jdk8_headless,
@@ -39,11 +37,7 @@ let
         hash = "sha256-rpvkNqSdInehucshyQb4X1ZpROkx8n9hga95L8XkKTk=";
       };
 
-      patches = [
-        ./bootstrap-compat.patch
-        ./bootstrap-gradle4_9.patch
-        ./bootstrap-jdk11-compat.patch
-      ];
+      patches = [ ./bootstrap-gradle4_9.patch ];
 
       gradleBuildTask = ":distributions:binZip";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
@@ -81,10 +75,6 @@ let
         cat > "$gradleInitScript" <<'EOF'
         gradle.projectsLoaded {
           rootProject.allprojects {
-            configurations.all {
-              resolutionStrategy.force("org.apache.httpcomponents:httpclient:4.5.5")
-              resolutionStrategy.force("org.apache.httpcomponents:httpcore:4.4.9")
-            }
             tasks.withType(AbstractArchiveTask) {
               if (it.hasProperty('preserveFileTimestamps')) {
                 preserveFileTimestamps = false
@@ -100,7 +90,7 @@ let
         skipNext=
         for arg in "''${gradleFlagsArray[@]}"; do
           if [ -n "$skipNext" ]; then
-            skipNext=
+            skipNext=1
             continue
           fi
           if [ "$arg" = "--init-script" ]; then
@@ -113,10 +103,6 @@ let
       '';
 
       gradleFlags = [
-        "-x"
-        ":docs:distDocs"
-        "-x"
-        ":docs:samples"
         "-PfinalRelease=true"
         "-PpromotionCommitId=v4.10.3"
         "-Pjava9Home=${jdk11_headless.passthru.home}"
@@ -157,11 +143,6 @@ let
         runHook postBuild
       '';
 
-      binaryZip = fetchurl {
-        url = "https://services.gradle.org/distributions/gradle-4.10.3-bin.zip";
-        sha256 = "0vhqxnk0yj3q9jam5w4kpia70i4h0q4pjxxqwynh3qml0vrcn9l6";
-      };
-
       installPhase = ''
         runHook preInstall
 
@@ -176,17 +157,13 @@ let
         mkdir -p "$out/libexec/gradle" "$out/bin"
         mv lib "$out/libexec/gradle/"
         mv bin "$out/libexec/gradle/"
-
-        # Hybrid Fix: Overwrite core jars with verified ones from binary to fix SSL/Classloader issues
-        mkdir -p binary-unpack
-        unzip -q "${finalAttrs.binaryZip}" -d binary-unpack
-        
-        # Overwrite lib with the verified binary one (includes plugins)
-        rm -rf "$out/libexec/gradle/lib"
-        cp -rv binary-unpack/gradle-4.10.3/lib "$out/libexec/gradle/"
+        substituteInPlace "$out/libexec/gradle/bin/gradle" \
+          --replace-fail \
+            'CLASSPATH=$APP_HOME/lib/gradle-launcher-4.10.3.jar' \
+            'CLASSPATH=$APP_HOME/lib/gradle-launcher-4.10.3.jar:$APP_HOME/lib/*:$APP_HOME/lib/plugins/*'
 
         makeWrapper "$out/libexec/gradle/bin/gradle" "$out/bin/gradle" \
-          --set-default JAVA_HOME "${jdk8_headless.passthru.home}"
+          --set-default JAVA_HOME "${finalAttrs.env.JAVA_HOME}"
 
         runHook postInstall
       '';
@@ -194,7 +171,6 @@ let
       passthru = {
         inherit (finalAttrs) jdk mitmCache;
         tests = { };
-        fetchDeps = finalAttrs.mitmCache.updateScript;
       };
     });
 

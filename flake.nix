@@ -103,11 +103,6 @@
             src = inputs.robotnix.outPath;
             name = "robotnix-patched";
             patches = [
-              (fetchpatch {
-                name = "lineageos: bump to 2026-04-05";
-                url = "https://github.com/nix-community/robotnix/pull/377.patch";
-                hash = "sha256-TA54W8lHLQZorxPlmv68G36hlvuWhNswGKbaTxQU0fo=";
-              })
             ];
           };
           robotnixPatched =
