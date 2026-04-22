@@ -1,0 +1,86 @@
+--- a/build-logic-commons/gradle-plugin/build.gradle.kts
++++ b/build-logic-commons/gradle-plugin/build.gradle.kts
+@@ -14,7 +14,7 @@
+ dependencies {
+     compileOnly("com.gradle:gradle-enterprise-gradle-plugin:3.10")
+ 
+-    implementation("org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:2.3.3")
+-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21")
++    implementation("org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:2.1.6")
++    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31")
+     implementation("org.gradle.kotlin:gradle-kotlin-dsl-conventions:0.7.0")
+ }
+--- a/build-logic/build-platform/build.gradle.kts
++++ b/build-logic/build-platform/build.gradle.kts
+@@ -10,8 +10,7 @@
+ val asmVersion = "9.2"
+ // To try out better kotlin compilation avoidance and incremental compilation
+ // with -Pkotlin.incremental.useClasspathSnapshot=true
+-val kotlinVersion = providers.gradleProperty("buildKotlinVersion")
+-    .getOrElse(embeddedKotlinVersion)
++val kotlinVersion = "1.5.31"
+ 
+ dependencies {
+     constraints {
+--- a/build-logic/basics/src/main/kotlin/gradlebuild/basics/BuildEnvironment.kt
++++ b/build-logic/basics/src/main/kotlin/gradlebuild/basics/BuildEnvironment.kt
+@@ -22,6 +22,7 @@
+ import org.gradle.api.file.Directory
+ import org.gradle.api.provider.Provider
+ import org.gradle.internal.os.OperatingSystem
++import java.io.ByteArrayOutputStream
+ 
+ 
+ fun Project.repoRoot() = layout.projectDirectory.parentOrRoot()
+@@ -49,28 +50,27 @@
+ fun Project.currentGitCommit() = git(layout.projectDirectory, "rev-parse", "HEAD")
+ 
+ 
+-@Suppress("UnstableApiUsage")
+ private
+-fun Project.git(checkoutDir: Directory, vararg args: String): Provider<String> {
+-    val execOutput = providers.exec {
++fun Project.git(checkoutDir: Directory, vararg args: String): Provider<String> = provider {
++    val execOutput = ByteArrayOutputStream()
++    val execResult = exec {
+         workingDir = checkoutDir.asFile
+         isIgnoreExitValue = true
+         commandLine = listOf("git", *args)
+         if (OperatingSystem.current().isWindows) {
+             commandLine = listOf("cmd", "/c") + commandLine
+         }
++        standardOutput = execOutput
+     }
+-    return execOutput.result.zip(execOutput.standardOutput.asBytes) { execResult, output ->
+-        when {
+-            execResult.exitValue == 0 -> String(output).trim()
+-            checkoutDir.asFile.resolve(".git/HEAD").exists() -> {
+-                // Read commit id directly from filesystem
+-                val headRef = checkoutDir.asFile.resolve(".git/HEAD").readText()
+-                    .replace("ref: ", "").trim()
+-                checkoutDir.asFile.resolve(".git/$headRef").readText().trim()
+-            }
+-            else -> "<unknown>" // It's a source distribution, we don't know.
++    when {
++        execResult.exitValue == 0 -> String(execOutput.toByteArray()).trim()
++        checkoutDir.asFile.resolve(".git/HEAD").exists() -> {
++            // Read commit id directly from filesystem
++            val headRef = checkoutDir.asFile.resolve(".git/HEAD").readText()
++                .replace("ref: ", "").trim()
++            checkoutDir.asFile.resolve(".git/$headRef").readText().trim()
+         }
++        else -> "<unknown>" // It's a source distribution, we don't know.
+     }
+ }
+ 
+--- a/build-logic/kotlin-dsl/src/main/kotlin/gradlebuild.kotlin-dsl-dependencies-embedded.gradle.kts
++++ b/build-logic/kotlin-dsl/src/main/kotlin/gradlebuild.kotlin-dsl-dependencies-embedded.gradle.kts
+@@ -26,7 +26,7 @@
+ // --- Enable automatic generation of API extensions -------------------
+ val apiExtensionsOutputDir = layout.buildDirectory.dir("generated-sources/kotlin")
+ 
+-val publishedKotlinDslPluginVersion = "2.3.3" // TODO:kotlin-dsl
++val publishedKotlinDslPluginVersion = "2.1.6" // TODO:kotlin-dsl
+ 
+ tasks {
+     val generateKotlinDependencyExtensions by registering(GenerateKotlinDependencyExtensions::class) {
