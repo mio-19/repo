@@ -4,6 +4,7 @@
   buildDartApplication,
   runCommand,
   fetchFromGitHub,
+  fetchurl,
   flutter338,
   jdk17_headless,
   python3,
@@ -14,6 +15,11 @@
 let
   appPackage =
     let
+      llamadartNativeAndroidArm64 = fetchurl {
+        url = "https://github.com/leehack/llamadart-native/releases/download/b8638/llamadart-native-android-arm64-b8638.tar.gz";
+        hash = "sha256-l/SZ09YYzRChcwS9MyaHiyJM7hxUSfqmHAdInlpyuYE=";
+      };
+
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
@@ -22,8 +28,7 @@ let
         # AGP may resolve aapt2 from build-tools 35.0.0 even with compileSdk 36.
         s.build-tools-35-0-0
         s.build-tools-36-0-0
-        # Flutter 3.38.x defaults to ndkVersion = "28.2.13676358" in FlutterExtension.kt; override below
-        s.ndk-29-0-14206865
+        s.ndk-28-2-13676358
         s.cmake-3-31-6
       ]);
 
@@ -33,13 +38,13 @@ let
     in
     buildDartApplication.override { dart = flutter338; } (finalAttrs: {
       pname = "meshcore-open";
-      version = "7.0.0+8";
+      version = "8.0.0+10";
 
       src = fetchFromGitHub {
         owner = "zjs81";
         repo = "meshcore-open";
-        rev = "Alpha7";
-        hash = "sha256-7szV0z9E/5Jb3Pyo3EFrzbB9mHIoJBgeqrnRdGko+PA=";
+        rev = "Alpha8";
+        hash = "sha256-OR2WFgj2RHmzKpfr/X/pUGIpcwOnxPodW4KWTaFpTqI=";
       };
 
       pubspecLock = lib.importJSON ./pubspec.lock.json;
@@ -154,8 +159,13 @@ let
         exec ${gradle}/bin/gradle -I "$PWD/gradle-version-normalize.init.gradle" "$@"
         GRADLEW_SCRIPT
         chmod +x android/gradlew
-        substituteInPlace android/app/build.gradle.kts \
-          --replace-fail 'ndkVersion = flutter.ndkVersion' 'ndkVersion = "29.0.14206865"'
+        if grep -Fq 'ndkVersion = "29.0.14206865"' android/app/build.gradle.kts; then
+          substituteInPlace android/app/build.gradle.kts \
+            --replace-fail 'ndkVersion = "29.0.14206865"' 'ndkVersion = "28.2.13676358"'
+        elif grep -Fq 'ndkVersion = flutter.ndkVersion' android/app/build.gradle.kts; then
+          substituteInPlace android/app/build.gradle.kts \
+            --replace-fail 'ndkVersion = flutter.ndkVersion' 'ndkVersion = "28.2.13676358"'
+        fi
 
         if grep -Fq 'android.newDsl=true' android/gradle.properties; then
           substituteInPlace android/gradle.properties \
@@ -180,6 +190,7 @@ let
         # local.properties is read by settings.gradle.kts (flutter.sdk) and AGP (sdk.dir).
         echo "sdk.dir=${androidSdk}/share/android-sdk" > android/local.properties
         echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6" >> android/local.properties
+        echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/28.2.13676358" >> android/local.properties
         echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
       '';
 
@@ -193,6 +204,7 @@ let
         GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.paths=${jdk17_headless}"
         GRADLE_OPTS="$GRADLE_OPTS -Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
         GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        export LLAMADART_ALLOW_LEGACY_LOCAL_BUNDLES=1
         if [[ -n "''${MITM_CACHE_KEYSTORE:-}" ]]; then
           GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyHost=$MITM_CACHE_HOST"
           GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyPort=$MITM_CACHE_PORT"
@@ -290,6 +302,8 @@ let
           replace_matches 'org\.jetbrains\.kotlin:kotlin-gradle-plugin:[0-9.]+' "org.jetbrains.kotlin:kotlin-gradle-plugin:$target_kotlin"
           replace_matches "ext\\.kotlin_version = '[0-9.]+'" "ext.kotlin_version = '$target_kotlin'"
           replace_matches "kotlin_version = '[0-9.]+'" "kotlin_version = '$target_kotlin'"
+          replace_matches 'val kotlinVersion = "[0-9.]+"' "val kotlinVersion = \"$target_kotlin\""
+          replace_matches 'kotlinVersion = "[0-9.]+"' "kotlinVersion = \"$target_kotlin\""
 
           replace_plugin_version_decls 'id\("com\.android\.(application|library|test)"\) version "[0-9.]+"' "$target_agp"
           replace_plugin_version_decls 'id "com\.android\.(application|library|test)" version "[0-9.]+"' "$target_agp"
@@ -337,8 +351,8 @@ let
           while IFS= read -r old_value; do
             [ -n "$old_value" ] || continue
             substituteInPlace "$file" \
-              --replace-fail "$old_value" '29.0.14206865'
-          done < <(grep -oE '27\.0\.12077973|28\.2\.13676358' "$file" | sort -u)
+              --replace-fail "$old_value" '28.2.13676358'
+          done < <(grep -oE '27\.0\.12077973|28\.2\.13676358|29\.0\.14206865' "$file" | sort -u)
 
           if grep -Fq 'android.newDsl=true' "$file"; then
             substituteInPlace "$file" \
@@ -387,6 +401,63 @@ let
                 print(path)
         PY
         )
+
+        while IFS= read -r package_dir; do
+          [ -n "$package_dir" ] || continue
+          work_package_dir="$package_dir"
+          if [[ "$package_dir" == /nix/store/* ]]; then
+            if [ -z "''${patched_pkg_dirs[$package_dir]:-}" ]; then
+              patched_pkg_dirs[$package_dir]="$(clone_dart_package "$package_dir" "$(basename "$package_dir")")"
+              if grep -Fq "$package_dir" .dart_tool/package_config.json; then
+                replace_dart_package_root "$package_dir" "''${patched_pkg_dirs[$package_dir]}"
+              fi
+            fi
+            work_package_dir="''${patched_pkg_dirs[$package_dir]}"
+          fi
+
+          case "$(basename "$work_package_dir")" in
+            *llamadart*)
+              mkdir -p "$work_package_dir/third_party/bin/android/arm64"
+              tar -xzf ${llamadartNativeAndroidArm64} -C "$work_package_dir/third_party/bin/android/arm64"
+              if [ -f "$work_package_dir/hook/build.dart" ]; then
+                substituteInPlace "$work_package_dir/hook/build.dart" \
+                  --replace-fail "  final destination = File(destinationPath);" $'  final destination = File(destinationPath);\n  await destination.parent.create(recursive: true);\n  await File(\'${llamadartNativeAndroidArm64}\').copy(destinationPath);\n  log.info(\'Saved native bundle to $destinationPath\');\n  return;'
+              fi
+              ;;
+          esac
+
+          while IFS= read -r gradle_file; do
+            patch_plugin_gradle_file "$gradle_file"
+          done < <(find "$work_package_dir" -type f \( -name '*.gradle' -o -name '*.gradle.kts' \))
+
+          while IFS= read -r ndk_file; do
+            patch_ndk_version_file "$ndk_file"
+          done < <(find "$work_package_dir" -type f -name '*.properties')
+        done < <(${python3}/bin/python3 - <<'PY'
+        import json
+        import urllib.parse
+
+        wanted = {"jni", "jni_flutter", "llamadart"}
+        with open(".dart_tool/package_config.json") as f:
+            data = json.load(f)
+
+        for package in data.get("packages", []):
+            if package.get("name") not in wanted:
+                continue
+            root_uri = package.get("rootUri", "")
+            if root_uri.startswith("file://"):
+                print(urllib.parse.unquote(root_uri[len("file://"):]))
+            elif root_uri.startswith("/"):
+                print(root_uri)
+        PY
+        )
+
+        if [ -f .dart-patched/hook/build.dart ]; then
+          mkdir -p .dart-patched/third_party/bin/android/arm64
+          tar -xzf ${llamadartNativeAndroidArm64} -C .dart-patched/third_party/bin/android/arm64
+          substituteInPlace .dart-patched/hook/build.dart \
+            --replace-fail "  final destination = File(destinationPath);" $'  final destination = File(destinationPath);\n  await destination.parent.create(recursive: true);\n  await File(\'${llamadartNativeAndroidArm64}\').copy(destinationPath);\n  log.info(\'Saved native bundle to $destinationPath\');\n  return;'
+        fi
       '';
 
       buildPhase = ''
