@@ -34,6 +34,7 @@ let
       };
 
       patches = [
+        # https://github.com/mastodon/mastodon-android/pull/1039
         ./0001-furigana-rebased.patch
         /*
           (fetchpatch {
