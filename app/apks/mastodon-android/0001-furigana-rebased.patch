@@ -1,0 +1,840 @@
+diff --git a/build.gradle b/build.gradle
+index 1f5a65b..2782909 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -5,7 +5,7 @@ buildscript {
+ 		mavenCentral()
+ 	}
+ 	dependencies {
+-		classpath "com.android.tools.build:gradle:8.2.2"
++		classpath 'com.android.tools.build:gradle:8.13.0'
+ 		classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1"
+ 		// NOTE: Do not place your application dependencies here; they belong
+ 		// in the individual module build.gradle files
+diff --git a/gradle/wrapper/gradle-wrapper.properties b/gradle/wrapper/gradle-wrapper.properties
+index adb8ebf..f008818 100644
+--- a/gradle/wrapper/gradle-wrapper.properties
++++ b/gradle/wrapper/gradle-wrapper.properties
+@@ -1,6 +1,6 @@
+ #Sat Jun 03 23:40:27 MSK 2023
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-8.5-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+diff --git a/mastodon/build.gradle b/mastodon/build.gradle
+index 8de3dd4..ff26c20 100644
+--- a/mastodon/build.gradle
++++ b/mastodon/build.gradle
+@@ -24,6 +24,7 @@ android {
+ 			minifyEnabled true
+ 			shrinkResources true
+ 			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
++			signingConfig signingConfigs.debug
+ 		}
+ 		debug{
+ 			debuggable true
+@@ -88,6 +89,26 @@ android {
+ 		unitTests.returnDefaultValues = true
+ 	}
+ 	namespace 'org.joinmastodon.android'
++	packaging {
++        resources {
++            excludes += [
++                "META-INF/CONTRIBUTORS.md",
++                "META-INF/LICENSE.md",
++                "META-INF/LICENSE.txt",
++                "META-INF/NOTICE.txt",
++                "META-INF/NOTICE.md"
++            ]
++        }
++    }
++	    packagingOptions {
++        resources {
++            pickFirsts += [
++                "com/atilika/kuromoji/ipadic/**",
++                "com/atilika/kuromoji/core/**"
++            ]
++        }
++    }
++
+ }
+ 
+ dependencies {
+@@ -108,6 +129,7 @@ dependencies {
+ 	implementation 'com.google.zxing:core:3.5.3'
+ 	implementation 'org.microg:safe-parcel:1.5.0'
+ 	implementation 'org.parceler:parceler-api:1.1.12'
++	implementation 'com.atilika.kuromoji:kuromoji-ipadic:0.9.0'
+ 	annotationProcessor 'org.parceler:parceler:1.1.12'
+ 	coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+ 
+diff --git a/mastodon/proguard-rules.pro b/mastodon/proguard-rules.pro
+index 1ec01ee..ab51089 100644
+--- a/mastodon/proguard-rules.pro
++++ b/mastodon/proguard-rules.pro
+@@ -62,3 +62,8 @@
+ -keep class * extends org.microg.safeparcel.AutoSafeParcelable{
+ 	*;
+ }
++
++-keep class com.atilika.kuromoji.** { *; }
++-keep class org.joinmastodon.android.ui.k.** { *; }
++
++-keepattributes SourceFile,LineNumberTable,RuntimeVisibleAnnotations,RuntimeVisibleTypeAnnotations,RuntimeInvisibleAnnotations
+diff --git a/mastodon/src/main/java/org/joinmastodon/android/GlobalUserPreferences.java b/mastodon/src/main/java/org/joinmastodon/android/GlobalUserPreferences.java
+index 44ab4b6..8b248f8 100644
+--- a/mastodon/src/main/java/org/joinmastodon/android/GlobalUserPreferences.java
++++ b/mastodon/src/main/java/org/joinmastodon/android/GlobalUserPreferences.java
+@@ -18,6 +18,9 @@ public class GlobalUserPreferences{
+ 	public static boolean showCWs;
+ 	public static boolean hideSensitiveMedia;
+ 
++	public static boolean showFurigana;
++	public static boolean convertKanaToHiragana;
++
+ 	private static SharedPreferences getPrefs(){
+ 		return MastodonApp.context.getSharedPreferences("global", Context.MODE_PRIVATE);
+ 	}
+@@ -53,6 +56,8 @@ public class GlobalUserPreferences{
+ 			// Also applies to new app installs
+ 			prefs.edit().putBoolean("perAccountMigrationDone", true).apply();
+ 		}
++		showFurigana=prefs.getBoolean("showFurigana", false);
++		convertKanaToHiragana=prefs.getBoolean("convertKanaToHiragana", true);
+ 	}
+ 
+ 	public static void save(){
+@@ -69,6 +74,8 @@ public class GlobalUserPreferences{
+ 				.putBoolean("emojiInNames", customEmojiInNames)
+ 				.putBoolean("showCWs", showCWs)
+ 				.putBoolean("hideSensitive", hideSensitiveMedia)
++				.putBoolean("showFurigana", showFurigana)
++				.putBoolean("convertKanaToHiragana", convertKanaToHiragana)
+ 				.apply();
+ 	}
+ 
+diff --git a/mastodon/src/main/java/org/joinmastodon/android/fragments/profile/ProfileFragment.java b/mastodon/src/main/java/org/joinmastodon/android/fragments/profile/ProfileFragment.java
+index da7f0dd..e54b0a2 100644
+--- a/mastodon/src/main/java/org/joinmastodon/android/fragments/profile/ProfileFragment.java
++++ b/mastodon/src/main/java/org/joinmastodon/android/fragments/profile/ProfileFragment.java
+@@ -85,6 +85,7 @@ import org.joinmastodon.android.model.Attachment;
+ import org.joinmastodon.android.model.FamiliarFollowers;
+ import org.joinmastodon.android.model.Relationship;
+ import org.joinmastodon.android.model.viewmodel.AccountViewModel;
++import org.joinmastodon.android.ui.FuriganaHelper;
+ import org.joinmastodon.android.ui.M3AlertDialogBuilder;
+ import org.joinmastodon.android.ui.OutlineProviders;
+ import org.joinmastodon.android.ui.SimpleViewHolder;
+@@ -726,7 +727,8 @@ public class ProfileFragment extends LoaderFragment implements ScrollableToTop,
+ 			bio.setVisibility(View.GONE);
+ 		}else{
+ 			bio.setVisibility(View.VISIBLE);
+-			bio.setText(parsedBio);
++			SpannableStringBuilder annotated = FuriganaHelper.annotateKanjiWithFurigana(getContext(), parsedBio, "");
++			bio.setText(annotated);
+ 		}
+ 		followersCount.setText(UiUtils.abbreviateNumber(account.followersCount));
+ 		followingCount.setText(UiUtils.abbreviateNumber(account.followingCount));
+diff --git a/mastodon/src/main/java/org/joinmastodon/android/fragments/settings/SettingsDisplayFragment.java b/mastodon/src/main/java/org/joinmastodon/android/fragments/settings/SettingsDisplayFragment.java
+index d081f09..8a970af 100644
+--- a/mastodon/src/main/java/org/joinmastodon/android/fragments/settings/SettingsDisplayFragment.java
++++ b/mastodon/src/main/java/org/joinmastodon/android/fragments/settings/SettingsDisplayFragment.java
+@@ -16,6 +16,7 @@ import org.joinmastodon.android.R;
+ import org.joinmastodon.android.events.StatusDisplaySettingsChangedEvent;
+ import org.joinmastodon.android.model.viewmodel.CheckableListItem;
+ import org.joinmastodon.android.model.viewmodel.ListItem;
++import org.joinmastodon.android.ui.FuriganaHelper;
+ import org.joinmastodon.android.ui.M3AlertDialogBuilder;
+ 
+ import java.util.ArrayList;
+@@ -28,6 +29,7 @@ public class SettingsDisplayFragment extends BaseSettingsFragment<Void>{
+ 	private ImageView themeTransitionWindowView;
+ 	private ListItem<Void> themeItem;
+ 	private CheckableListItem<Void> showCWsItem, hideSensitiveMediaItem, interactionCountsItem, emojiInNamesItem, dynamicColorsItem;
++	private CheckableListItem<Void> showFuriganaItem, convertKanaItem;
+ 
+ 	@Override
+ 	public void onCreate(Bundle savedInstanceState){
+@@ -46,6 +48,25 @@ public class SettingsDisplayFragment extends BaseSettingsFragment<Void>{
+ 		items.add(hideSensitiveMediaItem=new CheckableListItem<>(R.string.settings_hide_sensitive_media, 0, CheckableListItem.Style.SWITCH, GlobalUserPreferences.hideSensitiveMedia, R.drawable.ic_no_adult_content_24px, this::toggleCheckableItem));
+ 		items.add(interactionCountsItem=new CheckableListItem<>(R.string.settings_show_interaction_counts, 0, CheckableListItem.Style.SWITCH, GlobalUserPreferences.showInteractionCounts, R.drawable.ic_social_leaderboard_24px, this::toggleCheckableItem));
+ 		items.add(emojiInNamesItem=new CheckableListItem<>(R.string.settings_show_emoji_in_names, 0, CheckableListItem.Style.SWITCH, GlobalUserPreferences.customEmojiInNames, R.drawable.ic_emoticon_24px, this::toggleCheckableItem));
++		items.add(showFuriganaItem = new CheckableListItem<>(
++				R.string.settings_show_furigana, 0, CheckableListItem.Style.SWITCH,
++				GlobalUserPreferences.showFurigana,
++				R.drawable.ic_furigana_24px,
++				item -> {
++					toggleCheckableItem(item);
++					GlobalUserPreferences.showFurigana = item.checked;
++				}
++		));
++		items.add(convertKanaItem = new CheckableListItem<>(
++				R.string.settings_convert_kana_to_hiragana, 0, CheckableListItem.Style.SWITCH,
++				GlobalUserPreferences.convertKanaToHiragana,
++				R.drawable.ic_hiragana_24px,
++				item -> {
++					toggleCheckableItem(item);
++					GlobalUserPreferences.convertKanaToHiragana = item.checked;
++				}
++		));
++
+ 		onDataLoaded(items);
+ 	}
+ 
+@@ -65,12 +86,22 @@ public class SettingsDisplayFragment extends BaseSettingsFragment<Void>{
+ 	@Override
+ 	protected void onHidden(){
+ 		super.onHidden();
++		Boolean needRedraw = false;
++		if (convertKanaItem.checked != GlobalUserPreferences.convertKanaToHiragana) {
++			needRedraw = true;
++		}
+ 		GlobalUserPreferences.showCWs=showCWsItem.checked;
+ 		GlobalUserPreferences.hideSensitiveMedia=hideSensitiveMediaItem.checked;
+ 		GlobalUserPreferences.showInteractionCounts=interactionCountsItem.checked;
+ 		GlobalUserPreferences.customEmojiInNames=emojiInNamesItem.checked;
++		GlobalUserPreferences.showFurigana=showFuriganaItem.checked;
++		GlobalUserPreferences.convertKanaToHiragana=convertKanaItem.checked;
+ 		GlobalUserPreferences.save();
+ 		E.post(new StatusDisplaySettingsChangedEvent(accountID));
++		if (needRedraw){
++			FuriganaHelper.clearCache();
++
++		}
+ 	}
+ 
+ 	private int getAppearanceValue(){
+diff --git a/mastodon/src/main/java/org/joinmastodon/android/ui/displayitems/SpoilerStatusDisplayItem.java b/mastodon/src/main/java/org/joinmastodon/android/ui/displayitems/SpoilerStatusDisplayItem.java
+index 912bbdf..61cd1e2 100644
+--- a/mastodon/src/main/java/org/joinmastodon/android/ui/displayitems/SpoilerStatusDisplayItem.java
++++ b/mastodon/src/main/java/org/joinmastodon/android/ui/displayitems/SpoilerStatusDisplayItem.java
+@@ -1,5 +1,7 @@
+ package org.joinmastodon.android.ui.displayitems;
+ 
++import static org.joinmastodon.android.ui.FuriganaHelper.annotateKanjiWithFurigana;
++
+ import android.content.Context;
+ import android.graphics.drawable.Drawable;
+ import android.graphics.drawable.LayerDrawable;
+@@ -37,7 +39,9 @@ public class SpoilerStatusDisplayItem extends StatusDisplayItem{
+ 		this.type=type;
+ 		this.spoilerType=spoilerType;
+ 		if(TextUtils.isEmpty(title)){
+-			parsedTitle=HtmlParser.parseCustomEmoji(statusForContent.spoilerText, statusForContent.emojis);
++			CharSequence parsedTitle1;
++			parsedTitle1=HtmlParser.parseCustomEmoji(statusForContent.spoilerText, statusForContent.emojis);
++			parsedTitle = annotateKanjiWithFurigana(context, parsedTitle1, statusForContent.language);
+ 			emojiHelper=new CustomEmojiHelper();
+ 			emojiHelper.setText(parsedTitle);
+ 		}else{
+diff --git a/mastodon/src/main/java/org/joinmastodon/android/ui/displayitems/StatusDisplayItem.java b/mastodon/src/main/java/org/joinmastodon/android/ui/displayitems/StatusDisplayItem.java
+index 8ffd214..dd315e6 100644
+--- a/mastodon/src/main/java/org/joinmastodon/android/ui/displayitems/StatusDisplayItem.java
++++ b/mastodon/src/main/java/org/joinmastodon/android/ui/displayitems/StatusDisplayItem.java
+@@ -1,13 +1,17 @@
+ package org.joinmastodon.android.ui.displayitems;
+ 
++import static org.joinmastodon.android.ui.FuriganaHelper.annotateKanjiWithFurigana;
++
+ import android.app.Activity;
+ import android.app.Fragment;
+ import android.content.Context;
+ import android.text.SpannableStringBuilder;
+ import android.text.TextUtils;
++import android.util.Log;
+ import android.view.View;
+ import android.view.ViewGroup;
+ 
++import org.joinmastodon.android.BuildConfig;
+ import org.joinmastodon.android.GlobalUserPreferences;
+ import org.joinmastodon.android.R;
+ import org.joinmastodon.android.fragments.BaseStatusListFragment;
+@@ -28,6 +32,7 @@ import org.joinmastodon.android.ui.viewholders.AccountViewHolder;
+ import org.joinmastodon.android.utils.TypedObjectPool;
+ 
+ import java.util.ArrayList;
++import java.util.Arrays;
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Objects;
+@@ -165,10 +170,11 @@ public abstract class StatusDisplayItem{
+ 
+ 		if(!TextUtils.isEmpty(statusForContent.content)){
+ 			SpannableStringBuilder parsedText=HtmlParser.parse(statusForContent.content, statusForContent.emojis, statusForContent.mentions, statusForContent.tags, accountID, statusForContent, context);
++			SpannableStringBuilder annotated = annotateKanjiWithFurigana(context, parsedText, statusForContent.language);
+ 			if(filtered){
+-				HtmlParser.applyFilterHighlights(context, parsedText, status.filtered);
++				HtmlParser.applyFilterHighlights(context, annotated, status.filtered);
+ 			}
+-			TextStatusDisplayItem text=new TextStatusDisplayItem(parentID, parsedText, callbacks, context, statusForContent, accountID);
++			TextStatusDisplayItem text=new TextStatusDisplayItem(parentID, annotated, callbacks, context, statusForContent, accountID);
+ 			contentItems.add(text);
+ 		}else if(header instanceof HeaderStatusDisplayItem hsdi){
+ 			hsdi.needBottomPadding=true;
+diff --git a/mastodon/src/main/java/org/joinmastodon/android/ui/text/CustomEmojiSpan.java b/mastodon/src/main/java/org/joinmastodon/android/ui/text/CustomEmojiSpan.java
+index b6732b3..4502f61 100644
+--- a/mastodon/src/main/java/org/joinmastodon/android/ui/text/CustomEmojiSpan.java
++++ b/mastodon/src/main/java/org/joinmastodon/android/ui/text/CustomEmojiSpan.java
+@@ -28,27 +28,35 @@ public class CustomEmojiSpan extends ReplacementSpan{
+ 	}
+ 
+ 	@Override
+-	public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint){
+-		int size=Math.round(paint.descent()-paint.ascent());
+-		if(drawable==null){
+-			int alpha=paint.getAlpha();
++	public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end,
++					 float x, int top, int y, int bottom, @NonNull Paint paint) {
++		int size = Math.round(paint.descent() - paint.ascent());
++
++		if (drawable == null) {
++			int alpha = paint.getAlpha();
+ 			paint.setAlpha(alpha >> 1);
+-			canvas.drawRoundRect(x, top, x+size, top+size, V.dp(2), V.dp(2), paint);
++			canvas.drawRoundRect(x, y - size, x + size, y, V.dp(2), V.dp(2), paint);
+ 			paint.setAlpha(alpha);
+-		}else{
+-			// AnimatedImageDrawable doesn't like when its bounds don't start at (0, 0)
+-			Rect bounds=drawable.getBounds();
+-			int dw=drawable.getIntrinsicWidth();
+-			int dh=drawable.getIntrinsicHeight();
+-			if(bounds.left!=0 || bounds.top!=0 || bounds.right!=dw || bounds.left!=dh){
+-				drawable.setBounds(0, 0, dw, dh);
+-			}
+-			canvas.save();
+-			canvas.translate(x, top);
+-			canvas.scale(size/(float)dw, size/(float)dh, 0f, 0f);
+-			drawable.draw(canvas);
+-			canvas.restore();
++			return;
++		}
++
++		int dw = drawable.getIntrinsicWidth();
++		int dh = drawable.getIntrinsicHeight();
++
++		Rect bounds = drawable.getBounds();
++		if (bounds.left != 0 || bounds.top != 0 || bounds.right != dw || bounds.bottom != dh) {
++			drawable.setBounds(0, 0, dw, dh);
+ 		}
++
++		float scaleX = size / (float) dw;
++		float scaleY = size / (float) dh;
++		float transY = y - size * 0.9f;
++
++		canvas.save();
++		canvas.translate(x, transY);
++		canvas.scale(scaleX, scaleY);
++		drawable.draw(canvas);
++		canvas.restore();
+ 	}
+ 
+ 	public void setDrawable(Drawable drawable){
+diff --git a/mastodon/src/main/java/org/joinmastodon/android/ui/viewholders/LinkCardHolder.java b/mastodon/src/main/java/org/joinmastodon/android/ui/viewholders/LinkCardHolder.java
+index 7946af7..53b1660 100644
+--- a/mastodon/src/main/java/org/joinmastodon/android/ui/viewholders/LinkCardHolder.java
++++ b/mastodon/src/main/java/org/joinmastodon/android/ui/viewholders/LinkCardHolder.java
+@@ -6,6 +6,7 @@ import android.content.res.ColorStateList;
+ import android.graphics.drawable.Drawable;
+ import android.net.Uri;
+ import android.os.Bundle;
++import android.text.SpannableStringBuilder;
+ import android.text.TextUtils;
+ import android.view.View;
+ import android.view.ViewGroup;
+@@ -16,6 +17,7 @@ import org.joinmastodon.android.R;
+ import org.joinmastodon.android.fragments.profile.ProfileFragment;
+ import org.joinmastodon.android.model.Card;
+ import org.joinmastodon.android.model.viewmodel.CardViewModel;
++import org.joinmastodon.android.ui.FuriganaHelper;
+ import org.joinmastodon.android.ui.OutlineProviders;
+ import org.joinmastodon.android.ui.displayitems.StatusDisplayItem;
+ import org.joinmastodon.android.ui.drawables.BlurhashCrossfadeDrawable;
+@@ -81,9 +83,11 @@ public class LinkCardHolder<T extends LinkCardHolder.LinkCardProvider> extends S
+ 	public void onBind(T item){
+ 		CardViewModel cardVM=item.getCard();
+ 		Card card=cardVM.card;
+-		title.setText(card.title);
++		SpannableStringBuilder annotated = FuriganaHelper.annotateKanjiWithFurigana(this.activity, card.title, "");
++		title.setText(annotated);
+ 		if(description!=null){
+-			description.setText(card.description);
++			SpannableStringBuilder annotated_d = FuriganaHelper.annotateKanjiWithFurigana(this.activity, card.description, "");
++			description.setText(annotated_d);
+ 			description.setVisibility(TextUtils.isEmpty(card.description) ? View.GONE : View.VISIBLE);
+ 		}
+ 		String cardDomain=HtmlParser.normalizeDomain(Objects.requireNonNull(Uri.parse(card.url).getHost()));
+diff --git a/mastodon/src/main/res/values/strings.xml b/mastodon/src/main/res/values/strings.xml
+index 5e277df..51d1c7d 100644
+--- a/mastodon/src/main/res/values/strings.xml
++++ b/mastodon/src/main/res/values/strings.xml
+@@ -630,7 +630,8 @@
+ 	<string name="discoverability">Discoverability</string>
+ 	<string name="discoverability_help">When you opt into discoverability on Mastodon, your posts may appear in search results and trending.\n\nYour profile may be suggested to people with similar interests to you.\n\nOpting out does not hide your profile if someone searches for you by name.</string>
+ 	<string name="app_version_copied">Version number copied to clipboard</string>
+-	<string name="onboarding_recommendations_intro">You curate your own home feed. The more people you follow, the more active and interesting it will be.</string>
++	<string name="onboarding_recommendations_intro">You curate your own home feed.
++The more people you follow, the more active and interesting it will be.</string>
+ 	<string name="onboarding_recommendations_title">Personalize your home feed</string>
+ 	<string name="article_by_author">By %s</string>
+ 	<string name="button_reblogged">Boosted</string>
+@@ -981,5 +982,7 @@
+ 	<string name="confirm_delete_cover">Remove header image?</string>
+ 	<string name="profile_followers">Followers</string>
+ 	<string name="profile_following">Following</string>
++	<string name="settings_show_furigana">Show furigana</string>
++	<string name="settings_convert_kana_to_hiragana">Use hiragana in furigana (requires restart)</string>
+ 	<string name="user_follows_you">Follows you</string>
+-</resources>
+\ No newline at end of file
++</resources>
+diff --git a/mastodon/src/main/java/org/joinmastodon/android/ui/FuriganaHelper.java b/mastodon/src/main/java/org/joinmastodon/android/ui/FuriganaHelper.java
+new file mode 100644
+index 0000000..8130353
+--- /dev/null
++++ b/mastodon/src/main/java/org/joinmastodon/android/ui/FuriganaHelper.java
+@@ -0,0 +1,245 @@
++package org.joinmastodon.android.ui;
++
++import android.content.Context;
++import android.os.Build;
++import android.util.LruCache;
++import android.text.SpannableStringBuilder;
++import android.text.Spanned;
++
++import androidx.annotation.Nullable;
++
++import com.atilika.kuromoji.ipadic.Token;
++import com.atilika.kuromoji.ipadic.Tokenizer;
++
++import org.joinmastodon.android.GlobalUserPreferences;
++import org.joinmastodon.android.ui.text.FuriganaSpan;
++import org.joinmastodon.android.ui.text.LinkSpan;
++
++import java.util.ArrayList;
++import java.util.List;
++
++public class FuriganaHelper {
++
++	private static final LruCache<Integer, SpannableStringBuilder> cache =
++			new LruCache<>(200);
++
++	private static volatile Tokenizer tokenizer;
++
++	private static Tokenizer getTokenizer() {
++		if (tokenizer == null) {
++			synchronized (FuriganaHelper.class) {
++				if (tokenizer == null) {
++					tokenizer = new Tokenizer();
++				}
++			}
++		}
++		return tokenizer;
++	}
++
++	private static String prepareTextForTokenizer(String text) {
++        StringBuilder sb = new StringBuilder(text.length());
++        for (int i = 0; i < text.length(); i++) {
++            char c = text.charAt(i);
++            if (isKanji(c) || isKana(c)) sb.append(c);
++            else sb.append(' ');
++        }
++        return sb.toString();
++    }
++
++	public static SpannableStringBuilder annotateKanjiWithFurigana(Context context, CharSequence input, @Nullable String language) {
++		if (input == null || input.length() == 0) return new SpannableStringBuilder("");
++
++		if (!containsJapanese(input)) return new SpannableStringBuilder(input);
++
++		if ("zh".equals(language) || "zh-cn".equals(language) || "zh-tw".equals(language)) {
++			return new SpannableStringBuilder(input);
++		}
++
++		boolean showFurigana = GlobalUserPreferences.showFurigana;
++
++		boolean useHiragana = GlobalUserPreferences.convertKanaToHiragana;
++
++		if (!showFurigana) {
++			return new SpannableStringBuilder(input);
++		}
++
++		int hash = input.hashCode();
++		SpannableStringBuilder cached = cache.get(hash);
++		if (cached != null) return new SpannableStringBuilder(cached);
++
++		SpannableStringBuilder ssb = new SpannableStringBuilder(input);
++		String text = input.toString();
++		String prepared = prepareTextForTokenizer(text);
++		List<Token> tokens = getTokenizer().tokenize(prepared);
++		int offset = 0;
++
++		for (Token token : tokens) {
++			String surface = token.getSurface();
++			String reading = token.getReading();
++
++			if (reading != null && containsKanji(surface)) {
++				if (surface.contains("〇")) {
++					offset += surface.length();
++					continue;
++				}
++
++				if (useHiragana) reading = katakanaToHiragana(reading);
++
++				List<FuriganaSplitter.Part> parts = FuriganaSplitter.splitSurfaceReading(surface, reading);
++				for (FuriganaSplitter.Part part : parts) {
++					int start = text.indexOf(part.text, offset);
++					if (start >= 0) {
++						int end = start + part.text.length();
++
++						if (part.furigana != null && !part.furigana.isEmpty()) {
++							FuriganaSpan fs = new FuriganaSpan(part.furigana, 0.8f);
++							if (input instanceof Spanned spanned){
++								fs.captureVisualsFrom(spanned, start, end, context);
++							}
++							ssb.setSpan(fs, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
++						}
++
++						offset = end;
++					}
++				}
++			} else {
++				offset += surface.length();
++			}
++		}
++
++		cache.put(hash, new SpannableStringBuilder(ssb));
++		return ssb;
++	}
++
++	public static boolean containsJapanese(CharSequence text) {
++		if (text == null) return false;
++		for (int i = 0; i < text.length(); i++) {
++			char c = text.charAt(i);
++			if (isKanji(c) || isKana(c)) return true;
++		}
++		return false;
++	}
++
++	private static boolean isKana(char c) {
++		return (c >= 0x3040 && c <= 0x309F) || (c >= 0x30A0 && c <= 0x30FF);
++	}
++
++	private static boolean isKanji(char c) {
++		if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
++			return Character.UnicodeScript.of(c) == Character.UnicodeScript.HAN;
++		}
++		return false;
++	}
++
++	private static boolean containsKanji(String text) {
++		return text.matches(".*[\\p{IsHan}].*");
++	}
++
++	private static String katakanaToHiragana(String katakana) {
++		StringBuilder sb = new StringBuilder();
++		for (char c : katakana.toCharArray()) {
++			if (c >= 0x30A1 && c <= 0x30F6) {
++				sb.append((char) (c - 0x60));
++			} else {
++				sb.append(c);
++			}
++		}
++		return sb.toString();
++	}
++
++	public static void preload() {
++		new Thread(() -> {
++			try {
++				getTokenizer().tokenize("テスト");
++			} catch (Exception ignored) {}
++		}).start();
++	}
++
++	public static void clearCache() {
++		cache.evictAll();
++	}
++
++	public static class FuriganaSplitter {
++
++		public static class Part {
++			public final String text;
++			public final String furigana;
++			public Part(String text, String furigana) {
++				this.text = text;
++				this.furigana = furigana;
++			}
++		}
++
++		public static List<Part> splitSurfaceReading(String surface, String reading) {
++			List<Part> parts = new ArrayList<>();
++			if (surface == null || surface.isEmpty() || reading == null || reading.isEmpty()) {
++				parts.add(new Part(surface, null));
++				return parts;
++			}
++
++			int sLen = surface.length();
++			int rLen = reading.length();
++
++			int firstKanji = -1, lastKanji = -1;
++			for (int i = 0; i < sLen; i++) {
++				if (isKanji(surface.charAt(i))) {
++					if (firstKanji == -1) firstKanji = i;
++					lastKanji = i;
++				}
++			}
++			if (firstKanji == -1) {
++				parts.add(new Part(surface, null));
++				return parts;
++			}
++
++			int prefixKanaCount = 0;
++			for (int i = 0; i < firstKanji; i++) {
++				if (isKana(surface.charAt(i))) prefixKanaCount++;
++			}
++
++			int tailKanaCount = 0;
++			for (int i = sLen - 1; i > lastKanji; i--) {
++				if (isKana(surface.charAt(i))) tailKanaCount++;
++				else break;
++			}
++
++			int readStart = Math.min(prefixKanaCount, rLen);
++			int readEnd = Math.max(readStart, rLen - tailKanaCount);
++
++			String coreReading = "";
++			if (readStart < readEnd) {
++				coreReading = reading.substring(readStart, readEnd);
++			} else {
++				coreReading = "";
++			}
++
++			if (firstKanji > 0) {
++				parts.add(new Part(surface.substring(0, firstKanji), null));
++			}
++
++			String kanjiBlock = surface.substring(firstKanji, lastKanji + 1);
++			if (coreReading != null && !coreReading.isEmpty()) {
++				parts.add(new Part(kanjiBlock, coreReading));
++			} else {
++				parts.add(new Part(kanjiBlock, null));
++			}
++
++			if (lastKanji < sLen - 1) {
++				parts.add(new Part(surface.substring(lastKanji + 1), null));
++			}
++
++			return parts;
++		}
++
++		private static boolean isKana(char c) {
++			return (c >= 0x3040 && c <= 0x309F) || (c >= 0x30A0 && c <= 0x30FF);
++		}
++
++		private static boolean isKanji(char c) {
++			if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
++				return Character.UnicodeScript.of(c) == Character.UnicodeScript.HAN;
++			}
++			return false;
++		}
++	}
++}
+diff --git a/mastodon/src/main/java/org/joinmastodon/android/ui/text/FuriganaSpan.java b/mastodon/src/main/java/org/joinmastodon/android/ui/text/FuriganaSpan.java
+new file mode 100644
+index 0000000..80c98be
+--- /dev/null
++++ b/mastodon/src/main/java/org/joinmastodon/android/ui/text/FuriganaSpan.java
+@@ -0,0 +1,149 @@
++package org.joinmastodon.android.ui.text;
++
++import android.content.Context;
++import android.content.res.Resources;
++import android.graphics.Canvas;
++import android.graphics.Paint;
++import android.text.Spanned;
++import android.text.style.ForegroundColorSpan;
++import android.text.style.ReplacementSpan;
++import android.text.style.StyleSpan;
++import android.text.style.UnderlineSpan;
++import android.util.Log;
++import android.util.TypedValue;
++
++import androidx.annotation.Nullable;
++import me.grishka.appkit.utils.V;
++
++public class FuriganaSpan extends ReplacementSpan{
++
++	private static final String TAG = "FuriganaDebug";
++
++	private final String furigana;
++	private final float furiganaScale;
++
++	private float textWidth;
++	private Integer textColor = null;
++	private boolean underline = false;
++	private boolean bold = false;
++
++	public FuriganaSpan(String furigana, float furiganaScale) {
++		this.furigana = furigana;
++		this.furiganaScale = furiganaScale;
++	}
++
++	public void captureVisualsFrom(Spanned sp, int start, int end, @Nullable Context context) {
++		try {
++			if (sp == null) return;
++
++			ForegroundColorSpan[] colors = sp.getSpans(start, end, ForegroundColorSpan.class);
++			if (colors.length > 0) {
++				textColor = colors[colors.length - 1].getForegroundColor();
++			}
++
++			UnderlineSpan[] underlines = sp.getSpans(start, end, UnderlineSpan.class);
++			if (underlines.length > 0) {
++				underline = true;
++			}
++
++			StyleSpan[] styles = sp.getSpans(start, end, StyleSpan.class);
++			if (styles.length > 0) {
++				for (StyleSpan ss : styles) {
++					if (ss.getStyle() == android.graphics.Typeface.BOLD) {
++						bold = true;
++						break;
++					}
++				}
++			}
++
++			if (textColor == null) {
++				LinkSpan[] links =
++						sp.getSpans(start, end, LinkSpan.class);
++				if (links.length > 0) {
++					if (context != null) {
++						TypedValue tv = new TypedValue();
++						Resources.Theme theme = context.getTheme();
++						if (theme.resolveAttribute(android.R.attr.textColorLink, tv, true)) {
++							if (tv.data != 0) {
++								textColor = tv.data;
++							} else if (tv.resourceId != 0) {
++								textColor = context.getColor(tv.resourceId);
++							}
++						} else {
++							// fallback
++							textColor = 0xFF2196F3;
++						}
++					} else {
++						textColor = 0xFF2196F3;
++					}
++
++					underline = true;
++				}
++			}
++
++		} catch (Exception e) {
++			Log.e(TAG, "Error in captureVisualsFrom()", e);
++		}
++	}
++
++	@Override
++	public int getSize(Paint paint, CharSequence text, int start, int end, @Nullable Paint.FontMetricsInt fm) {
++		textWidth = paint.measureText(text, start, end);
++
++		if (fm != null) {
++			int extra = (int) (paint.getTextSize() * furiganaScale * 1.2f);
++			extra += V.dp(2);
++
++			fm.ascent -= extra;
++			fm.top -= extra;
++		}
++
++		Paint fPaint = new Paint(paint);
++		fPaint.setTextSize(paint.getTextSize() * furiganaScale);
++		float furiganaWidth = fPaint.measureText(furigana);
++		float width = Math.max(textWidth, furiganaWidth);
++
++		return (int) width;
++	}
++
++	@Override
++	public void draw(Canvas canvas, CharSequence text, int start, int end,
++					 float x, int top, int y, int bottom, Paint paint) {
++		String main = text.subSequence(start, end).toString();
++
++		float baseTextSize = paint.getTextSize();
++
++		Paint fPaint = new Paint(paint);
++		fPaint.setTextSize(baseTextSize * furiganaScale);
++
++		float furiganaWidth = fPaint.measureText(furigana);
++		float mainWidth = paint.measureText(main);
++
++		float furiganaX = x + (Math.max(mainWidth, furiganaWidth) - furiganaWidth) / 2f;
++		float furiganaY = y - baseTextSize * 1f;
++
++		if (textColor != null) {
++			fPaint.setColor(textColor);
++		}
++
++		canvas.save();
++		canvas.drawText(furigana, furiganaX, furiganaY, fPaint);
++		canvas.restore();
++
++		Paint mainPaint = new Paint(paint);
++		if (textColor != null) {
++			mainPaint.setColor(textColor);
++		}
++		if (bold) {
++			mainPaint.setFakeBoldText(true);
++		}
++
++		float mainX = x + (Math.max(mainWidth, furiganaWidth) - mainWidth) / 2f;
++		canvas.drawText(main, mainX, y, mainPaint);
++
++		if (underline) {
++			float underlineY = y + mainPaint.getTextSize() * 0.1f;
++			canvas.drawLine(mainX, underlineY, mainX + mainWidth, underlineY, mainPaint);
++		}
++	}
++}
+diff --git a/mastodon/src/main/res/drawable/ic_furigana_24px.xml b/mastodon/src/main/res/drawable/ic_furigana_24px.xml
+new file mode 100644
+index 0000000..77c641d
+--- /dev/null
++++ b/mastodon/src/main/res/drawable/ic_furigana_24px.xml
+@@ -0,0 +1,21 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++  <path
++      android:pathData="m22.32,22.452c0.632,-2.37 0.571,-4.784 0.04,-7.097 -0.501,-2.188 -0.85,-4.202 -2.977,-6.111 -2.243,-2.013 -4.266,-2.396 -7.243,-2.396 -2.978,0 -4.989,0.614 -7.115,2.416 -2.303,1.953 -2.691,3.804 -3.226,5.978 -0.585,2.38 -0.511,4.953 0.121,7.323"
++      android:strokeWidth="1.195"
++      android:fillColor="#00000000"
++      android:strokeColor="#000000"/>
++  <path
++      android:pathData="m3.643,9.52 l-0.127,-6.211 5.698,3.135z"
++      android:strokeWidth="1.195"
++      android:fillColor="#00000000"
++      android:strokeColor="#000000"/>
++  <path
++      android:pathData="M20.346,9.509 L20.469,3.182 14.869,6.525Z"
++      android:strokeWidth="1.195"
++      android:fillColor="#00000000"
++      android:strokeColor="#000000"/>
++</vector>
+diff --git a/mastodon/src/main/res/drawable/ic_hiragana_24px.xml b/mastodon/src/main/res/drawable/ic_hiragana_24px.xml
+new file mode 100644
+index 0000000..eb0b53d
+--- /dev/null
++++ b/mastodon/src/main/res/drawable/ic_hiragana_24px.xml
+@@ -0,0 +1,10 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24">
++  <path
++      android:fillColor="#FF000000"
++      android:pathData="m14.611,10.314c-1.029,2.81 -2.523,4.842 -4.14,6.423 -0.269,-1.455 -0.441,-2.985 -0.441,-4.591l0.025,-1.029c1.127,-0.426 2.548,-0.803 4.14,-0.803zM17.403,7.554 L15.468,7.052c-0.025,0.427 -0.147,1.079 -0.269,1.455l-0.073,0.251 -0.906,-0.025c-1.249,0 -2.744,0.226 -4.115,0.627 0.073,-1.054 0.147,-2.107 0.245,-3.086 3.013,-0.151 6.271,-0.502 8.843,-0.953l-0.025,-1.857c-2.499,0.602 -5.487,0.928 -8.598,1.079l0.294,-1.907c0.073,-0.351 0.171,-0.803 0.294,-1.129L9.099,1.457C9.124,1.758 9.075,2.21 9.05,2.661L8.854,4.593 7.188,4.618c-1.053,0 -3.184,-0.176 -4.042,-0.326l0.049,1.882c1.004,0.075 2.915,0.176 3.968,0.176l1.494,-0.025c-0.098,1.179 -0.221,2.434 -0.269,3.688 -3.38,1.606 -6.124,4.892 -6.124,8.128 0,2.132 1.274,3.161 2.891,3.161 1.347,0 2.817,-0.552 4.164,-1.38l0.392,1.405 1.764,-0.552c-0.196,-0.627 -0.392,-1.305 -0.588,-2.032 2.082,-1.806 4.066,-4.591 5.463,-8.154 2.278,0.677 3.527,2.383 3.527,4.29 0,3.261 -2.744,5.595 -7.177,6.071l1.053,1.681c5.683,-0.928 8.01,-4.039 8.01,-7.652 0,-2.76 -1.813,-5.068 -4.875,-5.896l0.025,-0.1C17.035,8.582 17.256,7.905 17.403,7.553ZM8.315,11.894v0.452c0,1.882 0.245,3.914 0.588,5.695 -1.249,0.903 -2.425,1.33 -3.38,1.33 -0.931,0 -1.396,-0.527 -1.396,-1.555 0,-2.057 1.813,-4.541 4.189,-5.921z"
++      android:strokeWidth="2.06584"/>
++</vector>

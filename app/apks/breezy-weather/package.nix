@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  # https://github.com/breezy-weather/breezy-weather/blob/258a4387d82c5e764df42057fd4bb8df20c61d1a/.github/.java-version
+  # https://github.com/breezy-weather/breezy-weather/blob/50e3306f3effca4e405d1acf5168ec2ab14dea9a/.github/.java-version
   jdk21_headless,
   gradle_9_4_1,
   stdenv,
@@ -10,7 +10,7 @@
   androidSdkBuilder,
 }:
 let
-  rev = "258a4387d82c5e764df42057fd4bb8df20c61d1a";
+  rev = "50e3306f3effca4e405d1acf5168ec2ab14dea9a";
   gradleFlavor = "Basic";
   releaseFlavor = "standard";
 
@@ -20,22 +20,22 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
-        # https://github.com/breezy-weather/breezy-weather/blob/258a4387d82c5e764df42057fd4bb8df20c61d1a/.github/workflows/push.yml#L47
+        # https://github.com/breezy-weather/breezy-weather/blob/50e3306f3effca4e405d1acf5168ec2ab14dea9a/.github/workflows/push.yml#L47
         s.build-tools-36-0-0
       ]);
 
-      # https://github.com/breezy-weather/breezy-weather/blob/258a4387d82c5e764df42057fd4bb8df20c61d1a/gradle/wrapper/gradle-wrapper.properties
+      # https://github.com/breezy-weather/breezy-weather/blob/50e3306f3effca4e405d1acf5168ec2ab14dea9a/gradle/wrapper/gradle-wrapper.properties
       gradle = gradle_9_4_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "breezy-weather";
-      version = "unstable-2026-04-12";
+      version = "unstable-2026-04-18";
 
       src = fetchFromGitHub {
         owner = "breezy-weather";
         repo = "breezy-weather";
         inherit rev;
-        hash = "sha256-NOqA9s0zatDvqVoizeyI25D7zW5qoJKCtyuvUEZ474c=";
+        hash = "sha256-Uza+jhDdvwrTd6p6+xg1LwHb+g+2Qc+uDfribjOPZIw=";
       };
 
       patches = [
