@@ -1,0 +1,89 @@
+diff --git a/build-logic-commons/gradle-plugin/src/main/kotlin/gradlebuild/StringExtensions.kt b/build-logic-commons/gradle-plugin/src/main/kotlin/gradlebuild/StringExtensions.kt
+index 4356286ebad..0c8565787a0 100644
+--- a/build-logic-commons/gradle-plugin/src/main/kotlin/gradlebuild/StringExtensions.kt
++++ b/build-logic-commons/gradle-plugin/src/main/kotlin/gradlebuild/StringExtensions.kt
+@@ -19,13 +19,13 @@ package gradlebuild
+ import java.util.Locale
+ 
+ fun String.toLowerCase(): String =
+-    lowercase(Locale.US)
++    toLowerCase(Locale.US)
+ 
+ fun String.toUpperCase(): String =
+-    uppercase(Locale.US)
++    toUpperCase(Locale.US)
+ 
+ fun String.capitalize(): String =
+-    replaceFirstChar { it.uppercase(Locale.US) }
++    if (isEmpty()) this else substring(0, 1).toUpperCase(Locale.US) + substring(1)
+ 
+ fun String.decapitalize(): String =
+-    replaceFirstChar { it.lowercase(Locale.US) }
++    if (isEmpty()) this else substring(0, 1).toLowerCase(Locale.US) + substring(1)
+diff --git a/build-logic/build-platform/build.gradle.kts b/build-logic/build-platform/build.gradle.kts
+index 42bc0e38e3c..a9f54d305ac 100644
+--- a/build-logic/build-platform/build.gradle.kts
++++ b/build-logic/build-platform/build.gradle.kts
+@@ -22,11 +22,12 @@ val kotlinVersion = providers.gradleProperty("buildKotlinVersion")
+ dependencies {
+     constraints {
+         api("org.gradle.guides:gradle-guides-plugin:0.21")
+-        api("com.gradle:gradle-enterprise-gradle-plugin:3.12.3") // Sync with `settings.gradle.kts`
++        api("com.gradle:gradle-enterprise-gradle-plugin:3.11.1") // Sync with `settings.gradle.kts`
+         api("com.gradle.publish:plugin-publish-plugin:1.1.0")
+         api("gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext:1.0.1")
+         api("me.champeau.gradle:japicmp-gradle-plugin:0.4.1")
+         api("me.champeau.jmh:jmh-gradle-plugin:0.6.8")
++        api("org.gradle:test-retry-gradle-plugin:1.4.0")
+         api("org.asciidoctor:asciidoctor-gradle-jvm:3.3.2")
+         api("org.jetbrains.kotlin:kotlin-gradle-plugin") { version { strictly(kotlinVersion) } }
+         api(kotlin("compiler-embeddable")) { version { strictly(kotlinVersion) } }
+diff --git a/build-logic/performance-testing/build.gradle.kts b/build-logic/performance-testing/build.gradle.kts
+index a8f94a32c44..2e1594fd825 100644
+--- a/build-logic/performance-testing/build.gradle.kts
++++ b/build-logic/performance-testing/build.gradle.kts
+@@ -20,6 +20,7 @@ dependencies {
+     implementation("commons-io:commons-io")
+     implementation("javax.activation:activation")
+     implementation("javax.xml.bind:jaxb-api")
++    implementation("org.gradle:test-retry-gradle-plugin")
+     implementation("com.gradle:gradle-enterprise-gradle-plugin")
+ 
+     testImplementation("org.junit.jupiter:junit-jupiter")
+diff --git a/build-logic/performance-testing/src/main/kotlin/gradlebuild/performance/PerformanceTestPlugin.kt b/build-logic/performance-testing/src/main/kotlin/gradlebuild/performance/PerformanceTestPlugin.kt
+index 82c22ac0fca..a207b8a4263 100644
+--- a/build-logic/performance-testing/src/main/kotlin/gradlebuild/performance/PerformanceTestPlugin.kt
++++ b/build-logic/performance-testing/src/main/kotlin/gradlebuild/performance/PerformanceTestPlugin.kt
+@@ -17,7 +17,6 @@
+ package gradlebuild.performance
+ 
+ import com.google.common.annotations.VisibleForTesting
+-import com.gradle.enterprise.gradleplugin.testretry.retry
+ import gradlebuild.basics.BuildEnvironment.isIntel
+ import gradlebuild.basics.BuildEnvironment.isLinux
+ import gradlebuild.basics.BuildEnvironment.isMacOsX
+diff --git a/settings.gradle.kts b/settings.gradle.kts
+index c040f1a2572..564f4719df9 100644
+--- a/settings.gradle.kts
++++ b/settings.gradle.kts
+@@ -24,7 +24,7 @@ pluginManagement {
+ }
+ 
+ plugins {
+-    id("com.gradle.enterprise").version("3.12.3") // Sync with `build-logic/build-platform/build.gradle.kts`
++    id("com.gradle.enterprise").version("3.11.1") // Sync with `build-logic/build-platform/build.gradle.kts`
+     id("io.github.gradle.gradle-enterprise-conventions-plugin").version("0.7.6")
+     id("gradlebuild.internal.cc-experiment")
+     id("org.gradle.toolchains.foojay-resolver-convention") version("0.4.0")
+diff --git a/subprojects/antlr/build.gradle.kts b/subprojects/antlr/build.gradle.kts
+index 19db9ddd410..3a03b714006 100644
+--- a/subprojects/antlr/build.gradle.kts
++++ b/subprojects/antlr/build.gradle.kts
+@@ -12,7 +12,6 @@ dependencies {
+     implementation(project(":model-core"))
+     implementation(project(":core"))
+     implementation(project(":plugins"))
+-    implementation(project(":platform-jvm"))
+     implementation(project(":workers"))
+     implementation(project(":files"))
+     implementation(project(":file-collections"))
