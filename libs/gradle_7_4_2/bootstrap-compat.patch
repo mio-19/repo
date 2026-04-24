@@ -1,0 +1,366 @@
+diff --git a/build-logic-commons/code-quality/build.gradle.kts b/build-logic-commons/code-quality/build.gradle.kts
+index 471e3cbff4b..d1cfa789057 100644
+--- a/build-logic-commons/code-quality/build.gradle.kts
++++ b/build-logic-commons/code-quality/build.gradle.kts
+@@ -12,6 +12,6 @@ java {
+ group = "gradlebuild"
+ 
+ dependencies {
+-    implementation("org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:2.1.7")
++    implementation("org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:2.1.6")
+     implementation("org.gradle.kotlin:gradle-kotlin-dsl-conventions:0.7.0")
+ }
+diff --git a/build-logic-commons/gradle-plugin/build.gradle.kts b/build-logic-commons/gradle-plugin/build.gradle.kts
+index 1759bc95dde..0ddfaf1b067 100644
+--- a/build-logic-commons/gradle-plugin/build.gradle.kts
++++ b/build-logic-commons/gradle-plugin/build.gradle.kts
+@@ -12,6 +12,6 @@ java {
+ dependencies {
+     implementation(project(":code-quality"))
+ 
+-    implementation("org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:2.1.7")
++    implementation("org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:2.1.6")
+     implementation("org.gradle.kotlin:gradle-kotlin-dsl-conventions:0.7.0")
+ }
+diff --git a/build-logic-settings/allprojects-plugin/src/main/kotlin/gradlebuild.base.allprojects.settings.gradle.kts b/build-logic-settings/allprojects-plugin/src/main/kotlin/gradlebuild.base.allprojects.settings.gradle.kts
+index d835569dfc8..aeef44ed8e5 100644
+--- a/build-logic-settings/allprojects-plugin/src/main/kotlin/gradlebuild.base.allprojects.settings.gradle.kts
++++ b/build-logic-settings/allprojects-plugin/src/main/kotlin/gradlebuild.base.allprojects.settings.gradle.kts
+@@ -23,7 +23,7 @@
+  * This should be limited to validation or tasks which are independent
+  * of the kind of project we're building.
+  */
+-val enableValidation = providers.systemProperty("org.gradle.internal.validate.external.plugins")
++val enableValidation = providers.systemProperty("org.gradle.internal.validate.external.plugins").forUseAtConfigurationTime()
+ 
+ gradle.beforeProject {
+     if (enableValidation.map(String::toBoolean).orElse(false).get()) {
+diff --git a/build-logic-settings/testfiltering-plugin/src/main/kotlin/gradlebuild.internal.testfiltering.settings.gradle.kts b/build-logic-settings/testfiltering-plugin/src/main/kotlin/gradlebuild.internal.testfiltering.settings.gradle.kts
+index 1a69083dc6b..789b4a3fa64 100644
+--- a/build-logic-settings/testfiltering-plugin/src/main/kotlin/gradlebuild.internal.testfiltering.settings.gradle.kts
++++ b/build-logic-settings/testfiltering-plugin/src/main/kotlin/gradlebuild.internal.testfiltering.settings.gradle.kts
+@@ -15,8 +15,8 @@
+  */
+ 
+ val testFilteringProperty = "gradle.internal.testselection.enabled"
+-val testFilteringProvider = providers.systemProperty(testFilteringProperty)
+-val gitBranchName: String? = providers.environmentVariable("BUILD_BRANCH").orNull
++val testFilteringProvider = providers.systemProperty(testFilteringProperty).forUseAtConfigurationTime()
++val gitBranchName: String? = providers.environmentVariable("BUILD_BRANCH").forUseAtConfigurationTime().orNull
+ if (!testFilteringProvider.isPresent && gitBranchName != null) {
+     val protectedBranches = listOf("master", "release")
+     if (!protectedBranches.contains(gitBranchName) && !gitBranchName.startsWith("pre-test/")) {
+diff --git a/build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts b/build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts
+index c358a4a79ae..7b1e3e8fff0 100644
+--- a/build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts
++++ b/build-logic/basics/src/main/kotlin/gradlebuild.repositories.gradle.kts
+@@ -39,5 +39,18 @@ repositories {
+             includeGroup("io.usethesource")
+         }
+     }
++    maven {
++        name = "JFrog OSS releases"
++        url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
++    }
++
++    maven {
++        name = "Gradle JCenter backup"
++        url = uri("https://repo.gradle.org/artifactory/jcenter-backup/")
++        content {
++            includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")
++        }
++    }
++
+     mavenCentral()
+ }
+diff --git a/build-logic/basics/src/main/kotlin/gradlebuild/basics/BuildParams.kt b/build-logic/basics/src/main/kotlin/gradlebuild/basics/BuildParams.kt
+index 5cf66eeeab8..445e87dda81 100644
+--- a/build-logic/basics/src/main/kotlin/gradlebuild/basics/BuildParams.kt
++++ b/build-logic/basics/src/main/kotlin/gradlebuild/basics/BuildParams.kt
+@@ -141,13 +141,13 @@ fun <T> Provider<T>.presence(): Provider<Boolean> =
+     map { true }.orElse(false)
+ 
+ 
+-fun Project.gradleProperty(propertyName: String) = providers.gradleProperty(propertyName)
++fun Project.gradleProperty(propertyName: String) = providers.gradleProperty(propertyName).forUseAtConfigurationTime()
+ 
+ 
+-fun Project.systemProperty(propertyName: String) = providers.systemProperty(propertyName)
++fun Project.systemProperty(propertyName: String) = providers.systemProperty(propertyName).forUseAtConfigurationTime()
+ 
+ 
+-fun Project.environmentVariable(propertyName: String) = providers.environmentVariable(propertyName)
++fun Project.environmentVariable(propertyName: String) = providers.environmentVariable(propertyName).forUseAtConfigurationTime()
+ 
+ 
+ fun Project.propertyFromAnySource(propertyName: String) = gradleProperty(propertyName)
+diff --git a/build-logic/build-platform/build.gradle.kts b/build-logic/build-platform/build.gradle.kts
+index 9ad994238a2..ee38265fef1 100644
+--- a/build-logic/build-platform/build.gradle.kts
++++ b/build-logic/build-platform/build.gradle.kts
+@@ -9,8 +9,7 @@ val javaParserVersion = "3.18.0"
+ val groovyVersion = "3.0.9"
+ val asmVersion = "9.2"
+ 
+-val kotlinVersion = providers.gradleProperty("buildKotlinVersion")
+-    .getOrElse(embeddedKotlinVersion)
++val kotlinVersion = "1.5.31"
+ 
+ dependencies {
+     constraints {
+@@ -74,3 +73,12 @@ dependencies {
+         api("org.objenesis:objenesis") { version { strictly("3.1") } }
+     }
+ }
++
++    repositories {
++        gradlePluginPortal()
++        maven {
++            name = "JFrog OSS releases"
++            url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
++        }
++        mavenCentral()
++    }
+diff --git a/build-logic/buildquality/build.gradle.kts b/build-logic/buildquality/build.gradle.kts
+index 09b76157999..ff78c391c2c 100644
+--- a/build-logic/buildquality/build.gradle.kts
++++ b/build-logic/buildquality/build.gradle.kts
+@@ -28,3 +28,12 @@ dependencies {
+ 
+     testImplementation("org.junit.jupiter:junit-jupiter-engine")
+ }
++
++    repositories {
++        gradlePluginPortal()
++        maven {
++            name = "JFrog OSS releases"
++            url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
++        }
++        mavenCentral()
++    }
+diff --git a/build-logic/jvm/src/main/kotlin/gradlebuild.unittest-and-compile.gradle.kts b/build-logic/jvm/src/main/kotlin/gradlebuild.unittest-and-compile.gradle.kts
+index cccbf6e6f01..0f986724f20 100644
+--- a/build-logic/jvm/src/main/kotlin/gradlebuild.unittest-and-compile.gradle.kts
++++ b/build-logic/jvm/src/main/kotlin/gradlebuild.unittest-and-compile.gradle.kts
+@@ -56,14 +56,6 @@ configureTests()
+ tasks.registerCITestDistributionLifecycleTasks()
+ 
+ fun configureCompile() {
+-    java.toolchain {
+-        languageVersion.set(JavaLanguageVersion.of(11))
+-        // Do not force Adoptium vendor for M1 Macs
+-        if (!OperatingSystem.current().toString().contains("aarch64")) {
+-            vendor.set(JvmVendorSpec.ADOPTIUM)
+-        }
+-    }
+-
+     tasks.withType<JavaCompile>().configureEach {
+         configureCompileTask(options)
+     }
+@@ -241,7 +233,6 @@ fun Test.usesEmbeddedExecuter() = name.startsWith("embedded")
+ 
+ fun Test.configureRerun() {
+     if (project.rerunAllTests.isPresent) {
+-        doNotTrackState("All tests should re-run")
+     }
+ }
+ 
+diff --git a/build-logic/kotlin-dsl/src/main/kotlin/gradlebuild.kotlin-dsl-dependencies-embedded.gradle.kts b/build-logic/kotlin-dsl/src/main/kotlin/gradlebuild.kotlin-dsl-dependencies-embedded.gradle.kts
+index ee085d0adfa..ed25883313b 100644
+--- a/build-logic/kotlin-dsl/src/main/kotlin/gradlebuild.kotlin-dsl-dependencies-embedded.gradle.kts
++++ b/build-logic/kotlin-dsl/src/main/kotlin/gradlebuild.kotlin-dsl-dependencies-embedded.gradle.kts
+@@ -26,7 +26,7 @@ plugins {
+ // --- Enable automatic generation of API extensions -------------------
+ val apiExtensionsOutputDir = layout.buildDirectory.dir("generated-sources/kotlin")
+ 
+-val publishedKotlinDslPluginVersion = "2.1.7" // TODO:kotlin-dsl
++val publishedKotlinDslPluginVersion = "2.1.6" // TODO:kotlin-dsl
+ 
+ tasks {
+     val generateKotlinDependencyExtensions by registering(GenerateKotlinDependencyExtensions::class) {
+diff --git a/build-logic/performance-testing/build.gradle.kts b/build-logic/performance-testing/build.gradle.kts
+index 6d5c28161b3..685dd587660 100644
+--- a/build-logic/performance-testing/build.gradle.kts
++++ b/build-logic/performance-testing/build.gradle.kts
+@@ -46,3 +46,12 @@ tasks.withType<Test>().configureEach {
+     environment("BUILD_BRANCH", "myBranch")
+     environment("BUILD_COMMIT_ID", "myCommitId")
+ }
++
++    repositories {
++        gradlePluginPortal()
++        maven {
++            name = "JFrog OSS releases"
++            url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
++        }
++        mavenCentral()
++    }
+diff --git a/build-logic/performance-testing/src/main/kotlin/gradlebuild/performance/PerformanceTestPlugin.kt b/build-logic/performance-testing/src/main/kotlin/gradlebuild/performance/PerformanceTestPlugin.kt
+index 29328f824d1..b17ca747087 100644
+--- a/build-logic/performance-testing/src/main/kotlin/gradlebuild/performance/PerformanceTestPlugin.kt
++++ b/build-logic/performance-testing/src/main/kotlin/gradlebuild/performance/PerformanceTestPlugin.kt
+@@ -174,7 +174,6 @@ class PerformanceTestPlugin : Plugin<Project> {
+             mainClass.set("org.gradle.performance.results.PerformanceTestRuntimesGenerator")
+             systemProperties(project.propertiesForPerformanceDb)
+             args(repoRoot().file(".teamcity/performance-test-durations.json").asFile.absolutePath)
+-            doNotTrackState("Reads data from the database")
+         }
+ 
+         val performanceScenarioJson = repoRoot().file(".teamcity/performance-tests-ci.json").asFile
+diff --git a/build-logic/profiling/src/main/kotlin/gradlebuild.buildscan.gradle.kts b/build-logic/profiling/src/main/kotlin/gradlebuild.buildscan.gradle.kts
+index f70c9a99029..714474bd829 100644
+--- a/build-logic/profiling/src/main/kotlin/gradlebuild.buildscan.gradle.kts
++++ b/build-logic/profiling/src/main/kotlin/gradlebuild.buildscan.gradle.kts
+@@ -231,7 +231,7 @@ open class FileSystemWatchingBuildOperationListener(private val buildOperationLi
+             is BuildFinishedFileSystemWatchingBuildOperationType.Result -> {
+                 if (result.isWatchingEnabled) {
+                     buildScan.value("watchFsStoppedDuringBuild", result.isStoppedWatchingDuringTheBuild.toString())
+-                    buildScan.value("watchFsStateInvalidatedAtStart", result.isStateInvalidatedAtStartOfBuild.toString())
++                    buildScan.value("watchFsStateInvalidatedAtStart", "false")
+                     result.statistics?.let {
+                         buildScan.value("watchFsEventsReceivedDuringBuild", it.numberOfReceivedEvents.toString())
+                         buildScan.value("watchFsRetainedDirectories", it.retainedDirectories.toString())
+diff --git a/build-logic/profiling/src/main/kotlin/gradlebuild/buildscan/tasks/ExtractCodeQualityBuildScanData.kt b/build-logic/profiling/src/main/kotlin/gradlebuild/buildscan/tasks/ExtractCodeQualityBuildScanData.kt
+index 73f80aab050..3c3a898b64b 100644
+--- a/build-logic/profiling/src/main/kotlin/gradlebuild/buildscan/tasks/ExtractCodeQualityBuildScanData.kt
++++ b/build-logic/profiling/src/main/kotlin/gradlebuild/buildscan/tasks/ExtractCodeQualityBuildScanData.kt
+@@ -43,10 +43,6 @@ abstract class AbstractExtractCodeQualityBuildScanData : DefaultTask() {
+     internal
+     var buildScanExt: BuildScanExtension? = null
+ 
+-    init {
+-        doNotTrackState("Adds build scan values")
+-    }
+-
+     @TaskAction
+     fun action() {
+         if (buildScanExt == null) return
+diff --git a/build-logic/publishing/src/main/kotlin/gradlebuild.publish-public-libraries.gradle.kts b/build-logic/publishing/src/main/kotlin/gradlebuild.publish-public-libraries.gradle.kts
+index 266c751442e..5f1eeb49593 100644
+--- a/build-logic/publishing/src/main/kotlin/gradlebuild.publish-public-libraries.gradle.kts
++++ b/build-logic/publishing/src/main/kotlin/gradlebuild.publish-public-libraries.gradle.kts
+@@ -53,15 +53,15 @@ publishing {
+     configurePublishingTasks()
+ }
+ 
+-val pgpSigningKey: Provider<String> = providers.environmentVariable("PGP_SIGNING_KEY")
++val pgpSigningKey: Provider<String> = providers.environmentVariable("PGP_SIGNING_KEY").forUseAtConfigurationTime()
+ val signArtifacts: Boolean = !pgpSigningKey.orNull.isNullOrEmpty()
+ 
+ tasks.withType<Sign>().configureEach { isEnabled = signArtifacts }
+ 
+ signing {
+     useInMemoryPgpKeys(
+-        project.providers.environmentVariable("PGP_SIGNING_KEY").orNull,
+-        project.providers.environmentVariable("PGP_SIGNING_KEY_PASSPHRASE").orNull
++        project.providers.environmentVariable("PGP_SIGNING_KEY").forUseAtConfigurationTime().orNull,
++        project.providers.environmentVariable("PGP_SIGNING_KEY_PASSPHRASE").forUseAtConfigurationTime().orNull
+     )
+     publishing.publications.configureEach {
+         if (signArtifacts) {
+diff --git a/build-logic/settings.gradle.kts b/build-logic/settings.gradle.kts
+index cdc525f67c2..e238bfab134 100644
+--- a/build-logic/settings.gradle.kts
++++ b/build-logic/settings.gradle.kts
+@@ -21,6 +21,7 @@ pluginManagement {
+ }
+ 
+ dependencyResolutionManagement {
++        repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+     repositories {
+         maven {
+             name = "Gradle Enterprise release candidates"
+@@ -39,6 +40,19 @@ dependencyResolutionManagement {
+                 includeModule("classycle", "classycle")
+             }
+         }
++            maven {
++                name = "Gradle JCenter backup"
++                url = uri("https://repo.gradle.org/artifactory/jcenter-backup/")
++                content {
++                    includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")
++                }
++            }
++
++            maven {
++                name = "JFrog OSS release-local"
++                url = uri("https://oss.jfrog.org/oss-release-local/")
++            }
++
+         mavenCentral()
+         gradlePluginPortal()
+     }
+diff --git a/build-logic/uber-plugins/build.gradle.kts b/build-logic/uber-plugins/build.gradle.kts
+index 5cf863994d1..972b9518239 100644
+--- a/build-logic/uber-plugins/build.gradle.kts
++++ b/build-logic/uber-plugins/build.gradle.kts
+@@ -17,3 +17,12 @@ dependencies {
+     implementation("org.gradle.kotlin:gradle-kotlin-dsl-conventions")
+     implementation(kotlin("gradle-plugin"))
+ }
++
++    repositories {
++        gradlePluginPortal()
++        maven {
++            name = "JFrog OSS releases"
++            url = uri("https://releases.jfrog.io/artifactory/oss-releases/")
++        }
++        mavenCentral()
++    }
+diff --git a/gradle/shared-with-buildSrc/mirrors.settings.gradle.kts b/gradle/shared-with-buildSrc/mirrors.settings.gradle.kts
+index c84fc4ca191..1d8cac5c639 100644
+--- a/gradle/shared-with-buildSrc/mirrors.settings.gradle.kts
++++ b/gradle/shared-with-buildSrc/mirrors.settings.gradle.kts
+@@ -32,7 +32,7 @@ val originalUrls: Map<String, String> = mapOf(
+ )
+ 
+ val mirrorUrls: Map<String, String> =
+-    providers.environmentVariable("REPO_MIRROR_URLS").orNull
++    providers.environmentVariable("REPO_MIRROR_URLS").forUseAtConfigurationTime().orNull
+         ?.ifBlank { null }
+         ?.split(',')
+         ?.associate { nameToUrl ->
+@@ -41,9 +41,9 @@ val mirrorUrls: Map<String, String> =
+         }
+         ?: emptyMap()
+ 
+-fun ignoreMirrors() = providers.environmentVariable("IGNORE_MIRROR").orNull?.toBoolean() == true
++fun ignoreMirrors() = providers.environmentVariable("IGNORE_MIRROR").forUseAtConfigurationTime().orNull?.toBoolean() == true
+ 
+-fun isCI() = providers.environmentVariable("CI").isPresent()
++fun isCI() = providers.environmentVariable("CI").forUseAtConfigurationTime().isPresent()
+ 
+ fun withMirrors(handler: RepositoryHandler) {
+     if (!isCI()) {
+diff --git a/settings.gradle.kts b/settings.gradle.kts
+index f40bc693dbe..1004d52ca73 100644
+--- a/settings.gradle.kts
++++ b/settings.gradle.kts
+@@ -15,6 +15,15 @@ pluginManagement {
+             }
+         }
+         gradlePluginPortal()
++        maven {
++            name = "Gradle JCenter backup"
++            url = uri("https://repo.gradle.org/artifactory/jcenter-backup/")
++            content {
++                includeModule("org.codehaus.groovy.modules", "http-builder-ng-core")
++            }
++        }
++
++        maven { url = uri("https://releases.jfrog.io/artifactory/oss-releases/") }
+     }
+ }
+ 
+diff --git a/subprojects/smoke-test/build.gradle.kts b/subprojects/smoke-test/build.gradle.kts
+index 20d8e8ef659..450266168af 100644
+--- a/subprojects/smoke-test/build.gradle.kts
++++ b/subprojects/smoke-test/build.gradle.kts
+@@ -69,7 +69,6 @@ tasks {
+     if (BuildEnvironment.isCiServer) {
+         remoteProjects.forEach { remoteProject ->
+             remoteProject {
+-                doNotTrackState("Do a full checkout on CI")
+             }
+         }
+     }

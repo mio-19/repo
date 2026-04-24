@@ -149,7 +149,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-bOB7/2FWasLfSOhKK0s5q5HKmHXoX/gPtWzUdwR3v1M=";
+        outputHash = "sha256-tSzeHsx4r41mXadCBed9dqSIjX+p3DkTO6OMuI01BM4=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -270,14 +270,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.21.0-rc1";
+      version = "5.24.12";
 
       src = fetchFromGitHub {
-        owner = "GlassOnTin";
+        owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-IibTUyq2RnQtNTWdW80kNz25fIMJeqb4e9dx+fLiCZY=";
+        hash = "sha256-rWkFMXdSyie81oZ39dB82Ks6EL7+HGMH2EEpgPMmYB8=";
       };
 
       patches = [
@@ -308,6 +308,7 @@ let
             attrPath = "apk_haven";
             extraArgs = [
               "--flake"
+              "--src-only"
               "--version-regex=^v?([0-9]+\\.[0-9]+\\.[0-9]+(-rc[0-9]+)?)$"
             ];
           })
@@ -399,7 +400,7 @@ let
 
       meta = with lib; {
         description = "Haven – SSH/Mosh terminal and Reticulum network client for Android";
-        homepage = "https://github.com/GlassOnTin/Haven";
+        homepage = "https://github.com/GlassHaven/Haven";
         license = licenses.gpl3Only;
         platforms = platforms.unix;
       };
@@ -417,8 +418,8 @@ mk-apk-package {
         - Internet
         - System
       License: GPL-3.0-only
-      SourceCode: https://github.com/GlassOnTin/Haven
-      IssueTracker: https://github.com/GlassOnTin/Haven/issues
+      SourceCode: https://github.com/GlassHaven/Haven
+      IssueTracker: https://github.com/GlassHaven/Haven/issues
       AutoName: Haven
       Summary: SSH/Mosh terminal and Reticulum network client
       Description: |-

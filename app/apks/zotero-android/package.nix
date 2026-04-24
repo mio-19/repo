@@ -97,7 +97,7 @@ let
               exit 1
             fi
 
-            ${lib.getExe nix-update} --flake --version="$latest" apk_zotero-android
+            ${lib.getExe nix-update} --flake --src-only --version="$latest" apk_zotero-android
             system="$(nix eval --impure --raw --expr builtins.currentSystem)"
             "$(nix build ".#legacyPackages.$system.apk_zotero-android.mitmCache.updateScript" --no-link --print-out-paths)"
           ''}"

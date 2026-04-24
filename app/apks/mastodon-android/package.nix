@@ -8,7 +8,6 @@
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  fetchpatch,
 }:
 let
   appPackage =
@@ -24,22 +23,19 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "mastodon-android";
-      version = "2.11.11-unstable-2026-04-04";
+      version = "2.11.11-unstable-2026-04-10";
 
       src = fetchFromGitHub {
         owner = "mastodon";
         repo = "mastodon-android";
         #tag = "v${finalAttrs.version}";
-        rev = "92478fa81dec9b6a8a272ffa55500e5526dcec74";
-        hash = "sha256-gGDVNaGU/uMibPYB1+EcFBsYz5A/GIi+0gN6D1vbtRk=";
+        rev = "d8309f0de3cf0b798bd8947ec1121850087a77cb";
+        hash = "sha256-w0KtvR5w0U4AWkjk7FOnBlUMq6J7CCV461P82C2MKhw=";
       };
 
       patches = [
-        (fetchpatch {
-          name = "Furigana implementation for japanese messages";
-          url = "https://github.com/mastodon/mastodon-android/pull/1039.diff";
-          hash = "sha256-QLD5iT2CXhiTVjXSLTqMtJ59rZ0GL7cKqvbytqxXs8A=";
-        })
+        # https://github.com/mastodon/mastodon-android/pull/1039
+        ./0001-furigana-rebased.patch
         /*
           (fetchpatch {
             name = "Enable more comprehensive R8 optimizations (#1079)";
