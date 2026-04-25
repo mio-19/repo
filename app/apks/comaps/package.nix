@@ -37,13 +37,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "comaps";
-      version = "2026.04.07-8";
+      version = "2026.04.23-19";
 
       src = fetchgit {
         url = "https://codeberg.org/comaps/comaps.git";
         tag = "v${finalAttrs.version}";
         fetchSubmodules = true;
-        hash = "sha256-FV73hkvAIivwHld7S6yEtAhNOwdnhGmAoN1m3JUB6m0=";
+        hash = "sha256-6ZWWPbVktxSTBOiczBvkzsU9cBnpfiDOVDNvB4xG1s0=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/android";
