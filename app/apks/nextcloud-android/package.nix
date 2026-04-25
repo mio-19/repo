@@ -24,14 +24,14 @@ let
   appPackage = buildGradlePackage rec {
     pname = "nextcloud-android";
     # Go to https://github.com/nextcloud/android/releases/latest to see latest release.
-    version = "33.0.1";
+    version = "33.1.0";
     inherit gradle;
 
     src = fetchFromGitHub {
       owner = "nextcloud";
       repo = "android";
       tag = "stable-${version}";
-      hash = "sha256-NAWeYEHIGMxoOpF6t/VhTRxjX1n2RTJ2AjZ8v8z3+2g=";
+      hash = "sha256-Z0bqp2/0hMj8yaxytERdSqaBlLmVZzgzMRpHgx3Czvg=";
     };
 
     lockFile = ./gradle.lock;
