@@ -3,26 +3,25 @@
   temurin-bin-11,
   temurin-bin-17,
   jdk21_headless,
-  gradle_8_1,
+  gradle_8_1_20230203,
   gradle-from-source,
   mergeLock,
 }:
 gradle-from-source {
-  version = "8.2";
-  hash = "sha256-2s5MzKtluNLcZt86AWOawI+oIBp3Sa5K68JT9OYkDZ4=";
+  version = "8.1.0-RC4";
+  hash = "sha256-BiyNOrNP1uF5obGoIsH+vagULOILclKQ6gK9W73gLnY=";
   lockFile = mergeLock [
-    gradle_8_1.unwrapped.passthru.lockFile
-    ./more.gradle.lock
+    gradle_8_1_20230203.unwrapped.passthru.lockFile
+    ./gradle.lock
   ];
   defaultJava = jdk21_headless;
-  # this version specifically ask for termurin branded jdk.
   buildJdk = temurin-bin-11;
   javaToolchains = [
     temurin-bin-8
     temurin-bin-11
     temurin-bin-17
   ];
-  bootstrapGradle = gradle_8_1;
+  bootstrapGradle = gradle_8_1_20230203;
   patches = [
     ./internal-integ-testing-bootstrap.patch
   ];
@@ -36,15 +35,9 @@ gradle-from-source {
       --replace-fail 'languageVersion = JavaLanguageVersion.of(11)' 'languageVersion.set(JavaLanguageVersion.of(11))' \
       --replace-fail 'vendor = JvmVendorSpec.ADOPTIUM' 'vendor.set(JvmVendorSpec.ADOPTIUM)'
     substituteInPlace build-logic-commons/gradle-plugin/src/main/kotlin/gradlebuild.build-logic.kotlin-dsl-gradle-plugin.gradle.kts \
-      --replace-fail '        allWarningsAsErrors = true' '        allWarningsAsErrors.set(true)' \
+      --replace-fail '        allWarningsAsErrors = false' '        allWarningsAsErrors.set(false)' \
       --replace-fail '    failOnWarning = true' '    failOnWarning.set(true)' \
       --replace-fail '    enableStricterValidation = true' '    enableStricterValidation.set(true)'
-    substituteInPlace \
-      build-logic-commons/gradle-plugin/build.gradle.kts \
-      build-logic/dependency-modules/src/main/kotlin/gradlebuild/modules/extension/ExternalModulesExtension.kt \
-      --replace-fail '1.8.20' '1.8.10'
-    substituteInPlace build-logic-commons/gradle-plugin/build.gradle.kts \
-      --replace-fail 'org.gradle.kotlin.kotlin-dsl.gradle.plugin:4.0.14' 'org.gradle.kotlin.kotlin-dsl.gradle.plugin:4.0.7'
     substituteInPlace build-logic-commons/gradle-plugin/src/main/kotlin/gradlebuild.ci-reporting.gradle.kts \
       --replace-fail '    projectState.projectBuildDir = buildDir' '    projectState.projectBuildDir.set(layout.buildDirectory)' \
       --replace-fail '    projectState.projectPath = path' '    projectState.projectPath.set(path)' \
@@ -61,34 +54,6 @@ gradle-from-source {
     substituteInPlace build-logic/lifecycle/src/main/kotlin/gradlebuild.lifecycle.gradle.kts \
       --replace-fail '            parameters.timeoutMillis = determineTimeoutMillis()' '            parameters.timeoutMillis.set(determineTimeoutMillis())' \
       --replace-fail '            parameters.projectDirectory = layout.projectDirectory' '            parameters.projectDirectory.set(layout.projectDirectory)'
-    substituteInPlace build-logic/cleanup/src/main/kotlin/gradlebuild.cleanup.gradle.kts \
-      --replace-fail '    parameters.rootProjectDir = repoRoot()' '    parameters.rootProjectDir.set(repoRoot())'
-    substituteInPlace build-logic/profiling/src/main/kotlin/gradlebuild.jmh.gradle.kts \
-      --replace-fail '    includeTests = false' '    includeTests.set(false)' \
-      --replace-fail '    resultFormat = "CSV"' '    resultFormat.set("CSV")' \
-      --replace-fail '    csv = tasks.jmh.map { layout.buildDirectory.file("results/jmh/results.csv").get() }' '    csv.set(tasks.jmh.map { layout.buildDirectory.file("results/jmh/results.csv").get() })' \
-      --replace-fail '    destination = layout.buildDirectory.dir("reports/jmh-html")' '    destination.set(layout.buildDirectory.dir("reports/jmh-html"))'
-    substituteInPlace build-logic/integration-testing/src/main/kotlin/gradlebuild.distribution-testing.gradle.kts \
-      --replace-fail '    parameters.gradleVersion = moduleIdentity.version.map { it.version }' '    parameters.gradleVersion.set(moduleIdentity.version.map { it.version })' \
-      --replace-fail '    parameters.homeDir = intTestHomeDir' '    parameters.homeDir.set(intTestHomeDir)' \
-      --replace-fail '    cachesCleaner = cachesCleanerService' '    cachesCleaner.set(cachesCleanerService)' \
-      --replace-fail '        tracker = it.service' '        tracker.set(it.service)' \
-      --replace-fail '        gradleUserHomeDir = intTestHomeDir' '        gradleUserHomeDir.set(intTestHomeDir)' \
-      --replace-fail '        daemonRegistry = repoRoot().dir("build/daemon")' '        daemonRegistry.set(repoRoot().dir("build/daemon"))' \
-      --replace-fail '        gradleSnippetsDir = repoRoot().dir("$docsProjectLocation/src/snippets")' '        gradleSnippetsDir.set(repoRoot().dir("$docsProjectLocation/src/snippets"))'
-    substituteInPlace build-logic/integration-testing/src/main/kotlin/gradlebuild/integrationtests/shared-configuration.kt \
-      --replace-fail '    parameters.includeTestClasses = project.testSplitIncludeTestClasses' '    parameters.includeTestClasses.set(project.testSplitIncludeTestClasses)' \
-      --replace-fail '    parameters.excludeTestClasses = project.testSplitExcludeTestClasses' '    parameters.excludeTestClasses.set(project.testSplitExcludeTestClasses)' \
-      --replace-fail '    parameters.onlyTestGradleVersion = project.testSplitOnlyTestGradleVersion' '    parameters.onlyTestGradleVersion.set(project.testSplitOnlyTestGradleVersion)' \
-      --replace-fail '    parameters.repoRoot = repoRoot()' '    parameters.repoRoot.set(repoRoot())'
-    substituteInPlace build-logic/integration-testing/src/main/kotlin/gradlebuild/integrationtests/tasks/GenerateLanguageAnnotations.kt \
-      --replace-fail '            classpath = this@GenerateLanguageAnnotations.classpath' '            classpath.setFrom(this@GenerateLanguageAnnotations.classpath)' \
-      --replace-fail '            packageName = this@GenerateLanguageAnnotations.packageName' '            packageName.set(this@GenerateLanguageAnnotations.packageName)' \
-      --replace-fail '            destDir = this@GenerateLanguageAnnotations.destDir' '            destDir.set(this@GenerateLanguageAnnotations.destDir)'
-    substituteInPlace build-logic/root-build/src/main/kotlin/gradlebuild.build-environment.gradle.kts \
-      --replace-fail 'buildEnvironmentExtension.gitCommitId = git("rev-parse", "HEAD")' 'buildEnvironmentExtension.gitCommitId.set(git("rev-parse", "HEAD"))' \
-      --replace-fail 'buildEnvironmentExtension.gitBranch = git("rev-parse", "--abbrev-ref", "HEAD")' 'buildEnvironmentExtension.gitBranch.set(git("rev-parse", "--abbrev-ref", "HEAD"))' \
-      --replace-fail 'buildEnvironmentExtension.repoRoot = layout.projectDirectory.parentOrRoot()' 'buildEnvironmentExtension.repoRoot.set(layout.projectDirectory.parentOrRoot())'
     substituteInPlace build-logic/lifecycle/src/main/kotlin/gradlebuild.teamcity-import-test-data.gradle.kts \
       --replace-fail $'            parameters.testTaskPathToJUnitXmlLocation = allTasks.filterIsInstance<Test>().associate {\n                it.path to gradleRootDir.relativize(it.reports.junitXml.outputLocation.asFile.get().toPath()).toString()\n            }' $'            parameters.testTaskPathToJUnitXmlLocation.set(allTasks.filterIsInstance<Test>().associate {\n                it.path to gradleRootDir.relativize(it.reports.junitXml.outputLocation.asFile.get().toPath()).toString()\n            })'
     substituteInPlace build-logic/build-update-utils/src/main/kotlin/gradlebuild.update-init-template-versions.gradle.kts \
@@ -119,6 +84,33 @@ gradle-from-source {
       --replace-fail '            this.receiptFolder = project.layout.buildDirectory.dir("generated-resources/build-receipt")' '            this.receiptFolder.set(project.layout.buildDirectory.dir("generated-resources/build-receipt"))'
     substituteInPlace build-logic/module-identity/src/main/kotlin/gradlebuild/identity/tasks/BuildReceipt.kt \
       --replace-fail '        buildTimestamp = provider.map { buildTimestampString -> timestampFormat.parse(buildTimestampString) }' '        buildTimestamp.set(provider.map { buildTimestampString -> timestampFormat.parse(buildTimestampString) })'
+    substituteInPlace build-logic/cleanup/src/main/kotlin/gradlebuild.cleanup.gradle.kts \
+      --replace-fail '    parameters.rootProjectDir = repoRoot()' '    parameters.rootProjectDir.set(repoRoot())'
+    substituteInPlace build-logic/profiling/src/main/kotlin/gradlebuild.jmh.gradle.kts \
+      --replace-fail '    includeTests = false' '    includeTests.set(false)' \
+      --replace-fail '    resultFormat = "CSV"' '    resultFormat.set("CSV")' \
+      --replace-fail '    csv = tasks.jmh.map { layout.buildDirectory.file("results/jmh/results.csv").get() }' '    csv.set(tasks.jmh.map { layout.buildDirectory.file("results/jmh/results.csv").get() })' \
+      --replace-fail '    destination = layout.buildDirectory.dir("reports/jmh-html")' '    destination.set(layout.buildDirectory.dir("reports/jmh-html"))'
+    substituteInPlace build-logic/integration-testing/src/main/kotlin/gradlebuild.distribution-testing.gradle.kts \
+      --replace-fail '    parameters.gradleVersion = moduleIdentity.version.map { it.version }' '    parameters.gradleVersion.set(moduleIdentity.version.map { it.version })' \
+      --replace-fail '    parameters.homeDir = intTestHomeDir' '    parameters.homeDir.set(intTestHomeDir)' \
+      --replace-fail '    cachesCleaner = cachesCleanerService' '    cachesCleaner.set(cachesCleanerService)' \
+      --replace-fail '        tracker = it.service' '        tracker.set(it.service)' \
+      --replace-fail '        gradleUserHomeDir = intTestHomeDir' '        gradleUserHomeDir.set(intTestHomeDir)' \
+      --replace-fail '        daemonRegistry = repoRoot().dir("build/daemon")' '        daemonRegistry.set(repoRoot().dir("build/daemon"))' \
+      --replace-fail '        gradleSnippetsDir = repoRoot().dir("$docsProjectLocation/src/snippets")' '        gradleSnippetsDir.set(repoRoot().dir("$docsProjectLocation/src/snippets"))'
+    substituteInPlace build-logic/integration-testing/src/main/kotlin/gradlebuild/integrationtests/shared-configuration.kt \
+      --replace-fail '    parameters.includeTestClasses = project.testSplitIncludeTestClasses' '    parameters.includeTestClasses.set(project.testSplitIncludeTestClasses)' \
+      --replace-fail '    parameters.excludeTestClasses = project.testSplitExcludeTestClasses' '    parameters.excludeTestClasses.set(project.testSplitExcludeTestClasses)' \
+      --replace-fail '    parameters.onlyTestGradleVersion = project.testSplitOnlyTestGradleVersion' '    parameters.onlyTestGradleVersion.set(project.testSplitOnlyTestGradleVersion)' \
+      --replace-fail '    parameters.repoRoot = repoRoot()' '    parameters.repoRoot.set(repoRoot())'
+    substituteInPlace build-logic/integration-testing/src/main/kotlin/gradlebuild/integrationtests/tasks/GenerateLanguageAnnotations.kt \
+      --replace-fail '            packageName = this@GenerateLanguageAnnotations.packageName' '            packageName.set(this@GenerateLanguageAnnotations.packageName)' \
+      --replace-fail '            destDir = this@GenerateLanguageAnnotations.destDir' '            destDir.set(this@GenerateLanguageAnnotations.destDir)'
+    substituteInPlace build-logic/root-build/src/main/kotlin/gradlebuild.build-environment.gradle.kts \
+      --replace-fail 'buildEnvironmentExtension.gitCommitId = git("rev-parse", "HEAD")' 'buildEnvironmentExtension.gitCommitId.set(git("rev-parse", "HEAD"))' \
+      --replace-fail 'buildEnvironmentExtension.gitBranch = git("rev-parse", "--abbrev-ref", "HEAD")' 'buildEnvironmentExtension.gitBranch.set(git("rev-parse", "--abbrev-ref", "HEAD"))' \
+      --replace-fail 'buildEnvironmentExtension.repoRoot = layout.projectDirectory.parentOrRoot()' 'buildEnvironmentExtension.repoRoot.set(layout.projectDirectory.parentOrRoot())'
     substituteInPlace build-logic/performance-testing/src/main/kotlin/gradlebuild/performance/PerformanceTestPlugin.kt \
       --replace-fail '        performanceTestExtension.baselines = project.performanceBaselines' '        performanceTestExtension.baselines.set(project.performanceBaselines)' \
       --replace-fail '            performanceResultsDirectory = repoRoot().dir("perf-results")' '            performanceResultsDirectory.set(repoRoot().dir("perf-results"))' \
@@ -189,7 +181,7 @@ gradle-from-source {
       --replace-fail '    enableStricterValidation = true' '    enableStricterValidation.set(true)' \
       --replace-fail '                name = "The Apache License, Version 2.0"' '                name.set("The Apache License, Version 2.0")' \
       --replace-fail '                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"' '                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")' \
-      --replace-fail '    destinationFile = futurePluginVersionsPropertiesFile' '    destinationFile.set(futurePluginVersionsPropertiesFile)' \
+      --replace-fail '    destinationFile = futurePluginVersionsPropertiesFile' '    outputFile = futurePluginVersionsPropertiesFile.get().asFile' \
       --replace-fail '    website = "https://github.com/gradle/gradle/tree/HEAD/subprojects/kotlin-dsl-plugins"' '    website.set("https://github.com/gradle/gradle/tree/HEAD/subprojects/kotlin-dsl-plugins")' \
       --replace-fail '    vcsUrl = "https://github.com/gradle/gradle/tree/HEAD/subprojects/kotlin-dsl-plugins"' '    vcsUrl.set("https://github.com/gradle/gradle/tree/HEAD/subprojects/kotlin-dsl-plugins")'
     substituteInPlace build-logic/publishing/src/main/kotlin/gradlebuild.publish-public-libraries.gradle.kts \
@@ -234,7 +226,7 @@ gradle-from-source {
       --replace-fail '        languageVersion = KotlinVersion.KOTLIN_1_8' '        languageVersion.set(KotlinVersion.KOTLIN_1_8)' \
       --replace-fail '        jvmTarget = JvmTarget.JVM_1_8' '        jvmTarget.set(JvmTarget.JVM_1_8)'
     substituteInPlace build-logic/packaging/src/main/kotlin/gradlebuild.api-metadata.gradle.kts \
-      --replace-fail '    destinationFile = apiDeclarationPropertiesFile' '    destinationFile.set(apiDeclarationPropertiesFile)'
+      --replace-fail '    destinationFile = apiDeclarationPropertiesFile' '    outputFile = apiDeclarationPropertiesFile.get().asFile'
     substituteInPlace build-logic/packaging/src/main/kotlin/gradlebuild.distributions.gradle.kts \
       --replace-fail '    outputFile = generatedTxtFileFor("api-relocated")' '    outputFile.set(generatedTxtFileFor("api-relocated"))' \
       --replace-fail '    destinationFile = generatedBinFileFor("dsl-meta-data.bin")' '    destinationFile.set(generatedBinFileFor("dsl-meta-data.bin"))' \
@@ -273,7 +265,7 @@ gradle-from-source {
       --replace-fail '        outputDir = apiExtensionsOutputDir' '        outputDir.set(apiExtensionsOutputDir)' \
       --replace-fail '        embeddedKotlinVersion = libs.kotlinVersion' '        embeddedKotlinVersion.set(libs.kotlinVersion)' \
       --replace-fail '        kotlinDslPluginsVersion = publishedKotlinDslPluginVersion' '        kotlinDslPluginsVersion.set(publishedKotlinDslPluginVersion)' \
-      --replace-fail '        destinationFile = layout.buildDirectory.file("versionsManifest/gradle-kotlin-dsl-versions.properties")' '        destinationFile.set(layout.buildDirectory.file("versionsManifest/gradle-kotlin-dsl-versions.properties"))'
+      --replace-fail '        destinationFile = layout.buildDirectory.file("versionsManifest/gradle-kotlin-dsl-versions.properties")' '        outputFile = layout.buildDirectory.file("versionsManifest/gradle-kotlin-dsl-versions.properties").get().asFile'
     substituteInPlace build-logic/kotlin-dsl/src/main/kotlin/gradlebuild.kotlin-dsl-plugin-extensions.gradle.kts \
       --replace-fail '    outputDir = generatedSourcesDir' '    outputDir.set(generatedSourcesDir)' \
       --replace-fail '    kotlinDslPluginsVersion = project.version' '    kotlinDslPluginsVersion.set(project.version)'
@@ -346,7 +338,7 @@ gradle-from-source {
       --replace-fail 'integTest.usesJavadocCodeSnippets = true' 'integTest.usesJavadocCodeSnippets.set(true)'
     substituteInPlace subprojects/smoke-test/build.gradle.kts \
       --replace-fail '        remoteUri = santaGitUri' '        remoteUri.set(santaGitUri)' \
-      --replace-fail '        ref = "70b2fec935b82d8783579290512690fe2eca8884"' '        ref.set("70b2fec935b82d8783579290512690fe2eca8884")' \
+      --replace-fail '        ref = "180b7a91054d5fe5b617543bb2f74a3819537b7b"' '        ref.set("180b7a91054d5fe5b617543bb2f74a3819537b7b")' \
       --replace-fail '        remoteUri = rootDir.absolutePath' '        remoteUri.set(rootDir.absolutePath)' \
       --replace-fail '        ref = buildCommitId' '        ref.set(buildCommitId)'
     substituteInPlace subprojects/testing-base/build.gradle.kts \
@@ -371,17 +363,5 @@ gradle-from-source {
       --replace-fail '        displayName = "Building $languageDisplayName $capKind$multiProjectSuffix"' '        displayName.set("Building $languageDisplayName $capKind$multiProjectSuffix")' \
       --replace-fail '        description = "Setup a $languageDisplayName $kind project$multiProjectSuffix step-by-step."' '        description.set("Setup a $languageDisplayName $kind project$multiProjectSuffix step-by-step.")' \
       --replace-fail '        category = language.toString()' '        category.set(language.toString())'
-    substituteInPlace build-logic/build-update-utils/src/main/kotlin/gradlebuild.update-versions.gradle.kts \
-      --replace-fail '    comment = " Generated - Update by running `./gradlew updateKotlinVersions`"' '    comment.set(" Generated - Update by running `./gradlew updateKotlinVersions`")' \
-      --replace-fail '    minimumSupported = "1.6.10"' '    minimumSupported.set("1.6.10")' \
-      --replace-fail '    propertiesFile = layout.projectDirectory.file("gradle/dependency-management/kotlin-versions.properties")' '    propertiesFile.set(layout.projectDirectory.file("gradle/dependency-management/kotlin-versions.properties"))'
-    substituteInPlace build-logic/integration-testing/src/main/kotlin/gradlebuild.distribution-testing.gradle.kts \
-      --replace-fail $'            gradleHomeDir = if (executerRequiresFullDistribution(taskName)) {\n                configurations["''${prefix}TestFullDistributionRuntimeClasspath"]\n            } else {\n                configurations["''${prefix}TestDistributionRuntimeClasspath"]\n            }' $'            gradleHomeDir.setFrom(if (executerRequiresFullDistribution(taskName)) {\n                configurations["''${prefix}TestFullDistributionRuntimeClasspath"]\n            } else {\n                configurations["''${prefix}TestDistributionRuntimeClasspath"]\n            })' \
-      --replace-fail '    normalizedDistributionZip.distributionZip = configurations["''${prefix}TestNormalizedDistributionPath"]' '    normalizedDistributionZip.distributionZip.setFrom(configurations["''${prefix}TestNormalizedDistributionPath"])' \
-      --replace-fail '    binDistributionZip.distributionZip = configurations["''${prefix}TestBinDistributionPath"]' '    binDistributionZip.distributionZip.setFrom(configurations["''${prefix}TestBinDistributionPath"])' \
-      --replace-fail '    allDistributionZip.distributionZip = configurations["''${prefix}TestAllDistributionPath"]' '    allDistributionZip.distributionZip.setFrom(configurations["''${prefix}TestAllDistributionPath"])' \
-      --replace-fail '    docsDistributionZip.distributionZip = configurations["''${prefix}TestDocsDistributionPath"]' '    docsDistributionZip.distributionZip.setFrom(configurations["''${prefix}TestDocsDistributionPath"])' \
-      --replace-fail '    srcDistributionZip.distributionZip = configurations["''${prefix}TestSrcDistributionPath"]' '    srcDistributionZip.distributionZip.setFrom(configurations["''${prefix}TestSrcDistributionPath"])' \
-      --replace-fail '    localRepository.localRepo = configurations["''${prefix}TestLocalRepositoryPath"]' '    localRepository.localRepo.setFrom(configurations["''${prefix}TestLocalRepositoryPath"])'
   '';
 }
