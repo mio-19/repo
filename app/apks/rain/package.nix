@@ -114,6 +114,7 @@ let
         cp -LR ${flutter341} flutter-sdk
         chmod -R u+w flutter-sdk
         touch flutter-sdk/bin/cache/engine.realm # https://github.com/NixOS/nixpkgs/pull/500309#issuecomment-4192628176
+        chmod +x flutter-sdk/bin/cache/artifacts/engine/linux-x64/font-subset # needed after nixpkgs b86751bc4085f48661017fa226dee99fab6c651b -> 01fbdeef22b76df85ea168fbfe1bfd9e63681b30
 
         cat > android/gradlew << 'GRADLEW_SCRIPT'
         #!/bin/sh
