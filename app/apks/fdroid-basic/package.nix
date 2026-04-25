@@ -24,12 +24,12 @@ let
 in
 buildGradlePackage rec {
   pname = "fdroid-basic";
-  version = "2.0-alpha7";
+  version = "2.0-alpha8";
 
   src = fetchgit {
     url = "https://gitlab.com/fdroid/fdroidclient.git";
     tag = version;
-    hash = "sha256-2aKQAz8vEJjauhHGVt7ZhmqkbYuK/c4ztYLHNQIjZZ0=";
+    hash = "sha256-u4LIkA32BqIkO8+KBc3YqnveBcl9BZ+QS2h3yQY16WQ=";
   };
 
   lockFile = ./gradle.lock;
