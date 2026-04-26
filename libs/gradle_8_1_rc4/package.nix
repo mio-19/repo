@@ -3,26 +3,25 @@
   temurin-bin-11,
   temurin-bin-17,
   jdk21_headless,
-  gradle_8_1_rc4,
+  gradle_8_1_20230203,
   gradle-from-source,
   mergeLock,
 }:
 gradle-from-source {
-  version = "8.1";
-  hash = "sha256-+IBfbf43KyIxOhkJbuI8r3TughQrSzCdz6PcGIsF6Zg=";
+  version = "8.1.0-RC4";
+  hash = "sha256-BiyNOrNP1uF5obGoIsH+vagULOILclKQ6gK9W73gLnY=";
   lockFile = mergeLock [
-    gradle_8_1_rc4.unwrapped.passthru.lockFile
-    ./more.gradle.lock
+    gradle_8_1_20230203.unwrapped.passthru.lockFile
+    ./gradle.lock
   ];
   defaultJava = jdk21_headless;
-  # this version specifically ask for termurin branded jdk.
   buildJdk = temurin-bin-11;
   javaToolchains = [
     temurin-bin-8
     temurin-bin-11
     temurin-bin-17
   ];
-  bootstrapGradle = gradle_8_1_rc4;
+  bootstrapGradle = gradle_8_1_20230203;
   patches = [
     ./internal-integ-testing-bootstrap.patch
   ];
@@ -55,33 +54,6 @@ gradle-from-source {
     substituteInPlace build-logic/lifecycle/src/main/kotlin/gradlebuild.lifecycle.gradle.kts \
       --replace-fail '            parameters.timeoutMillis = determineTimeoutMillis()' '            parameters.timeoutMillis.set(determineTimeoutMillis())' \
       --replace-fail '            parameters.projectDirectory = layout.projectDirectory' '            parameters.projectDirectory.set(layout.projectDirectory)'
-    substituteInPlace build-logic/cleanup/src/main/kotlin/gradlebuild.cleanup.gradle.kts \
-      --replace-fail '    parameters.rootProjectDir = repoRoot()' '    parameters.rootProjectDir.set(repoRoot())'
-    substituteInPlace build-logic/profiling/src/main/kotlin/gradlebuild.jmh.gradle.kts \
-      --replace-fail '    includeTests = false' '    includeTests.set(false)' \
-      --replace-fail '    resultFormat = "CSV"' '    resultFormat.set("CSV")' \
-      --replace-fail '    csv = tasks.jmh.map { layout.buildDirectory.file("results/jmh/results.csv").get() }' '    csv.set(tasks.jmh.map { layout.buildDirectory.file("results/jmh/results.csv").get() })' \
-      --replace-fail '    destination = layout.buildDirectory.dir("reports/jmh-html")' '    destination.set(layout.buildDirectory.dir("reports/jmh-html"))'
-    substituteInPlace build-logic/integration-testing/src/main/kotlin/gradlebuild.distribution-testing.gradle.kts \
-      --replace-fail '    parameters.gradleVersion = moduleIdentity.version.map { it.version }' '    parameters.gradleVersion.set(moduleIdentity.version.map { it.version })' \
-      --replace-fail '    parameters.homeDir = intTestHomeDir' '    parameters.homeDir.set(intTestHomeDir)' \
-      --replace-fail '    cachesCleaner = cachesCleanerService' '    cachesCleaner.set(cachesCleanerService)' \
-      --replace-fail '        tracker = it.service' '        tracker.set(it.service)' \
-      --replace-fail '        gradleUserHomeDir = intTestHomeDir' '        gradleUserHomeDir.set(intTestHomeDir)' \
-      --replace-fail '        daemonRegistry = repoRoot().dir("build/daemon")' '        daemonRegistry.set(repoRoot().dir("build/daemon"))' \
-      --replace-fail '        gradleSnippetsDir = repoRoot().dir("$docsProjectLocation/src/snippets")' '        gradleSnippetsDir.set(repoRoot().dir("$docsProjectLocation/src/snippets"))'
-    substituteInPlace build-logic/integration-testing/src/main/kotlin/gradlebuild/integrationtests/shared-configuration.kt \
-      --replace-fail '    parameters.includeTestClasses = project.testSplitIncludeTestClasses' '    parameters.includeTestClasses.set(project.testSplitIncludeTestClasses)' \
-      --replace-fail '    parameters.excludeTestClasses = project.testSplitExcludeTestClasses' '    parameters.excludeTestClasses.set(project.testSplitExcludeTestClasses)' \
-      --replace-fail '    parameters.onlyTestGradleVersion = project.testSplitOnlyTestGradleVersion' '    parameters.onlyTestGradleVersion.set(project.testSplitOnlyTestGradleVersion)' \
-      --replace-fail '    parameters.repoRoot = repoRoot()' '    parameters.repoRoot.set(repoRoot())'
-    substituteInPlace build-logic/integration-testing/src/main/kotlin/gradlebuild/integrationtests/tasks/GenerateLanguageAnnotations.kt \
-      --replace-fail '            packageName = this@GenerateLanguageAnnotations.packageName' '            packageName.set(this@GenerateLanguageAnnotations.packageName)' \
-      --replace-fail '            destDir = this@GenerateLanguageAnnotations.destDir' '            destDir.set(this@GenerateLanguageAnnotations.destDir)'
-    substituteInPlace build-logic/root-build/src/main/kotlin/gradlebuild.build-environment.gradle.kts \
-      --replace-fail 'buildEnvironmentExtension.gitCommitId = git("rev-parse", "HEAD")' 'buildEnvironmentExtension.gitCommitId.set(git("rev-parse", "HEAD"))' \
-      --replace-fail 'buildEnvironmentExtension.gitBranch = git("rev-parse", "--abbrev-ref", "HEAD")' 'buildEnvironmentExtension.gitBranch.set(git("rev-parse", "--abbrev-ref", "HEAD"))' \
-      --replace-fail 'buildEnvironmentExtension.repoRoot = layout.projectDirectory.parentOrRoot()' 'buildEnvironmentExtension.repoRoot.set(layout.projectDirectory.parentOrRoot())'
     substituteInPlace build-logic/lifecycle/src/main/kotlin/gradlebuild.teamcity-import-test-data.gradle.kts \
       --replace-fail $'            parameters.testTaskPathToJUnitXmlLocation = allTasks.filterIsInstance<Test>().associate {\n                it.path to gradleRootDir.relativize(it.reports.junitXml.outputLocation.asFile.get().toPath()).toString()\n            }' $'            parameters.testTaskPathToJUnitXmlLocation.set(allTasks.filterIsInstance<Test>().associate {\n                it.path to gradleRootDir.relativize(it.reports.junitXml.outputLocation.asFile.get().toPath()).toString()\n            })'
     substituteInPlace build-logic/build-update-utils/src/main/kotlin/gradlebuild.update-init-template-versions.gradle.kts \
@@ -112,6 +84,33 @@ gradle-from-source {
       --replace-fail '            this.receiptFolder = project.layout.buildDirectory.dir("generated-resources/build-receipt")' '            this.receiptFolder.set(project.layout.buildDirectory.dir("generated-resources/build-receipt"))'
     substituteInPlace build-logic/module-identity/src/main/kotlin/gradlebuild/identity/tasks/BuildReceipt.kt \
       --replace-fail '        buildTimestamp = provider.map { buildTimestampString -> timestampFormat.parse(buildTimestampString) }' '        buildTimestamp.set(provider.map { buildTimestampString -> timestampFormat.parse(buildTimestampString) })'
+    substituteInPlace build-logic/cleanup/src/main/kotlin/gradlebuild.cleanup.gradle.kts \
+      --replace-fail '    parameters.rootProjectDir = repoRoot()' '    parameters.rootProjectDir.set(repoRoot())'
+    substituteInPlace build-logic/profiling/src/main/kotlin/gradlebuild.jmh.gradle.kts \
+      --replace-fail '    includeTests = false' '    includeTests.set(false)' \
+      --replace-fail '    resultFormat = "CSV"' '    resultFormat.set("CSV")' \
+      --replace-fail '    csv = tasks.jmh.map { layout.buildDirectory.file("results/jmh/results.csv").get() }' '    csv.set(tasks.jmh.map { layout.buildDirectory.file("results/jmh/results.csv").get() })' \
+      --replace-fail '    destination = layout.buildDirectory.dir("reports/jmh-html")' '    destination.set(layout.buildDirectory.dir("reports/jmh-html"))'
+    substituteInPlace build-logic/integration-testing/src/main/kotlin/gradlebuild.distribution-testing.gradle.kts \
+      --replace-fail '    parameters.gradleVersion = moduleIdentity.version.map { it.version }' '    parameters.gradleVersion.set(moduleIdentity.version.map { it.version })' \
+      --replace-fail '    parameters.homeDir = intTestHomeDir' '    parameters.homeDir.set(intTestHomeDir)' \
+      --replace-fail '    cachesCleaner = cachesCleanerService' '    cachesCleaner.set(cachesCleanerService)' \
+      --replace-fail '        tracker = it.service' '        tracker.set(it.service)' \
+      --replace-fail '        gradleUserHomeDir = intTestHomeDir' '        gradleUserHomeDir.set(intTestHomeDir)' \
+      --replace-fail '        daemonRegistry = repoRoot().dir("build/daemon")' '        daemonRegistry.set(repoRoot().dir("build/daemon"))' \
+      --replace-fail '        gradleSnippetsDir = repoRoot().dir("$docsProjectLocation/src/snippets")' '        gradleSnippetsDir.set(repoRoot().dir("$docsProjectLocation/src/snippets"))'
+    substituteInPlace build-logic/integration-testing/src/main/kotlin/gradlebuild/integrationtests/shared-configuration.kt \
+      --replace-fail '    parameters.includeTestClasses = project.testSplitIncludeTestClasses' '    parameters.includeTestClasses.set(project.testSplitIncludeTestClasses)' \
+      --replace-fail '    parameters.excludeTestClasses = project.testSplitExcludeTestClasses' '    parameters.excludeTestClasses.set(project.testSplitExcludeTestClasses)' \
+      --replace-fail '    parameters.onlyTestGradleVersion = project.testSplitOnlyTestGradleVersion' '    parameters.onlyTestGradleVersion.set(project.testSplitOnlyTestGradleVersion)' \
+      --replace-fail '    parameters.repoRoot = repoRoot()' '    parameters.repoRoot.set(repoRoot())'
+    substituteInPlace build-logic/integration-testing/src/main/kotlin/gradlebuild/integrationtests/tasks/GenerateLanguageAnnotations.kt \
+      --replace-fail '            packageName = this@GenerateLanguageAnnotations.packageName' '            packageName.set(this@GenerateLanguageAnnotations.packageName)' \
+      --replace-fail '            destDir = this@GenerateLanguageAnnotations.destDir' '            destDir.set(this@GenerateLanguageAnnotations.destDir)'
+    substituteInPlace build-logic/root-build/src/main/kotlin/gradlebuild.build-environment.gradle.kts \
+      --replace-fail 'buildEnvironmentExtension.gitCommitId = git("rev-parse", "HEAD")' 'buildEnvironmentExtension.gitCommitId.set(git("rev-parse", "HEAD"))' \
+      --replace-fail 'buildEnvironmentExtension.gitBranch = git("rev-parse", "--abbrev-ref", "HEAD")' 'buildEnvironmentExtension.gitBranch.set(git("rev-parse", "--abbrev-ref", "HEAD"))' \
+      --replace-fail 'buildEnvironmentExtension.repoRoot = layout.projectDirectory.parentOrRoot()' 'buildEnvironmentExtension.repoRoot.set(layout.projectDirectory.parentOrRoot())'
     substituteInPlace build-logic/performance-testing/src/main/kotlin/gradlebuild/performance/PerformanceTestPlugin.kt \
       --replace-fail '        performanceTestExtension.baselines = project.performanceBaselines' '        performanceTestExtension.baselines.set(project.performanceBaselines)' \
       --replace-fail '            performanceResultsDirectory = repoRoot().dir("perf-results")' '            performanceResultsDirectory.set(repoRoot().dir("perf-results"))' \
