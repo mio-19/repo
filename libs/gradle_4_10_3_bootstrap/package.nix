@@ -90,7 +90,7 @@ let
         skipNext=
         for arg in "''${gradleFlagsArray[@]}"; do
           if [ -n "$skipNext" ]; then
-            skipNext=1
+            skipNext=
             continue
           fi
           if [ "$arg" = "--init-script" ]; then
@@ -103,6 +103,10 @@ let
       '';
 
       gradleFlags = [
+        "-x"
+        ":docs:distDocs"
+        "-x"
+        ":docs:samples"
         "-PfinalRelease=true"
         "-PpromotionCommitId=v4.10.3"
         "-Pjava9Home=${jdk11_headless.passthru.home}"
@@ -157,6 +161,11 @@ let
         mkdir -p "$out/libexec/gradle" "$out/bin"
         mv lib "$out/libexec/gradle/"
         mv bin "$out/libexec/gradle/"
+        for jar in "$out"/libexec/gradle/lib/plugins/gradle-resources-http-*.jar "$out"/libexec/gradle/lib/plugins/gradle-resources-sftp-*.jar "$out"/libexec/gradle/lib/plugins/httpclient-*.jar "$out"/libexec/gradle/lib/plugins/httpcore-*.jar "$out"/libexec/gradle/lib/plugins/jsch-*.jar; do
+          if [ -e "$jar" ]; then
+            mv "$jar" "$out/libexec/gradle/lib/"
+          fi
+        done
         substituteInPlace "$out/libexec/gradle/bin/gradle" \
           --replace-fail \
             'CLASSPATH=$APP_HOME/lib/gradle-launcher-4.10.3.jar' \
