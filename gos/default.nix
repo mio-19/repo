@@ -218,7 +218,7 @@ in
         hash = "sha256-/S3jLQ0LcXwQzuD5G9iskf9Qtmm7ICsDA+QIcUJo30M=";
       })
     */
-    ./spl_downgrade.patch
+    #./spl_downgrade.patch # no: brick the device
   ];
 
   source.dirs."packages/apps/GmsCompat".patches = [
