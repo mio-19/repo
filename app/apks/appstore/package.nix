@@ -1,11 +1,13 @@
 {
   mk-apk-package,
+  overrides-fromsrc,
   buildGradlePackage,
   sources,
   lib,
   jdk25_headless,
   jdk17_headless,
-  gradle_9_4_1,
+  gradle_9_4_0,
+  stdenv,
   fetchpatch,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -24,7 +26,7 @@ let
     s.build-tools-36-1-0
   ]);
 
-  gradle = gradle_9_4_1;
+  gradle = gradle_9_4_0;
 
   appPackage = buildGradlePackage {
     pname = "appstore";
@@ -32,7 +34,7 @@ let
 
     lockFile = ./gradle.lock;
     overrides = overrides-fromsrc-updated;
-    buildJdk = jdk17_headless;
+    buildJdk = jdk25_headless;
 
     patches = [
       ./0001-always-show-vanadium.patch # TODO: test
@@ -62,7 +64,7 @@ let
     ];
 
     env = {
-      JAVA_HOME = jdk17_headless.passthru.home;
+      JAVA_HOME = if stdenv.isDarwin then "${jdk25_headless}" else "${jdk25_headless}/lib/openjdk";
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
@@ -74,15 +76,21 @@ let
       echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
     '';
 
-    gradleFlags = [
-      "--console=plain"
-      "--dependency-verification=off"
-      "-Dorg.gradle.java.home=${jdk17_headless.passthru.home}"
-      "-Dorg.gradle.java.installations.auto-download=false"
-      "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home},${jdk25_headless.passthru.home}"
-      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-    ];
+    gradleFlags =
+      let
+        postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
+      in
+      [
+        "--console=plain"
+        "--dependency-verification=off"
+        "-Dorg.gradle.java.home=${
+          if stdenv.isDarwin then jdk25_headless else "${jdk25_headless}/lib/openjdk"
+        }"
+        "-Dorg.gradle.java.installations.auto-download=false"
+        "-Dorg.gradle.java.installations.paths=${jdk17_headless}${postfix},${jdk25_headless}${postfix}"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+      ];
 
     gradleBuildFlags = ":app:assembleRelease";
 

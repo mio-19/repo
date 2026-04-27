@@ -246,17 +246,17 @@
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
-    version = "9bdf70a2c9a2dd757fe163c599907dcda3960c62";
+    version = "0d4f0bfaa6c558ac5a18541015c55b927fcc8684";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/AppStore.git";
-      rev = "9bdf70a2c9a2dd757fe163c599907dcda3960c62";
+      rev = "0d4f0bfaa6c558ac5a18541015c55b927fcc8684";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-rtoGioYcJ0pFAkj59TwC3fu4x7MkAkbCAklKFxBiIGw=";
+      sha256 = "sha256-Do8Y0CiMcdW+RXBmH0LCy3nNkW75LfzjO2Yz9lSxi+Y=";
     };
-    date = "2026-04-26";
+    date = "2026-04-24";
   };
   grapheneos_camera = {
     pname = "grapheneos_camera";
