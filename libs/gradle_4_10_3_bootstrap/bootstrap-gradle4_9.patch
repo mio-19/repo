@@ -93,7 +93,7 @@ index 5e91cbcd..496432d2 100644
 +    subprojects {
 +        tasks.matching {
 +            it.name.startsWith("ktlint") ||
-+                it.name in listOf("test", "compileTestKotlin", "compileTestJava", "compileTestGroovy", "processTestResources")
++                it.name in listOf("test", "validateTaskProperties", "compileTestKotlin", "compileTestJava", "compileTestGroovy", "processTestResources")
 +        }.all {
 +            enabled = false
          }

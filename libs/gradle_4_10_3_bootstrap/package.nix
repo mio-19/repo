@@ -119,6 +119,10 @@ let
         rm -f gradle/verification-metadata.xml
         rm -rf gradle/wrapper .teamcity/.mvn/wrapper
         find . -name "*.jar" -print0 | xargs -0 rm -f
+        substituteInPlace subprojects/core/src/main/java/org/gradle/api/internal/DependencyClassPathProvider.java \
+          --replace-fail \
+            'Arrays.asList("gradle-core", "gradle-workers", "gradle-dependency-management", "gradle-plugin-use", "gradle-tooling-api")' \
+            'Arrays.asList("gradle-base-services", "gradle-base-services-groovy", "gradle-build-cache", "gradle-build-cache-http", "gradle-core-api", "gradle-core", "gradle-logging", "gradle-messaging", "gradle-model-core", "gradle-native", "gradle-process-services", "gradle-workers", "gradle-dependency-management", "gradle-plugin-use", "gradle-tooling-api")'
       '';
 
       gradleUpdateScript = ''
@@ -161,7 +165,7 @@ let
         mkdir -p "$out/libexec/gradle" "$out/bin"
         mv lib "$out/libexec/gradle/"
         mv bin "$out/libexec/gradle/"
-        for jar in "$out"/libexec/gradle/lib/plugins/gradle-resources-http-*.jar "$out"/libexec/gradle/lib/plugins/gradle-resources-sftp-*.jar "$out"/libexec/gradle/lib/plugins/httpclient-*.jar "$out"/libexec/gradle/lib/plugins/httpcore-*.jar "$out"/libexec/gradle/lib/plugins/jsch-*.jar; do
+        for jar in "$out"/libexec/gradle/lib/plugins/aether-*.jar "$out"/libexec/gradle/lib/plugins/gradle-*.jar "$out"/libexec/gradle/lib/plugins/httpclient-*.jar "$out"/libexec/gradle/lib/plugins/httpcore-*.jar "$out"/libexec/gradle/lib/plugins/ivy-*.jar "$out"/libexec/gradle/lib/plugins/jsch-*.jar "$out"/libexec/gradle/lib/plugins/maven-*.jar "$out"/libexec/gradle/lib/plugins/org.eclipse.jgit-*.jar "$out"/libexec/gradle/lib/plugins/plexus-*.jar "$out"/libexec/gradle/lib/plugins/pmaven-*.jar "$out"/libexec/gradle/lib/plugins/wagon-*.jar; do
           if [ -e "$jar" ]; then
             mv "$jar" "$out/libexec/gradle/lib/"
           fi
@@ -170,6 +174,24 @@ let
           --replace-fail \
             'CLASSPATH=$APP_HOME/lib/gradle-launcher-4.10.3.jar' \
             'CLASSPATH=$APP_HOME/lib/gradle-launcher-4.10.3.jar:$APP_HOME/lib/*:$APP_HOME/lib/plugins/*'
+        (
+          cd "$out/libexec/gradle/lib"
+          lineLength=11
+          printf 'Class-Path:' > launcher-manifest.mf
+          for jar in $(printf '%s\n' *.jar | sort); do
+            entry=" $jar"
+            if [ $((lineLength + ''${#entry})) -gt 70 ]; then
+              printf ' \n %s' "$jar" >> launcher-manifest.mf
+              lineLength=$((1 + ''${#jar}))
+            else
+              printf '%s' "$entry" >> launcher-manifest.mf
+              lineLength=$((lineLength + ''${#entry}))
+            fi
+          done
+          printf '\n' >> launcher-manifest.mf
+          jar ufm gradle-launcher-4.10.3.jar launcher-manifest.mf
+          rm launcher-manifest.mf
+        )
 
         makeWrapper "$out/libexec/gradle/bin/gradle" "$out/bin/gradle" \
           --set-default JAVA_HOME "${finalAttrs.env.JAVA_HOME}"
