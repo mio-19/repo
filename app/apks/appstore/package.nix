@@ -1,13 +1,11 @@
 {
   mk-apk-package,
-  overrides-fromsrc,
   buildGradlePackage,
   sources,
   lib,
   jdk25_headless,
   jdk17_headless,
-  gradle_9_4_0,
-  stdenv,
+  gradle_9_4_1,
   fetchpatch,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -26,7 +24,7 @@ let
     s.build-tools-36-1-0
   ]);
 
-  gradle = gradle_9_4_0;
+  gradle = gradle_9_4_1;
 
   appPackage = buildGradlePackage {
     pname = "appstore";
