@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk17_headless,
-  gradle_8_14_3,
+  gradle_9_3_1,
   stdenv,
   fetchFromGitHub,
 
@@ -17,20 +17,21 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-35
-        s.build-tools-35-0-0
+        s.platforms-android-36
+        s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_8_14_3;
+      gradle = gradle_9_3_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "mpv-android";
-      version = "2026-03-22";
+      version = "2026-04-25";
 
       src = fetchFromGitHub {
         owner = "mpv-android";
         repo = "mpv-android";
         tag = finalAttrs.version;
-        hash = "sha256-eYqJiDhIWafcrVzQFrpf8WvRjGQtNMfYINBg8u4S/xE=";
+        hash = "sha256-rUxy4pda313JrU+G9m9Zn8Zn1nfKn35O8eASrcHoktU=";
       };
 
       gradleBuildTask = ":app:assembleDefaultDebug";
@@ -55,7 +56,7 @@ let
         JAVA_HOME = jdk17_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
       };
 
       patches = [
@@ -67,6 +68,7 @@ let
       ];
 
       postPatch = ''
+        find app/src/main/res -name "*.orig" -delete
         cat > local.properties <<LOCALPROPS
         sdk.dir=${androidSdk}/share/android-sdk
         LOCALPROPS
@@ -76,8 +78,8 @@ let
         "-Dandroid.builder.sdkDownload=false"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
 
       preBuild = lib.optionalString stdenv.isDarwin ''
