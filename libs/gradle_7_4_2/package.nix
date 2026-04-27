@@ -22,27 +22,27 @@ gradle-from-source {
     ./bootstrap-compat.patch
   ];
   postPatch = ''
-    echo "kotlin.js.yarn.download=false" >> gradle.properties
-    echo "kotlin.js.node.download=false" >> gradle.properties
+        echo "kotlin.js.yarn.download=false" >> gradle.properties
+        echo "kotlin.js.node.download=false" >> gradle.properties
 
-    cat <<EOF >> settings.gradle.kts
-gradle.rootProject {
-    allprojects {
-        tasks.configureEach {
-            if (name == "browserProductionWebpack") {
-                actions.clear()
-                doLast {
-                    val jsFile = file("build/distributions/configuration-cache-report.js")
-                    jsFile.parentFile.mkdirs()
-                    jsFile.writeText("")
+        cat <<EOF >> settings.gradle.kts
+    gradle.rootProject {
+        allprojects {
+            tasks.configureEach {
+                if (name == "browserProductionWebpack") {
+                    actions.clear()
+                    doLast {
+                        val jsFile = file("build/distributions/configuration-cache-report.js")
+                        jsFile.parentFile.mkdirs()
+                        jsFile.writeText("")
+                    }
+                } else if (name == "rootPackageJson" || name == "kotlinNodeJsSetup" || name == "kotlinNpmInstall" || name == "generateExternalsIntegrated" || name == "packageJson") {
+                    enabled = false
+                    onlyIf { false }
                 }
-            } else if (name == "rootPackageJson" || name == "kotlinNodeJsSetup" || name == "kotlinNpmInstall" || name == "generateExternalsIntegrated" || name == "packageJson") {
-                enabled = false
-                onlyIf { false }
             }
         }
     }
-}
-EOF
+    EOF
   '';
 }

@@ -23,13 +23,34 @@ let
   kotlin-bootstrap = sources.kotlin-bootstrap;
 
   # IntelliJ SDKs
-  intellij-133 = sdkBuilders.buildIntellij { version = "133"; src = sources.intellij-133; };
-  intellij-134 = sdkBuilders.buildIntellij { version = "134"; src = sources.intellij-134; };
-  intellij-135 = sdkBuilders.buildIntellij { version = "135"; src = sources.intellij-135; };
-  intellij-138 = sdkBuilders.buildIntellij { version = "138"; src = sources.intellij-138; };
-  intellij-139 = sdkBuilders.buildIntellij { version = "139"; src = sources.intellij-139; };
-  intellij-141 = sdkBuilders.buildIntellij { version = "141"; src = sources.intellij-141; };
-  intellij-143 = sdkBuilders.buildIntellij { version = "143"; src = sources.intellij-143; };
+  intellij-133 = sdkBuilders.buildIntellij {
+    version = "133";
+    src = sources.intellij-133;
+  };
+  intellij-134 = sdkBuilders.buildIntellij {
+    version = "134";
+    src = sources.intellij-134;
+  };
+  intellij-135 = sdkBuilders.buildIntellij {
+    version = "135";
+    src = sources.intellij-135;
+  };
+  intellij-138 = sdkBuilders.buildIntellij {
+    version = "138";
+    src = sources.intellij-138;
+  };
+  intellij-139 = sdkBuilders.buildIntellij {
+    version = "139";
+    src = sources.intellij-139;
+  };
+  intellij-141 = sdkBuilders.buildIntellij {
+    version = "141";
+    src = sources.intellij-141;
+  };
+  intellij-143 = sdkBuilders.buildIntellij {
+    version = "143";
+    src = sources.intellij-143;
+  };
 
 in
 rec {
