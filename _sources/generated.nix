@@ -22,17 +22,17 @@
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
-    version = "c00c9c96d377b0d1f8d1709157ec11367a4e0e85";
+    version = "00181458b9b4820b250a481ddd1b3061a33a6abb";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
-      rev = "c00c9c96d377b0d1f8d1709157ec11367a4e0e85";
+      rev = "00181458b9b4820b250a481ddd1b3061a33a6abb";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-3KxU9SvWaEA8lGlOwf/qoQkc4wPV+WsD2sUwt25xMjQ=";
+      sha256 = "sha256-kJYCxw/kCFrlS0CGjtD9XoZPBiOiUoxCKngzL0Im4AA=";
     };
-    date = "2026-04-23";
+    date = "2026-04-28";
   };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
@@ -358,31 +358,31 @@
   };
   lineage_device_mainline_common = {
     pname = "lineage_device_mainline_common";
-    version = "de9223077104c3fb8b8e4277c56bc21007ea9662";
+    version = "35f10920d106c4c6c2b8f41fbc9de45b26fa5174";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_device_mainline_common.git";
-      rev = "de9223077104c3fb8b8e4277c56bc21007ea9662";
+      rev = "35f10920d106c4c6c2b8f41fbc9de45b26fa5174";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-gJBimAWE8ZA2MjScWXCGsTc43ATmtTYrTDDT/bz+Zrc=";
+      sha256 = "sha256-CmZTQU0JeRvNEkG3isUc85ZJEC+4dET3zi6GB6WlMM8=";
     };
-    date = "2026-03-10";
+    date = "2026-04-14";
   };
   lineage_device_virt_common = {
     pname = "lineage_device_virt_common";
-    version = "fdcfff953047463113451a5f8113a08e2d6a5d74";
+    version = "3b3bb0b82742cef0d6f6a97464ee589cc4e6414c";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_device_virt_virt-common.git";
-      rev = "fdcfff953047463113451a5f8113a08e2d6a5d74";
+      rev = "3b3bb0b82742cef0d6f6a97464ee589cc4e6414c";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-J3RT66iveZymw+AkezX+N/yuzWHCSh48hLLLxLlpc3E=";
+      sha256 = "sha256-kmbjVb/GEX535URDG13WboRmmmJtT3Dy1juyvYVbh14=";
     };
-    date = "2026-03-09";
+    date = "2026-04-10";
   };
   lineage_device_virtio_arm64 = {
     pname = "lineage_device_virtio_arm64";
@@ -442,15 +442,15 @@
   };
   lineage_external_drm_hwcomposer_upstream = {
     pname = "lineage_external_drm_hwcomposer_upstream";
-    version = "81379e00d94093e6c7fd11a02ee86655c816cf1b";
+    version = "8976786556df09c42b4ad41dd93969c6792f324d";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_external_drm_hwcomposer-upstream.git";
-      rev = "81379e00d94093e6c7fd11a02ee86655c816cf1b";
+      rev = "8976786556df09c42b4ad41dd93969c6792f324d";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-j8QHJnS4Zg2uLDAckkXU34zaQC9QvT3J/1UOmL8mS3E=";
+      sha256 = "sha256-e5FO88tXedYuefhGqZfLjVFHLcNKfJXM/98/wUAnQfg=";
     };
     date = "2026-01-19";
   };
@@ -484,31 +484,31 @@
   };
   lineage_external_mesa = {
     pname = "lineage_external_mesa";
-    version = "b88d4eb3c491c5de880cea75d57fc92f922a75a7";
+    version = "256234ad617a2ff48024b33ab1cad681075b0afa";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_external_mesa.git";
-      rev = "b88d4eb3c491c5de880cea75d57fc92f922a75a7";
+      rev = "256234ad617a2ff48024b33ab1cad681075b0afa";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-SJn6kHky3p0KfIVYdUPVID2DlyXLa+4VHf6IktgKBZw=";
+      sha256 = "sha256-rjzkM10JTnQS7dQ/64YFgql2BPBkxQqIiGREizFeDWg=";
     };
-    date = "2026-02-23";
+    date = "2026-04-28";
   };
   lineage_external_minigbm_upstream = {
     pname = "lineage_external_minigbm_upstream";
-    version = "09ed1a081ac15acc0eef52738bf2b9cc80af0238";
+    version = "6f63d1005a928f71a19f5b23ec9c0eb1ba1e66b9";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_external_minigbm-upstream.git";
-      rev = "09ed1a081ac15acc0eef52738bf2b9cc80af0238";
+      rev = "6f63d1005a928f71a19f5b23ec9c0eb1ba1e66b9";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-i3P9zAx/UeTgAaQznX40KFQvI5sM8uD1h6jtK3dsirc=";
+      sha256 = "sha256-LYpO6+HYX0CVTchReSaPUxWsMVlRASDirqNnalPQJV8=";
     };
-    date = "2026-01-19";
+    date = "2026-04-10";
   };
   lineage_gallery2 = {
     pname = "lineage_gallery2";
@@ -818,7 +818,7 @@
     version = "6b7bf6d049e8d425611e0c6dfb4637193190e8d6";
     src = fetchurl {
       url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/6b7bf6d049e8d425611e0c6dfb4637193190e8d6/vendor_gapps-6b7bf6d049e8d425611e0c6dfb4637193190e8d6.tar.gz";
-      sha256 = "sha256-SkpawHzPB3gLJ6Lr8lNIvQ0LvrH+6UwM+QaMjsnQTjM=";
+      sha256 = "sha256-ZJPTBe8kD4bWcvQET6TL58KfjiCicVzCAo3D8v/5XNE=";
     };
     date = "2026-04-09";
   };
