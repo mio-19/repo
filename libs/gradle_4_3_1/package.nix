@@ -5,7 +5,7 @@
 let
   mkGradle' =
     {
-      fetchFromGitHub,
+      fetchgit,
       gradle_4_0,
       jdk8_headless,
       makeWrapper,
@@ -21,10 +21,9 @@ let
       pname = "gradle-unwrapped";
       version = "4.3.1";
 
-      src = fetchFromGitHub {
-        owner = "gradle";
-        repo = "gradle";
-        tag = "v4.3.1";
+      src = fetchgit {
+        url = "https://github.com/gradle/gradle.git";
+        rev = "refs/tags/v4.3.1";
         hash = "sha256-G/WhKVgvjUk4zqJwIHVH76s7eN4CyeWiJMcS7kdDJLM=";
       };
 

@@ -161,13 +161,19 @@ let
       '';
 
       passthru = {
-        inherit (finalAttrs) jdk;
+        inherit (finalAttrs) jdk mitmCache;
         tests = { };
+        fetchDeps = finalAttrs.mitmCache.updateScript;
       };
     });
 
   unwrapped = callPackage mkGradle' { };
 in
-callPackage gradle-packages.wrapGradle {
+(callPackage gradle-packages.wrapGradle {
   gradle-unwrapped = unwrapped;
-}
+}).overrideAttrs
+  (old: {
+    passthru = old.passthru // {
+      inherit (unwrapped) mitmCache;
+    };
+  })

@@ -1,6 +1,7 @@
 {
   callPackage,
   fetchFromGitHub,
+  fetchurl,
   gradle-packages,
   gradle_4_10_3_bootstrap,
   jdk11_headless,
@@ -14,6 +15,7 @@ let
   mkGradle' =
     {
       fetchFromGitHub,
+      fetchurl,
       gradle_4_10_3_bootstrap,
       jdk11_headless,
       jdk8_headless,
@@ -25,6 +27,10 @@ let
     }:
     let
       gradleRunner = gradle_4_10_3_bootstrap;
+      officialGradleBin = fetchurl {
+        url = "https://services.gradle.org/distributions/gradle-4.10.3-bin.zip";
+        hash = "sha256-hibL8ga04gGt57h3eQkGkERwVLyT8FKVTHhID6btGG4=";
+      };
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gradle-unwrapped";
@@ -176,6 +182,35 @@ let
         mkdir -p "$out/libexec/gradle" "$out/bin"
         mv lib "$out/libexec/gradle/"
         mv bin "$out/libexec/gradle/"
+
+        officialDist="$(mktemp -d)"
+        unzip -q ${officialGradleBin} -d "$officialDist"
+        for officialJar in "$officialDist"/gradle-4.10.3/lib/gradle-*.jar "$officialDist"/gradle-4.10.3/lib/plugins/gradle-*.jar; do
+          props="$("$JAVA_HOME/bin/jar" tf "$officialJar" | grep '^[^/]*-classpath.properties$' || true)"
+          for prop in $props; do
+            targetJar="$out/libexec/gradle/''${officialJar#"$officialDist/gradle-4.10.3/"}"
+            if [ -f "$targetJar" ]; then
+              targetJarDir="$(mktemp -d)"
+              (cd "$targetJarDir" && "$JAVA_HOME/bin/jar" xf "$targetJar")
+              (cd "$targetJarDir" && "$JAVA_HOME/bin/jar" xf "$officialJar" "$prop")
+              if grep -q "plexus-cipher-1.7.jar" "$targetJarDir/$prop"; then
+                substituteInPlace "$targetJarDir/$prop" \
+                  --replace-fail "plexus-cipher-1.7.jar" "plexus-cipher-1.4.jar"
+              fi
+              if [ "$prop" = "gradle-kotlin-dsl-provider-plugins-classpath.properties" ]; then
+                substituteInPlace "$targetJarDir/$prop" \
+                  --replace-fail "runtime=" "runtime=gradle-plugins-4.10.3.jar,"
+                (cd "$targetJarDir" && "$JAVA_HOME/bin/jar" xf "$out/libexec/gradle/lib/plugins/gradle-plugins-4.10.3.jar" org/gradle/api/tasks/SourceSet.class org/gradle/api/tasks/SourceSetContainer.class org/gradle/api/tasks/SourceSetOutput.class)
+              fi
+              rm "$targetJar"
+              if [ -f "$targetJarDir/META-INF/MANIFEST.MF" ]; then
+                (cd "$targetJarDir" && "$JAVA_HOME/bin/jar" cfm "$targetJar" META-INF/MANIFEST.MF .)
+              else
+                (cd "$targetJarDir" && "$JAVA_HOME/bin/jar" cf "$targetJar" .)
+              fi
+            fi
+          done
+        done
 
         makeWrapper "$out/libexec/gradle/bin/gradle" "$out/bin/gradle" \
           --set-default JAVA_HOME "${finalAttrs.env.JAVA_HOME}"
