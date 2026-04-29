@@ -1,6 +1,7 @@
 {
   mk-apk-package,
   buildGradlePackage,
+  mergeLock,
   sources,
   lib,
   jdk25_headless,
@@ -37,7 +38,10 @@ let
 
       inherit gradle;
 
-      lockFile = ./gradle.lock;
+      lockFile = mergeLock [
+        ./gradle.lock
+        ./more.gradle.lock
+      ];
       overrides = overrides-fromsrc-updated;
       buildJdk = jdk25_headless;
 
