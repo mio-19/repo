@@ -288,17 +288,17 @@
   };
   grapheneos_pdfviewer = {
     pname = "grapheneos_pdfviewer";
-    version = "286259ed0f5cf762da86b445d782fccef3189e1a";
+    version = "21716ea3783198ca0db975a51182724dabc0a1bb";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/PdfViewer.git";
-      rev = "286259ed0f5cf762da86b445d782fccef3189e1a";
+      rev = "21716ea3783198ca0db975a51182724dabc0a1bb";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-hYNKSlBe78IRBZNTc+7mizJqn5OAaxwbjv/dPdz8loU=";
+      sha256 = "sha256-n5ur8tC5GJHixsGa3mi10xv5kihzPS3pnoAEykEpFBs=";
     };
-    date = "2026-04-25";
+    date = "2026-04-28";
   };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
@@ -358,17 +358,17 @@
   };
   lineage_device_mainline_common = {
     pname = "lineage_device_mainline_common";
-    version = "35f10920d106c4c6c2b8f41fbc9de45b26fa5174";
+    version = "5590a2d5fe683b283d759793945b8a4306a2dbf1";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_device_mainline_common.git";
-      rev = "35f10920d106c4c6c2b8f41fbc9de45b26fa5174";
+      rev = "5590a2d5fe683b283d759793945b8a4306a2dbf1";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-CmZTQU0JeRvNEkG3isUc85ZJEC+4dET3zi6GB6WlMM8=";
+      sha256 = "sha256-+Ts3vxE3vqf+XkdPEAiw4npg1aqFD4kZK8nNKY/j2qA=";
     };
-    date = "2026-04-14";
+    date = "2026-04-28";
   };
   lineage_device_virt_common = {
     pname = "lineage_device_virt_common";
@@ -470,17 +470,17 @@
   };
   lineage_external_linux_firmware_mainline = {
     pname = "lineage_external_linux_firmware_mainline";
-    version = "6734582a4fba084e07bd5d80ccfc2ea4976e865f";
+    version = "9d1219d37ae8a2c3b010163a1f556bf699bab358";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_external_linux-firmware-mainline.git";
-      rev = "6734582a4fba084e07bd5d80ccfc2ea4976e865f";
+      rev = "9d1219d37ae8a2c3b010163a1f556bf699bab358";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-C84GuV/JD+9ozj52fkmX98g6IdGCfnUui/3t80FvZsw=";
+      sha256 = "sha256-o1I2q7buyePXBWc9BAA2Zefukrnu3qkvgiqEQ0Eo0Hs=";
     };
-    date = "2026-01-05";
+    date = "2026-04-12";
   };
   lineage_external_mesa = {
     pname = "lineage_external_mesa";
