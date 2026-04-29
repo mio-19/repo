@@ -1,0 +1,1292 @@
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/announce/announce.gradle.kts b/subprojects/announce/announce.gradle.kts
+--- a/subprojects/announce/announce.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/announce/announce.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -34,7 +34,7 @@
+ 
+     testRuntimeOnly(project(":plugins"))
+     testRuntimeOnly(project(":runtimeApiInfo"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ }
+ 
+ gradlebuildJava {
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/antlr/antlr.gradle.kts b/subprojects/antlr/antlr.gradle.kts
+--- a/subprojects/antlr/antlr.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/antlr/antlr.gradle.kts	2026-04-30 01:21:19.863878727 +1000
+@@ -41,7 +41,7 @@
+ 
+     testImplementation(project(":baseServicesGroovy"))
+     testImplementation(project(":fileCollections"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ }
+ 
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/base-services/base-services.gradle.kts b/subprojects/base-services/base-services.gradle.kts
+--- a/subprojects/base-services/base-services.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/base-services/base-services.gradle.kts	2026-04-30 01:21:19.855878793 +1000
+@@ -35,7 +35,7 @@
+     integTestImplementation(project(":logging"))
+     
+     testFixturesImplementation(library("guava"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+     testRuntimeOnly(library("xerces"))
+     
+     integTestRuntimeOnly(project(":runtimeApiInfo"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/base-services-groovy/base-services-groovy.gradle.kts b/subprojects/base-services-groovy/base-services-groovy.gradle.kts
+--- a/subprojects/base-services-groovy/base-services-groovy.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/base-services-groovy/base-services-groovy.gradle.kts	2026-04-30 01:21:19.855878793 +1000
+@@ -27,7 +27,7 @@
+     implementation(library("groovy"))
+     implementation(library("guava"))
+ 
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ }
+ 
+ gradlebuildJava {
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/build-cache/build-cache.gradle.kts b/subprojects/build-cache/build-cache.gradle.kts
+--- a/subprojects/build-cache/build-cache.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/build-cache/build-cache.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -53,8 +53,8 @@
+ 
+     testImplementation(project(":modelCore"))
+     testImplementation(project(":fileCollections"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":baseServices")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":baseServices", configuration = "testFixturesRuntimeElements"))
+     testRuntimeOnly(project(":workers"))
+     testRuntimeOnly(project(":dependencyManagement"))
+     testRuntimeOnly(project(":runtimeApiInfo"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/build-cache-http/build-cache-http.gradle.kts b/subprojects/build-cache-http/build-cache-http.gradle.kts
+--- a/subprojects/build-cache-http/build-cache-http.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/build-cache-http/build-cache-http.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -35,7 +35,7 @@
+     implementation(library("commons_lang"))
+     implementation(library("inject"))
+ 
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     integTestImplementation(project(":logging"))
+     integTestImplementation(testLibrary("jetty"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/build-cache-packaging/build-cache-packaging.gradle.kts b/subprojects/build-cache-packaging/build-cache-packaging.gradle.kts
+--- a/subprojects/build-cache-packaging/build-cache-packaging.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/build-cache-packaging/build-cache-packaging.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -41,10 +41,10 @@
+     testImplementation(project(":fileCollections"))
+     testImplementation(project(":resources"))
+     
+-    testImplementation(testFixtures(project(":baseServices")))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":snapshots")))
+-    testImplementation(testFixtures(project(":coreApi")))
++    testImplementation(project(path = ":baseServices", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":snapshots", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":coreApi", configuration = "testFixturesRuntimeElements"))
+ }
+ 
+ gradlebuildJava {
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/build-comparison/build-comparison.gradle.kts b/subprojects/build-comparison/build-comparison.gradle.kts
+--- a/subprojects/build-comparison/build-comparison.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/build-comparison/build-comparison.gradle.kts	2026-04-30 01:21:19.863878727 +1000
+@@ -57,7 +57,7 @@
+     testImplementation(project(":dependencyManagement"))
+     testImplementation(testLibrary("jsoup"))
+ 
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ 
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/build-init/build-init.gradle.kts b/subprojects/build-init/build-init.gradle.kts
+--- a/subprojects/build-init/build-init.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/build-init/build-init.gradle.kts	2026-04-30 01:21:19.865878711 +1000
+@@ -46,8 +46,8 @@
+ 
+     testImplementation(project(":cli"))
+     testImplementation(project(":baseServicesGroovy"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":platformNative")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformNative", configuration = "testFixturesRuntimeElements"))
+     
+     testFixturesImplementation(project(":baseServices"))
+ 
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/code-quality/code-quality.gradle.kts b/subprojects/code-quality/code-quality.gradle.kts
+--- a/subprojects/code-quality/code-quality.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/code-quality/code-quality.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -43,7 +43,7 @@
+ 
+     testImplementation(project(":baseServicesGroovy"))
+     testImplementation(project(":fileCollections"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+     testRuntimeOnly("com.google.code.findbugs:bcel:2.0.1")
+     testRuntimeOnly("jaxen:jaxen:1.1")
+     testRuntimeOnly(project(":runtimeApiInfo"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/composite-builds/composite-builds.gradle.kts b/subprojects/composite-builds/composite-builds.gradle.kts
+--- a/subprojects/composite-builds/composite-builds.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/composite-builds/composite-builds.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -35,8 +35,8 @@
+     implementation(library("slf4j_api"))
+     implementation(library("guava"))
+ 
+-    testImplementation(testFixtures(project(":dependencyManagement")))
+-    testImplementation(testFixtures(project(":launcher")))
++    testImplementation(project(path = ":dependencyManagement", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":launcher", configuration = "testFixturesRuntimeElements"))
+ 
+     integTestImplementation(project(":buildOption"))
+ 
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/core/core.gradle.kts b/subprojects/core/core.gradle.kts
+--- a/subprojects/core/core.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/core/core.gradle.kts	2026-04-30 01:21:19.865878711 +1000
+@@ -124,12 +124,12 @@
+ 
+     testImplementation(project(":dependencyManagement"))
+ 
+-    testImplementation(testFixtures(project(":coreApi")))
+-    testImplementation(testFixtures(project(":messaging")))
+-    testImplementation(testFixtures(project(":modelCore")))
+-    testImplementation(testFixtures(project(":logging")))
+-    testImplementation(testFixtures(project(":baseServices")))
+-    testImplementation(testFixtures(project(":diagnostics")))
++    testImplementation(project(path = ":coreApi", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":messaging", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":modelCore", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":logging", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":baseServices", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":diagnostics", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     testRuntimeOnly(project(":kotlinDsl"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/core-api/core-api.gradle.kts b/subprojects/core-api/core-api.gradle.kts
+--- a/subprojects/core-api/core-api.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/core-api/core-api.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -40,7 +40,7 @@
+ 
+     testImplementation(library("asm"))
+     testImplementation(library("asm_commons"))
+-    testImplementation(testFixtures(project(":logging")))
++    testImplementation(project(path = ":logging", configuration = "testFixturesRuntimeElements"))
+     
+     testFixturesImplementation(project(":internalTesting"))
+     testFixturesImplementation(project(":baseServices"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/dependency-management/dependency-management.gradle.kts b/subprojects/dependency-management/dependency-management.gradle.kts
+--- a/subprojects/dependency-management/dependency-management.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/dependency-management/dependency-management.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -65,14 +65,14 @@
+     testImplementation(project(":diagnostics"))
+     testImplementation(project(":buildCachePackaging"))
+     testImplementation(library("nekohtml"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":messaging")))
+-    testImplementation(testFixtures(project(":coreApi")))
+-    testImplementation(testFixtures(project(":versionControl")))
+-    testImplementation(testFixtures(project(":resourcesHttp")))
+-    testImplementation(testFixtures(project(":baseServices")))
+-    testImplementation(testFixtures(project(":snapshots")))
+-    testImplementation(testFixtures(project(":execution")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":messaging", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":coreApi", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":versionControl", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":resourcesHttp", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":baseServices", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":snapshots", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":execution", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ 
+@@ -99,8 +99,8 @@
+ 
+     testFixturesApi(testLibrary("jetty"))
+     testFixturesImplementation(project(":core"))
+-    testFixturesImplementation(testFixtures(project(":core")))
+-    testFixturesImplementation(testFixtures(project(":resourcesHttp")))
++    testFixturesImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testFixturesImplementation(project(path = ":resourcesHttp", configuration = "testFixturesRuntimeElements"))
+     testFixturesImplementation(project(":coreApi"))
+     testFixturesImplementation(project(":messaging"))
+     testFixturesImplementation(project(":internalTesting"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/diagnostics/diagnostics.gradle.kts b/subprojects/diagnostics/diagnostics.gradle.kts
+--- a/subprojects/diagnostics/diagnostics.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/diagnostics/diagnostics.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -41,9 +41,9 @@
+     implementation(library("jatl"))
+ 
+     testImplementation(project(":processServices"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":dependencyManagement")))
+-    testImplementation(testFixtures(project(":logging")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":dependencyManagement", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":logging", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     testRuntimeOnly(project(":kotlinDsl"))
+@@ -52,7 +52,7 @@
+     integTestImplementation(testLibrary("jsoup"))
+     integTestImplementation(testLibrary("jetty"))
+ 
+-    testFixturesApi(testFixtures(project(":platformNative")))
++    testFixturesApi(project(path = ":platformNative", configuration = "testFixturesRuntimeElements"))
+     testFixturesImplementation(project(":baseServices"))
+     testFixturesImplementation(project(":internalTesting"))
+     testFixturesImplementation(project(":internalIntegTesting"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/distributions/distributions.gradle b/subprojects/distributions/distributions.gradle
+--- a/subprojects/distributions/distributions.gradle	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/distributions/distributions.gradle	2026-04-30 01:21:19.887878530 +1000
+@@ -83,7 +83,7 @@
+     minimalRuntime(project(":dependencyManagement"))
+    minimalRuntime(project(":platformJvm"))
+
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path: ":core", configuration: "testFixturesRuntimeElements"))
+     
+     integTestImplementation(project(":baseServices"))
+     integTestImplementation(project(":logging"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/ear/ear.gradle.kts b/subprojects/ear/ear.gradle.kts
+--- a/subprojects/ear/ear.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/ear/ear.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -38,7 +38,7 @@
+     testImplementation(project(":native"))
+     testImplementation(project(":baseServicesGroovy"))
+     testImplementation(library("ant"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ }
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/execution/execution.gradle.kts b/subprojects/execution/execution.gradle.kts
+--- a/subprojects/execution/execution.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/execution/execution.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -47,11 +47,11 @@
+     testImplementation(project(":modelCore"))
+     testImplementation(project(":baseServicesGroovy"))
+     testImplementation(project(":resources"))
+-    testImplementation(testFixtures(project(":baseServices")))
+-    testImplementation(testFixtures(project(":fileCollections")))
+-    testImplementation(testFixtures(project(":messaging")))
+-    testImplementation(testFixtures(project(":snapshots")))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":baseServices", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":fileCollections", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":messaging", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":snapshots", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     testFixturesImplementation(library("guava"))
+     testFixturesImplementation(project(":baseServices"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/file-collections/file-collections.gradle.kts b/subprojects/file-collections/file-collections.gradle.kts
+--- a/subprojects/file-collections/file-collections.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/file-collections/file-collections.gradle.kts	2026-04-30 01:21:19.857878777 +1000
+@@ -42,9 +42,9 @@
+     testImplementation(project(":processServices"))
+     testImplementation(project(":resources"))
+     testImplementation(project(":snapshots"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":coreApi")))
+-    testImplementation(testFixtures(project(":modelCore")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":coreApi", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":modelCore", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     testRuntimeOnly(project(":workers"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/ide/ide.gradle.kts b/subprojects/ide/ide.gradle.kts
+--- a/subprojects/ide/ide.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/ide/ide.gradle.kts	2026-04-30 01:21:19.857878777 +1000
+@@ -58,8 +58,8 @@
+     testImplementation(project(":dependencyManagement"))
+     testImplementation(testLibrary("xmlunit"))
+     testImplementation("nl.jqno.equalsverifier:equalsverifier:2.1.6")
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":dependencyManagement")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":dependencyManagement", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ 
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/ide-native/ide-native.gradle.kts b/subprojects/ide-native/ide-native.gradle.kts
+--- a/subprojects/ide-native/ide-native.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/ide-native/ide-native.gradle.kts	2026-04-30 01:21:19.863878727 +1000
+@@ -42,10 +42,10 @@
+     implementation(library("inject"))
+     implementation(library("plist"))
+ 
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":platformNative")))
+-    testImplementation(testFixtures(project(":languageNative")))
+-    testImplementation(testFixtures(project(":versionControl")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformNative", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":languageNative", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":versionControl", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ 
+@@ -53,10 +53,10 @@
+     integTestImplementation(library("commons_io"))
+     integTestImplementation(library("jgit"))
+ 
+-    testFixturesApi(testFixtures(project(":ide")))
++    testFixturesApi(project(path = ":ide", configuration = "testFixturesRuntimeElements"))
+     testFixturesImplementation(library("plist"))
+     testFixturesImplementation(library("guava"))
+-    testFixturesImplementation(testFixtures(project(":ide")))
++    testFixturesImplementation(project(path = ":ide", configuration = "testFixturesRuntimeElements"))
+ }
+ 
+ gradlebuildJava {
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/ide-play/ide-play.gradle.kts b/subprojects/ide-play/ide-play.gradle.kts
+--- a/subprojects/ide-play/ide-play.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/ide-play/ide-play.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -53,14 +53,14 @@
+     implementation(library("groovy"))
+     implementation(library("guava"))
+ 
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":platformPlay")))
+-    testImplementation(testFixtures(project(":ide")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformPlay", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":ide", configuration = "testFixturesRuntimeElements"))
+ 
+     integTestRuntimeOnly(project(":compositeBuilds"))
+     integTestRuntimeOnly(project(":runtimeApiInfo"))
+ 
+-    integTestRuntimeResources(testFixtures(project(":platformPlay")))
++    integTestRuntimeResources(project(path = ":platformPlay", configuration = "testFixturesRuntimeElements"))
+ }
+ 
+ gradlebuildJava {
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/instant-execution/instant-execution.gradle.kts b/subprojects/instant-execution/instant-execution.gradle.kts
+--- a/subprojects/instant-execution/instant-execution.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/instant-execution/instant-execution.gradle.kts	2026-04-30 01:21:19.865878711 +1000
+@@ -28,7 +28,7 @@
+     implementation(futureKotlin("stdlib-jdk8"))
+     implementation(futureKotlin("reflect"))
+ 
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+     testImplementation(testLibrary("mockito_kotlin2"))
+ 
+     integTestImplementation(project(":toolingApi"))
+@@ -36,7 +36,7 @@
+     integTestImplementation(library("guava"))
+     integTestImplementation(library("ant"))
+     integTestImplementation(library("inject"))
+-    integTestImplementation(testFixtures(project(":dependencyManagement")))
++    integTestImplementation(project(path = ":dependencyManagement", configuration = "testFixturesRuntimeElements"))
+ 
+     integTestRuntimeOnly(project(":apiMetadata"))
+     integTestRuntimeOnly(project(":toolingApiBuilders"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/integ-test/integ-test.gradle.kts b/subprojects/integ-test/integ-test.gradle.kts
+--- a/subprojects/integ-test/integ-test.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/integ-test/integ-test.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -51,9 +51,9 @@
+         crossVersionTestRuntimeOnly(it)
+     }
+ 
+-    integTestImplementation(testFixtures(project(":core")))
+-    integTestImplementation(testFixtures(project(":diagnostics")))
+-    integTestImplementation(testFixtures(project(":platformNative")))
++    integTestImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    integTestImplementation(project(path = ":diagnostics", configuration = "testFixturesRuntimeElements"))
++    integTestImplementation(project(path = ":platformNative", configuration = "testFixturesRuntimeElements"))
+ }
+ 
+ gradlebuildJava {
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/internal-integ-testing/internal-integ-testing.gradle.kts b/subprojects/internal-integ-testing/internal-integ-testing.gradle.kts
+--- a/subprojects/internal-integ-testing/internal-integ-testing.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/internal-integ-testing/internal-integ-testing.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -73,7 +73,7 @@
+         exclude(module = "groovy-all")
+         exclude(module = "slf4j-simple")
+     }
+-    implementation(testFixtures(project(":core")))
++    implementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     testRuntimeOnly(project(":workers"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/internal-performance-testing/internal-performance-testing.gradle.kts b/subprojects/internal-performance-testing/internal-performance-testing.gradle.kts
+--- a/subprojects/internal-performance-testing/internal-performance-testing.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/internal-performance-testing/internal-performance-testing.gradle.kts	2026-04-30 01:21:19.863878727 +1000
+@@ -65,8 +65,8 @@
+     implementation("org.gradle.ci.health:tagging:0.63")
+     implementation(testLibrary("mina"))
+     implementation(testLibrary("jetty"))
+-    implementation(testFixtures(project(":core")))
+-    implementation(testFixtures(project(":toolingApi")))
++    implementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    implementation(project(path = ":toolingApi", configuration = "testFixturesRuntimeElements"))
+ 
+     runtimeOnly("com.h2database:h2:1.4.192")
+ }
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/ivy/ivy.gradle.kts b/subprojects/ivy/ivy.gradle.kts
+--- a/subprojects/ivy/ivy.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/ivy/ivy.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -46,10 +46,10 @@
+     testImplementation(project(":processServices"))
+     testImplementation(project(":snapshots"))
+ 
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":modelCore")))
+-    testImplementation(testFixtures(project(":platformBase")))
+-    testImplementation(testFixtures(project(":dependencyManagement")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":modelCore", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformBase", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":dependencyManagement", configuration = "testFixturesRuntimeElements"))
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ 
+     integTestImplementation(project(":ear"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/jacoco/jacoco.gradle.kts b/subprojects/jacoco/jacoco.gradle.kts
+--- a/subprojects/jacoco/jacoco.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/jacoco/jacoco.gradle.kts	2026-04-30 01:21:19.857878777 +1000
+@@ -41,7 +41,7 @@
+     testImplementation(project(":fileCollections"))
+     testImplementation(project(":internalIntegTesting"))
+     testImplementation(testLibrary("jsoup"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     integTestRuntimeOnly(project(":testingJunitPlatform"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/javascript/javascript.gradle.kts b/subprojects/javascript/javascript.gradle.kts
+--- a/subprojects/javascript/javascript.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/javascript/javascript.gradle.kts	2026-04-30 01:21:19.865878711 +1000
+@@ -39,7 +39,7 @@
+     implementation(library("gson")) // used by JsHint.coordinates
+     implementation(library("simple")) // used by http package in envjs.coordinates
+     
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ }
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/jvm-services/jvm-services.gradle.kts b/subprojects/jvm-services/jvm-services.gradle.kts
+--- a/subprojects/jvm-services/jvm-services.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/jvm-services/jvm-services.gradle.kts	2026-04-30 01:21:19.863878727 +1000
+@@ -18,7 +18,7 @@
+     testImplementation(project(":snapshots"))
+     testImplementation(project(":resources"))
+     testImplementation(library("slf4j_api"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ }
+ 
+ gradlebuildJava {
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/language-groovy/language-groovy.gradle.kts b/subprojects/language-groovy/language-groovy.gradle.kts
+--- a/subprojects/language-groovy/language-groovy.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/language-groovy/language-groovy.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -30,12 +30,12 @@
+     implementation(library("inject"))
+ 
+     testImplementation(project(":baseServicesGroovy"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":launcher")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":launcher", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     
+-    testFixturesApi(testFixtures(project(":languageJvm")))
++    testFixturesApi(project(path = ":languageJvm", configuration = "testFixturesRuntimeElements"))
+     testFixturesImplementation(project(":core"))
+     testFixturesImplementation(project(":internalTesting"))
+ 
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/language-java/language-java.gradle.kts b/subprojects/language-java/language-java.gradle.kts
+--- a/subprojects/language-java/language-java.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/language-java/language-java.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -42,13 +42,13 @@
+ 
+     testImplementation(project(":baseServicesGroovy"))
+     testImplementation(library("commons_io"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":platformBase")))
+-    testImplementation(testFixtures(project(":launcher")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformBase", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":launcher", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     
+-    testFixturesApi(testFixtures(project(":languageJvm")))
++    testFixturesApi(project(path = ":languageJvm", configuration = "testFixturesRuntimeElements"))
+     testFixturesImplementation(project(":baseServices"))
+     testFixturesImplementation(project(":core"))
+     testFixturesImplementation(project(":coreApi"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/language-jvm/language-jvm.gradle.kts b/subprojects/language-jvm/language-jvm.gradle.kts
+--- a/subprojects/language-jvm/language-jvm.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/language-jvm/language-jvm.gradle.kts	2026-04-30 01:21:19.857878777 +1000
+@@ -27,7 +27,7 @@
+     testImplementation(project(":native"))
+     testImplementation(project(":resources"))
+     testImplementation(project(":snapshots"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+     
+     testRuntimeOnly(project(":languageJava"))
+     testRuntimeOnly(project(":runtimeApiInfo"))
+@@ -35,8 +35,8 @@
+     testFixturesImplementation(library("commons_lang"))
+     testFixturesImplementation(library("guava"))
+     testFixturesImplementation(project(":internalIntegTesting"))
+-    testFixturesImplementation(testFixtures(project(":core")))
+-    testFixturesImplementation(testFixtures(project(":launcher")))
++    testFixturesImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testFixturesImplementation(project(path = ":launcher", configuration = "testFixturesRuntimeElements"))
+ }
+ 
+ gradlebuildJava {
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/language-native/language-native.gradle.kts b/subprojects/language-native/language-native.gradle.kts
+--- a/subprojects/language-native/language-native.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/language-native/language-native.gradle.kts	2026-04-30 01:21:19.865878711 +1000
+@@ -59,17 +59,17 @@
+     }
+ 
+     testFixturesImplementation(project(":internalIntegTesting"))
+-    testFixturesImplementation(testFixtures(project(":platformNative")))
++    testFixturesImplementation(project(path = ":platformNative", configuration = "testFixturesRuntimeElements"))
+ 
+     testImplementation(project(":native"))
+     testImplementation(project(":resources"))
+     testImplementation(project(":baseServicesGroovy"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":versionControl")))
+-    testImplementation(testFixtures(project(":platformNative")))
+-    testImplementation(testFixtures(project(":platformBase")))
+-    testImplementation(testFixtures(project(":messaging")))
+-    testImplementation(testFixtures(project(":snapshots")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":versionControl", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformNative", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformBase", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":messaging", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":snapshots", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ 
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/language-scala/language-scala.gradle.kts b/subprojects/language-scala/language-scala.gradle.kts
+--- a/subprojects/language-scala/language-scala.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/language-scala/language-scala.gradle.kts	2026-04-30 01:21:19.863878727 +1000
+@@ -26,10 +26,10 @@
+     implementation(library("inject"))
+ 
+     testImplementation(project(":fileCollections"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":platformBase")))
+-    testImplementation(testFixtures(project(":launcher")))
+-    testImplementation(testFixtures(project(":plugins")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformBase", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":launcher", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":plugins", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ 
+@@ -42,13 +42,13 @@
+     }
+ 
+ 
+-    testFixturesApi(testFixtures(project(":languageJvm")))
++    testFixturesApi(project(path = ":languageJvm", configuration = "testFixturesRuntimeElements"))
+     testFixturesImplementation(project(":baseServices"))
+     testFixturesImplementation(project(":coreApi"))
+     testFixturesImplementation(project(":modelCore"))
+     testFixturesImplementation(project(":internalTesting"))
+     testFixturesImplementation(project(":platformBase"))
+-    testFixturesImplementation(testFixtures(project(":languageJvm")))
++    testFixturesImplementation(project(path = ":languageJvm", configuration = "testFixturesRuntimeElements"))
+ }
+ 
+ gradlebuildJava {
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/launcher/launcher.gradle.kts b/subprojects/launcher/launcher.gradle.kts
+--- a/subprojects/launcher/launcher.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/launcher/launcher.gradle.kts	2026-04-30 01:21:19.857878777 +1000
+@@ -47,11 +47,11 @@
+     testImplementation(project(":snapshots"))
+     testImplementation(project(":baseServicesGroovy")) // for 'Specs'
+ 
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":languageJava")))
+-    testImplementation(testFixtures(project(":messaging")))
+-    testImplementation(testFixtures(project(":logging")))
+-    testImplementation(testFixtures(project(":toolingApi")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":languageJava", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":messaging", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":logging", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":toolingApi", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     testRuntimeOnly(project(":kotlinDsl"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/logging/logging.gradle.kts b/subprojects/logging/logging.gradle.kts
+--- a/subprojects/logging/logging.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/logging/logging.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -25,7 +25,7 @@
+     runtimeOnly(library("log4j_to_slf4j"))
+     runtimeOnly(library("jcl_to_slf4j"))
+ 
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+     
+     integTestImplementation(library("ansi_control_sequence_util"))
+ 
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/maven/maven.gradle.kts b/subprojects/maven/maven.gradle.kts
+--- a/subprojects/maven/maven.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/maven/maven.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -55,9 +55,9 @@
+     testImplementation(project(":snapshots"))
+     testImplementation(project(":resourcesHttp"))
+     testImplementation(testLibrary("xmlunit"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":modelCore")))
+-    testImplementation(testFixtures(project(":dependencyManagement")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":modelCore", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":dependencyManagement", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ 
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/messaging/messaging.gradle.kts b/subprojects/messaging/messaging.gradle.kts
+--- a/subprojects/messaging/messaging.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/messaging/messaging.gradle.kts	2026-04-30 01:21:19.865878711 +1000
+@@ -13,7 +13,7 @@
+     implementation(library("guava"))
+     implementation(library("kryo"))
+ 
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     testFixturesImplementation(project(":baseServices"))
+     testFixturesImplementation(library("slf4j_api"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/model-core/model-core.gradle.kts b/subprojects/model-core/model-core.gradle.kts
+--- a/subprojects/model-core/model-core.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/model-core/model-core.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -40,8 +40,8 @@
+     implementation(library("commons_lang"))
+     implementation(library("asm"))
+ 
+-    testFixturesApi(testFixtures(project(":diagnostics")))
+-    testFixturesApi(testFixtures(project(":core")))
++    testFixturesApi(project(path = ":diagnostics", configuration = "testFixturesRuntimeElements"))
++    testFixturesApi(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+     testFixturesImplementation(project(":internalTesting"))
+     testFixturesImplementation(project(":internalIntegTesting"))
+     testFixturesImplementation(library("guava"))
+@@ -50,7 +50,7 @@
+     testImplementation(project(":fileCollections"))
+     testImplementation(project(":native"))
+     testImplementation(project(":resources"))
+-    testImplementation(testFixtures(project(":coreApi")))
++    testImplementation(project(path = ":coreApi", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ 
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/model-groovy/model-groovy.gradle.kts b/subprojects/model-groovy/model-groovy.gradle.kts
+--- a/subprojects/model-groovy/model-groovy.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/model-groovy/model-groovy.gradle.kts	2026-04-30 01:21:19.857878777 +1000
+@@ -34,8 +34,8 @@
+     implementation(library("groovy"))
+     implementation(library("guava"))
+ 
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":modelCore")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":modelCore", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ }
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/native/native.gradle.kts b/subprojects/native/native.gradle.kts
+--- a/subprojects/native/native.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/native/native.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -19,8 +19,8 @@
+     implementation(library("commons_io"))
+     implementation(library("jansi"))
+ 
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":logging")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":logging", configuration = "testFixturesRuntimeElements"))
+ 
+     jmhImplementation(project(":files"))
+ }
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/osgi/osgi.gradle.kts b/subprojects/osgi/osgi.gradle.kts
+--- a/subprojects/osgi/osgi.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/osgi/osgi.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -33,7 +33,7 @@
+     implementation(library("slf4j_api"))
+     implementation(library("bndlib"))
+ 
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ }
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/performance/performance.gradle b/subprojects/performance/performance.gradle
+--- a/subprojects/performance/performance.gradle	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/performance/performance.gradle	2026-04-30 01:21:19.889878514 +1000
+@@ -29,7 +29,7 @@
+     performanceTestImplementation libraries.commons_io.coordinates
+     performanceTestImplementation libraries.commons_compress.coordinates
+     performanceTestImplementation testLibraries.jetty
+-    performanceTestImplementation(testFixtures(project(":toolingApi")))
++    performanceTestImplementation(project(path: ":toolingApi", configuration: "testFixturesRuntimeElements"))
+ 
+     // so that all Gradle features are available
+     performanceTestRuntimeOnly allTestRuntimeDependencies
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/persistent-cache/persistent-cache.gradle.kts b/subprojects/persistent-cache/persistent-cache.gradle.kts
+--- a/subprojects/persistent-cache/persistent-cache.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/persistent-cache/persistent-cache.gradle.kts	2026-04-30 01:21:19.865878711 +1000
+@@ -35,7 +35,7 @@
+     implementation(library("commons_lang"))
+ 
+     testImplementation(project(":coreApi"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     testRuntimeOnly(project(":workers"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/platform-base/platform-base.gradle.kts b/subprojects/platform-base/platform-base.gradle.kts
+--- a/subprojects/platform-base/platform-base.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/platform-base/platform-base.gradle.kts	2026-04-30 01:21:19.865878711 +1000
+@@ -20,17 +20,17 @@
+     implementation(library("guava"))
+     implementation(library("commons_lang"))
+ 
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":coreApi")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":coreApi", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ 
+     testFixturesApi(project(":core"))
+     testFixturesApi(project(":fileCollections"))
+-    testFixturesApi(testFixtures(project(":modelCore")))
++    testFixturesApi(project(path = ":modelCore", configuration = "testFixturesRuntimeElements"))
+     testFixturesImplementation(library("guava"))
+-    testFixturesApi(testFixtures(project(":modelCore")))
+-    testFixturesApi(testFixtures(project(":diagnostics")))
++    testFixturesApi(project(path = ":modelCore", configuration = "testFixturesRuntimeElements"))
++    testFixturesApi(project(path = ":diagnostics", configuration = "testFixturesRuntimeElements"))
+ }
+ 
+ gradlebuildJava {
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/platform-jvm/platform-jvm.gradle.kts b/subprojects/platform-jvm/platform-jvm.gradle.kts
+--- a/subprojects/platform-jvm/platform-jvm.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/platform-jvm/platform-jvm.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -28,10 +28,10 @@
+ 
+     testImplementation(project(":native"))
+     testImplementation(library("ant"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":diagnostics")))
+-    testImplementation(testFixtures(project(":platformBase")))
+-    testImplementation(testFixtures(project(":platformNative")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":diagnostics", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformBase", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformNative", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ 
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/platform-native/platform-native.gradle.kts b/subprojects/platform-native/platform-native.gradle.kts
+--- a/subprojects/platform-native/platform-native.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/platform-native/platform-native.gradle.kts	2026-04-30 01:21:19.865878711 +1000
+@@ -51,8 +51,8 @@
+     integTestRuntimeOnly(project(":ideNative"))
+ 
+     testFixturesApi(project(":resources"))
+-    testFixturesApi(testFixtures(project(":ide")))
+-    testFixturesImplementation(testFixtures(project(":core")))
++    testFixturesApi(project(path = ":ide", configuration = "testFixturesRuntimeElements"))
++    testFixturesImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+     testFixturesImplementation(project(":internalTesting"))
+     testFixturesImplementation(project(":internalIntegTesting"))
+     testFixturesImplementation(project(":native"))
+@@ -65,13 +65,13 @@
+     testFixturesImplementation(library("commons_lang"))
+     testFixturesImplementation(library("commons_io"))
+ 
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":messaging")))
+-    testImplementation(testFixtures(project(":platformBase")))
+-    testImplementation(testFixtures(project(":modelCore")))
+-    testImplementation(testFixtures(project(":diagnostics")))
+-    testImplementation(testFixtures(project(":baseServices")))
+-    testImplementation(testFixtures(project(":snapshots")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":messaging", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformBase", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":modelCore", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":diagnostics", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":baseServices", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":snapshots", configuration = "testFixturesRuntimeElements"))
+ }
+ 
+ gradlebuildJava {
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/platform-play/platform-play.gradle.kts b/subprojects/platform-play/platform-play.gradle.kts
+--- a/subprojects/platform-play/platform-play.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/platform-play/platform-play.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -68,24 +68,24 @@
+     testFixturesApi(project(":platformBase")) {
+         because("Test fixtures export the Platform class")
+     }
+-    testFixturesApi(testFixtures(project(":launcher")))
+-    testFixturesApi(testFixtures(project(":core")))
+-    testFixturesApi(testFixtures(project(":platformNative")))
+-    testFixturesApi(testFixtures(project(":languageJvm")))
++    testFixturesApi(project(path = ":launcher", configuration = "testFixturesRuntimeElements"))
++    testFixturesApi(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testFixturesApi(project(path = ":platformNative", configuration = "testFixturesRuntimeElements"))
++    testFixturesApi(project(path = ":languageJvm", configuration = "testFixturesRuntimeElements"))
+     testFixturesApi(project(":internalIntegTesting"))
+     testFixturesImplementation(project(":internalTesting"))
+     testFixturesImplementation(project(":processServices"))
+     testFixturesImplementation(library("commons_io"))
+     testFixturesImplementation(library("commons_httpclient"))
+     testFixturesImplementation(library("slf4j_api"))
+-    testFixturesApi(testFixtures(project(":languageScala")))
+-    testFixturesApi(testFixtures(project(":languageJava")))
++    testFixturesApi(project(path = ":languageScala", configuration = "testFixturesRuntimeElements"))
++    testFixturesApi(project(path = ":languageJava", configuration = "testFixturesRuntimeElements"))
+ 
+-    testImplementation(testFixtures(project(":dependencyManagement")))
+-    testImplementation(testFixtures(project(":diagnostics")))
+-    testImplementation(testFixtures(project(":platformBase")))
++    testImplementation(project(path = ":dependencyManagement", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":diagnostics", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformBase", configuration = "testFixturesRuntimeElements"))
+ 
+-    integTestRuntimeResources(testFixtures(project(":platformPlay")))
++    integTestRuntimeResources(project(path = ":platformPlay", configuration = "testFixturesRuntimeElements"))
+ }
+ 
+ gradlebuildJava {
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/plugin-development/plugin-development.gradle.kts b/subprojects/plugin-development/plugin-development.gradle.kts
+--- a/subprojects/plugin-development/plugin-development.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/plugin-development/plugin-development.gradle.kts	2026-04-30 01:21:19.863878727 +1000
+@@ -49,8 +49,8 @@
+     implementation(library("asm"))
+ 
+     testImplementation(project(":fileCollections"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":logging")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":logging", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":toolingApi"))
+     testRuntimeOnly(project(":launcher"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/plugin-use/plugin-use.gradle.kts b/subprojects/plugin-use/plugin-use.gradle.kts
+--- a/subprojects/plugin-use/plugin-use.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/plugin-use/plugin-use.gradle.kts	2026-04-30 01:21:19.857878777 +1000
+@@ -35,7 +35,7 @@
+     implementation(library("groovy"))
+     implementation(library("guava"))
+ 
+-    testImplementation(testFixtures(project(":resourcesHttp")))
++    testImplementation(project(path = ":resourcesHttp", configuration = "testFixturesRuntimeElements"))
+ 
+     integTestImplementation(project(":baseServicesGroovy"))
+ 
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/plugins/plugins.gradle.kts b/subprojects/plugins/plugins.gradle.kts
+--- a/subprojects/plugins/plugins.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/plugins/plugins.gradle.kts	2026-04-30 01:21:19.857878777 +1000
+@@ -58,19 +58,19 @@
+     testImplementation(project(":messaging"))
+     testImplementation(project(":native"))
+     testImplementation(project(":resources"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":launcher")))
+-    testImplementation(testFixtures(project(":dependencyManagement")))
+-    testImplementation(testFixtures(project(":resourcesHttp")))
+-    testImplementation(testFixtures(project(":platformNative")))
+-    testImplementation(testFixtures(project(":languageJvm")))
+-    testImplementation(testFixtures(project(":languageJava")))
+-    testImplementation(testFixtures(project(":languageGroovy")))
+-    testImplementation(testFixtures(project(":diagnostics")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":launcher", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":dependencyManagement", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":resourcesHttp", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformNative", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":languageJvm", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":languageJava", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":languageGroovy", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":diagnostics", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ 
+-    testFixturesImplementation(testFixtures(project(":core")))
++    testFixturesImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+     testFixturesImplementation(project(":baseServicesGroovy"))
+     testFixturesImplementation(project(":fileCollections"))
+     testFixturesImplementation(project(":languageJvm"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/process-services/process-services.gradle.kts b/subprojects/process-services/process-services.gradle.kts
+--- a/subprojects/process-services/process-services.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/process-services/process-services.gradle.kts	2026-04-30 01:21:19.865878711 +1000
+@@ -17,7 +17,7 @@
+     implementation(library("guava"))
+     implementation(library("nativePlatform"))
+ 
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     integTestRuntimeOnly(project(":runtimeApiInfo"))
+ }
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/publish/publish.gradle.kts b/subprojects/publish/publish.gradle.kts
+--- a/subprojects/publish/publish.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/publish/publish.gradle.kts	2026-04-30 01:21:19.857878777 +1000
+@@ -37,7 +37,7 @@
+     implementation(library("gson"))
+     implementation(library("inject"))
+ 
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+     
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     testRuntimeOnly(project(":workers"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/reporting/reporting.gradle.kts b/subprojects/reporting/reporting.gradle.kts
+--- a/subprojects/reporting/reporting.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/reporting/reporting.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -30,7 +30,7 @@
+     testImplementation(project(":processServices"))
+     testImplementation(project(":baseServicesGroovy"))
+     testImplementation(testLibrary("jsoup"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+     
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     testRuntimeOnly(project(":workers"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/resources/resources.gradle.kts b/subprojects/resources/resources.gradle.kts
+--- a/subprojects/resources/resources.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/resources/resources.gradle.kts	2026-04-30 01:21:19.863878727 +1000
+@@ -23,7 +23,7 @@
+     testImplementation(project(":fileCollections"))
+     testImplementation(project(":snapshots"))
+ 
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+     
+     integTestImplementation(project(":internalIntegTesting"))
+     integTestRuntimeOnly(project(":runtimeApiInfo"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/resources-gcs/resources-gcs.gradle.kts b/subprojects/resources-gcs/resources-gcs.gradle.kts
+--- a/subprojects/resources-gcs/resources-gcs.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/resources-gcs/resources-gcs.gradle.kts	2026-04-30 01:21:19.865878711 +1000
+@@ -24,10 +24,10 @@
+     implementation(library("joda"))
+ 
+     testImplementation(library("groovy"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":dependencyManagement")))
+-    testImplementation(testFixtures(project(":ivy")))
+-    testImplementation(testFixtures(project(":maven")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":dependencyManagement", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":ivy", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":maven", configuration = "testFixturesRuntimeElements"))
+ 
+     integTestImplementation(project(":coreApi"))
+     integTestImplementation(project(":modelCore"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/resources-http/resources-http.gradle.kts b/subprojects/resources-http/resources-http.gradle.kts
+--- a/subprojects/resources-http/resources-http.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/resources-http/resources-http.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -42,8 +42,8 @@
+ 
+     testImplementation(project(":internalIntegTesting"))
+     testImplementation(testLibrary("jetty"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":logging")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":logging", configuration = "testFixturesRuntimeElements"))
+ 
+     testFixturesImplementation(project(":baseServices"))
+     testFixturesImplementation(project(":logging"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/resources-s3/resources-s3.gradle.kts b/subprojects/resources-s3/resources-s3.gradle.kts
+--- a/subprojects/resources-s3/resources-s3.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/resources-s3/resources-s3.gradle.kts	2026-04-30 01:21:19.863878727 +1000
+@@ -28,10 +28,10 @@
+     implementation(library("joda"))
+     implementation(library("commons_lang"))
+ 
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":dependencyManagement")))
+-    testImplementation(testFixtures(project(":ivy")))
+-    testImplementation(testFixtures(project(":maven")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":dependencyManagement", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":ivy", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":maven", configuration = "testFixturesRuntimeElements"))
+ 
+     integTestImplementation(project(":logging"))
+     integTestImplementation(library("commons_io"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/resources-sftp/resources-sftp.gradle.kts b/subprojects/resources-sftp/resources-sftp.gradle.kts
+--- a/subprojects/resources-sftp/resources-sftp.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/resources-sftp/resources-sftp.gradle.kts	2026-04-30 01:21:19.857878777 +1000
+@@ -34,10 +34,10 @@
+     implementation(library("jsch"))
+     implementation(library("commons_io"))
+ 
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":dependencyManagement")))
+-    testImplementation(testFixtures(project(":ivy")))
+-    testImplementation(testFixtures(project(":maven")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":dependencyManagement", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":ivy", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":maven", configuration = "testFixturesRuntimeElements"))
+ 
+     integTestImplementation(project(":logging"))
+     integTestImplementation(testLibrary("jetty"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/scala/scala.gradle.kts b/subprojects/scala/scala.gradle.kts
+--- a/subprojects/scala/scala.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/scala/scala.gradle.kts	2026-04-30 01:21:19.857878777 +1000
+@@ -45,15 +45,15 @@
+     testImplementation(project(":baseServicesGroovy"))
+     testImplementation(library("slf4j_api"))
+     testImplementation(library("commons_io"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":plugins")))
+-    testImplementation(testFixtures(project(":languageJvm")))
+-    testImplementation(testFixtures(project(":languageJava")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":plugins", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":languageJvm", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":languageJava", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ 
+     integTestImplementation(project(":jvmServices"))
+-    integTestImplementation(testFixtures(project(":languageScala")))
++    integTestImplementation(project(path = ":languageScala", configuration = "testFixturesRuntimeElements"))
+     integTestRuntimeOnly(project(":ide"))
+     integTestRuntimeOnly(project(":maven"))
+     integTestRuntimeOnly(project(":testingJunitPlatform"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/signing/signing.gradle.kts b/subprojects/signing/signing.gradle.kts
+--- a/subprojects/signing/signing.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/signing/signing.gradle.kts	2026-04-30 01:21:19.865878711 +1000
+@@ -39,7 +39,7 @@
+     implementation(library("bouncycastle_pgp"))
+ 
+     testImplementation(project(":ivy"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ }
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/smoke-test/smoke-test.gradle.kts b/subprojects/smoke-test/smoke-test.gradle.kts
+--- a/subprojects/smoke-test/smoke-test.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/smoke-test/smoke-test.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -62,8 +62,8 @@
+     smokeTestRuntimeOnly(project(":toolingApiBuilders"))
+     smokeTestRuntimeOnly(project(":testingJunitPlatform"))
+ 
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":versionControl")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":versionControl", configuration = "testFixturesRuntimeElements"))
+ }
+ 
+ gradlebuildJava {
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/snapshots/snapshots.gradle.kts b/subprojects/snapshots/snapshots.gradle.kts
+--- a/subprojects/snapshots/snapshots.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/snapshots/snapshots.gradle.kts	2026-04-30 01:21:19.863878727 +1000
+@@ -34,11 +34,11 @@
+     testImplementation(project(":resources"))
+     testImplementation(project(":native"))
+     testImplementation(library("ant"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":coreApi")))
+-    testImplementation(testFixtures(project(":baseServices")))
+-    testImplementation(testFixtures(project(":fileCollections")))
+-    testImplementation(testFixtures(project(":messaging")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":coreApi", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":baseServices", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":fileCollections", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":messaging", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     testRuntimeOnly(project(":workers"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/soak/soak.gradle.kts b/subprojects/soak/soak.gradle.kts
+--- a/subprojects/soak/soak.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/soak/soak.gradle.kts	2026-04-30 01:21:19.857878777 +1000
+@@ -27,7 +27,7 @@
+     testFixturesImplementation(project(":internalIntegTesting"))
+ 
+     testImplementation(project(":kotlinDslTestFixtures"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     integTestImplementation(project(":logging"))
+     integTestImplementation(project(":persistentCache"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/test-kit/test-kit.gradle.kts b/subprojects/test-kit/test-kit.gradle.kts
+--- a/subprojects/test-kit/test-kit.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/test-kit/test-kit.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -35,7 +35,7 @@
+     runtimeOnly(project(":native"))
+ 
+     testImplementation(library("guava"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     integTestImplementation(project(":native"))
+     integTestImplementation(project(":logging"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/testing-base/testing-base.gradle.kts b/subprojects/testing-base/testing-base.gradle.kts
+--- a/subprojects/testing-base/testing-base.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/testing-base/testing-base.gradle.kts	2026-04-30 01:21:19.859878761 +1000
+@@ -42,12 +42,12 @@
+     implementation(library("ant")) // only used for DateUtils
+ 
+     testImplementation(project(":fileCollections"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":messaging")))
+-    testImplementation(testFixtures(project(":platformBase")))
+-    testImplementation(testFixtures(project(":logging")))
+-    testImplementation(testFixtures(project(":baseServices")))
+-    testImplementation(testFixtures(project(":launcher")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":messaging", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformBase", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":logging", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":baseServices", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":launcher", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/testing-jvm/testing-jvm.gradle.kts b/subprojects/testing-jvm/testing-jvm.gradle.kts
+--- a/subprojects/testing-jvm/testing-jvm.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/testing-jvm/testing-jvm.gradle.kts	2026-04-30 01:21:19.865878711 +1000
+@@ -57,12 +57,12 @@
+     testImplementation("com.google.inject:guice:2.0") {
+         because("This is for TestNG")
+     }
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":testingBase")))
+-    testImplementation(testFixtures(project(":diagnostics")))
+-    testImplementation(testFixtures(project(":messaging")))
+-    testImplementation(testFixtures(project(":baseServices")))
+-    testImplementation(testFixtures(project(":platformNative")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":testingBase", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":diagnostics", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":messaging", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":baseServices", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformNative", configuration = "testFixturesRuntimeElements"))
+     
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/testing-native/testing-native.gradle.kts b/subprojects/testing-native/testing-native.gradle.kts
+--- a/subprojects/testing-native/testing-native.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/testing-native/testing-native.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -44,13 +44,13 @@
+     implementation(library("inject"))
+ 
+     testImplementation(project(":fileCollections"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":platformNative")))
+-    testImplementation(testFixtures(project(":diagnostics")))
+-    testImplementation(testFixtures(project(":platformBase")))
+-    testImplementation(testFixtures(project(":testingBase")))
+-    testImplementation(testFixtures(project(":languageNative")))
+-    testImplementation(testFixtures(project(":ide")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformNative", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":diagnostics", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":platformBase", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":testingBase", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":languageNative", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":ide", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ 
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/tooling-api/tooling-api.gradle.kts b/subprojects/tooling-api/tooling-api.gradle.kts
+--- a/subprojects/tooling-api/tooling-api.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/tooling-api/tooling-api.gradle.kts	2026-04-30 01:21:19.861878743 +1000
+@@ -83,11 +83,11 @@
+         because("BuildFinishedCrossVersionSpec classpath inference requires cglib enhancer")
+     }
+ 
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":logging")))
+-    testImplementation(testFixtures(project(":dependencyManagement")))
+-    testImplementation(testFixtures(project(":ide")))
+-    testImplementation(testFixtures(project(":workers")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":logging", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":dependencyManagement", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":ide", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":workers", configuration = "testFixturesRuntimeElements"))
+ 
+     integTestRuntimeOnly(project(":runtimeApiInfo"))
+ }
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/tooling-native/tooling-native.gradle.kts b/subprojects/tooling-native/tooling-native.gradle.kts
+--- a/subprojects/tooling-native/tooling-native.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/tooling-native/tooling-native.gradle.kts	2026-04-30 01:21:19.865878711 +1000
+@@ -36,7 +36,7 @@
+ 
+     implementation(library("guava"))
+ 
+-    testImplementation(testFixtures(project(":platformNative")))
++    testImplementation(project(path = ":platformNative", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+ }
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/version-control/version-control.gradle.kts b/subprojects/version-control/version-control.gradle.kts
+--- a/subprojects/version-control/version-control.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/version-control/version-control.gradle.kts	2026-04-30 01:21:19.857878777 +1000
+@@ -42,7 +42,7 @@
+     testImplementation(project(":native"))
+     testImplementation(project(":snapshots"))
+     testImplementation(project(":processServices"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     testFixturesImplementation(project(":baseServices"))
+     testFixturesImplementation(project(":internalTesting"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/worker-processes/worker-processes.gradle.kts b/subprojects/worker-processes/worker-processes.gradle.kts
+--- a/subprojects/worker-processes/worker-processes.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/worker-processes/worker-processes.gradle.kts	2026-04-30 01:21:19.863878727 +1000
+@@ -14,7 +14,7 @@
+ 
+     implementation(library("slf4j_api"))
+ 
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ }
+ 
+ gradlebuildJava {
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/workers/workers.gradle.kts b/subprojects/workers/workers.gradle.kts
+--- a/subprojects/workers/workers.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/workers/workers.gradle.kts	2026-04-30 01:21:19.863878727 +1000
+@@ -25,8 +25,8 @@
+     testImplementation(project(":fileCollections"))
+     testImplementation(project(":resources"))
+     testImplementation(project(":snapshots"))
+-    testImplementation(testFixtures(project(":core")))
+-    testImplementation(testFixtures(project(":logging")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
++    testImplementation(project(path = ":logging", configuration = "testFixturesRuntimeElements"))
+ 
+     testRuntimeOnly(project(":runtimeApiInfo"))
+     testRuntimeOnly(project(":dependencyManagement"))
+diff -ruN --exclude .git /nix/store/cxlizj3iz5b69gl27yj6cpsirbsv5xv1-source/subprojects/wrapper/wrapper.gradle.kts b/subprojects/wrapper/wrapper.gradle.kts
+--- a/subprojects/wrapper/wrapper.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/subprojects/wrapper/wrapper.gradle.kts	2026-04-30 01:21:19.863878727 +1000
+@@ -28,7 +28,7 @@
+     testImplementation(project(":baseServices"))
+     testImplementation(project(":native"))
+     testImplementation(library("ant"))
+-    testImplementation(testFixtures(project(":core")))
++    testImplementation(project(path = ":core", configuration = "testFixturesRuntimeElements"))
+ 
+     integTestImplementation(project(":logging"))
+     integTestImplementation(project(":coreApi"))

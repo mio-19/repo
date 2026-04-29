@@ -1,0 +1,315 @@
+--- a/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/fixtures/TestFixturesPlugin.kt
++++ b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/fixtures/TestFixturesPlugin.kt
+@@ -20,18 +20,12 @@
+ import library
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+-import org.gradle.api.artifacts.type.ArtifactTypeDefinition
+-import org.gradle.api.attributes.Category
+-import org.gradle.api.attributes.LibraryElements
+-import org.gradle.api.attributes.Usage
++import org.gradle.api.artifacts.ConfigurationContainer
++import org.gradle.api.tasks.SourceSet
+ import org.gradle.kotlin.dsl.*
+ import org.gradle.plugins.ide.idea.IdeaPlugin
+ import org.gradle.plugins.ide.idea.model.IdeaModel
+-import org.gradle.api.plugins.JavaTestFixturesPlugin
+-import org.gradle.api.plugins.internal.JvmPluginsHelper
+-import org.gradle.language.jvm.tasks.ProcessResources
+ import testLibrary
+-import java.io.File
+ import java.util.Locale
+ 
+ 
+@@ -50,9 +44,16 @@
+ open class TestFixturesPlugin : Plugin<Project> {
+ 
+     override fun apply(project: Project): Unit = project.run {
++
++        apply(plugin = "java")
++
++        extensions.create<TestFixturesExtension>("testFixtures")
++
+         if (file("src/testFixtures").isDirectory) {
+             configureAsProducer()
+         }
++
++        configureAsConsumer()
+     }
+ 
+     /**
+@@ -60,51 +61,77 @@
+      */
+     private
+     fun Project.configureAsProducer() {
+-        project.pluginManager.apply(JavaTestFixturesPlugin::class.java)
++        val main by java.sourceSets
++        val testFixtures by java.sourceSets.creating {
++            extendsFrom(main, configurations)
++        }
++        java.sourceSets.named("test", SourceSet::class) {
++            extendsFrom(testFixtures, configurations)
++        }
+ 
+         java.sourceSets.matching { it.name.toLowerCase(Locale.ROOT).endsWith("test") }.all {
+-            if (name != "test") {
+-                // the main test source set is already configured to use test fixtures by the Java test fixtures plugin
+-                configurations.findByName(implementationConfigurationName)!!.dependencies.add(
+-                    dependencies.testFixtures(project)
+-                )
+-            }
++            compileClasspath += testFixtures.output
++            runtimeClasspath += testFixtures.output
+         }
+ 
+-        val testFixtures by java.sourceSets.getting
++        configurations {
++            val testFixturesApi by creating {
++                extendsFrom(configurations[testFixtures.compileConfigurationName])
++            }
+ 
+-        removeTestFixturesFromArchivesConfiguration()
++            val testFixturesImplementation by getting {
++                extendsFrom(testFixturesApi)
++            }
++
++            val testFixturesRuntime by getting
++            val testFixturesRuntimeOnly by getting
++
++            create(testFixtures.apiElementsConfigurationName) {
++                extendsFrom(testFixturesApi, testFixturesRuntime)
++                /*
++                 * FIXME only the classes would be more appropriate here, but the Groovy compiler
++                 * needs resources too because we make use of extension methods registered through
++                 * a META-INF file.
++                 */
++                afterEvaluate {
++                    testFixtures.output.forEach {
++                        outgoing.artifact(it) {
++                            builtBy(testFixtures.output)
++                        }
++                    }
++                }
++            }
++
++            create(testFixtures.runtimeElementsConfigurationName) {
++                extendsFrom(testFixturesImplementation, testFixturesRuntime, testFixturesRuntimeOnly)
++                /*
++                 * FIXME a JAR would be more appropriate here, but the PlayApp fixture assumes that
++                 * its class is loaded from a directory.
++                 */
++                afterEvaluate {
++                    testFixtures.output.forEach {
++                        outgoing.artifact(it) {
++                            builtBy(testFixtures.output)
++                        }
++                    }
++                }
++            }
++        }
+ 
+-        val testFixturesApi by configurations
+-        val testFixturesImplementation by configurations
+-        val testFixturesRuntimeOnly by configurations
+-        val testFixturesRuntimeElements by configurations
++        removeTestFixturesFromArchivesConfiguration()
+ 
+         dependencies {
+-            testFixturesApi(project(":internalTesting"))
+-            // add a set of default dependencies for fixture implementation
+-            testFixturesImplementation(library("junit"))
+-            testFixturesImplementation(library("groovy"))
+-            testFixturesImplementation(testLibrary("spock"))
++            val testFixturesApi by configurations
++            val testFixturesRuntimeOnly by configurations
++
++            testFixturesApi(project(path))
++            testFixturesApi(library("junit"))
++            testFixturesApi(library("groovy"))
++            testFixturesApi(testLibrary("spock"))
+             testFixturesRuntimeOnly(testLibrary("bytebuddy"))
+             testFixturesRuntimeOnly(testLibrary("cglib"))
+         }
+ 
+-        // Add an outgoing variant allowing to select the exploded resources directory
+-        // as this is required at least by one project (idePlay)
+-        val processResources = tasks.named<ProcessResources>("processTestFixturesResources")
+-        testFixturesRuntimeElements.outgoing.variants.maybeCreate("resources").run {
+-            attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage::class.java, Usage.JAVA_RUNTIME))
+-            attributes.attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category::class.java, Category.LIBRARY))
+-            attributes.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements::class.java, LibraryElements.RESOURCES))
+-
+-            artifact(object : JvmPluginsHelper.IntermediateJavaArtifact(ArtifactTypeDefinition.JVM_RESOURCES_DIRECTORY, processResources) {
+-                override fun getFile(): File {
+-                    return processResources.get().destinationDir
+-                }
+-            })
+-        }
+-
+         plugins.withType<IdeaPlugin> {
+             configure<IdeaModel> {
+                 module {
+@@ -114,6 +141,39 @@
+             }
+         }
+     }
++
++    private
++    fun SourceSet.extendsFrom(other: SourceSet, configurations: ConfigurationContainer) {
++        configurations {
++            compileConfigurationName {
++                extendsFrom(configurations[other.compileConfigurationName])
++            }
++            implementationConfigurationName {
++                extendsFrom(configurations[other.implementationConfigurationName])
++            }
++            runtimeConfigurationName {
++                extendsFrom(configurations[other.runtimeConfigurationName])
++            }
++            runtimeOnlyConfigurationName {
++                extendsFrom(configurations[other.runtimeOnlyConfigurationName])
++            }
++        }
++    }
++
++    private
++    fun Project.configureAsConsumer() = afterEvaluate {
++        the<TestFixturesExtension>().origins.forEach { (projectPath, sourceSetName) ->
++            val sourceSet = java.sourceSets[sourceSetName]
++            val compileConfig = sourceSet.compileConfigurationName
++            val runtimeConfig = sourceSet.runtimeConfigurationName
++
++            dependencies {
++                compileConfig(project(path = projectPath, configuration = "testFixturesApiElements"))
++                compileConfig(project(":internalTesting"))
++                runtimeConfig(project(path = projectPath, configuration = "testFixturesRuntimeElements"))
++            }
++        }
++    }
+ 
+     // This is a hack to get rid of `Cannot publish artifact 'testFixtures' as it does not exist.`
+     // https://builds.gradle.org/viewLog.html?buildId=15853642&buildTypeId=bt39
+--- /dev/null
++++ b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/fixtures/TestFixturesExtension.kt
+@@ -0,0 +1,39 @@
++/*
++ * Copyright 2017 the original author or authors.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package org.gradle.gradlebuild.test.fixtures
++
++
++/**
++ * Test Fixtures.
++ *
++ * Configures the project to use the test fixtures from another project, which by default is core.
++ * Note this is not used to create test fixtures in this project, see [TestFixturesPlugin] for that.
++ */
++open class TestFixturesExtension {
++
++    fun from(project: String) =
++        from(project, "test")
++
++    fun from(project: String, sourceSet: String) =
++        origins.add(TestFixturesOrigin(project, sourceSet))
++
++    internal
++    val origins: MutableList<TestFixturesOrigin> = mutableListOf()
++}
++
++
++internal
++data class TestFixturesOrigin(val projectPath: String, val sourceSetName: String)
+--- a/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/CrossVersionTestsPlugin.kt
++++ b/buildSrc/subprojects/integration-testing/src/main/kotlin/org/gradle/gradlebuild/test/integrationtests/CrossVersionTestsPlugin.kt
+@@ -15,11 +15,12 @@
+  */
+ package org.gradle.gradlebuild.test.integrationtests
+ 
+-import com.google.common.collect.MultimapBuilder
+ import org.gradle.api.Action
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+ import org.gradle.api.tasks.SourceSet
++import org.gradle.gradlebuild.test.fixtures.TestFixturesExtension
++import org.gradle.gradlebuild.test.fixtures.TestFixturesPlugin
+ import org.gradle.kotlin.dsl.*
+ import releasedVersions
+ 
+@@ -29,7 +30,7 @@
+         val sourceSet = addSourceSet(TestType.CROSSVERSION)
+         addDependenciesAndConfigurations(TestType.CROSSVERSION)
+         dependencies {
+-            "crossVersionTestRuntimeOnly"(project(":toolingApiBuilders"))
++            "crossVersionTestRuntime"(project(":toolingApiBuilders"))
+         }
+         createTasks(sourceSet, TestType.CROSSVERSION)
+         createAggregateTasks(sourceSet)
+@@ -39,8 +40,10 @@
+ 
+     private
+     fun Project.configureTestFixturesForCrossVersionTests() {
+-        dependencies {
+-            "testImplementation"(testFixtures(project(":toolingApi")))
++        plugins.withType<TestFixturesPlugin> {
++            configure<TestFixturesExtension> {
++                from(":toolingApi")
++            }
+         }
+     }
+ 
+@@ -58,16 +61,10 @@
+         }
+ 
+         val quickTestVersions = releasedVersions.getTestedVersions(true)
+-        val allTestVersions = releasedVersions.getTestedVersions(false)
+-        val testVersionsEnabledInCurrentSplit = getTestVersionsEnabledInCurrentSplit(allTestVersions)
+-        if (testVersionsEnabledInCurrentSplit.size != allTestVersions.size) {
+-            println("Only enable ${testVersionsEnabledInCurrentSplit.joinToString(", ")} for $name cross version tests")
+-        }
+-        allTestVersions.forEach { targetVersion ->
++        releasedVersions.getTestedVersions(false).forEach { targetVersion ->
+             val crossVersionTest = createTestTask("gradle${targetVersion}CrossVersionTest", "forking", sourceSet, TestType.CROSSVERSION, Action {
+                 this.description = "Runs the cross-version tests against Gradle $targetVersion"
+                 this.systemProperties["org.gradle.integtest.versions"] = targetVersion
+-                enabled = targetVersion in testVersionsEnabledInCurrentSplit
+             })
+ 
+             allVersionsCrossVersionTests.configure { dependsOn(crossVersionTest) }
+@@ -76,25 +73,4 @@
+             }
+         }
+     }
+-
+-    // Sample the list, for example, allTestVersions is [1.0, 1.1, 1.2, 1.3, 1.4]
+-    // -PtestSplit=1/2 return [1.0, 1,2, 1.4]
+-    // -PtestSplit=2/2 return [1.1, 1,3]
+-    private
+-    fun Project.getTestVersionsEnabledInCurrentSplit(allTestVersions: List<String>): List<String> {
+-        val testSplit = project.stringPropertyOrEmpty("testSplit")
+-        if (testSplit.isBlank()) {
+-            return allTestVersions
+-        }
+-        val currentSplit = testSplit.split("/")[0].toInt()
+-        val numberOfSplits = testSplit.split("/")[1].toInt()
+-        val buckets = MultimapBuilder.SetMultimapBuilder
+-            .hashKeys()
+-            .arrayListValues()
+-            .build<Int, String>()
+-        for ((index, version) in allTestVersions.withIndex()) {
+-            buckets.put(index % numberOfSplits, version)
+-        }
+-        return buckets[currentSplit - 1]
+-    }
+ }

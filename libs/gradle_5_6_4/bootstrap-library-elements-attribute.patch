@@ -1,0 +1,22 @@
+--- a/subprojects/ide-play/ide-play.gradle.kts
++++ b/subprojects/ide-play/ide-play.gradle.kts
+@@ -32,7 +32,7 @@
+     attributes {
+         // play test apps MUST be found as exploded directory
+         attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage::class.java, Usage.JAVA_RUNTIME))
+-        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements::class.java, LibraryElements.RESOURCES))
++        attribute(org.gradle.api.attributes.Attribute.of("org.gradle.libraryelements", String::class.java), "resources")
+     }
+     isTransitive = false
+ }
+--- a/subprojects/platform-play/platform-play.gradle.kts
++++ b/subprojects/platform-play/platform-play.gradle.kts
+@@ -18,7 +18,7 @@
+     attributes {
+         // play test apps MUST be found as exploded directory
+         attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage::class.java, Usage.JAVA_RUNTIME))
+-        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements::class.java, LibraryElements.RESOURCES))
++        attribute(org.gradle.api.attributes.Attribute.of("org.gradle.libraryelements", String::class.java), "resources")
+     }
+     isTransitive = false
+ }
