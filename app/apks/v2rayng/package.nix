@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   stdenvNoCC,
-  gradle_9_3_1,
+  gradle_9_4_1,
   jdk25_headless,
   go_1_26,
   stdenv,
@@ -24,13 +24,13 @@ let
         s.ndk-28-2-13676358
       ]);
 
-      gradle = gradle_9_3_1;
+      gradle = gradle_9_4_1;
 
       androidLibXrayLiteSrc = fetchFromGitHub {
         owner = "2dust";
         repo = "AndroidLibXrayLite";
-        rev = "880725442c1d4023a973ccbcdbf527c89ef83a32";
-        hash = "sha256-TLKqh2/mPagul4Lgmx+kKCQw7TAKaZnBJJlq55a9no0=";
+        rev = "d8bfc35e93bc36991a5049586d99c379646abca4";
+        hash = "sha256-bInBZq1Vz6oGOt+YmK+8wi9tEXgAEVECB7x0pB1VbKk=";
       };
 
       androidLibXrayLiteGoModCache = stdenvNoCC.mkDerivation {
@@ -42,7 +42,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-c0W+2Sxn9PDv2ZGEwDoASp8wl1h9l0ydooLlBwFyTHQ=";
+        outputHash = "sha256-USauN+6X9edoUG6APll+mNcDmwrzICJql2tgVi9WdPY=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -68,6 +68,7 @@ let
 
         installPhase = ''
           runHook preInstall
+          chmod -R u+w "$TMPDIR/go-mod-cache"
           mv "$TMPDIR/go-mod-cache" "$out"
           runHook postInstall
         '';
@@ -150,14 +151,14 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "v2rayng";
-      version = "2.0.18";
+      version = "2.1.3";
 
       src = fetchFromGitHub {
         owner = "2dust";
         repo = "v2rayNG";
         tag = finalAttrs.version;
         fetchSubmodules = true;
-        hash = "sha256-7lY5qC7zhvlDWEF+WNU3N0I5d1UdZ5aii8OCZmwiHcs=";
+        hash = "sha256-48oV9djAPNrrofRf4lEhVJ8TnoDhzGsfvlqSwIxfz7o=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/V2rayNG";

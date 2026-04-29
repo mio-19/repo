@@ -26,6 +26,9 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "onlyoffice-documents";
+      # Check GitHub's Latest release before bumping; newer tags may not be the
+      # actual latest release:
+      # https://github.com/ONLYOFFICE/documents-app-android/releases/latest
       version = "9.3.1-707";
 
       src = fetchFromGitHub {
