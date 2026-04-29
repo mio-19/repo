@@ -1,0 +1,74 @@
+{
+ "!comment": "This is a nixpkgs Gradle dependency lockfile. For more details, refer to the Gradle section in the nixpkgs manual.",
+ "!version": 1,
+ "https://plugins.gradle.org/m2/org": {
+  "jetbrains#annotations/13.0": {
+   "jar": "sha256-rOKhDcji1f00kl7KwD5JiLLA+FFlDJS4zvSbob0RFHg=",
+   "pom": "sha256-llrrK+3/NpgZvd4b96CzuJuCR91pyIuGN112Fju4w5c="
+  },
+  "jetbrains/intellij/deps#trove4j/1.0.20181211": {
+   "jar": "sha256-r/t8haPIe9z2n/HbuE3hH2PckxKTk0vAjNerGN4INgE=",
+   "pom": "sha256-MQpqotkFNMMrj0bx/JjNDtrpXc38oj4oR+Xvqa4MAZo="
+  },
+  "jetbrains/kotlin#kotlin-android-extensions/1.3.21": {
+   "jar": "sha256-KwRirD5LNt/9s7+mFzy0Gw4k4lp9fu4QEkcfHSeuot0=",
+   "pom": "sha256-9jEKsCDHAlW7h+XUsHXCn67+ODhWtgQctTQ79ChdwVo="
+  },
+  "jetbrains/kotlin#kotlin-annotation-processing-gradle/1.3.21": {
+   "jar": "sha256-+viAMV1P1qZmzBeqXpYIx0aMcKJ5tJzMpn26KlSt9pI=",
+   "pom": "sha256-9X3OxdUN+KLeVw86yJcYidSUPyuqyogUACoudn0L6Mk="
+  },
+  "jetbrains/kotlin#kotlin-build-common/1.3.21": {
+   "jar": "sha256-9NjQjG9ZZtnVF87WDFIkx+3KLYEeoKcCvXGZoA3U+iU=",
+   "pom": "sha256-wmwuwUIkyn+halRUOik6ll74dzTLc2TF6MEennnJjS4="
+  },
+  "jetbrains/kotlin#kotlin-compiler-embeddable/1.3.21": {
+   "jar": "sha256-r6rtwyT79jlNnzlUTvzJPPxZ+KWqGhpccdYeJINmbGo=",
+   "pom": "sha256-Uyu5QViDU4ZwPnZUMH56w2ccCUfZZWGs2quaC3Lp30Q="
+  },
+  "jetbrains/kotlin#kotlin-compiler-runner/1.3.21": {
+   "jar": "sha256-c+cIigdPnFF81LsqhhGDQWhFlmHIMhNs82KMzVmUzDs=",
+   "pom": "sha256-KB9vwpwuA5E5mJrjZBv4aDS3URFJ/e5l2NkICOwn4oM="
+  },
+  "jetbrains/kotlin#kotlin-daemon-client/1.3.21": {
+   "jar": "sha256-s+zOEex7MR7g0czGXoEfN0jzKAEHZehsvbKbK3D3Pxw=",
+   "pom": "sha256-itMzMl3sJgv3wlG4l9bZlAatonHFHSE8fFQX4f9DX7Q="
+  },
+  "jetbrains/kotlin#kotlin-gradle-plugin-api/1.3.21": {
+   "jar": "sha256-7QqxFDcxDNQJZXxeX4pr9YmvCoNIV3zWAPVGAfyXw2k=",
+   "pom": "sha256-RhrUeSzPSgDhyR+JBIHL688FQdTsbWrEyiTqcFols5U="
+  },
+  "jetbrains/kotlin#kotlin-gradle-plugin-model/1.3.21": {
+   "jar": "sha256-+63meio/sjTi1MG48Hsq9sCWmT807XMv5vra9pa8IIo=",
+   "pom": "sha256-vMX1stCbzYkO35paf1ugyMDAMQrBjmGFJOq2OHCVDjs="
+  },
+  "jetbrains/kotlin#kotlin-gradle-plugin/1.3.21": {
+   "jar": "sha256-eFjFj0xnioQWUg9MCUKCpIGYHP5wLSMSERjJx+mtIyY=",
+   "pom": "sha256-uABbgVT1VnJ6aviVPC6AuOWrspGXMZRXYU06zvIIe9g="
+  },
+  "jetbrains/kotlin#kotlin-native-utils/1.3.21": {
+   "jar": "sha256-QGAQo59MjN0jUcwRELmO2ATAqoEMthBue59PK8whzUc=",
+   "pom": "sha256-AG/oxlzaUE9MrkwrMlR/Hx+7nG+99YAuk0fgt7J+Xes="
+  },
+  "jetbrains/kotlin#kotlin-reflect/1.3.21": {
+   "jar": "sha256-owZcgiYzGR4KPj7hKim+wjT8SyhkpruH70jM4+ngwmo=",
+   "pom": "sha256-QtTq+ZQiO5Yet71owWo7tK775B8vdL1wJ0Lv+QkXC8w="
+  },
+  "jetbrains/kotlin#kotlin-script-runtime/1.3.21": {
+   "jar": "sha256-LiW6vI3NIkucR54sFs57TFBAfSXxjWDR/SYveMK0dMs=",
+   "pom": "sha256-65n/mMkw7B9deLEt5j+o0aqEnLp+ZjyNuYz/F83HV0c="
+  },
+  "jetbrains/kotlin#kotlin-scripting-compiler-embeddable/1.3.21": {
+   "jar": "sha256-9Ob5/ThNQhZ+m4n5he5KSKBna/5wWy4vnRPhWR1LfAs=",
+   "pom": "sha256-zogfIC+Za2bxr3XBK3JgBI+Zy6IqDyqNXVquIGI1g1Y="
+  },
+  "jetbrains/kotlin#kotlin-stdlib-common/1.3.21": {
+   "jar": "sha256-zqYfe2EYleZPWFaal1f8CrDVgvEHIR4ZMODOKgrdUqc=",
+   "pom": "sha256-HkQzMKGrEIPdEjMesYI7zaGM06YWLtxTagNeTeHXhz0="
+  },
+  "jetbrains/kotlin#kotlin-stdlib/1.3.21": {
+   "jar": "sha256-OLojcNnwb1BDPgayyndblEc8LieF9BCSYHmreTxysDQ=",
+   "pom": "sha256-nOHqMzlsW/5I7IQSoM1WHsyQnXHI+TZZZ6FPnyT9uaU="
+  }
+ }
+}
