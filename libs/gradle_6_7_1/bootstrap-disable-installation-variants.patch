@@ -1,0 +1,10 @@
+--- a/buildSrc/subprojects/packaging/src/main/kotlin/gradlebuild/distributions.gradle.kts
++++ b/buildSrc/subprojects/packaging/src/main/kotlin/gradlebuild/distributions.gradle.kts
+@@ -204,7 +204,6 @@
+     }
+
+     // A 'installation' variant providing a folder where the distribution is present in the final format for forked integration testing
+-    consumableVariant("${name}Installation", "gradle-$name-installation", Bundling.EMBEDDED, emptyList(), installation)
+     // A variant providing the zipped distribution as additional input for tests that test the final distribution or require a distribution as test data
+     consumableVariant("${name}DistributionZip", "gradle-$name-distribution-zip", Bundling.EMBEDDED, emptyList(), distributionZip)
+ }

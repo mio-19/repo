@@ -1,0 +1,14 @@
+--- a/buildSrc/subprojects/basics/src/main/kotlin/gradlebuild/repositories.gradle.kts
++++ b/buildSrc/subprojects/basics/src/main/kotlin/gradlebuild/repositories.gradle.kts
+@@ -20,7 +20,11 @@
+     maven {
+         name = "Gradle libs"
+         url = uri("https://repo.gradle.org/gradle/libs")
++        metadataSources {
++            artifact()
++        }
+     }
++    mavenCentral()
+     maven {
+         name = "kotlinx"
+         url = uri("https://kotlin.bintray.com/kotlinx/")

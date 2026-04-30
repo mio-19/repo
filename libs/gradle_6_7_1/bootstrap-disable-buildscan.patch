@@ -1,0 +1,10 @@
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -20,7 +20,6 @@
+     id("gradlebuild.cleanup")                    // CI: Advanced cleanup after the build (like stopping daemons started by tests)
+     id("gradlebuild.ci-reporting")               // CI: Prepare reports to be uploaded to TeamCity
+
+-    id("gradlebuild.buildscan")                  // Reporting: Add more data through custom tags to build scans
+
+     id("gradlebuild.ide")                        // Local development: Tweak IDEA import
+     id("gradlebuild.update-versions")            // Local development: Convenience tasks to update versions in this build: 'released-versions.json', 'agp-versions.properties', ...
