@@ -1,0 +1,13 @@
+--- a/settings.gradle.kts
++++ b/settings.gradle.kts
+@@ -23,10 +23,6 @@
+     }
+ }
+ 
+-plugins {
+-    id("com.gradle.enterprise").version("3.0")
+-}
+-
+ apply(from = "gradle/build-cache-configuration.settings.gradle.kts")
+ apply(from = "gradle/shared-with-buildSrc/mirrors.settings.gradle.kts")
+ 

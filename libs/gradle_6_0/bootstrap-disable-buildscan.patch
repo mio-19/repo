@@ -1,0 +1,11 @@
+--- a/build.gradle.kts	2026-04-30 15:21:04.200515459 +1000
++++ b/build.gradle.kts	2026-04-30 15:21:04.204515425 +1000
+@@ -173,7 +173,7 @@
+ 
+ apply(plugin = "gradlebuild.cleanup")
+ apply(plugin = "gradlebuild.available-java-installations")
+-apply(plugin = "gradlebuild.buildscan")
++// Build scans are disabled for the source bootstrap.
+ apply(from = "gradle/versioning.gradle")
+ apply(from = "gradle/dependencies.gradle")
+ apply(plugin = "gradlebuild.minify")

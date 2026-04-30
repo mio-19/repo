@@ -1,0 +1,11 @@
+--- a/subprojects/distributions/distributions.gradle	2026-04-30 16:40:34.260496215 +1000
++++ b/subprojects/distributions/distributions.gradle	2026-04-30 16:40:34.262496198 +1000
+@@ -146,7 +146,7 @@
+ def binZip = tasks.register("binZip", Zip) {
+     archiveClassifier.set('bin')
+     into(zipRootFolder) {
+-        with binWithDistDocImage
++        with binDistImage
+     }
+ }
+ 
