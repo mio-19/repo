@@ -1,0 +1,94 @@
+diff -ruN /tmp/tmp.oGcj5DXgHY/a/buildSrc/subprojects/uber-plugins/src/main/kotlin/gradlebuild.internal.kotlin-js.gradle.kts /tmp/tmp.oGcj5DXgHY/b/buildSrc/subprojects/uber-plugins/src/main/kotlin/gradlebuild.internal.kotlin-js.gradle.kts
+--- a/buildSrc/subprojects/uber-plugins/src/main/kotlin/gradlebuild.internal.kotlin-js.gradle.kts	2026-05-01 05:14:25.572298758 +1000
++++ b/buildSrc/subprojects/uber-plugins/src/main/kotlin/gradlebuild.internal.kotlin-js.gradle.kts	1970-01-01 10:00:00.000000000 +1000
+@@ -1,64 +0,0 @@
+-/*
+- * Copyright 2020 the original author or authors.
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *      http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+-
+-import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
+-import org.jlleitschuh.gradle.ktlint.KtlintCheckTask
+-
+-plugins {
+-    kotlin("js")
+-    id("gradlebuild.dependency-modules")
+-    id("gradlebuild.repositories")
+-    id("org.gradle.kotlin-dsl.ktlint-convention")
+-}
+-
+-apply(from = "$rootDir/gradle/shared-with-buildSrc/code-quality-configuration.gradle.kts")
+-
+-kotlin {
+-    js {
+-        browser {
+-            webpackTask {
+-                sourceMaps = false
+-            }
+-            testTask {
+-                enabled = false
+-            }
+-        }
+-        binaries.executable()
+-    }
+-}
+-
+-tasks {
+-    withType<KotlinJsCompile>().configureEach {
+-        kotlinOptions.allWarningsAsErrors = true
+-    }
+-
+-    val ktlintCheckTasks = withType<KtlintCheckTask>()
+-
+-    withType<Test>().configureEach {
+-        shouldRunAfter(ktlintCheckTasks)
+-    }
+-
+-    named("codeQuality") {
+-        dependsOn(ktlintCheckTasks)
+-    }
+-
+-    register("quickTest") {
+-        dependsOn(named("test"))
+-        dependsOn(ktlintCheckTasks)
+-    }
+-
+-    register("platformTest")
+-}
+diff -ruN /tmp/tmp.oGcj5DXgHY/a/settings.gradle.kts /tmp/tmp.oGcj5DXgHY/b/settings.gradle.kts
+--- a/settings.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ b/settings.gradle.kts	2026-05-01 05:14:25.562298838 +1000
+@@ -155,7 +155,6 @@
+ include("smoke-test")
+ include("performance")
+ include("build-scan-performance")
+-include("configuration-cache-report")
+
+ rootProject.name = "gradle"
+
+diff -ruN /tmp/tmp.oGcj5DXgHY/a/subprojects/configuration-cache/build.gradle.kts /tmp/tmp.oGcj5DXgHY/b/subprojects/configuration-cache/build.gradle.kts
+--- a/subprojects/configuration-cache/build.gradle.kts	2026-05-01 05:14:25.566298806 +1000
++++ b/subprojects/configuration-cache/build.gradle.kts	2026-05-01 05:14:25.568298789 +1000
+@@ -15,11 +15,6 @@
+         }
+     }
+
+-    processResources {
+-        from({ project(":configuration-cache-report").tasks.named("assembleReport") }) {
+-            into("org/gradle/configurationcache")
+-        }
+-    }
+
+     configCacheIntegTest {
+         enabled = false

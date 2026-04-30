@@ -1,0 +1,12 @@
+--- a/buildSrc/subprojects/packaging/src/main/kotlin/gradlebuild.shaded-jar.gradle.kts
++++ b/buildSrc/subprojects/packaging/src/main/kotlin/gradlebuild.shaded-jar.gradle.kts
+@@ -149,7 +149,8 @@
+             attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 6)
+         }
+         extendsFrom(shadedImplementation)
+-        outgoing.artifact(shadedJarTask) {
++        outgoing.artifact(shadedJarTask.flatMap { it.jarFile }) {
++            builtBy(shadedJarTask)
+             name = moduleIdentity.baseName.get()
+             type = "jar"
+         }

@@ -1,0 +1,10 @@
+--- a/buildSrc/settings.gradle.kts
++++ b/buildSrc/settings.gradle.kts
+@@ -50,7 +50,6 @@
+
+ // Special purpose build logic for subproject - please preserve alphabetical order
+ include("binary-compatibility")
+-include("build-init-samples")
+ include("buildquality")
+ include("documentation")
+ include("integration-testing")

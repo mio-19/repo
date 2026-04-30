@@ -1,0 +1,66 @@
+--- a/buildSrc/subprojects/profiling/src/main/kotlin/gradlebuild.buildscan.gradle.kts
++++ b/buildSrc/subprojects/profiling/src/main/kotlin/gradlebuild.buildscan.gradle.kts
+@@ -24,16 +24,6 @@
+ import gradlebuild.basics.tasks.ClasspathManifest
+ import org.gradle.api.internal.BuildType
+ import org.gradle.api.internal.GradleInternal
+-import org.gradle.internal.operations.BuildOperationDescriptor
+-import org.gradle.internal.operations.BuildOperationListener
+-import org.gradle.internal.operations.BuildOperationListenerManager
+-import org.gradle.internal.operations.OperationFinishEvent
+-import org.gradle.internal.operations.OperationIdentifier
+-import org.gradle.internal.operations.OperationProgressEvent
+-import org.gradle.internal.operations.OperationStartEvent
+-import org.gradle.internal.watch.vfs.BuildFinishedFileSystemWatchingBuildOperationType
+-import org.gradle.kotlin.dsl.support.serviceOf
+-import org.gradle.launcher.exec.RunBuildBuildOperationType
+ import org.jsoup.Jsoup
+ import org.jsoup.parser.Parser
+ import java.net.URLEncoder
+@@ -61,7 +51,6 @@
+
+ extractCheckstyleAndCodenarcData()
+
+-extractWatchFsData()
+
+ if ((project.gradle as GradleInternal).services.get(BuildType::class.java) != BuildType.TASKS) {
+     buildScan.tag("SYNC")
+@@ -179,38 +168,6 @@
+     }
+ }
+
+-fun Project.extractWatchFsData() {
+-    gradle.serviceOf<BuildOperationListenerManager>().let { listenerManager ->
+-        listenerManager.addListener(FileSystemWatchingBuildOperationListener(listenerManager, buildScan))
+-    }
+-}
+-
+-open class FileSystemWatchingBuildOperationListener(private val buildOperationListenerManager: BuildOperationListenerManager, private val buildScan: BuildScanExtension) : BuildOperationListener {
+-
+-    override fun started(buildOperation: BuildOperationDescriptor, startEvent: OperationStartEvent) {
+-    }
+-
+-    override fun progress(operationIdentifier: OperationIdentifier, progressEvent: OperationProgressEvent) {
+-    }
+-
+-    override fun finished(buildOperation: BuildOperationDescriptor, finishEvent: OperationFinishEvent) {
+-        when (val result = finishEvent.result) {
+-            is RunBuildBuildOperationType.Result -> buildOperationListenerManager.removeListener(this)
+-            is BuildFinishedFileSystemWatchingBuildOperationType.Result -> {
+-                if (result.isWatchingEnabled) {
+-                    buildScan.value("watchFsStoppedDuringBuild", result.isStoppedWatchingDuringTheBuild.toString())
+-                    result.statistics?.let {
+-                        buildScan.value("watchFsEventsReceivedDuringBuild", it.numberOfReceivedEvents.toString())
+-                        buildScan.value("watchFsRetainedDirectories", it.retainedDirectories.toString())
+-                        buildScan.value("watchFsRetainedFiles", it.retainedRegularFiles.toString())
+-                        buildScan.value("watchFsRetainedMissingFiles", it.retainedMissingFiles.toString())
+-                        buildScan.value("watchFsWatchedHierarchies", it.numberOfWatchedHierarchies.toString())
+-                    }
+-                }
+-            }
+-        }
+-    }
+-}
+
+ fun Project.extractAllReportsFromCI() {
+     val capturedReportingTypes = listOf("html") // can add xml, text, junitXml if wanted
