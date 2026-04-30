@@ -1,0 +1,146 @@
+diff -ruN /tmp/tmp.oH1Uglk8F3/a/buildSrc/build.gradle.kts /tmp/tmp.oH1Uglk8F3/b/buildSrc/build.gradle.kts
+--- a/buildSrc/build.gradle.kts	2026-05-01 03:06:56.938004372 +1000
++++ b/buildSrc/build.gradle.kts	2026-05-01 03:06:56.942004340 +1000
+@@ -46,26 +46,16 @@
+             implementation(gradleApi())
+         }
+ 
+-        afterEvaluate {
+-            if (tasks.withType<ValidatePlugins>().isEmpty()) {
+-                val validatePlugins by tasks.registering(ValidatePlugins::class) {
+-                    outputFile.set(project.reporting.baseDirectory.file("task-properties/report.txt"))
+ 
+-                    val mainSourceSet = project.sourceSets.main.get()
+-                    classes.setFrom(mainSourceSet.output.classesDirs)
+-                    dependsOn(mainSourceSet.output)
+-                    classpath.setFrom(mainSourceSet.runtimeClasspath)
+-                }
+-                tasks.check { dependsOn(validatePlugins) }
+-            }
+-        }
++        apply(from = "../../../gradle/shared-with-buildSrc/code-quality-configuration.gradle.kts")
++    }
++}
+ 
+-        tasks.withType<ValidatePlugins>().configureEach {
+-            failOnWarning.set(true)
+-            enableStricterValidation.set(true)
++subprojects {
++    tasks.all {
++        if (name.startsWith("compileTest") || name.startsWith("codenarc") || name.startsWith("checkstyle") || name == "test" || name == "check" || name.endsWith("Check") || name == "validateTaskProperties") {
++            enabled = false
+         }
+-
+-        apply(from = "../../../gradle/shared-with-buildSrc/code-quality-configuration.gradle.kts")
+     }
+ }
+ 
+diff -ruN /tmp/tmp.oH1Uglk8F3/a/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/CiReportingPlugin.kt /tmp/tmp.oH1Uglk8F3/b/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/CiReportingPlugin.kt
+--- a/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/CiReportingPlugin.kt	2026-05-01 03:06:56.940004356 +1000
++++ b/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/CiReportingPlugin.kt	2026-05-01 03:06:56.944004323 +1000
+@@ -17,7 +17,6 @@
+ import org.gradle.kotlin.dsl.get
+ import org.gradle.kotlin.dsl.create
+ import org.gradle.kotlin.dsl.withGroovyBuilder
+-import org.gradle.plugin.devel.tasks.ValidatePlugins
+ import org.gradle.testing.DistributedPerformanceTest
+ import java.io.File
+ 
+@@ -142,7 +141,6 @@
+ 
+     private
+     fun Task.failedTaskCustomReports() = when (this) {
+-        is ValidatePlugins -> listOf(outputFile.get().asFile to project.name)
+         is Classycle -> listOf(reportFile to project.name)
+         is FindBrokenInternalLinks -> listOf(reportFile.get().asFile to project.name)
+         is DistributionTest -> listOf(
+diff -ruN /tmp/tmp.oH1Uglk8F3/a/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/TaskPropertyValidationPlugin.kt /tmp/tmp.oH1Uglk8F3/b/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/TaskPropertyValidationPlugin.kt
+--- a/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/TaskPropertyValidationPlugin.kt	2026-05-01 03:06:56.940004356 +1000
++++ b/buildSrc/subprojects/buildquality/src/main/kotlin/org/gradle/gradlebuild/buildquality/TaskPropertyValidationPlugin.kt	2026-05-01 03:06:56.946004307 +1000
+@@ -14,85 +14,11 @@
+  * limitations under the License.
+  */
+ package org.gradle.gradlebuild.buildquality
+-
+-import accessors.java
+-import accessors.reporting
+-
+ import org.gradle.api.Plugin
+ import org.gradle.api.Project
+-import org.gradle.api.artifacts.Configuration
+-import org.gradle.api.attributes.Attribute
+-import org.gradle.api.attributes.Category
+-import org.gradle.api.attributes.LibraryElements
+-import org.gradle.api.attributes.Usage
+-import org.gradle.api.tasks.testing.Test
+-
+-import org.gradle.kotlin.dsl.*
+-import org.gradle.plugin.devel.tasks.ValidatePlugins
+-
+-
+-private
+-const val validateTaskName = "validatePlugins"
+-
+-
+-private
+-const val reportFileName = "task-properties/report.txt"
+ 
+ 
+ open class TaskPropertyValidationPlugin : Plugin<Project> {
+ 
+-    override fun apply(project: Project): Unit = project.run {
+-        afterEvaluate {
+-            // This is in an after evaluate block to defer the decision until after the `java-gradle-plugin` may have been applied, so as to not collide with it
+-            // It would be better to use some convention plugins instead, that apply a fixes set of plugins (including this one)
+-            if (plugins.hasPlugin("java-base")) {
+-                val validationRuntime by configurations.creating {
+-                    isCanBeConsumed = false
+-                    attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+-                    // Required to select the right :distributions variant
+-                    attributes {
+-                        attribute(Attribute.of("org.gradle.runtime", String::class.java), "minimal")
+-                        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+-                        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.JAR))
+-                    }
+-                }
+-                dependencies {
+-                    // use a minimal gradle runtime here
+-                    validationRuntime(project(":core"))
+-                    validationRuntime(project(":dependencyManagement"))
+-                    validationRuntime(project(":platformJvm"))
+-                }
+-
+-                val validateTask = if (plugins.hasPlugin("java-gradle-plugin")) {
+-                    tasks.named(validateTaskName, ValidatePlugins::class)
+-                } else {
+-                    tasks.register(validateTaskName, ValidatePlugins::class)
+-                }
+-
+-                validateTask {
+-                    configureValidateTask(validationRuntime)
+-                }
+-                tasks.named("codeQuality") {
+-                    dependsOn(validateTask)
+-                }
+-                tasks.withType(Test::class).configureEach {
+-                    shouldRunAfter(validateTask)
+-                }
+-            }
+-        }
+-    }
+-
+-    private
+-    fun ValidatePlugins.configureValidateTask(validationRuntime: Configuration) {
+-        val main by project.java.sourceSets
+-        dependsOn(main.output)
+-        classes.setFrom(main.output.classesDirs)
+-        classpath.from(main.output) // to pick up resources too
+-        classpath.from(main.runtimeClasspath)
+-        classpath.from(validationRuntime)
+-        // TODO Should we provide a more intuitive way in the task definition to configure this property from Kotlin?
+-        outputFile.set(project.reporting.baseDirectory.file(reportFileName))
+-        failOnWarning.set(true)
+-        enableStricterValidation.set(true)
+-    }
++    override fun apply(project: Project) = Unit
+ }
