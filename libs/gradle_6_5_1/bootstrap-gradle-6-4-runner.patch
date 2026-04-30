@@ -1,0 +1,15 @@
+--- a/buildSrc/subprojects/configuration/src/main/kotlin/org/gradle/gradlebuild/java/AvailableJavaInstallationsPlugin.kt
++++ b/buildSrc/subprojects/configuration/src/main/kotlin/org/gradle/gradlebuild/java/AvailableJavaInstallationsPlugin.kt
+@@ -10,9 +10,9 @@
+ 
+ open class AvailableJavaInstallationsPlugin : Plugin<Project> {
+     override fun apply(project: Project): Unit = project.run {
+-        val testJavaHomePath = providers.gradleProperty(testJavaHomePropertyName).forUseAtConfigurationTime()
+-            .orElse(providers.systemProperty(testJavaHomePropertyName).forUseAtConfigurationTime())
+-            .orElse(providers.environmentVariable(testJavaHomePropertyName).forUseAtConfigurationTime())
++        val testJavaHomePath = providers.gradleProperty(testJavaHomePropertyName)
++            .orElse(providers.systemProperty(testJavaHomePropertyName))
++            .orElse(providers.environmentVariable(testJavaHomePropertyName))
+         val testJavaHome = rootProject.layout.projectDirectory.dir(testJavaHomePath)
+         val installationRegistry = extensions.getByType(JavaInstallationRegistry::class.java)
+         extensions.create("buildJvms", BuildJvms::class.java, installationRegistry, testJavaHome)

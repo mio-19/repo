@@ -1,0 +1,11 @@
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -23,8 +23,6 @@
+     gradlebuild.cleanup                      // CI: Advanced cleanup after the build (like stopping daemons started by tests)
+     gradlebuild.`ci-reporting`               // CI: Prepare reports to be uploaded to TeamCity
+ 
+-    gradlebuild.buildscan                    // Reporting: Add more data through custom tags to build scans
+-
+     gradlebuild.`build-version`              // Release process: Set the version for this build
+ 
+     gradlebuild.ide                          // Local development: Tweak IDEA import

@@ -1,0 +1,11 @@
+--- a/buildSrc/subprojects/profiling/src/main/kotlin/org/gradle/gradlebuild/profiling/buildscan/BuildScanPlugin.kt
++++ b/buildSrc/subprojects/profiling/src/main/kotlin/org/gradle/gradlebuild/profiling/buildscan/BuildScanPlugin.kt
+@@ -270,7 +270,7 @@
+ 
+     private
+     fun Project.extractVfsRetentionData() {
+-        val watchFileSystem = (project.gradle.startParameter as StartParameterInternal).isWatchFileSystem
++        val watchFileSystem = false
+         buildScan.value(watchFileSystemName, watchFileSystem.toString())
+     }
+ 

@@ -1,0 +1,11 @@
+--- a/subprojects/distributions/distributions.gradle.kts
++++ b/subprojects/distributions/distributions.gradle.kts
+@@ -114,7 +114,7 @@
+ val binZip = tasks.register<Zip>("binZip") {
+     archiveClassifier.set("bin")
+     into(zipRootFolder) {
+-        with(binWithDistDocImage)
++        with(binDistImage)
+     }
+ }
+ 
