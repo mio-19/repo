@@ -1,0 +1,16 @@
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -189,7 +189,7 @@
+ }
+ 
+ apply(plugin = "gradlebuild.cleanup")
+-apply(plugin = "gradlebuild.buildscan")
++// Build scans are disabled for the source bootstrap.
+ apply(from = "gradle/versioning.gradle")
+ apply(from = "gradle/dependencies.gradle")
+ apply(plugin = "gradlebuild.minify")
+@@ -415,4 +415,3 @@
+         fileMode = Integer.parseInt("0644", 8)
+     }
+ }
+-

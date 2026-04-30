@@ -1,30 +1,33 @@
 {
   gradle_5_6_4,
+  gradle_6_0,
   jdk11_headless,
   stdenv,
   fetchFromGitHub,
   makeWrapper,
+  runtimeShell,
   unzip,
 }:
 let
-  gradle = gradle_5_6_4;
-  gradleFetchDeps = gradle.fetchDeps;
+  gradle = gradle_6_0;
+  gradleFetchDeps = gradle_5_6_4.fetchDeps;
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "gradle-unwrapped";
-  version = "6.0";
+  version = "6.1.1";
 
   src = fetchFromGitHub {
     owner = "gradle";
     repo = "gradle";
-    tag = "v6.0.0";
-    hash = "sha256-joUdpgsHoeRumYrEElH28gbaakCRCEf6ARYuy3gFMB8=";
+    tag = "v6.1.1";
+    hash = "sha256-sYfwP783y9O5olXDP5xoODZef5mzJe9buxZEdtFot+w=";
   };
 
   gradleBuildTask = ":distributions:binZip";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 
   nativeBuildInputs = [
+    gradle_5_6_4
     gradle
     makeWrapper
     jdk11_headless
@@ -33,8 +36,10 @@ stdenv.mkDerivation (finalAttrs: {
 
   patches = [
     ./bootstrap-disable-buildscan.patch
+    ./bootstrap-disable-docs-samples.patch
     ./bootstrap-disable-dist-docs.patch
     ./bootstrap-disable-validate-plugins.patch
+    ./bootstrap-gradle-6-0-runner.patch
     ./bootstrap-root-repositories.patch
     ./bootstrap-settings-plugins.patch
   ];
@@ -80,6 +85,32 @@ stdenv.mkDerivation (finalAttrs: {
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
   ];
+
+  gradleUpdateScript = ''
+    runHook preBuild
+    tmpbin="$(mktemp -d)"
+    tee > "$tmpbin/gradlecustom" <<EOF
+    #!${runtimeShell}
+    exec ${gradle}/bin/gradle ''${gradleFlags[@]} ''${gradleFlagsArray[@]} "\$@"
+    EOF
+    chmod +x "$tmpbin/gradlecustom"
+    export PATH="$tmpbin:$PATH"
+    gradlecustom ${finalAttrs.gradleUpdateTask}
+    runHook postGradleUpdate
+  '';
+
+  buildPhase = ''
+    runHook preBuild
+    tmpbin="$(mktemp -d)"
+    tee > "$tmpbin/gradlecustom" <<EOF
+    #!${runtimeShell}
+    exec ${gradle}/bin/gradle ''${gradleFlags[@]} ''${gradleFlagsArray[@]} "\$@"
+    EOF
+    chmod +x "$tmpbin/gradlecustom"
+    export PATH="$tmpbin:$PATH"
+    gradlecustom ${finalAttrs.gradleBuildTask}
+    runHook postBuild
+  '';
 
   postPatch = ''
     rm -f gradle/verification-metadata.xml

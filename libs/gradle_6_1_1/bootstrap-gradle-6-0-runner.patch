@@ -1,0 +1,57 @@
+diff -ruN a/buildSrc/subprojects/configuration/src/main/kotlin/org/gradle/gradlebuild/java/AvailableJavaInstallations.kt b/buildSrc/subprojects/configuration/src/main/kotlin/org/gradle/gradlebuild/java/AvailableJavaInstallations.kt
+--- a/buildSrc/subprojects/configuration/src/main/kotlin/org/gradle/gradlebuild/java/AvailableJavaInstallations.kt	2026-04-30 21:12:24.362246124 +1000
++++ b/buildSrc/subprojects/configuration/src/main/kotlin/org/gradle/gradlebuild/java/AvailableJavaInstallations.kt	2026-04-30 21:12:36.202146388 +1000
+@@ -2,8 +2,6 @@
+ 
+ import org.gradle.api.GradleException
+ import org.gradle.api.JavaVersion
+-import org.gradle.api.services.BuildService
+-import org.gradle.api.services.BuildServiceParameters
+ import org.gradle.internal.concurrent.CompositeStoppable
+ import org.gradle.internal.jvm.JavaInfo
+ import org.gradle.internal.jvm.Jvm
+@@ -86,12 +84,7 @@
+ const val productionJdkName = "AdoptOpenJDK 11"
+ 
+ 
+-interface AvailableJavaInstallationsParameters : BuildServiceParameters {
+-    var testJavaProperty: String?
+-}
+-
+-
+-abstract class AvailableJavaInstallations : BuildService<AvailableJavaInstallationsParameters>, AutoCloseable {
++class AvailableJavaInstallations(private val testJavaProperty: String?) {
+     // Duplicate some of the Gradle services here because:
+     // 1. no services are currently available for injection into build services and
+     // 2. we probably don't want to expose these internal services anyway
+@@ -105,13 +98,13 @@
+ 
+     val currentJavaInstallation: JavaInstallation = JavaInstallation(true, Jvm.current(), JavaVersion.current(), javaInstallationProbe)
+     val javaInstallationForTest by lazy {
+-        determineJavaInstallation(testJavaHomePropertyName, parameters.testJavaProperty)
++        determineJavaInstallation(testJavaHomePropertyName, testJavaProperty)
+     }
+     val javaInstallationForCompilation by lazy {
+         determineJavaInstallationForCompilation()
+     }
+ 
+-    override fun close() {
++    fun close() {
+         CompositeStoppable.stoppable(services).stop()
+     }
+ 
+diff -ruN a/buildSrc/subprojects/configuration/src/main/kotlin/org/gradle/gradlebuild/java/AvailableJavaInstallationsPlugin.kt b/buildSrc/subprojects/configuration/src/main/kotlin/org/gradle/gradlebuild/java/AvailableJavaInstallationsPlugin.kt
+--- a/buildSrc/subprojects/configuration/src/main/kotlin/org/gradle/gradlebuild/java/AvailableJavaInstallationsPlugin.kt	2026-04-30 21:12:24.364246108 +1000
++++ b/buildSrc/subprojects/configuration/src/main/kotlin/org/gradle/gradlebuild/java/AvailableJavaInstallationsPlugin.kt	2026-04-30 21:12:36.202146388 +1000
+@@ -6,9 +6,8 @@
+ 
+ open class AvailableJavaInstallationsPlugin : Plugin<Project> {
+     override fun apply(project: Project): Unit = project.run {
+-        val availableInstallations = gradle.sharedServices.registerIfAbsent("availableJavaInstallations", AvailableJavaInstallations::class.java) {
+-            // TODO:instant-execution - this should be marked as a build input in some way
+-            parameters.testJavaProperty = project.findProperty(testJavaHomePropertyName)?.toString()
++        val availableInstallations = provider {
++            AvailableJavaInstallations(project.findProperty(testJavaHomePropertyName)?.toString())
+         }
+         extensions.create("buildJvms", BuildJvms::class.java, availableInstallations)
+     }

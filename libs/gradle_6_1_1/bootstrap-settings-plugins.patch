@@ -1,0 +1,22 @@
+--- a/settings.gradle.kts
++++ b/settings.gradle.kts
+@@ -20,13 +20,10 @@
+     repositories {
+         gradlePluginPortal()
+         maven { url = uri("https://repo.gradle.org/gradle/libs-releases") }
++        mavenCentral()
+     }
+ }
+ 
+-plugins {
+-    id("com.gradle.enterprise").version("3.1")
+-}
+-
+ apply(from = "gradle/build-cache-configuration.settings.gradle.kts")
+ apply(from = "gradle/shared-with-buildSrc/mirrors.settings.gradle.kts")
+ 
+@@ -172,4 +169,3 @@
+         enableFeaturePreview(feature.name)
+     }
+ }
+-
