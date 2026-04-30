@@ -1,0 +1,13 @@
+--- a/build.gradle.kts	2026-04-30 15:43:39.439875414 +1000
++++ b/build.gradle.kts	2026-04-30 15:43:39.443875382 +1000
+@@ -153,6 +153,10 @@
+             name = "Gradle libs"
+             url = uri("https://repo.gradle.org/gradle/libs")
++            metadataSources {
++                artifact()
++            }
+         }
++        mavenCentral()
+         maven {
+             name = "kotlinx"
+             url = uri("https://kotlin.bintray.com/kotlinx/")

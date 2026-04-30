@@ -1,0 +1,15 @@
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -33,7 +33,6 @@
+     gradlebuild.security
+     gradlebuild.install
+     gradlebuild.cleanup
+-    gradlebuild.buildscan
+     gradlebuild.`build-version`
+     gradlebuild.minify
+     gradlebuild.wrapper
+@@ -314,4 +313,3 @@
+         fileMode = Integer.parseInt("0644", 8)
+     }
+ }
+-
