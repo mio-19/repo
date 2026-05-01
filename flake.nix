@@ -154,11 +154,6 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/472580.patch";
                 hash = "sha256-dtQ8pFVnvTFwmpbMxEG9mnCbi1t6wweA1E/ufBdPsws=";
               })
-              (fetchpatch {
-                name = "zulu17: 17.0.12 -> 17.0.18";
-                url = "https://github.com/NixOS/nixpkgs/pull/500710.diff";
-                hash = "sha256-dKXr/+Il/hQinii1W/Fv/IC8hml9xlDaQZOdpvVMGr8=";
-              })
             ];
             /*
               # already merged

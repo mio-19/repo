@@ -22,17 +22,17 @@
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
-    version = "00181458b9b4820b250a481ddd1b3061a33a6abb";
+    version = "3d5c1a6824d298c404b61342041721be3f4cb839";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
-      rev = "00181458b9b4820b250a481ddd1b3061a33a6abb";
+      rev = "3d5c1a6824d298c404b61342041721be3f4cb839";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-kJYCxw/kCFrlS0CGjtD9XoZPBiOiUoxCKngzL0Im4AA=";
+      sha256 = "sha256-roxIY4sMLR5Ms2AJ++nahZwOYDayMUPyHcZk4qxN2UE=";
     };
-    date = "2026-04-28";
+    date = "2026-04-30";
   };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
@@ -582,17 +582,17 @@
   };
   lineage_latinime = {
     pname = "lineage_latinime";
-    version = "5a091397bcfcac8e479f62d5a43815753fb6c2a8";
+    version = "bfd71a269833500db5c3732521c683c03231f7a3";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git";
-      rev = "5a091397bcfcac8e479f62d5a43815753fb6c2a8";
+      rev = "bfd71a269833500db5c3732521c683c03231f7a3";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-mQHCZF3FZ49PjALwS2SRcL1R6cR0xG0aTL2/mguiacU=";
+      sha256 = "sha256-4Bcv36PADUMG64x5oEmVZ9dz1PCT22jVQYC56ZOpjGs=";
     };
-    date = "2026-04-15";
+    date = "2026-04-29";
   };
   lineage_launcher3 = {
     pname = "lineage_launcher3";
