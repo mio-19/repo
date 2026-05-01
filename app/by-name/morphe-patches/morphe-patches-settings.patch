@@ -1,6 +1,6 @@
 --- settings.gradle.kts
 +++ settings.gradle.kts
-@@ -5,14 +5,8 @@
+@@ -5,14 +5,9 @@
          mavenLocal()
          gradlePluginPortal()
          google()
@@ -14,6 +14,7 @@
 -        }
 +        maven { url = uri("file://" + System.getenv("MORPHE_PLUGIN_M2")) }
 +        maven { url = uri("file://" + System.getenv("MORPHE_LIBRARY_M2")) }
++        maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }
          // Obtain baksmali/smali from source builds - https://github.com/iBotPeaches/smali
          // Remove when official smali releases come out again.
          maven { url = uri("https://jitpack.io") }

@@ -81,7 +81,7 @@ let
         pname = "haven-rdp-transport-jni-libs";
         inherit (finalAttrs0) version src;
         cargoRoot = "rdp-kotlin/rust";
-        hash = "sha256-5vxcGzdtUB83XO4mhelXHOMIec5IISQP+55/dWKiIUk=";
+        hash = "sha256-7Wrzi8QZ/G91ow9vC5uULYe3NB+3FGUbI2txroZuxKg=";
       };
 
       mkRdpTransportJniLib =
@@ -270,21 +270,19 @@ let
     in
     {
       pname = "haven";
-      version = "5.24.63";
+      version = "5.24.80";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-2wYqDiMPBkJTzzBwUYEAP48fbZXBilh2KDFvGnWoNNE=";
+        hash = "sha256-LNUMj5EJmgIwagkS9LsZwamIOcYRJjq9zNwZgBbqvhk=";
       };
 
       patches = [
         # Build unsigned APK (no keystore in sandbox)
         ./remove-signing-config.patch
-        # Override AGP's default NDK selection for the native local module.
-        ./set-ndk-version.patch
         # Build the Rust JNI libraries in Nix instead of invoking cargo-ndk from Gradle.
         ./skip-gradle-rdp-native-build.patch
       ];
