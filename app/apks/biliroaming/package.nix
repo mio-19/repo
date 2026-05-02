@@ -20,6 +20,9 @@ let
     s.cmake-4-1-2
   ]);
   gradle = gradle_8_12;
+
+  androidSdkRoot = "${androidSdk}/share/android-sdk";
+  aapt2Path = "${androidSdkRoot}/build-tools/35.0.0/aapt2";
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "biliroaming";
@@ -70,39 +73,33 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   env = {
-    JAVA_HOME = jdk21_headless;
-    ANDROID_HOME = "${androidSdk}/share/android-sdk";
-    ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
-    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+    JAVA_HOME = jdk21_headless.passthru.home;
+    ANDROID_HOME = androidSdkRoot;
+    ANDROID_SDK_ROOT = androidSdkRoot;
+    ANDROID_NDK_ROOT = "${androidSdkRoot}/ndk/29.0.14206865";
+    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = aapt2Path;
   };
 
   preConfigure = ''
-    export ANDROID_USER_HOME="$PWD/.android"
-    export GRADLE_USER_HOME="$PWD/.gradle"
+    export ANDROID_USER_HOME="$HOME/.android"
+    export GRADLE_USER_HOME="$HOME/.gradle"
     mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"
 
-    cat >> gradle.properties <<EOF
-    org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g
-    EOF
+    echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g" >> gradle.properties
   '';
 
   gradleFlags = [
     "--no-daemon"
     "-Dorg.gradle.java.installations.auto-download=false"
-    "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
-    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+    "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
+    "-Dandroid.aapt2FromMavenOverride=${aapt2Path}"
+    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2Path}"
   ];
 
   installPhase = ''
     runHook preInstall
-    apk_dir="app/build/outputs/apk/release"
-    apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apk_dir/output-metadata.json" | head -n 1)"
-    test -n "$apk_name"
-    apk_path="$apk_dir/$apk_name"
-    test -f "$apk_path"
-    install -Dm644 "$apk_path" "$out/biliroaming.apk"
+    mkdir -p "$out"
+    mv app/build/outputs/apk/release/app-release-unsigned.apk "$out/biliroaming.apk"
     runHook postInstall
   '';
 
