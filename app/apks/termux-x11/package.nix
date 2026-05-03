@@ -17,16 +17,16 @@
 let
   appPackage =
     let
-      rev = "5c3dce481b01bc45893fa933bd5d78b774b0c528";
+      rev = "25c8dbc3e8cbf08c9dd233b29adbe1e3a1df52f4";
       shortRev = builtins.substring 0 7 rev;
-      version = "unstable-2026-04-22";
+      version = "unstable-2026-05-01";
 
       src = fetchFromGitHub {
         owner = "termux";
         repo = "termux-x11";
         inherit rev;
         fetchSubmodules = true;
-        hash = "sha256-vPoN+l+gXT5gN5ULe+tO9priTsD5GP7QFelIkE+l5qU=";
+        hash = "sha256-eVu/1v+JAwM6FcJmotpsg6hd2+h3Lz5As9LfGbhDZ2E=";
       };
 
       androidSdk = androidSdkBuilder (s: [
@@ -148,7 +148,7 @@ mk-apk-package {
       Description: |-
         Termux:X11 is the X11 server companion app for Termux.
         This package is built from source from the upstream master
-        branch at commit 5c3dce481b01bc45893fa933bd5d78b774b0c528.
+        branch at commit 25c8dbc3e8cbf08c9dd233b29adbe1e3a1df52f4.
 
         F-Droid does not currently ship metadata for this application,
         so this repo follows the upstream nightly debug universal APK

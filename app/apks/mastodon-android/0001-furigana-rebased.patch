@@ -379,16 +379,11 @@ index 5e277df..51d1c7d 100644
  	<string name="onboarding_recommendations_title">Personalize your home feed</string>
  	<string name="article_by_author">By %s</string>
  	<string name="button_reblogged">Boosted</string>
-@@ -981,5 +982,7 @@
- 	<string name="confirm_delete_cover">Remove header image?</string>
- 	<string name="profile_followers">Followers</string>
- 	<string name="profile_following">Following</string>
+@@ -984,1 +984,3 @@
+-	<string name="user_follows_you">Follows you</string>
 +	<string name="settings_show_furigana">Show furigana</string>
 +	<string name="settings_convert_kana_to_hiragana">Use hiragana in furigana (requires restart)</string>
- 	<string name="user_follows_you">Follows you</string>
--</resources>
-\ No newline at end of file
-+</resources>
++	<string name="user_follows_you">Follows you</string>
 diff --git a/mastodon/src/main/java/org/joinmastodon/android/ui/FuriganaHelper.java b/mastodon/src/main/java/org/joinmastodon/android/ui/FuriganaHelper.java
 new file mode 100644
 index 0000000..8130353

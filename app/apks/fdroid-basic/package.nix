@@ -24,12 +24,12 @@ let
 in
 buildGradlePackage rec {
   pname = "fdroid-basic";
-  version = "2.0-alpha8";
+  version = "2.0-alpha9";
 
   src = fetchgit {
     url = "https://gitlab.com/fdroid/fdroidclient.git";
     tag = version;
-    hash = "sha256-u4LIkA32BqIkO8+KBc3YqnveBcl9BZ+QS2h3yQY16WQ=";
+    hash = "sha256-b36hPlEnOlQ1h4yPHOCVcGLISYOlvO6iMjHbi5hazZA=";
   };
 
   lockFile = ./gradle.lock;
@@ -51,7 +51,7 @@ buildGradlePackage rec {
     rm -f gradle/verification-metadata.xml
     echo "Removed gradle/verification-metadata.xml so the source-built java libraries overrides is not rejected by upstream checksum verification."
 
-    pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                def agpVersion = requested.version ?: "9.1.0"\n                useModule("com.android.tools.build:gradle:''${agpVersion}")\n            }\n        }\n    }\n'
+    pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                def agpVersion = requested.version ?: "9.1.1"\n                useModule("com.android.tools.build:gradle:''${agpVersion}")\n            }\n        }\n    }\n'
     substituteInPlace settings.gradle \
       --replace-fail "pluginManagement {" "$pluginResolutionBlock"
     substituteInPlace app/build.gradle.kts \

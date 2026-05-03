@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  # https://github.com/breezy-weather/breezy-weather/blob/50e3306f3effca4e405d1acf5168ec2ab14dea9a/.github/.java-version
+  # https://github.com/breezy-weather/breezy-weather/blob/c342320fe7c1a9f5f80869e2bc25f299cffba1a4/.github/.java-version
   jdk21_headless,
   gradle_9_4_1,
   stdenv,
@@ -10,7 +10,7 @@
   androidSdkBuilder,
 }:
 let
-  rev = "50e3306f3effca4e405d1acf5168ec2ab14dea9a";
+  rev = "c342320fe7c1a9f5f80869e2bc25f299cffba1a4";
   gradleFlavor = "Basic";
   releaseFlavor = "standard";
 
@@ -20,22 +20,22 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
-        # https://github.com/breezy-weather/breezy-weather/blob/50e3306f3effca4e405d1acf5168ec2ab14dea9a/.github/workflows/push.yml#L47
+        # https://github.com/breezy-weather/breezy-weather/blob/c342320fe7c1a9f5f80869e2bc25f299cffba1a4/.github/workflows/push.yml#L47
         s.build-tools-36-0-0
       ]);
 
-      # https://github.com/breezy-weather/breezy-weather/blob/50e3306f3effca4e405d1acf5168ec2ab14dea9a/gradle/wrapper/gradle-wrapper.properties
+      # https://github.com/breezy-weather/breezy-weather/blob/c342320fe7c1a9f5f80869e2bc25f299cffba1a4/gradle/wrapper/gradle-wrapper.properties
       gradle = gradle_9_4_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "breezy-weather";
-      version = "unstable-2026-04-18";
+      version = "unstable-2026-05-01";
 
       src = fetchFromGitHub {
         owner = "breezy-weather";
         repo = "breezy-weather";
         inherit rev;
-        hash = "sha256-Uza+jhDdvwrTd6p6+xg1LwHb+g+2Qc+uDfribjOPZIw=";
+        hash = "sha256-VO38imaY+NOXu4FLGAT7cCH6tVkvXo/WOpUhNYOXylc=";
       };
 
       patches = [
@@ -69,7 +69,7 @@ let
 
       postPatch = ''
         substituteInPlace buildSrc/src/main/kotlin/breezy/buildlogic/Commands.kt \
-          --replace-fail 'return runCommand("git rev-list --count HEAD")' 'return "60104"' \
+          --replace-fail 'return runCommand("git rev-list --count HEAD")' 'return "60127"' \
           --replace-fail 'return runCommand("git rev-parse --short=8 HEAD")' 'return "${lib.substring 0 8 rev}"'
 
         echo "breezy.openweather.key=$(echo ZDljOTEwM2E3NGE0MzhlYWMwOTUyYTM0ZDFiNTgwZTYK | base64 -d)" >> local.properties

@@ -31,13 +31,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "emacs";
-      version = "31-unstable-20260411";
+      version = "31-unstable-20260502";
 
       src = fetchFromGitHub {
         owner = "emacs-mirror";
         repo = "emacs";
-        rev = "adfa1e969f869381b0a59cb1124bc38e3dd93d03";
-        hash = "sha256-CVs+Y4U5k67MwnOE+Fs8SPcUAsnSZ+U/5svNLFnGxVY=";
+        rev = "e420725935836298f0083c2a83e2c4fa3f0b4375";
+        hash = "sha256-meRK2oCeePN8zk6vsWY5/r0VB8v2gjwhMQdTOapj+ww=";
       };
 
       nativeBuildInputs = [
