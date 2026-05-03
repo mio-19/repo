@@ -526,17 +526,17 @@
   };
   lineage_glimpse = {
     pname = "lineage_glimpse";
-    version = "e6329558e38dc656ee10223d900d0aea00dedc77";
+    version = "1d912cc4dc80b9d461ab5051a12fe497baa5a433";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_Glimpse.git";
-      rev = "e6329558e38dc656ee10223d900d0aea00dedc77";
+      rev = "1d912cc4dc80b9d461ab5051a12fe497baa5a433";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-9mGvajbx2KLw5etSEe75fvyvss2waN5KlEjIn7UpPJg=";
+      sha256 = "sha256-qMv6+cZgSFrELnTxOUiQ6kTMCaY0b6la0q2BeBJ6S3M=";
     };
-    date = "2026-04-25";
+    date = "2026-05-02";
   };
   lineage_hardware_mainline_common = {
     pname = "lineage_hardware_mainline_common";
@@ -582,17 +582,17 @@
   };
   lineage_latinime = {
     pname = "lineage_latinime";
-    version = "bfd71a269833500db5c3732521c683c03231f7a3";
+    version = "b305ec6d67805f1084250b0c52cd137a5b43ef8c";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git";
-      rev = "bfd71a269833500db5c3732521c683c03231f7a3";
+      rev = "b305ec6d67805f1084250b0c52cd137a5b43ef8c";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-4Bcv36PADUMG64x5oEmVZ9dz1PCT22jVQYC56ZOpjGs=";
+      sha256 = "sha256-HqumdWdFfbkYGmgK5gu9+k3t/UlaDYH5wGiv+8BMY+o=";
     };
-    date = "2026-04-29";
+    date = "2026-05-02";
   };
   lineage_launcher3 = {
     pname = "lineage_launcher3";
@@ -624,17 +624,17 @@
   };
   lineage_recorder = {
     pname = "lineage_recorder";
-    version = "886c868eb69317c99a670f5981e1686eb77814c5";
+    version = "4bfc6548c9d9e08a93ae8c2c9dfe52d9df24fe2d";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_Recorder.git";
-      rev = "886c868eb69317c99a670f5981e1686eb77814c5";
+      rev = "4bfc6548c9d9e08a93ae8c2c9dfe52d9df24fe2d";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-zDr2tHKRxnK845xFbioKLbIdnljke/ZPAyCdtfWTaFs=";
+      sha256 = "sha256-glHroyWkqYnIo1l53QGZWHSiCtQTZJLU6tQASJZrEVM=";
     };
-    date = "2026-04-13";
+    date = "2026-05-02";
   };
   morphe_apktool = {
     pname = "morphe_apktool";
