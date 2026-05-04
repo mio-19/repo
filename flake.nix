@@ -245,6 +245,8 @@
 
           formatter = pkgs.nixfmt;
 
+          legacyPackages."${system}".packages."${system}" = selfPackages;
+
           packages.github-actions-cached = pkgs.symlinkJoin {
             name = "github-actions-cached";
             paths =
