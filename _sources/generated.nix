@@ -246,17 +246,17 @@
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
-    version = "9bdf70a2c9a2dd757fe163c599907dcda3960c62";
+    version = "2a6495c255beae64776101d556228fd81f2e2280";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/AppStore.git";
-      rev = "9bdf70a2c9a2dd757fe163c599907dcda3960c62";
+      rev = "2a6495c255beae64776101d556228fd81f2e2280";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-rtoGioYcJ0pFAkj59TwC3fu4x7MkAkbCAklKFxBiIGw=";
+      sha256 = "sha256-No0fWBSF5Aw8s3xKoywPHxBE73qAcLWsDdc1hMChakE=";
     };
-    date = "2026-04-26";
+    date = "2026-05-04";
   };
   grapheneos_camera = {
     pname = "grapheneos_camera";
@@ -818,7 +818,7 @@
     version = "6b7bf6d049e8d425611e0c6dfb4637193190e8d6";
     src = fetchurl {
       url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/6b7bf6d049e8d425611e0c6dfb4637193190e8d6/vendor_gapps-6b7bf6d049e8d425611e0c6dfb4637193190e8d6.tar.gz";
-      sha256 = "sha256-SkpawHzPB3gLJ6Lr8lNIvQ0LvrH+6UwM+QaMjsnQTjM=";
+      sha256 = "sha256-ZJPTBe8kD4bWcvQET6TL58KfjiCicVzCAo3D8v/5XNE=";
     };
     date = "2026-04-09";
   };
