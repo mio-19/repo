@@ -42,7 +42,7 @@ stdenv.mkDerivation (finalAttrs: {
   __darwinAllowLocalNetworking = true;
 
   env = {
-    JAVA_HOME = if stdenv.isDarwin then "${jdk11_headless}" else "${jdk11_headless}/lib/openjdk";
+    JAVA_HOME = jdk11_headless.passthru.home;
   };
 
   preBuild = ''
