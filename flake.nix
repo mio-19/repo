@@ -103,11 +103,6 @@
             src = inputs.robotnix.outPath;
             name = "robotnix-patched";
             patches = [
-              # grapheneos: bump to 2026-05-05
-              (fetchpatch {
-                url = "https://github.com/nix-community/robotnix/pull/384.patch";
-                hash = "sha256-fXxkvqx65BL1NO1RdBrcZxvN4Jg/UXZwr76VnYVFIoQ=";
-              })
             ];
           };
           robotnixPatched =
