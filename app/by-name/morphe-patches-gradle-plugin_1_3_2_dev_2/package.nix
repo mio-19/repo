@@ -38,7 +38,7 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   env = {
-    JAVA_HOME = if stdenv.isDarwin then "${jdk21_headless}" else "${jdk21_headless}/lib/openjdk";
+    JAVA_HOME = jdk21_headless.passthru.home;
     GITHUB_ACTOR = "nix-build";
     GITHUB_TOKEN = "ghp_dummy";
   };

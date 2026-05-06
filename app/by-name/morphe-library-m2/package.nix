@@ -57,7 +57,7 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   env = {
-    JAVA_HOME = if stdenv.isDarwin then "${jdk21_headless}" else "${jdk21_headless}/lib/openjdk";
+    JAVA_HOME = jdk21_headless.passthru.home;
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
   };
