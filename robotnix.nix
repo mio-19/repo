@@ -107,6 +107,7 @@ in
       packages.los-gts7l-ota = self.losNoCcache.gts7l.ota;
       packages.los-enchilada-img = self.losNoCcache.enchilada.img;
       packages.los-utm-img = self.losNoCcache.utm.img;
+      packages.grapheneos-husky-srcs = pkgs.srcOnly self.gos.husky.config.build.android;
       /*
         packages.grapheneos-husky-srcs = self.gos.husky.config.build.android.overrideAttrs (old: {
           buildPhase = "";
