@@ -57,7 +57,6 @@ let
           name = "Add volume buttons zoom";
           url = "https://github.com/zotero/zotero-android/pull/298.diff";
           hash = "sha256-/QGEJkh1VRoby25gHfc8a79hgSU0P3ywQZ3oHovCMao=";
-          excludes = [ "*/app/src/main/res/values/imported_strings.xml" ];
         })
       ];
 
