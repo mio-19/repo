@@ -27,12 +27,12 @@ let
       defaultJava = jdk21_headless;
     }).wrapped;
 
-  appVersionName = "1.0.12"; # kept in sync with appVersionName in upstream source code.
+  appVersionName = "1.0.13"; # kept in sync with appVersionName in upstream source code.
   allowlistVersion = lib.replaceStrings [ "." ] [ "_" ] appVersionName;
 
   upstreamAllowlist = fetchurl {
     url = "https://raw.githubusercontent.com/google-ai-edge/gallery/refs/heads/main/model_allowlists/${allowlistVersion}.json";
-    hash = "sha256-jY0Vcws3j3eQK9mzUemFI06KAf98PCalK/bHA+4Us5s=";
+    hash = "sha256-EMNpTi4RSvr8GsjKjVBJbGeYogf8f753q5nfGoU0kPk=";
   };
 
   patchedAllowlist = runCommand "gallery-model-allowlist.json" { nativeBuildInputs = [ jq ]; } ''
@@ -115,7 +115,7 @@ let
       substituteInPlace app/build.gradle.kts \
         --replace-fail "REPLACE_WITH_YOUR_REDIRECT_SCHEME_IN_HUGGINGFACE_APP" "com.google.ai.edge.gallery.oauthredirect" \
         --replace-fail 'applicationId = "com.google.aiedge.gallery"' 'applicationId = "com.google.ai.edge.gallery"' \
-        --replace-fail 'versionName = "1.0.12"' 'versionName = "${appVersionName}"' # not actually replacing. this makes sure that appVersionName is kept in sync with the version in source code.
+        --replace-fail 'versionName = "${appVersionName}"' 'versionName = "${appVersionName}"' # not actually replacing. this makes sure that appVersionName is kept in sync with the version in source code.
       substituteInPlace app/src/main/java/com/google/ai/edge/gallery/common/ProjectConfig.kt \
         --replace-fail "REPLACE_WITH_YOUR_CLIENT_ID_IN_HUGGINGFACE_APP" "$(echo MWYwNTA3YzAtNWRiMi00MTc5LWFhYTEtYjVmZTRjNDhmYjU5Cg== | base64 -d | tr -d '\n')" \
         --replace-fail "REPLACE_WITH_YOUR_REDIRECT_URI_IN_HUGGINGFACE_APP" "com.google.ai.edge.gallery.oauthredirect://oauth_redirect"
