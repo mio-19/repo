@@ -28,31 +28,27 @@ let
     rev = "d003b5ff1ca91fb8c5105619cf1108b450387061";
     hash = "sha256-2UO6zDAFeURrt9U9f7gNDA8J5X3o8Ct96/rItUq644g=";
   };
-
-  revanced-cli-deps = lib.importJSON ../revanced-cli/revanced-cli_deps.json;
-  morphe-patches-deps = lib.importJSON ../morphe-patches/morphe-patches_deps.json;
-  morphe-patches-library-dev-deps = lib.importJSON ../morphe-patches-library-m2/morphe-patches-library_deps.json;
-  morphe-patches-library-1_3_0-deps = lib.importJSON ../morphe-patches-library-m2_1_3_0/morphe-patches-library_deps.json;
-  morphe-patches-library-deps = lib.importJSON ./morphe-patches-library_deps.json;
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches-library-m2";
-  version = "1.0.4";
+  version = "1.3.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches-library";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-WPGAMlr/REL6lvkHNB8+kUNuEWLAwh4j5jtxyIFQhbI=";
+    hash = "sha256-wPCok7RS6AvU8GYcG8IiLT3UjX1oAPiC4YKvPcRtYjE=";
   };
 
   gradleBuildTask = "publish";
-  gradleUpdateTask = finalAttrs.gradleBuildTask;
+  gradleUpdateTask = "buildEnvironment ${finalAttrs.gradleBuildTask}";
 
   mitmCache = gradle.fetchDeps {
     pname = "morphe-patches-library";
     pkg = finalAttrs.finalPackage;
-    data = lib.recursiveUpdate (lib.recursiveUpdate revanced-cli-deps (lib.recursiveUpdate morphe-patches-deps (lib.recursiveUpdate morphe-patches-library-dev-deps morphe-patches-library-1_3_0-deps))) morphe-patches-library-deps;
+    data = lib.recursiveUpdate (lib.importJSON ../morphe-patches-library-m2/morphe-patches-library_deps.json) (
+      lib.importJSON ./morphe-patches-library_deps.json
+    );
     silent = false;
     useBwrap = false;
   };
@@ -117,7 +113,6 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   gradleFlags = [
-    "--refresh-dependencies"
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
     "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"

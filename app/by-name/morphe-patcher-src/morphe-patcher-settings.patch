@@ -1,13 +1,11 @@
 --- settings.gradle.kts
 +++ settings.gradle.kts
-@@ -2,8 +2,8 @@
+@@ -2,7 +2,7 @@
  
  // Include Morphe forks of libraries as composite builds if they exist locally
  mapOf(
 -    "ARSCLib" to "com.github.MorpheApp:arsclib",
--    "multidexlib2" to "app.morphe:multidexlib",
 +    "ARSCLib" to "com.github.MorpheApp:ARSCLib",
-+    "multidexlib2" to "app.morphe:multidexlib2",
  ).forEach { (libraryPath, libraryName) ->
      val libDir = file("../$libraryPath")
      if (libDir.exists()) {

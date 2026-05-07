@@ -32,25 +32,32 @@ let
     hash = "sha256-2UO6zDAFeURrt9U9f7gNDA8J5X3o8Ct96/rItUq644g=";
   };
 
+  revanced-cli-deps = lib.importJSON ../revanced-cli/revanced-cli_deps.json;
+  morphe-patches-deps = lib.importJSON ../morphe-patches/morphe-patches_deps.json;
+  morphe-cli-deps = lib.importJSON ./morphe-cli_deps.json;
+  morphe-cli-deps-filtered = morphe-cli-deps // {
+    "https:/" = builtins.removeAttrs morphe-cli-deps."https:/" [ "api.github" ];
+  };
+
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-cli";
-  version = "1.6.3";
+  version = "1.8.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-cli";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-tUQoJORLzvVdHIoj8dJFOgTGFfo77S1VexGrkydxXsg=";
+    hash = "sha256-JclbfjY3cn52v76bGefQDr7vyJhrjNlBWPp45sBfffk=";
   };
 
   gradleBuildTask = "shadowJar";
-  gradleUpdateTask = finalAttrs.gradleBuildTask;
+  gradleUpdateTask = "resolveRuntimeClasspath ${finalAttrs.gradleBuildTask}";
 
   mitmCache = gradle.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
-    data = ./morphe-cli_deps.json;
+    data = lib.recursiveUpdate (lib.recursiveUpdate revanced-cli-deps morphe-patches-deps) morphe-cli-deps-filtered;
     silent = false;
     useBwrap = false;
   };
@@ -91,6 +98,7 @@ stdenv.mkDerivation (finalAttrs: {
     # Set up local maven repo with pre-built morphe-library (from separate derivation).
     mkdir -p "$root/.m2/repository"
     cp -a ${morphe-library-m2}/* "$root/.m2/repository/"
+    chmod -R u+w "$root/.m2/repository"
 
     # ---- Patch GitHub Packages repos out of build.gradle files ----
 
@@ -117,14 +125,27 @@ stdenv.mkDerivation (finalAttrs: {
     substituteInPlace "$sourceRoot/build.gradle.kts" \
       --replace-fail '        languageVersion.set(JavaLanguageVersion.of(17))' \
                      '        languageVersion.set(JavaLanguageVersion.of(21))'
-    substituteInPlace "$sourceRoot/build.gradle.kts" \
-      --replace-fail '        vendor.set(JvmVendorSpec.ADOPTIUM)' ""
+    if grep -q 'vendor.set(JvmVendorSpec.ADOPTIUM)' "$sourceRoot/build.gradle.kts"; then
+      substituteInPlace "$sourceRoot/build.gradle.kts" \
+        --replace-fail '        vendor.set(JvmVendorSpec.ADOPTIUM)' ""
+    fi
+    if grep -q 'vendor.set(JvmVendorSpec.JETBRAINS)' "$sourceRoot/build.gradle.kts"; then
+      substituteInPlace "$sourceRoot/build.gradle.kts" \
+        --replace-fail '        vendor.set(JvmVendorSpec.JETBRAINS)' ""
+    fi
     substituteInPlace "$sourceRoot/build.gradle.kts" \
       --replace-fail '        jvmTarget.set(JvmTarget.JVM_17)' \
                      '        jvmTarget.set(JvmTarget.JVM_21)'
 
     # ---- Disable signing tasks (no GPG in sandbox) ----
-    echo 'tasks.withType<Sign> { enabled = false }' >> "$sourceRoot/build.gradle.kts"
+    cat >> "$sourceRoot/build.gradle.kts" <<'EOF'
+    tasks.withType<Sign> { enabled = false }
+    tasks.register("resolveRuntimeClasspath") {
+        doLast {
+            configurations.runtimeClasspath.get().resolve()
+        }
+    }
+    EOF
   '';
 
   gradleFlags = [
