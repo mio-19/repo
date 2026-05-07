@@ -9,12 +9,11 @@
 let
   appPackage =
     let
-      youtubeMusicXapk = fetchurl {
-        # https://apkpure.com/youtube-music/com.google.android.apps.youtube.music/download/8.50.51#google_vignette
-        name = "youtube-music-8.50.51.xapk";
-        # https://d-12.winudf.com/b/XAPK/Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpY184NTA1MTI0MF8zNTk5NzY1Yw?_fn=WW91VHViZSBNdXNpY184LjUwLjUxX0FQS1B1cmUueGFwaw&_p=Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpYw%3D%3D&download_id=1274105489023918&is_hot=true&k=063429608b92c6e4b5d260927eab624469fdaa36
-        url = "https://web.archive.org/web/20260507091803if_/https://d-12.winudf.com/b/XAPK/Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpY184NTA1MTI0MF8zNTk5NzY1Yw?_fn=WW91VHViZSBNdXNpY184LjUwLjUxX0FQS1B1cmUueGFwaw&_p=Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpYw%3D%3D&download_id=1274105489023918&is_hot=true&k=063429608b92c6e4b5d260927eab624469fdaa36";
-        hash = "sha256-orn+EyEg1qRb0wseX8LNe5z3JgeXyCZMVX4dmFSEYf8=";
+      youtubeMusicApk = fetchurl {
+        # https://youtube-music.en.uptodown.com/android/download/1164645913-x
+        name = "youtube-music-8.47.56.apk";
+        url = "https://web.archive.org/web/20260507094903if_/https://dw.uptodown.net/dwn/MFhQ8_gxRt-iwo-ip3SSEvXz2URDWbEvJa1VW5E5CY00eaurN8S5euBXJStp8VNfRc6T_8UPIBZzZDDRsjTsw-UsqM4QHo__2GOB25F3d6HKuP_WvTUFqp8vIi110pnN/uMMoLcNJq_uDd3yis7FL-VEta8MdZQXkGUsKlsa7XnAW61zplE8l3J6Myzv8993gAHuHbqcWfSWqbx9d9GNLSjd4TwTmAUV9Bw6tk3mo1Ju6Ze_SBa6aPGjN5gQJBlEn/pxOEgaYm2OPaBFn76E2LzVBd96O6d_0rtEKf0gjLcLbXF9bt0U4fkEUw08SOmschh_mCqlDtxrXCmsilH6qEwenDPf56d17EhJzaeYG2dZY=/youtube-music-8-47-56.apk";
+        hash = "";
       };
 
       morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
@@ -42,7 +41,7 @@ let
           --unsigned \
           --temporary-files-path "$workdir/tmp" \
           --out "$workdir/youtube-music-morphe.apk" \
-          ${youtubeMusicXapk}
+          ${youtubeMusicApk}
 
         runHook postBuild
       '';
