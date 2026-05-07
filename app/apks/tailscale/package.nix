@@ -17,13 +17,13 @@
 let
   appPackage =
     let
-      version = "1.96.4";
+      version = "1.98.0";
 
       src = fetchFromGitHub {
         owner = "tailscale";
         repo = "tailscale-android";
-        tag = "1.96.4-t8cf541dfd-g980f12083";
-        hash = "sha256-CmcXDvxa0TIV3+D3xMFbE+RdcewLj0Kke5vBYQP5uBw=";
+        tag = "1.98.0-t040bc81ba-g3778592bd";
+        hash = "sha256-D9KWrE1qR7t7giVNYvMJQLi74zGJmwa1qtu++ToO+wk=";
       };
 
       xMobileSrc = fetchFromGitHub {
@@ -42,7 +42,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-L2U5bFoVfTYtTyDGnbARLdwPtOJhFz47okTEkPxPWl4=";
+        outputHash = "sha256-CaKmhrA5QZ8pVd15i/bE8UU9kcQuRgCpBGF1Kvq+FQ8=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -74,6 +74,7 @@ let
 
         installPhase = ''
           runHook preInstall
+          chmod -R u+w "$TMPDIR/go-mod-cache"
           mv "$TMPDIR/go-mod-cache" "$out"
           runHook postInstall
         '';
