@@ -10,8 +10,8 @@ let
   appPackage =
     let
       youtubeApk = fetchurl {
-        # APKPure page: https://apkpure.com/youtube-2025/com.google.android.youtube/download/20.45.36
-        name = "youtube-20.45.36.apk";
+        # APKPure page: https://apkpure.com/youtube-2025/com.google.android.youtube/download/21.16.256
+        name = "youtube-21.16.256.apk";
         url = "https://web.archive.org/web/20260320225634if_/https://d-e03.winudf.com/b/APK/Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmVfMTU1NzkxNTA3Ml85OTIyYWNmOQ?_fn=WW91VHViZV8yMC40NS4zNl9BUEtQdXJlLmFwaw&_p=Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmU%3D&download_id=otr_1725909013636193&is_hot=true&k=9f03bd4e067ebc6cb974ef88609df1a969bf21d9&uu=https%3A%2F%2Fd-15.winudf.com%2Fb%2FAPK%2FY29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmVfMTU1NzkxNTA3Ml85OTIyYWNmOQ%3Fk%3D10dfa553ab84c1f507b4e3ee5da6e81069bf21d9";
         hash = "sha256-X9nE2heHhCIXgI1IYPFyE+t+1aS3blZ5m396ZODoCtc=";
       };
