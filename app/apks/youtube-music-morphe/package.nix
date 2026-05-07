@@ -66,7 +66,7 @@ mk-apk-package {
   mainApk = "youtube-music-morphe.apk";
   signScriptName = "sign-youtube-music-morphe";
   fdroid = {
-    appId = "app.morphe.android.apps.youtube.music";
+    appId = "com.google.android.apps.youtube.music.morphe";
     metadataYml = ''
       Categories:
         - Multimedia
