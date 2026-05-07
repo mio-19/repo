@@ -9,11 +9,12 @@
 let
   appPackage =
     let
-      youtubeMusicApk = fetchurl {
-        # Uptodown page: https://youtube-music.en.uptodown.com/android/download/1122511188
-        name = "youtube-music-8.44.54.apk";
-        url = "https://web.archive.org/web/20260320232250if_/https://dw.uptodown.net/dwn/rR6WO7qAeWNMQVK2Kv2yN_Xwa4SWIGrnFnokkuiNlSWDAnJEcO2DbmiGf9okDhVlWPcisCrmVJjKb37-OMwkgJqstr1eYW-YkOs4wgg8U7KQgKyh3eAyoSVHgeuC2ElI/jR8t9imqnEeE1DSQxvsKpbySgppdp6ywHykm40yJXaT7upLk7WaRmyyg1VYHRGt-dUU4i_1P0nLWWz2vNmXbP18pwNmnZkXwtUQGYQMMe4eTvf2xyREB8Bh7sKyGFMVl/QjOf1ZYFbUHFcu-Sn937d2-kjFYEf_5D6z7uZjZVK_LJoDXVmYG3UplGHfDqrfbifWd-BrZgwfqjwDH7wRLBLU9Dl53EAvU-FJvLRgFxdKQ=/youtube-music-8-44-54.apk";
-        hash = "sha256-y5zjbRRS/M/t9lvPvQY21QXzjMXlUcibiE2Wn4OAYlQ=";
+      youtubeMusicXapk = fetchurl {
+        # https://apkpure.com/youtube-music/com.google.android.apps.youtube.music/download/8.50.51#google_vignette
+        name = "youtube-music-8.50.51.xapk";
+        # https://d-12.winudf.com/b/XAPK/Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpY184NTA1MTI0MF8zNTk5NzY1Yw?_fn=WW91VHViZSBNdXNpY184LjUwLjUxX0FQS1B1cmUueGFwaw&_p=Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpYw%3D%3D&download_id=1274105489023918&is_hot=true&k=063429608b92c6e4b5d260927eab624469fdaa36
+        url = "https://web.archive.org/web/20260507091803if_/https://d-12.winudf.com/b/XAPK/Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpY184NTA1MTI0MF8zNTk5NzY1Yw?_fn=WW91VHViZSBNdXNpY184LjUwLjUxX0FQS1B1cmUueGFwaw&_p=Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpYw%3D%3D&download_id=1274105489023918&is_hot=true&k=063429608b92c6e4b5d260927eab624469fdaa36";
+        hash = "";
       };
 
       morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
@@ -33,8 +34,6 @@ let
 
         workdir="$TMPDIR/youtube-music-morphe"
         mkdir -p "$workdir"
-        cp ${youtubeMusicApk} "$workdir/input.apk"
-        chmod u+w "$workdir/input.apk"
 
         morphe-cli patch \
           --patches=${morphePatches} \
@@ -43,7 +42,7 @@ let
           --unsigned \
           --temporary-files-path "$workdir/tmp" \
           --out "$workdir/youtube-music-morphe.apk" \
-          "$workdir/input.apk"
+          ${youtubeMusicXapk}
 
         runHook postBuild
       '';
