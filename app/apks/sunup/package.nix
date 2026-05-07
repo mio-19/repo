@@ -14,14 +14,14 @@
   overrides-fromsrc-updated,
 }:
 let
-  version = "1.3.1";
+  version = "1.3.2";
 
   src = fetchFromGitea {
     domain = "codeberg.org";
     owner = "Sunup";
     repo = "android";
     rev = version;
-    hash = "sha256-9KoM8a8sMvN0zNv5gXPZDOjv1U+oI5WA/w2Ilcdn/mI=";
+    hash = "sha256-tkkUUEFdYjJEweEsr3XB2mkifsBoSksduQviYJCGoiM=";
   };
 
   androidSdk = androidSdkBuilder (s: [

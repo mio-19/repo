@@ -10,7 +10,8 @@
   androidSdkBuilder,
 }:
 let
-  rev = "c342320fe7c1a9f5f80869e2bc25f299cffba1a4";
+  version = "6.2.0";
+  rev = "v${version}";
   gradleFlavor = "Basic";
   releaseFlavor = "standard";
 
@@ -29,7 +30,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "breezy-weather";
-      version = "unstable-2026-05-01";
+      inherit version;
 
       src = fetchFromGitHub {
         owner = "breezy-weather";
