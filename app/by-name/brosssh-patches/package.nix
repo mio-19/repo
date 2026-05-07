@@ -35,6 +35,12 @@ let
     hash = "sha256-2UO6zDAFeURrt9U9f7gNDA8J5X3o8Ct96/rItUq644g=";
   };
 
+  morphe-cli-deps = lib.importJSON ../morphe-cli/morphe-cli_deps.json;
+  morphe-cli-deps-filtered = morphe-cli-deps // {
+    "https:/" = builtins.removeAttrs morphe-cli-deps."https:/" [ "api.github" ];
+  };
+  brosssh-patches-deps = lib.importJSON ./morphe-patches_deps.json;
+
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "brosssh-patches";
@@ -147,7 +153,7 @@ stdenv.mkDerivation (finalAttrs: {
   mitmCache = gradle.fetchDeps {
     pname = "brosssh-patches";
     pkg = finalAttrs.finalPackage;
-    data = ./morphe-patches_deps.json;
+    data = lib.recursiveUpdate morphe-cli-deps-filtered brosssh-patches-deps;
     silent = false;
     useBwrap = false;
   };

@@ -28,6 +28,12 @@ let
     rev = "d003b5ff1ca91fb8c5105619cf1108b450387061";
     hash = "sha256-2UO6zDAFeURrt9U9f7gNDA8J5X3o8Ct96/rItUq644g=";
   };
+
+  morphe-cli-deps = lib.importJSON ../morphe-cli/morphe-cli_deps.json;
+  morphe-cli-deps-filtered = morphe-cli-deps // {
+    "https:/" = builtins.removeAttrs morphe-cli-deps."https:/" [ "api.github" ];
+  };
+  morphe-patches-library-deps = lib.importJSON ./morphe-patches-library_deps.json;
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches-library-m2";
@@ -46,7 +52,7 @@ stdenv.mkDerivation (finalAttrs: {
   mitmCache = gradle.fetchDeps {
     pname = "morphe-patches-library";
     pkg = finalAttrs.finalPackage;
-    data = ./morphe-patches-library_deps.json;
+    data = lib.recursiveUpdate morphe-cli-deps-filtered morphe-patches-library-deps;
     silent = false;
     useBwrap = false;
   };
