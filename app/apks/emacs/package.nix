@@ -27,17 +27,17 @@ let
       versionCode = "310050029";
       androidAbi = "arm64-v8a";
       minSdk = "29";
-      internalVersion = "31.0.50";
+      internalVersion = "32.0.50";
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "emacs";
-      version = "31-unstable-20260502";
+      version = "32-unstable-20260508";
 
       src = fetchFromGitHub {
         owner = "emacs-mirror";
         repo = "emacs";
-        rev = "e420725935836298f0083c2a83e2c4fa3f0b4375";
-        hash = "sha256-meRK2oCeePN8zk6vsWY5/r0VB8v2gjwhMQdTOapj+ww=";
+        rev = "90f8f27a5806896614d22e299abef2a6b2d78cf8";
+        hash = "sha256-U7XCHjSUBQOrEufnAxZh3R6zFvBwwX6C1CEBRLlbkwE=";
       };
 
       nativeBuildInputs = [
@@ -56,6 +56,8 @@ let
       };
 
       postPatch = ''
+        substituteInPlace configure.ac \
+          --replace-fail 'module_env_snippet_31="$srcdir/src/module-env-32.h"' 'module_env_snippet_32="$srcdir/src/module-env-32.h"'
         substituteInPlace java/AndroidManifest.xml.in \
           --replace-fail 'android:versionCode="30"' 'android:versionCode="${versionCode}"'
         substituteInPlace java/Makefile.in \
@@ -136,7 +138,7 @@ mk-apk-package {
         GNU Emacs is an extensible, customizable, free/libre text
         editor and Lisp environment.
 
-        This build is compiled from source from the current Emacs 31.0.50
+        This build is compiled from source from the current Emacs 32.0.50
         development snapshot and configured with the shared user ID `com.termux`,
         so it can access the files and executables of the Termux app
         from this repo when both are installed and signed together.

@@ -321,7 +321,7 @@
     },
     "google_gallery": {
         "cargoLock": null,
-        "date": "2026-05-06",
+        "date": "2026-05-07",
         "extract": null,
         "name": "google_gallery",
         "passthru": null,
@@ -331,13 +331,13 @@
             "fetchSubmodules": true,
             "leaveDotGit": false,
             "name": null,
-            "rev": "115d3550ff7e50098e60ca9e285e4a7dc034bc27",
-            "sha256": "sha256-QKZ8RbH5PkHWfHcfzzMtpJXJcb4/nJIwPnVyWeW6c5A=",
+            "rev": "cdaa184a307c622fbcf8adee5f67e69399147738",
+            "sha256": "sha256-LKEan41ZiYPI9PPSEs3UXKWOf9FbgSFgrR9DrgnZCic=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/google-ai-edge/gallery.git"
         },
-        "version": "115d3550ff7e50098e60ca9e285e4a7dc034bc27"
+        "version": "cdaa184a307c622fbcf8adee5f67e69399147738"
     },
     "grapheneos_appstore": {
         "cargoLock": null,
@@ -401,7 +401,7 @@
     },
     "grapheneos_pdfviewer": {
         "cargoLock": null,
-        "date": "2026-05-06",
+        "date": "2026-05-07",
         "extract": null,
         "name": "grapheneos_pdfviewer",
         "passthru": null,
@@ -411,13 +411,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "a5225f9491d60e0a1ce5f2bbda2d6210d7796a92",
-            "sha256": "sha256-luHk6aptlPHoJQd9IxEOC4pgjHSakQTziBNPMrqzFXA=",
+            "rev": "c7a856991df359e010dad075e5df3f40ec7189c9",
+            "sha256": "sha256-k3gN8pXASV6oEPtK1c0ai/JWMKsDV7E3+re4j0h9ric=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/GrapheneOS/PdfViewer.git"
         },
-        "version": "a5225f9491d60e0a1ce5f2bbda2d6210d7796a92"
+        "version": "c7a856991df359e010dad075e5df3f40ec7189c9"
     },
     "gta4xlwifi-evobka-kernel": {
         "cargoLock": null,
@@ -1138,6 +1138,26 @@
             "url": "https://github.com/termux/termux-app.git"
         },
         "version": "30ebb2dee381d292ade0f2868cfde0f9f20b89fe"
+    },
+    "termux_x11": {
+        "cargoLock": null,
+        "date": "2026-05-06",
+        "extract": null,
+        "name": "termux_x11",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": true,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "d04adbc355d6b573085f00a64b65e1776c7c3f2f",
+            "sha256": "sha256-r6qYATxEULibaY0QIzLZfKW5l+77+te1pn/+pcvOBY0=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/termux/termux-x11.git"
+        },
+        "version": "d04adbc355d6b573085f00a64b65e1776c7c3f2f"
     },
     "vendor_gapps15": {
         "cargoLock": null,

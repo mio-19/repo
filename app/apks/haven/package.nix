@@ -270,14 +270,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.26.0";
+      version = "5.27.0";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-mn9PMtg++ofhnNyznHFhKunfTHycHvxlaCZ0esI1KwM=";
+        hash = "sha256-95fQN36XTmQxGA7jyjUQdKZSChc4kadFuCmVZfWpgME=";
       };
 
       patches = [

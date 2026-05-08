@@ -6,7 +6,7 @@
   lib,
   jdk25_headless,
   jdk17_headless,
-  gradle_9_4_0,
+  gradle_9_4_1,
   fetchpatch,
   fetchNpmDeps,
   npmHooks,
@@ -23,11 +23,11 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
-        s.platforms-android-36
-        s.build-tools-36-1-0
+        s.platforms-android-37-0
+        s.build-tools-37-0-0
       ]);
 
-      gradle = gradle_9_4_0;
+      gradle = gradle_9_4_1;
     in
     buildGradlePackage rec {
       pname = "pdfviewer";
@@ -48,7 +48,7 @@ let
       npmDeps = fetchNpmDeps {
         pname = "npm-deps-${pname}";
         inherit version src;
-        hash = "sha256-85HFjukStCgVSqvmE3ODfzb3ZAcZ3nhqFcH8UpP5aQI=";
+        hash = "sha256-VynyxVffpc6RB3Yjx6MzKnGJeCp9OHD1nUBhr4LpUUU=";
       };
 
       patches = [
@@ -86,7 +86,7 @@ let
       env = {
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2";
       };
 
       preConfigure = ''
@@ -127,8 +127,8 @@ let
         "-Dorg.gradle.java.home=${jdk25_headless.home}"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk17_headless}/lib/openjdk,${jdk25_headless}/lib/openjdk"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
       ];
 
       gradleBuildFlags = ":app:assembleRelease";

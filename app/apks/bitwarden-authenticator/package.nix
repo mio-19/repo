@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   pkgs,
-  gradle_9_3_1,
+  gradle_9_4_1,
   jdk25_headless,
   stdenv,
   fetchFromGitHub,
@@ -27,19 +27,19 @@ let
         s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_3_1;
+      gradle = gradle_9_4_1;
 
-      # https://github.com/bitwarden/android/blob/v2026.4.0-bwa/gradle/libs.versions.toml#L33 bitwardenSdk = "2.0.0-5676-14521973"
+      # https://github.com/bitwarden/android/blob/v2026.4.1-bwa/gradle/libs.versions.toml#L33 bitwardenSdk = "2.0.0-6074-f373e7f3"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
-        rev = "14521973668ec4f5e3de86e474637cc68bd70ac3";
-        hash = "sha256-EZZa3Cv7HdQKy9JCqqrn6s/CQJ1LECvl5UIWSztvIKE=";
+        rev = "f373e7f362b5540f735c6bead5354366ad2a9c01";
+        hash = "sha256-1cPEPwk0g5DwLZYBikv57muOktDIgMKgKdgDYQjFo8E=";
       };
 
       sdkSrcLock = fetchurl {
         url = "${sdkSrc.meta.homepage}/raw/${sdkSrc.rev}/Cargo.lock";
-        hash = "sha256-dZGh3z/twScrWkX1rcJWmcnqorsVYQq3ZbKgCsooE8o=";
+        hash = "sha256-FwHON4+0VqAru1+76yjGhItV7zOCyVqHPcQ6OpdmElU=";
       };
 
       androidCrossConfig = {
@@ -91,7 +91,6 @@ let
             lockFile = sdkSrcLock;
             outputHashes = {
               "passkey-0.5.0" = "sha256-vOeb5y3NImP1YQxs70FRiJACtQK+IdtE0HeHHUJoK5o=";
-              "uniffi-0.29.4" = "sha256-uUENtV5Oo+Gz5p44e+f2SDX6ea3tlWlLqAFOLBnxHwg=";
             };
           };
 
@@ -132,7 +131,6 @@ let
           lockFile = sdkSrcLock;
           outputHashes = {
             "passkey-0.5.0" = "sha256-vOeb5y3NImP1YQxs70FRiJACtQK+IdtE0HeHHUJoK5o=";
-            "uniffi-0.29.4" = "sha256-uUENtV5Oo+Gz5p44e+f2SDX6ea3tlWlLqAFOLBnxHwg=";
           };
         };
         cargoBuildFlags = [ "-p uniffi-bindgen" ];
@@ -152,7 +150,7 @@ let
           version = "2.0.0";
           src = sdkSrc;
           cargoRoot = ".";
-          hash = "sha256-ILDl8qR0luBep87KVh8xyEDsWNNda4CPm95+qB/u2TQ=";
+          hash = "sha256-NzLkiAGPaNJ3QgZsgcuzgIDbT3PHe9sOjm8H/LiZqoE=";
         };
         nativeBuildInputs = [
           rustPlatform.cargoSetupHook
@@ -185,13 +183,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-authenticator";
-      version = "2026.4.0";
+      version = "2026.4.1";
 
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
         tag = "v${finalAttrs.version}-bwa";
-        hash = "sha256-LQKa3kQowDKGC5Nu6aWXW7B6/FFWoo0A42GEsu8PA8U=";
+        hash = "sha256-631yoKCkH2I/7AoPRnRA42w8nkrKapwX/O1qILKZ+oQ=";
       };
 
       gradleBuildTask = ":authenticator:assembleRelease";
@@ -220,6 +218,12 @@ let
       };
 
       preConfigure = ''
+        for proxy_var in http_proxy https_proxy HTTP_PROXY HTTPS_PROXY; do
+          proxy_val="$(printenv "$proxy_var" || true)"
+          if [ -n "$proxy_val" ] && [ "''${proxy_val#*://}" = "$proxy_val" ]; then
+            export "$proxy_var=http://$proxy_val"
+          fi
+        done
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
@@ -230,7 +234,12 @@ let
         gitHubToken=
         EOF
         if [[ -n "''${IN_GRADLE_UPDATE_DEPS:-}" ]]; then
-          export GRADLE_USER_HOME="$HOME/.gradle"
+          gradleFlagsArray+=(
+            "-Dhttp.proxyHost=$MITM_CACHE_HOST"
+            "-Dhttp.proxyPort=$MITM_CACHE_PORT"
+            "-Dhttps.proxyHost=$MITM_CACHE_HOST"
+            "-Dhttps.proxyPort=$MITM_CACHE_PORT"
+          )
         fi
         substituteInPlace gradle/libs.versions.toml \
           --replace-fail 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version.ref = "bitwardenSdk" }' 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version = "LOCAL" }'
@@ -280,7 +289,8 @@ let
                     dependencies.create("org.jetbrains.kotlin:kotlin-stdlib:1.6.10"),
                     dependencies.create("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2"),
                     dependencies.create("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2"),
-                    dependencies.create("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0@jar")
+                    dependencies.create("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0@jar"),
+                    dependencies.create("com.android.tools.build:gradle:9.2.1")
                 ).apply {
                     isCanBeConsumed = false
                     isCanBeResolved = true
@@ -289,6 +299,7 @@ let
                         attribute(org.gradle.api.attributes.Usage.USAGE_ATTRIBUTE, objects.named(org.gradle.api.attributes.Usage.JAVA_RUNTIME))
                         attribute(org.gradle.api.attributes.LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(org.gradle.api.attributes.LibraryElements.JAR))
                         attribute(org.gradle.api.attributes.Bundling.BUNDLING_ATTRIBUTE, objects.named(org.gradle.api.attributes.Bundling.EXTERNAL))
+                        attribute(org.gradle.api.attributes.java.TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(org.gradle.api.attributes.java.TargetJvmEnvironment.STANDARD_JVM))
                     }
                 }
                 nixJvmBootstrap.resolve()
@@ -337,8 +348,8 @@ let
 
                 cd "$sdkKotlinDir"
                 substituteInPlace build.gradle \
-                  --replace-fail "id 'com.android.application' version '8.9.0' apply false" "id 'com.android.application' version '9.1.0' apply false" \
-                  --replace-fail "id 'com.android.library' version '8.9.0' apply false" "id 'com.android.library' version '9.1.0' apply false" \
+                  --replace-fail "id 'com.android.application' version '8.9.0' apply false" "id 'com.android.application' version '9.2.1' apply false" \
+                  --replace-fail "id 'com.android.library' version '8.9.0' apply false" "id 'com.android.library' version '9.2.1' apply false" \
                   --replace-fail "id 'org.jetbrains.kotlin.android' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.android' version '2.3.20' apply false" \
                   --replace-fail "id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.serialization' version '2.3.20' apply false" \
                   --replace-fail "id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.compose' version '2.3.20' apply false"
@@ -370,7 +381,7 @@ let
                       resolutionStrategy {
                           eachPlugin {
                               if (requested.id.id == \"com.android.application\" || requested.id.id == \"com.android.library\") {
-                                  useModule(\"com.android.tools.build:gradle:9.1.0\")
+                                  useModule(\"com.android.tools.build:gradle:9.2.1\")
                               }
                               if (requested.id.id == \"org.jetbrains.kotlin.android\" || requested.id.id == \"org.jetbrains.kotlin.plugin.serialization\" || requested.id.id == \"org.jetbrains.kotlin.plugin.compose\") {
                                   useModule(\"org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.20\")
@@ -394,9 +405,20 @@ let
                 chmod -R u+w ./sdk/src/main/java
                 mkdir -p ./sdk/build/intermediates/annotations_typedef_file/release/extractReleaseAnnotations
                 : > ./sdk/build/intermediates/annotations_typedef_file/release/extractReleaseAnnotations/typedefs.txt
-                if [[ -z "''${IN_GRADLE_UPDATE_DEPS:-}" ]]; then
-                  ${gradle}/bin/gradle --no-daemon sdk:publishToMavenLocal -Pversion=LOCAL
+                sdkPublishFlags=(--no-daemon)
+                sdkPublishEnv=()
+                if [[ -n "''${IN_GRADLE_UPDATE_DEPS:-}" ]]; then
+                  mkdir -p "$repoRoot/.gradle-sdk-publish"
+                  sdkPublishEnv=(
+                    env
+                    -u http_proxy
+                    -u https_proxy
+                    -u HTTP_PROXY
+                    -u HTTPS_PROXY
+                    "GRADLE_USER_HOME=$repoRoot/.gradle-sdk-publish"
+                  )
                 fi
+                "''${sdkPublishEnv[@]}" ${gradle}/bin/gradle "''${sdkPublishFlags[@]}" sdk:publishToMavenLocal -Pversion=LOCAL
 
                 cd "$repoRoot"
       '';

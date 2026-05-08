@@ -186,6 +186,12 @@ src.git = "https://github.com/termux/termux-app.git"
 src.branch = "master"
 fetch.git = "https://github.com/termux/termux-app.git"
 
+[termux_x11]
+src.git = "https://github.com/termux/termux-x11.git"
+src.branch = "master"
+fetch.git = "https://github.com/termux/termux-x11.git"
+git.fetchSubmodules = true
+
 # samsung-sm8550-cola2261 sources for dm3q, tracking lineage-23.2
 [cola2261_device_dm3q]
 src.git = "https://github.com/samsung-sm8550-cola2261/android_device_samsung_dm3q.git"

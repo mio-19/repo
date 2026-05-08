@@ -23,14 +23,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "mastodon-android";
-      version = "2.11.11-unstable-2026-05-01";
+      version = "2.12.1";
 
       src = fetchFromGitHub {
         owner = "mastodon";
         repo = "mastodon-android";
-        #tag = "v${finalAttrs.version}";
-        rev = "4a63c53958fb12c2941ecd4fd0cc1731a5963483";
-        hash = "sha256-qu7vrQWX9VJ0sSxbVCvNK1B5CGv3w2+TlQM0CUp895w=";
+        tag = "v${finalAttrs.version}";
+        hash = "sha256-6QOpJdiqfJUL8K8seEduV4CymmCTpxTsK9t3cWrKBao=";
       };
 
       patches = [
