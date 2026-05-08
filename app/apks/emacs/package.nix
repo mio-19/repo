@@ -27,17 +27,19 @@ let
       versionCode = "310050029";
       androidAbi = "arm64-v8a";
       minSdk = "29";
-      internalVersion = "32.0.50";
+      internalVersion = "31.0.60";
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "emacs";
-      version = "32-unstable-20260508";
+      version = "31-unstable-20260508";
 
       src = fetchFromGitHub {
         owner = "emacs-mirror";
         repo = "emacs";
-        rev = "90f8f27a5806896614d22e299abef2a6b2d78cf8";
-        hash = "sha256-U7XCHjSUBQOrEufnAxZh3R6zFvBwwX6C1CEBRLlbkwE=";
+        # Snapshot from the emacs-31 branch:
+        # https://github.com/emacs-mirror/emacs/tree/emacs-31
+        rev = "060451d6e0b3c91882c62ae1a574125c1f448487";
+        hash = "sha256-krO6DOt0MkGK151M2dOl6bV97ZrOnv6P1sNQw6bLuKw=";
       };
 
       nativeBuildInputs = [
@@ -56,8 +58,6 @@ let
       };
 
       postPatch = ''
-        substituteInPlace configure.ac \
-          --replace-fail 'module_env_snippet_31="$srcdir/src/module-env-32.h"' 'module_env_snippet_32="$srcdir/src/module-env-32.h"'
         substituteInPlace java/AndroidManifest.xml.in \
           --replace-fail 'android:versionCode="30"' 'android:versionCode="${versionCode}"'
         substituteInPlace java/Makefile.in \
@@ -138,7 +138,7 @@ mk-apk-package {
         GNU Emacs is an extensible, customizable, free/libre text
         editor and Lisp environment.
 
-        This build is compiled from source from the current Emacs 32.0.50
+        This build is compiled from source from the current Emacs 31.0.60
         development snapshot and configured with the shared user ID `com.termux`,
         so it can access the files and executables of the Termux app
         from this repo when both are installed and signed together.
