@@ -103,6 +103,10 @@
             src = inputs.robotnix.outPath;
             name = "robotnix-patched";
             patches = [
+              (fetchpatch {
+                url = "https://github.com/nix-community/robotnix/pull/385.patch";
+                hash = "sha256-YRWREQztPq9WvXIpZW54IWJ52wxAMv4sF4euSmOr1/Q=";
+              })
             ];
           };
           robotnixPatched =
