@@ -3,25 +3,21 @@
   temurin-bin-11,
   temurin-bin-17,
   jdk17_headless,
-  gradle-packages,
   gradle-from-source,
+  gradle_7_0,
+  mergeLock,
   stdenv,
 }:
-let
-  bootstrapGradle =
-    (gradle-packages.mkGradle {
-      version = "7.2";
-      hash = "sha256-9YFwmpw16cuS4W9YXSxLyZsrGl+F0rrb09xr/1nh5t0=";
-      defaultJava = jdk17_headless;
-    }).wrapped;
-in
 if stdenv.isDarwin then
-  bootstrapGradle
+  gradle_7_0
 else
   gradle-from-source {
     version = "7.2";
     hash = "sha256-W5lcqilYDT25LQEYZHAv+hBNeRm7s2/iamgajaDVf9o=";
-    lockFile = ./gradle.lock;
+    lockFile = mergeLock [
+      ./gradle.lock
+      ./source-bootstrap.gradle.lock
+    ];
     defaultJava = jdk17_headless;
     # this version specifically ask for termurin branded jdk.
     buildJdk = temurin-bin-11;
@@ -30,13 +26,31 @@ else
       temurin-bin-11
       temurin-bin-17
     ];
-    bootstrapGradle = bootstrapGradle;
+    bootstrapGradle = gradle_7_0;
     patches = [
       ./repository.patch
       ./configuration-cache-jdk11-compat.patch
     ];
     postPatch = ''
           # remove strict toolchain vendor and implementation requirements
+          for f in \
+            build-logic-commons/code-quality/build.gradle.kts \
+            build-logic-commons/gradle-plugin/build.gradle.kts
+          do
+            substituteInPlace "$f" \
+              --replace-fail \
+                'org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:2.1.6' \
+                'org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:2.1.4'
+          done
+          substituteInPlace build-logic/binary-compatibility/src/main/groovy/gradlebuild/binarycompatibility/rules/AcceptedRegressionsRulePostProcess.java \
+            --replace-fail \
+              'import org.gradle.util.internal.CollectionUtils;' \
+              'import java.util.stream.Collectors;'
+          substituteInPlace build-logic/binary-compatibility/src/main/groovy/gradlebuild/binarycompatibility/rules/AcceptedRegressionsRulePostProcess.java \
+            --replace-fail \
+              'String formattedLeft = CollectionUtils.join("\n", left);' \
+              'String formattedLeft = left.stream().map(Object::toString).collect(Collectors.joining("\n"));'
+
           find . -name "*.gradle" -o -name "*.gradle.kts" -print0 | xargs -0 sed -i -E \
             -e 's/vendor = JvmVendorSpec.ADOPTOPENJDK/vendor = JvmVendorSpec.matching(".*")/g' \
             -e 's/vendor.set\(JvmVendorSpec.ADOPTOPENJDK\)/vendor.set(JvmVendorSpec.matching(".*"))/g' \
