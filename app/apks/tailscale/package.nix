@@ -17,13 +17,13 @@
 let
   appPackage =
     let
-      version = "1.98.0";
+      version = "1.98.1";
 
       src = fetchFromGitHub {
         owner = "tailscale";
         repo = "tailscale-android";
-        tag = "1.98.0-t040bc81ba-g3778592bd";
-        hash = "sha256-D9KWrE1qR7t7giVNYvMJQLi74zGJmwa1qtu++ToO+wk=";
+        tag = "1.98.1-t2f4c02ee6-ge2d1cd6d0";
+        hash = "sha256-IhuMl9kA0jXMUVHyyylEuIo62AK0nAz5Egejce2oNDU=";
       };
 
       xMobileSrc = fetchFromGitHub {
@@ -42,7 +42,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-CaKmhrA5QZ8pVd15i/bE8UU9kcQuRgCpBGF1Kvq+FQ8=";
+        outputHash = "sha256-nmoUf4QEHRy5vcNdAN+eM916tbEq8Nv+WHpRo0WkxPM=";
 
         dontConfigure = true;
         dontFixup = true;
