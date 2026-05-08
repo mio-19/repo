@@ -1,0 +1,65 @@
+diff -ruN /tmp/tmp.S1MB0LN5qe/a/buildSrc/build.gradle.kts /tmp/tmp.S1MB0LN5qe/b/buildSrc/build.gradle.kts
+--- a/buildSrc/build.gradle.kts	2026-05-01 05:05:54.378428569 +1000
++++ b/buildSrc/build.gradle.kts	2026-05-01 05:05:54.380428553 +1000
+@@ -46,26 +46,16 @@
+             implementation(gradleApi())
+         }
+
+-        afterEvaluate {
+-            if (tasks.withType<ValidatePlugins>().isEmpty()) {
+-                val validatePlugins by tasks.registering(ValidatePlugins::class) {
+-                    outputFile.set(project.reporting.baseDirectory.file("task-properties/report.txt"))
+
+-                    val mainSourceSet = project.sourceSets.main.get()
+-                    classes.setFrom(mainSourceSet.output.classesDirs)
+-                    dependsOn(mainSourceSet.output)
+-                    classpath.setFrom(mainSourceSet.runtimeClasspath)
+-                }
+-                tasks.check { dependsOn(validatePlugins) }
+-            }
+-        }
++        apply(from = "../../../gradle/shared-with-buildSrc/code-quality-configuration.gradle.kts")
++    }
++}
+
+-        tasks.withType<ValidatePlugins>().configureEach {
+-            failOnWarning.set(true)
+-            enableStricterValidation.set(true)
++subprojects {
++    tasks.all {
++        if (name.startsWith("compileTest") || name.startsWith("codenarc") || name.startsWith("checkstyle") || name == "test" || name == "check" || name.endsWith("Check") || name == "validateTaskProperties") {
++            enabled = false
+         }
+-
+-        apply(from = "../../../gradle/shared-with-buildSrc/code-quality-configuration.gradle.kts")
+     }
+ }
+
+diff -ruN /tmp/tmp.S1MB0LN5qe/a/buildSrc/subprojects/buildquality/src/main/kotlin/gradlebuild.ci-reporting.gradle.kts /tmp/tmp.S1MB0LN5qe/b/buildSrc/subprojects/buildquality/src/main/kotlin/gradlebuild.ci-reporting.gradle.kts
+--- a/buildSrc/subprojects/buildquality/src/main/kotlin/gradlebuild.ci-reporting.gradle.kts	2026-05-01 05:05:54.382428538 +1000
++++ b/buildSrc/subprojects/buildquality/src/main/kotlin/gradlebuild.ci-reporting.gradle.kts	2026-05-01 05:05:54.384428522 +1000
+@@ -141,7 +141,6 @@
+ }
+
+ fun Task.failedTaskCustomReports() = when (this) {
+-    is ValidatePlugins -> listOf(outputFile.get().asFile to project.name)
+     is Classycle -> listOf(reportFile to project.name)
+     is FindBrokenInternalLinks -> listOf(reportFile.get().asFile to project.name)
+     is DistributionTest -> listOf(
+diff -ruN /tmp/tmp.S1MB0LN5qe/a/buildSrc/subprojects/buildquality/src/main/kotlin/gradlebuild.task-properties-validation.gradle.kts /tmp/tmp.S1MB0LN5qe/b/buildSrc/subprojects/buildquality/src/main/kotlin/gradlebuild.task-properties-validation.gradle.kts
+--- a/buildSrc/subprojects/buildquality/src/main/kotlin/gradlebuild.task-properties-validation.gradle.kts	2026-05-01 05:05:54.384428522 +1000
++++ b/buildSrc/subprojects/buildquality/src/main/kotlin/gradlebuild.task-properties-validation.gradle.kts	2026-05-01 05:05:54.386428505 +1000
+@@ -18,13 +18,3 @@
+     java
+ }
+
+-val validateTaskName = "validatePlugins"
+-val reportFileName = "task-properties/report.txt"
+-
+-tasks.register<ValidatePlugins>(validateTaskName) {
+-    val main = project.sourceSets.main.get()
+-    classes.from(main.output)
+-    classpath.from(main.runtimeClasspath)
+-    outputFile.set(project.reporting.baseDirectory.file(reportFileName))
+-    enableStricterValidation.set(true)
+-}
