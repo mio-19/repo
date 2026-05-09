@@ -1,6 +1,7 @@
 {
-  jdk8_headless,
-  jdk11_headless,
+  temurin-bin-8,
+  temurin-bin-11,
+  temurin-bin-17,
   jdk17_headless,
   gradle-from-source,
   gradle_7_0,
@@ -18,22 +19,12 @@ else
       ./source-bootstrap.gradle.lock
     ];
     defaultJava = jdk17_headless;
-    # gradle-from-source strips upstream Adoptium toolchain vendor requirements.
-    buildJdk = jdk11_headless;
-    avoidSingleUseDaemon = true;
-    extraDaemonJavaOpts = [
-      "-XX:-UseCompressedOops"
-      "-XX:-UseCompressedClassPointers"
-    ];
-    extraJavaOpts = [
-      "-XX:-UseCompressedOops"
-      "-XX:-UseCompressedClassPointers"
-    ];
-    forceSerialGradle = true;
+    # this version specifically ask for termurin branded jdk.
+    buildJdk = temurin-bin-11;
     javaToolchains = [
-      jdk8_headless
-      jdk11_headless
-      jdk17_headless
+      temurin-bin-8
+      temurin-bin-11
+      temurin-bin-17
     ];
     bootstrapGradle = gradle_7_0;
     patches = [
@@ -60,21 +51,16 @@ else
               'String formattedLeft = CollectionUtils.join("\n", left);' \
               'String formattedLeft = left.stream().map(Object::toString).collect(Collectors.joining("\n"));'
 
-          substituteInPlace build-logic/jvm/src/main/kotlin/gradlebuild.unittest-and-compile.gradle.kts \
-            --replace-fail \
-              $'    java.toolchain {\n        languageVersion.set(JavaLanguageVersion.of(11))\n        vendor.set(JvmVendorSpec.ADOPTOPENJDK)\n    }\n\n' \
-              "" \
-            --replace-fail \
-              '                "oracle" -> vendor.set(JvmVendorSpec.ORACLE)' \
-              '                "oracle" -> {}' \
-            --replace-fail \
-              '                "openjdk" -> vendor.set(JvmVendorSpec.ADOPTOPENJDK)' \
-              '                "openjdk" -> {}'
-
-          substituteInPlace build-logic/uber-plugins/src/main/kotlin/gradlebuild.kotlin-library.gradle.kts \
-            --replace-fail \
-              '        val launcher = javaToolchains.launcherFor(java.toolchain)' \
-              '        val launcher = javaToolchains.launcherFor { languageVersion.set(JavaLanguageVersion.of(8)) }'
+          find . -name "*.gradle" -o -name "*.gradle.kts" -print0 | xargs -0 sed -i -E \
+            -e 's/vendor = JvmVendorSpec.ADOPTOPENJDK/vendor = JvmVendorSpec.matching(".*")/g' \
+            -e 's/vendor.set\(JvmVendorSpec.ADOPTOPENJDK\)/vendor.set(JvmVendorSpec.matching(".*"))/g' \
+            -e 's/.*"oracle" -> vendor.set\(JvmVendorSpec.ORACLE\).*/"oracle" -> {}/g' \
+            -e 's/.*"openjdk" -> vendor.set\(JvmVendorSpec.ADOPTOPENJDK\).*/"openjdk" -> {}/g' \
+            -e 's/\.implementation\([^)]+\)//g' \
+            -e 's/implementation = [^ ]+/implementation = null/g' \
+            -e 's/implementation.set\([^)]+\)/implementation.set(null)/g' \
+            -e '/java\.toolchain \{/,/\}/d' \
+            -e 's/val launcher = javaToolchains.launcherFor\(java.toolchain\)/val launcher = javaToolchains.launcherFor { languageVersion.set(JavaLanguageVersion.of(8)) }/g'
 
           echo "kotlin.js.yarn.download=false" >> gradle.properties
           echo "kotlin.js.node.download=false" >> gradle.properties

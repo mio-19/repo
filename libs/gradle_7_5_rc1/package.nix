@@ -1,6 +1,7 @@
 {
-  jdk8_headless,
-  jdk11_headless,
+  temurin-bin-8,
+  temurin-bin-11,
+  temurin-bin-17,
   jdk17_headless,
   gradle-from-source,
   gradle_7_4_2,
@@ -14,11 +15,11 @@ gradle-from-source {
     ./gradle.lock
   ];
   defaultJava = jdk17_headless;
-  buildJdk = jdk11_headless;
+  buildJdk = temurin-bin-11;
   javaToolchains = [
-    jdk8_headless
-    jdk11_headless
-    jdk17_headless
+    temurin-bin-8
+    temurin-bin-11
+    temurin-bin-17
   ];
   bootstrapGradle = gradle_7_4_2;
   patches = [

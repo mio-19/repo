@@ -1,8 +1,8 @@
 # this is before gradle v8.11.0-M1. before commit https://github.com/gradle/gradle/commit/370ef936bf8edd86bc881ad1f54229c164f2e67f
 {
-  jdk8_headless,
-  jdk11_headless,
-  jdk17_headless,
+  temurin-bin-8,
+  temurin-bin-11,
+  temurin-bin-17,
   jdk21_headless,
   gradle_8_11_20240807,
   gradle-from-source,
@@ -21,12 +21,12 @@ gradle-from-source {
     ./more.gradle.lock
   ];
   defaultJava = jdk21_headless;
-  # gradle-from-source strips upstream Adoptium toolchain vendor requirements.
-  buildJdk = jdk11_headless;
+  # this version specifically ask for termurin branded jdk.
+  buildJdk = temurin-bin-11;
   javaToolchains = [
-    jdk8_headless
-    jdk11_headless
-    jdk17_headless
+    temurin-bin-8
+    temurin-bin-11
+    temurin-bin-17
   ];
   bootstrapGradle = gradle_8_11_20240807;
 }

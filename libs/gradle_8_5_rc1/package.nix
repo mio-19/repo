@@ -1,7 +1,7 @@
 {
-  jdk8_headless,
-  jdk11_headless,
-  jdk17_headless,
+  temurin-bin-8,
+  temurin-bin-11,
+  temurin-bin-17,
   jdk21_headless,
   gradle_8_4,
   gradle-from-source,
@@ -18,11 +18,11 @@ gradle-from-source {
     ./disable-dependency-verification.patch
   ];
   defaultJava = jdk21_headless;
-  buildJdk = jdk11_headless;
+  buildJdk = temurin-bin-11;
   javaToolchains = [
-    jdk8_headless
-    jdk11_headless
-    jdk17_headless
+    temurin-bin-8
+    temurin-bin-11
+    temurin-bin-17
   ];
   gradleFlags = [
     "-PbuildKotlinVersion=1.9.20"

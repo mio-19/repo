@@ -26,10 +26,7 @@
 }:
 {
   configureOnDemand ? false,
-  avoidSingleUseDaemon ? false,
-  extraDaemonJavaOpts ? [ ],
-  extraJavaOpts ? [ ],
-  forceSerialGradle ? false,
+  avoidSingleUseDaemon ? false, # avoidSingleUseDaemon is working in progress
   version,
   tag ? if lib.length (lib.splitString "." version) == 2 then "v${version}.0" else "v${version}",
   rev ? null,
@@ -52,24 +49,11 @@ let
   additionalGradleFlags = gradleFlags;
   additionalPostPatch = postPatch;
   additionalPatches = patches;
-  inherit (lib) hasPrefix;
-  openJdk11BuildWorkaround = hasPrefix "11" (buildJdk.version or "");
-  effectiveAvoidSingleUseDaemon = avoidSingleUseDaemon || openJdk11BuildWorkaround;
-  effectiveForceSerialGradle = forceSerialGradle || openJdk11BuildWorkaround;
-  effectiveExtraJavaOpts = lib.unique extraJavaOpts;
-  serialGradleFlags = lib.optionals effectiveForceSerialGradle [ "--max-workers=1" ];
-  singleUseDaemonJavaOpts = lib.unique (
-    lib.optionals openJdk11BuildWorkaround [
-      "-XX:TieredStopAtLevel=1"
-      "-XX:-UseBiasedLocking"
-    ]
-    ++ extraDaemonJavaOpts
-  );
-  launcherJavaOpts = lib.unique (effectiveExtraJavaOpts ++ singleUseDaemonJavaOpts);
   toolchainPaths = lib.concatStringsSep "," (
     map (x: if x ? passthru then x.passthru.home else x) javaToolchains
   );
   lockFile' = buildMavenRepo.passthru.readLockFile lockFile;
+  inherit (lib) hasPrefix;
   filteredLockfile = lib.filterAttrs (
     key: _:
     !hasPrefix "gradle:gradle:" key
@@ -173,7 +157,6 @@ let
       ++ lib.optionals configureOnDemand [
         "--configure-on-demand" # breaks 8.7.0-20240118-1
       ]
-      ++ serialGradleFlags
       ++ additionalGradleFlags;
 
       gradleBuildFlags = [ ":distributions-full:binDistributionZip" ];
@@ -187,32 +170,7 @@ let
         find . -name "*.jar" -print0 | xargs -0 rm
         echo "Removed gradle/wrapper, .teamcity/.mvn/wrapper and all .jar files"
       ''
-      + additionalPostPatch
-      + ''
-        while IFS= read -r -d "" file; do
-          if grep -Fq 'vendor = JvmVendorSpec.ADOPTIUM' "$file"; then
-            substituteInPlace "$file" --replace-fail 'vendor = JvmVendorSpec.ADOPTIUM' ""
-          fi
-          if grep -Fq 'vendor.set(JvmVendorSpec.ADOPTIUM)' "$file"; then
-            substituteInPlace "$file" --replace-fail 'vendor.set(JvmVendorSpec.ADOPTIUM)' ""
-          fi
-          if grep -Fq 'jvmVendor = "adoptium"' "$file"; then
-            substituteInPlace "$file" --replace-fail 'jvmVendor = "adoptium"' 'jvmVendor = null'
-          fi
-        done < <(
-          find . -type f \( \
-            -name "*.gradle" -o \
-            -name "*.gradle.kts" -o \
-            -name "*.groovy" -o \
-            -name "*.kt" \
-          \) -print0
-        )
-
-        if [ -f gradle/gradle-daemon-jvm.properties ] && grep -Fq 'toolchainVendor=adoptium' gradle/gradle-daemon-jvm.properties; then
-          substituteInPlace gradle/gradle-daemon-jvm.properties \
-            --replace-fail 'toolchainVendor=adoptium' ""
-        fi
-      '';
+      + additionalPostPatch;
 
       patches = additionalPatches;
 
@@ -299,26 +257,14 @@ let
       passthru.lockFile = lockFile;
 
       # https://github.com/gradle/gradle/blob/v9.4.1/platforms/core-runtime/base-services/src/main/java/org/gradle/internal/jvm/JpmsConfiguration.java#L64 - GROOVY_JPMS_ARGS_9 & configurationCacheJpmsArgs
-      preBuild =
-        lib.optionalString effectiveForceSerialGradle ''
-          export enableParallelBuilding=
-          export NIX_BUILD_CORES=1
-        ''
-        + lib.optionalString effectiveAvoidSingleUseDaemon ''
-          if [ ! -f gradle.properties ]; then
-            echo "gradle-unwrapped-${version} error: gradle.properties not found" >&2
-            exit 1
-          fi
-          jvmargs="$(grep -m1 '^org\.gradle\.jvmargs=' gradle.properties | cut -d'=' -f2-)"
-          compatJavaOpts="${lib.escapeShellArgs singleUseDaemonJavaOpts}"
-          if [ -n "$compatJavaOpts" ]; then
-            substituteInPlace gradle.properties \
-              --replace-fail "org.gradle.jvmargs=$jvmargs" \
-              "org.gradle.jvmargs=$compatJavaOpts $jvmargs"
-          fi
-          export JAVA_OPTS="${lib.escapeShellArgs launcherJavaOpts} --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-opens=java.base/java.nio.charset=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.xml/javax.xml.namespace=ALL-UNNAMED $jvmargs"
-          echo "Adding JVM argument to avoid single-use Gradle daemon: $JAVA_OPTS"
-        '';
+      preBuild = lib.optionalString avoidSingleUseDaemon ''
+        if [ ! -f gradle.properties ]; then
+          echo "gradle-unwrapped-${version} error: gradle.properties not found" >&2
+          exit 1
+        fi
+        export JAVA_OPTS="--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-opens=java.base/java.nio.charset=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.xml/javax.xml.namespace=ALL-UNNAMED $(grep '^org\.gradle\.jvmargs=' gradle.properties | cut -d'=' -f2-)"
+        echo "Adding JVM argument to avoid single-use Gradle daemon: $JAVA_OPTS"
+      '';
       meta = {
         platforms = [
           "aarch64-darwin"

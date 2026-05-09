@@ -1,8 +1,8 @@
 # this is before gradle_12_rc1. before commit https://github.com/gradle/gradle/commit/864ddaf0a289b122e804046ab4a0e618dce9b8e7
 {
-  jdk8_headless,
-  jdk11_headless,
-  jdk17_headless,
+  temurin-bin-8,
+  temurin-bin-11,
+  temurin-bin-17,
   jdk21_headless,
   gradle_8_11_M1,
   gradle-from-source,
@@ -10,7 +10,7 @@
   stdenv,
 }:
 if stdenv.isDarwin then
-  # use the existing Darwin binary-wrapper fallback
+  # no termurin-bin-* on darwin
   (gradle-packages.mkGradle {
     version = "8.11.1";
     hash = "sha256-85eyhwI6zboen2/F6nLSLdY2adWe1KKJopsadu7hUcY=";
@@ -22,12 +22,12 @@ else
     hash = "sha256-s9Fcf6zz0TTLEFeq0zGxovCppZGluIV3ux8XmcDdF2A=";
     lockFile = ./gradle.lock;
     defaultJava = jdk21_headless;
-    # gradle-from-source strips upstream Adoptium toolchain vendor requirements.
-    buildJdk = jdk11_headless;
+    # this version specifically ask for termurin branded jdk.
+    buildJdk = temurin-bin-11;
     javaToolchains = [
-      jdk8_headless
-      jdk11_headless
-      jdk17_headless
+      temurin-bin-8
+      temurin-bin-11
+      temurin-bin-17
     ];
     # nix-shell -p javaPackages.compiler.openjdk11-bootstrap
     # nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.11-milestone-1

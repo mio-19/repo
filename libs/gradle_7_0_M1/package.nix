@@ -2,7 +2,7 @@
   gradle_5_6_4,
   gradle_7_0_20201209,
   git,
-  jdk11_headless,
+  temurin-bin-11,
   stdenv,
   fetchFromGitHub,
   makeWrapper,
@@ -32,7 +32,7 @@ stdenv.mkDerivation (finalAttrs: {
     gradle
     git
     makeWrapper
-    jdk11_headless
+    temurin-bin-11
     unzip
   ];
 
@@ -46,7 +46,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   __darwinAllowLocalNetworking = true;
 
-  env.JAVA_HOME = jdk11_headless.passthru.home;
+  env.JAVA_HOME = temurin-bin-11.passthru.home;
 
   preBuild = ''
     export HOME="$PWD/.home"
