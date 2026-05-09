@@ -63,15 +63,17 @@ stdenv.mkDerivation (finalAttrs: {
     export LANG=C.UTF-8
     export LC_ALL=C.UTF-8
     mkdir -p "$GRADLE_USER_HOME"
-    export GRADLE_OPTS="-Xmx4096m -XX:MaxMetaspaceSize=1024m -Dfile.encoding=UTF-8 -Dkotlin.compiler.execution.strategy=in-process -Dkotlin.daemon.enabled=false ''${GRADLE_OPTS:-}"
+    export GRADLE_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED -Xmx2048m -XX:MaxMetaspaceSize=768m -Dfile.encoding=UTF-8 -Dkotlin.compiler.execution.strategy=in-process -Dkotlin.daemon.enabled=false ''${GRADLE_OPTS:-}"
     cat > "$GRADLE_USER_HOME/gradle.properties" <<EOF
     org.gradle.daemon=false
-    org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m -Dfile.encoding=UTF-8 -Dkotlin.compiler.execution.strategy=in-process -Dkotlin.daemon.enabled=false
+    org.gradle.jvmargs=--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED -Xmx2048m -XX:MaxMetaspaceSize=768m -Dfile.encoding=UTF-8 -Dkotlin.compiler.execution.strategy=in-process -Dkotlin.daemon.enabled=false
     org.gradle.workers.max=1
+    org.gradle.unsafe.watch-fs=false
     kotlin.compiler.execution.strategy=in-process
     kotlin.daemon.enabled=false
     kotlin.incremental=false
     EOF
+    export JAVA_OPTS="$GRADLE_OPTS"
   '';
 
   gradleFlags = [
@@ -82,6 +84,7 @@ stdenv.mkDerivation (finalAttrs: {
     "--no-build-cache"
     "--stacktrace"
     "-Dorg.gradle.vfs.watch=false"
+    "-Dorg.gradle.unsafe.watch-fs=false"
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
   ];
