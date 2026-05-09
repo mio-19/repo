@@ -239,6 +239,7 @@ read
 + <https://github.com/osbm/nixapks>
 + <https://github.com/tiann/KernelSU/issues/2942#issuecomment-4078266560>
 + <https://www.reddit.com/r/LineageOS/comments/1oaw2hj/comment/nkisxra/>
++ <https://github.com/GrapheneOS/os-issue-tracker/issues/5225>
 
 todo
 
