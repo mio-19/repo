@@ -10,6 +10,7 @@
   fetchFromGitHub,
   yarn-berry_4,
   nodejs,
+  error_prone_annotations_2_28_0,
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -28,18 +29,19 @@ let
         s.build-tools-35-0-0
         s.build-tools-36-0-0
         s.cmake-3-31-6
+        s.ndk-27-0-12077973
         s.ndk-27-1-12297006
       ]);
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "joplin";
-      version = "3.5.13";
+      version = "3.6.11";
 
       src = fetchFromGitHub {
         owner = "laurent22";
         repo = "joplin";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-KSunfdaT5K5Hk4D65Z4QFsLq9Z1jCoU5sWkypbjjmOA=";
+        hash = "sha256-pgF4om1BKXZeI+BkOjfhx3C6Svl8K0hUemfkz0H+aTk=";
       };
 
       sourceRoot = "${finalAttrs.src.name}";
@@ -51,12 +53,13 @@ let
           src
           missingHashes
           ;
-        hash = "sha256-iDclcCwzgmKOMxO4ZdmPyTKPoGY24+6gm19E4+pCB50=";
+        hash = "sha256-LxP3Jla1WrlHif+u5k0r2ZjRnmXKkaRevUU9IqmHsSU=";
       };
 
-      gradleBuildTask = ":app:assembleRelease";
+      gradleBuildTask = ":app:assembleRelease -x :app:lintVitalAnalyzeRelease -x :app:lintVitalReportRelease -x :app:lintVitalRelease";
       gradleUpdateTask = ''
         :app:assembleRelease
+        :app:lintVitalAnalyzeRelease
         :expo-gradle-plugin:expo-autolinking-plugin-shared:compileKotlin
         :gradle-plugin:shared:compileKotlin
         :gradle-plugin:settings-plugin:compileKotlin
@@ -86,7 +89,7 @@ let
         JAVA_HOME = jdk17_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.1.12297006";
+        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.0.12077973";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
         GRADLE_OPTS = "-Dorg.gradle.java.installations.auto-download=false -Dorg.gradle.java.installations.paths=${jdk17_headless},${jdk21_headless}";
         NODE_ENV = "development";
@@ -116,13 +119,36 @@ let
                     --replace-fail 'id("org.gradle.toolchains.foojay-resolver-convention").version("0.5.0")' ""
                 fi
                 if [[ -z "''${IN_GRADLE_UPDATE_DEPS:-}" && -d "${finalAttrs.mitmCache}" ]]; then
+                  mitmOverlay="$PWD/.gradle-mitm-overlay"
+                  for artifact in \
+                    commons-codec/commons-codec/1.10 \
+                    commons-logging/commons-logging/1.2 \
+                    org/apache/httpcomponents/httpclient/4.5.6 \
+                    org/apache/httpcomponents/httpcomponents-client/4.5.6 \
+                    org/apache/httpcomponents/httpcore/4.4.10 \
+                    org/apache/httpcomponents/httpcomponents-core/4.4.10 \
+                    org/apache/httpcomponents/httpmime/4.5.6; do
+                    mkdir -p "$mitmOverlay/$artifact"
+                    ln -s "${finalAttrs.mitmCache}/https/plugins.gradle.org/m2/$artifact/"* \
+                      "$mitmOverlay/$artifact/"
+                  done
+                  mkdir -p \
+                    "$mitmOverlay/com/google/errorprone/error_prone_annotations/2.28.0" \
+                    "$mitmOverlay/com/google/errorprone/error_prone_parent/2.28.0"
+                  ln -s "${error_prone_annotations_2_28_0}/error_prone_annotations-2.28.0.jar" \
+                    "$mitmOverlay/com/google/errorprone/error_prone_annotations/2.28.0/"
+                  ln -s "${error_prone_annotations_2_28_0}/error_prone_annotations-2.28.0.pom" \
+                    "$mitmOverlay/com/google/errorprone/error_prone_annotations/2.28.0/"
+                  ln -s "${error_prone_annotations_2_28_0}/error_prone_parent-2.28.0.pom" \
+                    "$mitmOverlay/com/google/errorprone/error_prone_parent/2.28.0/"
                   if grep -q "google()" packages/app-mobile/android/settings.gradle; then
                     substituteInPlace packages/app-mobile/android/settings.gradle \
                       --replace-fail "google()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/dl.google.com/dl/android/maven2\") }"
                   fi
                   if grep -q "mavenCentral()" packages/app-mobile/android/settings.gradle; then
                     substituteInPlace packages/app-mobile/android/settings.gradle \
-                      --replace-fail "mavenCentral()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }"
+                      --replace-fail "mavenCentral()" "maven { url = uri(\"$mitmOverlay\") }
+          maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }"
                   fi
                   if grep -q "gradlePluginPortal()" packages/app-mobile/android/settings.gradle; then
                     substituteInPlace packages/app-mobile/android/settings.gradle \
@@ -134,7 +160,8 @@ let
                   fi
                   if grep -q "mavenCentral()" packages/app-mobile/android/build.gradle; then
                     substituteInPlace packages/app-mobile/android/build.gradle \
-                      --replace-fail "mavenCentral()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }"
+                      --replace-fail "mavenCentral()" "maven { url = uri(\"$mitmOverlay\") }
+          maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }"
                   fi
                   if grep -q "google()" packages/app-mobile/node_modules/@react-native/gradle-plugin/settings.gradle.kts; then
                     substituteInPlace packages/app-mobile/node_modules/@react-native/gradle-plugin/settings.gradle.kts \
@@ -142,7 +169,8 @@ let
                   fi
                   if grep -q "mavenCentral()" packages/app-mobile/node_modules/@react-native/gradle-plugin/settings.gradle.kts; then
                     substituteInPlace packages/app-mobile/node_modules/@react-native/gradle-plugin/settings.gradle.kts \
-                      --replace-fail "mavenCentral()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }"
+                      --replace-fail "mavenCentral()" "maven { url = uri(\"$mitmOverlay\") }
+          maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }"
                   fi
                   if grep -q "gradlePluginPortal()" packages/app-mobile/node_modules/@react-native/gradle-plugin/settings.gradle.kts; then
                     substituteInPlace packages/app-mobile/node_modules/@react-native/gradle-plugin/settings.gradle.kts \
@@ -155,7 +183,8 @@ let
                     fi
                     if grep -q "mavenCentral()" packages/app-mobile/node_modules/expo-modules-autolinking/android/settings.gradle.kts; then
                       substituteInPlace packages/app-mobile/node_modules/expo-modules-autolinking/android/settings.gradle.kts \
-                        --replace-fail "mavenCentral()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }"
+                        --replace-fail "mavenCentral()" "maven { url = uri(\"$mitmOverlay\") }
+          maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }"
                     fi
                     if grep -q "gradlePluginPortal()" packages/app-mobile/node_modules/expo-modules-autolinking/android/settings.gradle.kts; then
                       substituteInPlace packages/app-mobile/node_modules/expo-modules-autolinking/android/settings.gradle.kts \
@@ -169,7 +198,8 @@ let
                     fi
                     if grep -q "mavenCentral()" packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/settings.gradle.kts; then
                       substituteInPlace packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/settings.gradle.kts \
-                        --replace-fail "mavenCentral()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }"
+                        --replace-fail "mavenCentral()" "maven { url = uri(\"$mitmOverlay\") }
+          maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }"
                     fi
                     if grep -q "gradlePluginPortal()" packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/settings.gradle.kts; then
                       substituteInPlace packages/app-mobile/node_modules/expo-modules-autolinking/android/expo-gradle-plugin/settings.gradle.kts \
@@ -235,12 +265,28 @@ let
                       fi
                       if grep -q "mavenCentral()" "$f"; then
                         substituteInPlace "$f" \
-                          --replace-fail "mavenCentral()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }"
+                          --replace-fail "mavenCentral()" "maven { url = uri(\"$mitmOverlay\") }
+          maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }"
                       fi
                       if grep -q "gradlePluginPortal()" "$f"; then
                         substituteInPlace "$f" \
                           --replace-fail "gradlePluginPortal()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/plugins.gradle.org/m2\") }"
                       fi
+                    fi
+                  done
+                  find packages/app-mobile -type f \( -name "*.gradle" -o -name "*.gradle.kts" -o -name "settings.gradle" -o -name "settings.gradle.kts" \) -print0 | while IFS= read -r -d "" f; do
+                    if grep -q "google()" "$f"; then
+                      substituteInPlace "$f" \
+                        --replace-fail "google()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/dl.google.com/dl/android/maven2\") }"
+                    fi
+                    if grep -q "mavenCentral()" "$f"; then
+                      substituteInPlace "$f" \
+                        --replace-fail "mavenCentral()" "maven { url = uri(\"$mitmOverlay\") }
+          maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }"
+                    fi
+                    if grep -q "gradlePluginPortal()" "$f"; then
+                      substituteInPlace "$f" \
+                        --replace-fail "gradlePluginPortal()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/plugins.gradle.org/m2\") }"
                     fi
                   done
                 fi
@@ -263,8 +309,10 @@ let
                 export PATH="$PWD/packages/turndown/node_modules/.bin:$PWD/packages/turndown-plugin-gfm/node_modules/.bin:$PATH"
                 (cd packages/turndown && npm run build-cjs)
                 (cd packages/turndown-plugin-gfm && ${nodejs}/bin/node ../turndown/node_modules/rollup/dist/bin/rollup -c config/rollup.config.cjs.js && ${nodejs}/bin/node ../turndown/node_modules/rollup/dist/bin/rollup -c config/rollup.config.browser.cjs.js)
+                ${nodejs}/bin/node .yarn/releases/yarn-4.9.2.cjs workspace @joplin/whisper-voice-typing build
                 ${nodejs}/bin/node .yarn/releases/yarn-4.9.2.cjs tsc
                 ${nodejs}/bin/node .yarn/releases/yarn-4.9.2.cjs workspace @joplin/app-mobile buildInjectedJs
+                ${nodejs}/bin/node .yarn/releases/yarn-4.9.2.cjs workspace @joplin/app-mobile gulp encodeAssets
                 if [[ -n "''${IN_GRADLE_UPDATE_DEPS:-}" ]]; then
                   bootstrapDir="$(mktemp -d)"
                   cat > "$bootstrapDir/build.gradle" <<'EOF'
@@ -274,7 +322,14 @@ let
         }
 
         configurations {
-            bootstrap
+            bootstrap {
+                attributes {
+                    attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+                    attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
+                    attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements, LibraryElements.JAR))
+                    attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
+                }
+            }
         }
 
         dependencies {
@@ -287,6 +342,13 @@ let
             bootstrap "com.google.guava:failureaccess:1.0.1"
             bootstrap "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava"
             bootstrap "com.google.j2objc:j2objc-annotations:2.8"
+            bootstrap("com.google.errorprone:error_prone_annotations") {
+                version {
+                    strictly "2.28.0"
+                }
+            }
+            bootstrap "com.android.tools.lint:lint-gradle:31.11.0"
+            bootstrap "org.apache.httpcomponents:httpclient:4.5.6"
             bootstrap "org.sonatype.oss:oss-parent:7@pom"
             bootstrap "org.sonatype.oss:oss-parent:9@pom"
         }
