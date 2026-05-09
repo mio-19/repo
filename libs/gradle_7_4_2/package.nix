@@ -1,7 +1,6 @@
 {
-  temurin-bin-8,
-  temurin-bin-11,
-  temurin-bin-17,
+  jdk8_headless,
+  jdk11_headless,
   jdk17_headless,
   gradle-from-source,
   gradle_7_2,
@@ -11,11 +10,17 @@ gradle-from-source {
   hash = "sha256-nsbNw0tgpbPKtrLvOOuipXQxPa3YGrwuz77uxsPiMug=";
   lockFile = ./gradle.lock;
   defaultJava = jdk17_headless;
-  buildJdk = temurin-bin-11;
+  buildJdk = jdk11_headless;
+  avoidSingleUseDaemon = true;
+  extraJavaOpts = [
+    "-XX:-UseCompressedOops"
+    "-XX:-UseCompressedClassPointers"
+  ];
+  forceSerialGradle = true;
   javaToolchains = [
-    temurin-bin-8
-    temurin-bin-11
-    temurin-bin-17
+    jdk8_headless
+    jdk11_headless
+    jdk17_headless
   ];
   bootstrapGradle = gradle_7_2;
   patches = [
