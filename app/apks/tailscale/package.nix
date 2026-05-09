@@ -182,6 +182,8 @@ let
 
         substituteInPlace android/build.gradle \
           --replace-fail 'ndkVersion "23.1.7779620"' 'ndkVersion "27.3.13750724"'
+        substituteInPlace android/build.gradle \
+          --replace-fail 'versionCode 468' 'versionCode 576'
 
         substituteInPlace Makefile \
           --replace-fail 'ndk;23.1.7779620' 'ndk;27.3.13750724'
