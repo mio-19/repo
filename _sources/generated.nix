@@ -232,17 +232,17 @@
   };
   google_gallery = {
     pname = "google_gallery";
-    version = "cdaa184a307c622fbcf8adee5f67e69399147738";
+    version = "3884a5c061f82681830c79eb7e63157fbaab09a9";
     src = fetchgit {
       url = "https://github.com/google-ai-edge/gallery.git";
-      rev = "cdaa184a307c622fbcf8adee5f67e69399147738";
+      rev = "3884a5c061f82681830c79eb7e63157fbaab09a9";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-LKEan41ZiYPI9PPSEs3UXKWOf9FbgSFgrR9DrgnZCic=";
+      sha256 = "sha256-UCktyUiUphASO+xkZCH8/V/AXT7CrUSpmmlZzE2EJrI=";
     };
-    date = "2026-05-07";
+    date = "2026-05-08";
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
@@ -832,7 +832,7 @@
     version = "6b7bf6d049e8d425611e0c6dfb4637193190e8d6";
     src = fetchurl {
       url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/6b7bf6d049e8d425611e0c6dfb4637193190e8d6/vendor_gapps-6b7bf6d049e8d425611e0c6dfb4637193190e8d6.tar.gz";
-      sha256 = "sha256-SkpawHzPB3gLJ6Lr8lNIvQ0LvrH+6UwM+QaMjsnQTjM=";
+      sha256 = "sha256-ZJPTBe8kD4bWcvQET6TL58KfjiCicVzCAo3D8v/5XNE=";
     };
     date = "2026-04-09";
   };
