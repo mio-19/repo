@@ -29,20 +29,20 @@ let
       androidLibXrayLiteSrc = fetchFromGitHub {
         owner = "2dust";
         repo = "AndroidLibXrayLite";
-        rev = "1b0ec8e1113f60730997ac570c1fc2ed1902dc5f";
-        hash = "sha256-55LqLclwHPHGzWuw6GEechXUvL0NSgMMadHVP7tct3Y=";
+        rev = "1314c9af79518a03300803019c8264c737bb3596";
+        hash = "sha256-vmd85/BrWTxoCeMa9Vh8aTfbTYC/oP1S1uXDdpRfR38=";
       };
 
       androidLibXrayLiteGoModCache = stdenvNoCC.mkDerivation {
         pname = "android-lib-xray-lite-go-mod-cache";
-        version = "26.3.27";
+        version = "26.5.10";
         src = androidLibXrayLiteSrc;
 
         nativeBuildInputs = [ go_1_26 ];
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-FJlXNhzD9XZDcS9RFfhlwGeI94YiusICCNcdbZDfPCE=";
+        outputHash = "sha256-4ZNezy85scLrSNtur0PnBaMYGRKG/j9X8k3HqJGQ+zc=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -76,7 +76,7 @@ let
 
       libv2rayAar = stdenv.mkDerivation {
         pname = "android-lib-xray-lite-aar";
-        version = "26.3.27";
+        version = "26.5.10";
         src = androidLibXrayLiteSrc;
 
         nativeBuildInputs = [
@@ -151,14 +151,14 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "v2rayng";
-      version = "2.1.6";
+      version = "2.1.7";
 
       src = fetchFromGitHub {
         owner = "2dust";
         repo = "v2rayNG";
         tag = finalAttrs.version;
         fetchSubmodules = true;
-        hash = "sha256-J4KUU6cex5pD3MPp5bYR+32DbF/1Bw2P6r6qeM1jYH8=";
+        hash = "sha256-VqIbucyIRoKCvTAUpV7gi2QmqYRy2/1JZSRaXQU5IFI=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/V2rayNG";
