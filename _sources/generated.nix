@@ -232,15 +232,15 @@
   };
   google_gallery = {
     pname = "google_gallery";
-    version = "51a7a136aec4d3ef854ff649b3c75e7fe6a80eb2";
+    version = "dd18ea431df8892f3f384a318289fa5e5646d7de";
     src = fetchgit {
       url = "https://github.com/google-ai-edge/gallery.git";
-      rev = "51a7a136aec4d3ef854ff649b3c75e7fe6a80eb2";
+      rev = "dd18ea431df8892f3f384a318289fa5e5646d7de";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-lF+uEIZx0Od1sOB3yDQ3jziXWkBa546C+E4LLDg7xcg=";
+      sha256 = "sha256-dtlESwGR9KJm8TDGARMVM6qs3gwKbWQtWHurVfZoHtE=";
     };
     date = "2026-05-09";
   };
