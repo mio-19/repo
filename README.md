@@ -2,7 +2,7 @@
 
 This repository contains build scripts for android applications and operating systems based on android.
 
-This repository shall be treated only as a proof of concept / toy project as the code quality is affected by llm.
+This repository shall be treated only as a proof of concept / toy project as the code quality is affected negatively by llm.
 
 Warning: This repository contains many llm generated glue code. They might be written on false assumptions but happen to work. Don't trust them. See later section LLM for more details.
 
