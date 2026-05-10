@@ -24,13 +24,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "element-android";
-      version = "1.6.58";
+      version = "1.6.56";
 
       src = fetchFromGitHub {
         owner = "element-hq";
         repo = "element-android";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-E79YfLWhIEFyd5t03u9IAXh7iBkkuIXvckr1AJrGMqA=";
+        hash = "sha256-cV2LZo2YIZtW9ZqXv06GhIe7LDOusu0xa4snS9mHq6U=";
       };
 
       patches = [
