@@ -23,13 +23,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gamenative";
-      version = "0.9.1";
+      version = "0.9.2";
 
       src = fetchFromGitHub {
         owner = "utkarshdalal";
         repo = "GameNative";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-RdTB9ErRbd1tDb/A9raOQGlBc3JRLIBtcr76mpYtdDk=";
+        hash = "sha256-uCCKN6lDbJ8SeOV6gKTVmtgzA0sJ5l5IUvLr5vs15XI=";
       };
 
       patches = [

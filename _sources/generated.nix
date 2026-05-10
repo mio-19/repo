@@ -8,17 +8,17 @@
 {
   axp_build = {
     pname = "axp_build";
-    version = "67792ebd80ed5a27e120efa3eab956a8c44ee4b6";
+    version = "28c78924ba060881ea7eaa1bb6ba70693fbd717d";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/build.git";
-      rev = "67792ebd80ed5a27e120efa3eab956a8c44ee4b6";
+      rev = "28c78924ba060881ea7eaa1bb6ba70693fbd717d";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-2hcAczs4wcDhznprGSaILMJwf/8WPV0g7QjT24+6ccY=";
+      sha256 = "sha256-BiFOYwkT+CMyNc1D7G0Ryzq7EF4Go6PWhcxO5gR+WGU=";
     };
-    date = "2026-04-18";
+    date = "2026-05-09";
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
@@ -232,17 +232,17 @@
   };
   google_gallery = {
     pname = "google_gallery";
-    version = "3884a5c061f82681830c79eb7e63157fbaab09a9";
+    version = "51a7a136aec4d3ef854ff649b3c75e7fe6a80eb2";
     src = fetchgit {
       url = "https://github.com/google-ai-edge/gallery.git";
-      rev = "3884a5c061f82681830c79eb7e63157fbaab09a9";
+      rev = "51a7a136aec4d3ef854ff649b3c75e7fe6a80eb2";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-UCktyUiUphASO+xkZCH8/V/AXT7CrUSpmmlZzE2EJrI=";
+      sha256 = "sha256-lF+uEIZx0Od1sOB3yDQ3jziXWkBa546C+E4LLDg7xcg=";
     };
-    date = "2026-05-08";
+    date = "2026-05-09";
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";

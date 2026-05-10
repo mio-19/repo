@@ -38,13 +38,13 @@ let
     in
     buildDartApplication.override { dart = flutter338; } (finalAttrs: {
       pname = "meshcore-open";
-      version = "8.0.0+10";
+      version = "9.0.0+12";
 
       src = fetchFromGitHub {
         owner = "zjs81";
         repo = "meshcore-open";
-        rev = "Alpha8";
-        hash = "sha256-OR2WFgj2RHmzKpfr/X/pUGIpcwOnxPodW4KWTaFpTqI=";
+        rev = "Alpha9";
+        hash = "sha256-9Vx0oWYwk/XPG1a6LnyTARO0Vrw2fvqL0un3drQrPLA=";
       };
 
       pubspecLock = lib.importJSON ./pubspec.lock.json;
