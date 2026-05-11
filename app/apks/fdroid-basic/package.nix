@@ -32,6 +32,8 @@ buildGradlePackage rec {
     hash = "sha256-b36hPlEnOlQ1h4yPHOCVcGLISYOlvO6iMjHbi5hazZA=";
   };
 
+  patches = [ ./version-name-update.patch ];
+
   lockFile = ./gradle.lock;
 
   inherit gradle;

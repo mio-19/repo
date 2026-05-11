@@ -1,0 +1,117 @@
+diff --git a/app/src/full/kotlin/org/fdroid/ui/nearby/SwapSuccessModel.kt b/app/src/full/kotlin/org/fdroid/ui/nearby/SwapSuccessModel.kt
+index 1696437..3aa4c36 100644
+--- a/app/src/full/kotlin/org/fdroid/ui/nearby/SwapSuccessModel.kt
++++ b/app/src/full/kotlin/org/fdroid/ui/nearby/SwapSuccessModel.kt
+@@ -19,8 +19,8 @@ data class SwapSuccessItem(
+   val installState: InstallState = InstallState.Unknown,
+ ) {
+   val isInstalled: Boolean
+-    get() = installedVersionCode != null && installedVersionCode >= versionCode
++    get() = installedVersionCode != null && (installedVersionCode > versionCode || (installedVersionCode == versionCode && installedVersionName == versionName))
+ 
+   val hasUpdate: Boolean
+-    get() = installedVersionCode != null && installedVersionCode < versionCode
++    get() = installedVersionCode != null && (installedVersionCode < versionCode || (installedVersionCode == versionCode && installedVersionName != versionName))
+ }
+diff --git a/app/src/main/kotlin/org/fdroid/ui/details/AppDetailsItem.kt b/app/src/main/kotlin/org/fdroid/ui/details/AppDetailsItem.kt
+index 98b7e53..196d293 100644
+--- a/app/src/main/kotlin/org/fdroid/ui/details/AppDetailsItem.kt
++++ b/app/src/main/kotlin/org/fdroid/ui/details/AppDetailsItem.kt
+@@ -181,7 +181,10 @@ data class AppDetailsItem(
+         if (versions == null) {
+           MainButtonState.LOADING
+         } else if (
+-          suggestedVersion == null || suggestedVersion.versionCode <= installedVersionCode
++          suggestedVersion == null ||
++          (suggestedVersion.versionCode < (installedVersionCode ?: 0)) ||
++          (suggestedVersion.versionCode == installedVersionCode &&
++            suggestedVersion.versionName == installedVersionName)
+         ) {
+           MainButtonState.NONE
+         } else {
+diff --git a/app/src/main/kotlin/org/fdroid/ui/details/DetailsPresenter.kt b/app/src/main/kotlin/org/fdroid/ui/details/DetailsPresenter.kt
+index 1e713da..dab105c 100644
+--- a/app/src/main/kotlin/org/fdroid/ui/details/DetailsPresenter.kt
++++ b/app/src/main/kotlin/org/fdroid/ui/details/DetailsPresenter.kt
+@@ -219,7 +219,9 @@ fun DetailsPresenter(
+           if (
+             installedVersionCode == null ||
+               possibleUpdate == null ||
+-              possibleUpdate.versionCode <= installedVersionCode
++              (possibleUpdate.versionCode < installedVersionCode ||
++                (possibleUpdate.versionCode == installedVersionCode &&
++                  possibleUpdate.versionName == packageInfo?.versionName))
+           ) {
+             null
+           } else {
+@@ -257,7 +259,9 @@ fun DetailsPresenter(
+             if (!signerCompatible || installState.showProgress) {
+               false
+             } else {
+-              (installedVersion?.versionCode ?: 0) < version.versionCode
++              val installedCode = installedVersion?.versionCode ?: 0
++              installedCode < version.versionCode ||
++                (installedCode == version.versionCode && installedVersion?.versionName != version.versionName)
+             },
+         )
+       },
+diff --git a/libs/database/src/main/java/org/fdroid/database/DbAppChecker.kt b/libs/database/src/main/java/org/fdroid/database/DbAppChecker.kt
+index f73eb1b..4ada74d 100644
+--- a/libs/database/src/main/java/org/fdroid/database/DbAppChecker.kt
++++ b/libs/database/src/main/java/org/fdroid/database/DbAppChecker.kt
+@@ -68,6 +68,7 @@ public class DbAppChecker(
+             versions = versions,
+             allowedSignersGetter = null, // all signers are allowed
+             installedVersionCode = getLongVersionCode(packageInfo),
++            installedVersionName = packageInfo.versionName,
+             allowedReleaseChannels = null,
+             includeKnownVulnerabilities = true,
+             preferencesGetter = { appPrefsDao.getAppPrefsOrNull(packageName) },
+diff --git a/libs/index/src/androidMain/kotlin/org/fdroid/UpdateChecker.kt b/libs/index/src/androidMain/kotlin/org/fdroid/UpdateChecker.kt
+index 22d9b8d..eea4a99 100644
+--- a/libs/index/src/androidMain/kotlin/org/fdroid/UpdateChecker.kt
++++ b/libs/index/src/androidMain/kotlin/org/fdroid/UpdateChecker.kt
+@@ -40,6 +40,7 @@ public class UpdateChecker(private val compatibilityChecker: CompatibilityChecke
+         packageInfo.signatures?.map { getPackageSigner(it.toByteArray()) }?.toSet()
+       },
+       installedVersionCode = PackageInfoCompat.getLongVersionCode(packageInfo),
++      installedVersionName = packageInfo.versionName,
+       allowedReleaseChannels = releaseChannels,
+       preferencesGetter = preferencesGetter,
+       includeKnownVulnerabilities = includeKnownVulnerabilities,
+@@ -89,6 +90,7 @@ public class UpdateChecker(private val compatibilityChecker: CompatibilityChecke
+     versions: List<T>,
+     allowedSignersGetter: (() -> Set<String>?)? = null,
+     installedVersionCode: Long = 0,
++    installedVersionName: String? = null,
+     allowedReleaseChannels: List<String>? = null,
+     includeKnownVulnerabilities: Boolean = false,
+     preferencesGetter: (() -> PackagePreference?)? = null,
+@@ -97,6 +99,7 @@ public class UpdateChecker(private val compatibilityChecker: CompatibilityChecke
+         versions = versions,
+         allowedSignersGetter = allowedSignersGetter,
+         installedVersionCode = installedVersionCode,
++        installedVersionName = installedVersionName,
+         allowedReleaseChannels = allowedReleaseChannels,
+         includeKnownVulnerabilities = includeKnownVulnerabilities,
+         preferencesGetter = preferencesGetter,
+@@ -113,6 +116,7 @@ public class UpdateChecker(private val compatibilityChecker: CompatibilityChecke
+     versions: List<T>,
+     allowedSignersGetter: (() -> Set<String>?)? = null,
+     installedVersionCode: Long = 0,
++    installedVersionName: String? = null,
+     allowedReleaseChannels: List<String>? = null,
+     includeKnownVulnerabilities: Boolean = false,
+     preferencesGetter: (() -> PackagePreference?)? = null,
+@@ -128,7 +132,10 @@ public class UpdateChecker(private val compatibilityChecker: CompatibilityChecke
+       )
+         yield(version)
+       // if version code is not higher than installed skip package as list is sorted
+-      if (version.versionCode <= installedVersionCode) return@sequence
++      if (version.versionCode < installedVersionCode) return@sequence
++      if (version.versionCode == installedVersionCode && version.versionName == installedVersionName) {
++        return@versions
++      }
+       // we don't support versions that have multiple signers
+       if (version.signer?.hasMultipleSigners == true) return@versions
+       // skip incompatible versions
