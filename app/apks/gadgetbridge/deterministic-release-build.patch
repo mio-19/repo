@@ -12,22 +12,18 @@
      try {
          final def commitCount = providers.exec {
              commandLine('git', 'rev-list', 'HEAD', '--count')
-@@ -27,19 +32,26 @@
+@@ -27,7 +32,9 @@
  tasks.register("buildGitChangelog"){
      final def changelogFile = new File("${project.rootDir}/app/build/generated/res/changelog/xml/changelog_git.xml")
  
 -    inputs.file(project.rootProject.file(".git/HEAD"))
-+    
++    if (project.rootProject.file(".git/HEAD").exists()) {
++        inputs.file(project.rootProject.file(".git/HEAD"))
++    }
      outputs.file(changelogFile)
  
      doLast {
-+        try {
-+            inputs.file(project.rootProject.file(".git/HEAD"))
-+        } catch (ignored) {}
-+
-         def allCommits
-         try {
-             allCommits = providers.exec {
+@@ -37,9 +44,12 @@
                  commandLine('git', 'log', '--pretty=format:%h %s')
              }.standardOutput.asText.get()
          } catch (ignored) {
@@ -42,7 +38,7 @@
              return
          }
  
-@@ -74,12 +86,17 @@
+@@ -74,12 +84,17 @@
  }
  
  final def getGitHashShort = { ->
