@@ -1,23 +1,19 @@
 diff --git a/app/src/full/kotlin/org/fdroid/ui/nearby/SwapSuccessModel.kt b/app/src/full/kotlin/org/fdroid/ui/nearby/SwapSuccessModel.kt
-index 1696437..3aa4c36 100644
+index 1696437..9ff7b28 100644
 --- a/app/src/full/kotlin/org/fdroid/ui/nearby/SwapSuccessModel.kt
 +++ b/app/src/full/kotlin/org/fdroid/ui/nearby/SwapSuccessModel.kt
-@@ -19,8 +19,8 @@ data class SwapSuccessItem(
-   val installState: InstallState = InstallState.Unknown,
- ) {
-   val isInstalled: Boolean
--    get() = installedVersionCode != null && installedVersionCode >= versionCode
-+    get() = installedVersionCode != null && (installedVersionCode > versionCode || (installedVersionCode == versionCode && installedVersionName == versionName))
+@@ -22,5 +22,5 @@ data class SwapSuccessItem(
+     get() = installedVersionCode != null && installedVersionCode >= versionCode
  
    val hasUpdate: Boolean
 -    get() = installedVersionCode != null && installedVersionCode < versionCode
-+    get() = installedVersionCode != null && (installedVersionCode < versionCode || (installedVersionCode == versionCode && installedVersionName != versionName))
++    get() = installedVersionCode != null && (installedVersionCode < versionCode || (installedVersionCode == versionCode && installedVersionName != null && installedVersionName != versionName))
  }
 diff --git a/app/src/main/kotlin/org/fdroid/ui/details/AppDetailsItem.kt b/app/src/main/kotlin/org/fdroid/ui/details/AppDetailsItem.kt
-index 98b7e53..196d293 100644
+index 98b7e53..d1ae54b 100644
 --- a/app/src/main/kotlin/org/fdroid/ui/details/AppDetailsItem.kt
 +++ b/app/src/main/kotlin/org/fdroid/ui/details/AppDetailsItem.kt
-@@ -181,7 +181,10 @@ data class AppDetailsItem(
+@@ -181,7 +181,11 @@ data class AppDetailsItem(
          if (versions == null) {
            MainButtonState.LOADING
          } else if (
@@ -25,33 +21,37 @@ index 98b7e53..196d293 100644
 +          suggestedVersion == null ||
 +          (suggestedVersion.versionCode < (installedVersionCode ?: 0)) ||
 +          (suggestedVersion.versionCode == installedVersionCode &&
-+            suggestedVersion.versionName == installedVersionName)
++            (installedVersionName == null ||
++              suggestedVersion.versionName == installedVersionName))
          ) {
            MainButtonState.NONE
          } else {
 diff --git a/app/src/main/kotlin/org/fdroid/ui/details/DetailsPresenter.kt b/app/src/main/kotlin/org/fdroid/ui/details/DetailsPresenter.kt
-index 1e713da..dab105c 100644
+index 1e713da..0e69767 100644
 --- a/app/src/main/kotlin/org/fdroid/ui/details/DetailsPresenter.kt
 +++ b/app/src/main/kotlin/org/fdroid/ui/details/DetailsPresenter.kt
-@@ -219,7 +219,9 @@ fun DetailsPresenter(
+@@ -219,7 +219,10 @@ fun DetailsPresenter(
            if (
              installedVersionCode == null ||
                possibleUpdate == null ||
 -              possibleUpdate.versionCode <= installedVersionCode
 +              (possibleUpdate.versionCode < installedVersionCode ||
 +                (possibleUpdate.versionCode == installedVersionCode &&
-+                  possibleUpdate.versionName == packageInfo?.versionName))
++                  (packageInfo?.versionName == null ||
++                    possibleUpdate.versionName == packageInfo.versionName)))
            ) {
              null
            } else {
-@@ -257,7 +259,9 @@ fun DetailsPresenter(
+@@ -257,7 +260,11 @@ fun DetailsPresenter(
              if (!signerCompatible || installState.showProgress) {
                false
              } else {
 -              (installedVersion?.versionCode ?: 0) < version.versionCode
 +              val installedCode = installedVersion?.versionCode ?: 0
 +              installedCode < version.versionCode ||
-+                (installedCode == version.versionCode && installedVersion?.versionName != version.versionName)
++                (installedCode == version.versionCode &&
++                  installedVersion?.versionName != null &&
++                  installedVersion.versionName != version.versionName)
              },
          )
        },
@@ -68,7 +68,7 @@ index f73eb1b..4ada74d 100644
              includeKnownVulnerabilities = true,
              preferencesGetter = { appPrefsDao.getAppPrefsOrNull(packageName) },
 diff --git a/libs/index/src/androidMain/kotlin/org/fdroid/UpdateChecker.kt b/libs/index/src/androidMain/kotlin/org/fdroid/UpdateChecker.kt
-index 22d9b8d..eea4a99 100644
+index 22d9b8d..0a96af5 100644
 --- a/libs/index/src/androidMain/kotlin/org/fdroid/UpdateChecker.kt
 +++ b/libs/index/src/androidMain/kotlin/org/fdroid/UpdateChecker.kt
 @@ -40,6 +40,7 @@ public class UpdateChecker(private val compatibilityChecker: CompatibilityChecke
@@ -109,9 +109,9 @@ index 22d9b8d..eea4a99 100644
        // if version code is not higher than installed skip package as list is sorted
 -      if (version.versionCode <= installedVersionCode) return@sequence
 +      if (version.versionCode < installedVersionCode) return@sequence
-+      if (version.versionCode == installedVersionCode && version.versionName == installedVersionName) {
-+        return@versions
-+      }
++      if (version.versionCode == installedVersionCode &&
++        (installedVersionName == null || version.versionName == installedVersionName)
++      ) return@versions
        // we don't support versions that have multiple signers
        if (version.signer?.hasMultipleSigners == true) return@versions
        // skip incompatible versions
