@@ -162,17 +162,17 @@
   };
   derpfest16_hardware_oneplus = {
     pname = "derpfest16_hardware_oneplus";
-    version = "3c3057c888e46beb4cc0a909f70d24257af7a8a5";
+    version = "58032612ed86f943ac0fe927a833156d26fcbdf8";
     src = fetchgit {
       url = "https://github.com/ppanzenboeck/hardware_oneplus.git";
-      rev = "3c3057c888e46beb4cc0a909f70d24257af7a8a5";
+      rev = "58032612ed86f943ac0fe927a833156d26fcbdf8";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-pnrTLQL+H9cuxLlbRVTJPY84GfW2ymJscIom/Wivnhc=";
+      sha256 = "sha256-2AaNAbTnNYBXq5tug3of0RZZngm8gTjFyhHMgjodT4Y=";
     };
-    date = "2026-02-03";
+    date = "2026-05-10";
   };
   derpfest16_kernel_oneplus_sdm845 = {
     pname = "derpfest16_kernel_oneplus_sdm845";
