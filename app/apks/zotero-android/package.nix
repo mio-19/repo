@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk17_headless,
-  gradle-packages,
+  gradle_9_4_1,
   stdenv,
   fetchFromGitHub,
   writeShellScript,
@@ -24,12 +24,7 @@ let
         s.build-tools-35-0-0
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "9.2.1";
-          hash = "sha256-cvRMn468sa9Dg49F7lxKqcVESJizRoqz9K97YHbFvD8=";
-          defaultJava = jdk17_headless;
-        }).wrapped;
+      gradle = gradle_9_4_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "zotero-android";
