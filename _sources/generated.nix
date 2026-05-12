@@ -22,17 +22,17 @@
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
-    version = "fb4a62eda1bf7022e2aa266e7abbe8632daff56c";
+    version = "70b123d15c8fa441caf222c65d791a0d97b08b12";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
-      rev = "fb4a62eda1bf7022e2aa266e7abbe8632daff56c";
+      rev = "70b123d15c8fa441caf222c65d791a0d97b08b12";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-/xLhlsPaBBc+c8DEpbTJeLLAk29DlkXbAHiOW0quY6Q=";
+      sha256 = "sha256-Xavn2iac879xdGCs9IMt2xJ9BkgdwfUDn2d/TqrwiWg=";
     };
-    date = "2026-05-07";
+    date = "2026-05-12";
   };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
@@ -232,17 +232,17 @@
   };
   google_gallery = {
     pname = "google_gallery";
-    version = "dd18ea431df8892f3f384a318289fa5e5646d7de";
+    version = "8ab46ea4df4257d15a567fa5f17e8390617ac681";
     src = fetchgit {
       url = "https://github.com/google-ai-edge/gallery.git";
-      rev = "dd18ea431df8892f3f384a318289fa5e5646d7de";
+      rev = "8ab46ea4df4257d15a567fa5f17e8390617ac681";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-dtlESwGR9KJm8TDGARMVM6qs3gwKbWQtWHurVfZoHtE=";
+      sha256 = "sha256-ZzKWDtMpLYlmstr/iskCEPjniAOLbk95FEU0U/Olt8Y=";
     };
-    date = "2026-05-09";
+    date = "2026-05-11";
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
@@ -344,17 +344,17 @@
   };
   lineage_deskclock = {
     pname = "lineage_deskclock";
-    version = "59bbbdc8f2aafaf336036e55b036bef98d31ac4f";
+    version = "23107f7f51a16d4787f5e5fe7e357234d018ed1d";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_DeskClock.git";
-      rev = "59bbbdc8f2aafaf336036e55b036bef98d31ac4f";
+      rev = "23107f7f51a16d4787f5e5fe7e357234d018ed1d";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-ohe0vXm555dZ01pyVt8uoI1YfoWkBtvH2Vo48GXc5r0=";
+      sha256 = "sha256-ZWE4EjnNLYW6lFHdcjOwUGccw+3ydLQjGVHsAFIsA64=";
     };
-    date = "2026-04-15";
+    date = "2026-05-11";
   };
   lineage_device_mainline_common = {
     pname = "lineage_device_mainline_common";

@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  gradle_9_3_1,
+  gradle_9_4_1,
   jdk21_headless,
   stdenv,
   fetchFromGitHub,
@@ -34,17 +34,22 @@ let
         hash = "sha256-bOvR2EA/xYww6Tk5skbz5uWNB2WlzVBUbxbAD9gF0sM=";
       };
 
-      gradle = gradle_9_3_1;
+      nlohmannJsonHeader = fetchurl {
+        url = "https://raw.githubusercontent.com/nlohmann/json/v3.11.3/single_include/nlohmann/json.hpp";
+        hash = "sha256-m+pMgGbvShwgayvlo2MC+JJvf9xgh69dILQX0M8QPqY=";
+      };
+
+      gradle = gradle_9_4_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "meditrak";
-      version = "0.17.2";
+      version = "0.17.3";
 
       src = fetchFromGitHub {
         owner = "AdamGuidarini";
         repo = "MediTrak";
         rev = "v${finalAttrs.version}";
-        hash = "sha256-YJWZIq16su3JQmYFqhr7cjFNgD1LSb2VC+nJuSG/vj0=";
+        hash = "sha256-dAARQuIj4dJ95MP3q2A/QzyTGjTO6queGu4LWYIFXTM=";
       };
 
       patches = [
@@ -59,6 +64,10 @@ let
         # block is skipped (it checks: if NOT EXISTS <dir>, then download).
         mkdir -p app/src/main/cpp/sqlite3
         cd app/src/main/cpp/sqlite3 && ${unzip}/bin/unzip -q ${sqliteAmalgamationZip} && cd -
+
+        # Pre-populate nlohmann/json header.
+        mkdir -p app/src/main/cpp/json/nlohmann
+        cp ${nlohmannJsonHeader} app/src/main/cpp/json/nlohmann/json.hpp
 
         substituteInPlace app/build.gradle \
           --replace-fail "            version '3.22.1'" "            version '3.31.6'"
