@@ -46,14 +46,21 @@ let
 
       sourceRoot = "${finalAttrs.src.name}";
 
+      patches = [
+        # Remove after upstream updates to Yarn 4.14.
+        # https://github.com/laurent22/joplin/blob/dev/package.json#L103
+        ./yarn-4.14-support.patch
+      ];
+
       missingHashes = ./missing-hashes.json;
 
       offlineCache = yarn-berry_4.fetchYarnBerryDeps {
         inherit (finalAttrs)
           src
+          patches
           missingHashes
           ;
-        hash = "sha256-LxP3Jla1WrlHif+u5k0r2ZjRnmXKkaRevUU9IqmHsSU=";
+        hash = "sha256-PKWYg4WdnDLShmlTpcHmDSU95Aw4hQ81lG53TmBJMrk=";
       };
 
       gradleBuildTask = ":app:assembleRelease -x :app:lintVitalAnalyzeRelease -x :app:lintVitalReportRelease -x :app:lintVitalRelease";
@@ -309,10 +316,10 @@ let
                 export PATH="$PWD/packages/turndown/node_modules/.bin:$PWD/packages/turndown-plugin-gfm/node_modules/.bin:$PATH"
                 (cd packages/turndown && npm run build-cjs)
                 (cd packages/turndown-plugin-gfm && ${nodejs}/bin/node ../turndown/node_modules/rollup/dist/bin/rollup -c config/rollup.config.cjs.js && ${nodejs}/bin/node ../turndown/node_modules/rollup/dist/bin/rollup -c config/rollup.config.browser.cjs.js)
-                ${nodejs}/bin/node .yarn/releases/yarn-4.9.2.cjs workspace @joplin/whisper-voice-typing build
-                ${nodejs}/bin/node .yarn/releases/yarn-4.9.2.cjs tsc
-                ${nodejs}/bin/node .yarn/releases/yarn-4.9.2.cjs workspace @joplin/app-mobile buildInjectedJs
-                ${nodejs}/bin/node .yarn/releases/yarn-4.9.2.cjs workspace @joplin/app-mobile gulp encodeAssets
+                ${lib.getExe yarn-berry_4} workspace @joplin/whisper-voice-typing build
+                ${lib.getExe yarn-berry_4} tsc
+                ${lib.getExe yarn-berry_4} workspace @joplin/app-mobile buildInjectedJs
+                ${lib.getExe yarn-berry_4} workspace @joplin/app-mobile gulp encodeAssets
                 if [[ -n "''${IN_GRADLE_UPDATE_DEPS:-}" ]]; then
                   bootstrapDir="$(mktemp -d)"
                   cat > "$bootstrapDir/build.gradle" <<'EOF'
