@@ -7,7 +7,7 @@
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
   morphe-patches-gradle-plugin_1_3_2,
-  morphe-library-m2,
+  morphe-patches-library-m2_1_3_1,
   apktool-src,
   multidexlib2-src,
   morphe-patcher-src,
@@ -27,104 +27,27 @@ let
 
   gradle = gradle_9_3_1;
 
-  arsclib-src = fetchFromGitHub {
-    owner = "MorpheApp";
-    repo = "ARSCLib";
-    rev = "d003b5ff1ca91fb8c5105619cf1108b450387061";
-    hash = "sha256-2UO6zDAFeURrt9U9f7gNDA8J5X3o8Ct96/rItUq644g=";
-  };
+  morphe-cli-deps-filtered = lib.filterAttrs (
+    name: _: !lib.any (pattern: !builtins.isNull (builtins.match pattern name)) [ "api.github" ]
+  ) (lib.importJSON ../morphe-patches/morphe-patches_deps.json);
 
-  hoodles-patches-deps = lib.importJSON ../hoodles-patches/hoodles-patches_deps.json;
-  morphe-cli-deps = lib.importJSON ../morphe-cli/morphe-cli_deps.json;
-  morphe-cli-deps-filtered = morphe-cli-deps // {
-    "https:/" = builtins.removeAttrs morphe-cli-deps."https:/" [ "api.github" ];
-  };
+  hoodles-patches-deps = lib.importJSON ../hoodles-patches/morphe-patches_deps.json;
   brosssh-patches-deps = lib.importJSON ../brosssh-patches/morphe-patches_deps.json;
   piko-patches-deps = lib.importJSON ./piko-patches_deps.json;
 
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "piko-patches";
-  version = "3.2.0";
+  version = "3.3.0";
 
   src = fetchFromGitHub {
     owner = "crimera";
     repo = "piko";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-FPtLT8PVrmAgJgDnrw5JWksuAomSL3YVWAfUPEn4jNA=";
+    hash = "sha256-V0h9Mt5hs2NqrwVk2JhDREUAZYyQDcImCbOaZgqHoqA=";
   };
 
-  gradleBuildTask = "generatePatchesList";
-  gradleUpdateTask = finalAttrs.gradleBuildTask;
-
-  postUnpack = ''
-    root="$PWD"
-    cp -a ${morphe-patcher-src} "$root/morphe-patcher"
-    chmod -R u+w "$root/morphe-patcher"
-    cp -a ${arsclib-src} "$root/ARSCLib"
-    chmod -R u+w "$root/ARSCLib"
-    cp -a ${apktool-src} "$root/Apktool"
-    chmod -R u+w "$root/Apktool"
-
-    cp -a ${multidexlib2-src} "$root/multidexlib2"
-    chmod -R u+w "$root/multidexlib2"
-
-    substituteInPlace "$sourceRoot/settings.gradle.kts" \
-      --replace-fail 'id("app.morphe.patches") version "1.1.1"' 'id("app.morphe.patches") version "1.3.2"' \
-      --replace-fail '
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/MorpheApp/registry")
-                credentials {
-                    username = providers.gradleProperty("gpr.user").getOrElse(System.getenv("GITHUB_ACTOR"))
-                    password = providers.gradleProperty("gpr.key").getOrElse(System.getenv("GITHUB_TOKEN"))
-                }
-            }
-    ' '
-            maven { url = uri("file://" + System.getenv("MORPHE_PLUGIN_M2")) }
-            maven { url = uri("file://" + System.getenv("MORPHE_LIBRARY_M2")) }
-    '
-
-    printf '%s\n' \
-          "" \
-          '    // Added by Nix build: include ARSCLib as composite build.' \
-          '    val arsclibDir = file("../ARSCLib")' \
-          '    if (arsclibDir.exists()) {' \
-          '        includeBuild(arsclibDir) {' \
-          '            dependencySubstitution {' \
-          '                substitute(module("com.github.MorpheApp:ARSCLib")).using(project(":"))' \
-          '            }' \
-          '        }' \
-          '    }' \
-          "" \
-          '    // Added by Nix build: include morphe-patcher as composite build.' \
-          '    val patcherDir = file("../morphe-patcher")' \
-          '    if (patcherDir.exists()) {' \
-          '        includeBuild(patcherDir) {' \
-          '            dependencySubstitution {' \
-          '                substitute(module("app.morphe:morphe-patcher")).using(project(":"))' \
-          '            }' \
-          '        }' \
-          '    }' \
-          >> "$sourceRoot/settings.gradle.kts"
-
-    substituteInPlace "$sourceRoot/extensions/shared/library/build.gradle.kts" \
-      --replace-fail 'namespace = "app.morphe.extension"' 'namespace = "app.morphe.extension.library"'
-  '';
-
-  mitmCache = gradle.fetchDeps {
-    pname = "piko-patches";
-    pkg = finalAttrs.finalPackage;
-    data = lib.recursiveUpdate (lib.recursiveUpdate (lib.recursiveUpdate hoodles-patches-deps morphe-cli-deps-filtered) brosssh-patches-deps) piko-patches-deps;
-    silent = false;
-    useBwrap = false;
-  };
-
-  nativeBuildInputs = [
-    gradle
-    jdk21_headless
-    writableTmpDirAsHomeHook
-  ];
+  sourceRoot = "source";
 
   env = {
     JAVA_HOME = jdk21_headless.passthru.home;
@@ -132,8 +55,75 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_2}";
-    MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
+    MORPHE_LIBRARY_M2 = "${morphe-patches-library-m2_1_3_1}";
   };
+
+  postUnpack = ''
+    root="$PWD"
+    cp -a ${morphe-patcher-src} "$root/morphe-patcher"
+    chmod -R u+w "$root/morphe-patcher"
+    cp -a ${apktool-src} "$root/Apktool"
+    chmod -R u+w "$root/Apktool"
+
+    cp -a ${multidexlib2-src} "$root/multidexlib2"
+    chmod -R u+w "$root/multidexlib2"
+
+    substituteInPlace "$sourceRoot/gradle/libs.versions.toml" \
+      --replace-fail 'morphe-patches-library = "1.2.0"' 'morphe-patches-library = "1.3.1"'
+
+    patch -d "$sourceRoot" -p0 < ${./settings.gradle.kts.patch}
+
+    if [ -d "$sourceRoot/extensions/shared/library" ]; then
+        mv "$sourceRoot/extensions/shared/library" "$sourceRoot/extensions/shared/piko-library"
+    fi
+    find "$sourceRoot" -name "build.gradle.kts" -exec sed -i 's/project(":extensions:shared:library")/project(":extensions:shared:piko-library")/g' {} +
+
+    cat >> "$sourceRoot/settings.gradle.kts" <<EOF
+
+    // Added by Nix build: include morphe-patcher as composite build.
+    val patcherDir = file("../morphe-patcher")
+    if (patcherDir.exists()) {
+        includeBuild(patcherDir) {
+            dependencySubstitution {
+                substitute(module("app.morphe:morphe-patcher")).using(project(":"))
+            }
+        }
+    }
+    EOF
+
+    cat >> "$sourceRoot/build.gradle.kts" <<EOF
+
+    allprojects {
+        repositories {
+            mavenLocal()
+            maven { url = rootProject.layout.buildDirectory.dir("m2").get().asFile.toURI() }
+            mavenCentral()
+            google()
+            maven { url = uri("file://" + System.getenv("MORPHE_PLUGIN_M2")) }
+            maven { url = uri("file://" + System.getenv("MORPHE_LIBRARY_M2")) }
+            maven { url = uri("https://jitpack.io") }
+        }
+    }
+    EOF
+  '';
+
+  mitmCache = gradle.fetchDeps {
+    pname = "piko-patches";
+    pkg = finalAttrs.finalPackage;
+    data = ./piko-patches_deps.json;
+    silent = false;
+    useBwrap = false;
+  };
+
+  passthru = {
+    inherit (finalAttrs) mitmCache;
+  };
+
+  nativeBuildInputs = [
+    gradle
+    jdk21_headless
+    writableTmpDirAsHomeHook
+  ];
 
   preConfigure = ''
     export ANDROID_USER_HOME="$HOME/.android"
@@ -148,6 +138,9 @@ stdenv.mkDerivation (finalAttrs: {
     "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
     "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
   ];
+
+  gradleBuildTask = "generatePatchesList";
+  gradleUpdateTask = finalAttrs.gradleBuildTask;
 
   installPhase = ''
     runHook preInstall

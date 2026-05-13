@@ -232,17 +232,17 @@
   };
   google_gallery = {
     pname = "google_gallery";
-    version = "8ab46ea4df4257d15a567fa5f17e8390617ac681";
+    version = "a0c4bd24db1c605979bcd5a624a6b0a1ba0c3dc2";
     src = fetchgit {
       url = "https://github.com/google-ai-edge/gallery.git";
-      rev = "8ab46ea4df4257d15a567fa5f17e8390617ac681";
+      rev = "a0c4bd24db1c605979bcd5a624a6b0a1ba0c3dc2";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-ZzKWDtMpLYlmstr/iskCEPjniAOLbk95FEU0U/Olt8Y=";
+      sha256 = "sha256-9QdvONxU1zGSx8NswgHhBy7GXRqyoPE2mz3g9g1y+G0=";
     };
-    date = "2026-05-11";
+    date = "2026-05-12";
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
@@ -288,17 +288,17 @@
   };
   grapheneos_pdfviewer = {
     pname = "grapheneos_pdfviewer";
-    version = "c7a856991df359e010dad075e5df3f40ec7189c9";
+    version = "e65649c0d653e77cc0a8ae29047edaeb44ae105a";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/PdfViewer.git";
-      rev = "c7a856991df359e010dad075e5df3f40ec7189c9";
+      rev = "e65649c0d653e77cc0a8ae29047edaeb44ae105a";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-k3gN8pXASV6oEPtK1c0ai/JWMKsDV7E3+re4j0h9ric=";
+      sha256 = "sha256-YFzYP3rKxGOroX5OT2mUvWNYydeW7EknbR09jbeYsp8=";
     };
-    date = "2026-05-07";
+    date = "2026-05-12";
   };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
@@ -806,17 +806,17 @@
   };
   termux_x11 = {
     pname = "termux_x11";
-    version = "d04adbc355d6b573085f00a64b65e1776c7c3f2f";
+    version = "c7eaa7796adeeb1e6f5350ce71a0d4c9d20fecfc";
     src = fetchgit {
       url = "https://github.com/termux/termux-x11.git";
-      rev = "d04adbc355d6b573085f00a64b65e1776c7c3f2f";
+      rev = "c7eaa7796adeeb1e6f5350ce71a0d4c9d20fecfc";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-r6qYATxEULibaY0QIzLZfKW5l+77+te1pn/+pcvOBY0=";
+      sha256 = "sha256-nuenrjSYch0Tq/wBo9wwfGxuqUXz4R7n6hbEC6KpKaI=";
     };
-    date = "2026-05-06";
+    date = "2026-05-12";
   };
   vendor_gapps15 = {
     pname = "vendor_gapps15";

@@ -27,7 +27,7 @@ let
       defaultJava = jdk21_headless;
     }).wrapped;
 
-  appVersionName = "1.0.13"; # kept in sync with appVersionName in upstream source code.
+  appVersionName = "1.0.14"; # kept in sync with appVersionName in upstream source code.
   allowlistVersion = lib.replaceStrings [ "." ] [ "_" ] appVersionName;
 
   upstreamAllowlist = fetchurl {

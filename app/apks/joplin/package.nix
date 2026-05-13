@@ -35,13 +35,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "joplin";
-      version = "3.6.11";
+      version = "3.6.13";
 
       src = fetchFromGitHub {
         owner = "laurent22";
         repo = "joplin";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-pgF4om1BKXZeI+BkOjfhx3C6Svl8K0hUemfkz0H+aTk=";
+        hash = "sha256-09XxatNA03tyRlq9eEn/t99D6RktWzEeSnN2NPuiYq8=";
       };
 
       sourceRoot = "${finalAttrs.src.name}";
@@ -60,7 +60,7 @@ let
           patches
           missingHashes
           ;
-        hash = "sha256-PKWYg4WdnDLShmlTpcHmDSU95Aw4hQ81lG53TmBJMrk=";
+        hash = "sha256-ejg0u9Dy3iaBusH248IbtJNpvd/zADyPJ9CplIK1A/w=";
       };
 
       gradleBuildTask = ":app:assembleRelease -x :app:lintVitalAnalyzeRelease -x :app:lintVitalReportRelease -x :app:lintVitalRelease";
