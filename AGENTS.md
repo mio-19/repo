@@ -26,3 +26,4 @@
 - old code is having logic for example like `if stdenv.isDarwin then "${jdk25_headless}" else "${jdk25_headless}/lib/openjdk"`. please use .passthru.home like `jdk25_headless.passthru.home` for example for new code and optionally update old code to use .passthru.home
 - When need a home, use writableTmpDirAsHomeHook with `export GRADLE_USER_HOME="$HOME/.gradle"` `"-Dmaven.repo.local=$HOME/.m2/repository"` or similar.
 - Prefer mv in installPhase over cp because it is faster
+- JDK 11 can be unstable in some Gradle source builds (daemon crash/disappear). If it fails with that symptom, retry once before changing package logic.
