@@ -30,8 +30,13 @@ stdenv.mkDerivation {
     makeWrapper ${jamvm-1_5_1}/bin/jamvm $out/bin/java \
       --add-flags "-Xbootclasspath:${gnu-classpath-0_93}/share/classpath/glibj.zip:${jamvm-1_5_1}/share/jamvm/classes.zip"
 
-    # The "jar" for this stage is gjar from gnu-classpath
-    ln -s ${gnu-classpath-0_93}/bin/gjar $out/bin/jar
+    # The "jar" for this stage is a wrapper around gnu.classpath.tools.jar.Main
+    # since gjar from gnu-classpath assumes jamvm is in its own bin directory.
+    cat > $out/bin/jar <<EOF
+#!/bin/sh
+exec ${jamvm-1_5_1}/bin/jamvm -Xbootclasspath/p:"${gnu-classpath-0_93}/share/classpath/tools.zip" gnu.classpath.tools.jar.Main "\$@"
+EOF
+    chmod +x $out/bin/jar
   '';
 
   passthru = {
