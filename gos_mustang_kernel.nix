@@ -11,7 +11,7 @@ let
     fetchSubmodules = true;
     deepClone = false;
     sparseCheckout = [ ];
-    hash = "sha256-as+SnYnllAavlQCp1uorxFBC0aNAlX7zojETMm9lw/c=";
+    hash = "";
   };
 in
 callPackage ./gos_kernel_common.nix { } {
