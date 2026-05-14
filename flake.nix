@@ -13,8 +13,8 @@
     };
     robotnix = {
       #  --option extra-substituters https://robotnix.cachix.org --option extra-trusted-public-keys robotnix.cachix.org-1:+y88eX6KTvkJyernp1knbpttlaLTboVp4vq/b24BIv0=
-      #url = "git+https://github.com/nix-community/robotnix.git?shallow=1";
-      url = "git+https://github.com/nix-community/robotnix.git?shallow=1&ref=grapheneos_2026-05-07";
+      url = "git+https://github.com/nix-community/robotnix.git?shallow=1";
+      #url = "git+https://github.com/nix-community/robotnix.git?shallow=1&ref=grapheneos_2026-05-07";
       #url = "github:nix-community/robotnix/grapheneos_2026-04-04";
       #url = "github:mio-19/robotnix";
       inputs.nixpkgs.follows = "nixpkgs";
