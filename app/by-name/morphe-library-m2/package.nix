@@ -129,18 +129,14 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
     mkdir -p "$out"
-    # Move artifacts from the local maven repo and jadb
+    # Copy artifacts from the local maven repo and jadb
     # Jadb is in ../.m2/repository
     # Library artifacts are in build/m2
     if [ -d "build/m2" ]; then
-      mv build/m2/* "$out/"
+      cp -a build/m2/. "$out/"
     fi
     if [ -d "../.m2/repository" ]; then
-      # Use cp for the second one if there are overlaps, or just mv if not.
-      # But since we want speed, mv is better.
-      # Using a loop to avoid 'mv' failing on directory merge if needed,
-      # but here we can just move the contents.
-      mv ../.m2/repository/* "$out/"
+      cp -a ../.m2/repository/. "$out/"
     fi
     runHook postInstall
   '';

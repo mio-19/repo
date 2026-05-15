@@ -17,7 +17,7 @@ let
       dockerTools
       ;
   };
-  inherit (pkgs) fetchpatch jdk;
+  inherit (pkgs) fetchpatch;
   originalGrapheneosConfig =
     (robotnix.lib.robotnixSystem (
       innerArgs@{ ... }:
@@ -44,7 +44,7 @@ let
     keystore="$TMPDIR/grapheneos-''${lower_name}-signing-key.jks"
 
     # We don't expect out of band upgrade so use a key generated every time.
-    ${lib.getExe' jdk "keytool"} -genkeypair \
+    ${lib.getExe' pkgs.jdk "keytool"} -genkeypair \
       -keystore "$keystore" \
       -storepass android \
       -keypass android \
@@ -204,8 +204,7 @@ in
       cp proprietary/vendor/etc/fstab.zram.50p proprietary/vendor/etc/fstab.zram.100p
       substituteInPlace proprietary/vendor/etc/fstab.zram.100p --replace-fail "zramsize=50%" "size=100%"
       substituteInPlace proprietary/vendor/etc/fstab.zram.100p --replace-fail "zram_backingdev_size=1G" "zram_backingdev_size=4G"
-      substituteInPlace sysprop/vendor.prop \
-        --replace-fail "vendor.zram.size=50p" "vendor.zram.size=100p"
+      sed -i 's|vendor.zram.size=50p|vendor.zram.size=100p|' sysprop/vendor.prop
       cd -
     '';
   */
