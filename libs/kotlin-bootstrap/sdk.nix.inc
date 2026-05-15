@@ -31,20 +31,20 @@ let
         runHook preBuild
 
         export JAVA_HOME=${jdk8}
-        export JDK_16_x64=${jdk8}/lib/openjdk
-        export JDK_18_x64=${jdk8}/lib/openjdk
+        export JDK_16_x64=${jdk8.passthru.home}
+        export JDK_18_x64=${jdk8.passthru.home}
         export HOME="$TMPDIR/home"
         mkdir -p "$HOME"
 
         # Use a fake JDK layout for Ant
         fakeJdk="$TMPDIR/fake-jdk"
         mkdir -p "$fakeJdk/lib"
-        cp -a ${jdk8}/lib/openjdk/jre "$fakeJdk/jre"
+        cp -a ${jdk8.passthru.home}/jre "$fakeJdk/jre"
         chmod -R u+w "$fakeJdk"
         rm -rf "$fakeJdk/jre/bin"
-        ln -s ${jdk8}/lib/openjdk/bin "$fakeJdk/jre/bin"
-        ln -s ${jdk8}/lib/openjdk/bin "$fakeJdk/bin"
-        ln -s ${jdk8}/lib/openjdk/lib/tools.jar "$fakeJdk/lib/tools.jar"
+        ln -s ${jdk8.passthru.home}/bin "$fakeJdk/jre/bin"
+        ln -s ${jdk8.passthru.home}/bin "$fakeJdk/bin"
+        ln -s ${jdk8.passthru.home}/lib/tools.jar "$fakeJdk/lib/tools.jar"
         export _JAVA_OPTIONS="-Djava.home=$fakeJdk/jre"
 
         cp -a $src intellij-community
@@ -59,7 +59,7 @@ let
           rm -rf plugins/gradle
         fi
 
-        cp ${jdk8}/lib/openjdk/lib/tools.jar lib/ant/lib/tools.jar
+        cp ${jdk8.passthru.home}/lib/tools.jar lib/ant/lib/tools.jar
 
         # Apply common fixes for Nix build environment
         if [ -f jps/jps-builders/jps-builders.iml ]; then
@@ -68,7 +68,7 @@ let
         <orderEntry type="module-library">
           <library>
             <CLASSES>
-              <root url="jar://${jdk8}/lib/openjdk/lib/tools.jar!/" />
+              <root url="jar://${jdk8.passthru.home}/lib/tools.jar!/" />
             </CLASSES>
             <JAVADOC />
             <SOURCES />

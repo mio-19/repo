@@ -79,20 +79,20 @@ let
         runHook preBuild
 
         export JAVA_HOME=${jdk8}
-        export JDK_16_x64=${jdk8}/lib/openjdk
-        export JDK_18_x64=${jdk8}/lib/openjdk
+        export JDK_16_x64=${jdk8.passthru.home}
+        export JDK_18_x64=${jdk8.passthru.home}
         export HOME="$TMPDIR/home"
         mkdir -p "$HOME"
 
         # Use a fake JDK layout
         fakeJdk="$TMPDIR/fake-jdk"
         mkdir -p "$fakeJdk/lib"
-        cp -a ${jdk8}/lib/openjdk/jre "$fakeJdk/jre"
+        cp -a ${jdk8.passthru.home}/jre "$fakeJdk/jre"
         chmod -R u+w "$fakeJdk"
         rm -rf "$fakeJdk/jre/bin"
-        ln -s ${jdk8}/lib/openjdk/bin "$fakeJdk/jre/bin"
-        ln -s ${jdk8}/lib/openjdk/bin "$fakeJdk/bin"
-        ln -s ${jdk8}/lib/openjdk/lib/tools.jar "$fakeJdk/lib/tools.jar"
+        ln -s ${jdk8.passthru.home}/bin "$fakeJdk/jre/bin"
+        ln -s ${jdk8.passthru.home}/bin "$fakeJdk/bin"
+        ln -s ${jdk8.passthru.home}/lib/tools.jar "$fakeJdk/lib/tools.jar"
         export _JAVA_OPTIONS="-Djava.home=$fakeJdk/jre"
 
         cp -a $src kotlin

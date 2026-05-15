@@ -88,9 +88,9 @@ let
     '';
 
     gradleFlags = [
-      "-Dorg.gradle.java.home=${jdk25_headless.home}"
+      "-Dorg.gradle.java.home=${jdk25_headless.passthru.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
-      "-Dorg.gradle.java.installations.paths=${jdk17_headless}/lib/openjdk,${jdk25_headless}/lib/openjdk"
+      "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home},${jdk25_headless.passthru.home}"
       "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
       "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
     ];

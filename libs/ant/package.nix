@@ -11,7 +11,6 @@
   antlr_2_7_7,
 }:
 let
-  postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
   ant_nixpkgs = callPackage ./nixpkgs.nix { };
   inherit (libsUtils) checkMavenProvides exposeMavenProvides;
 in
@@ -55,7 +54,7 @@ ant_nixpkgs.overrideAttrs (
         done
       '';
     preBuild = lib.optionalString (lib.strings.compareVersions finalAttrs.version "1.9.6" <= 0) ''
-      export CLASSPATH=${jdk}${postfix}/lib/tools.jar
+      export CLASSPATH=${jdk.passthru.home}/lib/tools.jar
     '';
     buildPhase = ''
       runHook preBuild
