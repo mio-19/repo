@@ -44,6 +44,7 @@ let
         runHook preBuild
 
         workdir="$TMPDIR/duolingo-hoodles"
+        export MORPHE_VERSION_NAME_SUFFIX="-patches-${hoodles-patches.version}"
 
         morphe-cli patch \
           --patches=${hoodlesPatches} \

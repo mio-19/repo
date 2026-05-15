@@ -80,9 +80,7 @@ buildGradlePackage rec {
   gradleFlags = [
     "--console=plain"
     "-Dorg.gradle.java.installations.auto-download=false"
-    "-Dorg.gradle.java.installations.paths=${
-      if stdenv.isDarwin then "${jdk17_headless}" else "${jdk17_headless}/lib/openjdk"
-    }"
+    "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home}"
   ];
 
   gradleBuildFlags = [

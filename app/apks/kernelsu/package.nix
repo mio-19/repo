@@ -172,16 +172,12 @@ let
         echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6" >> local.properties
       '';
 
-      gradleFlags =
-        let
-          postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
-        in
-        [
-          "-Dorg.gradle.java.installations.auto-download=false"
-          "-Dorg.gradle.java.installations.paths=${jdk21_headless}${postfix}"
-          "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-          "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        ];
+      gradleFlags = [
+        "-Dorg.gradle.java.installations.auto-download=false"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+      ];
 
       installPhase = ''
         runHook preInstall

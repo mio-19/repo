@@ -54,7 +54,7 @@ let
       ];
 
       env = {
-        JAVA_HOME = "${jdk17_headless}/lib/openjdk";
+        JAVA_HOME = jdk17_headless.passthru.home;
       };
 
       postPatch = ''

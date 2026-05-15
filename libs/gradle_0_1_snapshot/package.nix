@@ -185,8 +185,6 @@ let
       }) artifacts
     );
   };
-
-  postfix = if stdenv.isDarwin then "" else "/lib/openjdk";
 in
 stdenv.mkDerivation {
   pname = "gradle";
@@ -213,8 +211,8 @@ stdenv.mkDerivation {
   buildPhase = ''
     runHook preBuild
 
-    export JAVA_HOME=${jdk8_headless.passthru.home}${postfix}
-    export CLASSPATH=${jdk8_headless}${postfix}/lib/tools.jar
+    export JAVA_HOME=${jdk8_headless.passthru.home}
+    export CLASSPATH=${jdk8_headless.passthru.home}/lib/tools.jar
     export mavenRepo="${mavenRepo}"
     export ANT_OPTS=-Divy.default.ivy.user.dir="$HOME/.ivy2"
     mkdir -p "$HOME/.ivy2/local" ivy src/samples
@@ -241,7 +239,7 @@ stdenv.mkDerivation {
 
     mkdir -p "$out/bin"
     makeWrapper "$out/libexec/gradle/bin/gradle" "$out/bin/gradle" \
-      --set-default JAVA_HOME ${jdk8_headless}${postfix} \
+      --set-default JAVA_HOME ${jdk8_headless.passthru.home} \
       --suffix PATH : ${
         lib.makeBinPath [
           coreutils
