@@ -4,6 +4,9 @@ args@{
   lib,
   ...
 }:
+let
+  inherit (pkgs) fetchFromGitHub fetchpatch;
+in
 {
   imports = [ ./los.nix ];
   manufactor = "oneplus";
@@ -25,7 +28,7 @@ args@{
 
   source.dirs = {
     "vendor/oneplus/enchilada" = {
-      src = pkgs.fetchFromGitHub {
+      src = fetchFromGitHub {
         owner = "TheMuppets";
         repo = "proprietary_vendor_oneplus_enchilada";
         rev = "2dedc8d1099e0b4d3e507c0049ee9bdcf12d77f0";
@@ -35,7 +38,7 @@ args@{
         sed -i 's/add-radio-file-sha1-checked/add-radio-file/g' Android.mk
       '';
     };
-    "vendor/oneplus/sdm845-common".src = pkgs.fetchFromGitHub {
+    "vendor/oneplus/sdm845-common".src = fetchFromGitHub {
       owner = "TheMuppets";
       repo = "proprietary_vendor_oneplus_sdm845-common";
       rev = "3d6b72f093ccfb99e8bfc17af204441b6e6322aa";
@@ -61,49 +64,49 @@ args@{
     '';
 
     # Reuse LineageOS mainline components used by current mainline devices.
-    "device/mainline/common".src = pkgs.fetchFromGitHub {
+    "device/mainline/common".src = fetchFromGitHub {
       owner = "LineageOS";
       repo = "android_device_mainline_common";
       rev = "63d6b822704a8539ebb0f84319db0957ddbbf99c";
       hash = "sha256-TVE1C0GM9CABdwCGjYJoMyThHQa5nPdTHWgWTEaOvWM=";
     };
-    "device/mainline/qcom-common".src = pkgs.fetchFromGitHub {
+    "device/mainline/qcom-common".src = fetchFromGitHub {
       owner = "LineageOS";
       repo = "android_device_mainline_qcom-common";
       rev = "a78e396481404aa0a1aeb0f859bb8aaf5ffc3989";
       hash = "sha256-ApuFe8DhqKDkepq/+q5JgVtmlXB+AKbsq6QdjWxRDPU=";
     };
-    "kernel/mainline/configs".src = pkgs.fetchFromGitHub {
+    "kernel/mainline/configs".src = fetchFromGitHub {
       owner = "LineageOS";
       repo = "android_kernel_mainline_configs";
       rev = "cbd8590fed658bd598bd77f4460bb96c0f1fb0c7";
       hash = "sha256-yT+Vo7GUFCIMwv8+5Vj2iM83sFsyHqI1XJc7XObtpeU=";
     };
-    "hardware/mainline/common".src = pkgs.fetchFromGitHub {
+    "hardware/mainline/common".src = fetchFromGitHub {
       owner = "LineageOS";
       repo = "android_hardware_mainline_common";
       rev = "a041424e50ef9304092f0663a60b906925000d29";
       hash = "sha256-Q6SSGrPJtuWpYEGHxh1lL/bdh/Txp/7amMRXnpV7IiY=";
     };
-    "hardware/mainline/qcom".src = pkgs.fetchFromGitHub {
+    "hardware/mainline/qcom".src = fetchFromGitHub {
       owner = "LineageOS";
       repo = "android_hardware_mainline_qcom";
       rev = "ecf7f082f63c79431141b76648c0398acf99b34c";
       hash = "sha256-zJW8jJJZt+9qN7RCFuiq5nilWQrv9ivLQpQo2f1Fwk0=";
     };
-    "external/linux-firmware-mainline".src = pkgs.fetchFromGitHub {
+    "external/linux-firmware-mainline".src = fetchFromGitHub {
       owner = "LineageOS";
       repo = "android_external_linux-firmware-mainline";
       rev = "6734582a4fba084e07bd5d80ccfc2ea4976e865f";
       hash = "sha256-C84GuV/JD+9ozj52fkmX98g6IdGCfnUui/3t80FvZsw=";
     };
-    "external/tinyhal".src = pkgs.fetchFromGitHub {
+    "external/tinyhal".src = fetchFromGitHub {
       owner = "LineageOS";
       repo = "android_external_tinyhal";
       rev = "0e87ac3457b98c5f7104540e896e3c7610c95750";
       hash = "sha256-+jIOqs/CfiqhxLMakTHZRHKWvZO7UYMG13pHlVfyOqI=";
     };
-    "hardware/sony/timekeep".src = pkgs.fetchFromGitHub {
+    "hardware/sony/timekeep".src = fetchFromGitHub {
       owner = "LineageOS";
       repo = "android_hardware_sony_timekeep";
       rev = "07f619c12dd80052f865c51e5d8c77d860c68c64";

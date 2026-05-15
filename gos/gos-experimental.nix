@@ -5,11 +5,14 @@ args@{
   lib,
   ...
 }:
+let
+  inherit (pkgs) fetchFromGitHub git;
+in
 {
   /*
     # WIP: ERROR: building adevtool dependencies: Or did you mean ["libdisk"]
     source.dirs."bootable/recovery" = lib.mkForce {
-      src = pkgs.fetchFromGitHub {
+      src = fetchFromGitHub {
         owner = "LineageOS";
         repo = "android_bootable_recovery";
         rev = "833e2948bfe4bbfbf73796391a9336850108e7bd";
@@ -130,7 +133,7 @@ args@{
           hash = "sha256-riyeyBW9hyRmdQO2SmiXSizJWGmgbLnhzw0/l1/ZePg=";
         })
       ];
-      git = lib.getExe pkgs.git;
+      git = lib.getExe git;
     in
     ''
       for p in ${lib.concatStringsSep " " patches0}; do

@@ -28,7 +28,8 @@ stdenv.mkDerivation (finalAttrs: {
     jdk21_headless
   ];
   postPatch = ''
-    sed -i 's|<target name="download-ivy"|<target name="download-ivy" unless="offline"|' common/ivy.xml
+    substituteInPlace common/ivy.xml \
+      --replace-fail '<target name="download-ivy"' '<target name="download-ivy" unless="offline"'
   '';
   buildPhase = ''
     runHook preBuild

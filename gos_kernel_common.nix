@@ -126,7 +126,8 @@ stdenvNoCC.mkDerivation {
           chmod -R u+w aosp/KernelSU
           ln -sfn ../KernelSU/kernel aosp/drivers/kernelsu
           printf "\nobj-\$(CONFIG_KSU) += kernelsu/\n" >> aosp/drivers/Makefile
-          sed -i "/endmenu/i\\source \"drivers/kernelsu/Kconfig\"" aosp/drivers/Kconfig
+          substituteInPlace aosp/drivers/Kconfig \
+            --replace-fail "endmenu" "source \"drivers/kernelsu/Kconfig\"\nendmenu"
 
           cp aosp/KernelSU/kernel/Makefile aosp/KernelSU/kernel/Makefile.orig
           {
@@ -139,12 +140,14 @@ stdenvNoCC.mkDerivation {
 
       ${lib.optionalString enableLindroid ''
         # lindroid steps
-        sed -i "/^CONFIG_INTERCONNECT=y$/a CONFIG_DRM_LINDROID_EVDI=y" aosp/arch/arm64/configs/gki_defconfig
+        substituteInPlace aosp/arch/arm64/configs/gki_defconfig \
+          --replace-fail "CONFIG_INTERCONNECT=y" "CONFIG_INTERCONNECT=y\nCONFIG_DRM_LINDROID_EVDI=y"
 
         rm -rf aosp/drivers/lindroid-drm
         cp -r ${lindroidDrm} aosp/drivers/lindroid-drm
         echo "obj-y += lindroid-drm/" >> aosp/drivers/Makefile
-        sed -i "/endmenu/i\\source \"drivers/lindroid-drm/Kconfig\"" aosp/drivers/Kconfig
+        substituteInPlace aosp/drivers/Kconfig \
+          --replace-fail "endmenu" "source \"drivers/lindroid-drm/Kconfig\"\nendmenu"
 
         cd aosp
         #see bwlow#apply_patch ${./kernel/0ac686b9e81ba331c2ad9b420fd21262a80daaa4.patch}

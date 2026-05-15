@@ -18,6 +18,12 @@ let
         grapheneos.channel = config.grapheneos.channel;
       }
     )).config;
+  inherit (pkgs)
+    git
+    fetchgit
+    runCommand
+    zstd
+    ;
   aospLlvmBase = {
     version = "21.0.0";
     revision = "386af4a5c64ab75eaee2448dc38f2e34a40bfed0";
@@ -129,20 +135,20 @@ let
   mkAospLlvmMonorepoSrc =
     clangVersion: spec:
     let
-      llvmProjectSrc = pkgs.fetchgit {
+      llvmProjectSrc = fetchgit {
         url = "https://github.com/llvm/llvm-project.git";
         rev = aospLlvmBase.revision;
         hash = aospLlvmBase.hash;
       };
-      llvmAndroidSrc = pkgs.fetchgit {
+      llvmAndroidSrc = fetchgit {
         url = "https://android.googlesource.com/toolchain/llvm_android";
         rev = spec.llvmAndroidRevision;
         hash = spec.llvmAndroidHash;
       };
     in
-    pkgs.runCommand "aosp-${clangVersion}-llvm-project-src"
+    runCommand "aosp-${clangVersion}-llvm-project-src"
       {
-        nativeBuildInputs = [ pkgs.git ];
+        nativeBuildInputs = [ git ];
       }
       ''
         cp --reflink=auto --no-preserve=ownership -r ${llvmProjectSrc} $out
@@ -170,15 +176,15 @@ let
       (
         _final: prev: {
           libllvm = prev.libllvm.overrideAttrs (old: {
-            buildInputs = lib.unique ((old.buildInputs or [ ]) ++ [ pkgs.zstd ]);
-            propagatedBuildInputs = lib.unique ((old.propagatedBuildInputs or [ ]) ++ [ pkgs.zstd ]);
+            buildInputs = lib.unique ((old.buildInputs or [ ]) ++ [ zstd ]);
+            propagatedBuildInputs = lib.unique ((old.propagatedBuildInputs or [ ]) ++ [ zstd ]);
             cmakeFlags = (old.cmakeFlags or [ ]) ++ [
               (lib.cmakeFeature "LLVM_ENABLE_ZSTD" "FORCE_ON")
             ];
           });
 
           clang-unwrapped = prev.clang-unwrapped.overrideAttrs (old: {
-            buildInputs = lib.unique ((old.buildInputs or [ ]) ++ [ pkgs.zstd ]);
+            buildInputs = lib.unique ((old.buildInputs or [ ]) ++ [ zstd ]);
           });
         }
       );
@@ -266,7 +272,7 @@ let
       original = originalGrapheneosConfig.source.dirs."prebuilts/clang/host/linux-x86".src;
       stableToolchainPaths = toolchainPathsByClangVersion."clang-r563880";
     in
-    pkgs.runCommand "grapheneos-prebuilts-clang-host-linux-x86-source-built" { } ''
+    runCommand "grapheneos-prebuilts-clang-host-linux-x86-source-built" { } ''
       cp --reflink=auto --no-preserve=ownership -r ${original} $out
       chmod -R u+w $out
 
