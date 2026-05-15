@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
 
   # JamVM 1.5.1 is old, might need some fixes for modern GCC
   env = {
-    CFLAGS = "-Wno-error -fcommon -D_GNU_SOURCE -Wno-implicit-function-declaration -Wno-incompatible-pointer-types";
+    CFLAGS = "-O1 -Wno-error -fcommon -D_GNU_SOURCE -Wno-implicit-function-declaration -Wno-incompatible-pointer-types";
   };
 
   hardeningDisable = [ "fortify" ];

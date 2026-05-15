@@ -16,7 +16,10 @@ stdenv.mkDerivation rec {
     hash = "sha256-ogmusUIWXPMakblTP3FuvN7R4BLn06ha0BKPuGi6Py4=";
   };
 
-  nativeBuildInputs = [ bootstrap-jdk-stage1 ecj-bootstrap-3_2_2 ];
+  nativeBuildInputs = [
+    bootstrap-jdk-stage1
+    ecj-bootstrap-3_2_2
+  ];
 
   buildPhase = ''
     export JAVA_HOME=${bootstrap-jdk-stage1}
@@ -24,17 +27,17 @@ stdenv.mkDerivation rec {
     export JAVAC=${ecj-bootstrap-3_2_2}/bin/javac
     export PATH=${ecj-bootstrap-3_2_2}/bin:$PATH
     export HOME=$TMPDIR
-    
+
     chmod +x build.sh
     export ANT_OPTS="-Xnocompact -Xnoinlining -Xms128m -Xmx512m -Dbuild.compiler=extJavac"
     export BOOTJAVAC_OPTS="-nowarn -sourcepath src/main"
-    
+
     # Prevent JamVM segmentation fault by disabling some optimizations
     sed -i 's|"''${JAVACMD}" |"''${JAVACMD}" -Xnocompact -Xnoinlining |g' build.sh
-    
+
     # Disable building tests to avoid compilation errors with Jikes
     sed -i 's/depends="jars,test-jar"/depends="jars"/g' build.xml
-    
+
     # build.sh dist creates the distribution in the specified directory
     sh build.sh -Ddist.dir=$out dist
   '';

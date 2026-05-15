@@ -30,22 +30,22 @@ stdenv.mkDerivation rec {
     find . -name "*.java" > sources.txt
     # ECJ 3.2.2 is old enough that it should work with Jikes (via bootstrap-jdk-stage1)
     javac -d build @sources.txt
-    
+
     # Copy resource files
     find . -name "*.properties" -exec cp --parents {} build/ \;
     find . -name "*.rsc" -exec cp --parents {} build/ \;
   '';
 
   installPhase = ''
-    mkdir -p $out/share/java $out/bin
-    (cd build && jar cf $out/share/java/ecj-bootstrap.jar *)
-    
-    # Create a javac wrapper using ecj-bootstrap
-    cat > $out/bin/javac <<EOF
-#!/bin/sh
-exec ${bootstrap-jdk-stage1}/bin/java -cp $out/share/java/ecj-bootstrap.jar org.eclipse.jdt.internal.compiler.batch.Main -bootclasspath ${gnu-classpath-0_93}/share/classpath/glibj.zip -nowarn -1.5 "\$@"
-EOF
-    chmod +x $out/bin/javac
+        mkdir -p $out/share/java $out/bin
+        (cd build && jar cf $out/share/java/ecj-bootstrap.jar *)
+        
+        # Create a javac wrapper using ecj-bootstrap
+        cat > $out/bin/javac <<EOF
+    #!/bin/sh
+    exec ${bootstrap-jdk-stage1}/bin/java -cp $out/share/java/ecj-bootstrap.jar org.eclipse.jdt.internal.compiler.batch.Main -bootclasspath ${gnu-classpath-0_93}/share/classpath/glibj.zip -nowarn -1.5 "\$@"
+    EOF
+        chmod +x $out/bin/javac
   '';
 
   meta = with lib; {

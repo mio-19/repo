@@ -27,8 +27,7 @@ stdenv.mkDerivation {
       --add-flags "-bootclasspath ${gnu-classpath-0_93}/share/classpath/glibj.zip:${jamvm-1_5_1}/share/jamvm/classes.zip"
 
     # The "java" for this stage is jamvm
-    makeWrapper ${jamvm-1_5_1}/bin/jamvm $out/bin/java \
-      --add-flags "-Xbootclasspath:${gnu-classpath-0_93}/share/classpath/glibj.zip:${jamvm-1_5_1}/share/jamvm/classes.zip"
+    ln -s ${jamvm-1_5_1}/bin/jamvm $out/bin/java
 
     # The "jar" for this stage is a wrapper around gnu.classpath.tools.jar.Main
     # since gjar from gnu-classpath assumes jamvm is in its own bin directory.
