@@ -32,6 +32,7 @@ let
       mkdir -p "$workdir"
       cp ${twitterApk} "$workdir/input.apkm"
       chmod u+w "$workdir/input.apkm"
+      export MORPHE_VERSION_NAME_SUFFIX="-patches-${piko-patches.version}"
 
       morphe-cli patch \
         --patches=${pikoPatches} \
