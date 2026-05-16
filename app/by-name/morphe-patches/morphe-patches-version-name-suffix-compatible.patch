@@ -1,0 +1,67 @@
+diff --git a/extensions/music/src/main/java/app/morphe/extension/music/patches/VersionCheckPatch.java b/extensions/music/src/main/java/app/morphe/extension/music/patches/VersionCheckPatch.java
+index 5c55789..e405e72 100644
+--- a/extensions/music/src/main/java/app/morphe/extension/music/patches/VersionCheckPatch.java
++++ b/extensions/music/src/main/java/app/morphe/extension/music/patches/VersionCheckPatch.java
+@@ -4,8 +4,14 @@ import app.morphe.extension.shared.Utils;
+ 
+ public class VersionCheckPatch {
+     private static boolean isVersionOrGreater(String version) {
+-        return Utils.getAppVersionName().compareTo(version) >= 0;
++        String appVersion = Utils.getAppVersionName();
++        int suffixIndex = appVersion.indexOf("-patches-");
++        if (suffixIndex >= 0) {
++            appVersion = appVersion.substring(0, suffixIndex);
++        }
++
++        return appVersion.compareTo(version) >= 0;
+     }
+ 
+     public static final boolean IS_8_40_OR_GREATER = isVersionOrGreater("8.40.00");
+-}
+\ No newline at end of file
++}
+diff --git a/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/VersionCheckPatch.java b/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/VersionCheckPatch.java
+index 0e29114..7a6ac1c 100644
+--- a/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/VersionCheckPatch.java
++++ b/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/VersionCheckPatch.java
+@@ -4,7 +4,13 @@ import app.morphe.extension.shared.Utils;
+ 
+ public class VersionCheckPatch {
+     private static boolean isVersionOrGreater(String version) {
+-        return Utils.getAppVersionName().compareTo(version) >= 0;
++        String appVersion = Utils.getAppVersionName();
++        int suffixIndex = appVersion.indexOf("-patches-");
++        if (suffixIndex >= 0) {
++            appVersion = appVersion.substring(0, suffixIndex);
++        }
++
++        return appVersion.compareTo(version) >= 0;
+     }
+ 
+     public static final boolean IS_20_22_OR_GREATER = isVersionOrGreater("20.22.00");
+diff --git a/patches/src/main/kotlin/app/morphe/patches/music/misc/playservice/VersionCheckPatch.kt b/patches/src/main/kotlin/app/morphe/patches/music/misc/playservice/VersionCheckPatch.kt
+index 266eabc..0728317 100644
+--- a/patches/src/main/kotlin/app/morphe/patches/music/misc/playservice/VersionCheckPatch.kt
++++ b/patches/src/main/kotlin/app/morphe/patches/music/misc/playservice/VersionCheckPatch.kt
+@@ -32,7 +32,7 @@ var is_9_10_or_greater: Boolean by Delegates.notNull()
+ 
+ val versionCheckPatch = bytecodePatch {
+     execute {
+-        val versionName = packageMetadata.versionName
++        val versionName = packageMetadata.versionName.substringBefore("-patches-")
+         fun isEqualsOrGreaterThan(version: String): Boolean {
+             return versionName >= version
+         }
+diff --git a/patches/src/main/kotlin/app/morphe/patches/youtube/misc/playservice/VersionCheckPatch.kt b/patches/src/main/kotlin/app/morphe/patches/youtube/misc/playservice/VersionCheckPatch.kt
+index e78354c..cf99396 100644
+--- a/patches/src/main/kotlin/app/morphe/patches/youtube/misc/playservice/VersionCheckPatch.kt
++++ b/patches/src/main/kotlin/app/morphe/patches/youtube/misc/playservice/VersionCheckPatch.kt
+@@ -74,7 +74,7 @@ var is_21_19_or_greater : Boolean by Delegates.notNull()
+ 
+ val versionCheckPatch = bytecodePatch {
+     execute {
+-        val versionName = packageMetadata.versionName
++        val versionName = packageMetadata.versionName.substringBefore("-patches-")
+         fun isEqualsOrGreaterThan(version: String): Boolean {
+             return versionName >= version
+         }
