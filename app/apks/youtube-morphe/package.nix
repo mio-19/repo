@@ -35,7 +35,6 @@ let
         mkdir -p "$workdir"
         cp ${youtubeApk} "$workdir/input.apk"
         chmod u+w "$workdir/input.apk"
-        export MORPHE_VERSION_NAME_SUFFIX="-patches-${morphe-patches.version}"
 
         morphe-cli patch \
           --patches=${morphePatches} \
