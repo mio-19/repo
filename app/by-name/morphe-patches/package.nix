@@ -89,7 +89,6 @@ stdenv.mkDerivation (finalAttrs: {
     patch -d "$root/multidexlib2" -p3 < ${../brosssh-patches/multidexlib2-gradle-9.patch}
 
     patch -d "$sourceRoot" -p0 < ${./morphe-patches-settings.patch}
-    patch -d "$sourceRoot" -p1 < ${./morphe-patches-version-name-suffix-compatible.patch}
 
     cat >> "$sourceRoot/build.gradle.kts" << 'EOF'
 

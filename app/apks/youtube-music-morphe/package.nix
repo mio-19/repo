@@ -33,7 +33,6 @@ let
 
         workdir="$TMPDIR/youtube-music-morphe"
         mkdir -p "$workdir"
-        export MORPHE_VERSION_NAME_SUFFIX="-patches-${morphe-patches.version}"
 
         morphe-cli patch \
           --patches=${morphePatches} \
