@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
   version = "1.8.4";
 
   src = fetchurl {
-    url = "mirror://apache/ant/source/apache-ant-${version}-src.tar.bz2";
+    url = "https://archive.apache.org/dist/ant/source/apache-ant-${version}-src.tar.bz2";
     sha256 = "sha256-XeZfe6P2fkNv//zcCnP1kdEAbp+0GvhjLB8fhNSj4LE=";
   };
 
@@ -34,8 +34,10 @@ stdenv.mkDerivation rec {
   };
 
   patchPhase = ''
-    sed -i 's|"${env.JAVACMD}" |"${env.JAVACMD}" -Xnocompact -Xnoinlining |' bootstrap.sh
-    sed -i 's/depends="jars,test-jar"/depends="jars"/g' build.xml
+    substituteInPlace bootstrap.sh \
+      --replace-fail '"''${JAVACMD}" ' '"''${JAVACMD}" -Xnocompact -Xnoinlining '
+    substituteInPlace build.xml \
+      --replace-fail 'depends="jars,test-jar"' 'depends="jars"'
   '';
 
   buildPhase = ''

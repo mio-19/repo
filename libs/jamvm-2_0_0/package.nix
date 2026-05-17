@@ -2,7 +2,7 @@
   lib,
   stdenv,
   fetchurl,
-  gnu-classpath-0_99,
+  gnu-classpath-devel,
   zlib,
 }:
 stdenv.mkDerivation rec {
@@ -16,11 +16,11 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     zlib
-    gnu-classpath-0_99
+    gnu-classpath-devel
   ];
 
   configureFlags = [
-    "--with-classpath-install-dir=${gnu-classpath-0_99}"
+    "--with-classpath-install-dir=${gnu-classpath-devel}"
   ];
 
   env = {

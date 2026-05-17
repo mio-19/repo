@@ -62,7 +62,7 @@ stdenv.mkDerivation rec {
   installPhase = ''
     mkdir -p $out/share/java $out/bin
     cp ecj-bootstrap.jar $out/share/java
-    
+
     # Use the template to create javac wrapper
     substitute ${./ecj-javac.sh.in} $out/bin/javac \
       --subst-var-by shell "${stdenv.shell}" \

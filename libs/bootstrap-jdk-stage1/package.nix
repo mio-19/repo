@@ -19,23 +19,23 @@ stdenv.mkDerivation {
   dontUnpack = true;
 
   installPhase = ''
-    mkdir -p $out/bin
+        mkdir -p $out/bin
 
-    # The "javac" for this stage is jikes
-    # We need to point it to the standard classes
-    makeWrapper ${jikes}/bin/jikes $out/bin/javac \
-      --add-flags "-bootclasspath ${gnu-classpath-0_93}/share/classpath/glibj.zip:${jamvm-1_5_1}/share/jamvm/classes.zip"
+        # The "javac" for this stage is jikes
+        # We need to point it to the standard classes
+        makeWrapper ${jikes}/bin/jikes $out/bin/javac \
+          --add-flags "-bootclasspath ${gnu-classpath-0_93}/share/classpath/glibj.zip:${jamvm-1_5_1}/share/jamvm/classes.zip"
 
-    # The "java" for this stage is jamvm
-    ln -s ${jamvm-1_5_1}/bin/jamvm $out/bin/java
+        # The "java" for this stage is jamvm
+        ln -s ${jamvm-1_5_1}/bin/jamvm $out/bin/java
 
-    # The "jar" for this stage is a wrapper around gnu.classpath.tools.jar.Main
-    # since gjar from gnu-classpath assumes jamvm is in its own bin directory.
-    cat > $out/bin/jar <<EOF
-#!/bin/sh
-exec ${jamvm-1_5_1}/bin/jamvm -Xbootclasspath/p:"${gnu-classpath-0_93}/share/classpath/tools.zip" gnu.classpath.tools.jar.Main "\$@"
-EOF
-    chmod +x $out/bin/jar
+        # The "jar" for this stage is a wrapper around gnu.classpath.tools.jar.Main
+        # since gjar from gnu-classpath assumes jamvm is in its own bin directory.
+        cat > $out/bin/jar <<EOF
+    #!/bin/sh
+    exec ${jamvm-1_5_1}/bin/jamvm -Xbootclasspath/p:"${gnu-classpath-0_93}/share/classpath/tools.zip" gnu.classpath.tools.jar.Main "\$@"
+    EOF
+        chmod +x $out/bin/jar
   '';
 
   passthru = {
