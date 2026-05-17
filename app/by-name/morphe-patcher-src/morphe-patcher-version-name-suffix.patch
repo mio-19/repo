@@ -1,0 +1,10 @@
+--- src/main/kotlin/app/morphe/patcher/resource/coder/ArsclibResourceCoder.kt
++++ src/main/kotlin/app/morphe/patcher/resource/coder/ArsclibResourceCoder.kt
+@@ -251,0 +252,7 @@ class ArsclibResourceCoder(
++            val versionNameSuffix = System.getenv("MORPHE_VERSION_NAME_SUFFIX")
++            if (!versionNameSuffix.isNullOrBlank()) {
++                val currentVersionName = manifestNode.getAttribute("android:versionName")
++                if (currentVersionName.isNotEmpty() && !currentVersionName.endsWith(versionNameSuffix)) {
++                    manifestNode.setAttribute("android:versionName", currentVersionName + versionNameSuffix)
++                }
++            }
