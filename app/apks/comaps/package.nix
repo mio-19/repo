@@ -21,7 +21,13 @@
   python3,
 }:
 let
+  version = "2026.05.06-11";
+  versionParts = builtins.match "([0-9]{4}\\.[0-9]{2}\\.[0-9]{2})-([0-9]+)" version;
+  versionDate = builtins.elemAt versionParts 0;
+  versionCount = builtins.elemAt versionParts 1;
+
   appPackage =
+    assert versionParts != null;
     let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -37,7 +43,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "comaps";
-      version = "2026.05.06-11";
+      inherit version;
 
       src = fetchgit {
         url = "https://codeberg.org/comaps/comaps.git";
@@ -94,6 +100,9 @@ let
       # Nixpkgs default protobuf is 7.x, so provide a compatible interpreter.
       prePatch = ''
         export PATH="${(python3.withPackages (ps: [ ps.protobuf4 ]))}/bin:$PATH"
+        substituteInPlace ../tools/unix/version.sh \
+          --replace-fail '    local COUNT_AND_DATE=( 0 $(date +%Y.%m.%d) )' \
+            '    local COUNT_AND_DATE=( ${versionCount} ${versionDate} )'
         substituteInPlace ../CMakeLists.txt \
           --replace-fail 'if(PROTOBUF_VERSION VERSION_LESS "3.20.0" OR PROTOBUF_VERSION VERSION_GREATER_EQUAL "4.0.0")' \
             'if(PROTOBUF_VERSION VERSION_LESS "3.20.0" OR PROTOBUF_VERSION VERSION_GREATER_EQUAL "5.0.0")' \

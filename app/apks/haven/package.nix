@@ -277,7 +277,7 @@ let
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-wgrpJLVWwRCoTrsd78qxPHEqiC2qi7HztmQ9hVY6U7g=";
+        hash = "sha256-opvN4HZhF1amhlkUBsMU1UAewK7qjPEupNufkma6M34=";
       };
 
       patches = [
