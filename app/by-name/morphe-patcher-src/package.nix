@@ -9,5 +9,6 @@ applyPatches {
   postPatch = ''
     patch -d . -p0 < ${./morphe-patcher.patch}
     patch -d . -p0 < ${./morphe-patcher-settings.patch}
+    patch -d . -p0 < ${./morphe-patcher-version-name-suffix.patch}
   '';
 }
