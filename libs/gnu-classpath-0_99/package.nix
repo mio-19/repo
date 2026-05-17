@@ -2,9 +2,11 @@
   lib,
   stdenv,
   fetchurl,
+  fetchpatch,
   ecj-bootstrap-3_2_2,
-  bootstrap-jdk-stage1,
-  zip,
+  jamvm-1_5_1,
+  fastjar,
+  libtool,
   pkg-config,
 }:
 stdenv.mkDerivation rec {
@@ -16,25 +18,30 @@ stdenv.mkDerivation rec {
     sha256 = "1j7cby4k66f1nvckm48xcmh352b1d1b33qk7l6hi7dp9i9zjjagr";
   };
 
+  patches = [
+    ./aarch64-support.patch
+  ];
+
   nativeBuildInputs = [
-    ecj-bootstrap-3_2_2
-    bootstrap-jdk-stage1
-    zip
+    fastjar
+    libtool
     pkg-config
   ];
 
   configureFlags = [
-    "--with-javac=${ecj-bootstrap-3_2_2}/bin/javac"
-    "--with-java=${bootstrap-jdk-stage1}/bin/java"
+    "JAVAC=${ecj-bootstrap-3_2_2}/bin/javac"
+    "JAVA=${jamvm-1_5_1}/bin/jamvm"
+    "--with-ecj-jar=${ecj-bootstrap-3_2_2}/share/java/ecj-bootstrap.jar"
+    "GCJ_JAVAC_TRUE=no"
+    "ac_cv_prog_java_works=yes"
     "--disable-Werror"
+    "--disable-gmp"
     "--disable-gtk-peer"
     "--disable-gconf-peer"
     "--disable-plugin"
-    "--disable-alsa"
     "--disable-dssi"
-    "--disable-qt-peer"
-    "--disable-xmlj"
-    "--disable-tools"
+    "--disable-alsa"
+    "--disable-gjdoc"
   ];
 
   env = {
@@ -42,6 +49,12 @@ stdenv.mkDerivation rec {
   };
 
   hardeningDisable = [ "fortify" ];
+
+  enableParallelBuilding = true;
+
+  postInstall = ''
+    make install-data
+  '';
 
   meta = with lib; {
     description = "Free Software implementations of the Java standard class libraries (0.99)";

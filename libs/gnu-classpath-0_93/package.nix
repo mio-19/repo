@@ -5,6 +5,7 @@
   jikes,
   zip,
   pkg-config,
+  libtool,
 }:
 stdenv.mkDerivation rec {
   pname = "gnu-classpath";
@@ -15,10 +16,16 @@ stdenv.mkDerivation rec {
     sha256 = "0i99wf9xd3hw1sj2sazychb9prx8nadxh2clgvk3zlmb28v0jbfz";
   };
 
+  patches = [
+    ./miscompilation.patch
+    ./aarch64-support.patch
+  ];
+
   nativeBuildInputs = [
     jikes
     zip
     pkg-config
+    libtool
   ];
 
   # Minimal build for bootstrapping

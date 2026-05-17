@@ -13,6 +13,7 @@
   openjdk21_headless,
   openjdk25,
   openjdk25_headless,
+  icedtea7,
 }:
 let
   # Nixpkgs OpenJDK generic builder has a bug where it calls
@@ -40,40 +41,34 @@ let
         );
     };
 
-  # To ensure these all build in this environment, we use the standard Nixpkgs
-  # bootstrap JDKs (which are often pre-built binaries).
-  # In a full-source bootstrap (like Guix), these would eventually be replaced
-  # by our own compiled versions once the IcedTea bridge is implemented.
-
-  jdk8_bootstrapped = wrapJdk openjdk8;
-  jdk8_headless_bootstrapped = wrapJdk openjdk8_headless;
-
-  jdk11_bootstrapped = wrapJdk (
-    openjdk11.override { jdk-bootstrap = openjdk11.passthru.jdk-bootstrap; }
+  # OpenJDK 8 (Requires OpenJDK 7 / IcedTea 7)
+  jdk8_bootstrapped = wrapJdk (openjdk8.override { jdk-bootstrap = icedtea7; });
+  jdk8_headless_bootstrapped = wrapJdk (
+    openjdk8_headless.override { jdk-bootstrap = icedtea7.jre; }
   );
+
+  # OpenJDK 11 (Requires OpenJDK 8)
+  jdk11_bootstrapped = wrapJdk (openjdk11.override { jdk-bootstrap = jdk8_bootstrapped; });
   jdk11_headless_bootstrapped = wrapJdk (
-    openjdk11_headless.override { jdk-bootstrap = openjdk11_headless.passthru.jdk-bootstrap; }
+    openjdk11_headless.override { jdk-bootstrap = jdk8_headless_bootstrapped; }
   );
 
-  jdk17_bootstrapped = wrapJdk (
-    openjdk17.override { jdk-bootstrap = openjdk17.passthru.jdk-bootstrap; }
-  );
+  # OpenJDK 17 (Requires OpenJDK 11)
+  jdk17_bootstrapped = wrapJdk (openjdk17.override { jdk-bootstrap = jdk11_bootstrapped; });
   jdk17_headless_bootstrapped = wrapJdk (
-    openjdk17_headless.override { jdk-bootstrap = openjdk17_headless.passthru.jdk-bootstrap; }
+    openjdk11_headless.override { jdk-bootstrap = jdk11_headless_bootstrapped; }
   );
 
-  jdk21_bootstrapped = wrapJdk (
-    openjdk21.override { jdk-bootstrap = openjdk21.passthru.jdk-bootstrap; }
-  );
+  # OpenJDK 21 (Requires OpenJDK 17)
+  jdk21_bootstrapped = wrapJdk (openjdk21.override { jdk-bootstrap = jdk17_bootstrapped; });
   jdk21_headless_bootstrapped = wrapJdk (
-    openjdk21_headless.override { jdk-bootstrap = openjdk21_headless.passthru.jdk-bootstrap; }
+    openjdk21_headless.override { jdk-bootstrap = jdk17_headless_bootstrapped; }
   );
 
-  jdk25_bootstrapped = wrapJdk (
-    openjdk25.override { jdk-bootstrap = openjdk25.passthru.jdk-bootstrap; }
-  );
+  # OpenJDK 25 (Requires OpenJDK 21)
+  jdk25_bootstrapped = wrapJdk (openjdk25.override { jdk-bootstrap = jdk21_bootstrapped; });
   jdk25_headless_bootstrapped = wrapJdk (
-    openjdk25_headless.override { jdk-bootstrap = openjdk25_headless.passthru.jdk-bootstrap; }
+    openjdk25_headless.override { jdk-bootstrap = jdk21_headless_bootstrapped; }
   );
 in
 {

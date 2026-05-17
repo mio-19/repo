@@ -1,0 +1,36 @@
+From 88d7b63ba1748431741244d195fbc412a9d3e8d0 Mon Sep 17 00:00:00 2001
+From: Herwig Hochleitner <herwig@bendlas.net>
+Date: Mon, 16 Sep 2024 07:03:26 +0200
+Subject: [PATCH] make jpeg-6b optional
+
+this library doesn't appear in the github snapshot, so we're getting
+rid of the hard exit here
+
+see https://github.com/openjdk/jdk7u
+---
+ remove-intree-libraries.sh.in | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/remove-intree-libraries.sh.in b/remove-intree-libraries.sh.in
+index b6f6cb54..72df81f1 100644
+--- a/remove-intree-libraries.sh.in
++++ b/remove-intree-libraries.sh.in
+@@ -18,11 +18,11 @@ fi
+ 
+ if test "x@ENABLE_SYSTEM_JPEG@" = "xtrue"; then
+   if [ ! -d ${JPEG_SRC} ]; then
+-      echo "${JPEG_SRC} does not exist. Refusing to proceed."
+-      exit -2;
++      echo "${JPEG_SRC} does not exist. Proceeding."
++  else
++      echo "Removing libjpeg"
++      rm -rvf ${JPEG_SRC}
+   fi
+-  echo "Removing libjpeg"
+-  rm -rvf ${JPEG_SRC}
+ fi
+ 
+ if test "x@ENABLE_SYSTEM_GIF@" = "xtrue"; then
+-- 
+2.46.0
+

@@ -1,52 +1,50 @@
 {
   lib,
   stdenv,
-  fetchFromGitHub,
-  bootstrap-jdk-stage1,
-  ecj-bootstrap-3_2_2,
+  fetchurl,
+  jikes,
+  jamvm-1_5_1,
+  unzip,
+  zip,
 }:
 stdenv.mkDerivation rec {
-  pname = "ant-bootstrap";
-  version = "1.7.0";
+  pname = "ant";
+  version = "1.8.4";
 
-  src = fetchFromGitHub {
-    owner = "apache";
-    repo = "ant";
-    rev = "ANT_170";
-    hash = "sha256-ogmusUIWXPMakblTP3FuvN7R4BLn06ha0BKPuGi6Py4=";
+  src = fetchurl {
+    url = "mirror://apache/ant/source/apache-ant-${version}-src.tar.bz2";
+    sha256 = "sha256-XeZfe6P2fkNv//zcCnP1kdEAbp+0GvhjLB8fhNSj4LE=";
   };
 
   nativeBuildInputs = [
-    bootstrap-jdk-stage1
-    ecj-bootstrap-3_2_2
+    jikes
+    jamvm-1_5_1
+    unzip
+    zip
   ];
 
-  buildPhase = ''
-    export JAVA_HOME=${bootstrap-jdk-stage1}
-    export JAVACMD=${bootstrap-jdk-stage1}/bin/java
-    export JAVAC=${ecj-bootstrap-3_2_2}/bin/javac
-    export PATH=${ecj-bootstrap-3_2_2}/bin:$PATH
-    export HOME=$TMPDIR
+  env = {
+    JAVA_HOME = jamvm-1_5_1;
+    JAVACMD = "${jamvm-1_5_1}/bin/jamvm";
+    JAVAC = "${jikes}/bin/jikes";
+    CLASSPATH = "${jamvm-1_5_1}/lib/rt.jar";
+    ANT_OPTS = "-Dbuild.compiler=jikes";
+    BOOTJAVAC_OPTS = "-nowarn";
+    HOME = "/tmp";
+  };
 
-    chmod +x build.sh
-    export ANT_OPTS="-Xnocompact -Xnoinlining -Xms128m -Xmx512m -Dbuild.compiler=extJavac"
-    export BOOTJAVAC_OPTS="-nowarn -sourcepath src/main"
-
-    # Prevent JamVM segmentation fault by disabling some optimizations
-    sed -i 's|"''${JAVACMD}" |"''${JAVACMD}" -Xnocompact -Xnoinlining |g' build.sh
-
-    # Disable building tests to avoid compilation errors with Jikes
+  patchPhase = ''
+    sed -i 's|"${env.JAVACMD}" |"${env.JAVACMD}" -Xnocompact -Xnoinlining |' bootstrap.sh
     sed -i 's/depends="jars,test-jar"/depends="jars"/g' build.xml
-
-    # build.sh dist creates the distribution in the specified directory
-    sh build.sh -Ddist.dir=$out dist
   '';
 
-  installPhase = ''
-    # The distribution is already built and placed in $out
-    # Let's ensure the bin directory exists and has the ant executable
-    test -d $out/bin || exit 1
+  buildPhase = ''
+    mkdir -p $out
+    touch $HOME/.ant.properties
+    bash -x bootstrap.sh -Ddist.dir=$out
   '';
+
+  installPhase = "true";
 
   meta = with lib; {
     description = "Apache Ant, a Java-based build tool (bootstrap version)";
