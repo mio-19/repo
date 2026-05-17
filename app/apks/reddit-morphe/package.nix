@@ -43,7 +43,6 @@ let
         runHook preBuild
 
         workdir="$TMPDIR/reddit-morphe"
-        export MORPHE_VERSION_NAME_SUFFIX="-patches-${morphe-patches.version}"
 
         morphe-cli patch \
           --patches=${morphePatches} \

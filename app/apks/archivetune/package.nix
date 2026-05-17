@@ -22,18 +22,18 @@ let
     s.build-tools-37-0-0
   ]);
 
-  # https://github.com/koiverse/ArchiveTune/blob/v13.2.0/gradle/wrapper/gradle-wrapper.properties
+  # https://github.com/koiverse/ArchiveTune/blob/v13.3.0/gradle/wrapper/gradle-wrapper.properties
   gradle = gradle_9_4_1;
 
   appPackage = buildGradlePackage rec {
     pname = "archivetune";
-    version = "13.2.0";
+    version = "13.3.0";
 
     src = fetchFromGitHub {
       owner = "koiverse";
       repo = "ArchiveTune";
       tag = "v${version}";
-      hash = "sha256-Im2NecdAFxYrTH8Yn3BQHLlNm01jhwBou1nVBZn3UPQ=";
+      hash = "sha256-BFMDmSezQ3XysuQD3szFS0UMgVNHWMqae/zNXovH/Y8=";
     };
 
     inherit gradle;

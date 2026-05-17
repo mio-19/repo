@@ -2,30 +2,32 @@
   mk-apk-package,
   lib,
   jdk21_headless,
-  gradle_9_3_1,
+  gradle_9_4_1,
   stdenv,
   fetchgit,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
 let
-  version = "4.8.2";
+  version = "4.8.3";
 
   src = fetchgit {
     url = "https://gitlab.com/AuroraOSS/AuroraStore.git";
     tag = version;
-    hash = "sha256-HivKLMPJcMkiAPNw1RKMpr6g4B8Aq/jD4j5fXjFqr0c=";
+    hash = "sha256-8sY+fm0uBadRWhIN6o5FeIGYbNMmbe4ozwCPFJd/XpA=";
   };
 
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
     s.platforms-android-36
+    s.platforms-android-37-0
     s.build-tools-35-0-0
+    s.build-tools-36-0-0
     s.build-tools-36-1-0
   ]);
 
-  gradle = gradle_9_3_1;
+  gradle = gradle_9_4_1;
 
   appPackage = stdenv.mkDerivation (finalAttrs: {
     pname = "aurorastore";
@@ -69,9 +71,6 @@ let
     '';
 
     postPatch = ''
-            substituteInPlace app/build.gradle.kts \
-              --replace-fail '    compileSdk = 37' '    compileSdk = 36'
-
             pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                val agpVersion = requested.version ?: "8.13.2"\n                useModule("com.android.tools.build:gradle:$agpVersion")\n            }\n        }\n    }\n'
             if [[ -z "''${IN_GRADLE_UPDATE_DEPS:-}" ]]; then
               cacheRoot="${finalAttrs.mitmCache}"

@@ -32,7 +32,6 @@ let
       mkdir -p "$workdir"
       cp ${instagramApkm} "$workdir/input.apkm"
       chmod u+w "$workdir/input.apkm"
-      export MORPHE_VERSION_NAME_SUFFIX="-patches-${brosssh-patches.version}"
 
       ${lib.getExe morphe-cli} patch \
         --patches=${brossshPatches} \
