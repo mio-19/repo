@@ -372,17 +372,17 @@
   };
   lineage_device_virt_common = {
     pname = "lineage_device_virt_common";
-    version = "3b3bb0b82742cef0d6f6a97464ee589cc4e6414c";
+    version = "b136323cbc5ecfaa46ea30bb90bfde51dffb32d3";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_device_virt_virt-common.git";
-      rev = "3b3bb0b82742cef0d6f6a97464ee589cc4e6414c";
+      rev = "b136323cbc5ecfaa46ea30bb90bfde51dffb32d3";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-kmbjVb/GEX535URDG13WboRmmmJtT3Dy1juyvYVbh14=";
+      sha256 = "sha256-H+HWAvmNTWwXNmYMgo3CVUO37IAsfiXOWk+dSnGz4W0=";
     };
-    date = "2026-04-10";
+    date = "2026-05-12";
   };
   lineage_device_virtio_arm64 = {
     pname = "lineage_device_virtio_arm64";
@@ -806,17 +806,17 @@
   };
   termux_x11 = {
     pname = "termux_x11";
-    version = "16db9d5bf2ae33c9e7d764a2854dcdb2933c52e0";
+    version = "b8e52c8b16afef82a8bfeeab843f073d2ec6f272";
     src = fetchgit {
       url = "https://github.com/termux/termux-x11.git";
-      rev = "16db9d5bf2ae33c9e7d764a2854dcdb2933c52e0";
+      rev = "b8e52c8b16afef82a8bfeeab843f073d2ec6f272";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-2dZHGSvNUcqENyOq1+O7QSbqzdKhwBwFZug4Rkgsbig=";
+      sha256 = "sha256-D67jjtzu8Huuf8HVFgdmKCrc6zsn5c3NmbsgUEmfxK0=";
     };
-    date = "2026-05-14";
+    date = "2026-05-18";
   };
   vendor_gapps15 = {
     pname = "vendor_gapps15";
