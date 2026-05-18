@@ -1,6 +1,7 @@
 {
   lib,
   stdenv,
+  buildPackages,
   fetchFromGitHub,
   fetchpatch,
   autoPatchelfHook,
@@ -96,19 +97,6 @@ let
       configureFlags = (oldAttrs.configureFlags or [ ]) ++ [ "--disable-javac-server" ];
     });
 
-  limitOpenJdkJobs =
-    jobs: jdk:
-    jdk.overrideAttrs (oldAttrs: {
-      preConfigure = (oldAttrs.preConfigure or "") + ''
-        for i in "''${!configureFlags[@]}"; do
-          case "''${configureFlags[$i]}" in
-            --with-jobs=*) unset "configureFlags[$i]" ;;
-          esac
-        done
-        configureFlags+=("--with-jobs=${toString jobs}")
-      '';
-    });
-
   withoutOpenJdkJvmFeatures =
     features: jdk:
     jdk.overrideAttrs (oldAttrs: {
@@ -124,6 +112,40 @@ let
     jdk.overrideAttrs (_oldAttrs: {
       buildFlags = [ "images" ];
     });
+
+  openjdk11Source = fetchFromGitHub {
+    owner = "openjdk";
+    repo = "jdk11u";
+    tag = "jdk-11.0.31-ga";
+    hash = "sha256-sVBPsUgoyZg4vwaOJ+b0eCC1UvtIorw3Ba+vMaqdAHk=";
+  };
+
+  withOpenJdk11GaSource =
+    jdk:
+    jdk.overrideAttrs (oldAttrs: {
+      version = "11.0.31+11";
+      src = openjdk11Source;
+      configureFlags =
+        lib.filter (
+          flag: !(lib.hasPrefix "--with-version-build=" flag) && !(lib.hasPrefix "--with-version-date=" flag)
+        ) (oldAttrs.configureFlags or [ ])
+        ++ [
+          "--with-version-build=11"
+          "--with-version-date=2026-04-21"
+        ];
+    });
+
+  withOpenJdk11StableToolchain =
+    jdk:
+    jdk.overrideAttrs (oldAttrs: {
+      depsBuildBuild = [ buildPackages.gcc13Stdenv.cc ];
+      env = (oldAttrs.env or { }) // {
+        NIX_CFLAGS_COMPILE = "-Wformat";
+      };
+    });
+
+  openjdk11Stable =
+    jdk: args: withOpenJdk11StableToolchain (withOpenJdk11GaSource (jdk.override args));
 
   patchJdk11BootstrapToolJavacFlags =
     jdk:
@@ -151,11 +173,10 @@ let
       hash,
       bootJdk,
       headless ? false,
-      jobs ? null,
     }:
     let
       bootHome = bootJdk.passthru.home or bootJdk.home or "${bootJdk}";
-      buildJobs = if jobs == null then "$NIX_BUILD_CORES" else toString jobs;
+      buildJobs = "$NIX_BUILD_CORES";
       selectBuiltJdkImage = ''
         image=
         while IFS= read -r candidate; do
@@ -433,15 +454,13 @@ let
   # generator tools. Build a reduced source JDK 11 first, then use that
   # compiler to build the final feature-complete JDK 11 packages.
   jdk11_stage1_bootstrapped = wrapBootstrapJdk (
-    limitOpenJdkJobs 1 (
-      buildOpenJdkImages (
-        disableJavacServer (
-          patchJdk11BootstrapToolJavacFlags (
-            withoutOpenJdkJvmFeatures [
-              "jfr"
-              "jvmti"
-            ] (openjdk11_headless.override { jdk-bootstrap = jdk10_headless_bootstrapped; })
-          )
+    buildOpenJdkImages (
+      disableJavacServer (
+        patchJdk11BootstrapToolJavacFlags (
+          withoutOpenJdkJvmFeatures [
+            "jfr"
+            "jvmti"
+          ] (openjdk11Stable openjdk11_headless { jdk-bootstrap = jdk10_headless_bootstrapped; })
         )
       )
     )
@@ -449,12 +468,14 @@ let
 
   jdk11_bootstrapped = wrapOpenJdk (
     buildOpenJdkImages (
-      disableJavacServer (openjdk11.override { jdk-bootstrap = jdk11_stage1_bootstrapped; })
+      disableJavacServer (openjdk11Stable openjdk11 { jdk-bootstrap = jdk11_stage1_bootstrapped; })
     )
   );
   jdk11_headless_bootstrapped = wrapOpenJdk (
     buildOpenJdkImages (
-      disableJavacServer (openjdk11_headless.override { jdk-bootstrap = jdk11_stage1_bootstrapped; })
+      disableJavacServer (
+        openjdk11Stable openjdk11_headless { jdk-bootstrap = jdk11_stage1_bootstrapped; }
+      )
     )
   );
 
@@ -466,7 +487,6 @@ let
     tag = "jdk-12.0.2-ga";
     hash = "sha256-c7HKYceKNplC/Bb+GR21gsYI0Svt4AOq/TkgnwhdheY=";
     bootJdk = jdk11_bootstrapped;
-    jobs = 1;
   };
   jdk12_headless_bootstrapped = mkOpenJdkBootstrap {
     featureVersion = "12";
@@ -476,7 +496,6 @@ let
     hash = "sha256-c7HKYceKNplC/Bb+GR21gsYI0Svt4AOq/TkgnwhdheY=";
     bootJdk = jdk11_headless_bootstrapped;
     headless = true;
-    jobs = 1;
   };
 
   # OpenJDK 13 (Requires OpenJDK 12)
