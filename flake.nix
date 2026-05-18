@@ -7,7 +7,7 @@
     android-nixpkgs = {
       #url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
-      url = "github:tadfisher/android-nixpkgs/2026-05-11-stable";
+      url = "github:tadfisher/android-nixpkgs/2026-05-14-stable";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
@@ -52,8 +52,8 @@
       flake = false;
     };
     openwrt-imagebuilder = {
-      url = "github:astro/nix-openwrt-imagebuilder";
-      #url = "github:mio-19/nix-openwrt-imagebuilder";
+      #url = "github:astro/nix-openwrt-imagebuilder";
+      url = "github:mio-19/nix-openwrt-imagebuilder";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
       inputs.systems.follows = "flake-utils/systems";

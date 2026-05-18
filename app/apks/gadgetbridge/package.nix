@@ -30,13 +30,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gadgetbridge";
-      version = "0.91.0";
+      version = "0.91.1";
 
       src = fetchgit {
         url = "https://codeberg.org/Freeyourgadget/Gadgetbridge.git";
         rev = finalAttrs.version;
         fetchSubmodules = true;
-        hash = "sha256-rTNKDb2wKckgt10Yni/o45Zbw+emJamy6hmmn7E1fgo=";
+        hash = "sha256-tM5U0FhG8hPmBK8umjv5nOp0Gj3fo4C+DjiDxWoNAoY=";
       };
 
       patches = [

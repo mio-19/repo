@@ -17,13 +17,13 @@
 let
   appPackage =
     let
-      version = "1.98.1";
+      version = "1.98.2";
 
       src = fetchFromGitHub {
         owner = "tailscale";
         repo = "tailscale-android";
-        tag = "1.98.1-t2f4c02ee6-ge2d1cd6d0";
-        hash = "sha256-IhuMl9kA0jXMUVHyyylEuIo62AK0nAz5Egejce2oNDU=";
+        tag = "1.98.2-taaf7caef1-g9cc6630cd";
+        hash = "sha256-uI7JfJdcSjio7pRFj2aZQoBfNLdB6UCmhPNl/YwSdrw=";
       };
 
       xMobileSrc = fetchFromGitHub {
@@ -42,7 +42,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-nmoUf4QEHRy5vcNdAN+eM916tbEq8Nv+WHpRo0WkxPM=";
+        outputHash = "sha256-nMRte1vb5gOoutO4qLEKjn8PYE48pXThzThCXTwIJhA=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -145,6 +145,24 @@ let
         chmod -R u+w "$GOMODCACHE"
         export GOPROXY=off
         export GOSUMDB=off
+        export GOTOOLCHAIN=local
+
+        # nixpkgs currently has Go 1.26.2; upstream's 1.26.3 directive makes
+        # Go try to resolve the toolchain module, which cannot be verified
+        # with GOSUMDB disabled in the offline build.
+        substituteInPlace go.mod --replace-fail 'go 1.26.3' 'go 1.26.2'
+        find "$GOMODCACHE" -name go.mod -print | while read -r gomod; do
+          if grep -q '^go 1\.26\.3$' "$gomod"; then
+            substituteInPlace "$gomod" --replace-fail 'go 1.26.3' 'go 1.26.2'
+          fi
+        done
+
+        unzip -q "$GOMODCACHE/cache/download/tailscale.com/@v/v${version}.zip" -d tailscale-module-tmp
+        mv "tailscale-module-tmp/tailscale.com@v${version}" tailscale-module
+        rm -rf tailscale-module-tmp
+        chmod -R u+w tailscale-module
+        substituteInPlace tailscale-module/go.mod --replace-fail 'go 1.26.3' 'go 1.26.2'
+        go mod edit -replace=tailscale.com=./tailscale-module
 
         cp -R ${xMobileSrc} x-mobile
         chmod -R u+w x-mobile
@@ -160,13 +178,19 @@ let
         # into GOPATH/src so those imports remain available in GOPATH mode.
         mkdir -p "$GOPATH/src/github.com/tailscale" "$GOPATH/src/golang.org/x"
         ln -s "$PWD" "$GOPATH/src/github.com/tailscale/tailscale-android"
+        ln -s "$PWD/tailscale-module" "$GOPATH/src/tailscale.com"
         ln -s "$PWD/x-mobile" "$GOPATH/src/golang.org/x/mobile"
         find "$GOMODCACHE" -name go.mod -print | while read -r gomod; do
           module_dir="$(dirname "$gomod")"
           rel_path="''${module_dir#$GOMODCACHE/}"
           module_path="''${rel_path%@*}"
+          case "$module_path" in
+            golang.org/toolchain*) continue ;;
+          esac
           mkdir -p "$GOPATH/src/$(dirname "$module_path")"
-          ln -s "$module_dir" "$GOPATH/src/$module_path"
+          if [ ! -e "$GOPATH/src/$module_path" ]; then
+            ln -s "$module_dir" "$GOPATH/src/$module_path"
+          fi
         done
 
         cat > tailscale.version <<EOF

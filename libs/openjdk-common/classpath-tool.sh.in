@@ -1,0 +1,5 @@
+#!@shell@
+
+set -eu
+
+exec @java@ -classpath @classpath@/share/classpath/tools.zip gnu.classpath.tools.@toolPkg@.@mainClass@ "$@"

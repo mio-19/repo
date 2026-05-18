@@ -46,6 +46,9 @@ in
             "kmod-usb-storage-uas"
             "block-mount"
             "parted"
+            # https://openwrt.org/docs/guide-user/firewall/upnp/upnp_setup
+            "miniupnpd"
+            "luci-app-upnp"
           ];
 
           disabledServices = [ ];

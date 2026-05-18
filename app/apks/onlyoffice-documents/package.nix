@@ -29,13 +29,13 @@ let
       # Check GitHub's Latest release before bumping; newer tags may not be the
       # actual latest release:
       # https://github.com/ONLYOFFICE/documents-app-android/releases/latest
-      version = "9.3.1-707";
+      version = "9.4.0-708";
 
       src = fetchFromGitHub {
         owner = "ONLYOFFICE";
         repo = "documents-app-android";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-kSZLe3QAYc9y6wAHJab4JPHlab7qcWaVENR6at0OQZk=";
+        hash = "sha256-/UH4cURiq2dWgS/YQzE621nyYrIrrj+x0RKvZSOnx8c=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/app_manager";
