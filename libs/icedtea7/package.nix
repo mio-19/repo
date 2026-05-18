@@ -31,7 +31,10 @@
   binutils,
   cacert,
   setJavaClassPath,
-  xorg,
+  lndir,
+  libx11,
+  libxtst,
+  libxt,
   jdk5-bootstrap,
   patch,
   python3,
@@ -102,7 +105,7 @@ let
       which
       perl
       coreutils
-      xorg.lndir
+      lndir
       zlib
       libjpeg
       libpng
@@ -112,10 +115,10 @@ let
       attr
       alsa-lib
       cups
-      xorg.libX11
-      xorg.libXtst
+      libx11
+      libxtst
       gtk2
-      xorg.libXt
+      libxt
     ];
 
     nativeBuildInputs = [
