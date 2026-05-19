@@ -1,7 +1,7 @@
 {
-  temurin-bin-8,
-  temurin-bin-11,
-  temurin-bin-17,
+  jdk8_headless,
+  jdk11_headless,
+  jdk17_headless,
   jdk21_headless,
   gradle_8_1_20230203,
   gradle-from-source,
@@ -15,11 +15,11 @@ gradle-from-source {
     ./gradle.lock
   ];
   defaultJava = jdk21_headless;
-  buildJdk = temurin-bin-11;
+  buildJdk = jdk11_headless;
   javaToolchains = [
-    temurin-bin-8
-    temurin-bin-11
-    temurin-bin-17
+    jdk8_headless
+    jdk11_headless
+    jdk17_headless
   ];
   bootstrapGradle = gradle_8_1_20230203;
   patches = [
@@ -33,7 +33,15 @@ gradle-from-source {
       build-logic-commons/commons/src/main/kotlin/common.kt \
       build-logic-commons/gradle-plugin/build.gradle.kts \
       --replace-fail 'languageVersion = JavaLanguageVersion.of(11)' 'languageVersion.set(JavaLanguageVersion.of(11))' \
-      --replace-fail 'vendor = JvmVendorSpec.ADOPTIUM' 'vendor.set(JvmVendorSpec.ADOPTIUM)'
+      --replace-fail 'vendor = JvmVendorSpec.ADOPTIUM' ""
+    for file in \
+      subprojects/docs/src/snippets/java/toolchain-filters/groovy/build.gradle \
+      subprojects/platform-jvm/src/integTest/groovy/org/gradle/jvm/toolchain/JavaToolchainDownloadIntegrationTest.groovy
+    do
+      if [ -f "$file" ] && grep -Fq 'vendor = JvmVendorSpec.ADOPTIUM' "$file"; then
+        substituteInPlace "$file" --replace-fail 'vendor = JvmVendorSpec.ADOPTIUM' ""
+      fi
+    done
     substituteInPlace build-logic-commons/gradle-plugin/src/main/kotlin/gradlebuild.build-logic.kotlin-dsl-gradle-plugin.gradle.kts \
       --replace-fail '        allWarningsAsErrors = false' '        allWarningsAsErrors.set(false)' \
       --replace-fail '    failOnWarning = true' '    failOnWarning.set(true)' \
