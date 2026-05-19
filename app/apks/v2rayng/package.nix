@@ -29,13 +29,13 @@ let
       androidLibXrayLiteSrc = fetchFromGitHub {
         owner = "2dust";
         repo = "AndroidLibXrayLite";
-        rev = "1314c9af79518a03300803019c8264c737bb3596";
-        hash = "sha256-vmd85/BrWTxoCeMa9Vh8aTfbTYC/oP1S1uXDdpRfR38=";
+        tag = "v26.5.19";
+        hash = "sha256-JvwWFkTXET7K2cSQ1yRjxtGUdqrGtyz1ECZnMxaOMGU=";
       };
 
       androidLibXrayLiteGoModCache = stdenvNoCC.mkDerivation {
         pname = "android-lib-xray-lite-go-mod-cache";
-        version = "26.5.10";
+        version = "26.5.19";
         src = androidLibXrayLiteSrc;
 
         nativeBuildInputs = [ go_1_26 ];
@@ -76,7 +76,7 @@ let
 
       libv2rayAar = stdenv.mkDerivation {
         pname = "android-lib-xray-lite-aar";
-        version = "26.5.10";
+        version = "26.5.19";
         src = androidLibXrayLiteSrc;
 
         nativeBuildInputs = [
