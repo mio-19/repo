@@ -155,6 +155,11 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/472580.patch";
                 hash = "sha256-dtQ8pFVnvTFwmpbMxEG9mnCbi1t6wweA1E/ufBdPsws=";
               })
+              (fetchpatch {
+                name = "openjdk26: init at 26-ga";
+                url = "https://github.com/NixOS/nixpkgs/pull/506259.patch";
+                hash = "sha256-jjzVh6rOZ/wcLbR4SfOcjts9IUWt/GbQPZXRDveV+c4=";
+              })
             ];
             /*
               # already merged
