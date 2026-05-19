@@ -160,16 +160,12 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/506259.patch";
                 hash = "sha256-jjzVh6rOZ/wcLbR4SfOcjts9IUWt/GbQPZXRDveV+c4=";
               })
+              (fetchpatch {
+                name = "maven: 3.9.12 -> 3.9.15";
+                url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
+                hash = "sha256-irj4xo2s4MhmV2vdZ1AIKNvfNP5tSNPrsxIh7QFBiG4=";
+              })
             ];
-            /*
-              # already merged
-              # https://github.com/NixOS/nixpkgs/pull/508847
-              postPatch = ''
-                substituteInPlace \
-                  pkgs/development/tools/build-managers/gradle/setup-hook.sh \
-                  --replace-fail '--console plain' '-Dorg.gradle.console=plain'
-              '';
-            */
           };
           nixpkgs =
             (import "${nixpkgsSrc}/flake.nix").outputs (
