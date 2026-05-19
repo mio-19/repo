@@ -29,12 +29,12 @@ let
 
       gradle = gradle_9_4_1;
 
-      # https://github.com/bitwarden/android/blob/v2026.4.1-bwa/gradle/libs.versions.toml#L33 bitwardenSdk = "2.0.0-6074-f373e7f3"
+      # https://github.com/bitwarden/android/blob/v2026.4.2-bwpm/gradle/libs.versions.toml#L33 bitwardenSdk = "2.0.0-6825-release-hotfix-v2026.4.1-bwpm"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
-        rev = "f373e7f362b5540f735c6bead5354366ad2a9c01";
-        hash = "sha256-1cPEPwk0g5DwLZYBikv57muOktDIgMKgKdgDYQjFo8E=";
+        rev = "6c3c4bddaf6054980fce89343014727f6f2b9cc7";
+        hash = "sha256-pWzEqLGyBzDOCBh+c4zwxHcxTmLJpIjizH4LMBK8cGA=";
       };
 
       sdkSrcLock = fetchurl {
@@ -183,13 +183,14 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-authenticator";
-      version = "2026.4.1";
+      version = "2026.4.2";
 
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
-        tag = "v${finalAttrs.version}-bwa";
-        hash = "sha256-631yoKCkH2I/7AoPRnRA42w8nkrKapwX/O1qILKZ+oQ=";
+        # v2026.4.2-bwa is not tagged; authenticator ships from the same monorepo commit as v2026.4.2-bwpm.
+        tag = "v${finalAttrs.version}-bwpm";
+        hash = "sha256-3eX73TsN/1MB6MeoSqCWHGVwksSW6fIhWO5RRUhufCQ=";
       };
 
       gradleBuildTask = ":authenticator:assembleRelease";
@@ -242,7 +243,7 @@ let
           )
         fi
         substituteInPlace gradle/libs.versions.toml \
-          --replace-fail 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version.ref = "bitwardenSdk" }' 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version = "LOCAL" }'
+          --replace-fail 'bitwarden-sdk = { module = "com.bitwarden:sdk-android.dev", version.ref = "bitwardenSdk" }' 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version = "LOCAL" }'
         cat >> build.gradle.kts <<'EOF'
         val nixBootstrap by configurations.creating
         dependencies {

@@ -29,10 +29,11 @@ let
           hash = "sha256-cvRMn468sa9Dg49F7lxKqcVESJizRoqz9K97YHbFvD8=";
           defaultJava = jdk25_headless;
         }).wrapped;
+      shortRev = builtins.substring 0 7 sources.termux_app.version;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "termux-app";
-      version = "unstable-${sources.termux_app.date}";
+      version = "unstable-${sources.termux_app.date}-${shortRev}";
       src = sources.termux_app.src;
 
       patches = [
@@ -186,7 +187,8 @@ mk-apk-package {
       Description: |-
         Termux combines terminal emulation with a Linux package collection.
         This package is built from source from the upstream termux-app
-        repository and follows the F-Droid universal APK build approach.
+        repository at commit ${sources.termux_app.version} and follows the
+        F-Droid universal APK build approach.
     '';
   };
 }

@@ -78,7 +78,7 @@ let
         (fetchpatch {
           name = "feat: multi window support";
           url = "https://github.com/termux/termux-app/pull/4961.diff";
-          hash = "sha256-N/Elb1VT54aLSgWxPbvEWoEUtkTsVoYKRSWZyt3L5/E=";
+          hash = "sha256-y0OWR6RUe/04yr99sUxWXysdp95Zxh+DQbI1quOymiI=";
         })
       ]
       ++ lib.optionals bumpAGP [
