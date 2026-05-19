@@ -1,6 +1,6 @@
 # repo
 
-This repository contains build scripts for android applications, operating systems based on android, and full source code bootstrapping of gradle/maven.
+This repository contains build scripts for android applications, operating systems based on android, and full source code bootstrapping of gradle/maven/openjdk.
 
 This repository shall be treated only as a proof of concept / toy project as the code quality is affected negatively by llm.
 
