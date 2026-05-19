@@ -1,0 +1,42 @@
+#!@shell@
+
+set -eu
+
+declare -a vmArgs ecjArgs
+declare -A defaultArgs
+vmArgs=( -Xmx1024M )
+ecjArgs=()
+defaultArgs=(
+    -bootclasspath "@bootClasspath@"
+    -source 1.5
+    -target 1.5
+    -classpath .
+)
+
+## split into args for (jam)vm and ecj:
+## vm args are stripped of -J
+## ecj args are deleted from defaultArgs
+for flag in "$@"
+do if [[ $flag =~ ^-J ]]
+   then 
+     vmFlag="${flag:2}"
+     # Filter out -XX flags that JamVM doesn't understand
+     if [[ ! $vmFlag =~ ^-XX: ]]
+     then
+       vmArgs+=( "$vmFlag" )
+     fi
+   elif [[ $flag =~ ^-XD ]]
+   then
+     # Ignore -XD flags
+     :
+   else unset defaultArgs[$flag]
+        ecjArgs+=( "${flag}" )
+   fi
+done
+
+## apply (left over) default args
+for defFlag in "${!defaultArgs[@]}"
+do ecjArgs+=( "$defFlag" "${defaultArgs[$defFlag]}" )
+done
+
+CLASSPATH=@ecjJar@:${CLASSPATH:-} exec @java@ "${vmArgs[@]}" org.eclipse.jdt.internal.compiler.batch.Main -nowarn "${ecjArgs[@]}"

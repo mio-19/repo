@@ -28,6 +28,10 @@
         robotnix = inputsPatched.robotnix;
         androidSdkBuilder = androidSdkBuilderRaw;
       };
+      sourceBuiltNdkPnames = [
+        "ndk-28-2-13676358"
+        "ndk-29-0-14206865"
+      ];
       helpers = {
         buildMavenRepositoryFromLockFile-bare = mvn2nixMaven.buildMavenRepositoryFromLockFile;
         androidSdkBuilder =
@@ -39,7 +43,7 @@
             in
             map (
               pkg:
-              if lib.isDerivation pkg && (pkg.pname or "") == "ndk-29-0-14206865" then
+              if lib.isDerivation pkg && lib.elem (pkg.pname or "") sourceBuiltNdkPnames then
                 sourceBuiltNdkHelper.mkSourceBuiltNdk pkg
               else
                 pkg

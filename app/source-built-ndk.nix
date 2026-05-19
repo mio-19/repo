@@ -6,10 +6,19 @@
   androidSdkBuilder,
 }:
 let
-  aospLlvmBase = {
-    version = "21.0.0";
-    revision = "386af4a5c64ab75eaee2448dc38f2e34a40bfed0";
-    hash = "sha256-30ZqBJ8zFWnGLFVsbI+hVqg2j4VS+pc3MTFbgpmz2ZY=";
+  sourceBuiltNdkReleases = {
+    "28.2.13676358" = {
+      llvmRevision = "r547379";
+      llvmProjectRev = "b718bcaf8c198c82f3021447d943401e3ab5bd54";
+      llvmProjectHash = "sha256-JkVEJgNmm0o4BIEVvFSztuutmYv4cCS32jO+ZZSwVpU=";
+      buildId = "13676358";
+    };
+    "29.0.14206865" = {
+      llvmRevision = "r563880c";
+      llvmProjectRev = "5e96669f06077099aa41290cdb4c5e6fa0f59349";
+      llvmProjectHash = "sha256-Efdy0nIa7h9ytmByCiBDju//SBe08lmo7NTwfdTUqG8=";
+      buildId = "14206865";
+    };
   };
 
   # Standard Linux environment for building AOSP LLVM
@@ -36,55 +45,72 @@ let
     }
   );
 
-  # Build the host toolchain (Clang + LLD) ONLY in a single Pass
-  # To avoid OOM and complex runtime issues, we build only what's needed for the NDK toolchain
-  sourceBuiltLlvmDrv = stdenv.mkDerivation (finalAttrs: {
-    pname = "aosp-llvm";
-    version = "r563880";
+  # Build the host LLVM tools used by the NDK.  The source revision is the
+  # Android release branch in toolchain/llvm-project, which already contains
+  # the exact patch stack recorded by the matching llvm_android release branch.
+  sourceBuiltLlvmDrv =
+    release:
+    stdenv.mkDerivation (finalAttrs: {
+      pname = "aosp-llvm";
+      version = release.llvmRevision;
 
-    src = pkgs.fetchgit {
-      url = "https://android.googlesource.com/toolchain/llvm-project";
-      rev = "5e96669f06077099aa41290cdb4c5e6fa0f59349"; # mirror-goog-llvm-r563880-release
-      hash = "sha256-Efdy0nIa7h9ytmByCiBDju//SBe08lmo7NTwfdTUqG8=";
-    };
+      src = pkgs.fetchgit {
+        url = "https://android.googlesource.com/toolchain/llvm-project";
+        rev = release.llvmProjectRev;
+        hash = release.llvmProjectHash;
+      };
 
-    nativeBuildInputs = [ sourceBuiltLlvmFhs ];
+      nativeBuildInputs = [ sourceBuiltLlvmFhs ];
 
-    buildPhase = ''
-      export SRC_DIR=$(pwd)
-      aosp-llvm-fhs -c "
-        set -e
-        mkdir -p build
-        cd build
-        cmake ../llvm \
-          -GNinja \
-          -DCMAKE_C_COMPILER=gcc \
-          -DCMAKE_CXX_COMPILER=g++ \
-          -DCMAKE_C_FLAGS='-Wno-error=dangling-reference' \
-          -DCMAKE_CXX_FLAGS='-Wno-error=dangling-reference' \
-          -DLLVM_ENABLE_PROJECTS='clang;lld' \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DLLVM_TARGETS_TO_BUILD='AArch64;ARM;X86' \
-          -DLLVM_INSTALL_TOOLCHAIN_ONLY=ON \
-          -DLLVM_ENABLE_ZSTD=ON \
-          -DCMAKE_INSTALL_PREFIX=$out \
-          -DLLVM_PARALLEL_LINK_JOBS=1 \
-          -DLLVM_BUILD_LLVM_DYLIB=ON \
-          -DLLVM_LINK_LLVM_DYLIB=ON \
-          -DCLANG_LINK_CLANG_DYLIB=ON
-        ninja install
-      "
-    '';
+      buildPhase = ''
+        runHook preBuild
+        aosp-llvm-fhs -c "
+          set -euo pipefail
+          mkdir -p build
+          cd build
+          cmake ../llvm \
+            -GNinja \
+            -DCMAKE_C_COMPILER=gcc \
+            -DCMAKE_CXX_COMPILER=g++ \
+            -DCMAKE_C_FLAGS='-Wno-error=dangling-reference' \
+            -DCMAKE_CXX_FLAGS='-Wno-error=dangling-reference' \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=$out \
+            -DCMAKE_INSTALL_LIBDIR=lib \
+            -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+            -DCMAKE_PLATFORM_NO_VERSIONED_SONAME=ON \
+            -DLLVM_ENABLE_PROJECTS='clang;clang-tools-extra;lld' \
+            -DLLVM_TARGETS_TO_BUILD='AArch64;ARM;X86' \
+            -DLLVM_INSTALL_TOOLCHAIN_ONLY=ON \
+            -DLLVM_ENABLE_ZSTD=ON \
+            -DLLVM_ENABLE_TERMINFO=OFF \
+            -DLLVM_ENABLE_PLUGINS=OFF \
+            -DLLVM_VERSION_SUFFIX= \
+            -DLLVM_PARALLEL_LINK_JOBS=1 \
+            -DLLVM_BUILD_LLVM_DYLIB=ON \
+            -DLLVM_LINK_LLVM_DYLIB=ON \
+            -DCLANG_LINK_CLANG_DYLIB=ON \
+            -DCLANG_VENDOR='Android (${release.buildId}, based on ${release.llvmRevision})' \
+            -DCLANG_REPOSITORY_STRING='https://android.googlesource.com/toolchain/llvm-project' \
+            -DCLANG_DEFAULT_LINKER=lld \
+            -DCLANG_DEFAULT_OBJCOPY=llvm-objcopy \
+            -DBUG_REPORT_URL='https://github.com/android-ndk/ndk/issues'
+          ninja install
+        "
+        runHook postBuild
+      '';
 
-    installPhase = "touch $out/DONE";
+      installPhase = ''
+        touch $out/DONE
+      '';
 
-    passthru = {
-      clang-unwrapped = finalAttrs.finalPackage;
-      llvm = finalAttrs.finalPackage;
-      lld = finalAttrs.finalPackage;
-      lib = finalAttrs.finalPackage;
-    };
-  });
+      passthru = {
+        clang-unwrapped = finalAttrs.finalPackage;
+        llvm = finalAttrs.finalPackage;
+        lld = finalAttrs.finalPackage;
+        lib = finalAttrs.finalPackage;
+      };
+    });
 
 in
 {
@@ -95,6 +121,10 @@ in
       # Propagate attributes that android-nixpkgs expects
       inherit (originalNdk) version path xml;
       installSdk = originalNdk.installSdk or "";
+      release =
+        sourceBuiltNdkReleases.${version}
+          or (throw "No source-built LLVM release metadata for NDK ${version}");
+      sourceBuiltLlvm = sourceBuiltLlvmDrv release;
     in
     (pkgs.runCommand "${originalNdk.name}-source-built" { } ''
       cp --reflink=auto --no-preserve=ownership -r ${originalNdk} $out
@@ -110,13 +140,13 @@ in
       fi
 
       if [ -d "$targetDir" ]; then
-        rm -rf "$targetDir/bin"
-        rm -rf "$targetDir/lib"
-        mkdir -p "$targetDir/bin" "$targetDir/lib"
-        
-        # Link source-built toolchain
-        ln -sf ${sourceBuiltLlvmDrv}/bin/* "$targetDir/bin/"
-        ln -sf ${sourceBuiltLlvmDrv}/lib/* "$targetDir/lib/"
+        # Preserve the NDK's target-prefixed clang driver shims and sysroot.
+        for tool in ${sourceBuiltLlvm}/bin/*; do
+          ln -sf "$tool" "$targetDir/bin/$(basename "$tool")"
+        done
+        for libPath in ${sourceBuiltLlvm}/lib/*; do
+          ln -sf "$libPath" "$targetDir/lib/$(basename "$libPath")"
+        done
       fi
     '')
     // {

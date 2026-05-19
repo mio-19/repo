@@ -22,17 +22,17 @@
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
-    version = "ce9b5100c2d6612afc46b404c3504e88daf00eac";
+    version = "271ef870e43c53f0bc91a7b1ea02358c455777e4";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
-      rev = "ce9b5100c2d6612afc46b404c3504e88daf00eac";
+      rev = "271ef870e43c53f0bc91a7b1ea02358c455777e4";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-mK8ZEfAvTxb5Pw9CVqxzgmwY/cZTHJ/0X0CdvwhJlXY=";
+      sha256 = "sha256-PcVSdUDy2PrbZXvEVBYuKEZRvkEtb3XzMKHLgiAADIs=";
     };
-    date = "2026-05-14";
+    date = "2026-05-19";
   };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
@@ -232,17 +232,17 @@
   };
   google_gallery = {
     pname = "google_gallery";
-    version = "b9e216c4be0ecc001931a31187d15609b3ffdb4f";
+    version = "52a01199c7698c8da21a66af255f563700cc7dd4";
     src = fetchgit {
       url = "https://github.com/google-ai-edge/gallery.git";
-      rev = "b9e216c4be0ecc001931a31187d15609b3ffdb4f";
+      rev = "52a01199c7698c8da21a66af255f563700cc7dd4";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-L21OAlWBcGtQNq7weSIykIOnGioWrB/36qstnCoy27s=";
+      sha256 = "sha256-MJ4DBMn/Po1GcuwEQ7Jwyqu/P06dC6izxDi1NYIa9Qw=";
     };
-    date = "2026-05-15";
+    date = "2026-05-18";
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
@@ -358,31 +358,31 @@
   };
   lineage_device_mainline_common = {
     pname = "lineage_device_mainline_common";
-    version = "5590a2d5fe683b283d759793945b8a4306a2dbf1";
+    version = "48c5d4385e58a2ab93fd432dd114b7f41c9b4b10";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_device_mainline_common.git";
-      rev = "5590a2d5fe683b283d759793945b8a4306a2dbf1";
+      rev = "48c5d4385e58a2ab93fd432dd114b7f41c9b4b10";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-+Ts3vxE3vqf+XkdPEAiw4npg1aqFD4kZK8nNKY/j2qA=";
+      sha256 = "sha256-vxCJF5cS3eWjdzfGjPBWOGReC1u7jKFMB9/9+Gibw8g=";
     };
-    date = "2026-04-28";
+    date = "2026-05-18";
   };
   lineage_device_virt_common = {
     pname = "lineage_device_virt_common";
-    version = "3b3bb0b82742cef0d6f6a97464ee589cc4e6414c";
+    version = "b136323cbc5ecfaa46ea30bb90bfde51dffb32d3";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_device_virt_virt-common.git";
-      rev = "3b3bb0b82742cef0d6f6a97464ee589cc4e6414c";
+      rev = "b136323cbc5ecfaa46ea30bb90bfde51dffb32d3";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-kmbjVb/GEX535URDG13WboRmmmJtT3Dy1juyvYVbh14=";
+      sha256 = "sha256-H+HWAvmNTWwXNmYMgo3CVUO37IAsfiXOWk+dSnGz4W0=";
     };
-    date = "2026-04-10";
+    date = "2026-05-12";
   };
   lineage_device_virtio_arm64 = {
     pname = "lineage_device_virtio_arm64";
@@ -806,17 +806,17 @@
   };
   termux_x11 = {
     pname = "termux_x11";
-    version = "16db9d5bf2ae33c9e7d764a2854dcdb2933c52e0";
+    version = "b8e52c8b16afef82a8bfeeab843f073d2ec6f272";
     src = fetchgit {
       url = "https://github.com/termux/termux-x11.git";
-      rev = "16db9d5bf2ae33c9e7d764a2854dcdb2933c52e0";
+      rev = "b8e52c8b16afef82a8bfeeab843f073d2ec6f272";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-2dZHGSvNUcqENyOq1+O7QSbqzdKhwBwFZug4Rkgsbig=";
+      sha256 = "sha256-D67jjtzu8Huuf8HVFgdmKCrc6zsn5c3NmbsgUEmfxK0=";
     };
-    date = "2026-05-14";
+    date = "2026-05-18";
   };
   vendor_gapps15 = {
     pname = "vendor_gapps15";
@@ -832,7 +832,7 @@
     version = "6b7bf6d049e8d425611e0c6dfb4637193190e8d6";
     src = fetchurl {
       url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/6b7bf6d049e8d425611e0c6dfb4637193190e8d6/vendor_gapps-6b7bf6d049e8d425611e0c6dfb4637193190e8d6.tar.gz";
-      sha256 = "sha256-SkpawHzPB3gLJ6Lr8lNIvQ0LvrH+6UwM+QaMjsnQTjM=";
+      sha256 = "sha256-ZJPTBe8kD4bWcvQET6TL58KfjiCicVzCAo3D8v/5XNE=";
     };
     date = "2026-04-09";
   };
