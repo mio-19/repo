@@ -187,7 +187,7 @@
                 maven = selfPackages.maven_3_9_14;
                 gradle_7 = selfPackages.gradle_7_6_6;
                 gradle_7-unwrapped = gradle_7.unwrapped;
-                gradle_9 = selfPackages.gradle_9_4_1;
+                gradle_9 = selfPackages.gradle_9_5_1;
                 gradle_9-unwrapped = gradle_9.unwrapped;
                 gradle =
                   assert prev.gradle == prev.gradle_8;
@@ -196,7 +196,7 @@
                 gradle-unwrapped =
                   assert prev.gradle-unwrapped == prev.gradle_8-unwrapped;
                   gradle_8-unwrapped;
-                gradle_8 = selfPackages.gradle_8_14_4;
+                gradle_8 = selfPackages.gradle_8_14_5;
                 gradle_8-unwrapped = gradle_8.unwrapped;
                 mitm-cache =
                   assert prev.mitm-cache.fetch == prev.mitm-cache.passthru.fetch;
