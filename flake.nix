@@ -155,19 +155,16 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/472580.patch";
                 hash = "sha256-dtQ8pFVnvTFwmpbMxEG9mnCbi1t6wweA1E/ufBdPsws=";
               })
-              /*
-                # wait a little bit
-                (fetchpatch {
-                  name = "openjdk26: init at 26-ga";
-                  url = "https://github.com/NixOS/nixpkgs/pull/506259.patch";
-                  hash = "sha256-jjzVh6rOZ/wcLbR4SfOcjts9IUWt/GbQPZXRDveV+c4=";
-                })
-                (fetchpatch {
-                  name = "maven: 3.9.12 -> 3.9.15";
-                  url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
-                  hash = "sha256-irj4xo2s4MhmV2vdZ1AIKNvfNP5tSNPrsxIh7QFBiG4=";
-                })
-              */
+              (fetchpatch {
+                name = "openjdk26: init at 26-ga";
+                url = "https://github.com/NixOS/nixpkgs/pull/506259.patch";
+                hash = "sha256-jjzVh6rOZ/wcLbR4SfOcjts9IUWt/GbQPZXRDveV+c4=";
+              })
+              (fetchpatch {
+                name = "maven: 3.9.12 -> 3.9.15";
+                url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
+                hash = "sha256-irj4xo2s4MhmV2vdZ1AIKNvfNP5tSNPrsxIh7QFBiG4=";
+              })
               /*
                 # wait more
                 (fetchpatch {
