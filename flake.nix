@@ -165,6 +165,11 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
                 hash = "sha256-irj4xo2s4MhmV2vdZ1AIKNvfNP5tSNPrsxIh7QFBiG4=";
               })
+              (fetchpatch {
+                name = "ant: build from source";
+                url = "https://github.com/NixOS/nixpkgs/pull/521111.diff";
+                hash = "sha256-okJ2JXObWNVPpRAbAbj9/ilKKOGR8GBJ010KelLDQqQ=";
+              })
             ];
           };
           nixpkgs =
