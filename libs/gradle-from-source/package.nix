@@ -34,6 +34,7 @@
   lockFile,
   defaultJava,
   buildJdk ? jdk17_headless,
+  relaxJavaVendor ? false,
   javaToolchains ? [
     jdk8_headless
     jdk11_headless
@@ -80,6 +81,17 @@ let
   */
   jnaLibraryPath = lib.optionalString stdenv.hostPlatform.isLinux (lib.makeLibraryPath [ udev ]);
   jnaFlag = lib.optionalString stdenv.hostPlatform.isLinux ''--add-flags "-Djna.library.path=${jnaLibraryPath}"'';
+  relaxJavaVendorPostPatch = lib.optionalString relaxJavaVendor ''
+    find . \( -name "*.gradle" -o -name "*.gradle.kts" -o -name "*.kt" \) -print0 |
+      while IFS= read -r -d "" file; do
+        if grep -Fq 'vendor = JvmVendorSpec.ADOPTIUM' "$file"; then
+          substituteInPlace "$file" --replace-fail 'vendor = JvmVendorSpec.ADOPTIUM' ""
+        fi
+        if grep -Fq 'vendor.set(JvmVendorSpec.ADOPTIUM)' "$file"; then
+          substituteInPlace "$file" --replace-fail 'vendor.set(JvmVendorSpec.ADOPTIUM)' ""
+        fi
+      done
+  '';
   # similar to nixpkgs mkGradle'
   mkGradle' =
     {
@@ -170,6 +182,7 @@ let
         find . -name "*.jar" -print0 | xargs -0 rm
         echo "Removed gradle/wrapper, .teamcity/.mvn/wrapper and all .jar files"
       ''
+      + relaxJavaVendorPostPatch
       + additionalPostPatch;
 
       patches = additionalPatches;
