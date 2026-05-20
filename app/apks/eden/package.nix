@@ -8,6 +8,7 @@
 
   gitMinimal,
   glslang,
+  pkg-config,
   python3,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -33,12 +34,12 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "eden";
-      version = "0.2.0-rc2";
+      version = "0.2.0";
 
       src = fetchgit {
         url = "https://git.eden-emu.dev/eden-emu/eden";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-keLkB5qeQch+tM2J6zVh9oQGhP5TuxItqrZRN24apJw=";
+        hash = "sha256-Q/tJP6AHAtW9AXn9G+8dF4oTlKDfNHN4cuTKXtYq0T8=";
       };
 
       gradleBuildTask = ":app:assembleMainlineRelease";
@@ -58,6 +59,7 @@ let
 
         gitMinimal
         glslang
+        pkg-config
         python3
         writableTmpDirAsHomeHook
       ];
