@@ -1,8 +1,7 @@
 # before commit https://github.com/gradle/gradle/commit/aeccddf345f564ecd3028ae852907af765aae898
 {
-  temurin-bin-8,
-  temurin-bin-11,
-  temurin-bin-17,
+  jdk8_headless,
+  jdk11_headless,
   jdk17_headless,
   gradle_7_6_20220622,
   gradle-from-source,
@@ -17,16 +16,17 @@ gradle-from-source {
     ./more.gradle.lock
   ];
   defaultJava = jdk17_headless;
-  # this version specifically ask for termurin branded jdk.
-  buildJdk = temurin-bin-11;
+  # this version specifically ask for Temurin branded jdk.
+  relaxJavaVendor = true;
+  buildJdk = jdk11_headless;
   patches = [
     #./fix-test-fixtures-artifact.patch
     #./fix-arch-test-dependency.patch
   ];
   javaToolchains = [
-    temurin-bin-8
-    temurin-bin-11
-    temurin-bin-17
+    jdk8_headless
+    jdk11_headless
+    jdk17_headless
   ];
   # read https://github.com/tadfisher/gradle2nix/pull/88
   /*

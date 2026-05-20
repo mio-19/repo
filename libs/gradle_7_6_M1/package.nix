@@ -1,7 +1,6 @@
 {
-  temurin-bin-8,
-  temurin-bin-11,
-  temurin-bin-17,
+  jdk8_headless,
+  jdk11_headless,
   jdk17_headless,
   gradle-from-source,
   gradle_7_6_20220916,
@@ -14,12 +13,13 @@ gradle-from-source {
     gradle_7_6_20220916.unwrapped.passthru.lockFile
   ];
   defaultJava = jdk17_headless;
-  # this version specifically ask for termurin branded jdk.
-  buildJdk = temurin-bin-11;
+  # this version specifically ask for Temurin branded jdk.
+  relaxJavaVendor = true;
+  buildJdk = jdk11_headless;
   javaToolchains = [
-    temurin-bin-8
-    temurin-bin-11
-    temurin-bin-17
+    jdk8_headless
+    jdk11_headless
+    jdk17_headless
   ];
   bootstrapGradle = gradle_7_6_20220916;
 }
