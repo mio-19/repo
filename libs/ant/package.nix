@@ -9,6 +9,8 @@
   libsUtils,
   applyPatches,
   antlr_2_7_7,
+  java-hamcrest,
+  junit_4,
 }:
 let
   ant_nixpkgs = callPackage ./nixpkgs.nix { };
@@ -52,6 +54,17 @@ ant_nixpkgs.overrideAttrs (
             substituteInPlace "$pom" --replace-fail '-SNAPSHOT' ""
           fi
         done
+
+        if [ -e lib/optional/junit-${junit_4.version}.jar ]; then
+          rm -f lib/optional/junit-${junit_4.version}.jar
+          ln -s ${junit_4}/share/java/junit-${junit_4.version}.jar \
+            lib/optional/junit-${junit_4.version}.jar
+        fi
+        if [ -e lib/optional/hamcrest-${java-hamcrest.version}.jar ]; then
+          rm -f lib/optional/hamcrest-${java-hamcrest.version}.jar
+          ln -s ${java-hamcrest}/share/java/hamcrest-${java-hamcrest.version}.jar \
+            lib/optional/hamcrest-${java-hamcrest.version}.jar
+        fi
       '';
     preBuild = lib.optionalString (lib.strings.compareVersions finalAttrs.version "1.9.6" <= 0) ''
       export CLASSPATH=${jdk.passthru.home}/lib/tools.jar
