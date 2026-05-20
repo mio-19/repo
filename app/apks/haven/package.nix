@@ -267,17 +267,30 @@ let
           runHook postInstall
         '';
       };
+
+      wayvncShimToolchain =
+        let
+          aarch64LinuxGnuCc = pkgs.pkgsCross.aarch64-multiplatform.stdenv.cc;
+          x86_64LinuxGnuCc = pkgs.pkgsCross.gnu64.stdenv.cc;
+        in
+        pkgs.runCommand "haven-wayvnc-shim-toolchain" { } ''
+          mkdir -p "$out/bin"
+          ln -s ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}gcc "$out/bin/aarch64-linux-gnu-gcc"
+          ln -s ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}strip "$out/bin/aarch64-linux-gnu-strip"
+          ln -s ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}gcc "$out/bin/x86_64-linux-gnu-gcc"
+          ln -s ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}strip "$out/bin/x86_64-linux-gnu-strip"
+        '';
     in
     {
       pname = "haven";
-      version = "5.39.0";
+      version = "5.41.0";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-FdXqo0zhY+twB7q1NDpwYrgK66XZZ5YeeBcwGsUvF3s=";
+        hash = "sha256-k21vPSZt5AoySWf4Suhb7VwL/k06xRiNgE0si90DAuc=";
       };
 
       patches = [
@@ -333,6 +346,7 @@ let
         python313
         go_1_26
         unzip
+        wayvncShimToolchain
       ];
 
       env = {
