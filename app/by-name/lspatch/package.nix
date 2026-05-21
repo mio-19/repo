@@ -47,7 +47,7 @@ let
       (fetchpatch {
         name = "[translation] Update translation from Crowdin";
         url = "https://github.com/JingMatrix/LSPatch/pull/57.patch";
-        hash = "sha256-9j4d+mtZrnRSs6wkqYixbfRXhmpMwenyfa4MARKRM8M=";
+        hash = "sha256-GlnGFFudZvol13LFQ/T9vcVVA4Y3OpWGPc95rt0mjd8=";
       })
     ];
 
