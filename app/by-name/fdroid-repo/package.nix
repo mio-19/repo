@@ -47,6 +47,7 @@ let
     # gradle lock platform dependent issue. need update lock for darwin:
     "youtube-morphe"
     "youtube-music-morphe"
+    "youtube-revanced"
     "reddit-morphe"
     "spotify-revanced"
     "duolingo-revanced"
