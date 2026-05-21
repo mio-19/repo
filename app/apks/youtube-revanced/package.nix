@@ -67,7 +67,7 @@ mk-apk-package {
   mainApk = "youtube-revanced.apk";
   signScriptName = "sign-youtube-revanced";
   fdroid = {
-    appId = "app.revanced.android.youtube";
+    appId = "com.google.android.youtube.revanced";
     metadataYml = ''
       Categories:
         - Multimedia
