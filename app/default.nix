@@ -43,7 +43,9 @@
             in
             map (
               pkg:
-              if lib.isDerivation pkg && lib.elem (pkg.pname or "") sourceBuiltNdkPnames then
+              if
+                pkgs.stdenv.isLinux && lib.isDerivation pkg && lib.elem (pkg.pname or "") sourceBuiltNdkPnames
+              then
                 sourceBuiltNdkHelper.mkSourceBuiltNdk pkg
               else
                 pkg
@@ -87,10 +89,19 @@
           ;
         directory = ./by-name;
       };
+      darwinExcludedPackageNames = lib.optionals pkgs.stdenv.isDarwin [
+        "jdk8"
+        "jdk11"
+        "jdk17"
+        "jdk21"
+        "jdk25"
+      ];
     in
     rec {
       _module.args.libs = libs;
-      packages = lib.filterAttrs (_: lib.isDerivation) legacyPackages;
+      packages = lib.filterAttrs (_: lib.isDerivation) (
+        removeAttrs legacyPackages darwinExcludedPackageNames
+      );
       legacyPackages = removeAttrs (
         byName // libs // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk
       ) [ "packages" ];
