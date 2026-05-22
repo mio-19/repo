@@ -161,9 +161,9 @@
                 hash = "sha256-jjzVh6rOZ/wcLbR4SfOcjts9IUWt/GbQPZXRDveV+c4=";
               })
               (fetchpatch {
-                name = "maven: 3.9.12 -> 3.9.15";
+                name = "maven: 3.9.12 -> 3.9.16";
                 url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
-                hash = "sha256-irj4xo2s4MhmV2vdZ1AIKNvfNP5tSNPrsxIh7QFBiG4=";
+                hash = "sha256-vyDAGlg/67ht8BR7ASOS8LYLqclu6lcjzxUIjJoVM3I=";
               })
               /*
                 # wait more
