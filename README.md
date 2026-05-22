@@ -246,3 +246,10 @@ read
 todo
 
 + Change apkPath placeholder out to finalpackage
++ unstable hash
+
+```json
+  "services.gradle": {
+   "org/versions/all": "sha256-hW92v8avCy/6usgQ3dc/6Zo59J/8GhhrLrWwevV/o5Q="
+  }
+```
