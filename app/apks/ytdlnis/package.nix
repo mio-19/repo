@@ -49,9 +49,9 @@ let
 
       patches = [
         (fetchpatch {
-          name = "Enable synchronous memory tagging";
+          name = "Enable asynchronous memory tagging";
           url = "https://github.com/deniscerri/ytdlnis/pull/1157.diff";
-          hash = "sha256-Vj69EgOWZ7DbU3xNC1ytVn1xOthq2j25ktdEfn7ic3k=";
+          hash = "sha256-tjRvk37L37IoEsxGj9RbSOtZXU57RfmyHCxEDwVEStU=";
         })
       ];
 
