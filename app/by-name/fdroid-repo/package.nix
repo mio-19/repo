@@ -47,6 +47,7 @@ let
     # gradle lock platform dependent issue. need update lock for darwin:
     "youtube-morphe"
     "youtube-music-morphe"
+    "youtube-revanced"
     "reddit-morphe"
     "spotify-revanced"
     "duolingo-revanced"
@@ -76,10 +77,10 @@ let
     "firebird"
 
     # failed to compile on darwin after https://github.com/NixOS/nixpkgs/pull/500309
-    #"rain"
-    #"weathermaster"
-    #"meshcore-open"
-    #"immich"
+    "rain"
+    "weathermaster"
+    "meshcore-open"
+    "immich"
   ];
 
   excludedApkNames = [

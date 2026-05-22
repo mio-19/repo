@@ -29,6 +29,8 @@ pkgs.stdenvNoCC.mkDerivation {
 
   dontUnpack = true;
 
+  nativeBuildInputs = [ pkgs.coreutils ];
+
   buildPhase = ''
     runHook preBuild
 
