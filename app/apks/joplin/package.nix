@@ -35,13 +35,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "joplin";
-      version = "3.6.13";
+      version = "3.6.14";
 
       src = fetchFromGitHub {
         owner = "laurent22";
         repo = "joplin";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-09XxatNA03tyRlq9eEn/t99D6RktWzEeSnN2NPuiYq8=";
+        hash = "sha256-C+253px2giINWjXsY2Jg/4M4hoFH7hWdIs4sAc6HUFw=";
       };
 
       sourceRoot = "${finalAttrs.src.name}";

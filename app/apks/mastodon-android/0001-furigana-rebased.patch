@@ -119,12 +119,11 @@ diff --git a/mastodon/src/main/java/org/joinmastodon/android/fragments/profile/P
 index da7f0dd..e54b0a2 100644
 --- a/mastodon/src/main/java/org/joinmastodon/android/fragments/profile/ProfileFragment.java
 +++ b/mastodon/src/main/java/org/joinmastodon/android/fragments/profile/ProfileFragment.java
-@@ -85,6 +85,7 @@ import org.joinmastodon.android.model.Attachment;
+@@ -85,5 +85,6 @@ import org.joinmastodon.android.model.Attachment;
  import org.joinmastodon.android.model.FamiliarFollowers;
  import org.joinmastodon.android.model.Relationship;
  import org.joinmastodon.android.model.viewmodel.AccountViewModel;
 +import org.joinmastodon.android.ui.FuriganaHelper;
- import org.joinmastodon.android.ui.M3AlertDialogBuilder;
  import org.joinmastodon.android.ui.OutlineProviders;
  import org.joinmastodon.android.ui.SimpleViewHolder;
 @@ -726,7 +727,8 @@ public class ProfileFragment extends LoaderFragment implements ScrollableToTop,
