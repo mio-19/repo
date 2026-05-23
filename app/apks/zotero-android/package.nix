@@ -28,7 +28,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "zotero-android";
-      version = "1.0.0-246";
+      version = "1.0.0-247";
 
       src = fetchFromGitHub {
         owner = "zotero";
@@ -39,7 +39,7 @@ let
         # latest 1.0.0-* tag by time, not raw version ordering:
         # https://github.com/zotero/zotero-android/tags
         tag = finalAttrs.version;
-        hash = "sha256-NJ1bXfj/l4iLumds/wosFEYUYU0bKfG8qMfy539KqWg=";
+        hash = "sha256-x8Y81FiUknMKfb8qyG4dmxP7GgzX3VjosHck9ZxESL4=";
       };
 
       patches = [
@@ -128,6 +128,8 @@ let
 
       postPatch = ''
         find app/src/main/res -name "*.orig" -delete
+        substituteInPlace app/src/main/java/org/zotero/android/screens/allitems/AllItemsPhoneAppSearchBar.kt \
+          --replace-fail 'import androidx.compose.ui.Modifier' $'import androidx.compose.ui.Modifier\nimport androidx.compose.ui.res.stringResource'
       '';
 
       preConfigure = ''

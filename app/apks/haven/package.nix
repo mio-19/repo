@@ -275,22 +275,46 @@ let
         in
         pkgs.runCommand "haven-wayvnc-shim-toolchain" { } ''
           mkdir -p "$out/bin"
-          ln -s ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}gcc "$out/bin/aarch64-linux-gnu-gcc"
+          
+          cat > "$out/bin/aarch64-linux-gnu-gcc" <<'EOF'
+          #!/bin/sh
+          args=()
+          for arg in "$@"; do
+            args+=("$arg")
+            if [ "$arg" = "-static" ]; then
+              args+=("-L${pkgs.pkgsCross.aarch64-multiplatform.glibc.static}/lib" "-B${pkgs.pkgsCross.aarch64-multiplatform.glibc.static}/lib")
+            fi
+          done
+          exec ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}gcc "''${args[@]}"
+          EOF
+          chmod +x "$out/bin/aarch64-linux-gnu-gcc"
           ln -s ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}strip "$out/bin/aarch64-linux-gnu-strip"
-          ln -s ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}gcc "$out/bin/x86_64-linux-gnu-gcc"
+
+          cat > "$out/bin/x86_64-linux-gnu-gcc" <<'EOF'
+          #!/bin/sh
+          args=()
+          for arg in "$@"; do
+            args+=("$arg")
+            if [ "$arg" = "-static" ]; then
+              args+=("-L${pkgs.pkgsCross.gnu64.glibc.static}/lib" "-B${pkgs.pkgsCross.gnu64.glibc.static}/lib")
+            fi
+          done
+          exec ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}gcc "''${args[@]}"
+          EOF
+          chmod +x "$out/bin/x86_64-linux-gnu-gcc"
           ln -s ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}strip "$out/bin/x86_64-linux-gnu-strip"
         '';
     in
     {
       pname = "haven";
-      version = "5.46.0";
+      version = "5.50.0";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-HzfNZpYUBlOZnxbJ/tE9ONV7tO5HgQFhAQyowELCfqE=";
+        hash = "sha256-Z/b2XN/zvFklxlewKMd0mXe1SUrSjibJmqyJgIX48C0=";
       };
 
       patches = [
