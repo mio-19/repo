@@ -277,35 +277,29 @@ let
           mkdir -p "$out/bin"
           
           cat > "$out/bin/aarch64-linux-gnu-gcc" <<'EOF'
-          #!/bin/sh
-          has_static=0
+          #!${pkgs.runtimeShell}
+          args=()
           for arg in "$@"; do
+            args+=("$arg")
             if [ "$arg" = "-static" ]; then
-              has_static=1
+              args+=("-L${pkgs.pkgsCross.aarch64-multiplatform.glibc.static}/lib" "-B${pkgs.pkgsCross.aarch64-multiplatform.glibc.static}/lib")
             fi
           done
-          if [ "$has_static" = "1" ]; then
-            exec ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}gcc "$@" "-L${pkgs.pkgsCross.aarch64-multiplatform.glibc.static}/lib" "-B${pkgs.pkgsCross.aarch64-multiplatform.glibc.static}/lib"
-          else
-            exec ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}gcc "$@"
-          fi
+          exec ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}gcc "''${args[@]}"
           EOF
           chmod +x "$out/bin/aarch64-linux-gnu-gcc"
           ln -s ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}strip "$out/bin/aarch64-linux-gnu-strip"
 
           cat > "$out/bin/x86_64-linux-gnu-gcc" <<'EOF'
-          #!/bin/sh
-          has_static=0
+          #!${pkgs.runtimeShell}
+          args=()
           for arg in "$@"; do
+            args+=("$arg")
             if [ "$arg" = "-static" ]; then
-              has_static=1
+              args+=("-L${pkgs.pkgsCross.gnu64.glibc.static}/lib" "-B${pkgs.pkgsCross.gnu64.glibc.static}/lib")
             fi
           done
-          if [ "$has_static" = "1" ]; then
-            exec ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}gcc "$@" "-L${pkgs.pkgsCross.gnu64.glibc.static}/lib" "-B${pkgs.pkgsCross.gnu64.glibc.static}/lib"
-          else
-            exec ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}gcc "$@"
-          fi
+          exec ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}gcc "''${args[@]}"
           EOF
           chmod +x "$out/bin/x86_64-linux-gnu-gcc"
           ln -s ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}strip "$out/bin/x86_64-linux-gnu-strip"
