@@ -31,13 +31,20 @@ let
       # https://github.com/ONLYOFFICE/documents-app-android/releases/latest
       version = "9.4.0-708";
 
+      /*
+        src = fetchFromGitHub {
+          owner = "ONLYOFFICE";
+          repo = "documents-app-android";
+          tag = "v${finalAttrs.version}";
+          hash = "sha256-/UH4cURiq2dWgS/YQzE621nyYrIrrj+x0RKvZSOnx8c=";
+        };
+      */
       src = fetchFromGitHub {
-        owner = "ONLYOFFICE";
-        repo = "documents-app-android";
-        tag = "v${finalAttrs.version}";
+        owner = "forked-by-mio";
+        repo = "onlyoffice-documents-app-android-9.4.0-708";
+        rev = "4a666059c03d8c785bd46b888af7d8da4220ff12";
         hash = "sha256-/UH4cURiq2dWgS/YQzE621nyYrIrrj+x0RKvZSOnx8c=";
       };
-
       sourceRoot = "${finalAttrs.src.name}/app_manager";
 
       postUnpack = ''
