@@ -27,7 +27,7 @@ let
       defaultJava = jdk21_headless;
     }).wrapped;
 
-  appVersionName = "1.0.14"; # kept in sync with appVersionName in upstream source code. remember to set upstreamAllowlist's hash to empty to get new hash when bumping version.
+  appVersionName = "1.0.15"; # kept in sync with appVersionName in upstream source code. remember to set upstreamAllowlist's hash to empty to get new hash when bumping version.
   allowlistVersion = lib.replaceStrings [ "." ] [ "_" ] appVersionName;
 
   upstreamAllowlist = fetchurl {

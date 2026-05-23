@@ -41,11 +41,6 @@ let
     patches = [
       ./0001-always-show-vanadium.patch # TODO: test
       (fetchpatch {
-        name = "Fix details screen shared axis transition grouping";
-        url = "https://github.com/GrapheneOS/AppStore/pull/469.patch";
-        hash = "sha256-/V0ZvhOLtceDjUG2JIsPWg4KgGQRzSdQe2kQ+pF7QXE=";
-      })
-      (fetchpatch {
         name = "Do not reserve space for an icon in settings list";
         url = "https://github.com/GrapheneOS/AppStore/pull/395.patch";
         hash = "sha256-s9tNIzOb10ENMe7urrbQcE2o/q/fGmBAzgdxkEZQjd0=";
