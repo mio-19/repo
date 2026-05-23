@@ -43,13 +43,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "meditrak";
-      version = "0.17.4";
+      version = "0.17.5";
 
       src = fetchFromGitHub {
         owner = "AdamGuidarini";
         repo = "MediTrak";
         rev = "v${finalAttrs.version}";
-        hash = "sha256-u1V9oMHjWq7UhXMIc/fjRS5yeBI+e+gobGh8TW/XlcU=";
+        hash = "sha256-MKZp8WCTR+AfqJDJlC27R27vKWRbJcDfIBm/jwgGEiA=";
       };
 
       patches = [
