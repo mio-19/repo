@@ -32,12 +32,15 @@ let
     # scripts still assume older NDK tool/bin and sysroot layouts; dav1d was
     # patched forward, but libvpx still failed to link cleanly, so keep baseline.
     s.ndk-21-4-7075529
+    s.ndk-26-1-10909125
+    s.ndk-27-0-12077973
+    s.ndk-27-3-13750724
     # ndk-23-2-8568313 could not be realized under the pinned Android SDK packaging because auto-patchelf could not satisfy host libs like libsqlite3.so.0, libgdbm.so.3, libssl.so.1.0.0, and libffi.so.6.
   ]);
-in
-buildGradlePackage rec {
+  in
+  buildGradlePackage rec {
   pname = "forkgram";
-  version = "12.6.7.0";
+  version = "12.7.3.0";
 
   gradle = gradle_8_14_4;
 
@@ -45,7 +48,7 @@ buildGradlePackage rec {
     owner = "forkgram";
     repo = "TelegramAndroid";
     rev = version;
-    hash = "sha256-xn48Ki7dOSO4hHSiorGGiVgxmRYhYbmVGagmEvU5In0=";
+    hash = "sha256-zvRL7yZ42lp+DjO1tsoyfJrHWw2v+5XrYPCJ1zaS+ks=";
     fetchSubmodules = true;
   };
 
@@ -105,9 +108,25 @@ buildGradlePackage rec {
   postPatch = ''
     patchShebangs TMessagesProj/jni/
 
+    # Force NDK version to one that works with the native build scripts
+    find . -name "build.gradle" -exec sed -i "s/ndkVersion [\"'][^\"']*[\"']/ndkVersion \"21.4.7075529\"/g" {} +
+
+    # Set JVM target to 21 to match Java compiler
+    find . -name "build.gradle" -exec sed -i 's/jvmTarget = JavaVersion.VERSION_17/jvmTarget = JavaVersion.VERSION_21/g' {} +
+    find . -name "build.gradle" -exec sed -i 's/jvmTarget = "1.8"/jvmTarget = "21"/g' {} +
+
+    # Fix build with older NDK headers missing ANDROID_BITMAP_FORMAT_RGBA_1010102
+    substituteInPlace TMessagesProj/jni/image.cpp \
+      --replace-fail 'case ANDROID_BITMAP_FORMAT_RGBA_1010102:' '#ifdef ANDROID_BITMAP_FORMAT_RGBA_1010102
+        case ANDROID_BITMAP_FORMAT_RGBA_1010102:
+#endif'
+
     # Fix hardcoded /bin/bash in subprocess call (no /bin/bash in Nix sandbox)
     substituteInPlace TMessagesProj/jni/prepare.py \
       --replace-fail 'executable="/bin/bash"' 'executable="${bash}/bin/bash"'
+
+    # Remove --icf=safe and -flto=full as they cause linker issues in NDK 21
+    find . \( -name "CMakeLists.txt" -o -name "*.cmake" \) -exec sed -i 's/-Wl,--icf=safe//g; s/-flto=full//g' {} +
 
     # Inject Telegram API credentials and enable F-Droid mode — taken from the F-Droid build recipe:
     # https://gitlab.com/fdroid/fdroiddata/-/blob/master/metadata/org.forkgram.messenger.yml
@@ -118,10 +137,12 @@ buildGradlePackage rec {
     echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
     substituteInPlace gradle.properties \
       --replace-fail "F_DROID=0" "F_DROID=1"
+    echo "android.ndkVersion=21.4.7075529" >> gradle.properties
 
 
     # Tell AGP where to find cmake (it looks for version 3.22.1 in the SDK by default)
     echo "cmake.dir=${cmake}" >> local.properties
+    echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/21.4.7075529" >> local.properties
 
     # Use aapt2 from the installed SDK instead of downloading from Maven
     echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2" >> gradle.properties
@@ -154,6 +175,8 @@ buildGradlePackage rec {
   env = {
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+    ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/21.4.7075529";
+    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/21.4.7075529";
     GOFLAGS = "-mod=vendor";
   };
 

@@ -1501,6 +1501,54 @@
       "hash": "sha256-TGx9bUMcX9YUFfYHodjQix4DvlkYYgIFjTCeVMJSz74="
     }
   },
+  "com.atlassian.commonmark:commonmark:0.13.0": {
+    "commonmark-0.13.0.jar": {
+      "url": "https://repo.maven.apache.org/maven2/com/atlassian/commonmark/commonmark/0.13.0/commonmark-0.13.0.jar",
+      "hash": "sha256-/TiuzvaAZJiU/9e0NOEAgfxgniYMY+FsQyOj6qKp8JY="
+    },
+    "commonmark-0.13.0.pom": {
+      "url": "https://repo.maven.apache.org/maven2/com/atlassian/commonmark/commonmark/0.13.0/commonmark-0.13.0.pom",
+      "hash": "sha256-gIlt7pPS8jj6zod7mytwEZJUrkHhfJ/wkiU4l8H4rWE="
+    }
+  },
+  "com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.13.0": {
+    "commonmark-ext-gfm-strikethrough-0.13.0.jar": {
+      "url": "https://repo.maven.apache.org/maven2/com/atlassian/commonmark/commonmark-ext-gfm-strikethrough/0.13.0/commonmark-ext-gfm-strikethrough-0.13.0.jar",
+      "hash": "sha256-XzrW0Ufuq4j5m08Pe+QpaeHodtTTuFGr1XpxtK+A6m8="
+    },
+    "commonmark-ext-gfm-strikethrough-0.13.0.pom": {
+      "url": "https://repo.maven.apache.org/maven2/com/atlassian/commonmark/commonmark-ext-gfm-strikethrough/0.13.0/commonmark-ext-gfm-strikethrough-0.13.0.pom",
+      "hash": "sha256-DE6Cd2lV4gH3Hgsr3kiJm3hmqxs0SXBJi4ymgADnbYU="
+    }
+  },
+  "com.atlassian.commonmark:commonmark-ext-gfm-tables:0.13.0": {
+    "commonmark-ext-gfm-tables-0.13.0.jar": {
+      "url": "https://repo.maven.apache.org/maven2/com/atlassian/commonmark/commonmark-ext-gfm-tables/0.13.0/commonmark-ext-gfm-tables-0.13.0.jar",
+      "hash": "sha256-tHCaUUnNPL+5diIWlVugV2q8iLUpc7MN1vaXp6YpDRU="
+    },
+    "commonmark-ext-gfm-tables-0.13.0.pom": {
+      "url": "https://repo.maven.apache.org/maven2/com/atlassian/commonmark/commonmark-ext-gfm-tables/0.13.0/commonmark-ext-gfm-tables-0.13.0.pom",
+      "hash": "sha256-8LzCgppoQpkS4osvHyIBOOB1p+G0zlyJ7Nyzjx4L1yg="
+    }
+  },
+  "com.atlassian.commonmark:commonmark-parent:0.13.0": {
+    "commonmark-parent-0.13.0.pom": {
+      "url": "https://repo.maven.apache.org/maven2/com/atlassian/commonmark/commonmark-parent/0.13.0/commonmark-parent-0.13.0.pom",
+      "hash": "sha256-mIYKJwMgqJWvpG1/5Mx9cOW+USTBkEMcqpAiPNo6jig="
+    }
+  },
+  "com.atlassian.pom:base-pom:5.0.13": {
+    "base-pom-5.0.13.pom": {
+      "url": "https://repo.maven.apache.org/maven2/com/atlassian/pom/base-pom/5.0.13/base-pom-5.0.13.pom",
+      "hash": "sha256-CN0hBF/fYQSL7zj/7FbiHuslxuLYRPwJ9rlW4JNzdUM="
+    }
+  },
+  "com.atlassian.pom:central-pom:5.0.13": {
+    "central-pom-5.0.13.pom": {
+      "url": "https://repo.maven.apache.org/maven2/com/atlassian/pom/central-pom/5.0.13/central-pom-5.0.13.pom",
+      "hash": "sha256-zihFbTZlB8oPkQIpQqBeOI/Zj4YqbY2zEFxcRJenTOU="
+    }
+  },
   "com.github.javaparser:javaparser-core:3.25.4": {
     "javaparser-core-3.25.4.jar": {
       "url": "https://repo.maven.apache.org/maven2/com/github/javaparser/javaparser-core/3.25.4/javaparser-core-3.25.4.jar",
@@ -2547,6 +2595,66 @@
     "netty-transport-native-unix-common-4.1.93.Final.pom": {
       "url": "https://repo.maven.apache.org/maven2/io/netty/netty-transport-native-unix-common/4.1.93.Final/netty-transport-native-unix-common-4.1.93.Final.pom",
       "hash": "sha256-Fbwltn/wpJJysnDvK4z/1iAFfKFssp3/etVmGtyirhI="
+    }
+  },
+  "io.noties.markwon:core:4.6.2": {
+    "core-4.6.2.aar": {
+      "url": "https://repo.maven.apache.org/maven2/io/noties/markwon/core/4.6.2/core-4.6.2.aar",
+      "hash": "sha256-KeTB3prvo9PH+KeUi6JMNpatw0sp49fRBus16Poshf0="
+    },
+    "core-4.6.2.pom": {
+      "url": "https://repo.maven.apache.org/maven2/io/noties/markwon/core/4.6.2/core-4.6.2.pom",
+      "hash": "sha256-59Bnnv+vmGJJ2kR/qPyycX9fIbBmy+xQszho/Sejejk="
+    }
+  },
+  "io.noties.markwon:ext-latex:4.6.2": {
+    "ext-latex-4.6.2.aar": {
+      "url": "https://repo.maven.apache.org/maven2/io/noties/markwon/ext-latex/4.6.2/ext-latex-4.6.2.aar",
+      "hash": "sha256-7ssvBLyPHyh3smKrsNYshjze7WW+l0o51aUswTPyGPE="
+    },
+    "ext-latex-4.6.2.pom": {
+      "url": "https://repo.maven.apache.org/maven2/io/noties/markwon/ext-latex/4.6.2/ext-latex-4.6.2.pom",
+      "hash": "sha256-mQGxPLL4xFbsuv4fXqa3oRrDyrKFkiL6FGyDNhX5m5A="
+    }
+  },
+  "io.noties.markwon:ext-strikethrough:4.6.2": {
+    "ext-strikethrough-4.6.2.aar": {
+      "url": "https://repo.maven.apache.org/maven2/io/noties/markwon/ext-strikethrough/4.6.2/ext-strikethrough-4.6.2.aar",
+      "hash": "sha256-IiuHhi2uIHBsqMXIU8gxRA2QYgiO0n1OzLDtgPjfHTg="
+    },
+    "ext-strikethrough-4.6.2.pom": {
+      "url": "https://repo.maven.apache.org/maven2/io/noties/markwon/ext-strikethrough/4.6.2/ext-strikethrough-4.6.2.pom",
+      "hash": "sha256-a0auxGJSctChW+s0kBuBs03cDfiIg4xoXqW+xs9Adig="
+    }
+  },
+  "io.noties.markwon:ext-tables:4.6.2": {
+    "ext-tables-4.6.2.aar": {
+      "url": "https://repo.maven.apache.org/maven2/io/noties/markwon/ext-tables/4.6.2/ext-tables-4.6.2.aar",
+      "hash": "sha256-iuJn6C1mAmuBXPwApT+CYud1tYU3eCXcplGRLtvPV1k="
+    },
+    "ext-tables-4.6.2.pom": {
+      "url": "https://repo.maven.apache.org/maven2/io/noties/markwon/ext-tables/4.6.2/ext-tables-4.6.2.pom",
+      "hash": "sha256-yYtXz54HExlzPpEmNUfOB1K1ETcC8pGag1U6nFjLdjU="
+    }
+  },
+  "io.noties.markwon:html:4.6.2": {
+    "html-4.6.2.aar": {
+      "url": "https://repo.maven.apache.org/maven2/io/noties/markwon/html/4.6.2/html-4.6.2.aar",
+      "hash": "sha256-OkuakKsPrAUIe/Zcq20sfbhlGlGy9vuRrRnA9gamoC8="
+    },
+    "html-4.6.2.pom": {
+      "url": "https://repo.maven.apache.org/maven2/io/noties/markwon/html/4.6.2/html-4.6.2.pom",
+      "hash": "sha256-t6RM66cdp1zctUrtwc5gBo7OkHCgzS2U4MrTVNCqwqQ="
+    }
+  },
+  "io.noties.markwon:inline-parser:4.6.2": {
+    "inline-parser-4.6.2.aar": {
+      "url": "https://repo.maven.apache.org/maven2/io/noties/markwon/inline-parser/4.6.2/inline-parser-4.6.2.aar",
+      "hash": "sha256-syccY8zhEoL//mQ1r9dHRrPLeBkd2sHvh0BY7J4qyI0="
+    },
+    "inline-parser-4.6.2.pom": {
+      "url": "https://repo.maven.apache.org/maven2/io/noties/markwon/inline-parser/4.6.2/inline-parser-4.6.2.pom",
+      "hash": "sha256-LrzsCul0HJdYT8LxwQoBJ3KbipspZJ/x8CCE9s7s1vM="
     }
   },
   "io.perfmark:perfmark-api:0.26.0": {
@@ -4193,6 +4301,16 @@
     "connector-3.1.2.pom": {
       "url": "https://repo.maven.apache.org/maven2/org/unifiedpush/android/connector/3.1.2/connector-3.1.2.pom",
       "hash": "sha256-pmTzeNWq3/j6PcZKE8ek8KlhRXxU0w9vG1nnIDJrwvU="
+    }
+  },
+  "ru.noties:jlatexmath-android:0.2.0": {
+    "jlatexmath-android-0.2.0.aar": {
+      "url": "https://repo.maven.apache.org/maven2/ru/noties/jlatexmath-android/0.2.0/jlatexmath-android-0.2.0.aar",
+      "hash": "sha256-sWgkMo1F7YaJL3+Kp0pUL8NhuKlABN6Mpa6GETt4qJ8="
+    },
+    "jlatexmath-android-0.2.0.pom": {
+      "url": "https://repo.maven.apache.org/maven2/ru/noties/jlatexmath-android/0.2.0/jlatexmath-android-0.2.0.pom",
+      "hash": "sha256-eEvBk0oSqNCCAaAL2aCYOQvC2WmjLYvfeHTxyAeaY6g="
     }
   }
 }
