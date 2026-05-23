@@ -36,6 +36,7 @@ stdenv.mkDerivation (finalAttrs: {
   mitmCache = gradle.fetchDeps {
     pname = "glide";
     pkg = finalAttrs.finalPackage;
+    # manually removed package-list
     data = ./glide_deps.json;
     silent = false;
     useBwrap = false;
