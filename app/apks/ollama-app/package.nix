@@ -76,6 +76,7 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         pkg = finalAttrs.finalPackage;
+        # removed master-index and group-index manually
         data = ./ollama-app_deps.json;
         silent = false;
         useBwrap = false;
