@@ -103,7 +103,6 @@
             fetchpatch
             applyPatches
             stdenv
-            lib
             ;
           robotSrc = applyPatches {
             src = inputs.robotnix.outPath;
