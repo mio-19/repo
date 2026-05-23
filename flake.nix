@@ -193,7 +193,7 @@
             overlays = [
               (final: prev: rec {
                 inherit (selfPackages) ant;
-                maven = selfPackages.maven_3_9_14;
+                maven = selfPackages.maven_3_9_16;
                 gradle_7 = selfPackages.gradle_7_6_6;
                 gradle_7-unwrapped = gradle_7.unwrapped;
                 gradle_9 = selfPackages.gradle_9_5_1;
