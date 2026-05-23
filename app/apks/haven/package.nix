@@ -275,7 +275,7 @@ let
         in
         pkgs.runCommand "haven-wayvnc-shim-toolchain" { } ''
           mkdir -p "$out/bin"
-          
+
           cat > "$out/bin/aarch64-linux-gnu-gcc" <<'EOF'
           #!${pkgs.runtimeShell}
           args=()

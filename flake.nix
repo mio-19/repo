@@ -99,7 +99,12 @@
       perSystem =
         { pkgs, system, ... }:
         let
-          inherit (pkgs) fetchpatch applyPatches;
+          inherit (pkgs)
+            fetchpatch
+            applyPatches
+            stdenv
+            lib
+            ;
           robotSrc = applyPatches {
             src = inputs.robotnix.outPath;
             name = "robotnix-patched";
@@ -173,6 +178,14 @@
                   hash = "sha256-okJ2JXObWNVPpRAbAbj9/ilKKOGR8GBJ010KelLDQqQ=";
                 })
               */
+            ]
+            ++ lib.optionals stdenv.isDarwin [
+              # related to appstream : https://github.com/NixOS/nixpkgs/issues/514566
+              (fetchpatch {
+                name = "libfyaml: fixed building issues";
+                url = "https://github.com/NixOS/nixpkgs/pull/515614.patch";
+                hash = "sha256-lPg+NKhTJVCDLuuDaKF9o7evPxjcGxD9Gh/M1X3yqag=";
+              })
             ];
           };
           nixpkgs =
