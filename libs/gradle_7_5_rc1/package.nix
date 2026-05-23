@@ -10,7 +10,7 @@ gradle-from-source {
   version = "7.5.0-RC1";
   hash = "sha256-22eR97X9z6QhN4yMfaAzElErs1A/vCGqcRyfL4L2MwE=";
   lockFile = mergeLock [
-    gradle_7_4_2.unwrapped.passthru.lockFile
+    ../gradle_7_4_2/gradle.lock
     ./gradle.lock
   ];
   defaultJava = jdk17_headless;
