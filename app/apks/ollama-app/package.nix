@@ -7,7 +7,7 @@
   flutter329,
   jdk17_headless,
   python3,
-  gradle-packages,
+  gradle_8_10_2,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
@@ -30,12 +30,7 @@ let
         s.cmake-3-22-1
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.10.2";
-          hash = "sha256-McVXE+QCM6gwOCfOtCykikcmegrUurkXcSMSHnFSTCY=";
-          defaultJava = jdk17_headless;
-        }).wrapped;
+      gradle = gradle_8_10_2;
       pythonWithYaml = python3.withPackages (ps: [ ps.pyyaml ]);
     in
     buildDartApplication.override { dart = flutter329; } (finalAttrs: {

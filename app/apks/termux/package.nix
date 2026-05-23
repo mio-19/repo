@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk25_headless,
-  gradle-packages,
+  gradle_9_2_1,
   stdenv,
   fetchurl,
 
@@ -23,12 +23,7 @@ let
         s.ndk-29-0-14206865
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "9.2.1";
-          hash = "sha256-cvRMn468sa9Dg49F7lxKqcVESJizRoqz9K97YHbFvD8=";
-          defaultJava = jdk25_headless;
-        }).wrapped;
+      gradle = gradle_9_2_1;
       shortRev = builtins.substring 0 7 sources.termux_app.version;
     in
     stdenv.mkDerivation (finalAttrs: {

@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk21_headless,
-  gradle-packages,
+  gradle_8_9,
   stdenv,
   fetchFromGitHub,
 
@@ -21,12 +21,7 @@ let
         s.build-tools-34-0-0
       ]);
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.9";
-          hash = "sha256-1yXXB7+r1N/clYxiQAOzyArMwD9wN7USLEsdDvFc7Ks=";
-          defaultJava = jdk21_headless;
-        }).wrapped;
+      gradle = gradle_8_9;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "tuxguitar-android";

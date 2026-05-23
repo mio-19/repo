@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk21_headless,
-  gradle-packages,
+  gradle_8_10_2,
   stdenv,
   stdenvNoCC,
   fetchFromGitHub,
@@ -350,12 +350,7 @@ let
         '';
       };
 
-      gradle =
-        (gradle-packages.mkGradle {
-          version = "8.10.2";
-          hash = "sha256-McVXE+QCM6gwOCfOtCykikcmegrUurkXcSMSHnFSTCY=";
-          defaultJava = jdk21_headless;
-        }).wrapped;
+      gradle = gradle_8_10_2;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "nekobox-for-android";
