@@ -1,6 +1,8 @@
---- a/TMessagesProj/jni/prepare.py	2026-03-15 18:35:31.393408249 +1100
-+++ b/TMessagesProj/jni/prepare.py	2026-03-15 18:35:48.895259323 +1100
-@@ -176,7 +176,7 @@
+diff --git a/TMessagesProj/jni/prepare.py b/TMessagesProj/jni/prepare.py
+index 9af3d866..139f1b6a 100644
+--- a/TMessagesProj/jni/prepare.py
++++ b/TMessagesProj/jni/prepare.py
+@@ -176,7 +176,7 @@ stages = []
  def removeDir(folder):
      if win:
          return 'if exist ' + folder + ' rmdir /Q /S ' + folder + '\nif exist ' + folder + ' exit /b 1'
@@ -9,7 +11,16 @@
  
  def filterByPlatform(commands):
      commands = commands.split('\n')
-@@ -393,8 +393,6 @@
+@@ -273,7 +273,7 @@ def run(commands):
+     elif re.search(r'\%', commands):
+         error('Bad command: ' + commands)
+     else:
+-        return subprocess.run("set -e\n" + commands, shell=True, executable="/bin/bash", env=modifiedEnv).returncode == 0
++        return subprocess.run("set -e\n" + commands, shell=True, executable="bash", env=modifiedEnv).returncode == 0
+ 
+ # Thanks https://stackoverflow.com/a/510364
+ class _Getch:
+@@ -393,8 +393,6 @@ if customRunCommand:
      finish(0)
  
  stage('dav1d', """
@@ -18,7 +29,7 @@
      export NDK={ndk}
      export NINJA_PATH=`which ninja`
      ./build_dav1d_clang.sh {archesStr}
-@@ -402,8 +400,6 @@
+@@ -402,8 +400,6 @@ stage('dav1d', """
  """.format(ndk=ndkPath,archesStr=' '.join(arches)))
  
  stage('libvpx', """
@@ -27,7 +38,7 @@
      export NDK={ndk}
      export NINJA_PATH=`which ninja`
      ./build_libvpx_clang.sh {archesStr}
-@@ -411,8 +407,6 @@
+@@ -411,8 +407,6 @@ stage('libvpx', """
  """.format(ndk=ndkPath,archesStr=' '.join(arches)))
  
  stage('ffmpeg', """
@@ -36,7 +47,7 @@
      export NDK={ndk}
      ./build_ffmpeg_clang.sh {archesStr}
      ./patch_ffmpeg.sh
-@@ -420,8 +414,6 @@
+@@ -420,8 +414,6 @@ stage('ffmpeg', """
  """.format(ndk=ndkPath,archesStr=' '.join(arches)))
  
  stage('boringssl', """
@@ -45,7 +56,7 @@
      export NDK={ndk}
      export NINJA_PATH=`which ninja`
      ./patch_boringssl.sh
-@@ -432,9 +424,6 @@
+@@ -432,9 +424,6 @@ stage('boringssl', """
  stage('tde2e', """
      # Install gsed on macOS.
  
