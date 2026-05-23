@@ -5,12 +5,8 @@
   gradle-from-source,
   gradle_7_0,
   mergeLock,
-  stdenv,
 }:
-if stdenv.isDarwin then
-  gradle_7_0
-else
-  gradle-from-source {
+gradle-from-source {
     version = "7.2";
     hash = "sha256-W5lcqilYDT25LQEYZHAv+hBNeRm7s2/iamgajaDVf9o=";
     lockFile = mergeLock [
