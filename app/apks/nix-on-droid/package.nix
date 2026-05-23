@@ -3,13 +3,13 @@
   lib,
   jdk17_headless,
   jdk21_headless,
+  gradle_7_5,
   gradle_8_13,
   stdenv,
   fetchFromGitHub,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   fetchpatch,
-  gradle-packages,
 }:
 let
   bumpAGP = false;
@@ -38,15 +38,7 @@ let
           ]
       );
 
-      gradle =
-        if bumpAGP then
-          gradle_8_13
-        else
-          (gradle-packages.mkGradle {
-            version = "7.5";
-            hash = "sha256-y4fyIsVYW9RoOK1Nt4RjpcXz0zbl4rmNx8DFhlJzUcI=";
-            defaultJava = jdk17_headless;
-          }).wrapped;
+      gradle = if bumpAGP then gradle_8_13 else gradle_7_5;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "nix-on-droid";

@@ -4,7 +4,7 @@
   buildGradlePackage,
   lib,
   androidSdkBuilder,
-  gradle-packages,
+  gradle_8_10_2,
   jdk21_headless,
   runCommand,
   fetchurl,
@@ -20,12 +20,7 @@ let
     s.build-tools-35-0-0
   ]);
 
-  gradle =
-    (gradle-packages.mkGradle {
-      version = "8.10.2";
-      hash = "sha256-McVXE+QCM6gwOCfOtCykikcmegrUurkXcSMSHnFSTCY=";
-      defaultJava = jdk21_headless;
-    }).wrapped;
+  gradle = gradle_8_10_2;
 
   appVersionName = "1.0.15"; # kept in sync with appVersionName in upstream source code. remember to set upstreamAllowlist's hash to empty to get new hash when bumping version.
   allowlistVersion = lib.replaceStrings [ "." ] [ "_" ] appVersionName;
