@@ -6,9 +6,17 @@
   jdk25_headless,
   gradle_9_4_1,
   fetchFromGitHub,
+  mkSignScript,
+  cmake,
+  ninja,
+  pkgs,
+  python3,
+  mergeLock,
+  unzip,
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  deepMerge,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -17,113 +25,145 @@ let
     s.platforms-android-36
     s.build-tools-35-0-0
     s.build-tools-36-0-0
+    s.ndk-28-2-13676358
+    s.ndk-29-0-14206865
   ]);
 
   gradle = gradle_9_4_1;
 
-  appPackage = buildGradlePackage rec {
+  appPackage = buildGradlePackage (finalAttrs: {
     pname = "nextcloud-android";
     # Go to https://github.com/nextcloud/android/releases/latest to see latest release.
-    version = "33.1.0";
+    version = "33.1.1";
     inherit gradle;
 
     src = fetchFromGitHub {
       owner = "nextcloud";
       repo = "android";
-      tag = "stable-${version}";
-      hash = "sha256-Z0bqp2/0hMj8yaxytERdSqaBlLmVZzgzMRpHgx3Czvg=";
+      tag = "stable-${finalAttrs.version}";
+      hash = "sha256-EY6vxc6XhCS7uzeZQ101JRBd7V9PFjIBtJF7Czyun6A=";
     };
 
-    lockFile = ./gradle.lock;
+    lockFile = mergeLock [
+      ./gradle.lock
+      (pkgs.writeText "extra-deps-lock.json" (builtins.toJSON {
+        "com.nextcloud:openssl:3.5.6" = {
+          "openssl-3.5.6.aar" = {
+            "url" = "https://raw.githubusercontent.com/nextcloud/android/stable-33.1.1/app/libs/local-maven/com/nextcloud/openssl/3.5.6/openssl-3.5.6.aar";
+            "hash" = "sha256-sHiwElmNfIBrUKlx6mks8cOHtLhD/iAUvGqPXmox6I4=";
+          };
+          "openssl-3.5.6.pom" = {
+            "url" = "https://raw.githubusercontent.com/nextcloud/android/stable-33.1.1/app/libs/local-maven/com/nextcloud/openssl/3.5.6/openssl-3.5.6.pom";
+            "hash" = "sha256-/X9foniD3T4pWf0oac2ad+j3AjEBf4G2ifodhF+XVCQ=";
+          };
+        };
+        "org.jetbrains.intellij.deps.kotlinx:kotlinx-coroutines-bom:1.8.0-intellij-14" = {
+          "kotlinx-coroutines-bom-1.8.0-intellij-14.pom" = {
+            "url" = "https://repo1.maven.org/maven2/org/jetbrains/intellij/deps/kotlinx/kotlinx-coroutines-bom/1.8.0-intellij-14/kotlinx-coroutines-bom-1.8.0-intellij-14.pom";
+            "hash" = "sha256-HUFjTSKbHviGsEg6F+S225NrRkP5QBqzS+UWCc+6YD0=";
+          };
+        };
+        "org.jetbrains.intellij.deps.kotlinx:kotlinx-coroutines-core-jvm:1.8.0-intellij-14" = {
+          "kotlinx-coroutines-core-jvm-1.8.0-intellij-14.jar" = {
+            "url" = "https://repo1.maven.org/maven2/org/jetbrains/intellij/deps/kotlinx/kotlinx-coroutines-core-jvm/1.8.0-intellij-14/kotlinx-coroutines-core-jvm-1.8.0-intellij-14.jar";
+            "hash" = "sha256-7wQ4Vu+POHA5FpYPrBacNZ2Y1f69Vx1n/M3+dbo3jeM=";
+          };
+          "kotlinx-coroutines-core-jvm-1.8.0-intellij-14.module" = {
+            "url" = "https://repo1.maven.org/maven2/org/jetbrains/intellij/deps/kotlinx/kotlinx-coroutines-core-jvm/1.8.0-intellij-14/kotlinx-coroutines-core-jvm-1.8.0-intellij-14.module";
+            "hash" = "sha256-Z3M5jeX7L0MyuzdL5AGgNdLxTBM4/rNEYR81hFmZx/c=";
+          };
+        };
+        "com.google.devtools.ksp:symbol-processing-aa-embeddable:2.3.6" = {
+          "symbol-processing-aa-embeddable-2.3.6.jar" = {
+            "url" = "https://repo1.maven.org/maven2/com/google/devtools/ksp/symbol-processing-aa-embeddable/2.3.6/symbol-processing-aa-embeddable-2.3.6.jar";
+            "hash" = "sha256-fK6i1CZoCmp3AHvKYNQOockhjz22rp0WxU8P/vxOG1s=";
+          };
+          "symbol-processing-aa-embeddable-2.3.6.pom" = {
+            "url" = "https://repo1.maven.org/maven2/com/google/devtools/ksp/symbol-processing-aa-embeddable/2.3.6/symbol-processing-aa-embeddable-2.3.6.pom";
+            "hash" = "sha256-oa7nRVgcA+5ZqJYoiODuB5WifGwbVbczJS5SvfHPI/0=";
+          };
+        };
+      }))
+    ];
+
     overrides = overrides-fromsrc;
     buildJdk = jdk25_headless;
 
     postPatch = ''
       rm -f gradle/verification-metadata.xml
+
+      # Fix openssl detection in CMake by pointing to the files in the local maven repo
+      # First, unpack the AAR
+      mkdir -p app/libs/openssl-unpacked
+      unzip app/libs/local-maven/com/nextcloud/openssl/3.5.6/openssl-3.5.6.aar -d app/libs/openssl-unpacked
+      
+      ABS_PATH=$(pwd)
+
+      substituteInPlace app/src/main/cpp/CMakeLists.txt \
+        --replace-fail 'find_package(openssl REQUIRED CONFIG)' '
+add_library(openssl_ssl SHARED IMPORTED)
+set_target_properties(openssl_ssl PROPERTIES IMPORTED_LOCATION @ABS_PATH@/app/libs/openssl-unpacked/jni/''${ANDROID_ABI}/libssl.so)
+add_library(openssl_crypto SHARED IMPORTED)
+set_target_properties(openssl_crypto PROPERTIES IMPORTED_LOCATION @ABS_PATH@/app/libs/openssl-unpacked/jni/''${ANDROID_ABI}/libcrypto.so)
+' \
+        --replace-fail 'cms_verifier.cpp' 'cms_verifier.cpp)
+target_include_directories(cms_verifier PRIVATE @ABS_PATH@/app/libs/openssl-unpacked/headers' \
+        --replace-fail 'openssl::ssl' 'openssl_ssl' \
+        --replace-fail 'openssl::crypto' 'openssl_crypto'
+      
+      sed -i "s|@ABS_PATH@|$ABS_PATH|g" app/src/main/cpp/CMakeLists.txt
     '';
-
-    nativeBuildInputs = [
-      androidSdk
-      gradle
-      jdk25_headless
-
-      writableTmpDirAsHomeHook
-    ];
-
-    dontUseGradleConfigure = true;
-
-    env = {
-      JAVA_HOME = jdk25_headless;
-      ANDROID_HOME = "${androidSdk}/share/android-sdk";
-      ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
-    };
 
     preConfigure = ''
       export ANDROID_USER_HOME="$HOME/.android"
-      export GRADLE_USER_HOME="$HOME/.gradle"
-      export TERM=dumb
       mkdir -p "$ANDROID_USER_HOME"
-      echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
-      gradleFlagsArray+=(--no-daemon --init-script "$gradleInitScript" --offline)
+      echo "cmake.dir=${cmake}" >> local.properties
+      echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2" >> gradle.properties
     '';
 
-    gradleFlags = [
-      "-Dorg.gradle.java.home=${jdk25_headless.home}"
-      "-Dorg.gradle.java.installations.auto-download=false"
-      "-Dorg.gradle.java.installations.paths=${jdk25_headless}"
-      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-    ];
-
-    gradleBuildFlags = ":app:assembleGenericRelease";
+    gradleBuildFlagsArray = [ ":app:assembleGenericRelease" ];
 
     installPhase = ''
       runHook preInstall
-
-      apk_dir="app/build/outputs/apk/generic/release"
-      apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apk_dir/output-metadata.json" | head -n 1)"
-      test -n "$apk_name"
-      apk_path="$apk_dir/$apk_name"
-      test -f "$apk_path"
-      badging="$("${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt" dump badging "$apk_path")"
-      pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
-      [ "$pkg" = "com.nextcloud.client" ]
-
-      install -Dm644 "$apk_path" "$out/nextcloud-android.apk"
+      find app/build/outputs/apk -name "*.apk" -exec install -Dm644 {} "$out/nextcloud-android.apk" \;
       runHook postInstall
     '';
 
-    meta = with lib; {
-      description = "Nextcloud Android app built from source";
-      homepage = "https://github.com/nextcloud/android";
-      license = licenses.agpl3Plus;
-      platforms = platforms.unix;
+    passthru.signScript = mkSignScript {
+      name = "sign-nextcloud-android";
+      apkPath = "${placeholder "out"}/nextcloud-android.apk";
+      defaultOut = "nextcloud-android-signed.apk";
     };
-  };
+
+    nativeBuildInputs = [
+      androidSdk
+      writableTmpDirAsHomeHook
+      cmake
+      ninja
+      unzip
+    ];
+    env = {
+      ANDROID_HOME = "${androidSdk}/share/android-sdk";
+      ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+    };
+
+    dontUseCmakeConfigure = true;
+    dontUseNinjaBuild = true;
+  });
 in
 mk-apk-package {
   inherit appPackage;
   mainApk = "nextcloud-android.apk";
   signScriptName = "sign-nextcloud-android";
   fdroid = {
-    appId = "com.nextcloud.client";
-    metadataYml = ''
-      Categories:
-        - Cloud Storage & File Sync
-      License: AGPL-3.0-or-later
-      WebSite: https://nextcloud.com/
-      SourceCode: https://github.com/nextcloud/android
-      IssueTracker: https://github.com/nextcloud/android/issues
-      Changelog: https://github.com/nextcloud/android/releases
-      AutoName: Nextcloud
-      Summary: Access and sync your Nextcloud files
-      Description: |-
-        Nextcloud lets you browse, upload, and synchronize files with your
-        Nextcloud server from Android.
+    AutoName = "Nextcloud";
+    Summary = "Access and sync your Nextcloud files";
+    Description = ''
+      Nextcloud lets you browse, upload, and synchronize files with your
+      Nextcloud server from Android.
 
-        This package is built from source from the upstream nextcloud/android
-        repository using the generic (F-Droid compatible) flavor.
+      This package is built from source from the upstream nextcloud/android
+      repository using the generic (F-Droid compatible) flavor.
     '';
   };
 }
