@@ -278,28 +278,34 @@ let
           
           cat > "$out/bin/aarch64-linux-gnu-gcc" <<'EOF'
           #!/bin/sh
-          args=()
+          has_static=0
           for arg in "$@"; do
-            args+=("$arg")
             if [ "$arg" = "-static" ]; then
-              args+=("-L${pkgs.pkgsCross.aarch64-multiplatform.glibc.static}/lib" "-B${pkgs.pkgsCross.aarch64-multiplatform.glibc.static}/lib")
+              has_static=1
             fi
           done
-          exec ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}gcc "''${args[@]}"
+          if [ "$has_static" = "1" ]; then
+            exec ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}gcc "$@" "-L${pkgs.pkgsCross.aarch64-multiplatform.glibc.static}/lib" "-B${pkgs.pkgsCross.aarch64-multiplatform.glibc.static}/lib"
+          else
+            exec ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}gcc "$@"
+          fi
           EOF
           chmod +x "$out/bin/aarch64-linux-gnu-gcc"
           ln -s ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}strip "$out/bin/aarch64-linux-gnu-strip"
 
           cat > "$out/bin/x86_64-linux-gnu-gcc" <<'EOF'
           #!/bin/sh
-          args=()
+          has_static=0
           for arg in "$@"; do
-            args+=("$arg")
             if [ "$arg" = "-static" ]; then
-              args+=("-L${pkgs.pkgsCross.gnu64.glibc.static}/lib" "-B${pkgs.pkgsCross.gnu64.glibc.static}/lib")
+              has_static=1
             fi
           done
-          exec ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}gcc "''${args[@]}"
+          if [ "$has_static" = "1" ]; then
+            exec ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}gcc "$@" "-L${pkgs.pkgsCross.gnu64.glibc.static}/lib" "-B${pkgs.pkgsCross.gnu64.glibc.static}/lib"
+          else
+            exec ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}gcc "$@"
+          fi
           EOF
           chmod +x "$out/bin/x86_64-linux-gnu-gcc"
           ln -s ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}strip "$out/bin/x86_64-linux-gnu-strip"
