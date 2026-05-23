@@ -30,7 +30,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "shizuku";
-      version = "unstable-2026-03-20";
+      version = "13.6.0";
 
       dontConfigure = true;
 

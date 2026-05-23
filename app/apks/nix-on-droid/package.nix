@@ -50,7 +50,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "nix-on-droid";
-      version = "unstable-2025-06-17";
+      version = "0.118.3";
 
       src = fetchFromGitHub {
         owner = "nix-community";
