@@ -102,7 +102,6 @@
           inherit (pkgs)
             fetchpatch
             applyPatches
-            stdenv
             ;
           robotSrc = applyPatches {
             src = inputs.robotnix.outPath;
@@ -178,7 +177,7 @@
                 })
               */
             ]
-            ++ lib.optionals stdenv.isDarwin [
+            ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
               # apply unconditionally next time when we update nixpkgs
               # related to appstream : https://github.com/NixOS/nixpkgs/issues/514566
               (fetchpatch {
