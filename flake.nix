@@ -171,7 +171,7 @@
                 hash = "sha256-vyDAGlg/67ht8BR7ASOS8LYLqclu6lcjzxUIjJoVM3I=";
               })
               /*
-                # wait more
+                # apply next time when we update nixpkgs
                 (fetchpatch {
                   name = "ant: build from source";
                   url = "https://github.com/NixOS/nixpkgs/pull/521111.diff";
@@ -180,6 +180,7 @@
               */
             ]
             ++ lib.optionals stdenv.isDarwin [
+              # apply unconditionally next time when we update nixpkgs
               # related to appstream : https://github.com/NixOS/nixpkgs/issues/514566
               (fetchpatch {
                 name = "libfyaml: fixed building issues";
