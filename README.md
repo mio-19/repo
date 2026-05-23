@@ -253,3 +253,11 @@ todo
    "org/versions/all": "sha256-hW92v8avCy/6usgQ3dc/6Zo59J/8GhhrLrWwevV/o5Q="
   }
 ```
+
+ollama
+
+```
+  "com/google/android/material/group-index": {
+   "xml": "sha256-Ew8Yf2jjLfnpmulxSpC9XE6aVpDFvK9/ZPR1BTLkhEQ="
+  },
+```
