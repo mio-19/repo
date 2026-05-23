@@ -1,0 +1,154 @@
+diff --git a/TMessagesProj/jni/CMakeLists.txt b/TMessagesProj/jni/CMakeLists.txt
+index 2d1cca2e..e527bf41 100644
+--- a/TMessagesProj/jni/CMakeLists.txt
++++ b/TMessagesProj/jni/CMakeLists.txt
+@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.10.2)
+ set(CMAKE_CXX_FLAGS "-std=c++14 -DANDROID -g")
+ set(CMAKE_C_FLAGS "-w -std=c11 -DANDROID -D_LARGEFILE_SOURCE=1 -g -Wno-error=implicit-function-declaration")
+ set(CMAKE_ASM_FLAGS "${CFLAGS} -x assembler-with-cpp")
+-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections -fvisibility=hidden -flto=full")
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections -fvisibility=hidden -fvisibility-inlines-hidden -flto=full")
+-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -flto=full -Wl,--gc-sections -Wl,--icf=safe -Wl,-Bsymbolic -Wl,--exclude-libs,libtgvoip.a,libtgcalls.a,libtgcalls_tp.a,libtgnet.a,libflac.a,librlottie.a,libsqlite.a,
++set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections -fvisibility=hidden ")
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections -fvisibility=hidden -fvisibility-inlines-hidden ")
++set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}  -Wl,--gc-sections  -Wl,-Bsymbolic -Wl,--exclude-libs,libtgvoip.a,libtgcalls.a,libtgcalls_tp.a,libtgnet.a,libflac.a,librlottie.a,libsqlite.a,
+ ${CMAKE_HOME_DIRECTORY}/ffmpeg/build/${ANDROID_ABI}/lib/libswscale.a,
+ ${CMAKE_HOME_DIRECTORY}/ffmpeg/build/${ANDROID_ABI}/lib/libavformat.a,
+ ${CMAKE_HOME_DIRECTORY}/ffmpeg/build/${ANDROID_ABI}/lib/libavcodec.a,
+@@ -676,5 +676,14 @@ target_link_libraries(${NATIVE_LIB}
+ #            c)
+ #endif()
+ 
+-include(AndroidNdkModules)
+-android_ndk_import_module_cpufeatures()
++# AndroidNdkModules was added in NDK r23; for older NDKs add cpufeatures manually.
++if(EXISTS "${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c")
++  add_library(cpufeatures STATIC
++    "${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c")
++  target_include_directories(cpufeatures PUBLIC
++    "${ANDROID_NDK}/sources/android/cpufeatures")
++  set_target_properties(cpufeatures PROPERTIES POSITION_INDEPENDENT_CODE ON)
++else()
++  include(AndroidNdkModules)
++  android_ndk_import_module_cpufeatures()
++endif()
+diff --git a/TMessagesProj/jni/build_boringssl.sh b/TMessagesProj/jni/build_boringssl.sh
+index 92a83ee1..de8cc366 100755
+--- a/TMessagesProj/jni/build_boringssl.sh
++++ b/TMessagesProj/jni/build_boringssl.sh
+@@ -3,7 +3,7 @@
+ set -e
+ 
+ 
+-if [[ -z "$(ANDROID_SDK)" ]]; then
++if [[ -z "${ANDROID_SDK}" ]]; then
+    cmakePath=""
+ else
+    cmakePath=`find $ANDROID_SDK/cmake -executable -type f | grep cmake$ | head -n 1`/
+diff --git a/TMessagesProj/jni/image.cpp b/TMessagesProj/jni/image.cpp
+index 4631dbc5..8797b6c0 100644
+--- a/TMessagesProj/jni/image.cpp
++++ b/TMessagesProj/jni/image.cpp
+@@ -1268,7 +1268,9 @@ static inline uint32_t bitmapBytesPerPixel(int32_t format) {
+         case ANDROID_BITMAP_FORMAT_RGBA_F16:
+             return 8;
+ 
++#ifdef ANDROID_BITMAP_FORMAT_RGBA_1010102
+         case ANDROID_BITMAP_FORMAT_RGBA_1010102:
++#endif
+             return 4;
+ 
+         default:
+diff --git a/TMessagesProj/jni/tde2e/build-tdlib.sh b/TMessagesProj/jni/tde2e/build-tdlib.sh
+index dbf7cfc2..8b4ea528 100755
+--- a/TMessagesProj/jni/tde2e/build-tdlib.sh
++++ b/TMessagesProj/jni/tde2e/build-tdlib.sh
+@@ -1,7 +1,7 @@
+ #!/usr/bin/env bash
+ 
+ ANDROID_SDK_ROOT=${1:-SDK}
+-ANDROID_NDK_VERSION=${2:-23.2.8568313}
++ANDROID_NDK_VERSION=${2:-21.4.7075529}
+ OPENSSL_INSTALL_DIR=${3:-third-party/openssl}
+ ANDROID_STL=${4:-c++_static}
+ TDLIB_INTERFACE=${5:-Java}
+@@ -16,7 +16,6 @@ if [ "$TDLIB_INTERFACE" != "Java" ] && [ "$TDLIB_INTERFACE" != "JSON" ] && [ "$T
+   exit 1
+ fi
+ 
+-source ./check-environment.sh || exit 1
+ 
+ if [ ! -d "$ANDROID_SDK_ROOT" ] ; then
+   echo "Error: directory \"$ANDROID_SDK_ROOT\" doesn't exist. Run ./fetch-sdk.sh first, or provide a valid path to Android SDK."
+@@ -31,7 +30,6 @@ fi
+ ANDROID_SDK_ROOT="$(cd "$(dirname -- "$ANDROID_SDK_ROOT")" >/dev/null; pwd -P)/$(basename -- "$ANDROID_SDK_ROOT")"
+ ANDROID_NDK_ROOT="$ANDROID_SDK_ROOT/ndk/$ANDROID_NDK_VERSION"
+ OPENSSL_INSTALL_DIR="$(cd "$(dirname -- "$OPENSSL_INSTALL_DIR")" >/dev/null; pwd -P)/$(basename -- "$OPENSSL_INSTALL_DIR")"
+-PATH=$ANDROID_SDK_ROOT/cmake/3.22.1/bin:$PATH
+ TDLIB_INTERFACE_OPTION=$([ "$TDLIB_INTERFACE" == "JSON" ] && echo "-DTD_ANDROID_JSON=ON" || [ "$TDLIB_INTERFACE" == "JSONJava" ] && echo "-DTD_ANDROID_JSON_JAVA=ON" || echo "")
+ 
+ cd $(dirname $0)
+@@ -51,7 +49,7 @@ for ABI in arm64-v8a armeabi-v7a x86_64 x86 ; do
+ 
+   mkdir -p build-$ABI-$TDLIB_INTERFACE || exit 1
+   cd build-$ABI-$TDLIB_INTERFACE
+-  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake" -DOPENSSL_ROOT_DIR="$OPENSSL_INSTALL_DIR/$ABI" -DCMAKE_BUILD_TYPE=RelWithDebInfo -GNinja -DANDROID_ABI=$ABI -DANDROID_STL=$ANDROID_STL -DANDROID_PLATFORM=android-16 $TDLIB_INTERFACE_OPTION .. || exit 1
++  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake" -DOPENSSL_ROOT_DIR="$OPENSSL_INSTALL_DIR/$ABI" -DCMAKE_BUILD_TYPE=RelWithDebInfo -GNinja -DCMAKE_MAKE_PROGRAM=ninja -DANDROID_LD=lld -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=BOTH -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH -DANDROID_ABI=$ABI -DANDROID_STL=$ANDROID_STL -DANDROID_PLATFORM=android-16 $TDLIB_INTERFACE_OPTION .. || exit 1
+   if [ "$TDLIB_INTERFACE" == "Java" ] || [ "$TDLIB_INTERFACE" == "JSONJava" ] ; then
+     cmake --build . --target tde2e || exit 1
+   fi
+diff --git a/TMessagesProj/jni/tde2e_source/CMake/TdSetUpCompiler.cmake b/TMessagesProj/jni/tde2e_source/CMake/TdSetUpCompiler.cmake
+index b110810e..33b254e4 100644
+--- a/TMessagesProj/jni/tde2e_source/CMake/TdSetUpCompiler.cmake
++++ b/TMessagesProj/jni/tde2e_source/CMake/TdSetUpCompiler.cmake
+@@ -64,7 +64,7 @@ function(td_set_up_compiler)
+       elseif (EMSCRIPTEN)
+         set(TD_LINKER_FLAGS "-Wl,--gc-sections")
+       elseif (ANDROID)
+-        set(TD_LINKER_FLAGS "-Wl,--gc-sections -Wl,--exclude-libs,ALL -Wl,--icf=safe")
++        set(TD_LINKER_FLAGS "-Wl,--gc-sections -Wl,--exclude-libs,ALL ")
+       else()
+         set(TD_LINKER_FLAGS "-Wl,--gc-sections -Wl,--exclude-libs,ALL")
+       endif()
+diff --git a/TMessagesProj/jni/tde2e_source/CMakeLists.txt b/TMessagesProj/jni/tde2e_source/CMakeLists.txt
+index 534b0719..6acf188e 100644
+--- a/TMessagesProj/jni/tde2e_source/CMakeLists.txt
++++ b/TMessagesProj/jni/tde2e_source/CMakeLists.txt
+@@ -185,8 +185,15 @@ if (NOT ZLIB_FOUND)
+   find_package(ZLIB)
+ endif()
+ if (NOT ZLIB_FOUND)
+-  message(WARNING "Can't find zlib: stop TDLib building")
+-  return()
++  if (ANDROID_NDK)
++    set(ZLIB_INCLUDE_DIR "${CMAKE_SYSROOT}/usr/include" CACHE PATH "" FORCE)
++    set(ZLIB_LIBRARY "z" CACHE STRING "" FORCE)
++    set(ZLIB_LIBRARIES "z")
++    set(ZLIB_FOUND 1)
++  elseif (NOT TD_GENERATE_SOURCE_FILES)
++    message(WARNING "Can't find zlib: stop TDLib building")
++    return()
++  endif()
+ endif()
+ 
+ if (NOT TDUTILS_MIME_TYPE OR NOT TDUTILS_USE_EXTERNAL_DEPENDENCIES)
+diff --git a/TMessagesProj/jni/tde2e_source/tdutils/CMakeLists.txt b/TMessagesProj/jni/tde2e_source/tdutils/CMakeLists.txt
+index 5576fed8..33acbae8 100644
+--- a/TMessagesProj/jni/tde2e_source/tdutils/CMakeLists.txt
++++ b/TMessagesProj/jni/tde2e_source/tdutils/CMakeLists.txt
+@@ -11,7 +11,14 @@ if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
+ endif()
+ 
+ if (NOT ZLIB_FOUND AND TDUTILS_USE_EXTERNAL_DEPENDENCIES)
+-  find_package(ZLIB)
++  if (ANDROID_NDK AND CMAKE_SYSROOT)
++    set(ZLIB_INCLUDE_DIR "${CMAKE_SYSROOT}/usr/include" CACHE PATH "" FORCE)
++    set(ZLIB_LIBRARY "z" CACHE STRING "" FORCE)
++    set(ZLIB_LIBRARIES "z")
++    set(ZLIB_FOUND 1)
++  else()
++    find_package(ZLIB)
++  endif()
+ endif()
+ if (ZLIB_FOUND)
+   set(TD_HAVE_ZLIB 1)
