@@ -2,6 +2,7 @@
   mk-apk-package,
   overrides-fromsrc,
   buildGradlePackage,
+  mergeLock,
   lib,
   jdk25_headless,
   gradle_9_4_1,
@@ -17,6 +18,8 @@ let
     s.platforms-android-36
     s.build-tools-35-0-0
     s.build-tools-36-0-0
+    s.ndk-29-0-14206865
+    s.cmake-4-1-2
   ]);
 
   gradle = gradle_9_4_1;
@@ -24,17 +27,20 @@ let
   appPackage = buildGradlePackage rec {
     pname = "nextcloud-android";
     # Go to https://github.com/nextcloud/android/releases/latest to see latest release.
-    version = "33.1.0";
+    version = "33.1.1";
     inherit gradle;
 
     src = fetchFromGitHub {
       owner = "nextcloud";
       repo = "android";
       tag = "stable-${version}";
-      hash = "sha256-Z0bqp2/0hMj8yaxytERdSqaBlLmVZzgzMRpHgx3Czvg=";
+      hash = "sha256-EY6vxc6XhCS7uzeZQ101JRBd7V9PFjIBtJF7Czyun6A=";
     };
 
-    lockFile = ./gradle.lock;
+    lockFile = mergeLock [
+      ./gradle.lock
+      ./more.gradle.lock
+    ];
     overrides = overrides-fromsrc;
     buildJdk = jdk25_headless;
 
@@ -56,6 +62,7 @@ let
       JAVA_HOME = jdk25_headless;
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+      ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     };
 
@@ -64,7 +71,11 @@ let
       export GRADLE_USER_HOME="$HOME/.gradle"
       export TERM=dumb
       mkdir -p "$ANDROID_USER_HOME"
-      echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+      cat > local.properties <<EOF
+      sdk.dir=${androidSdk}/share/android-sdk
+      cmake.dir=${androidSdk}/share/android-sdk/cmake/4.1.2
+      ndk.dir=${androidSdk}/share/android-sdk/ndk/29.0.14206865
+      EOF
       gradleFlagsArray+=(--no-daemon --init-script "$gradleInitScript" --offline)
     '';
 
