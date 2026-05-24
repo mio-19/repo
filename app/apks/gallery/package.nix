@@ -41,7 +41,14 @@ let
           "sizeInBytes": 5065244672,
           "minDeviceMemoryInGb": 8,
           "commitHash": "7c778c0c415a10ad518cf6f2ac21931610e0d223",
-          "llmSupportThinking": true,
+          "capabilities": [
+            "llm_thinking"
+          ],
+          "capabilityToTaskTypes": {
+            "llm_thinking": [
+              "llm_chat"
+            ]
+          },
           "defaultConfig": {
             "topK": 64,
             "topP": 0.95,
@@ -61,10 +68,17 @@ let
           "modelId": "typomonster/supergemma4-e4b-abliterated-litert-lm",
           "modelFile": "supergemma4-e4b-abliterated.litertlm",
           "description": "An abliterated variant of Gemma 4 E4B (supergemma4) ready for deployment on Android using LiteRT-LM.",
-          "sizeInBytes": 3654473271,
-          "minDeviceMemoryInGb": 8,
+          "sizeInBytes": 3654467584,
+          "minDeviceMemoryInGb": 12,
           "commitHash": "3cb37a0fe1688c84cdb9faaa273052d82b8ca68b",
-          "llmSupportThinking": true,
+          "capabilities": [
+            "llm_thinking"
+          ],
+          "capabilityToTaskTypes": {
+            "llm_thinking": [
+              "llm_chat"
+            ]
+          },
           "defaultConfig": {
             "topK": 64,
             "topP": 0.95,
