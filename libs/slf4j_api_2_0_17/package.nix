@@ -3,12 +3,13 @@
   lib,
   mkMavenPackageWithLock,
   buildMavenRepositoryFromLockFile,
-  maven,
+  maven_3_9_14,
 }:
 let
   inherit (buildMavenRepositoryFromLockFile.passthru) mergeDeps;
 in
 mkMavenPackageWithLock rec {
+  maven = maven_3_9_14;
   pname = "slf4j-api";
   version = "2.0.17";
 
@@ -20,7 +21,7 @@ mkMavenPackageWithLock rec {
   };
 
   lockFile = mergeDeps [
-    maven.passthru.mavenDeps
+    maven_3_9_14.passthru.mavenDeps
     ./mvn2nix-lock.json
   ];
   mvnFlags = [

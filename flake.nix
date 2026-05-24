@@ -7,7 +7,7 @@
     android-nixpkgs = {
       #url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
-      url = "github:tadfisher/android-nixpkgs/2026-05-21-stable";
+      url = "github:tadfisher/android-nixpkgs/2026-05-23-stable";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
@@ -176,9 +176,6 @@
                   hash = "sha256-okJ2JXObWNVPpRAbAbj9/ilKKOGR8GBJ010KelLDQqQ=";
                 })
               */
-            ]
-            ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
-              # apply unconditionally next time when we update nixpkgs
               # related to appstream : https://github.com/NixOS/nixpkgs/issues/514566
               (fetchpatch {
                 name = "libfyaml: fixed building issues";
@@ -205,7 +202,7 @@
             overlays = [
               (final: prev: rec {
                 inherit (selfPackages) ant;
-                maven = selfPackages.maven_3_9_14; # TODO: selfPackages.maven_3_9_16;
+                maven = selfPackages.maven_3_9_16;
                 gradle_7 = selfPackages.gradle_7_6_6;
                 gradle_7-unwrapped = gradle_7.unwrapped;
                 gradle_9 = selfPackages.gradle_9_5_1;
