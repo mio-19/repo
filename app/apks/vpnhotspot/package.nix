@@ -39,10 +39,6 @@ let
         tag = "v${finalAttrs.version}";
         hash = "sha256-706n9cGGZYxB3KG7/MWbsTfICfHJpaXygihBs+MeaGA=";
       };
-      patches = [
-        # foss.patch: https://github.com/Mygod/VPNHotspot.git vs https://codeberg.org/zinga/VPNHotspot.git v2.19.1
-        ./foss.patch
-      ];
 
       gradleBuildTask = ":mobile:assembleFreedomRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
@@ -71,12 +67,14 @@ let
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
       };
 
+      # foss.patch: https://github.com/Mygod/VPNHotspot.git vs https://codeberg.org/zinga/VPNHotspot.git v2.19.1
       postPatch = ''
-            substituteInPlace mobile/build.gradle.kts \
+        patch -p1 < "${./foss.patch}"
+        substituteInPlace mobile/build.gradle.kts \
               --replace-fail '    compileSdk = 36' '    compileSdk = 36
         ndkVersion = "27.3.13750724"'
 
-            substituteInPlace mobile/build.gradle.kts \
+        substituteInPlace mobile/build.gradle.kts \
               --replace-fail 'vcsInfo.include = true' 'vcsInfo.include = false'
       '';
 
