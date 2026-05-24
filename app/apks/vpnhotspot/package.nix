@@ -69,7 +69,7 @@ let
 
       # foss.patch: https://github.com/Mygod/VPNHotspot.git vs https://codeberg.org/zinga/VPNHotspot.git v2.19.1
       postPatch = ''
-        patch -p1 < "${./foss.patch}"
+        ${lib.getExe git} apply "${./foss.patch}"
         substituteInPlace mobile/build.gradle.kts \
               --replace-fail '    compileSdk = 36' '    compileSdk = 36
         ndkVersion = "27.3.13750724"'
