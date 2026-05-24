@@ -10,17 +10,17 @@ let
   appPackage =
     let
       youtubeApk = fetchurl {
-        # https://youtube.en.uptodown.com/android/download/1165342360
-        name = "youtube-20.47.62.apk";
-        url = "https://web.archive.org/web/20260507095312if_/https://dw.uptodown.net/dwn/IdhnqP6xT2dcasDhCpJg-1yfGw-8LuHpOvCHJQPRcEQRfjAshlfmJk5eMZEMFkLUFiDymwMcjGX7LS7GFgL8CFrZJ8ejG9wR6IeOm26dQIUKipReOhMLgwtXT_EPK3wJ/nI3U-UOyc3J3D4GJmZrN6DPh42TLqFmNYYdo4bpI_Jyq5F6lzwfaY4aqHGGO8tPIt3hX1qIW8eX7nsPCnJDZAJbKyrLmPaSdrKxGHc4KLCsZ2d9Wb6KcSM0YK94vnXis/E1bjO47fwVYrrSIV5f4pB0v9tSuWUqMpJWHBjjQNdawIIHSdbOuhoTnLW-CHFaCkUD9_ZmWOQC1WPMm-ARgmOw==/youtube-20-47-62.apk";
-        hash = "sha256-5RijXuGlSq1lOgOU3OlZt3D1bckVmGoZng33GvNkr+0=";
+        # https://youtube.en.uptodown.com/android/download/1113555850
+        name = "youtube-20.40.45.apk";
+        url = "https://files.catbox.moe/iv053i.apk";
+        hash = "sha256-t2WdpJKh69i9fOopCb5O4fWOAKJYbWWhyRsuHl7GrNE=";
       };
 
       revancedBundle = "${revanced-patches}/app/revanced/patches/6.1.0/patches-6.1.0.rvp";
     in
     stdenv.mkDerivation {
       pname = "youtube-revanced";
-      version = "20.47.62-patches-6.1.0";
+      version = "20.40.45-patches-6.1.0";
 
       dontUnpack = true;
 
