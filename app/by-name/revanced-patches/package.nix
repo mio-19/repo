@@ -32,6 +32,10 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-gXvEntqX7mLlLyWVa3WRqQGNr3rDmuHn1ZqGO9Kzptg=";
   };
 
+  patches = [
+    ./disable-youtube-environment-and-gmscore-update-checks.patch
+  ];
+
   gradleBuildTask = "publish";
   gradleUpdateTask = finalAttrs.gradleBuildTask;
 

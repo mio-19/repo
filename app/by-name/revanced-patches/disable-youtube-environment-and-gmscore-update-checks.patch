@@ -1,0 +1,16 @@
+diff --git a/extensions/shared/library/src/main/java/app/revanced/extension/shared/GmsCoreSupport.java b/extensions/shared/library/src/main/java/app/revanced/extension/shared/GmsCoreSupport.java
+index fb7e689..d6610db 100644
+--- a/extensions/shared/library/src/main/java/app/revanced/extension/shared/GmsCoreSupport.java
++++ b/extensions/shared/library/src/main/java/app/revanced/extension/shared/GmsCoreSupport.java
+@@ -146 +145,0 @@ public class GmsCoreSupport {
+-            checkUpdates(context);
+diff --git a/patches/src/main/kotlin/app/revanced/patches/youtube/misc/settings/SettingsPatch.kt b/patches/src/main/kotlin/app/revanced/patches/youtube/misc/settings/SettingsPatch.kt
+index dd3dd01..910ec8d 100644
+--- a/patches/src/main/kotlin/app/revanced/patches/youtube/misc/settings/SettingsPatch.kt
++++ b/patches/src/main/kotlin/app/revanced/patches/youtube/misc/settings/SettingsPatch.kt
+@@ -20 +19,0 @@ import app.revanced.patches.shared.misc.settings.settingsPatch
+-import app.revanced.patches.youtube.misc.check.checkEnvironmentPatch
+@@ -171,3 +169,0 @@ val settingsPatch = bytecodePatch(
+-        // Currently there is no easy way to make a mandatory patch,
+-        // so for now this is a dependent of this patch.
+-        checkEnvironmentPatch,
