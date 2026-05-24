@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk21_headless,
-  gradle_8_14_3,
+  gradle_9_4_1,
   stdenv,
   fetchgit,
   writableTmpDirAsHomeHook,
@@ -16,17 +16,17 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
-        s.build-tools-35-0-0
+        s.platforms-android-36-1
         s.build-tools-36-0-0
         s.ndk-27-3-13750724
         s.cmake-3-31-6
       ]);
 
-      gradle = gradle_8_14_3;
+      gradle = gradle_9_4_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "vpnhotspot";
-      version = "2.19.1";
+      version = "2.19.2";
       /*
         src = fetchgit {
           url = "https://codeberg.org/zinga/VPNHotspot.git";
@@ -37,7 +37,7 @@ let
       src = fetchgit {
         url = "https://github.com/Mygod/VPNHotspot.git";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-706n9cGGZYxB3KG7/MWbsTfICfHJpaXygihBs+MeaGA=";
+        hash = "sha256-Oj4L//G9Ichm02jOyCwmMhLJBa9bBN7PM38DVUiLK8s=";
       };
 
       gradleBuildTask = ":mobile:assembleFreedomRelease";
@@ -59,7 +59,7 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk21_headless;
+        JAVA_HOME = jdk21_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
@@ -67,9 +67,12 @@ let
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
       };
 
-      # foss.patch: https://github.com/Mygod/VPNHotspot.git vs https://codeberg.org/zinga/VPNHotspot.git v2.19.1
+      # foss.patch: https://github.com/Mygod/VPNHotspot.git v2.19.2 plus the Codeberg FOSS delta.
       postPatch = ''
         ${lib.getExe git} apply "${./foss.patch}"
+        substituteInPlace gradle/gradle-daemon-jvm.properties \
+              --replace-fail 'toolchainVendor=JETBRAINS' ""
+
         substituteInPlace mobile/build.gradle.kts \
               --replace-fail '    compileSdk = 36' '    compileSdk = 36
         ndkVersion = "27.3.13750724"'
@@ -89,7 +92,7 @@ let
       gradleFlags = [
         "-xlintVitalFreedomRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
