@@ -55,6 +55,29 @@ let
             "llm_prompt_lab",
             "llm_agent_chat"
           ]
+        },
+        {
+          "name": "supergemma4-e4b-abliterated",
+          "modelId": "typomonster/supergemma4-e4b-abliterated-litert-lm",
+          "modelFile": "supergemma4-e4b-abliterated.litertlm",
+          "description": "An abliterated variant of Gemma 4 E4B (supergemma4) ready for deployment on Android using LiteRT-LM.",
+          "sizeInBytes": 3654473271,
+          "minDeviceMemoryInGb": 8,
+          "commitHash": "3cb37a0fe1688c84cdb9faaa273052d82b8ca68b",
+          "llmSupportThinking": true,
+          "defaultConfig": {
+            "topK": 64,
+            "topP": 0.95,
+            "temperature": 1.0,
+            "maxContextLength": 32000,
+            "maxTokens": 4000,
+            "accelerators": "gpu,cpu"
+          },
+          "taskTypes": [
+            "llm_chat",
+            "llm_prompt_lab",
+            "llm_agent_chat"
+          ]
         }
       ]
     ' ${upstreamAllowlist} > "$out"
