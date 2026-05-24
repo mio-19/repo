@@ -26,7 +26,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "vpnhotspot";
-      version = "2.19.2";
+      version = "2.19.1";
       /*
         src = fetchgit {
           url = "https://codeberg.org/zinga/VPNHotspot.git";
@@ -37,7 +37,7 @@ let
       src = fetchgit {
         url = "https://github.com/Mygod/VPNHotspot.git";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-Oj4L//G9Ichm02jOyCwmMhLJBa9bBN7PM38DVUiLK8s=";
+        hash = "sha256-706n9cGGZYxB3KG7/MWbsTfICfHJpaXygihBs+MeaGA=";
       };
 
       gradleBuildTask = ":mobile:assembleFreedomRelease";
