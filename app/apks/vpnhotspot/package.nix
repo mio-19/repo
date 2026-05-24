@@ -27,12 +27,22 @@ let
     stdenv.mkDerivation (finalAttrs: {
       pname = "vpnhotspot";
       version = "2.19.1";
-
+      /*
+        src = fetchgit {
+          url = "https://codeberg.org/zinga/VPNHotspot.git";
+          rev = "db3dcedc3c2b40929e3e0c04fed457cf5003457f";
+          hash = "sha256-fCMve90QwT2K0axT1JHZ774ciko5+XSo4hZou+KfHQk=";
+        };
+      */
       src = fetchgit {
-        url = "https://codeberg.org/zinga/VPNHotspot.git";
-        rev = "db3dcedc3c2b40929e3e0c04fed457cf5003457f";
-        hash = "sha256-fCMve90QwT2K0axT1JHZ774ciko5+XSo4hZou+KfHQk=";
+        url = "https://github.com/Mygod/VPNHotspot.git";
+        tag = "v${finalAttrs.version}";
+        hash = "sha256-706n9cGGZYxB3KG7/MWbsTfICfHJpaXygihBs+MeaGA=";
       };
+      patches = [
+        # foss.patch: https://github.com/Mygod/VPNHotspot.git vs https://codeberg.org/zinga/VPNHotspot.git v2.19.1
+        ./foss.patch
+      ];
 
       gradleBuildTask = ":mobile:assembleFreedomRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
