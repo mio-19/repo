@@ -1,5 +1,5 @@
 diff --git a/README.md b/README.md
-index 4aa3832e..2347cd63 100644
+index 21b58263..0dd41e6e 100644
 --- a/README.md
 +++ b/README.md
 @@ -11,6 +11,10 @@
@@ -14,7 +14,7 @@ index 4aa3832e..2347cd63 100644
  
  * Connecting things that don't support VPN like Chromecasts behind corporate firewalls;
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 33e92070..a3e1808e 100644
+index 819848a1..ca1ac309 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -1,8 +1,8 @@
@@ -2029,27 +2029,26 @@ index 00000000..e91b71e4
 +VPN Hotspot
 \ No newline at end of file
 diff --git a/mobile/build.gradle.kts b/mobile/build.gradle.kts
-index aec241bc..0112729c 100644
+index 9a87145b..1b088eaf 100644
 --- a/mobile/build.gradle.kts
 +++ b/mobile/build.gradle.kts
-@@ -1,12 +1,12 @@
- import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+@@ -9,11 +9,11 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
  
  plugins {
--    alias(libs.plugins.aboutLibraries)
-+    //alias(libs.plugins.aboutLibraries)
      alias(libs.plugins.android.application)
 -    alias(libs.plugins.crashlytics)
 +    //alias(libs.plugins.crashlytics)
-     alias(libs.plugins.kotlin.compose)
      alias(libs.plugins.ksp)
 -    alias(libs.plugins.google.services)
 +    //alias(libs.plugins.google.services)
-     kotlin("android")
+     alias(libs.plugins.kotlin.android)
+-    id("com.google.android.gms.oss-licenses-plugin")
++    //id("com.google.android.gms.oss-licenses-plugin")
      kotlin("kapt")
      id("kotlin-parcelize")
-@@ -58,6 +58,14 @@ android {
-     ))
+ }
+@@ -100,6 +100,13 @@ android {
+     )
      lint.warning += "FullBackupContent"
      lint.warning += "UnsafeOptInUsageError"
 +    flavorDimensions.add("freedom")
@@ -2057,21 +2056,12 @@ index aec241bc..0112729c 100644
 +        create("freedom") {
 +            applicationId = "be.mygod.vpnhotspot_foss"
 +            dimension = "freedom"
-+            //resourceConfigurations.addAll(arrayOf("es", "it", "pt-rBR", "ru", "zh-rCN", "zh-rTW"))
 +        }
 +    }
-     sourceSets.getByName("androidTest").assets.srcDir("$projectDir/schemas")
+     sourceSets.getByName("androidTest").assets.directories.add("$projectDir/schemas")
      externalNativeBuild.cmake.path = file("src/main/cpp/CMakeLists.txt")
  }
-@@ -71,15 +79,15 @@ kotlin.compilerOptions.jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()
- dependencies {
-     coreLibraryDesugaring(libs.desugar.jdk.libs)
-     ksp(libs.room.compiler)
--    implementation(libs.aboutlibraries.compose.m3)
-+    //implementation(libs.aboutlibraries.compose.m3)
-     implementation(libs.activity.compose)
-     implementation(libs.browser)
-     implementation(libs.core.i18n)
+@@ -126,8 +133,8 @@ dependencies {
      implementation(libs.core.ktx)
      implementation(libs.dexmaker)
      implementation(libs.dnsjava)
@@ -2079,23 +2069,89 @@ index aec241bc..0112729c 100644
 -    implementation(libs.firebase.crashlytics)
 +    //implementation(libs.firebase.analytics)
 +    //implementation(libs.firebase.crashlytics)
-     implementation(libs.foundation.layout)
      implementation(libs.fragment.ktx)
      implementation(libs.hiddenapibypass)
-@@ -91,7 +99,7 @@ dependencies {
+     implementation(libs.ktor.network.jvm)
+@@ -137,7 +144,7 @@ dependencies {
+     implementation(libs.lifecycle.livedata.ktx)
      implementation(libs.lifecycle.runtime.ktx)
      implementation(libs.material)
-     implementation(libs.material3.android)
 -    implementation(libs.play.services.oss.licenses)
 +    //implementation(libs.play.services.oss.licenses)
      implementation(libs.preference)
      implementation(libs.preferencex.simplemenu)
      implementation(libs.room.ktx)
+diff --git a/mobile/build.gradle.kts.rej b/mobile/build.gradle.kts.rej
+new file mode 100644
+index 00000000..373aab9b
+--- /dev/null
++++ b/mobile/build.gradle.kts.rej
+@@ -0,0 +1,60 @@
++diff a/mobile/build.gradle.kts b/mobile/build.gradle.kts	(rejected hunks)
++@@ -1,12 +1,12 @@
++ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
++ 
++ plugins {
++-    alias(libs.plugins.aboutLibraries)
+++    //alias(libs.plugins.aboutLibraries)
++     alias(libs.plugins.android.application)
++-    alias(libs.plugins.crashlytics)
+++    //alias(libs.plugins.crashlytics)
++     alias(libs.plugins.kotlin.compose)
++     alias(libs.plugins.ksp)
++-    alias(libs.plugins.google.services)
+++    //alias(libs.plugins.google.services)
++     kotlin("android")
++     kotlin("kapt")
++     id("kotlin-parcelize")
++@@ -58,6 +58,14 @@ android {
++     ))
++     lint.warning += "FullBackupContent"
++     lint.warning += "UnsafeOptInUsageError"
+++    flavorDimensions.add("freedom")
+++    productFlavors {
+++        create("freedom") {
+++            applicationId = "be.mygod.vpnhotspot_foss"
+++            dimension = "freedom"
+++            //resourceConfigurations.addAll(arrayOf("es", "it", "pt-rBR", "ru", "zh-rCN", "zh-rTW"))
+++        }
+++    }
++     sourceSets.getByName("androidTest").assets.srcDir("$projectDir/schemas")
++     externalNativeBuild.cmake.path = file("src/main/cpp/CMakeLists.txt")
++ }
++@@ -71,15 +79,15 @@ kotlin.compilerOptions.jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()
++ dependencies {
++     coreLibraryDesugaring(libs.desugar.jdk.libs)
++     ksp(libs.room.compiler)
++-    implementation(libs.aboutlibraries.compose.m3)
+++    //implementation(libs.aboutlibraries.compose.m3)
++     implementation(libs.activity.compose)
++     implementation(libs.browser)
++     implementation(libs.core.i18n)
++     implementation(libs.core.ktx)
++     implementation(libs.dexmaker)
++     implementation(libs.dnsjava)
++-    implementation(libs.firebase.analytics)
++-    implementation(libs.firebase.crashlytics)
+++    //implementation(libs.firebase.analytics)
+++    //implementation(libs.firebase.crashlytics)
++     implementation(libs.foundation.layout)
++     implementation(libs.fragment.ktx)
++     implementation(libs.hiddenapibypass)
++@@ -91,7 +99,7 @@ dependencies {
++     implementation(libs.lifecycle.runtime.ktx)
++     implementation(libs.material)
++     implementation(libs.material3.android)
++-    implementation(libs.play.services.oss.licenses)
+++    //implementation(libs.play.services.oss.licenses)
++     implementation(libs.preference)
++     implementation(libs.preferencex.simplemenu)
++     implementation(libs.room.ktx)
 diff --git a/mobile/src/main/AndroidManifest.xml b/mobile/src/main/AndroidManifest.xml
-index 1172d87d..0ead4f7b 100644
+index e6a751f2..51e2a6ac 100644
 --- a/mobile/src/main/AndroidManifest.xml
 +++ b/mobile/src/main/AndroidManifest.xml
-@@ -267,7 +267,7 @@
+@@ -216,7 +216,7 @@
  
          <provider
              android:name="androidx.core.content.FileProvider"
@@ -2104,109 +2160,101 @@ index 1172d87d..0ead4f7b 100644
              android:exported="false"
              android:grantUriPermissions="true">
              <meta-data
-diff --git a/mobile/src/main/java/be/mygod/vpnhotspot/AboutLibrariesActivity.kt b/mobile/src/main/java/be/mygod/vpnhotspot/AboutLibrariesActivity.kt
-index 87be3508..779de04c 100644
---- a/mobile/src/main/java/be/mygod/vpnhotspot/AboutLibrariesActivity.kt
-+++ b/mobile/src/main/java/be/mygod/vpnhotspot/AboutLibrariesActivity.kt
-@@ -22,15 +22,11 @@ import androidx.compose.ui.platform.UriHandler
- import androidx.compose.ui.res.colorResource
- import androidx.compose.ui.res.stringResource
- import be.mygod.vpnhotspot.util.launchUrl
--import com.mikepenz.aboutlibraries.Libs
--import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
--import com.mikepenz.aboutlibraries.util.withContext
--
- class AboutLibrariesActivity : ComponentActivity(), UriHandler {
-     @OptIn(ExperimentalMaterial3Api::class)
-     override fun onCreate(savedInstanceState: Bundle?) {
-         super.onCreate(savedInstanceState)
--        enableEdgeToEdge()
-+        /*enableEdgeToEdge()
-         setContent {
-             MaterialTheme(
-                 if (isSystemInDarkTheme()) darkColorScheme(
-@@ -60,7 +56,7 @@ class AboutLibrariesActivity : ComponentActivity(), UriHandler {
-                     }
-                 }
-             }
--        }
-+        }*/
-     }
- 
-     override fun openUri(uri: String) = launchUrl(uri)
 diff --git a/mobile/src/main/java/be/mygod/vpnhotspot/App.kt b/mobile/src/main/java/be/mygod/vpnhotspot/App.kt
-index 5cbd9364..2fafb618 100644
+index 2ce320c3..bec87016 100644
 --- a/mobile/src/main/java/be/mygod/vpnhotspot/App.kt
 +++ b/mobile/src/main/java/be/mygod/vpnhotspot/App.kt
-@@ -29,13 +29,6 @@ import be.mygod.vpnhotspot.util.DeviceStorageApp
+@@ -30,12 +30,6 @@ import be.mygod.vpnhotspot.util.DeviceStorageApp
  import be.mygod.vpnhotspot.util.Services
  import be.mygod.vpnhotspot.util.privateLookup
  import be.mygod.vpnhotspot.widget.SmartSnackbar
 -import com.google.android.gms.dynamite.DynamiteModule
+-import com.google.firebase.analytics.FirebaseAnalytics
 -import com.google.firebase.analytics.ParametersBuilder
--import com.google.firebase.analytics.ktx.analytics
 -import com.google.firebase.analytics.logEvent
 -import com.google.firebase.crashlytics.FirebaseCrashlytics
--import com.google.firebase.ktx.Firebase
 -import com.google.firebase.provider.FirebaseInitProvider
  import kotlinx.coroutines.DEBUG_PROPERTY_NAME
  import kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON
  import kotlinx.coroutines.GlobalScope
-@@ -63,31 +56,23 @@ class App : Application() {
+@@ -63,11 +57,11 @@ class App : Application() {
  
          // overhead of debug mode is minimal: https://github.com/Kotlin/kotlinx.coroutines/blob/f528898/docs/debugging.md#debug-mode
          System.setProperty(DEBUG_PROPERTY_NAME, DEBUG_PROPERTY_VALUE_ON)
--        DynamiteModule::class.java.getDeclaredField("zzf").apply { isAccessible = true }.set(null, false)
-+        //DynamiteModule::class.java.getDeclaredField("zzf").apply { isAccessible = true }.set(null, false)
+-        DynamiteModule::class.java.getDeclaredField("zzg").apply { isAccessible = true }.set(null, false)
++        //DynamiteModule::class.java.getDeclaredField("zzg").apply { isAccessible = true }.set(null, false)
          // call super.attachInfo get around ProviderInfo check
 -        FirebaseInitProvider::class.java.privateLookup().findSpecial(ContentProvider::class.java, "attachInfo",
 -            MethodType.methodType(Void.TYPE, Context::class.java, ProviderInfo::class.java),
 -            FirebaseInitProvider::class.java).bindTo(FirebaseInitProvider()).invokeWithArguments(deviceStorage, null)
++        //FirebaseInitProvider::class.java.privateLookup().findSpecial(ContentProvider::class.java, "attachInfo",
++            //MethodType.methodType(Void.TYPE, Context::class.java, ProviderInfo::class.java),
++            //FirebaseInitProvider::class.java).bindTo(FirebaseInitProvider()).invokeWithArguments(deviceStorage, null)
+         val isDebug = try {
+             when {
+                 packageManager.hasSigningCertificate(packageName, byteArrayOf(0x72, 0x4f, 0xff.toByte(), 0xe1.toByte(), 0x7e, 0x11, 0x88.toByte(), 0x53, 0x3c, 0x0d, 0x6a, 0x7a, 0xf3.toByte(), 0xc1.toByte(), 0xdc.toByte(), 0x12, 0x94.toByte(), 0x7c, 0xb5.toByte(), 0x54, 0x32, 0x3a, 0xf2.toByte(), 0xb1.toByte(), 0x87.toByte(), 0xc1.toByte(), 0xf5.toByte(), 0xec.toByte(), 0x19, 0x63, 0xf2.toByte(), 0xb7.toByte()), PackageManager.CERT_INPUT_SHA256) -> false
+@@ -78,30 +72,29 @@ class App : Application() {
+             e.printStackTrace()
+             null
+         }
 -        FirebaseCrashlytics.getInstance().apply {
--            setCustomKey("uname.release", Os.uname().release)
--            setCustomKey("build", Build.DISPLAY)
--            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) setCustomKey("extension_s",
--                SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S))
++        //FirebaseCrashlytics.getInstance().apply {
+             if (isDebug != null) {
+-                setCustomKey("debug", isDebug)
+-                setCustomKey("git", BuildGit.VALUE)
+-                setCustomKey("uname.release", Os.uname().release)
+-                setCustomKey("build", Build.DISPLAY)
+-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+-                    setCustomKey("extension_s", SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S))
++                //setCustomKey("debug", isDebug)
++                //setCustomKey("git", BuildGit.VALUE)
++                //setCustomKey("uname.release", Os.uname().release)
++                //setCustomKey("build", Build.DISPLAY)
++                //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
++                    //setCustomKey("extension_s", SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S))
+                 }
+-            } else isCrashlyticsCollectionEnabled = false
 -        }
-+
++            } else /*isCrashlyticsCollectionEnabled = false*/ {}
          Timber.plant(object : Timber.DebugTree() {
              @SuppressLint("LogNotTimber")
              override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
                  if (t == null) {
                      if (priority != Log.DEBUG || BuildConfig.DEBUG) Log.println(priority, tag, message)
 -                    FirebaseCrashlytics.getInstance().log("${"XXVDIWEF".getOrElse(priority) { 'X' }}/$tag: $message")
-+                    //FirebaseCrashlytics.getInstance().log("${"XXVDIWEF".getOrElse(priority) { 'X' }}/$tag: $message")
++                    //FirebaseCrashlytics.getInstance().log("${"XXVDIWEF".getOrElse(priority) { \'X\' }}/$tag: $message")
                  } else {
                      if (priority >= Log.WARN || priority == Log.DEBUG) {
                          Log.println(priority, tag, message)
                          Log.w(tag, message, t)
                      }
--                    if (priority >= Log.INFO && t !is NoShellException) {
+                     if (priority >= Log.INFO && t !is NoShellException) {
 -                        FirebaseCrashlytics.getInstance().recordException(t)
--                    }
-+                    //if (priority >= Log.INFO && t !is NoShellException) {
 +                        //FirebaseCrashlytics.getInstance().recordException(t)
-+                    //}
+                     }
                  }
              }
-         })
-@@ -111,11 +96,14 @@ class App : Application() {
+@@ -126,11 +119,9 @@ class App : Application() {
       * This method is used to log "expected" and well-handled errors, i.e. we care less about logs, etc.
       * logException is inappropriate sometimes because it flushes all logs that could be used to investigate other bugs.
       */
 -    fun logEvent(@Size(min = 1L, max = 40L) event: String, block: ParametersBuilder.() -> Unit = { }) {
-+    /*fun logEvent(@Size(min = 1L, max = 40L) event: String, block: ParametersBuilder.() -> Unit = { }) {
-         Firebase.analytics.logEvent(event) {
-             block(this)
-             Timber.i(if (bundle.isEmpty) event else "$event, extras: $bundle")
-         }
-+    }*/
-+    fun logEvent(@Size(min = 1L, max = 40L) event: String, t : Throwable) {
+-        FirebaseAnalytics.getInstance(app).logEvent(event) {
+-            block(this)
+-            Timber.i(if (bundle.isEmpty) event else "$event, extras: $bundle")
+-        }
++    /*fun logEvent(@Size(min = 1L, max = 40L) event: String, block: ParametersBuilder.() -> Unit = { }) { ... }*/
++    fun logEvent(@Size(min = 1L, max = 40L) event: String, t : Throwable? = null) {
 +        Timber.i(if (t == null) event else "$event, extras: $t")
      }
  
      /**
-@@ -128,7 +116,7 @@ class App : Application() {
+@@ -139,11 +130,11 @@ class App : Application() {
+      * https://android.googlesource.com/platform/frameworks/opt/net/wifi/+/53e0284/service/java/com/android/server/wifi/WifiSettingsStore.java#228
+      */
+     inline fun <reified T> startServiceWithLocation(context: Context) {
+-        if (Build.VERSION.SDK_INT < 33 && location?.isLocationEnabled != true) try {
++        //if (Build.VERSION.SDK_INT < 33 && location?.isLocationEnabled != true) try {
              context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
              Toast.makeText(context, R.string.tethering_location_off, Toast.LENGTH_LONG).show()
          } catch (e: ActivityNotFoundException) {
@@ -2215,24 +2263,119 @@ index 5cbd9364..2fafb618 100644
              SmartSnackbar.make(R.string.tethering_location_off).show()
          } else context.startForegroundService(Intent(context, T::class.java))
      }
+diff --git a/mobile/src/main/java/be/mygod/vpnhotspot/App.kt.rej b/mobile/src/main/java/be/mygod/vpnhotspot/App.kt.rej
+new file mode 100644
+index 00000000..a265e5c6
+--- /dev/null
++++ b/mobile/src/main/java/be/mygod/vpnhotspot/App.kt.rej
+@@ -0,0 +1,69 @@
++diff a/mobile/src/main/java/be/mygod/vpnhotspot/App.kt b/mobile/src/main/java/be/mygod/vpnhotspot/App.kt	(rejected hunks)
++@@ -29,13 +29,6 @@ import be.mygod.vpnhotspot.util.DeviceStorageApp
++ import be.mygod.vpnhotspot.util.Services
++ import be.mygod.vpnhotspot.util.privateLookup
++ import be.mygod.vpnhotspot.widget.SmartSnackbar
++-import com.google.android.gms.dynamite.DynamiteModule
++-import com.google.firebase.analytics.ParametersBuilder
++-import com.google.firebase.analytics.ktx.analytics
++-import com.google.firebase.analytics.logEvent
++-import com.google.firebase.crashlytics.FirebaseCrashlytics
++-import com.google.firebase.ktx.Firebase
++-import com.google.firebase.provider.FirebaseInitProvider
++ import kotlinx.coroutines.DEBUG_PROPERTY_NAME
++ import kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON
++ import kotlinx.coroutines.GlobalScope
++@@ -63,31 +56,23 @@ class App : Application() {
++ 
++         // overhead of debug mode is minimal: https://github.com/Kotlin/kotlinx.coroutines/blob/f528898/docs/debugging.md#debug-mode
++         System.setProperty(DEBUG_PROPERTY_NAME, DEBUG_PROPERTY_VALUE_ON)
++-        DynamiteModule::class.java.getDeclaredField("zzf").apply { isAccessible = true }.set(null, false)
+++        //DynamiteModule::class.java.getDeclaredField("zzf").apply { isAccessible = true }.set(null, false)
++         // call super.attachInfo get around ProviderInfo check
++-        FirebaseInitProvider::class.java.privateLookup().findSpecial(ContentProvider::class.java, "attachInfo",
++-            MethodType.methodType(Void.TYPE, Context::class.java, ProviderInfo::class.java),
++-            FirebaseInitProvider::class.java).bindTo(FirebaseInitProvider()).invokeWithArguments(deviceStorage, null)
++-        FirebaseCrashlytics.getInstance().apply {
++-            setCustomKey("uname.release", Os.uname().release)
++-            setCustomKey("build", Build.DISPLAY)
++-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) setCustomKey("extension_s",
++-                SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S))
++-        }
+++
++         Timber.plant(object : Timber.DebugTree() {
++             @SuppressLint("LogNotTimber")
++             override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
++                 if (t == null) {
++                     if (priority != Log.DEBUG || BuildConfig.DEBUG) Log.println(priority, tag, message)
++-                    FirebaseCrashlytics.getInstance().log("${"XXVDIWEF".getOrElse(priority) { 'X' }}/$tag: $message")
+++                    //FirebaseCrashlytics.getInstance().log("${"XXVDIWEF".getOrElse(priority) { 'X' }}/$tag: $message")
++                 } else {
++                     if (priority >= Log.WARN || priority == Log.DEBUG) {
++                         Log.println(priority, tag, message)
++                         Log.w(tag, message, t)
++                     }
++-                    if (priority >= Log.INFO && t !is NoShellException) {
++-                        FirebaseCrashlytics.getInstance().recordException(t)
++-                    }
+++                    //if (priority >= Log.INFO && t !is NoShellException) {
+++                        //FirebaseCrashlytics.getInstance().recordException(t)
+++                    //}
++                 }
++             }
++         })
++@@ -111,11 +96,14 @@ class App : Application() {
++      * This method is used to log "expected" and well-handled errors, i.e. we care less about logs, etc.
++      * logException is inappropriate sometimes because it flushes all logs that could be used to investigate other bugs.
++      */
++-    fun logEvent(@Size(min = 1L, max = 40L) event: String, block: ParametersBuilder.() -> Unit = { }) {
+++    /*fun logEvent(@Size(min = 1L, max = 40L) event: String, block: ParametersBuilder.() -> Unit = { }) {
++         Firebase.analytics.logEvent(event) {
++             block(this)
++             Timber.i(if (bundle.isEmpty) event else "$event, extras: $bundle")
++         }
+++    }*/
+++    fun logEvent(@Size(min = 1L, max = 40L) event: String, t : Throwable) {
+++        Timber.i(if (t == null) event else "$event, extras: $t")
++     }
++ 
++     /**
 diff --git a/mobile/src/main/java/be/mygod/vpnhotspot/SettingsPreferenceFragment.kt b/mobile/src/main/java/be/mygod/vpnhotspot/SettingsPreferenceFragment.kt
-index de48f917..b271a97d 100644
+index 17ed44eb..0025bd69 100644
 --- a/mobile/src/main/java/be/mygod/vpnhotspot/SettingsPreferenceFragment.kt
 +++ b/mobile/src/main/java/be/mygod/vpnhotspot/SettingsPreferenceFragment.kt
-@@ -138,10 +138,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
+@@ -139,10 +139,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
              requireContext().launchUrl("https://mygod.be/donate/")
              true
          }
 -        findPreference<Preference>("misc.licenses")!!.setOnPreferenceClickListener {
--            startActivity(Intent(requireContext(), AboutLibrariesActivity::class.java))
 +        /*findPreference<Preference>("misc.licenses")!!.setOnPreferenceClickListener {
-+            startActivity(Intent(context, OssLicensesMenuActivity::class.java))
+             startActivity(Intent(requireContext(), OssLicensesMenuActivity::class.java))
              true
 -        }
 +        }*/
      }
  
      override fun onDisplayPreferenceDialog(preference: Preference) = when (preference.key) {
+diff --git a/mobile/src/main/java/be/mygod/vpnhotspot/SettingsPreferenceFragment.kt.rej b/mobile/src/main/java/be/mygod/vpnhotspot/SettingsPreferenceFragment.kt.rej
+new file mode 100644
+index 00000000..40e78cbd
+--- /dev/null
++++ b/mobile/src/main/java/be/mygod/vpnhotspot/SettingsPreferenceFragment.kt.rej
+@@ -0,0 +1,15 @@
++diff a/mobile/src/main/java/be/mygod/vpnhotspot/SettingsPreferenceFragment.kt b/mobile/src/main/java/be/mygod/vpnhotspot/SettingsPreferenceFragment.kt	(rejected hunks)
++@@ -138,10 +138,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
++             requireContext().launchUrl("https://mygod.be/donate/")
++             true
++         }
++-        findPreference<Preference>("misc.licenses")!!.setOnPreferenceClickListener {
++-            startActivity(Intent(requireContext(), AboutLibrariesActivity::class.java))
+++        /*findPreference<Preference>("misc.licenses")!!.setOnPreferenceClickListener {
+++            startActivity(Intent(context, OssLicensesMenuActivity::class.java))
++             true
++-        }
+++        }*/
++     }
++ 
++     override fun onDisplayPreferenceDialog(preference: Preference) = when (preference.key) {
 diff --git a/mobile/src/main/java/be/mygod/vpnhotspot/manage/ManageBar.kt b/mobile/src/main/java/be/mygod/vpnhotspot/manage/ManageBar.kt
 index 4ec1b51f..83d4055d 100644
 --- a/mobile/src/main/java/be/mygod/vpnhotspot/manage/ManageBar.kt
@@ -2256,10 +2399,10 @@ index 4ec1b51f..83d4055d 100644
          }
      }
 diff --git a/mobile/src/main/java/be/mygod/vpnhotspot/manage/TetherManager.kt b/mobile/src/main/java/be/mygod/vpnhotspot/manage/TetherManager.kt
-index 08823300..7bde0c13 100644
+index 318457ca..018cc6b2 100644
 --- a/mobile/src/main/java/be/mygod/vpnhotspot/manage/TetherManager.kt
 +++ b/mobile/src/main/java/be/mygod/vpnhotspot/manage/TetherManager.kt
-@@ -62,7 +62,6 @@ sealed class TetherManager(protected val parent: TetheringFragment) : Manager(),
+@@ -63,7 +63,6 @@ sealed class TetherManager(protected val parent: TetheringFragment) : Manager(),
                          "package:${mainActivity.packageName}".toUri()))
                  return
              } catch (e: RuntimeException) {
@@ -2296,7 +2439,7 @@ index aafa1392..c5eb7878 100644
          }
          return if (newServer?.active != false) newServer else {
 diff --git a/mobile/src/main/java/be/mygod/vpnhotspot/net/wifi/P2pSupplicantConfiguration.kt b/mobile/src/main/java/be/mygod/vpnhotspot/net/wifi/P2pSupplicantConfiguration.kt
-index 286fb93d..46a0a4f4 100644
+index 1b74a2a3..08f21559 100644
 --- a/mobile/src/main/java/be/mygod/vpnhotspot/net/wifi/P2pSupplicantConfiguration.kt
 +++ b/mobile/src/main/java/be/mygod/vpnhotspot/net/wifi/P2pSupplicantConfiguration.kt
 @@ -6,8 +6,6 @@ import be.mygod.vpnhotspot.RepeaterService
