@@ -50,17 +50,17 @@
   };
   cola2261_device_sm8550_common = {
     pname = "cola2261_device_sm8550_common";
-    version = "3bcd6194856207bfae1e6cbb3eeb2cc6305a604d";
+    version = "573a2fa9942551ad7bebf0ba6a1b73ff98728f96";
     src = fetchgit {
       url = "https://github.com/samsung-sm8550-cola2261/android_device_samsung_sm8550-common.git";
-      rev = "3bcd6194856207bfae1e6cbb3eeb2cc6305a604d";
+      rev = "573a2fa9942551ad7bebf0ba6a1b73ff98728f96";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-S0wV9p98nddqY4l//WYiRhieNf245PR0uliroD/iZmA=";
+      sha256 = "sha256-Gv8+zzLuPOlW3A05YDOGV0k+ebbckB/D7jAUFRAGGWE=";
     };
-    date = "2026-05-21";
+    date = "2026-05-24";
   };
   cola2261_hardware_samsung = {
     pname = "cola2261_hardware_samsung";
@@ -498,17 +498,17 @@
   };
   lineage_external_minigbm_upstream = {
     pname = "lineage_external_minigbm_upstream";
-    version = "6f63d1005a928f71a19f5b23ec9c0eb1ba1e66b9";
+    version = "8701d79648842687bbf5ca0b2218873056645930";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_external_minigbm-upstream.git";
-      rev = "6f63d1005a928f71a19f5b23ec9c0eb1ba1e66b9";
+      rev = "8701d79648842687bbf5ca0b2218873056645930";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-LYpO6+HYX0CVTchReSaPUxWsMVlRASDirqNnalPQJV8=";
+      sha256 = "sha256-PajJSvst1FMlZU4I7wtTveMRUc6eArnd0aiu6JrAVJE=";
     };
-    date = "2026-04-10";
+    date = "2026-05-23";
   };
   lineage_gallery2 = {
     pname = "lineage_gallery2";
@@ -526,17 +526,17 @@
   };
   lineage_glimpse = {
     pname = "lineage_glimpse";
-    version = "6823ba0a5aa87443f6510ed92f33bc2c71c71701";
+    version = "32463581fe70cbb2a47114f88bbcc8a5887dd1b3";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_Glimpse.git";
-      rev = "6823ba0a5aa87443f6510ed92f33bc2c71c71701";
+      rev = "32463581fe70cbb2a47114f88bbcc8a5887dd1b3";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-rNhFf9IxvfUXP1WTJpEZ7BIdjuLcIadc1TpqYvlvon8=";
+      sha256 = "sha256-+k7wWLHm2KqsOc/O9BzJJRdX1+eCVouk9Dhcrfha9Ms=";
     };
-    date = "2026-05-15";
+    date = "2026-05-16";
   };
   lineage_hardware_mainline_common = {
     pname = "lineage_hardware_mainline_common";
