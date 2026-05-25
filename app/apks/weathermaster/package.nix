@@ -82,7 +82,8 @@ let
 
     gradleFlags = [
       "-xlintVitalRelease"
-      "-x" "checkReleaseAarMetadata"
+      "-x"
+      "checkReleaseAarMetadata"
       "-Dorg.gradle.java.installations.auto-download=false"
       "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
       "-Dandroid.aapt2FromMavenOverride=${finalAttrs.androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
