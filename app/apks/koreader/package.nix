@@ -54,6 +54,7 @@ stdenv.mkDerivation (
     androidNdkVersion = "26.1.10909125"; # cannot install upstream's ndk version.
     androidArch = "arm64";
     androidFlavor = "Fdroid";
+    androidVersionCodeBase = "11654"; # git rev-list --count v2026.03
     fhsEnv = buildFHSEnv {
       name = "koreader-build-env";
       targetPkgs =
@@ -96,6 +97,18 @@ stdenv.mkDerivation (
     };
     sourceRoot = "${finalAttrs.src.name}";
     postPatch = ''
+      # KOReader derives VERSION from git, but fetchFromGitHub leaves only a
+      # shallow fetchgit branch here. Recreate the release tag locally, and allow
+      # `git describe` to use this deterministic lightweight tag.
+      git tag -f "v${finalAttrs.version}"
+      substituteInPlace Makefile \
+          --replace-fail \
+            'VERSION := $(shell git describe HEAD)' \
+            'VERSION := $(shell git describe --tags HEAD)'
+      substituteInPlace make/android.mk \
+          --replace-fail \
+            'ANDROID_VERSION ?= $(shell git rev-list --count HEAD)' \
+            'ANDROID_VERSION ?= ${androidVersionCodeBase}'
       substituteInPlace $(find . -name CMakeLists.txt) ${lib.concatMapStrings repos-replace repos}
       # LuaJIT uses CROSS+CC for the cross-compiler (TARGET_CC), so CC must be
       # "clang" to form "aarch64-linux-android21-clang". But HOST_CC (used to
