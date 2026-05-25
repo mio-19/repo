@@ -83,6 +83,8 @@ let
     #"weathermaster"
     #"meshcore-open"
     #"immich"
+
+    "joplin"
   ];
 
   excludedApkNames = [
