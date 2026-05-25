@@ -5,7 +5,17 @@
   jdk21_headless,
   gradle_8_7,
   gradle-from-source,
+  gradle-packages,
+  stdenv,
 }:
+if stdenv.isDarwin then
+  # darwin only: The Develocity server (ge.gradle.org) rejected the request due to authentication being required.
+  (gradle-packages.mkGradle {
+    version = "8.8";
+    hash = "sha256-pLQVhgH4Y2ze6rCb12r7ZAAwu1sUSq/iYaXorwJ9xhI=";
+    defaultJava = jdk21_headless;
+  }).wrapped
+else
 gradle-from-source {
   version = "8.8";
   hash = "sha256-am+ns2YNuOQKLFlCbbOfK5ds2uXZg8IVFw/nId+wXxU=";
