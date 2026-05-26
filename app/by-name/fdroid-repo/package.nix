@@ -85,6 +85,8 @@ let
     #"immich"
 
     "joplin"
+
+    "sunup" # Internal compiler error. See log for more details
   ];
 
   excludedApkNames = [
