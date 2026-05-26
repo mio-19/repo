@@ -85,8 +85,6 @@ let
     #"immich"
 
     "joplin"
-
-    "termux-x11" # different hash on darwin vs linux
   ];
 
   excludedApkNames = [
