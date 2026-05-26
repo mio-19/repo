@@ -76,11 +76,14 @@ in
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   source.dirs."packages/apps/NetworkLocation".patches = [
-    (fetchpatch {
-      name = "audit fixes: division-by-zero guard, executor leak, log typo";
-      url = "https://github.com/GrapheneOS/platform_packages_apps_NetworkLocation/pull/34.patch";
-      hash = "sha256-c9FIx8dNQGPwnWlujfSj8p09DYe7kTebQaj/GCK6Ds4=";
-    })
+    /*
+      # UNSURE
+      (fetchpatch {
+        name = "audit fixes: division-by-zero guard, executor leak, log typo";
+        url = "https://github.com/GrapheneOS/platform_packages_apps_NetworkLocation/pull/34.patch";
+        hash = "sha256-c9FIx8dNQGPwnWlujfSj8p09DYe7kTebQaj/GCK6Ds4=";
+      })
+    */
   ];
   source.dirs."frameworks/base".patches = [
     (fetchpatch {
