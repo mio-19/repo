@@ -32,7 +32,7 @@ let
 
     lockFile = mergeLock (
       [
-        gradle.unwrapped.passthru.lockFile
+        ../../../libs/gradle_9_4_1/gradle.lock
         ./gradle.lock
         # [id: 'org.lineageos.generatebp', version: '1.28', apply: false] org.jetbrains.kotlin:kotlin-stdlib:2.2.0 org.jetbrains.kotlin:kotlin-reflect:2.2.0
         ./more.gradle.lock
