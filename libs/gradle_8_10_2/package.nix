@@ -13,7 +13,7 @@ if stdenv.isDarwin then
   # darwin only: Internal compiler error. See log for more details
   (gradle-packages.mkGradle {
     version = "8.10.2";
-    hash = "";
+    hash = "sha256-McVXE+QCM6gwOCfOtCykikcmegrUurkXcSMSHnFSTCY=";
     defaultJava = jdk21_headless;
   }).wrapped
 else
