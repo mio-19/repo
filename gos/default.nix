@@ -76,8 +76,7 @@ in
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   source.dirs."packages/apps/NetworkLocation".patches = [
-    # audit fixes: division-by-zero guard, executor leak, log typo
-    # https://github.com/GrapheneOS/platform_packages_apps_NetworkLocation/pull/34
+    # audit fixes: division-by-zero guard, executor leak, log typo - https://github.com/GrapheneOS/platform_packages_apps_NetworkLocation/pull/34
     ./34.diff
   ];
   source.dirs."frameworks/base".patches = [
