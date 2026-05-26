@@ -3,12 +3,12 @@
   fetchFromGitHub,
   lib,
   libsUtils,
-  jdk17_headless,
+  jdk11_headless,
 }:
 kotlin-stdlib_2_3_20.overrideAttrs (
   finalAttrs: prevAttrs: {
     version = "2.3.0";
-    jdk = jdk17_headless;
+    jdk = jdk11_headless;
     src = fetchFromGitHub {
       owner = "JetBrains";
       repo = "kotlin";
