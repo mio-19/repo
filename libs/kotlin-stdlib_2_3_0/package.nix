@@ -1,8 +1,6 @@
 {
   kotlin-stdlib_2_3_20,
   fetchFromGitHub,
-  lib,
-  libsUtils,
   jdk11_headless,
 }:
 kotlin-stdlib_2_3_20.overrideAttrs (
