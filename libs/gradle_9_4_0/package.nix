@@ -10,7 +10,7 @@ if stdenv.isDarwin then
   # darwin only: cannot build
   (gradle-packages.mkGradle {
     version = "9.4.0";
-    hash = "";
+    hash = "sha256-YOpyM1bYEmPoAC/sD8+eKw7uDAhQx6PXqwpj8szGAfM=";
     defaultJava = jdk25_headless;
   }).wrapped
 else
