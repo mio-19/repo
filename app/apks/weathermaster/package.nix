@@ -13,15 +13,21 @@
 let
   appPackage = stdenv.mkDerivation (finalAttrs: {
     pname = "weathermaster";
-    version = "3.0.0";
+    version = "3.1.1";
 
     src = fetchFromGitHub {
       owner = "PranshulGG";
       repo = "WeatherMaster";
       tag = "v${finalAttrs.version}";
-      hash = "sha256-hgR1xlsB7b7aVCclz3vN6YG/XfuYSJx5R4Qb8jTytVg=";
+      hash = "sha256-Nfoft4TarCizEdfVcF29Y9Eyco/cygYawLHmOr62jmY=";
     };
     patches = [ ./compile-sdk-36.patch ];
+
+    postPatch = ''
+      substituteInPlace app/build.gradle.kts \
+        --replace-fail '            signingConfig = signingConfigs.getByName("release")' \
+                       '            // Signing is handled by the Nix/F-Droid packaging flow.'
+    '';
 
     androidSdk = androidSdkBuilder (s: [
       s.cmdline-tools-latest
@@ -58,6 +64,7 @@ let
       ANDROID_HOME = "${finalAttrs.androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${finalAttrs.androidSdk}/share/android-sdk";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${finalAttrs.androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
+      GEO_NAMES_USERNAME = "dummy";
     };
 
     preConfigure = ''
