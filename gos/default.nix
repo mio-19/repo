@@ -140,6 +140,11 @@ in
       url = "https://github.com/GrapheneOS/platform_packages_apps_AppCompatConfig/pull/6.patch";
       hash = "sha256-QoabShVmthSA817+FrJ7GTc/VK2N6JSXu9KaVoDg4Sg=";
     })
+    (fetchpatch {
+      name = "Fix enumBits overflow, unused import and dependabot branch";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_AppCompatConfig/pull/7.diff";
+      hash = "sha256-8rJvNXJS4uwrA/rz20RCBcjStp7SdddRtmVRxQZYVgI=";
+    })
   ];
   source.dirs."packages/modules/Virtualization".patches = [
     (fetchpatch {
