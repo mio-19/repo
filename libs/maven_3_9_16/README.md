@@ -1,49 +1,5 @@
 # maven
 
-## messy.lock - remove .asc for gradle.lock
-```
-jq 'walk(
-  if type == "object"
-  then with_entries(select(.key | endswith(".asc") | not))
-  else .
-  end
-)'
-```
-```
-jq 'walk(
-  if type == "object"
-  then with_entries(select(.key | endswith(".module") | not))
-  else .
-  end
-)'
-```
-```
-jq 'walk(
-  if type == "object"
-  then with_entries(select(.key | endswith(".aar") | not))
-  else .
-  end
-)'
-```
-```
-jq 'map_values(
-  with_entries(select(.key | endswith(".jar") or endswith(".pom")))
-)'
-```
-```
-jq 'to_entries
-  | sort_by(.key)
-  | map(
-      .value |= with_entries(select(.key | endswith(".jar") or endswith(".pom")))
-    )
-  | from_entries'
-```
-```
-jq 'with_entries(select(.key | test("^(androidx\\.|com\\.android)") | not))'
-```
-```
-jq 'with_entries(select(.key | contains("-android") | not))'
-```
 ## a
 still not helpful
 ```
