@@ -22,17 +22,17 @@
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
-    version = "a0e342c06e3f6a142665f5d5f7f5d6b0c6a9799f";
+    version = "e8cbd64a7d1a3cbad053780855b9f5fb302bbc60";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
-      rev = "a0e342c06e3f6a142665f5d5f7f5d6b0c6a9799f";
+      rev = "e8cbd64a7d1a3cbad053780855b9f5fb302bbc60";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-aYd8mBMeg22/tuEB6wusCH4cOpiTCShKZX0Tsnf59h0=";
+      sha256 = "sha256-AQoP04DEOd7byQdBKWDA6IEWh5aTHQ0IXM5tiGYdLBA=";
     };
-    date = "2026-05-21";
+    date = "2026-05-26";
   };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
@@ -232,17 +232,17 @@
   };
   google_gallery = {
     pname = "google_gallery";
-    version = "b1137ba2025336da6703e45db9630473a079aed2";
+    version = "21c71bfe53e5ea82d119f1de0d21dac44a092036";
     src = fetchgit {
       url = "https://github.com/google-ai-edge/gallery.git";
-      rev = "b1137ba2025336da6703e45db9630473a079aed2";
+      rev = "21c71bfe53e5ea82d119f1de0d21dac44a092036";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-opJhZ/v2Z3PqW1BK42JqHZs+fTi+SWUAeuVw058Rm4w=";
+      sha256 = "sha256-gT2X8Ukm6ofsGCFr70vj9CKoG8w96h4MTB4GiDJShxY=";
     };
-    date = "2026-05-21";
+    date = "2026-05-26";
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
@@ -806,17 +806,17 @@
   };
   termux_x11 = {
     pname = "termux_x11";
-    version = "ac63b99a871fd741df34106ddc157d88ee647f8f";
+    version = "c1a18e0ea4c1d7fe9a145596ab71f48ba9b7eee2";
     src = fetchgit {
       url = "https://github.com/termux/termux-x11.git";
-      rev = "ac63b99a871fd741df34106ddc157d88ee647f8f";
+      rev = "c1a18e0ea4c1d7fe9a145596ab71f48ba9b7eee2";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-2CyAzoR6b6ck/NIPw+I0UlX+bC5WVwMwermLUo/0ywI=";
+      sha256 = "sha256-C2uVDrZHQiurZndN6oT2CtSuMSWHNhcnR+HBuI9DvQg=";
     };
-    date = "2026-05-19";
+    date = "2026-05-26";
   };
   vendor_gapps15 = {
     pname = "vendor_gapps15";
@@ -832,7 +832,7 @@
     version = "6b7bf6d049e8d425611e0c6dfb4637193190e8d6";
     src = fetchurl {
       url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/6b7bf6d049e8d425611e0c6dfb4637193190e8d6/vendor_gapps-6b7bf6d049e8d425611e0c6dfb4637193190e8d6.tar.gz";
-      sha256 = "sha256-SkpawHzPB3gLJ6Lr8lNIvQ0LvrH+6UwM+QaMjsnQTjM=";
+      sha256 = "sha256-ZJPTBe8kD4bWcvQET6TL58KfjiCicVzCAo3D8v/5XNE=";
     };
     date = "2026-04-09";
   };
