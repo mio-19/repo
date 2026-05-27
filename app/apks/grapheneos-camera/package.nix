@@ -117,7 +117,7 @@ mk-apk-package {
   mainApk = "Camera.apk";
   signScriptName = "sign-grapheneos-camera";
   fdroid = {
-    appId = "app.grapheneos.camera.play";
+    appId = "app.grapheneos.camera";
     metadataYml = ''
       Categories:
         - Multimedia
