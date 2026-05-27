@@ -76,8 +76,11 @@ in
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   source.dirs."packages/apps/NetworkLocation".patches = [
-    # audit fixes: division-by-zero guard, executor leak, log typo - https://github.com/GrapheneOS/platform_packages_apps_NetworkLocation/pull/34
-    ./34.diff
+    (fetchpatch {
+      name = "Fix cell-based location accuracy and geocoder robustness";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_NetworkLocation/pull/35.diff";
+      hash = "sha256-Qfo8Z4em5cU+v1u2cignkWqVsO76J7sAMvr90GWYFU0=";
+    })
   ];
   source.dirs."frameworks/base".patches = [
     (fetchpatch {
