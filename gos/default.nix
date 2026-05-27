@@ -134,7 +134,7 @@ in
   source.dirs."packages/apps/AppCompatConfig".patches = [
     (fetchpatch {
       name = "add configs for Brave beta and Brave nightly.patch";
-      url = "https://github.com/GrapheneOS/platform_packages_apps_AppCompatConfig/pull/6.patch";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_AppCompatConfig/pull/8.diff";
       hash = "sha256-QoabShVmthSA817+FrJ7GTc/VK2N6JSXu9KaVoDg4Sg=";
     })
     (fetchpatch {
