@@ -105,4 +105,19 @@ mk-apk-package {
   inherit appPackage;
   mainApk = "Info.apk";
   signScriptName = "sign-grapheneos-info";
+  fdroid = {
+    appId = "app.grapheneos.info";
+    metadataYml = ''
+      Categories:
+        - System
+      License: Apache-2.0
+      SourceCode: https://github.com/GrapheneOS/Info
+      IssueTracker: https://github.com/GrapheneOS/Info/issues
+      AutoName: GrapheneOS Info
+      Summary: System info app for GrapheneOS
+      Description: |-
+        GrapheneOS Info provides system information and status details
+        for GrapheneOS devices. This package is built from source.
+    '';
+  };
 }
