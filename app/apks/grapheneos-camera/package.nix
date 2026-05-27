@@ -116,4 +116,21 @@ mk-apk-package {
   inherit appPackage;
   mainApk = "Camera.apk";
   signScriptName = "sign-grapheneos-camera";
+  fdroid = {
+    appId = "app.grapheneos.camera.play";
+    metadataYml = ''
+      Categories:
+        - Multimedia
+        - System
+      License: MIT
+      SourceCode: https://github.com/GrapheneOS/Camera
+      IssueTracker: https://github.com/GrapheneOS/Camera/issues
+      Changelog: https://github.com/GrapheneOS/Camera/releases
+      AutoName: GrapheneOS Camera
+      Summary: A secure and privacy focused camera application
+      Description: |-
+        GrapheneOS Camera is a secure and privacy focused camera application
+        originally developed for GrapheneOS.
+    '';
+  };
 }
