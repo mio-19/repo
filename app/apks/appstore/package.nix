@@ -45,6 +45,11 @@ let
         url = "https://github.com/GrapheneOS/AppStore/pull/395.patch";
         hash = "sha256-s9tNIzOb10ENMe7urrbQcE2o/q/fGmBAzgdxkEZQjd0=";
       })
+      (fetchpatch {
+        name = "Resolve #479 (open App Store from up-to-date notification)";
+        url = "https://github.com/GrapheneOS/AppStore/pull/481.diff";
+        hash = "sha256-9aZ8OQYQfzsaupP9yTt/fAOxV4YKmbN0rgzIFmEF3yg=";
+      })
     ];
 
     postPatch = ''
