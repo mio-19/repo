@@ -1,5 +1,5 @@
---- a/settings.gradle.kts	2026-03-16 11:52:22.957187848 +1100
-+++ b/settings.gradle.kts	2026-03-16 11:52:22.965187775 +1100
+--- a/settings.gradle.kts
++++ b/settings.gradle.kts
 @@ -18,7 +18,6 @@
  }
  
@@ -8,16 +8,20 @@
  }
  
  dependencyResolutionManagement {
-@@ -31,7 +30,7 @@
+@@ -30,12 +29,6 @@
                  includeGroupAndSubgroups("com.google")
              }
          }
 -        maven(url = "https://maven.mozilla.org/maven2") {
-+        maven(url = "https://jitpack.io") {
+-            mavenContent {
+-                includeGroup("org.mozilla.components")
+-                includeGroup("org.mozilla.telemetry")
+-            }
+-        }
+         maven(url = "https://jitpack.io") {
              mavenContent {
-                 includeGroup("org.mozilla.components")
-                 includeGroup("org.mozilla.telemetry")
-@@ -48,7 +47,6 @@
+                 includeGroup("com.github.ByteHamster")
+@@ -41,7 +34,6 @@
  }
  
  include(
@@ -25,7 +29,7 @@
      ":app-thunderbird",
      ":app-ui-catalog",
  )
-@@ -89,7 +87,6 @@
+@@ -82,7 +74,6 @@
  
  include(
      ":feature:funding:api",
@@ -33,7 +37,7 @@
      ":feature:funding:link",
      ":feature:funding:noop",
  )
-@@ -144,7 +141,6 @@
+@@ -137,7 +128,6 @@
  include(
      ":feature:telemetry:api",
      ":feature:telemetry:noop",

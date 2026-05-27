@@ -26,13 +26,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "thunderbird-android";
-      version = "18.0";
+      version = "19.0";
 
       src = fetchFromGitHub {
         owner = "thunderbird";
         repo = "thunderbird-android";
-        tag = "THUNDERBIRD_18_0";
-        hash = "sha256-99NGl5/65JPA+B2rhxCPDdSW1WaRaeoq+xOGXQxC8FU=";
+        tag = "THUNDERBIRD_19_0";
+        hash = "sha256-IyRKWhwRoUo0NEGMoT9X7NnvP1ITme1Ddb2s1eCkPV0=";
       };
 
       patches = [
@@ -134,7 +134,7 @@ mk-apk-package {
       Summary: Thunderbird for Android (foss flavor)
       Description: |-
         Thunderbird is a free, open-source email client. This is the F-Droid
-        foss flavor built from the THUNDERBIRD_17_0 branch without any
+        foss flavor built from the THUNDERBIRD_19_0 branch without any
         proprietary Google dependencies.
     '';
   };
