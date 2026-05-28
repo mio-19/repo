@@ -37,7 +37,7 @@ let
       (fetchpatch {
         name = "added release state display to info app";
         url = "https://github.com/GrapheneOS/Info/pull/56.diff";
-        hash = "sha256-qMMHV6426FHw1QCg+JfpvmjO/qUvul6T/2Le7A2YQXI=";
+        hash = "sha256-hAb90373JGtmd5pbhNvOHgjMt34TG9psFm6mdQ7XXhI=";
       })
     ];
 
