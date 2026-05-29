@@ -107,10 +107,6 @@ let
 
       postPatch = ''
         rm -f gradle/verification-metadata.xml
-      ''
-      + agp-resolution.patchSettingsGradle { agpVersion = "9.0.0"; }
-      + ''
-
         rm app/src/main/res/values/strings.xml.orig || true
         substituteInPlace app/build.gradle.kts \
               --replace-fail \
