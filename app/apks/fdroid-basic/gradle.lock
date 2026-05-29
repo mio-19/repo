@@ -8509,14 +8509,14 @@
       "hash": "sha256-IDmQEivg/dNL8S0LeIwGVRYThqjoWLpD8G43CcLMdMw="
     }
   },
-  "org.bouncycastle:bcprov-jdk18on:1.80": {
-    "bcprov-jdk18on-1.80.jar": {
-      "url": "https://repo.maven.apache.org/maven2/org/bouncycastle/bcprov-jdk18on/1.80/bcprov-jdk18on-1.80.jar",
-      "hash": "sha256-6K0gn4xY0pGjfKl1Dp6frGBZaVbJg+Sd2Cgjgd2LMkk="
+  "org.bouncycastle:bcprov-jdk18on:1.80.2": {
+    "bcprov-jdk18on-1.80.2.jar": {
+      "url": "https://repo.maven.apache.org/maven2/org/bouncycastle/bcprov-jdk18on/1.80.2/bcprov-jdk18on-1.80.2.jar",
+      "hash": "sha256-szIn8H3OJk2vGqwueY7xCaSQHzGr7axTY1dG3ZNnnTs="
     },
-    "bcprov-jdk18on-1.80.pom": {
-      "url": "https://repo.maven.apache.org/maven2/org/bouncycastle/bcprov-jdk18on/1.80/bcprov-jdk18on-1.80.pom",
-      "hash": "sha256-oKdcdtkcQh7qVtD2Bi+49j7ff6x+xyT9QgzNytcYHUM="
+    "bcprov-jdk18on-1.80.2.pom": {
+      "url": "https://repo.maven.apache.org/maven2/org/bouncycastle/bcprov-jdk18on/1.80.2/bcprov-jdk18on-1.80.2.pom",
+      "hash": "sha256-EqUFpxejvHZH99jt6ndzLJxty1PE32Kju1i3pUIooo8="
     }
   },
   "org.bouncycastle:bcprov-jdk18on:1.79": {
@@ -8539,14 +8539,14 @@
       "hash": "sha256-ESb2dhSDFHW/kNDjxmIHesTcMDblsjNHbFELqSmntCw="
     }
   },
-  "org.bouncycastle:bcutil-jdk18on:1.80": {
-    "bcutil-jdk18on-1.80.jar": {
-      "url": "https://repo.maven.apache.org/maven2/org/bouncycastle/bcutil-jdk18on/1.80/bcutil-jdk18on-1.80.jar",
-      "hash": "sha256-Iuymh/eVVBH0Vq8z5uqOaPxzzYDLizKqX3qLGCfXxng="
+  "org.bouncycastle:bcutil-jdk18on:1.80.2": {
+    "bcutil-jdk18on-1.80.2.jar": {
+      "url": "https://repo.maven.apache.org/maven2/org/bouncycastle/bcutil-jdk18on/1.80.2/bcutil-jdk18on-1.80.2.jar",
+      "hash": "sha256-vHjTLX/7FB7ifk+3ffBCWdhCyJnn6Or5EvmQ1yU707Q="
     },
-    "bcutil-jdk18on-1.80.pom": {
-      "url": "https://repo.maven.apache.org/maven2/org/bouncycastle/bcutil-jdk18on/1.80/bcutil-jdk18on-1.80.pom",
-      "hash": "sha256-Qhp95L/rnFs4sfxHxCagh9kIeJVdQQf1t6gusde3R7Y="
+    "bcutil-jdk18on-1.80.2.pom": {
+      "url": "https://repo.maven.apache.org/maven2/org/bouncycastle/bcutil-jdk18on/1.80.2/bcutil-jdk18on-1.80.2.pom",
+      "hash": "sha256-Joi+GvSZ1SUJYRTML1HHp6TKI8PScxe3HhjByWvsA9E="
     }
   },
   "org.bouncycastle:bcutil-jdk18on:1.79": {
@@ -11253,16 +11253,6 @@
       "hash": "sha256-Mh3bt+5v5PU96mtM1tt0FU1r+kI5HB92OzYbn0hazwU="
     }
   },
-  "org.ow2.asm:asm:9.9": {
-    "asm-9.9.jar": {
-      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.9/asm-9.9.jar",
-      "hash": "sha256-A9madK0e5ccTNO9nQ39O9P40iMqnyW2GRavHPI4gF9Q="
-    },
-    "asm-9.9.pom": {
-      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.9/asm-9.9.pom",
-      "hash": "sha256-z4Ye8edF1XFUr3muFN80DtU0Hl3NAVfO/NLrfxqgXFc="
-    }
-  },
   "org.ow2.asm:asm:9.9.1": {
     "asm-9.9.1.jar": {
       "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.9.1/asm-9.9.1.jar",
@@ -11271,6 +11261,16 @@
     "asm-9.9.1.pom": {
       "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.9.1/asm-9.9.1.pom",
       "hash": "sha256-rKaN7pui9s2Q/95yjv3H4+v89Z8/Qfv+JI0tAdW4Zq8="
+    }
+  },
+  "org.ow2.asm:asm:9.9": {
+    "asm-9.9.jar": {
+      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.9/asm-9.9.jar",
+      "hash": "sha256-A9madK0e5ccTNO9nQ39O9P40iMqnyW2GRavHPI4gF9Q="
+    },
+    "asm-9.9.pom": {
+      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.9/asm-9.9.pom",
+      "hash": "sha256-z4Ye8edF1XFUr3muFN80DtU0Hl3NAVfO/NLrfxqgXFc="
     }
   },
   "org.ow2.asm:asm:9.8": {
@@ -11319,16 +11319,6 @@
       "hash": "sha256-95PnjwH3A3F9CUcuVs3yEv4piXDIguIRbo5Un7bRQMI="
     }
   },
-  "org.ow2.asm:asm-tree:9.9.1": {
-    "asm-tree-9.9.1.jar": {
-      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-tree/9.9.1/asm-tree-9.9.1.jar",
-      "hash": "sha256-DzVVCWtyC4ILusqwtRVYm+4CAL7gmb2hTFYXOK6De6E="
-    },
-    "asm-tree-9.9.1.pom": {
-      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-tree/9.9.1/asm-tree-9.9.1.pom",
-      "hash": "sha256-Z/7kRrpRKHEwBzjw+Vb2GlAKhS9oYf9w8KPHvwwPpAU="
-    }
-  },
   "org.ow2.asm:asm-tree:9.9": {
     "asm-tree-9.9.jar": {
       "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-tree/9.9/asm-tree-9.9.jar",
@@ -11337,6 +11327,16 @@
     "asm-tree-9.9.pom": {
       "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-tree/9.9/asm-tree-9.9.pom",
       "hash": "sha256-0BeI7Y5ujiSsr2y0p73MJzNBYlL6oAIylZ4+Lp3xv0Q="
+    }
+  },
+  "org.ow2.asm:asm-tree:9.9.1": {
+    "asm-tree-9.9.1.jar": {
+      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-tree/9.9.1/asm-tree-9.9.1.jar",
+      "hash": "sha256-DzVVCWtyC4ILusqwtRVYm+4CAL7gmb2hTFYXOK6De6E="
+    },
+    "asm-tree-9.9.1.pom": {
+      "url": "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-tree/9.9.1/asm-tree-9.9.1.pom",
+      "hash": "sha256-Z/7kRrpRKHEwBzjw+Vb2GlAKhS9oYf9w8KPHvwwPpAU="
     }
   },
   "org.ow2.asm:asm-tree:9.8": {

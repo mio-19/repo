@@ -53,12 +53,7 @@ buildGradlePackage rec {
   postPatch = ''
     rm -f gradle/verification-metadata.xml
     echo "Removed gradle/verification-metadata.xml so the source-built java libraries overrides is not rejected by upstream checksum verification."
-  ''
-  + agp-resolution.patchSettingsGradle {
-    file = "settings.gradle";
-    agpVersion = "9.1.1";
-  }
-  + ''
+
     substituteInPlace app/build.gradle.kts \
       --replace-fail '  lint {' $'  lint {\n    checkReleaseBuilds = false' \
       --replace-fail 'versionNameSuffix = "-$gitHash"' 'versionNameSuffix = "-unknown"'
