@@ -106,10 +106,9 @@ let
 
       postPatch = ''
         rm -f gradle/verification-metadata.xml
-
-        pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                val agpVersion = requested.version ?: "9.0.0"\n                useModule("com.android.tools.build:gradle:$agpVersion")\n            }\n        }\n    }\n'
-        substituteInPlace settings.gradle.kts \
-          --replace-fail "pluginManagement {" "$pluginResolutionBlock"
+      ''
+      + (import ../_shared/agp-resolution.nix).patchSettingsGradle { agpVersion = "9.0.0"; }
+      + ''
 
         rm app/src/main/res/values/strings.xml.orig || true
         substituteInPlace app/build.gradle.kts \

@@ -57,11 +57,24 @@ let
 
         # Resolve Android plugin IDs via com.android.tools.build:gradle directly,
         # which avoids plugin-marker fetches that may be absent in locked deps.
-        pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library" || requested.id.id == "com.android.settings") {\n                def agpVersion = requested.version ?: "8.10.1"\n                useModule("com.android.tools.build:gradle:''${agpVersion}")\n            }\n        }\n    }\n'
-        substituteInPlace settings.gradle \
-          --replace-fail "pluginManagement {" "$pluginResolutionBlock"
-        substituteInPlace api/settings.gradle \
-          --replace-fail "pluginManagement {" "$pluginResolutionBlock"
+      ''
+      + (
+        let
+          agpRes = import ../_shared/agp-resolution.nix;
+          args = {
+            file = "settings.gradle";
+            agpVersion = "8.10.1";
+            pluginIds = [
+              "com.android.application"
+              "com.android.library"
+              "com.android.settings"
+            ];
+          };
+        in
+        agpRes.patchSettingsGradle args
+        + agpRes.patchSettingsGradle (args // { file = "api/settings.gradle"; })
+      )
+      + ''
 
         # Ensure all Gradle repository resolution goes through local cached maven roots.
         cacheRoot="${finalAttrs.mitmCache}"
