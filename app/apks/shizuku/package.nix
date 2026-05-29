@@ -1,4 +1,5 @@
 {
+  agp-resolution,
   mk-apk-package,
   lib,
   curl,
@@ -60,7 +61,6 @@ let
       ''
       + (
         let
-          agpRes = import ../_shared/agp-resolution.nix;
           args = {
             file = "settings.gradle";
             agpVersion = "8.10.1";
@@ -71,8 +71,8 @@ let
             ];
           };
         in
-        agpRes.patchSettingsGradle args
-        + agpRes.patchSettingsGradle (args // { file = "api/settings.gradle"; })
+        agp-resolution.patchSettingsGradle args
+        + agp-resolution.patchSettingsGradle (args // { file = "api/settings.gradle"; })
       )
       + ''
 

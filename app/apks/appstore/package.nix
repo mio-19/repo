@@ -1,4 +1,5 @@
 {
+  agp-resolution,
   mk-apk-package,
   buildGradlePackage,
   mergeLock,
@@ -52,11 +53,7 @@ let
       })
     ];
 
-    postPatch =
-      let
-        agpRes = import ../_shared/agp-resolution.nix;
-      in
-      agpRes.patchSettingsGradle { agpVersion = "9.0.0"; };
+    postPatch = agp-resolution.patchSettingsGradle { agpVersion = "9.0.0"; };
 
     nativeBuildInputs = [
       androidSdk

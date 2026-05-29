@@ -24,6 +24,7 @@
 #     file = "settings.gradle";
 #     agpVersion = "9.1.1";
 #   } + ''...''
+{ }:
 let
   # Build a resolutionStrategy block string that replaces "pluginManagement {"
   # in a Gradle settings file.

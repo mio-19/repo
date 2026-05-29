@@ -1,4 +1,5 @@
 {
+  agp-resolution,
   mk-apk-package,
   overrides-fromsrc,
   buildGradlePackage,
@@ -60,7 +61,7 @@ let
       ''
         rm -f gradle/verification-metadata.xml
       ''
-      + agpRes.patchSettingsGradle { agpVersion = "9.0.0"; };
+      + agp-resolution.patchSettingsGradle { agpVersion = "9.0.0"; };
 
     nativeBuildInputs = [
       androidSdk

@@ -1,4 +1,5 @@
 {
+  agp-resolution,
   mk-apk-package,
   lib,
   jdk21_headless,
@@ -111,7 +112,7 @@ let
                   --replace-fail $'dependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    repositories {\n        google()\n        mavenCentral()\n        // libsu is only available via jitpack\n        maven("https://jitpack.io/") {\n            content {\n                includeModule("com.github.topjohnwu.libsu", "core")\n            }\n        }\n        // Only included in huawei variants\n        maven("https://developer.huawei.com/repo/") {\n            content {\n                includeGroup("com.huawei.hms")\n                includeGroup("com.huawei.android.hms")\n            }\n        }\n    }\n}' "$dependencyRepositoriesBlock"
               else
       ''
-      + agpRes.patchSettingsGradle { agpVersion = "8.13.2"; }
+      + agp-resolution.patchSettingsGradle { agpVersion = "8.13.2"; }
       + ''
               fi
 

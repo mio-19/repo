@@ -1,4 +1,5 @@
 {
+  agp-resolution,
   mk-apk-package,
   buildGradlePackage,
   mergeLock,
@@ -107,7 +108,7 @@ let
       postPatch = ''
         rm -f gradle/verification-metadata.xml
       ''
-      + (import ../_shared/agp-resolution.nix).patchSettingsGradle { agpVersion = "9.0.0"; }
+      + agp-resolution.patchSettingsGradle { agpVersion = "9.0.0"; }
       + ''
 
         rm app/src/main/res/values/strings.xml.orig || true

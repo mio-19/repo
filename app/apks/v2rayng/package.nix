@@ -1,4 +1,5 @@
 {
+  agp-resolution,
   mk-apk-package,
   lib,
   stdenvNoCC,
@@ -196,7 +197,7 @@ let
         cp ${libv2rayAar}/libv2ray.aar app/libs/libv2ray.aar
       '';
 
-      postPatch = (import ../_shared/agp-resolution.nix).patchSettingsGradle {
+      postPatch = agp-resolution.patchSettingsGradle {
         agpVersion = "9.1.0";
         extraPlugins = [
           {

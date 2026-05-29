@@ -1,4 +1,5 @@
 {
+  agp-resolution,
 
   androidSdkBuilder,
   fetchgit,
@@ -53,7 +54,7 @@ buildGradlePackage rec {
     rm -f gradle/verification-metadata.xml
     echo "Removed gradle/verification-metadata.xml so the source-built java libraries overrides is not rejected by upstream checksum verification."
   ''
-  + (import ../_shared/agp-resolution.nix).patchSettingsGradle {
+  + agp-resolution.patchSettingsGradle {
     file = "settings.gradle";
     agpVersion = "9.1.1";
   }
