@@ -17,13 +17,14 @@
 let
   appPackage =
     let
-      version = "1.98.2";
+      version = "1.98.4-t9e69045b2-g0b6f6554d";
+      tailscaleVersion = lib.head (lib.splitString "-" version);
 
       src = fetchFromGitHub {
         owner = "tailscale";
         repo = "tailscale-android";
-        tag = "1.98.2-taaf7caef1-g9cc6630cd";
-        hash = "sha256-uI7JfJdcSjio7pRFj2aZQoBfNLdB6UCmhPNl/YwSdrw=";
+        tag = version;
+        hash = "sha256-dOKiFK6TUYUy4Pqxw1Z7X6u5w5GQJMY52J9M9629yQs=";
       };
 
       xMobileSrc = fetchFromGitHub {
@@ -42,7 +43,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-nMRte1vb5gOoutO4qLEKjn8PYE48pXThzThCXTwIJhA=";
+        outputHash = "sha256-+CuAaeR/09Sy4iRVLcFqD/xfw7Raee4sM6I7JORUk9o=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -157,8 +158,8 @@ let
           fi
         done
 
-        unzip -q "$GOMODCACHE/cache/download/tailscale.com/@v/v${version}.zip" -d tailscale-module-tmp
-        mv "tailscale-module-tmp/tailscale.com@v${version}" tailscale-module
+        unzip -q "$GOMODCACHE/cache/download/tailscale.com/@v/v${tailscaleVersion}.zip" -d tailscale-module-tmp
+        mv "tailscale-module-tmp/tailscale.com@v${tailscaleVersion}" tailscale-module
         rm -rf tailscale-module-tmp
         chmod -R u+w tailscale-module
         substituteInPlace tailscale-module/go.mod --replace-fail 'go 1.26.3' 'go 1.26.2'
