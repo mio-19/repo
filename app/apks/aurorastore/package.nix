@@ -82,14 +82,6 @@ let
               maven { url = uri("'"$cacheRoot"'/https/jitpack.io") }
               maven { url = uri("'"$cacheRoot"'/https/developer.huawei.com/repo") }
           }
-          resolutionStrategy {
-              eachPlugin {
-                  if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {
-                      val agpVersion = requested.version ?: "8.13.2"
-                      useModule("com.android.tools.build:gradle:$agpVersion")
-                  }
-              }
-          }
       }'
 
               dependencyRepositoriesBlock='dependencyResolutionManagement {
@@ -106,10 +98,6 @@ let
               substituteInPlace settings.gradle.kts \
                 --replace-fail $'pluginManagement {\n    repositories {\n        gradlePluginPortal()\n        google()\n        mavenCentral()\n    }\n}' "$pluginResolutionBlock" \
                 --replace-fail $'dependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    repositories {\n        google()\n        mavenCentral()\n        // libsu is only available via jitpack\n        maven("https://jitpack.io/") {\n            content {\n                includeModule("com.github.topjohnwu.libsu", "core")\n            }\n        }\n        // Only included in huawei variants\n        maven("https://developer.huawei.com/repo/") {\n            content {\n                includeGroup("com.huawei.hms")\n                includeGroup("com.huawei.android.hms")\n            }\n        }\n    }\n}' "$dependencyRepositoriesBlock"
-            else
-    ''
-    + agp-resolution.patchSettingsGradle { agpVersion = "8.13.2"; }
-    + ''
             fi
 
             substituteInPlace app/build.gradle.kts \
