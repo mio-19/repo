@@ -49,8 +49,8 @@ let
       prePatch = ''
         # fetchFromGitHub strips .git, so derive a deterministic version from env.
         substituteInPlace build.gradle \
-          --replace-fail "def gitCommitId = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()" "def gitCommitId = System.getenv('SHIZUKU_GIT_COMMIT_ID') ?: '${shortRev}'" \
-          --replace-fail "def gitCommitCount = Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())" "def gitCommitCount = Integer.parseInt(System.getenv('SHIZUKU_GIT_COMMIT_COUNT') ?: '1')"
+          --replace-fail "def gitCommitId = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()" "def gitCommitId = '${shortRev}'" \
+          --replace-fail "def gitCommitCount = Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())" "def gitCommitCount = Integer.parseInt('${commitCount}')"
 
         # AGP 8.10.0 currently fails to resolve in this build environment.
         substituteInPlace api/settings.gradle \
@@ -123,6 +123,10 @@ let
           --replace-fail "android.signingConfigs.sign.storePassword = android.signingConfigs.debug.storePassword" "android.signingConfigs.sign.storePassword = 'android'" \
           --replace-fail "android.signingConfigs.sign.keyAlias = android.signingConfigs.debug.keyAlias" "android.signingConfigs.sign.keyAlias = 'androiddebugkey'" \
           --replace-fail "android.signingConfigs.sign.keyPassword = android.signingConfigs.debug.keyPassword" "android.signingConfigs.sign.keyPassword = 'android'"
+      '';
+
+      postPatch = ''
+        rm -f gradle/verification-metadata.xml
       '';
 
       gradleBuildTask = ":manager:assembleRelease";
@@ -219,7 +223,7 @@ let
       gradleFlags = [
         "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
