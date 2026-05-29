@@ -182,13 +182,13 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/515614.patch";
                 hash = "sha256-lPg+NKhTJVCDLuuDaKF9o7evPxjcGxD9Gh/M1X3yqag=";
               })
-              (fetchpatch {
-                name = "apktool: 2.2.1 -> 3.0.2";
-                url = "https://github.com/NixOS/nixpkgs/pull/525249.diff";
-                hash = "sha256-O0gO2CWa8A+UMnEDEaqrepuCuW9ra33jtzqVq1M4uE4=";
-              })
               /*
                 # when we update nixpkgs
+                (fetchpatch {
+                  name = "apktool: 2.2.1 -> 3.0.2";
+                  url = "https://github.com/NixOS/nixpkgs/pull/525249.diff";
+                  hash = "sha256-O0gO2CWa8A+UMnEDEaqrepuCuW9ra33jtzqVq1M4uE4=";
+                })
                 (fetchpatch {
                   name = "maven_4: init at 4.0.0-rc5";
                   url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
