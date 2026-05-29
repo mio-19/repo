@@ -46,8 +46,7 @@ let
       rm -f app/src/main/res/values/strings.xml.orig
 
       rm -f gradle/verification-metadata.xml
-    ''
-    + agp-resolution.patchSettingsGradle { agpVersion = "9.0.0"; };
+    '';
 
     nativeBuildInputs = [
       androidSdk
