@@ -42,7 +42,7 @@ let
     overrides = overrides-fromsrc-updated;
     buildJdk = jdk17_headless;
 
-    postPatch = agp-resolution.patchSettingsGradle { agpVersion = "8.13.2"; };
+    postPatch = "";
 
     nativeBuildInputs = [
       androidSdk
