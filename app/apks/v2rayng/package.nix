@@ -196,11 +196,16 @@ let
         cp ${libv2rayAar}/libv2ray.aar app/libs/libv2ray.aar
       '';
 
-      postPatch = ''
-        pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                val agpVersion = requested.version ?: "9.1.0"\n                useModule("com.android.tools.build:gradle:$agpVersion")\n            }\n            if (requested.id.id == "org.jetbrains.kotlin.android") {\n                val kotlinVersion = requested.version ?: "2.3.10"\n                useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")\n            }\n        }\n    }\n'
-        substituteInPlace settings.gradle.kts \
-          --replace-fail "pluginManagement {" "$pluginResolutionBlock"
-      '';
+      postPatch = (import ../_shared/agp-resolution.nix).patchSettingsGradle {
+        agpVersion = "9.1.0";
+        extraPlugins = [
+          {
+            ids = [ "org.jetbrains.kotlin.android" ];
+            module = "org.jetbrains.kotlin:kotlin-gradle-plugin";
+            version = "2.3.10";
+          }
+        ];
+      };
 
       gradleFlags = [
         "-Dorg.gradle.java.installations.auto-download=false"

@@ -41,11 +41,7 @@ let
     overrides = overrides-fromsrc-updated;
     buildJdk = jdk17_headless;
 
-    postPatch = ''
-      pluginResolutionBlock=$'pluginManagement {\n    resolutionStrategy {\n        eachPlugin {\n            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {\n                val agpVersion = requested.version ?: "8.13.2"\n                useModule("com.android.tools.build:gradle:$agpVersion")\n            }\n        }\n    }\n'
-      substituteInPlace settings.gradle.kts \
-        --replace-fail "pluginManagement {" "$pluginResolutionBlock"
-    '';
+    postPatch = (import ../_shared/agp-resolution.nix).patchSettingsGradle { agpVersion = "8.13.2"; };
 
     nativeBuildInputs = [
       androidSdk
