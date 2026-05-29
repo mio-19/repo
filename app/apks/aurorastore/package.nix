@@ -71,77 +71,73 @@ let
       echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
     '';
 
-    postPatch =
-      let
-        agpRes = import ../_shared/agp-resolution.nix;
-      in
-      ''
-              if [[ -z "''${IN_GRADLE_UPDATE_DEPS:-}" ]]; then
-                cacheRoot="${finalAttrs.mitmCache}"
-                pluginResolutionBlock='pluginManagement {
-            repositories {
-                maven { url = uri("'"$cacheRoot"'/https/plugins.gradle.org/m2") }
-                maven { url = uri("'"$cacheRoot"'/https/dl.google.com/dl/android/maven2") }
-                maven { url = uri("'"$cacheRoot"'/https/repo.maven.apache.org/maven2") }
-                maven { url = uri("'"$cacheRoot"'/https/jitpack.io") }
-                maven { url = uri("'"$cacheRoot"'/https/developer.huawei.com/repo") }
-            }
-            resolutionStrategy {
-                eachPlugin {
-                    if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {
-                        val agpVersion = requested.version ?: "8.13.2"
-                        useModule("com.android.tools.build:gradle:$agpVersion")
-                    }
-                }
-            }
-        }'
+    postPatch = ''
+            if [[ -z "''${IN_GRADLE_UPDATE_DEPS:-}" ]]; then
+              cacheRoot="${finalAttrs.mitmCache}"
+              pluginResolutionBlock='pluginManagement {
+          repositories {
+              maven { url = uri("'"$cacheRoot"'/https/plugins.gradle.org/m2") }
+              maven { url = uri("'"$cacheRoot"'/https/dl.google.com/dl/android/maven2") }
+              maven { url = uri("'"$cacheRoot"'/https/repo.maven.apache.org/maven2") }
+              maven { url = uri("'"$cacheRoot"'/https/jitpack.io") }
+              maven { url = uri("'"$cacheRoot"'/https/developer.huawei.com/repo") }
+          }
+          resolutionStrategy {
+              eachPlugin {
+                  if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library") {
+                      val agpVersion = requested.version ?: "8.13.2"
+                      useModule("com.android.tools.build:gradle:$agpVersion")
+                  }
+              }
+          }
+      }'
 
-                dependencyRepositoriesBlock='dependencyResolutionManagement {
-            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-            repositories {
-                maven { url = uri("'"$cacheRoot"'/https/dl.google.com/dl/android/maven2") }
-                maven { url = uri("'"$cacheRoot"'/https/repo.maven.apache.org/maven2") }
-                maven { url = uri("'"$cacheRoot"'/https/jitpack.io") }
-                maven { url = uri("'"$cacheRoot"'/https/developer.huawei.com/repo") }
-            }
-        }
-        '
+              dependencyRepositoriesBlock='dependencyResolutionManagement {
+          repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+          repositories {
+              maven { url = uri("'"$cacheRoot"'/https/dl.google.com/dl/android/maven2") }
+              maven { url = uri("'"$cacheRoot"'/https/repo.maven.apache.org/maven2") }
+              maven { url = uri("'"$cacheRoot"'/https/jitpack.io") }
+              maven { url = uri("'"$cacheRoot"'/https/developer.huawei.com/repo") }
+          }
+      }
+      '
 
-                substituteInPlace settings.gradle.kts \
-                  --replace-fail $'pluginManagement {\n    repositories {\n        gradlePluginPortal()\n        google()\n        mavenCentral()\n    }\n}' "$pluginResolutionBlock" \
-                  --replace-fail $'dependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    repositories {\n        google()\n        mavenCentral()\n        // libsu is only available via jitpack\n        maven("https://jitpack.io/") {\n            content {\n                includeModule("com.github.topjohnwu.libsu", "core")\n            }\n        }\n        // Only included in huawei variants\n        maven("https://developer.huawei.com/repo/") {\n            content {\n                includeGroup("com.huawei.hms")\n                includeGroup("com.huawei.android.hms")\n            }\n        }\n    }\n}' "$dependencyRepositoriesBlock"
-              else
-      ''
-      + agp-resolution.patchSettingsGradle { agpVersion = "8.13.2"; }
-      + ''
-              fi
+              substituteInPlace settings.gradle.kts \
+                --replace-fail $'pluginManagement {\n    repositories {\n        gradlePluginPortal()\n        google()\n        mavenCentral()\n    }\n}' "$pluginResolutionBlock" \
+                --replace-fail $'dependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    repositories {\n        google()\n        mavenCentral()\n        // libsu is only available via jitpack\n        maven("https://jitpack.io/") {\n            content {\n                includeModule("com.github.topjohnwu.libsu", "core")\n            }\n        }\n        // Only included in huawei variants\n        maven("https://developer.huawei.com/repo/") {\n            content {\n                includeGroup("com.huawei.hms")\n                includeGroup("com.huawei.android.hms")\n            }\n        }\n    }\n}' "$dependencyRepositoriesBlock"
+            else
+    ''
+    + agp-resolution.patchSettingsGradle { agpVersion = "8.13.2"; }
+    + ''
+            fi
 
-              substituteInPlace app/build.gradle.kts \
-                --replace-fail \
-                  'val lastCommitHash = providers.exec {' \
-                  'val lastCommitHash = providers.provider { "unknown" } /* patched for nix builds: no .git metadata */ ; if (false) { providers.exec {' \
-                --replace-fail \
-                  '}.standardOutput.asText.map { it.trim() }' \
-                  '}.standardOutput.asText.map { it.trim() } }'
+            substituteInPlace app/build.gradle.kts \
+              --replace-fail \
+                'val lastCommitHash = providers.exec {' \
+                'val lastCommitHash = providers.provider { "unknown" } /* patched for nix builds: no .git metadata */ ; if (false) { providers.exec {' \
+              --replace-fail \
+                '}.standardOutput.asText.map { it.trim() }' \
+                '}.standardOutput.asText.map { it.trim() } }'
 
-              if [[ -n "''${MITM_CACHE_HOST:-}" && -n "''${MITM_CACHE_PORT:-}" && -n "''${MITM_CACHE_CA:-}" ]]; then
-                truststore="$PWD/mitm-truststore.jks"
-                keytool -importcert -noprompt \
-                  -alias mitm-cache-ca \
-                  -file "$MITM_CACHE_CA" \
-                  -keystore "$truststore" \
-                  -storepass changeit
+            if [[ -n "''${MITM_CACHE_HOST:-}" && -n "''${MITM_CACHE_PORT:-}" && -n "''${MITM_CACHE_CA:-}" ]]; then
+              truststore="$PWD/mitm-truststore.jks"
+              keytool -importcert -noprompt \
+                -alias mitm-cache-ca \
+                -file "$MITM_CACHE_CA" \
+                -keystore "$truststore" \
+                -storepass changeit
 
-                cat >> gradle.properties <<EOF
-              systemProp.http.proxyHost=$MITM_CACHE_HOST
-              systemProp.http.proxyPort=$MITM_CACHE_PORT
-              systemProp.https.proxyHost=$MITM_CACHE_HOST
-              systemProp.https.proxyPort=$MITM_CACHE_PORT
-              systemProp.javax.net.ssl.trustStore=$truststore
-              systemProp.javax.net.ssl.trustStorePassword=changeit
-        EOF
-              fi
-      '';
+              cat >> gradle.properties <<EOF
+            systemProp.http.proxyHost=$MITM_CACHE_HOST
+            systemProp.http.proxyPort=$MITM_CACHE_PORT
+            systemProp.https.proxyHost=$MITM_CACHE_HOST
+            systemProp.https.proxyPort=$MITM_CACHE_PORT
+            systemProp.javax.net.ssl.trustStore=$truststore
+            systemProp.javax.net.ssl.trustStorePassword=changeit
+      EOF
+            fi
+    '';
 
     gradleFlags = [
       "--no-daemon"

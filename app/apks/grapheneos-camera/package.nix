@@ -54,14 +54,10 @@ let
       })
     ];
 
-    postPatch =
-      let
-        agpRes = import ../_shared/agp-resolution.nix;
-      in
-      ''
-        rm -f gradle/verification-metadata.xml
-      ''
-      + agp-resolution.patchSettingsGradle { agpVersion = "9.0.0"; };
+    postPatch = ''
+      rm -f gradle/verification-metadata.xml
+    ''
+    + agp-resolution.patchSettingsGradle { agpVersion = "9.0.0"; };
 
     nativeBuildInputs = [
       androidSdk
