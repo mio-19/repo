@@ -187,11 +187,14 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/525249.diff";
                 hash = "sha256-O0gO2CWa8A+UMnEDEaqrepuCuW9ra33jtzqVq1M4uE4=";
               })
-              (fetchpatch {
-                name = "maven_4: init at 4.0.0-rc5";
-                url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
-                hash = "sha256-und55gAfRHBle9s1vmmEMOgfNmYrAsay9ITZ5JdZBiM=";
-              })
+              /*
+                # when we update nixpkgs
+                (fetchpatch {
+                  name = "maven_4: init at 4.0.0-rc5";
+                  url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
+                  hash = "sha256-und55gAfRHBle9s1vmmEMOgfNmYrAsay9ITZ5JdZBiM=";
+                })
+              */
             ];
           };
           nixpkgs =
