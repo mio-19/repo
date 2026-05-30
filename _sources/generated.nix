@@ -22,17 +22,17 @@
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
-    version = "e8cbd64a7d1a3cbad053780855b9f5fb302bbc60";
+    version = "b9f16f01a3286081b431ae61682ec5c496affa70";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
-      rev = "e8cbd64a7d1a3cbad053780855b9f5fb302bbc60";
+      rev = "b9f16f01a3286081b431ae61682ec5c496affa70";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-AQoP04DEOd7byQdBKWDA6IEWh5aTHQ0IXM5tiGYdLBA=";
+      sha256 = "sha256-vxvj2fffKfrAwQclUSqUhJRSScKPqqdsMt3s2rXWVLU=";
     };
-    date = "2026-05-26";
+    date = "2026-05-28";
   };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
@@ -232,17 +232,17 @@
   };
   google_gallery = {
     pname = "google_gallery";
-    version = "21c71bfe53e5ea82d119f1de0d21dac44a092036";
+    version = "4b404bc2b95ae3584af13d7567a87c950549f435";
     src = fetchgit {
       url = "https://github.com/google-ai-edge/gallery.git";
-      rev = "21c71bfe53e5ea82d119f1de0d21dac44a092036";
+      rev = "4b404bc2b95ae3584af13d7567a87c950549f435";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-gT2X8Ukm6ofsGCFr70vj9CKoG8w96h4MTB4GiDJShxY=";
+      sha256 = "sha256-qAluH6sso7NNhzY9LbD9L3EYapO7c82heGeYHzOJoCk=";
     };
-    date = "2026-05-26";
+    date = "2026-05-28";
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
@@ -316,31 +316,31 @@
   };
   libhybris = {
     pname = "libhybris";
-    version = "419f3ff6736e01cb0e579f65a34c85cfa7de578b";
+    version = "29e0fa6da0166261f6b9437582fe2d56bab8530c";
     src = fetchgit {
       url = "https://github.com/Linux-on-droid/libhybris.git";
-      rev = "419f3ff6736e01cb0e579f65a34c85cfa7de578b";
+      rev = "29e0fa6da0166261f6b9437582fe2d56bab8530c";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-h9QmJ/uZ2sHMGX3/UcxD+xe/myONacKwoBhmn0RK5sI=";
+      sha256 = "sha256-5Ji9R1M0PKNWb8mQyMESQAI2qRli2GMIIMMVDsjZ7NE=";
     };
-    date = "2024-10-14";
+    date = "2026-05-29";
   };
   lindroid_drm_loopback = {
     pname = "lindroid_drm_loopback";
-    version = "f15bc3ee6e9a90e85e70ef3da057f027c68cbefd";
+    version = "2a38c1414c769e7d4a78df99030c855b5225b079";
     src = fetchgit {
       url = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git";
-      rev = "f15bc3ee6e9a90e85e70ef3da057f027c68cbefd";
+      rev = "2a38c1414c769e7d4a78df99030c855b5225b079";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-K1mjxq6dFkLlzsCbgZWzBEYCNN6k+fEz18mLHP1+jGA=";
+      sha256 = "sha256-qCxY/ZtijGYnoxs51aP5gFyDLV9lhbFGEcaP9j5FwZk=";
     };
-    date = "2026-05-04";
+    date = "2026-05-29";
   };
   lineage_deskclock = {
     pname = "lineage_deskclock";
@@ -358,17 +358,17 @@
   };
   lineage_device_mainline_common = {
     pname = "lineage_device_mainline_common";
-    version = "48c5d4385e58a2ab93fd432dd114b7f41c9b4b10";
+    version = "8a367c56730684a3b555ac4677a67e5b826e57d0";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_device_mainline_common.git";
-      rev = "48c5d4385e58a2ab93fd432dd114b7f41c9b4b10";
+      rev = "8a367c56730684a3b555ac4677a67e5b826e57d0";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-vxCJF5cS3eWjdzfGjPBWOGReC1u7jKFMB9/9+Gibw8g=";
+      sha256 = "sha256-a7BDy7DGV/bBBvz+Qvroxf1Jt1pX0QZ1hbN4xvCrW/g=";
     };
-    date = "2026-05-18";
+    date = "2026-05-19";
   };
   lineage_device_virt_common = {
     pname = "lineage_device_virt_common";
@@ -806,17 +806,17 @@
   };
   termux_x11 = {
     pname = "termux_x11";
-    version = "c1a18e0ea4c1d7fe9a145596ab71f48ba9b7eee2";
+    version = "222d68c9d0a51b840ae99c2076990225f6724a8f";
     src = fetchgit {
       url = "https://github.com/termux/termux-x11.git";
-      rev = "c1a18e0ea4c1d7fe9a145596ab71f48ba9b7eee2";
+      rev = "222d68c9d0a51b840ae99c2076990225f6724a8f";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-C2uVDrZHQiurZndN6oT2CtSuMSWHNhcnR+HBuI9DvQg=";
+      sha256 = "sha256-3m9ij/FmTQScrLQjUga5L1UIWINro+aOjjfH4nRSbaU=";
     };
-    date = "2026-05-26";
+    date = "2026-05-27";
   };
   vendor_gapps15 = {
     pname = "vendor_gapps15";
@@ -838,16 +838,16 @@
   };
   vendor_lindroid = {
     pname = "vendor_lindroid";
-    version = "a54fb0cce61d7768c79c72df8d991507acba81f4";
+    version = "75f5bd1c375e55a8f755985db5b5cf7cdefbd20e";
     src = fetchgit {
       url = "https://github.com/Linux-on-droid/vendor_lindroid.git";
-      rev = "a54fb0cce61d7768c79c72df8d991507acba81f4";
+      rev = "75f5bd1c375e55a8f755985db5b5cf7cdefbd20e";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-K+DQd3aQ8M+1/JiOFt62VgFKx7hNBLMIzTs7rb4SwqQ=";
+      sha256 = "sha256-VE3jPb87JEWUU/wvcbRhWtpJhXnyByQt/2xHCYva//8=";
     };
-    date = "2026-03-05";
+    date = "2026-05-29";
   };
 }
