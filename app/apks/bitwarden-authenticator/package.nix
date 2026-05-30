@@ -29,17 +29,17 @@ let
 
       gradle = gradle_9_4_1;
 
-      # https://github.com/bitwarden/android/blob/v2026.4.2-bwpm/gradle/libs.versions.toml#L33 bitwardenSdk = "2.0.0-6825-release-hotfix-v2026.4.1-bwpm"
+      # https://github.com/bitwarden/android/blob/v2026.5.0-bwa/gradle/libs.versions.toml#L33 bitwardenSdk = "3.0.0-6822-fe351b43"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
-        rev = "6c3c4bddaf6054980fce89343014727f6f2b9cc7";
-        hash = "sha256-pWzEqLGyBzDOCBh+c4zwxHcxTmLJpIjizH4LMBK8cGA=";
+        rev = "fe351b43";
+        hash = "sha256-JBT7oSS+NlCH8DztNOASnVNlmWnGPtdOCkR68lihrh0=";
       };
 
       sdkSrcLock = fetchurl {
         url = "${sdkSrc.meta.homepage}/raw/${sdkSrc.rev}/Cargo.lock";
-        hash = "sha256-FwHON4+0VqAru1+76yjGhItV7zOCyVqHPcQ6OpdmElU=";
+        hash = "sha256-jdovyBv465G0SnZFIAImW3TP076wL1Zf6Djhd0ubwak=";
       };
 
       androidCrossConfig = {
@@ -150,7 +150,7 @@ let
           version = "2.0.0";
           src = sdkSrc;
           cargoRoot = ".";
-          hash = "sha256-NzLkiAGPaNJ3QgZsgcuzgIDbT3PHe9sOjm8H/LiZqoE=";
+          hash = "sha256-ujsjMww+A1x1xBZMW7sZjw2bz7bwLWoDvaBILLYmT4g=";
         };
         nativeBuildInputs = [
           rustPlatform.cargoSetupHook
@@ -183,14 +183,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-authenticator";
-      version = "2026.4.2";
+      version = "2026.5.0";
 
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
-        # v2026.4.2-bwa is not tagged; authenticator ships from the same monorepo commit as v2026.4.2-bwpm.
-        tag = "v${finalAttrs.version}-bwpm";
-        hash = "sha256-3eX73TsN/1MB6MeoSqCWHGVwksSW6fIhWO5RRUhufCQ=";
+        tag = "v${finalAttrs.version}-bwa";
+        hash = "sha256-9dptwwuZJPegnwSIi3DJ2u0ZrE/OnJt+hQXpryiQIE8=";
       };
 
       gradleBuildTask = ":authenticator:assembleRelease";
@@ -243,7 +242,7 @@ let
           )
         fi
         substituteInPlace gradle/libs.versions.toml \
-          --replace-fail 'bitwarden-sdk = { module = "com.bitwarden:sdk-android.dev", version.ref = "bitwardenSdk" }' 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version = "LOCAL" }'
+          --replace-fail 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version.ref = "bitwardenSdk" }' 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version = "LOCAL" }'
         cat >> build.gradle.kts <<'EOF'
         val nixBootstrap by configurations.creating
         dependencies {
@@ -271,6 +270,7 @@ let
             nixBootstrap("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0@jar")
             nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-compat:2.3.20")
             nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-impl:2.3.20")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.20")
             nixBootstrap("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
         }
         tasks.register("resolveNixBootstrapDeps") {
