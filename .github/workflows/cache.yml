@@ -81,7 +81,7 @@ jobs:
       if: runner.os == 'Linux'
       # always lost communication after 2h?
       run: |
-        timeout --signal=KILL 1h nix run nixpkgs#nix-fast-build -- --max-jobs 1 --option cores 1 \
+        timeout --signal=KILL 30m nix run nixpkgs#nix-fast-build -- --max-jobs 1 --option cores 1 \
           --no-nom \
           -f .#packages.${{ env.SYSTEM }}.github-actions-cached
     - name: Build nix packages
