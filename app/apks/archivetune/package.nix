@@ -1,9 +1,10 @@
 {
+  agp-resolution,
   mk-apk-package,
   overrides-fromsrc,
-  buildGradlePackage,
   gradle_9_4_1,
   lib,
+  stdenv,
   jdk21_headless,
   fetchFromGitHub,
   zip,
@@ -11,6 +12,10 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   overrides-fromsrc-updated,
+  writeShellScript,
+  _experimental-update-script-combinators,
+  nix-update-script,
+  gradleSetupHook,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -20,32 +25,62 @@ let
     # needed for AGP 9.x
     s.build-tools-36-0-0
     s.build-tools-37-0-0
+    s.ndk-28-2-13676358
+    s.cmake-3-22-1
   ]);
 
-  # https://github.com/koiverse/ArchiveTune/blob/v13.3.0/gradle/wrapper/gradle-wrapper.properties
+  # https://github.com/koiverse/ArchiveTune/blob/v13.4.0/gradle/wrapper/gradle-wrapper.properties
   gradle = gradle_9_4_1;
 
-  appPackage = buildGradlePackage rec {
+  appPackage = stdenv.mkDerivation (finalAttrs: {
     pname = "archivetune";
-    version = "13.3.0";
+    version = "13.4.0";
 
     src = fetchFromGitHub {
       owner = "koiverse";
       repo = "ArchiveTune";
-      tag = "v${version}";
-      hash = "sha256-BFMDmSezQ3XysuQD3szFS0UMgVNHWMqae/zNXovH/Y8=";
+      tag = "v${finalAttrs.version}";
+      hash = "sha256-WZWk0IbZP1A5vQN0T1C7tqBV0Hyx7IpZ1hugJK7gL4k=";
     };
 
-    inherit gradle;
+    gradleBuildTask = ":app:assembleMobileArm64Release";
+    gradleUpdateTask = ":app:assembleMobileArm64Release";
+    gradleBuildFlags = [ ":app:assembleMobileArm64Release" ];
 
-    # $ nix develop /path/to/repo#apk_archivetune -c nix run github:tadfisher/gradle2nix/v2
-    lockFile = ./gradle.lock;
-    overrides = overrides-fromsrc-updated;
-    buildJdk = jdk21_headless;
+    mitmCache = gradle.fetchDeps {
+      inherit (finalAttrs) pname;
+      attrPath = "apk_archivetune";
+      pkg = finalAttrs.finalPackage.overrideAttrs (old: {
+        nativeBuildInputs = lib.remove gradleSetupHook old.nativeBuildInputs;
+        preConfigure = ''
+          export ANDROID_USER_HOME="$HOME/.android"
+          mkdir -p "$ANDROID_USER_HOME"
+          echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+        '';
+      });
+      data = ./archivetune_deps.json;
+      silent = false;
+      useBwrap = false;
+    };
+
+    passthru.updateScript = _experimental-update-script-combinators.sequence [
+      (nix-update-script { })
+      {
+        command = [
+          "${writeShellScript "update-apk-archivetune-gradle-deps" ''
+            set -euo pipefail
+            system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+            "$(nix build ".#legacyPackages.$system.apk_archivetune.mitmCache.updateScript" --no-link --print-out-paths)"
+          ''}"
+        ];
+        supportedFeatures = [ ];
+      }
+    ];
 
     nativeBuildInputs = [
       androidSdk
       gradle
+      gradleSetupHook
       jdk21_headless
       zip
       unzip
@@ -56,10 +91,29 @@ let
       JAVA_HOME = jdk21_headless;
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+      ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     };
 
+    prePatch = (agp-resolution.patchSettingsGradle {
+      file = "settings.gradle.kts";
+      agpVersion = "9.2.1";
+      pluginIds = [ "com.android.application" "com.android.library" ];
+    });
+
+    preConfigure = ''
+      export ANDROID_USER_HOME="$HOME/.android"
+      mkdir -p "$ANDROID_USER_HOME"
+      echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+
+      # Inject mitmCache into settings.gradle.kts pluginManagement to fix Gradle 9 offline plugin resolution
+      # Only do this if finalAttrs.mitmCache actually evaluates to a path
+      substituteInPlace settings.gradle.kts \
+        --replace-fail "gradlePluginPortal()" "gradlePluginPortal(); maven { setUrl(uri(\"${finalAttrs.mitmCache}\")) }"
+    '';
+
     gradleFlags = [
+      "--no-configuration-cache"
       "-xlintVitalMobileUniversalRelease"
       "-xlintVitalMobileArmeabiRelease"
       "-Dorg.gradle.java.home=${jdk21_headless.home}"
@@ -68,8 +122,6 @@ let
       "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
     ];
-
-    gradleBuildFlags = ":app:assembleMobileArm64Release";
 
     installPhase = ''
       runHook preInstall
@@ -91,7 +143,7 @@ let
       license = licenses.gpl3Only;
       platforms = platforms.unix;
     };
-  };
+  });
 in
 mk-apk-package {
   inherit appPackage;
