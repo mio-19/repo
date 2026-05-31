@@ -16,20 +16,22 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-35
+        s.platforms-android-36
         s.build-tools-35-0-0
+        s.build-tools-36-0-0
       ]);
 
       gradle = gradle_8_12_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gamenative";
-      version = "0.9.2";
+      version = "1.0.0-prerelease";
 
       src = fetchFromGitHub {
         owner = "utkarshdalal";
         repo = "GameNative";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-uCCKN6lDbJ8SeOV6gKTVmtgzA0sJ5l5IUvLr5vs15XI=";
+        hash = "sha256-m1+RpeP45d3hyFN3grxXQ14y0mB+fjAa2W18ukTh+RE=";
       };
 
       patches = [
@@ -39,10 +41,10 @@ let
 
       postPatch = ''
         substituteInPlace app/build.gradle.kts \
-          --replace-fail '    ndkVersion = "22.1.7171670"' ""
+          --replace-fail '    ndkVersion = "27.3.13750724"' ""
       '';
 
-      gradleBuildTask = ":app:assembleRelease";
+      gradleBuildTask = ":app:assembleModernRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
 
       mitmCache = gradle.fetchDeps {
@@ -74,7 +76,6 @@ let
       '';
 
       gradleFlags = [
-        "-xlintVitalAnalyzeRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
@@ -83,7 +84,7 @@ let
 
       installPhase = ''
         runHook preInstall
-        apk_path="$(echo app/build/outputs/apk/release/*.apk | awk '{print $1}')"
+        apk_path="$(echo app/build/outputs/apk/modern/release/*.apk | awk '{print $1}')"
         install -Dm644 "$apk_path" "$out/gamenative.apk"
         runHook postInstall
       '';
