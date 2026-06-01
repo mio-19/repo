@@ -8,7 +8,7 @@
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  gradle_9_1_0,
+  gradle_9_4_1,
 }:
 let
   appPackage =
@@ -20,17 +20,17 @@ let
         s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_1_0;
+      gradle = gradle_9_4_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "kdeconnect-android";
-      version = "1.35.5";
+      version = "1.35.8";
 
       src = fetchFromGitHub {
         owner = "KDE";
         repo = "kdeconnect-android";
         rev = "v${finalAttrs.version}";
-        hash = "sha256-pnPy4Yai0Fj7ViEyjFTTKskNnaoTyln0DlQU3R9QcFk=";
+        hash = "sha256-nF7j1w4uP/99iwJ6F8A9qIdAsIx9aw52OIWeX3fOLCU=";
       };
 
       gradleBuildTask = "assembleRelease";
