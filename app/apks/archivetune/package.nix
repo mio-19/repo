@@ -43,6 +43,10 @@ let
       hash = "sha256-WZWk0IbZP1A5vQN0T1C7tqBV0Hyx7IpZ1hugJK7gL4k=";
     };
 
+    patches = [
+      ./remove-star-dialog.patch
+    ];
+
     gradleBuildTask = ":app:assembleMobileArm64Release";
     gradleUpdateTask = ":app:assembleMobileArm64Release";
     gradleBuildFlags = [ ":app:assembleMobileArm64Release" ];
