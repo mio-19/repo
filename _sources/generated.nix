@@ -806,17 +806,17 @@
   };
   termux_x11 = {
     pname = "termux_x11";
-    version = "222d68c9d0a51b840ae99c2076990225f6724a8f";
+    version = "f9611e9a879adb7e5df6f92a56f1110e16160ea6";
     src = fetchgit {
       url = "https://github.com/termux/termux-x11.git";
-      rev = "222d68c9d0a51b840ae99c2076990225f6724a8f";
+      rev = "f9611e9a879adb7e5df6f92a56f1110e16160ea6";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-3m9ij/FmTQScrLQjUga5L1UIWINro+aOjjfH4nRSbaU=";
+      sha256 = "sha256-o1GZ+l7Mmk+Dg0ztGHBfM/faSHSZPxLPoOdkrtmkUUQ=";
     };
-    date = "2026-05-27";
+    date = "2026-05-31";
   };
   vendor_gapps15 = {
     pname = "vendor_gapps15";
@@ -832,7 +832,7 @@
     version = "6b7bf6d049e8d425611e0c6dfb4637193190e8d6";
     src = fetchurl {
       url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/6b7bf6d049e8d425611e0c6dfb4637193190e8d6/vendor_gapps-6b7bf6d049e8d425611e0c6dfb4637193190e8d6.tar.gz";
-      sha256 = "sha256-SkpawHzPB3gLJ6Lr8lNIvQ0LvrH+6UwM+QaMjsnQTjM=";
+      sha256 = "sha256-ZJPTBe8kD4bWcvQET6TL58KfjiCicVzCAo3D8v/5XNE=";
     };
     date = "2026-04-09";
   };
