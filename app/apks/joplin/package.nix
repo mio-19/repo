@@ -35,13 +35,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "joplin";
-      version = "3.6.14";
+      version = "3.6.20";
 
       src = fetchFromGitHub {
         owner = "laurent22";
         repo = "joplin";
-        tag = "v${finalAttrs.version}";
-        hash = "sha256-C+253px2giINWjXsY2Jg/4M4hoFH7hWdIs4sAc6HUFw=";
+        tag = "android-v${finalAttrs.version}";
+        hash = "sha256-jnK3Wo2jXK/d8muHISjQJe7aWg8g09PJh3nU4UqYqfQ=";
       };
 
       sourceRoot = "${finalAttrs.src.name}";
