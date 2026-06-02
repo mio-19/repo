@@ -7,7 +7,7 @@
     android-nixpkgs = {
       #url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
-      url = "github:tadfisher/android-nixpkgs/2026-05-23-stable";
+      url = "github:tadfisher/android-nixpkgs/2026-05-30-stable";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
@@ -158,11 +158,14 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/472580.patch";
                 hash = "sha256-dtQ8pFVnvTFwmpbMxEG9mnCbi1t6wweA1E/ufBdPsws=";
               })
-              (fetchpatch {
-                name = "openjdk26: init at 26-ga";
-                url = "https://github.com/NixOS/nixpkgs/pull/506259.patch";
-                hash = "sha256-jjzVh6rOZ/wcLbR4SfOcjts9IUWt/GbQPZXRDveV+c4=";
-              })
+              /*
+                # conflicts with https://github.com/NixOS/nixpkgs/pull/506356
+                (fetchpatch {
+                  name = "openjdk26: init at 26-ga";
+                  url = "https://github.com/NixOS/nixpkgs/pull/506259.patch";
+                  hash = "sha256-jjzVh6rOZ/wcLbR4SfOcjts9IUWt/GbQPZXRDveV+c4=";
+                })
+              */
               (fetchpatch {
                 name = "maven: 3.9.12 -> 3.9.16";
                 url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
