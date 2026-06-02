@@ -32,20 +32,20 @@ let
       androidLibXrayLiteSrc = fetchFromGitHub {
         owner = "2dust";
         repo = "AndroidLibXrayLite";
-        tag = "v26.5.19";
-        hash = "sha256-JvwWFkTXET7K2cSQ1yRjxtGUdqrGtyz1ECZnMxaOMGU=";
+        tag = "v26.6.1";
+        hash = "sha256-BtKxWpwT2dmxUTlvl1+mQA3L6ibDPSTlavQXSbbPqk8=";
       };
 
       androidLibXrayLiteGoModCache = stdenvNoCC.mkDerivation {
         pname = "android-lib-xray-lite-go-mod-cache";
-        version = "26.5.19";
+        version = "26.6.1";
         src = androidLibXrayLiteSrc;
 
         nativeBuildInputs = [ go_1_26 ];
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-4ZNezy85scLrSNtur0PnBaMYGRKG/j9X8k3HqJGQ+zc=";
+        outputHash = "sha256-sUkCAMTYjBkbhqgaXcvZx/2ZkWRhdtidX+qx6Rhmnf8=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -79,7 +79,7 @@ let
 
       libv2rayAar = stdenv.mkDerivation {
         pname = "android-lib-xray-lite-aar";
-        version = "26.5.19";
+        version = "26.6.1";
         src = androidLibXrayLiteSrc;
 
         nativeBuildInputs = [
@@ -120,6 +120,11 @@ let
           go mod edit -replace=golang.org/x/mobile=./x-mobile
           go mod vendor
 
+          substituteInPlace vendor/github.com/xtls/xray-core/transport/internet/finalmask/xicmp/client.go \
+            --replace-fail '//go:linkname checksum golang.org/x/net/icmp.checksum' '// ' \
+            --replace-fail 'func checksum(b []byte) uint16' 'func checksum(b []byte) uint16 { csumcv := len(b) - 1; s := uint32(0); for i := 0; i < csumcv; i += 2 { s += uint32(b[i+1])<<8 | uint32(b[i]) }; if csumcv&1 == 0 { s += uint32(b[csumcv]) }; s = s>>16 + s&0xffff; s = s + s>>16; return ^uint16(s) }'
+
+
           gomobileBin="$PWD/gomobile-bin"
           gobindBin="$PWD/gobind-bin"
           (cd ./x-mobile && go build -o "$gomobileBin" ./cmd/gomobile)
@@ -140,7 +145,7 @@ let
             fi
           done
           export PATH="$GOPATH/bin:$PATH"
-          "$gomobileBin" bind -x -v -androidapi 24 -trimpath -ldflags='-s -w -buildid=' ./
+          "$gomobileBin" bind -x -v -androidapi 24 -trimpath -ldflags='-s -w -buildid= -checklinkname=0' ./
 
           runHook postBuild
         '';
@@ -154,14 +159,14 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "v2rayng";
-      version = "2.2.1";
+      version = "2.2.2";
 
       src = fetchFromGitHub {
         owner = "2dust";
         repo = "v2rayNG";
         tag = finalAttrs.version;
         fetchSubmodules = true;
-        hash = "sha256-cbDOHOco5fBHuYSfVKjY0BsSWva8IJKDulp2/fRP6UI=";
+        hash = "sha256-a4DBweJsMrxvj/xBpXgvTwMh1YogRf57mYV5Q2fXjzE=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/V2rayNG";
