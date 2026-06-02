@@ -34,12 +34,12 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "eden";
-      version = "0.2.0";
+      version = "0.2.1";
 
       src = fetchgit {
         url = "https://git.eden-emu.dev/eden-emu/eden";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-Q/tJP6AHAtW9AXn9G+8dF4oTlKDfNHN4cuTKXtYq0T8=";
+        hash = "sha256-79/JmIRWysoc3psJqMFyiNc2gjTY4VhJfdNaiTvisMk=";
       };
 
       gradleBuildTask = ":app:assembleMainlineRelease";
