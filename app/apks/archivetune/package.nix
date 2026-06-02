@@ -99,11 +99,16 @@ let
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     };
 
-    prePatch = (agp-resolution.patchSettingsGradle {
-      file = "settings.gradle.kts";
-      agpVersion = "9.2.1";
-      pluginIds = [ "com.android.application" "com.android.library" ];
-    });
+    prePatch = (
+      agp-resolution.patchSettingsGradle {
+        file = "settings.gradle.kts";
+        agpVersion = "9.2.1";
+        pluginIds = [
+          "com.android.application"
+          "com.android.library"
+        ];
+      }
+    );
 
     preConfigure = ''
       export ANDROID_USER_HOME="$HOME/.android"
