@@ -1,0 +1,34 @@
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+index c83688e..a921dd1 100644
+--- a/app/build.gradle.kts
++++ b/app/build.gradle.kts
+@@ -280,29 +280,6 @@ dependencies {
+     detektPlugins(libs.detekt.rules.compose)
+ }
+ 
+-sentry {
+-    autoInstallation {
+-        enabled = !isNoGms()
+-        sentryVersion = libs.versions.sentry.asProvider()
+-        autoUploadProguardMapping = isSentryAutoUploadEnabled()
+-        uploadNativeSymbols = isSentryAutoUploadEnabled()
+-    }
+-
+-    tracingInstrumentation {
+-        enabled = false
+-    }
+-
+-    ignoredVariants.set(
+-        listOf(
+-            "productionNoGmsDebug",
+-            "nobleNoGmsDebug",
+-            "productionNoGmsAlpha",
+-            "nobleNoGmsAlpha",
+-            "productionNoGmsRelease",
+-            "nobleNoGmsRelease",
+-        )
+-    )
+-}
+ 
+ fun isNoGms(): Boolean = gradle.startParameter.taskNames.any {
+     it.contains("noGms", true)

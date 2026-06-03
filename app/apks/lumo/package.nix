@@ -10,13 +10,13 @@
   androidSdkBuilder,
 }:
 let
-  version = "1.2.18-nogms";
+  version = "1.5.1-nogms";
 
   src = fetchFromGitHub {
     owner = "ProtonLumo";
     repo = "android-lumo";
     tag = version;
-    hash = "sha256-sacD8lv6D1WP4aXEVGC+CymjgD0wgEQ6zpmxTo3Tx28=";
+    hash = "sha256-CGuLJyENtP4CQ91FHntm7lv+XEbL98OZVlwpIahLMmI=";
   };
 
   appPackage =
@@ -34,6 +34,8 @@ let
     stdenv.mkDerivation (finalAttrs: {
       pname = "lumo";
       inherit version src;
+
+      patches = [ ./remove-sentry.patch ];
 
       # F-Droid metadata builds subdir `app` with Gradle flavors
       # `production` and `noGms`.
@@ -61,12 +63,17 @@ let
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
         SENTRY_DISABLE_TELEMETRY = "1";
+        SENTRY_TELEMETRY_DISABLE = "1";
       };
 
       postPatch = ''
+        substituteInPlace build.gradle.kts \
+          --replace-fail 'alias(libs.plugins.sentry.android.gradle) apply false' '// alias(libs.plugins.sentry.android.gradle) apply false' || true
         substituteInPlace app/build.gradle.kts \
-          --replace-fail '            signingConfig = signingConfigs.getByName("release")' \
-            '            signingConfig = if (isNoGms()) signingConfigs.getByName("debug") else signingConfigs.getByName("release")'
+          --replace-fail 'alias(libs.plugins.sentry.android.gradle)' '// alias(libs.plugins.sentry.android.gradle)' || true
+        substituteInPlace app/build.gradle.kts \
+          --replace-fail 'signingConfig = signingConfigs.getByName("release")' \
+            'signingConfig = if (isNoGms()) signingConfigs.getByName("debug") else signingConfigs.getByName("release")'
       '';
 
       preConfigure = ''
@@ -81,6 +88,8 @@ let
         "-Dandroid.builder.sdkDownload=false"
         "-Dio.sentry.telemetry.enabled=false"
         "-Dsentry.telemetry.enabled=false"
+        "-Dio.sentry.auto-init=false"
+        "-Dsentry.auto-init=false"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
       ];
