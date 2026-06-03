@@ -4,7 +4,7 @@
   buildDartApplication,
   runCommand,
   fetchFromGitHub,
-  flutter341,
+  flutter344,
   jdk17_headless,
   python3,
   gradle_8_13,
@@ -31,15 +31,15 @@ let
 
       pythonWithYaml = python3.withPackages (ps: [ ps.pyyaml ]);
     in
-    buildDartApplication.override { dart = flutter341; } (finalAttrs: {
+    buildDartApplication.override { dart = flutter344; } (finalAttrs: {
       pname = "rain";
-      version = "1.3.10";
+      version = "1.3.12";
 
       src = fetchFromGitHub {
         owner = "darkmoonight";
         repo = "Rain";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-j7b7LzNpEmXBuMP5VqGN+ltzpFi8DTVsAij4aDTJA5Y=";
+        hash = "sha256-XueHDou4trFFGtt/Cb4h6iUzzHdXFu/GqBtSN1Qw3Gw=";
       };
 
       patches = [
@@ -54,8 +54,8 @@ let
           name:
           runCommand "flutter-sdk-${name}" { passthru.packageRoot = "."; } ''
             for path in \
-              '${flutter341}/packages/${name}' \
-              '${flutter341}/bin/cache/pkg/${name}'; do
+              '${flutter344}/packages/${name}' \
+              '${flutter344}/bin/cache/pkg/${name}'; do
               if [ -d "$path" ]; then
                 ln -s "$path" "$out"
                 break
@@ -76,7 +76,7 @@ let
         useBwrap = false;
       };
 
-      gradleUpdateTask = ":app:checkReleaseAarMetadata :app:assembleRelease :connectivity_plus:extractReleaseAnnotations :dynamic_color:checkReleaseAarMetadata :workmanager_android:checkReleaseAarMetadata";
+      gradleUpdateTask = ":app:checkFlossReleaseAarMetadata :app:assembleFlossRelease :connectivity_plus:extractReleaseAnnotations :dynamic_color:checkReleaseAarMetadata :workmanager_android:checkReleaseAarMetadata";
 
       dontDartBuild = true;
       dontDartInstall = true;
@@ -111,7 +111,7 @@ let
       ];
 
       postPatch = ''
-        cp -LR ${flutter341} flutter-sdk
+        cp -LR ${flutter344} flutter-sdk
         chmod -R u+w flutter-sdk
         touch flutter-sdk/bin/cache/engine.realm # https://github.com/NixOS/nixpkgs/pull/500309#issuecomment-4192628176
         chmod +x flutter-sdk/bin/cache/artifacts/engine/*/font-subset # needed after nixpkgs b86751bc4085f48661017fa226dee99fab6c651b -> 01fbdeef22b76df85ea168fbfe1bfd9e63681b30
@@ -122,16 +122,31 @@ let
         GRADLEW_SCRIPT
         chmod +x android/gradlew
 
+        echo "subprojects {" >> android/build.gradle
+        echo "    project.configurations.all {" >> android/build.gradle
+        echo "        resolutionStrategy.eachDependency { details ->" >> android/build.gradle
+        echo "            if (details.requested.group == 'androidx.glance' && details.requested.name == 'glance-appwidget') {" >> android/build.gradle
+        echo "                details.useVersion '1.1.1'" >> android/build.gradle
+        echo "            }" >> android/build.gradle
+        echo "        }" >> android/build.gradle
+        echo "    }" >> android/build.gradle
+        echo "}" >> android/build.gradle
+
+        echo "-dontwarn com.google.android.gms.**" > android/app/proguard-rules.pro
+        echo "-dontwarn com.google.android.gms.location.**" >> android/app/proguard-rules.pro
+        echo "-dontwarn com.google.android.gms.common.**" >> android/app/proguard-rules.pro
+        echo "-dontwarn com.google.android.gms.tasks.**" >> android/app/proguard-rules.pro
+
+        sed -i 's/signingConfig = signingConfigs.release/signingConfig = signingConfigs.release\n            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"/' android/app/build.gradle
+
         if grep -Fq 'android.newDsl=true' android/gradle.properties; then
           substituteInPlace android/gradle.properties \
             --replace-fail 'android.newDsl=true' 'android.newDsl=false'
         elif ! grep -Fq 'android.newDsl=' android/gradle.properties; then
           echo 'android.newDsl=false' >> android/gradle.properties
         fi
-        if grep -Fq 'signingConfig = signingConfigs.release' android/app/build.gradle; then
-          substituteInPlace android/app/build.gradle \
-            --replace-fail 'signingConfig = signingConfigs.release' 'signingConfig = signingConfigs.debug'
-        fi
+        substituteInPlace android/app/build.gradle \
+          --replace-fail 'signingConfig = signingConfigs.release' 'signingConfig = signingConfigs.debug'
         substituteInPlace android/app/build.gradle \
           --replace-fail "ndkVersion = '29.0.14206865'" "ndkVersion = '28.2.13676358'"
 
@@ -210,13 +225,13 @@ let
 
       buildPhase = ''
         runHook preBuild
-        flutter build apk --release --no-pub
+        flutter build apk --release --no-pub --flavor floss
         runHook postBuild
       '';
 
       installPhase = ''
         runHook preInstall
-        install -Dm644 build/app/outputs/flutter-apk/app-release.apk \
+        install -Dm644 build/app/outputs/flutter-apk/app-floss-release.apk \
           "$out/rain.apk"
         runHook postInstall
       '';
