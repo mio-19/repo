@@ -307,14 +307,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.59.14";
+      version = "5.59.17";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-f5AANDNgfNjCXserbv5xJWF65IMXJGxQecGmN23qmFc=";
+        hash = "sha256-L8eIpDTsZuIgRCp8dSed0IZ26EtUxAaAPNuOE0VBgc8=";
       };
 
       patches = [
@@ -323,6 +323,10 @@ let
         # Build the Rust JNI libraries in Nix instead of invoking cargo-ndk from Gradle.
         ./skip-gradle-rdp-native-build.patch
       ];
+
+      postPatch = ''
+        rm -f gradle/verification-metadata.xml
+      '';
 
       gradleBuildTask = ":app:assembleArm64Release";
       gradleUpdateTask = finalAttrs0.gradleBuildTask;
