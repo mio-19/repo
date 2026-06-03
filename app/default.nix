@@ -23,7 +23,7 @@
       };
       mvn2nixMaven = pkgs.callPackage "${inputs.mvn2nix}/maven.nix" { };
       gradle2nixScope = pkgs.callPackage "${gradle2nixPatched}/nix" { };
-      androidSdkBuilderRaw = inputs.android-nixpkgs.sdk.${system};
+      androidSdkBuilderRaw = pkgs.androidSdk;
       sourceBuiltNdkHelper = pkgs.callPackage ./source-built-ndk.nix {
         robotnix = inputsPatched.robotnix;
         androidSdkBuilder = androidSdkBuilderRaw;

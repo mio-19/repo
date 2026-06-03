@@ -345,6 +345,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-python27": {
+      "locked": {
+        "lastModified": 1780203844,
+        "narHash": "sha256-K5sT4jTpGs15ADhviMKNBH38REpPf5Q6mM1+N6cArVE=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b51242d7d43689db2f3be91bd05d5b24fbb469c4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-26.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1780336545,
@@ -486,6 +502,7 @@
         "nix-kernelsu-builder": "nix-kernelsu-builder",
         "nixos-apple-silicon": "nixos-apple-silicon",
         "nixpkgs": "nixpkgs_2",
+        "nixpkgs-python27": "nixpkgs-python27",
         "openwrt-imagebuilder": "openwrt-imagebuilder",
         "robotnix": "robotnix",
         "squish-find-the-brains": "squish-find-the-brains",
