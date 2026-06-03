@@ -13,7 +13,6 @@
   androidSdkBuilder,
   applyPatches,
   gradle_8_13,
-  fetchpatch,
 }:
 let
   appPackage =
@@ -54,11 +53,14 @@ let
           hash = "sha256-6EGJBt52SH9QKwBmaukyx71J3KeUK9UmMyQq2YPXvj8=";
         };
         patches = [
-          (fetchpatch {
-            name = "feat: show notification and battery optimization warning";
-            url = "https://github.com/immich-app/immich/pull/26610.diff";
-            hash = "sha256-vTxs6h/jbmcTSdsWE2aj3ryzj2IB1uULbEqwBI/lcSU=";
-          })
+          /*
+            # TODO:
+            (fetchpatch {
+              name = "feat: show notification and battery optimization warning";
+              url = "https://github.com/immich-app/immich/pull/26610.diff";
+              hash = "sha256-TBXPSuikeq0S2o/+sl6F+twfMxJBkCuiwpdK88mn6L8=";
+            })
+          */
           /*
             # TODO:
             (fetchpatch {
