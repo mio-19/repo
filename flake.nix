@@ -4,10 +4,11 @@
     #nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
+    nixpkgs-python27.url = "github:NixOS/nixpkgs/nixos-26.05";
     android-nixpkgs = {
       #url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
-      url = "github:tadfisher/android-nixpkgs/2026-05-23-stable";
+      url = "github:tadfisher/android-nixpkgs/2026-05-30-stable";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
@@ -158,11 +159,14 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/472580.patch";
                 hash = "sha256-dtQ8pFVnvTFwmpbMxEG9mnCbi1t6wweA1E/ufBdPsws=";
               })
-              (fetchpatch {
-                name = "openjdk26: init at 26-ga";
-                url = "https://github.com/NixOS/nixpkgs/pull/506259.patch";
-                hash = "sha256-jjzVh6rOZ/wcLbR4SfOcjts9IUWt/GbQPZXRDveV+c4=";
-              })
+              /*
+                # conflicts with https://github.com/NixOS/nixpkgs/pull/506356
+                (fetchpatch {
+                  name = "openjdk26: init at 26-ga";
+                  url = "https://github.com/NixOS/nixpkgs/pull/506259.patch";
+                  hash = "sha256-jjzVh6rOZ/wcLbR4SfOcjts9IUWt/GbQPZXRDveV+c4=";
+                })
+              */
               (fetchpatch {
                 name = "maven: 3.9.12 -> 3.9.16";
                 url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
@@ -213,8 +217,14 @@
             };
             inherit system;
             overlays = [
+              inputs.android-nixpkgs.overlays.default
               (final: prev: rec {
                 inherit (selfPackages) ant;
+                python27 =
+                  (import inputs.nixpkgs-python27 {
+                    inherit system;
+                    config.permittedInsecurePackages = [ "python-2.7.18.12" ];
+                  }).python27;
                 maven = selfPackages.maven_3_9_16;
                 gradle_7 = selfPackages.gradle_7_6_6;
                 gradle_7-unwrapped = gradle_7.unwrapped;
