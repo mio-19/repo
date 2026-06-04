@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  gradle_9_3_1,
+  gradle_9_4_1,
   jdk21_headless,
   jdk17_headless,
   stdenv,
@@ -17,21 +17,22 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
+        s.platforms-android-35
         s.platforms-android-36
         s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_3_1;
+      gradle = gradle_9_4_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "meshtastic";
-      version = "2.7.13";
+      version = "2.7.14";
 
       src = fetchFromGitHub {
         owner = "meshtastic";
         repo = "Meshtastic-Android";
         rev = "v${finalAttrs.version}";
-        hash = "sha256-bktrjU/KgUeh4eLPfQM3No1oK5YOo3bjRHRk+qGg4X8=";
+        hash = "sha256-YsHSW6E6Dpqc8C9MCmHjnTGPwMWiiJHQrw1tM1Pu1vk=";
         fetchSubmodules = true;
       };
 
@@ -43,18 +44,17 @@ let
         # Remove develocity build-scan plugin (not needed for building,
         # and causes class-load errors with Gradle 9.3.1)
         ./remove-develocity.patch
-        # Pin kotlin-dsl to 6.4.2 in build-logic; 5.2.0 is bundled with
-        # Gradle 9.3.1 and not published to Maven.
-        ./pin-kotlin-dsl.patch
+
         # Remove firebase plugin declarations (unneeded for fdroid flavor)
         ./remove-firebase-root.patch
         ./remove-firebase-convention.patch
         # Remove firebase-crashlytics apply() and plugins.withId block from
         # AnalyticsConventionPlugin.kt so it compiles cleanly without Firebase
         ./remove-firebase-analytics-plugin.patch
+        ./downgrade-sdk-35.patch
       ];
 
-      gradleBuildTask = ":app:assembleFdroidRelease";
+      gradleBuildTask = ":androidApp:assembleFdroidRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
 
       # Lock refresh steps:
@@ -80,7 +80,7 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk21_headless;
+        JAVA_HOME = jdk21_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
@@ -98,15 +98,22 @@ let
       '';
 
       gradleFlags = [
+        "-x"
+        "checkFdroidReleaseAarMetadata"
+        "-x"
+        "checkReleaseAarMetadata"
+        "-x"
+        "checkDebugAarMetadata"
+        "--no-configuration-cache"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk17_headless},${jdk21_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home},${jdk21_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
 
       installPhase = ''
         runHook preInstall
-        apk_path="$(echo app/build/outputs/apk/fdroid/release/*.apk)"
+        apk_path="androidApp/build/outputs/apk/fdroid/release/androidApp-fdroid-universal-release.apk"
         install -Dm644 "$apk_path" "$out/meshtastic.apk"
         runHook postInstall
       '';

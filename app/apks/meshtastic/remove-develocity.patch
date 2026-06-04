@@ -1,12 +1,29 @@
 --- a/settings.gradle.kts
 +++ b/settings.gradle.kts
-@@ -74,9 +74,5 @@
+@@ -32,7 +32,6 @@
  }
  
  plugins {
--    id("com.gradle.develocity") version("4.3.2")
--    id("com.gradle.common-custom-user-data-gradle-plugin") version "2.4.0"
+-    id("com.gradle.develocity") version "4.4.2"
+     id("org.meshtastic.flatpak.sources.settings") version "0.1.2"
  }
  
--// Shared Develocity and Build Cache configuration
--apply(from = "gradle/develocity.settings.gradle")
+@@ -72,18 +71,6 @@
+ apply(from = "gradle/build-cache.settings.gradle")
+ 
+ // Build Scans — publish in CI only for debugging and performance profiling.
+-develocity {
+-    buildScan {
+-        capture {
+-            fileFingerprints = true
+-        }
+-        val isCi = providers.environmentVariable("CI").isPresent
+-        publishing.onlyIf { isCi }
+-        uploadInBackground = !isCi
+-        termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
+-        termsOfUseAgree = "yes"
+-    }
+-}
+ 
+ 
+ include(
