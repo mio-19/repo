@@ -63,7 +63,7 @@ in
 {
   imports = [
     ./source-built-toolchain.nix
-    ./gos_noleakdns.nix
+    #./gos_noleakdns.nix # unsure
     ./gos-apple.nix
     ./gos_adb_wireless_no_wifi.nix
     ./gos_advanced_power_menu.nix
