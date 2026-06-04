@@ -27,14 +27,14 @@ let
   appPackage = buildGradlePackage rec {
     pname = "nextcloud-android";
     # Go to https://github.com/nextcloud/android/releases/latest to see latest release.
-    version = "33.1.1";
+    version = "33.1.2";
     inherit gradle;
 
     src = fetchFromGitHub {
       owner = "nextcloud";
       repo = "android";
       tag = "stable-${version}";
-      hash = "sha256-EY6vxc6XhCS7uzeZQ101JRBd7V9PFjIBtJF7Czyun6A=";
+      hash = "sha256-vtG6Tnpxml6DCILsK+UaoCyJi/NwYWPqBPWJImCcvc4=";
     };
 
     lockFile = mergeLock [
