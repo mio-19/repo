@@ -33,13 +33,13 @@ let
     in
     buildDartApplication.override { dart = flutter344; } (finalAttrs: {
       pname = "rain";
-      version = "1.3.12";
+      version = "1.3.13";
 
       src = fetchFromGitHub {
         owner = "darkmoonight";
         repo = "Rain";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-XueHDou4trFFGtt/Cb4h6iUzzHdXFu/GqBtSN1Qw3Gw=";
+        hash = "sha256-eKMYnj8pAJKt+/RzSsWWr7P9wr0Y6J9LevxDdpccc0I=";
       };
 
       patches = [
