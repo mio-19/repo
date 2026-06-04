@@ -22,17 +22,17 @@
   };
   axp_kernel_patches = {
     pname = "axp_kernel_patches";
-    version = "2d85f30b04ce7fdb303d1dc59d9818abf4bf5d3e";
+    version = "c90d210f1fc9436223744e923a701e1d98eec7c6";
     src = fetchgit {
       url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
-      rev = "2d85f30b04ce7fdb303d1dc59d9818abf4bf5d3e";
+      rev = "c90d210f1fc9436223744e923a701e1d98eec7c6";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-sd7fbr2h95mBLOcfu0mVpwrh2ebmt+aR2uSfZ8gbV5A=";
+      sha256 = "sha256-KNjfMc1r+fwXWmvQwDZS+tK25K3rQuZ4MEQKHekgdb4=";
     };
-    date = "2026-06-02";
+    date = "2026-06-04";
   };
   cola2261_device_dm3q = {
     pname = "cola2261_device_dm3q";
@@ -232,17 +232,17 @@
   };
   google_gallery = {
     pname = "google_gallery";
-    version = "6cb32dd5bfc1320e141dd2776812dce57f425454";
+    version = "5d7bfa5c65cf66af9a80bf9aff0718be3bd7c511";
     src = fetchgit {
       url = "https://github.com/google-ai-edge/gallery.git";
-      rev = "6cb32dd5bfc1320e141dd2776812dce57f425454";
+      rev = "5d7bfa5c65cf66af9a80bf9aff0718be3bd7c511";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-YyGdEGIA+icjSmP7ws9w12n/rkL9m5qfP8rDwgdyhaQ=";
+      sha256 = "sha256-dbekqPVeZyS2It0hojjHtPB3e58NwP7+8lWGUKKpKG8=";
     };
-    date = "2026-06-01";
+    date = "2026-06-03";
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
@@ -288,17 +288,17 @@
   };
   grapheneos_pdfviewer = {
     pname = "grapheneos_pdfviewer";
-    version = "e08cce8d3dc8762a3d3ebf5cb4bce3b7e967d5a9";
+    version = "095e4249765e93b573cb7f0155ddc1d809965e65";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/PdfViewer.git";
-      rev = "e08cce8d3dc8762a3d3ebf5cb4bce3b7e967d5a9";
+      rev = "095e4249765e93b573cb7f0155ddc1d809965e65";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-/Y6Oj33TTnUPTpUGkd5l2g3g8d/fvqd8CCOm6BuMQV0=";
+      sha256 = "sha256-Asm611sRaT0az3JJNXPl4MXk5l9RUS0GT+N9H/k+72g=";
     };
-    date = "2026-05-20";
+    date = "2026-06-03";
   };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
