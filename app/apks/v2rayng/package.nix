@@ -29,17 +29,17 @@ let
 
       gradle = gradle_9_4_1;
 
-      version = "26.6.2";
+      xrayLiteVersion = "26.6.2";
       androidLibXrayLiteSrc = fetchFromGitHub {
         owner = "2dust";
         repo = "AndroidLibXrayLite";
-        tag = "v${version}";
+        tag = "v${xrayLiteVersion}";
         hash = "sha256-/pYYZMcsO4vbqRYAAZCxompcWJ/akXDzev4VPdQXMCc=";
       };
 
       androidLibXrayLiteGoModCache = stdenvNoCC.mkDerivation {
         pname = "android-lib-xray-lite-go-mod-cache";
-        version = "26.6.2";
+        version = xrayLiteVersion;
         src = androidLibXrayLiteSrc;
 
         nativeBuildInputs = [ go_1_26 ];
@@ -80,7 +80,7 @@ let
 
       libv2rayAar = stdenv.mkDerivation {
         pname = "android-lib-xray-lite-aar";
-        version = "26.6.2";
+        version = xrayLiteVersion;
         src = androidLibXrayLiteSrc;
 
         nativeBuildInputs = [
