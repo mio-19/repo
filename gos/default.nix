@@ -194,13 +194,16 @@ in
     "AppStore.apk" = "grapheneos_appstore";
     "PdfViewerGOS.apk" = "grapheneos_pdfviewer";
   };
-  source.dirs."packages/modules/Connectivity".patches = [
-    (fetchpatch {
-      name = "Connectivity: Add capability to allow tethering to use VPN upstreams";
-      url = "https://github.com/LineageOS/android_packages_modules_Connectivity/commit/a365cfb8b6919aaa5ca99dafbc79ad95098ae218.patch";
-      hash = "sha256-TrvrKyFWSBdZaYATDLffoQKI6EOYUGcPGeFxM654p7s=";
-    })
-  ];
+  /*
+    # unsure
+    source.dirs."packages/modules/Connectivity".patches = [
+      (fetchpatch {
+        name = "Connectivity: Add capability to allow tethering to use VPN upstreams";
+        url = "https://github.com/LineageOS/android_packages_modules_Connectivity/commit/a365cfb8b6919aaa5ca99dafbc79ad95098ae218.patch";
+        hash = "sha256-TrvrKyFWSBdZaYATDLffoQKI6EOYUGcPGeFxM654p7s=";
+      })
+    ];
+  */
 
   source.dirs."vendor/adevtool".patches = [
     ./adevtool-bigger-zram.patch # changing here is no effect but mightbe needed somewhere??
