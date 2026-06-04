@@ -17,8 +17,7 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
-        s.platforms-android-35
-        s.platforms-android-36
+        s.platforms-android-37-0
         s.build-tools-36-0-0
       ]);
 
@@ -51,7 +50,6 @@ let
         # Remove firebase-crashlytics apply() and plugins.withId block from
         # AnalyticsConventionPlugin.kt so it compiles cleanly without Firebase
         ./remove-firebase-analytics-plugin.patch
-        ./downgrade-sdk-35.patch
       ];
 
       gradleBuildTask = ":androidApp:assembleFdroidRelease";
