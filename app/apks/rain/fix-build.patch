@@ -1,6 +1,7 @@
---- a/android/app/build.gradle
-+++ b/android/app/build.gradle
-@@ -65,7 +65,8 @@
+diff -urN rain-src/android/app/build.gradle rain-src-3/android/app/build.gradle
+--- rain-src/android/app/build.gradle	2026-06-05 09:53:23.507783788 +1000
++++ rain-src-3/android/app/build.gradle	2026-06-05 10:09:47.229996331 +1000
+@@ -66,7 +66,8 @@
  
      buildTypes {
          release {
@@ -10,16 +11,18 @@
          }
  
          debug {
---- /dev/null
-+++ b/android/app/proguard-rules.pro
+diff -urN rain-src/android/app/proguard-rules.pro rain-src-3/android/app/proguard-rules.pro
+--- rain-src/android/app/proguard-rules.pro	1970-01-01 10:00:00.000000000 +1000
++++ rain-src-3/android/app/proguard-rules.pro	2026-06-05 10:09:47.229996331 +1000
 @@ -0,0 +1,4 @@
 +-dontwarn com.google.android.gms.**
 +-dontwarn com.google.android.gms.location.**
 +-dontwarn com.google.android.gms.common.**
 +-dontwarn com.google.android.gms.tasks.**
---- a/android/build.gradle
-+++ b/android/build.gradle
-@@ -16,3 +16,11 @@
+diff -urN rain-src/android/build.gradle rain-src-3/android/build.gradle
+--- rain-src/android/build.gradle	2026-06-05 09:53:23.507783788 +1000
++++ rain-src-3/android/build.gradle	2026-06-05 10:09:47.229996331 +1000
+@@ -16,3 +16,13 @@
  tasks.register("clean", Delete) {
      delete rootProject.buildDir
  }
