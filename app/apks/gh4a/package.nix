@@ -21,6 +21,10 @@ let
     hash = "sha256-ctBPFKZtngci0prdHuc7cx2grAX1ayBNZSGK3aQfd2k=";
   };
 
+  # rxloader has broken POM metadata on Jitpack (always reports master-SNAPSHOT
+  # regardless of the resolved commit-tagged version), so Gradle refuses to
+  # resolve it through the normal dependency graph. Fetch the pinned .aar
+  # directly and inject it as a local file dependency instead.
   rxloaderAar = fetchurl {
     url = "https://jitpack.io/com/github/maniac103/rxloader/master-SNAPSHOT/rxloader-master-0.4.0-g30399e2-9.aar";
     hash = "sha256-wW6fU6deBX5XQW39qp6x6E/Kzs+rUotmE5jNM+JeHnY=";

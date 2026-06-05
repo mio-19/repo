@@ -19,11 +19,8 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
-        s.build-tools-36-0-0
-        s.platforms-android-35
-        s.build-tools-35-0-0
         s.platforms-android-37-0
-        s.build-tools-36-1-0
+        s.build-tools-36-0-0
         s.ndk-28-2-13676358
       ]);
 
@@ -190,11 +187,13 @@ let
         writableTmpDirAsHomeHook
       ];
 
-      env = {
+      env = let
+        aapt2Path = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+      in {
         JAVA_HOME = jdk25_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = aapt2Path;
       };
 
       preConfigure = ''
@@ -216,11 +215,13 @@ let
         ];
       };
 
-      gradleFlags = [
+      gradleFlags = let
+        aapt2Path = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+      in [
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk25_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${aapt2Path}"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2Path}"
       ];
 
       installPhase = ''
