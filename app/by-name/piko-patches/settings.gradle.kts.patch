@@ -1,7 +1,25 @@
+--- build.gradle.kts
++++ build.gradle.kts
+@@ -1,3 +1,15 @@
+ plugins {
+     alias(libs.plugins.android.library) apply false
+ }
++
++allprojects {
++    repositories {
++        mavenLocal()
++        maven { url = rootProject.layout.buildDirectory.dir("m2").get().asFile.toURI() }
++        mavenCentral()
++        google()
++        maven { url = uri("file://" + System.getenv("MORPHE_PLUGIN_M2")) }
++        maven { url = uri("file://" + System.getenv("MORPHE_LIBRARY_M2")) }
++        maven { url = uri("https://jitpack.io") }
++    }
++}
 --- settings.gradle.kts
 +++ settings.gradle.kts
-@@ -9,14 +5,9 @@
-         mavenLocal()
+@@ -10,14 +10,9 @@
+     repositories {
          gradlePluginPortal()
          google()
 -        maven {
@@ -17,3 +35,18 @@
 +        maven { url = uri("https://jitpack.io") }
      }
  }
+ 
+@@ -34,3 +29,13 @@
+         proguardFiles(rootProject.projectDir.resolve("extensions/proguard-rules.pro").toString())
+     }
+ }
++
++// Added by Nix build: include morphe-patcher as composite build.
++val patcherDir = file("../morphe-patcher")
++if (patcherDir.exists()) {
++    includeBuild(patcherDir) {
++        dependencySubstitution {
++            substitute(module("app.morphe:morphe-patcher")).using(project(":"))
++        }
++    }
++}

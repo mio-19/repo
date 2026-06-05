@@ -76,35 +76,13 @@ stdenv.mkDerivation (finalAttrs: {
     if [ -d "$sourceRoot/extensions/shared/library" ]; then
         mv "$sourceRoot/extensions/shared/library" "$sourceRoot/extensions/shared/piko-library"
     fi
-    find "$sourceRoot" -name "build.gradle.kts" -exec sed -i 's/project(":extensions:shared:library")/project(":extensions:shared:piko-library")/g' {} +
 
-    cat >> "$sourceRoot/settings.gradle.kts" <<EOF
-
-    // Added by Nix build: include morphe-patcher as composite build.
-    val patcherDir = file("../morphe-patcher")
-    if (patcherDir.exists()) {
-        includeBuild(patcherDir) {
-            dependencySubstitution {
-                substitute(module("app.morphe:morphe-patcher")).using(project(":"))
-            }
-        }
-    }
-    EOF
-
-    cat >> "$sourceRoot/build.gradle.kts" <<EOF
-
-    allprojects {
-        repositories {
-            mavenLocal()
-            maven { url = rootProject.layout.buildDirectory.dir("m2").get().asFile.toURI() }
-            mavenCentral()
-            google()
-            maven { url = uri("file://" + System.getenv("MORPHE_PLUGIN_M2")) }
-            maven { url = uri("file://" + System.getenv("MORPHE_LIBRARY_M2")) }
-            maven { url = uri("https://jitpack.io") }
-        }
-    }
-    EOF
+    while IFS= read -r -d "" file; do
+      if grep -Fq 'project(":extensions:shared:library")' "$file"; then
+        substituteInPlace "$file" \
+          --replace-fail 'project(":extensions:shared:library")' 'project(":extensions:shared:piko-library")'
+      fi
+    done < <(find "$sourceRoot" -name "build.gradle.kts" -print0)
   '';
 
   mitmCache = gradle.fetchDeps {

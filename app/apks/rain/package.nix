@@ -43,6 +43,7 @@ let
       };
 
       patches = [
+        ./fix-build.patch
         ./0001-nolint.patch
       ];
 
@@ -122,31 +123,6 @@ let
         GRADLEW_SCRIPT
         chmod +x android/gradlew
 
-        echo "subprojects {" >> android/build.gradle
-        echo "    project.configurations.all {" >> android/build.gradle
-        echo "        resolutionStrategy.eachDependency { details ->" >> android/build.gradle
-        echo "            if (details.requested.group == 'androidx.glance' && details.requested.name == 'glance-appwidget') {" >> android/build.gradle
-        echo "                details.useVersion '1.1.1'" >> android/build.gradle
-        echo "            }" >> android/build.gradle
-        echo "        }" >> android/build.gradle
-        echo "    }" >> android/build.gradle
-        echo "}" >> android/build.gradle
-
-        echo "-dontwarn com.google.android.gms.**" > android/app/proguard-rules.pro
-        echo "-dontwarn com.google.android.gms.location.**" >> android/app/proguard-rules.pro
-        echo "-dontwarn com.google.android.gms.common.**" >> android/app/proguard-rules.pro
-        echo "-dontwarn com.google.android.gms.tasks.**" >> android/app/proguard-rules.pro
-
-        sed -i 's/signingConfig = signingConfigs.release/signingConfig = signingConfigs.release\n            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"/' android/app/build.gradle
-
-        if grep -Fq 'android.newDsl=true' android/gradle.properties; then
-          substituteInPlace android/gradle.properties \
-            --replace-fail 'android.newDsl=true' 'android.newDsl=false'
-        elif ! grep -Fq 'android.newDsl=' android/gradle.properties; then
-          echo 'android.newDsl=false' >> android/gradle.properties
-        fi
-        substituteInPlace android/app/build.gradle \
-          --replace-fail 'signingConfig = signingConfigs.release' 'signingConfig = signingConfigs.debug'
         substituteInPlace android/app/build.gradle \
           --replace-fail "ndkVersion = '29.0.14206865'" "ndkVersion = '28.2.13676358'"
 

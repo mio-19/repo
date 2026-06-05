@@ -1,0 +1,36 @@
+--- a/android/app/build.gradle
++++ b/android/app/build.gradle
+@@ -65,8 +65,9 @@
+ 
+     buildTypes {
+         release {
+-            signingConfig = signingConfigs.release
++            signingConfig = signingConfigs.debug
++            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+         }
+ 
+         debug {
+             signingConfig = signingConfigs.debug
+--- /dev/null
++++ b/android/app/proguard-rules.pro
+@@ -0,0 +1,4 @@
++-dontwarn com.google.android.gms.**
++-dontwarn com.google.android.gms.location.**
++-dontwarn com.google.android.gms.common.**
++-dontwarn com.google.android.gms.tasks.**
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -16,3 +16,11 @@
+ tasks.register("clean", Delete) {
+     delete rootProject.buildDir
+ }
++
++subprojects {
++    project.configurations.all {
++        resolutionStrategy.eachDependency { details ->
++            if (details.requested.group == 'androidx.glance' && details.requested.name == 'glance-appwidget') {
++                details.useVersion '1.1.1'
++            }
++        }
++    }
++}
