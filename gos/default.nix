@@ -102,6 +102,13 @@ in
       url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/305.patch";
       hash = "sha256-VGaxcAWyLeItvQjSFJceCWhWj8IvJ7iquuJOLwpfo1I=";
     })
+
+    # this is incorrect, but I prefer this way
+    (fetchpatch {
+      name = "SystemUI: Open Tethering settings from QS Hotspot tile";
+      url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/323.diff";
+      hash = "sha256-qNylnt+S2lIt30D9gwnbW7jcf+rb7zDV3c6tS877AuQ=";
+    })
   ];
   source.dirs."packages/apps/Settings".patches = [
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786

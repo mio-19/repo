@@ -112,28 +112,28 @@ let
       ];
 
       postPatch = ''
-        cp -LR ${flutter344} flutter-sdk
-        chmod -R u+w flutter-sdk
-        touch flutter-sdk/bin/cache/engine.realm # https://github.com/NixOS/nixpkgs/pull/500309#issuecomment-4192628176
-        chmod +x flutter-sdk/bin/cache/artifacts/engine/*/font-subset # needed after nixpkgs b86751bc4085f48661017fa226dee99fab6c651b -> 01fbdeef22b76df85ea168fbfe1bfd9e63681b30
+                cp -LR ${flutter344} flutter-sdk
+                chmod -R u+w flutter-sdk
+                touch flutter-sdk/bin/cache/engine.realm # https://github.com/NixOS/nixpkgs/pull/500309#issuecomment-4192628176
+                chmod +x flutter-sdk/bin/cache/artifacts/engine/*/font-subset # needed after nixpkgs b86751bc4085f48661017fa226dee99fab6c651b -> 01fbdeef22b76df85ea168fbfe1bfd9e63681b30
 
-        cat > android/gradlew << 'EOF'
-        #!/bin/sh
-        exec ${gradle}/bin/gradle "$@"
-EOF
-        chmod +x android/gradlew
+                cat > android/gradlew << 'EOF'
+                #!/bin/sh
+                exec ${gradle}/bin/gradle "$@"
+        EOF
+                chmod +x android/gradlew
 
-        if grep -Fq 'android.newDsl=true' android/gradle.properties; then
-          substituteInPlace android/gradle.properties \
-            --replace-fail 'android.newDsl=true' 'android.newDsl=false'
-        elif ! grep -Fq 'android.newDsl=' android/gradle.properties; then
-          cat >> android/gradle.properties << 'EOF'
-android.newDsl=false
-EOF
-        fi
+                if grep -Fq 'android.newDsl=true' android/gradle.properties; then
+                  substituteInPlace android/gradle.properties \
+                    --replace-fail 'android.newDsl=true' 'android.newDsl=false'
+                elif ! grep -Fq 'android.newDsl=' android/gradle.properties; then
+                  cat >> android/gradle.properties << 'EOF'
+        android.newDsl=false
+        EOF
+                fi
 
-        substituteInPlace android/app/build.gradle \
-          --replace-fail "ndkVersion = '29.0.14206865'" "ndkVersion = '28.2.13676358'"
+                substituteInPlace android/app/build.gradle \
+                  --replace-fail "ndkVersion = '29.0.14206865'" "ndkVersion = '28.2.13676358'"
 
       '';
 
