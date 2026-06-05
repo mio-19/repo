@@ -1,16 +1,15 @@
 --- a/android/app/build.gradle
 +++ b/android/app/build.gradle
-@@ -65,8 +65,9 @@
+@@ -65,7 +65,8 @@
  
      buildTypes {
          release {
--            signingConfig = signingConfigs.release
-+            signingConfig = signingConfigs.debug
-+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+-           signingConfig = signingConfigs.release
++           signingConfig = signingConfigs.debug
++           proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
          }
  
          debug {
-             signingConfig = signingConfigs.debug
 --- /dev/null
 +++ b/android/app/proguard-rules.pro
 @@ -0,0 +1,4 @@
