@@ -25,7 +25,7 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
-        s.build-tools-35-0-0
+
         s.build-tools-36-1-0
       ]);
 
@@ -74,6 +74,10 @@ let
         substituteInPlace app/build.gradle.kts \
           --replace-fail 'signingConfig = signingConfigs.getByName("release")' \
             'signingConfig = if (isNoGms()) signingConfigs.getByName("debug") else signingConfigs.getByName("release")'
+        substituteInPlace app/build.gradle.kts \
+          --replace-fail 'compileSdk = 36' 'compileSdk = 36; buildToolsVersion = "36.1.0"'
+        substituteInPlace vosk-model/build.gradle.kts \
+          --replace-fail 'compileSdk = 36' 'compileSdk = 36; buildToolsVersion = "36.1.0"'
       '';
 
       preConfigure = ''
