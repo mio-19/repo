@@ -28,3 +28,4 @@
 - Prefer mv in installPhase over cp because it is faster
 - JDK 11 can be unstable in some Gradle source builds (daemon crash/disappear). If it fails with that symptom, retry once before changing package logic.
 - When asked for "apk update" generally, do not check or update packages managed by `nvfetcher`. Only check packages with custom update scripts (`updateScript`) or git-based ones not in `nvfetcher.toml`.
+- When asked to check updates, just check and list them. Do not automatically update them unless explicitly told to.
