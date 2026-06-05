@@ -140,14 +140,14 @@ in
   ];
   source.dirs."packages/apps/AppCompatConfig".patches = [
     (fetchpatch {
-      name = "add Chrome Beta, Canary, Dev configs";
-      url = "https://github.com/GrapheneOS/platform_packages_apps_AppCompatConfig/pull/10.patch";
-      hash = "sha256-2Nf5M7dFs/xsy2sU6PZInP4bWvSfPTd/lMVRp4Vey+w=";
-    })
-    (fetchpatch {
       name = "add configs for Brave beta and Brave nightly.patch";
       url = "https://github.com/GrapheneOS/platform_packages_apps_AppCompatConfig/pull/8.diff";
       hash = "sha256-QoabShVmthSA817+FrJ7GTc/VK2N6JSXu9KaVoDg4Sg=";
+    })
+    (fetchpatch {
+      name = "add Chrome Beta, Canary, Dev configs";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_AppCompatConfig/pull/10.patch";
+      hash = "sha256-2Nf5M7dFs/xsy2sU6PZInP4bWvSfPTd/lMVRp4Vey+w=";
     })
     (fetchpatch {
       name = "Fix enumBits overflow, unused import and dependabot branch";
