@@ -149,7 +149,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-tSzeHsx4r41mXadCBed9dqSIjX+p3DkTO6OMuI01BM4=";
+        outputHash = "sha256-maaOiMEVCMpYjyhAs5Mzk9w3la0YHb03pe6n01ptYP0=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -307,14 +307,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.59.21";
+      version = "5.59.36";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-hKzaWPrBjSO659253xz5RqpbHclPFngPC9F9AXJ3PnU=";
+        hash = "sha256-NHTXoXvsF8ixA8CZeyfTUWQNVPHjDcHdlDyF/5/qd2M=";
       };
 
       patches = [
