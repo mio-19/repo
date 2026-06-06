@@ -1,7 +1,7 @@
 {
   inputs = {
-    #nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nixpkgs.url = "github:NixOS/nixpkgs/staging";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    #nixpkgs.url = "github:NixOS/nixpkgs/staging-next";
     #nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
@@ -155,6 +155,12 @@
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
             patches = [
+              # already in staging
+              (fetchpatch {
+                name = "rust: 1.95.0 -> 1.96.0";
+                url = "https://github.com/NixOS/nixpkgs/pull/525279.diff";
+                hash = "sha256-bnaT7TKe/yz+7L9xZSSIubuP3YWnIpcKHrX4qYzRGGc=";
+              })
               (fetchpatch {
                 name = "Bootstrap rust";
                 url = "https://github.com/NixOS/nixpkgs/pull/528074.diff";
@@ -184,22 +190,20 @@
                 hash = "sha256-EXl/fYKF2oTxL6JGf1CGfI6dL2+TnPW9VFubt9SkCHk=";
               })
               /*
-                # apply next time when we update nixpkgs
+                # work stopped
                 (fetchpatch {
                   name = "ant: build from source";
                   url = "https://github.com/NixOS/nixpkgs/pull/521111.diff";
                   hash = "sha256-okJ2JXObWNVPpRAbAbj9/ilKKOGR8GBJ010KelLDQqQ=";
                 })
               */
-              /*
-                # already in staging
-                # related to appstream : https://github.com/NixOS/nixpkgs/issues/514566
-                (fetchpatch {
-                  name = "libfyaml: fixed building issues";
-                  url = "https://github.com/NixOS/nixpkgs/pull/515614.patch";
-                  hash = "sha256-lPg+NKhTJVCDLuuDaKF9o7evPxjcGxD9Gh/M1X3yqag=";
-                })
-              */
+              # already in staging
+              # related to appstream : https://github.com/NixOS/nixpkgs/issues/514566
+              (fetchpatch {
+                name = "libfyaml: fixed building issues";
+                url = "https://github.com/NixOS/nixpkgs/pull/515614.patch";
+                hash = "sha256-lPg+NKhTJVCDLuuDaKF9o7evPxjcGxD9Gh/M1X3yqag=";
+              })
               (fetchpatch {
                 name = "apktool: 2.2.1 -> 3.0.2";
                 url = "https://github.com/NixOS/nixpkgs/pull/525249.diff";
