@@ -1,10 +1,11 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    #nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/staging";
     #nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
-    nixpkgs-python27.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs-python27.url = "github:NixOS/nixpkgs/nixos-26.05-small";
     android-nixpkgs = {
       #url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
@@ -155,6 +156,11 @@
             name = "nixpkgs-patched";
             patches = [
               (fetchpatch {
+                name = "Bootstrap rust";
+                url = "https://github.com/NixOS/nixpkgs/pull/528074.diff";
+                hash = "sha256-thDAiWCbe7MI6DKgAh/au9N1n637VBxBnv58B90rE/M=";
+              })
+              (fetchpatch {
                 name = "gradle: reduce keytool noise";
                 url = "https://github.com/NixOS/nixpkgs/pull/472580.patch";
                 hash = "sha256-dtQ8pFVnvTFwmpbMxEG9mnCbi1t6wweA1E/ufBdPsws=";
@@ -185,25 +191,25 @@
                   hash = "sha256-okJ2JXObWNVPpRAbAbj9/ilKKOGR8GBJ010KelLDQqQ=";
                 })
               */
-              # related to appstream : https://github.com/NixOS/nixpkgs/issues/514566
-              (fetchpatch {
-                name = "libfyaml: fixed building issues";
-                url = "https://github.com/NixOS/nixpkgs/pull/515614.patch";
-                hash = "sha256-lPg+NKhTJVCDLuuDaKF9o7evPxjcGxD9Gh/M1X3yqag=";
-              })
               /*
-                # when we update nixpkgs
+                # already in staging
+                # related to appstream : https://github.com/NixOS/nixpkgs/issues/514566
                 (fetchpatch {
-                  name = "apktool: 2.2.1 -> 3.0.2";
-                  url = "https://github.com/NixOS/nixpkgs/pull/525249.diff";
-                  hash = "sha256-O0gO2CWa8A+UMnEDEaqrepuCuW9ra33jtzqVq1M4uE4=";
-                })
-                (fetchpatch {
-                  name = "maven_4: init at 4.0.0-rc5";
-                  url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
-                  hash = "sha256-und55gAfRHBle9s1vmmEMOgfNmYrAsay9ITZ5JdZBiM=";
+                  name = "libfyaml: fixed building issues";
+                  url = "https://github.com/NixOS/nixpkgs/pull/515614.patch";
+                  hash = "sha256-lPg+NKhTJVCDLuuDaKF9o7evPxjcGxD9Gh/M1X3yqag=";
                 })
               */
+              (fetchpatch {
+                name = "apktool: 2.2.1 -> 3.0.2";
+                url = "https://github.com/NixOS/nixpkgs/pull/525249.diff";
+                hash = "sha256-O0gO2CWa8A+UMnEDEaqrepuCuW9ra33jtzqVq1M4uE4=";
+              })
+              (fetchpatch {
+                name = "maven_4: init at 4.0.0-rc5";
+                url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
+                hash = "sha256-und55gAfRHBle9s1vmmEMOgfNmYrAsay9ITZ5JdZBiM=";
+              })
             ];
           };
           nixpkgs =
