@@ -215,6 +215,10 @@
                 hash = "sha256-sQdzgOlieIX0DMyJ7WXr9L7bDakGplEP79D+7EGbGWE=";
               })
             ];
+            postPatch = ''
+              # workaround for faulty applyPatches which doesn't work with renaming files
+              mv pkgs/development/compilers/rust/1_95.nix pkgs/development/compilers/rust/1_96.nix
+            '';
           };
           nixpkgs =
             (import "${nixpkgsSrc}/flake.nix").outputs (
