@@ -208,7 +208,7 @@
               (fetchpatch {
                 name = "maven_4: init at 4.0.0-rc5";
                 url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
-                hash = "sha256-und55gAfRHBle9s1vmmEMOgfNmYrAsay9ITZ5JdZBiM=";
+                hash = "sha256-sQdzgOlieIX0DMyJ7WXr9L7bDakGplEP79D+7EGbGWE=";
               })
             ];
           };
