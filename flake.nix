@@ -265,6 +265,14 @@
                       fetch = selfLegacyPackages.mitm-cache-fetch;
                     };
                   });
+
+                # needed with rustc patches:
+                gjs = prev.gjs.overrideAttrs (old: {
+                  doCheck = false;
+                });
+                git = prev.git.overrideAttrs (old: {
+                  doCheck = false;
+                });
               })
             ];
           };
