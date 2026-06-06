@@ -271,7 +271,7 @@
                   doCheck = false;
                 });
                 git = prev.git.overrideAttrs (old: {
-                  doCheck = false;
+                  doInstallCheck = false;
                 });
               })
             ];
