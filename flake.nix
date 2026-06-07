@@ -246,6 +246,7 @@
             overlays = [
               inputs.android-nixpkgs.overlays.default
               (final: prev: rec {
+                inherit (pkgs) fdroidserver;
                 inherit (selfPackages) ant;
                 python27 =
                   (import inputs.nixpkgs-python27 {
