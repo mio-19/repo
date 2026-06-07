@@ -1,10 +1,11 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    #nixpkgs.url = "github:NixOS/nixpkgs/staging-next";
     #nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
-    nixpkgs-python27.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs-python27.url = "github:NixOS/nixpkgs/nixos-26.05-small";
     android-nixpkgs = {
       #url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
@@ -154,6 +155,17 @@
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
             patches = [
+              # already in staging
+              (fetchpatch {
+                name = "rust: 1.95.0 -> 1.96.0";
+                url = "https://github.com/NixOS/nixpkgs/pull/525279.diff";
+                hash = "sha256-bnaT7TKe/yz+7L9xZSSIubuP3YWnIpcKHrX4qYzRGGc=";
+              })
+              (fetchpatch {
+                name = "Bootstrap rust";
+                url = "https://github.com/NixOS/nixpkgs/pull/528074.diff";
+                hash = "sha256-thDAiWCbe7MI6DKgAh/au9N1n637VBxBnv58B90rE/M=";
+              })
               (fetchpatch {
                 name = "maven: provide default plugins per Maven version to buildMavenPackage";
                 url = "https://github.com/NixOS/nixpkgs/pull/527061.patch";
@@ -183,33 +195,35 @@
                 hash = "sha256-EXl/fYKF2oTxL6JGf1CGfI6dL2+TnPW9VFubt9SkCHk=";
               })
               /*
-                # apply next time when we update nixpkgs
+                # work stopped
                 (fetchpatch {
                   name = "ant: build from source";
                   url = "https://github.com/NixOS/nixpkgs/pull/521111.diff";
                   hash = "sha256-okJ2JXObWNVPpRAbAbj9/ilKKOGR8GBJ010KelLDQqQ=";
                 })
               */
+              # already in staging
               # related to appstream : https://github.com/NixOS/nixpkgs/issues/514566
               (fetchpatch {
                 name = "libfyaml: fixed building issues";
                 url = "https://github.com/NixOS/nixpkgs/pull/515614.patch";
                 hash = "sha256-lPg+NKhTJVCDLuuDaKF9o7evPxjcGxD9Gh/M1X3yqag=";
               })
-              /*
-                # when we update nixpkgs
-                (fetchpatch {
-                  name = "apktool: 2.2.1 -> 3.0.2";
-                  url = "https://github.com/NixOS/nixpkgs/pull/525249.diff";
-                  hash = "sha256-O0gO2CWa8A+UMnEDEaqrepuCuW9ra33jtzqVq1M4uE4=";
-                })
-                (fetchpatch {
-                  name = "maven_4: init at 4.0.0-rc5";
-                  url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
-                  hash = "sha256-und55gAfRHBle9s1vmmEMOgfNmYrAsay9ITZ5JdZBiM=";
-                })
-              */
+              (fetchpatch {
+                name = "apktool: 2.2.1 -> 3.0.2";
+                url = "https://github.com/NixOS/nixpkgs/pull/525249.diff";
+                hash = "sha256-O0gO2CWa8A+UMnEDEaqrepuCuW9ra33jtzqVq1M4uE4=";
+              })
+              (fetchpatch {
+                name = "maven_4: init at 4.0.0-rc5";
+                url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
+                hash = "sha256-sQdzgOlieIX0DMyJ7WXr9L7bDakGplEP79D+7EGbGWE=";
+              })
             ];
+            postPatch = ''
+              # workaround for faulty applyPatches which doesn't work with renaming files
+              mv pkgs/development/compilers/rust/1_95.nix pkgs/development/compilers/rust/1_96.nix
+            '';
           };
           nixpkgs =
             (import "${nixpkgsSrc}/flake.nix").outputs (
@@ -256,6 +270,14 @@
                       fetch = selfLegacyPackages.mitm-cache-fetch;
                     };
                   });
+
+                # needed with rustc patches:
+                gjs = prev.gjs.overrideAttrs (old: {
+                  doCheck = false;
+                });
+                git = prev.git.overrideAttrs (old: {
+                  doInstallCheck = false;
+                });
               })
             ];
           };
