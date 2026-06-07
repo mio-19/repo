@@ -155,6 +155,11 @@
             name = "nixpkgs-patched";
             patches = [
               (fetchpatch {
+                name = "maven: provide default plugins per Maven version to buildMavenPackage";
+                url = "https://github.com/NixOS/nixpkgs/pull/527061.patch";
+                hash = "sha256-9asBRe+7FtAZ/066/9OOTbQYt/sS9pYHe6G3xZhAP7U=";
+              })
+              (fetchpatch {
                 name = "gradle: reduce keytool noise";
                 url = "https://github.com/NixOS/nixpkgs/pull/472580.patch";
                 hash = "sha256-dtQ8pFVnvTFwmpbMxEG9mnCbi1t6wweA1E/ufBdPsws=";
