@@ -116,7 +116,7 @@
               inputs.robotnix.inputs
               // {
                 self = robotnixPatched;
-                inherit nixpkgs;
+                nixpkgs = nixpkgs2;
                 androidPkgs = android-nixpkgs;
               }
             )
@@ -234,12 +234,18 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
                 hash = "sha256-sQdzgOlieIX0DMyJ7WXr9L7bDakGplEP79D+7EGbGWE=";
               })
-              ./0001-git-no-doInstallCheck-incorrect.patch
             ];
             postPatch = ''
               # workaround for faulty applyPatches which doesn't work with renaming files
               mv pkgs/development/compilers/rust/1_95.nix pkgs/development/compilers/rust/1_96.nix
             '';
+          };
+          nixpkgsSrc2 = applyPatches {
+            src = nixpkgsSrc;
+            name = "nixpkgs-patched";
+            patches = [
+              ./0001-git-no-doInstallCheck-incorrect.patch
+            ];
           };
           nixpkgs =
             (import "${nixpkgsSrc}/flake.nix").outputs (
@@ -250,6 +256,16 @@
             )
             // {
               inherit (nixpkgsSrc) outPath;
+            };
+          nixpkgs2 =
+            (import "${nixpkgsSrc2}/flake.nix").outputs (
+              inputs.nixpkgs.inputs
+              // {
+                self = nixpkgs2;
+              }
+            )
+            // {
+              inherit (nixpkgsSrc2) outPath;
             };
           pkgsPatched = import nixpkgs {
             config = pkgs.config // {
