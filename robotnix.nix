@@ -59,6 +59,7 @@ in
               _module.args.pkgs-unfree = pkgsPatched;
               _module.args.robotnix = robotnix;
               _module.args.self = self;
+              _module.args.inputs = inputsPatched;
               imports = [ f ];
               ccache.enable = ccache;
             };

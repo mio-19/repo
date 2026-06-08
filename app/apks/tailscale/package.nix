@@ -17,14 +17,14 @@
 let
   appPackage =
     let
-      version = "1.98.4-t9e69045b2-g0b6f6554d";
+      version = "1.100.0-td727cb81f-ge7966699a";
       tailscaleVersion = lib.head (lib.splitString "-" version);
 
       src = fetchFromGitHub {
         owner = "tailscale";
         repo = "tailscale-android";
         tag = version;
-        hash = "sha256-dOKiFK6TUYUy4Pqxw1Z7X6u5w5GQJMY52J9M9629yQs=";
+        hash = "sha256-sjNk+YSG2/9MOPPUDIJgp2VuFqChyI5bQO6FSLiGrLA=";
       };
 
       xMobileSrc = fetchFromGitHub {
@@ -43,7 +43,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-+CuAaeR/09Sy4iRVLcFqD/xfw7Raee4sM6I7JORUk9o=";
+        outputHash = "sha256-QNZVKKh3FXjGuAquOhPMBEZAxiRy6xgFXDab0tHsNrA=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -94,6 +94,10 @@ let
     stdenv.mkDerivation (finalAttrs: {
       pname = "tailscale";
       inherit version src;
+
+      passthru = {
+        inherit goModCache;
+      };
 
       patches = [
         (fetchpatch {
@@ -148,13 +152,13 @@ let
         export GOSUMDB=off
         export GOTOOLCHAIN=local
 
-        # nixpkgs currently has Go 1.26.2; upstream's 1.26.3 directive makes
+        # nixpkgs currently has Go 1.26.2; upstream's 1.26.4 directive makes
         # Go try to resolve the toolchain module, which cannot be verified
         # with GOSUMDB disabled in the offline build.
-        substituteInPlace go.mod --replace-fail 'go 1.26.3' 'go 1.26.2'
+        substituteInPlace go.mod --replace-fail 'go 1.26.4' 'go 1.26.2'
         find "$GOMODCACHE" -name go.mod -print | while read -r gomod; do
-          if grep -q '^go 1\.26\.3$' "$gomod"; then
-            substituteInPlace "$gomod" --replace-fail 'go 1.26.3' 'go 1.26.2'
+          if grep -q '^go 1\.26\.4$' "$gomod"; then
+            substituteInPlace "$gomod" --replace-fail 'go 1.26.4' 'go 1.26.2'
           fi
         done
 
@@ -162,7 +166,7 @@ let
         mv "tailscale-module-tmp/tailscale.com@v${tailscaleVersion}" tailscale-module
         rm -rf tailscale-module-tmp
         chmod -R u+w tailscale-module
-        substituteInPlace tailscale-module/go.mod --replace-fail 'go 1.26.3' 'go 1.26.2'
+        substituteInPlace tailscale-module/go.mod --replace-fail 'go 1.26.4' 'go 1.26.2'
         go mod edit -replace=tailscale.com=./tailscale-module
 
         cp -R ${xMobileSrc} x-mobile

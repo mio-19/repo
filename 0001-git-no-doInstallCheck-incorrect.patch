@@ -1,0 +1,25 @@
+From 39dfdb1cdb8e49fc5f41d67be0432cb5982b4c73 Mon Sep 17 00:00:00 2001
+From: Mio <mio@mio19.uk>
+Date: Mon, 8 Jun 2026 14:28:58 +1000
+Subject: [PATCH] git-no-doInstallCheck-incorrect
+
+---
+ pkgs/by-name/gi/git/package.nix | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/pkgs/by-name/gi/git/package.nix b/pkgs/by-name/gi/git/package.nix
+index bda0344badb9..4e3f023ab2ab 100644
+--- a/pkgs/by-name/gi/git/package.nix
++++ b/pkgs/by-name/gi/git/package.nix
+@@ -484,7 +484,7 @@ stdenv.mkDerivation (finalAttrs: {
+   ## InstallCheck
+ 
+   doCheck = false;
+-  inherit doInstallCheck;
++  doInstallCheck = false;
+ 
+   installCheckTarget = "test";
+ 
+-- 
+2.54.0
+

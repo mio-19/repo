@@ -116,11 +116,23 @@
               inputs.robotnix.inputs
               // {
                 self = robotnixPatched;
-                inherit nixpkgs;
+                nixpkgs = nixpkgs2;
+                androidPkgs = android-nixpkgs;
               }
             )
             // {
               inherit (robotSrc) outPath;
+            };
+          android-nixpkgs =
+            (import "${inputs.android-nixpkgs}/flake.nix").outputs (
+              inputs.android-nixpkgs.inputs
+              // {
+                self = android-nixpkgs;
+                inherit nixpkgs;
+              }
+            )
+            // {
+              inherit (inputs.android-nixpkgs) outPath;
             };
 
           gradle2nixSrc = applyPatches {
@@ -228,6 +240,13 @@
               mv pkgs/development/compilers/rust/1_95.nix pkgs/development/compilers/rust/1_96.nix
             '';
           };
+          nixpkgsSrc2 = applyPatches {
+            src = nixpkgsSrc;
+            name = "nixpkgs-patched";
+            patches = [
+              ./0001-git-no-doInstallCheck-incorrect.patch
+            ];
+          };
           nixpkgs =
             (import "${nixpkgsSrc}/flake.nix").outputs (
               inputs.nixpkgs.inputs
@@ -238,6 +257,16 @@
             // {
               inherit (nixpkgsSrc) outPath;
             };
+          nixpkgs2 =
+            (import "${nixpkgsSrc2}/flake.nix").outputs (
+              inputs.nixpkgs.inputs
+              // {
+                self = nixpkgs2;
+              }
+            )
+            // {
+              inherit (nixpkgsSrc2) outPath;
+            };
           pkgsPatched = import nixpkgs {
             config = pkgs.config // {
               allowUnfree = true;
@@ -246,6 +275,7 @@
             overlays = [
               inputs.android-nixpkgs.overlays.default
               (final: prev: rec {
+                inherit (pkgs) fdroidserver;
                 inherit (selfPackages) ant;
                 python27 =
                   (import inputs.nixpkgs-python27 {
@@ -285,9 +315,9 @@
             ];
           };
           inputsPatched = inputs // {
-            nixpkgs = nixpkgs;
             robotnix = robotnixPatched;
             gradle2nix = gradle2nixPatched;
+            inherit nixpkgs android-nixpkgs;
           };
           selfPackages = self.packages."${system}";
           selfLegacyPackages = self.legacyPackages."${system}";
