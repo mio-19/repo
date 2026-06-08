@@ -234,6 +234,7 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
                 hash = "sha256-sQdzgOlieIX0DMyJ7WXr9L7bDakGplEP79D+7EGbGWE=";
               })
+              ./0001-git-no-doInstallCheck.patch
             ];
             postPatch = ''
               # workaround for faulty applyPatches which doesn't work with renaming files
