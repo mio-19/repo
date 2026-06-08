@@ -117,10 +117,22 @@
               // {
                 self = robotnixPatched;
                 inherit nixpkgs;
+                androidPkgs = android-nixpkgs;
               }
             )
             // {
               inherit (robotSrc) outPath;
+            };
+          android-nixpkgs =
+            (import "${inputs.android-nixpkgs}/flake.nix").outputs (
+              inputs.android-nixpkgs.inputs
+              // {
+                self = android-nixpkgs;
+                inherit nixpkgs;
+              }
+            )
+            // {
+              inherit (inputs.android-nixpkgs) outPath;
             };
 
           gradle2nixSrc = applyPatches {
@@ -286,9 +298,9 @@
             ];
           };
           inputsPatched = inputs // {
-            nixpkgs = nixpkgs;
             robotnix = robotnixPatched;
             gradle2nix = gradle2nixPatched;
+            inherit nixpkgs android-nixpkgs;
           };
           selfPackages = self.packages."${system}";
           selfLegacyPackages = self.legacyPackages."${system}";
