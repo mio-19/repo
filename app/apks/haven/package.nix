@@ -134,6 +134,9 @@ let
       prepareXMobile = replacement: ''
         cp -R ${xMobileSrc} x-mobile
         chmod -R u+w x-mobile
+        if [[ ! -f x-mobile/go.mod ]]; then
+          (cd x-mobile && go mod init golang.org/x/mobile)
+        fi
         substituteInPlace x-mobile/cmd/gomobile/init.go \
           --replace-fail 'if err := goInstall([]string{"golang.org/x/mobile/cmd/gobind@latest"}, nil); err != nil {' \
                          'if _, err := exec.LookPath("gobind"); err != nil {'
@@ -149,7 +152,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-maaOiMEVCMpYjyhAs5Mzk9w3la0YHb03pe6n01ptYP0=";
+        outputHash = "sha256-e3l/NidLfF+FSJGhjU6DdsbONsQbnojR4S4HmEWPZFQ=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -163,7 +166,7 @@ let
           export GOCACHE="$TMPDIR/go-build-cache"
           export GOMODCACHE="$TMPDIR/go-mod-cache"
           export GOPROXY=https://proxy.golang.org,direct
-          export GOSUMDB=off
+          export GOSUMDB=sum.golang.org
 
           cp -R "$src" source
           chmod -R u+w source
@@ -171,6 +174,11 @@ let
 
           ${prepareXMobile "../x-mobile"}
           cd go
+          go mod tidy -v
+          go mod vendor -v
+          VENDOR_PATH=$(find "$PWD" -name vendor -type d | head -n 1)
+
+          cd ../x-mobile
           go mod download
 
           runHook postBuild
@@ -178,9 +186,11 @@ let
 
         installPhase = ''
           runHook preInstall
+          mkdir -p "$out"
+          cp -R "$VENDOR_PATH" "$out/vendor"
           rm -rf "$TMPDIR/go-mod-cache/cache/download/sumdb"
           chmod -R u+w "$TMPDIR/go-mod-cache"
-          mv "$TMPDIR/go-mod-cache" "$out"
+          mv "$TMPDIR/go-mod-cache" "$out/cache"
           runHook postInstall
         '';
       };
@@ -213,57 +223,64 @@ let
           export GOPATH="$TMPDIR/go"
           export GOMODCACHE="$PWD/.gomodcache"
           mkdir -p "$GOCACHE" "$GOPATH"
-          cp -R ${rcloneGoModCache} "$GOMODCACHE"
+          cp -R ${rcloneGoModCache}/cache "$GOMODCACHE"
           chmod -R u+w "$GOMODCACHE"
+
+          export GOBIN="$TMPDIR/go-bin"
+          mkdir -p "$GOBIN"
+          export PATH="$GOBIN:$PATH"
+
           export GOPROXY=off
           export GOSUMDB=off
         '';
 
         buildPhase = ''
-          runHook preBuild
+            runHook preBuild
 
-          export GOBIN="$TMPDIR/go-bin"
-          mkdir -p "$GOBIN"
-          export PATH="$GOBIN:${go_1_26}/bin:$PATH"
+            cd rclone-android
+            ${prepareXMobile "../x-mobile"}
+            cd go
 
-          cd rclone-android
-          ${prepareXMobile "../x-mobile"}
-          cd go
-          go install golang.org/x/mobile/cmd/gobind
-          go install golang.org/x/mobile/cmd/gomobile
-          go mod vendor
-          cd ../..
+            (cd ../x-mobile/cmd/gobind && go build -o "$GOBIN/gobind")
+            (cd ../x-mobile/cmd/gomobile && go build -o "$GOBIN/gomobile")
 
-          mkdir -p "$GOPATH/src/sh.haven" "$GOPATH/src/golang.org/x"
-          ln -s "$PWD/rclone-android/go" "$GOPATH/src/sh.haven/rcbridge"
-          ln -s "$PWD/rclone-android/x-mobile" "$GOPATH/src/golang.org/x/mobile"
-          cp -R rclone-android/go/vendor/. "$GOPATH/src/"
+            mkdir -p "$GOPATH/src/sh.haven" "$GOPATH/src/golang.org/x"
+            ln -s "$PWD" "$GOPATH/src/sh.haven/rcbridge"
+            ln -s "$PWD/../x-mobile" "$GOPATH/src/golang.org/x/mobile"
+            cp -R ${rcloneGoModCache}/vendor/. "$GOPATH/src/"
 
-          mkdir -p rclone-android/jniLibs rclone-android/build
-          cd rclone-android/go
+            mkdir -p ../jniLibs ../build
 
-          export GO111MODULE=off
-          gomobile init
-          gomobile bind \
-            -target=android/arm64,android/amd64 \
-            -javapkg=sh.haven.rclone.binding \
-            -androidapi=26 \
-            -o ../build/rcbridge.aar \
-            sh.haven/rcbridge
+            export GOFLAGS="-mod=mod"
+            export GO111MODULE=on
+            gomobile init
+            gomobile bind \
+              -target=android/arm64,android/amd64 \
+              -javapkg=sh.haven.rclone.binding \
+              -androidapi=26 \
+              -ldflags "-s -w" \
+              -v \
+              -o ../build/rcbridge.aar \
+              . ./wgbridge ./tsbridge ./mailbridge
+
 
           cd ..
           unzip -o build/rcbridge.aar "jni/*" -d build/extracted
+          unzip -o build/rcbridge.aar "classes.jar" -d build/extracted
 
           install -Dm755 build/extracted/jni/arm64-v8a/libgojni.so jniLibs/arm64-v8a/libgojni.so
           install -Dm755 build/extracted/jni/x86_64/libgojni.so jniLibs/x86_64/libgojni.so
+          install -Dm644 build/extracted/classes.jar build/rcbridge-bindings.jar
 
           runHook postBuild
         '';
 
         installPhase = ''
           runHook preInstall
-          install -Dm755 build/extracted/jni/arm64-v8a/libgojni.so "$out/arm64-v8a/libgojni.so"
-          install -Dm755 build/extracted/jni/x86_64/libgojni.so "$out/x86_64/libgojni.so"
+          mkdir -p "$out/jniLibs" "$out/build"
+          install -Dm755 jniLibs/arm64-v8a/libgojni.so "$out/jniLibs/arm64-v8a/libgojni.so"
+          install -Dm755 jniLibs/x86_64/libgojni.so "$out/jniLibs/x86_64/libgojni.so"
+          install -Dm644 build/rcbridge-bindings.jar "$out/build/rcbridge-bindings.jar"
           runHook postInstall
         '';
       };
@@ -307,14 +324,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.59.39";
+      version = "5.59.46";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-C2MOZ3GkhqeyZT4VF95swTb97j41ujhlUuhSwj+SfJ0=";
+        hash = "sha256-ie7KDnlg8DbV72j9zWGXfx0rs9E4KGSjOV0iHjs//BI=";
       };
 
       patches = [
@@ -322,6 +339,7 @@ let
         ./remove-signing-config.patch
         # Build the Rust JNI libraries in Nix instead of invoking cargo-ndk from Gradle.
         ./skip-gradle-rdp-native-build.patch
+        ./skip-gradle-rclone-native-build.patch
       ];
 
       postPatch = ''
@@ -395,7 +413,9 @@ let
         cp -r ${rdpTransportJniLibs}/. rdp-kotlin/jniLibs/
 
         mkdir -p rclone-android/jniLibs
-        cp -r ${rcloneTransportJniLibs}/. rclone-android/jniLibs/
+        cp -r ${rcloneTransportJniLibs}/jniLibs/. rclone-android/jniLibs/
+        mkdir -p rclone-android/build
+        cp ${rcloneTransportJniLibs}/build/rcbridge-bindings.jar rclone-android/build/
 
         # When running in mitmCache dependency-fetch mode, configure pip (used by
         # Chaquopy) to trust the mitm proxy certificate so PyPI downloads are captured.

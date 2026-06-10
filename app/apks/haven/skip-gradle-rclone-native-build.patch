@@ -1,0 +1,11 @@
+--- a/rclone-android/build.gradle.kts
++++ b/rclone-android/build.gradle.kts
+@@ -62,7 +62,7 @@
+     // pre-mailbridge build crashing at the first Mailbridge.mbRPC call.)
+ 
+     workingDir = projectDir
+-    commandLine("bash", toolsDir.resolve("build-android.sh").absolutePath)
++    commandLine("echo", "skipping native build")
+ 
+     // Ensure Go toolchain is on PATH for the build script
+     val goRoot = "/usr/local/go"
