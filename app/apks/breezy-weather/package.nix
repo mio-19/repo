@@ -10,7 +10,7 @@
   androidSdkBuilder,
 }:
 let
-  version = "6.2.0";
+  version = "6.2.1";
   rev = "v${version}";
   gradleFlavor = "Basic";
   releaseFlavor = "standard";
@@ -21,6 +21,7 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
+        s.platforms-android-37-0
         # https://github.com/breezy-weather/breezy-weather/blob/c342320fe7c1a9f5f80869e2bc25f299cffba1a4/.github/workflows/push.yml#L47
         s.build-tools-36-0-0
       ]);
@@ -36,7 +37,7 @@ let
         owner = "breezy-weather";
         repo = "breezy-weather";
         inherit rev;
-        hash = "sha256-VO38imaY+NOXu4FLGAT7cCH6tVkvXo/WOpUhNYOXylc=";
+        hash = "sha256-inNZ5ViyrIQ5QLLe4mjTlttXDJmSrSY3M5gCRluJkwg=";
       };
 
       patches = [
