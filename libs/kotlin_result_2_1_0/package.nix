@@ -41,7 +41,13 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   dontConfigure = true;
-  dontUnpack = true;
+
+  postPatch = ''
+    substituteInPlace kotlin-result/src/commonMain/kotlin/com/github/michaelbull/result/Binding.kt \
+      --replace-fail "internal expect object BindException" "@PublishedApi internal expect object BindException"
+    substituteInPlace kotlin-result/src/jvmMain/kotlin/com/github/michaelbull/result/BindException.kt \
+      --replace-fail "internal actual object BindException" "@PublishedApi internal actual object BindException"
+  '';
 
   installPhase = ''
     runHook preInstall
@@ -49,10 +55,8 @@ stdenv.mkDerivation (finalAttrs: {
     export JAVA_HOME=${jdk25_headless}
     tmp="$(mktemp -d)"
 
-    cd "$tmp"
-
-    find "${finalAttrs.src}/kotlin-result/src/commonMain/kotlin" -name '*.kt' | sort > common-sources.txt
-    find "${finalAttrs.src}/kotlin-result/src/jvmMain/kotlin" -name '*.kt' | sort > jvm-sources.txt
+    find kotlin-result/src/commonMain/kotlin -name '*.kt' | sort > common-sources.txt
+    find kotlin-result/src/jvmMain/kotlin -name '*.kt' | sort > jvm-sources.txt
     cat common-sources.txt jvm-sources.txt > sources.txt
     common_sources="$(paste -sd, common-sources.txt)"
     ${kotlin}/bin/kotlinc \
