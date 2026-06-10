@@ -7,7 +7,7 @@
   lib,
   jdk25_headless,
   jdk17_headless,
-  gradle_9_4_1,
+  gradle_9_5_1,
   fetchpatch,
   fetchNpmDeps,
   npmHooks,
@@ -28,7 +28,7 @@ let
         s.build-tools-37-0-0
       ]);
 
-      gradle = gradle_9_4_1;
+      gradle = gradle_9_5_1;
     in
     buildGradlePackage rec {
       pname = "pdfviewer";
@@ -44,7 +44,7 @@ let
         ./more.gradle.lock
       ];
       overrides = overrides-fromsrc-updated;
-      buildJdk = jdk25_headless;
+      buildJdk = jdk17_headless;
 
       npmDeps = fetchNpmDeps {
         pname = "npm-deps-${pname}";
@@ -88,6 +88,7 @@ let
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2";
+        JAVA_HOME = jdk17_headless.passthru.home;
       };
 
       preConfigure = ''
