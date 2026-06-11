@@ -5,7 +5,7 @@
   fetchgit,
   overrides-fromsrc,
   buildGradlePackage,
-  gradle_9_3_1,
+  gradle_9_4_1,
   jdk25_headless,
   lib,
   mkSignScript,
@@ -18,19 +18,21 @@ let
     s.cmdline-tools-latest
     s.platform-tools
     s.platforms-android-36
-    s.build-tools-36-0-0
+    s."platforms-android-37-0"
+    s."build-tools-36-0-0"
+    s."build-tools-37-0-0"
   ]);
 
-  gradle = gradle_9_3_1;
+  gradle = gradle_9_4_1;
 in
 buildGradlePackage rec {
   pname = "fdroid-basic";
-  version = "2.0-alpha9";
+  version = "2.0-alpha10";
 
   src = fetchgit {
     url = "https://gitlab.com/fdroid/fdroidclient.git";
     tag = version;
-    hash = "sha256-b36hPlEnOlQ1h4yPHOCVcGLISYOlvO6iMjHbi5hazZA=";
+    hash = "sha256-Zr6RexDLPxK1E0cHlNfy7wx8mPUBXlmyZY9UkCB5a80=";
   };
 
   patches = [ ./version-name-update.patch ];
@@ -68,7 +70,7 @@ buildGradlePackage rec {
   env = {
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2";
   };
 
   gradleFlags = [
@@ -76,8 +78,8 @@ buildGradlePackage rec {
     "-Dorg.gradle.java.home=${jdk25_headless.home}"
     "-Dorg.gradle.java.installations.auto-download=false"
     "-Dorg.gradle.java.installations.paths=${jdk25_headless}"
-    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
+    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
   ];
 
   gradleBuildFlags = ":app:assembleBasicDefaultRelease";

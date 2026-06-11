@@ -27,6 +27,13 @@ let
         hash = "sha256-sjNk+YSG2/9MOPPUDIJgp2VuFqChyI5bQO6FSLiGrLA=";
       };
 
+      tailscaleSrc = fetchFromGitHub {
+        owner = "tailscale";
+        repo = "tailscale";
+        tag = "v${tailscaleVersion}";
+        hash = "sha256-Z24bwKKYxet/hLRdN10PHg3TK01MxPjldNHnsCZ6htE=";
+      };
+
       xMobileSrc = fetchFromGitHub {
         owner = "golang";
         repo = "mobile";
@@ -39,11 +46,15 @@ let
         pname = "tailscale-go-mod-cache";
         inherit version src;
 
-        nativeBuildInputs = [ go_1_26 ];
+        nativeBuildInputs = [
+          go_1_26
+          writableTmpDirAsHomeHook
+        ];
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-G8wHMWAuHqK4XeJsjEzqOW8iBRuasy+pEBOqh38PVO8=";
+        # Update hash to trigger rebuild with internet access
+        outputHash = "sha256-10QBPVkzl0ySit7Y/+McBZHPpwBQD9Y9bSF4dZtJthA=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -51,8 +62,7 @@ let
         buildPhase = ''
           runHook preBuild
 
-          export HOME="$TMPDIR/home"
-          mkdir -p "$HOME"
+          export GOTOOLCHAIN=local
           export GOPATH="$TMPDIR/go"
           export GOCACHE="$TMPDIR/go-build-cache"
           export GOMODCACHE="$TMPDIR/go-mod-cache"
@@ -62,6 +72,14 @@ let
           cp -R "$src" source
           chmod -R u+w source
           cd source
+
+          # Aggressively patch go.mod files to use the available go version
+          find . -name "go.mod" -execdir go mod edit -go=1.26.3 -toolchain=none {} \;
+
+          cp -R ${tailscaleSrc} tailscale-module
+          chmod -R u+w tailscale-module
+          go mod edit -go=1.26.3 -toolchain=none tailscale-module/go.mod
+          go mod edit -replace=tailscale.com=./tailscale-module
 
           cp -R ${xMobileSrc} x-mobile
           chmod -R u+w x-mobile
@@ -138,7 +156,6 @@ let
       };
 
       preBuild = ''
-        export HOME="$PWD/.home"
         mkdir -p "$HOME/.android" "$HOME/.cache"
 
         patchShebangs tool build-tags.sh version-ldflags.sh
@@ -152,21 +169,17 @@ let
         export GOSUMDB=off
         export GOTOOLCHAIN=local
 
-        # nixpkgs currently has Go 1.26.2; upstream's 1.26.4 directive makes
-        # Go try to resolve the toolchain module, which cannot be verified
-        # with GOSUMDB disabled in the offline build.
-        substituteInPlace go.mod --replace-fail 'go 1.26.4' 'go 1.26.2'
+        # Aggressively patch go.mod files to use the available go version
+        find . -name "go.mod" -execdir go mod edit -go=1.26.3 -toolchain=none {} \;
+
         find "$GOMODCACHE" -name go.mod -print | while read -r gomod; do
-          if grep -q '^go 1\.26\.4$' "$gomod"; then
-            substituteInPlace "$gomod" --replace-fail 'go 1.26.4' 'go 1.26.2'
-          fi
+          chmod u+w "$(dirname "$gomod")" "$gomod"
+          go mod edit -go=1.26.3 -toolchain=none "$gomod"
         done
 
-        unzip -q "$GOMODCACHE/cache/download/tailscale.com/@v/v${tailscaleVersion}.zip" -d tailscale-module-tmp
-        mv "tailscale-module-tmp/tailscale.com@v${tailscaleVersion}" tailscale-module
-        rm -rf tailscale-module-tmp
+        cp -R ${tailscaleSrc} tailscale-module
         chmod -R u+w tailscale-module
-        substituteInPlace tailscale-module/go.mod --replace-fail 'go 1.26.4' 'go 1.26.2'
+        go mod edit -go=1.26.3 -toolchain=none tailscale-module/go.mod
         go mod edit -replace=tailscale.com=./tailscale-module
 
         cp -R ${xMobileSrc} x-mobile
