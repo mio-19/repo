@@ -9,7 +9,7 @@
     android-nixpkgs = {
       #url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
-      url = "github:tadfisher/android-nixpkgs/2026-06-09-stable";
+      url = "github:tadfisher/android-nixpkgs/2026-05-30-stable";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
