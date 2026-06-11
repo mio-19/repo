@@ -13,19 +13,18 @@ diff --git a/app/src/main/kotlin/org/fdroid/ui/details/AppDetailsItem.kt b/app/s
 index 98b7e53..d1ae54b 100644
 --- a/app/src/main/kotlin/org/fdroid/ui/details/AppDetailsItem.kt
 +++ b/app/src/main/kotlin/org/fdroid/ui/details/AppDetailsItem.kt
-@@ -181,7 +181,11 @@ data class AppDetailsItem(
-         if (versions == null) {
+@@ -194,7 +194,10 @@ data class AppDetailsItem(
            MainButtonState.LOADING
          } else if (
--          suggestedVersion == null || suggestedVersion.versionCode <= installedVersionCode
-+          suggestedVersion == null ||
-+          (suggestedVersion.versionCode < (installedVersionCode ?: 0)) ||
-+          (suggestedVersion.versionCode == installedVersionCode &&
-+            (installedVersionName == null ||
-+              suggestedVersion.versionName == installedVersionName))
+           suggestedVersion == null ||
+-            suggestedVersion.versionCode <= installedVersionCode ||
++            (suggestedVersion.versionCode < installedVersionCode) ||
++            (suggestedVersion.versionCode == installedVersionCode &&
++              (installedVersionName == null ||
++                suggestedVersion.versionName == installedVersionName)) ||
+             suggestedVersion.versionCode <= (appPrefs?.ignoreVersionCodeUpdate ?: 0)
          ) {
            MainButtonState.NONE
-         } else {
 diff --git a/app/src/main/kotlin/org/fdroid/ui/details/DetailsPresenter.kt b/app/src/main/kotlin/org/fdroid/ui/details/DetailsPresenter.kt
 index 1e713da..0e69767 100644
 --- a/app/src/main/kotlin/org/fdroid/ui/details/DetailsPresenter.kt
@@ -46,12 +45,12 @@ index 1e713da..0e69767 100644
              if (!signerCompatible || installState.showProgress) {
                false
              } else {
--              (installedVersion?.versionCode ?: 0) < version.versionCode
-+              val installedCode = installedVersion?.versionCode ?: 0
+-              (installedVersionCode ?: 0) < version.versionCode
++              val installedCode = installedVersionCode ?: 0
 +              installedCode < version.versionCode ||
 +                (installedCode == version.versionCode &&
-+                  installedVersion?.versionName != null &&
-+                  installedVersion.versionName != version.versionName)
++                  packageInfo?.versionName != null &&
++                  packageInfo.versionName != version.versionName)
              },
          )
        },
