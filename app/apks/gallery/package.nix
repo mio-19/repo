@@ -110,21 +110,14 @@ let
     sourceRoot = "${src.name}/Android/src";
 
     lockFile = ./gradle.lock;
-    overrides =
-      (builtins.removeAttrs overrides-fromsrc-updated [
-        "org.jetbrains.kotlinx:kotlinx-io-core-jvm:0.8.2"
-        "org.jetbrains.kotlinx:kotlinx-io-bytestring-jvm:0.8.2"
-        "org.jetbrains.kotlinx:kotlinx-io-core:0.8.2"
-        "org.jetbrains.kotlinx:kotlinx-io-bytestring:0.8.2"
-      ])
-      // {
-        "com.google.protobuf:protoc:4.26.1"."protoc-4.26.1-linux-x86_64.exe" =
-          src:
-          runCommand "protoc-4.26.1-linux-x86_64.exe" { } ''
-            cp ${src} $out
-            chmod +x $out
-          '';
-      };
+    overrides = overrides-fromsrc-updated // {
+      "com.google.protobuf:protoc:4.26.1"."protoc-4.26.1-linux-x86_64.exe" =
+        src:
+        runCommand "protoc-4.26.1-linux-x86_64.exe" { } ''
+          cp ${src} $out
+          chmod +x $out
+        '';
+    };
     buildJdk = jdk21_headless;
 
     nativeBuildInputs = [
