@@ -79,6 +79,7 @@ let
     '';
 
     preConfigure = ''
+      export PREFAB_JAR="${finalAttrs.passthru.prefab_jar}"
       export ANDROID_USER_HOME="$HOME/.android"
       export GRADLE_USER_HOME="$HOME/.gradle"
       export TERM=dumb
@@ -89,7 +90,20 @@ let
       ndk.dir=${androidSdk}/share/android-sdk/ndk/29.0.14206865
       EOF
 
-      cat > init.gradle <<EOF
+      cat > init-prefab.gradle <<EOF
+      gradle.projectsEvaluated {
+          rootProject.allprojects {
+              configurations.all {
+                  if (name == "_internal_prefab_binary") {
+                      withDependencies { deps ->
+                          deps.clear()
+                          deps.add(project.dependencies.create(project.files(System.getenv("PREFAB_JAR"))))
+                      }
+                  }
+              }
+          }
+      }
+
       rootProject {
           tasks.register("resolveAllDependencies") {
               doLast {
@@ -108,7 +122,7 @@ let
           }
       }
       EOF
-      gradleFlagsArray+=(--init-script "init.gradle")
+      gradleFlagsArray+=(--init-script "init-prefab.gradle")
     '';
 
     gradleFlags = [
