@@ -1,0 +1,36 @@
+--- a/settings.gradle.kts
++++ b/settings.gradle.kts
+@@ -20,13 +20,9 @@
+     }
+ 
+     repositories {
+-        google {
+-            content {
+-                includeGroupByRegex("com\\.android.*")
+-                includeGroupByRegex("com\\.google.*")
+-                includeGroupByRegex("androidx.*")
+-            }
+-        }
++        mavenLocal()
++        maven("https://maven.google.com")
++        maven("https://plugins.gradle.org/m2/")
+         gradlePluginPortal()
+         mavenCentral()
+     }
+@@ -37,13 +33,9 @@
+ dependencyResolutionManagement {
+     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+     repositories {
+-        google {
+-            content {
+-                includeGroupByRegex("com\\.android.*")
+-                includeGroupByRegex("com\\.google.*")
+-                includeGroupByRegex("androidx.*")
+-            }
+-        }
++        mavenLocal()
++        maven("https://maven.google.com")
++        maven("https://plugins.gradle.org/m2/")
+         mavenCentral()
+         maven("https://jitpack.io")
+     }
