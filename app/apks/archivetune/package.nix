@@ -15,7 +15,6 @@
   writeShellScript,
   _experimental-update-script-combinators,
   nix-update-script,
-  gradleSetupHook,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -55,7 +54,6 @@ let
       inherit (finalAttrs) pname;
       attrPath = "apk_archivetune";
       pkg = finalAttrs.finalPackage.overrideAttrs (old: {
-        nativeBuildInputs = lib.remove gradleSetupHook old.nativeBuildInputs;
         preConfigure = ''
           export ANDROID_USER_HOME="$HOME/.android"
           mkdir -p "$ANDROID_USER_HOME"
@@ -84,7 +82,6 @@ let
     nativeBuildInputs = [
       androidSdk
       gradle
-      gradleSetupHook
       jdk21_headless
       zip
       unzip
