@@ -75,6 +75,10 @@ stdenv.mkDerivation (finalAttrs: {
       -Xmulti-platform \
       -Xcommon-sources="$bytestring_common_sources" \
       -jvm-target 1.8 \
+      -language-version 2.0 \
+      -api-version 2.0 \
+      -opt-in=kotlin.ExperimentalStdlibApi \
+      -opt-in=kotlin.io.encoding.ExperimentalEncodingApi \
       -module-name kotlinx-io-bytestring-jvm \
       -d "$tmp/kotlinx-io-bytestring-jvm-${finalAttrs.version}.jar" \
       @bytestring-sources.txt
@@ -87,6 +91,10 @@ stdenv.mkDerivation (finalAttrs: {
       -Xmulti-platform \
       -Xcommon-sources="$core_common_sources" \
       -jvm-target 1.8 \
+      -language-version 2.0 \
+      -api-version 2.0 \
+      -opt-in=kotlin.ExperimentalStdlibApi \
+      -opt-in=kotlin.io.encoding.ExperimentalEncodingApi \
       -classpath "$tmp/kotlinx-io-bytestring-jvm-${finalAttrs.version}.jar" \
       -module-name kotlinx-io-core-jvm \
       -d "$tmp/kotlinx-io-core-jvm-${finalAttrs.version}.jar" \

@@ -1,6 +1,7 @@
 {
   mk-apk-package,
   overrides-fromsrc,
+  overrides-fromsrc-updated,
   buildGradlePackage,
   lib,
   androidSdkBuilder,
@@ -109,7 +110,7 @@ let
     sourceRoot = "${src.name}/Android/src";
 
     lockFile = ./gradle.lock;
-    overrides = overrides-fromsrc // {
+    overrides = overrides-fromsrc-updated // {
       "com.google.protobuf:protoc:4.26.1"."protoc-4.26.1-linux-x86_64.exe" =
         src:
         runCommand "protoc-4.26.1-linux-x86_64.exe" { } ''
