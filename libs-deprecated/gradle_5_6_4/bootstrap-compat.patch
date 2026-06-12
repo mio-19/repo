@@ -1,0 +1,784 @@
+diff --git a/subprojects/logging/src/main/java/org/gradle/internal/logging/console/DefaultColorMap.java b/subprojects/logging/src/main/java/org/gradle/internal/logging/console/DefaultColorMap.java
+index d06b1ceb..59241288 100644
+--- a/subprojects/logging/src/main/java/org/gradle/internal/logging/console/DefaultColorMap.java
++++ b/subprojects/logging/src/main/java/org/gradle/internal/logging/console/DefaultColorMap.java
+@@ -164,17 +164,22 @@ private Color createColorFromSpec(String colorSpec) {
+             return cachedColor;
+         }
+ 
+-        if (colorSpec.equalsIgnoreCase(BOLD)) {
+-            return newBoldColor();
+-        }
+-        if (colorSpec.equalsIgnoreCase("reverse")) {
+-            return newReverseColor();
+-        }
+-        if (colorSpec.equalsIgnoreCase("italic")) {
+-            return newItalicColor();
+-        }
++        if (!colorSpec.contains("-")) {
++            if (colorSpec.equalsIgnoreCase(BOLD)) {
++                return newBoldColor();
++            }
++            if (colorSpec.equalsIgnoreCase("reverse")) {
++                return newReverseColor();
++            }
++            if (colorSpec.equalsIgnoreCase("italic")) {
++                return newItalicColor();
++            }
+ 
+-        if (colorSpec.contains("-")) {
++            Ansi.Color ansiColor = Ansi.Color.valueOf(colorSpec.toUpperCase());
++            if (ansiColor != DEFAULT) {
++                return new ForegroundColor(ansiColor);
++            }
++        } else {
+             String[] colors = colorSpec.split("-");
+             ArrayList<Color> colorList = new ArrayList(colors.length);
+             for (String color : colors) {
+@@ -183,11 +188,6 @@ private Color createColorFromSpec(String colorSpec) {
+             return new CompositeColor(colorList);
+         }
+ 
+-        Ansi.Color ansiColor = Ansi.Color.valueOf(colorSpec.toUpperCase());
+-        if (ansiColor != DEFAULT) {
+-            return new ForegroundColor(ansiColor);
+-        }
+-
+         return noDecoration;
+     }
+ 
+@@ -213,7 +213,8 @@ public BrightForegroundColor(Ansi.Color ansiColor) {
+ 
+         @Override
+         public void on(Ansi ansi) {
+-            ansi.fgBright(ansiColor);
++            ansi.a(Attribute.INTENSITY_BOLD);
++            ansi.fg(ansiColor);
+         }
+ 
+         @Override
+diff --git a/subprojects/logging/src/main/java/org/gradle/internal/logging/sink/AnsiConsoleUtil.java b/subprojects/logging/src/main/java/org/gradle/internal/logging/sink/AnsiConsoleUtil.java
+index 32fcfef2..72dab8d6 100644
+--- a/subprojects/logging/src/main/java/org/gradle/internal/logging/sink/AnsiConsoleUtil.java
++++ b/subprojects/logging/src/main/java/org/gradle/internal/logging/sink/AnsiConsoleUtil.java
+@@ -17,30 +17,21 @@
+ package org.gradle.internal.logging.sink;
+ 
+ import org.fusesource.jansi.AnsiOutputStream;
+-import org.fusesource.jansi.internal.Kernel32.*;
+-import org.fusesource.jansi.internal.WindowsSupport;
++import org.fusesource.jansi.internal.CLibrary;
+ 
+ import java.io.FilterOutputStream;
+ import java.io.IOException;
+ import java.io.OutputStream;
+ 
+ import static org.fusesource.jansi.internal.CLibrary.STDOUT_FILENO;
+-import static org.fusesource.jansi.internal.CLibrary.isatty;
+-import static org.fusesource.jansi.internal.Kernel32.*;
+ 
+ /**
+- * @see <a href="https://github.com/gradle/gradle/issues/882">Original issue (gradle/gradle#882)</a>
+- * @see <a href="https://github.com/fusesource/jansi/issues/69">Issue in 3rd party library (fusesource/jansi#69)</a>
++ * Compatibility wrapper that keeps Unix ANSI behaviour when bootstrapping with
++ * the older Jansi API available in the legacy bootstrap chain.
+  */
+ public final class AnsiConsoleUtil {
+-    private static final int ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
+-    private static final int DISABLE_NEWLINE_AUTO_RETURN = 0x0008;
+-
+     private AnsiConsoleUtil() {}
+ 
+-    /**
+-     * @see <a href="https://github.com/fusesource/jansi/blob/eeda18cb05122abe48b284dca969e2c060a0c009/jansi/src/main/java/org/fusesource/jansi/AnsiConsole.java#L48-L54">Method copied over from AnsiConsole.wrapOutputStream</a>
+-     */
+     public static OutputStream wrapOutputStream(final OutputStream stream) {
+         try {
+             return wrapOutputStream(stream, STDOUT_FILENO);
+@@ -49,74 +40,29 @@ public static OutputStream wrapOutputStream(final OutputStream stream) {
+         }
+     }
+ 
+-    /**
+-     * @see <a href="https://github.com/fusesource/jansi/blob/eeda18cb05122abe48b284dca969e2c060a0c009/jansi/src/main/java/org/fusesource/jansi/AnsiConsole.java#L64-L119">Method copied over from AnsiConsole.wrapOutputStream</a>
+-     */
+     public static OutputStream wrapOutputStream(final OutputStream stream, int fileno) {
+-
+-        // If the jansi.passthrough property is set, then don't interpret
+-        // any of the ansi sequences.
+         if (Boolean.getBoolean("jansi.passthrough")) {
+             return stream;
+         }
+ 
+-        // If the jansi.strip property is set, then we just strip the
+-        // the ansi escapes.
+         if (Boolean.getBoolean("jansi.strip")) {
+             return new AnsiOutputStream(stream);
+         }
+ 
+         String os = System.getProperty("os.name");
+-        if (os.startsWith("Windows") && !isXterm()) {
+-            final long stdOutputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+-            final int[] mode = new int[1];
+-            if (stdOutputHandle != INVALID_HANDLE_VALUE
+-                && 0 != GetConsoleMode(stdOutputHandle, mode)
+-                && 0 != SetConsoleMode(stdOutputHandle, mode[0] | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN)) {
+-                return new FilterOutputStream(stream) {
+-                    @Override
+-                    public void close() throws IOException {
+-                        write(AnsiOutputStream.REST_CODE);
+-                        flush();
+-
+-                        // Reset console mode
+-                        SetConsoleMode(stdOutputHandle, mode[0]);
+-
+-                        super.close();
+-                    }
+-                };
+-            }
+-
+-            // On windows we know the console does not interpret ANSI codes..
+-            try {
+-                return new WindowsAnsiOutputStream(stream);
+-            } catch (Throwable ignore) {
+-                // this happens when JNA is not in the path.. or
+-                // this happens when the stdout is being redirected to a file.
+-            }
+-
+-            // Use the ANSIOutputStream to strip out the ANSI escape sequences.
++        if (os.startsWith("Windows")) {
+             return new AnsiOutputStream(stream);
+         }
+ 
+-        // We must be on some Unix variant, including Cygwin or MSYS(2) on Windows...
+         try {
+-            // If the jansi.force property is set, then we force to output
+-            // the ansi escapes for piping it into ansi color aware commands (e.g. less -r)
+             boolean forceColored = Boolean.getBoolean("jansi.force");
+-            // If we can detect that stdout is not a tty.. then setup
+-            // to strip the ANSI sequences..
+-            if (!isXterm() && !forceColored && isatty(fileno) == 0) {
++            if (!isXterm() && !forceColored && CLibrary.CLIBRARY.isatty(fileno) == 0) {
+                 return new AnsiOutputStream(stream);
+             }
+         } catch (Throwable ignore) {
+-            // These errors happen if the JNI lib is not available for your platform.
+-            // But since we are on ANSI friendly platform, assume the user is on the console.
++            // If JNI helpers are unavailable, assume ANSI is supported.
+         }
+ 
+-        // By default we assume your Unix tty can handle ANSI codes.
+-        // Just wrap it up so that when we get closed, we reset the
+-        // attributes.
+         return new FilterOutputStream(stream) {
+             @Override
+             public void close() throws IOException {
+@@ -127,302 +73,8 @@ public void close() throws IOException {
+         };
+     }
+ 
+-    /**
+-     * @see <a href="https://github.com/fusesource/jansi/blob/eeda18cb05122abe48b284dca969e2c060a0c009/jansi/src/main/java/org/fusesource/jansi/AnsiConsole.java#L121-L124">Method copied over from AnsiConsole.isXterm</a>
+-     */
+     private static boolean isXterm() {
+         String term = System.getenv("TERM");
+         return term != null && term.startsWith("xterm");
+     }
+-
+-    /**
+-     * @see <a href="https://github.com/fusesource/jansi/blob/eeda18cb05122abe48b284dca969e2c060a0c009/jansi/src/main/java/org/fusesource/jansi/WindowsAnsiOutputStream.java">Class copied over and patched from fusesource/jansi</a>
+-     */
+-    private static class WindowsAnsiOutputStream extends AnsiOutputStream {
+-
+-        private static final long CONSOLE = GetStdHandle(STD_OUTPUT_HANDLE);
+-
+-        private static final short FOREGROUND_BLACK = 0;
+-        private static final short FOREGROUND_YELLOW = (short) (FOREGROUND_RED | FOREGROUND_GREEN);
+-        private static final short FOREGROUND_MAGENTA = (short) (FOREGROUND_BLUE | FOREGROUND_RED);
+-        private static final short FOREGROUND_CYAN = (short) (FOREGROUND_BLUE | FOREGROUND_GREEN);
+-        private static final short FOREGROUND_WHITE = (short) (FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+-
+-        private static final short FOREGROUND_INTENSITY = 0x0008;
+-
+-        private static final short BACKGROUND_BLACK = 0;
+-        private static final short BACKGROUND_YELLOW = (short) (BACKGROUND_RED | BACKGROUND_GREEN);
+-        private static final short BACKGROUND_MAGENTA = (short) (BACKGROUND_BLUE | BACKGROUND_RED);
+-        private static final short BACKGROUND_CYAN = (short) (BACKGROUND_BLUE | BACKGROUND_GREEN);
+-        private static final short BACKGROUND_WHITE = (short) (BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE);
+-
+-        private static final short[] ANSI_FOREGROUND_COLOR_MAP = {
+-            FOREGROUND_BLACK,
+-            FOREGROUND_RED,
+-            FOREGROUND_GREEN,
+-            FOREGROUND_YELLOW,
+-            FOREGROUND_BLUE,
+-            FOREGROUND_MAGENTA,
+-            FOREGROUND_CYAN,
+-            FOREGROUND_WHITE,
+-        };
+-
+-        private static final short[] ANSI_BACKGROUND_COLOR_MAP = {
+-            BACKGROUND_BLACK,
+-            BACKGROUND_RED,
+-            BACKGROUND_GREEN,
+-            BACKGROUND_YELLOW,
+-            BACKGROUND_BLUE,
+-            BACKGROUND_MAGENTA,
+-            BACKGROUND_CYAN,
+-            BACKGROUND_WHITE,
+-        };
+-
+-        private final CONSOLE_SCREEN_BUFFER_INFO info = new CONSOLE_SCREEN_BUFFER_INFO();
+-        private final short originalColors;
+-
+-        private boolean negative;
+-        private short savedX = -1;
+-        private short savedY = -1;
+-
+-        public WindowsAnsiOutputStream(OutputStream os) throws IOException {
+-            super(os);
+-            getConsoleInfo();
+-            originalColors = info.attributes;
+-        }
+-
+-        private void getConsoleInfo() throws IOException {
+-            out.flush();
+-            if (GetConsoleScreenBufferInfo(CONSOLE, info) == 0) {
+-                throw new IOException("Could not get the screen info: " + WindowsSupport.getLastErrorMessage());
+-            }
+-            if (negative) {
+-                info.attributes = invertAttributeColors(info.attributes);
+-            }
+-        }
+-
+-        private void applyAttribute() throws IOException {
+-            out.flush();
+-            short attributes = info.attributes;
+-            if (negative) {
+-                attributes = invertAttributeColors(attributes);
+-            }
+-            if (SetConsoleTextAttribute(CONSOLE, attributes) == 0) {
+-                throw new IOException(WindowsSupport.getLastErrorMessage());
+-            }
+-        }
+-
+-        private short invertAttributeColors(short attributes) {
+-            // Swap the Foreground and Background bits.
+-            int fg = 0x000F & attributes;
+-            fg <<= 8;
+-            int bg = 0X00F0 * attributes;
+-            bg >>= 8;
+-            attributes = (short) ((attributes & 0xFF00) | fg | bg);
+-            return attributes;
+-        }
+-
+-        private void applyCursorPosition() throws IOException {
+-            if (SetConsoleCursorPosition(CONSOLE, info.cursorPosition.copy()) == 0) {
+-                throw new IOException(WindowsSupport.getLastErrorMessage());
+-            }
+-        }
+-
+-        @Override
+-        protected void processEraseScreen(int eraseOption) throws IOException {
+-            getConsoleInfo();
+-            int[] written = new int[1];
+-            switch (eraseOption) {
+-                case ERASE_SCREEN:
+-                    COORD topLeft = new COORD();
+-                    topLeft.x = 0;
+-                    topLeft.y = info.window.top;
+-                    int screenLength = info.window.height() * info.size.x;
+-                    FillConsoleOutputAttribute(CONSOLE, originalColors, screenLength, topLeft, written);
+-                    FillConsoleOutputCharacterW(CONSOLE, ' ', screenLength, topLeft, written);
+-                    break;
+-                case ERASE_SCREEN_TO_BEGINING:
+-                    COORD topLeft2 = new COORD();
+-                    topLeft2.x = 0;
+-                    topLeft2.y = info.window.top;
+-                    int lengthToCursor = (info.cursorPosition.y - info.window.top) * info.size.x
+-                        + info.cursorPosition.x;
+-                    FillConsoleOutputAttribute(CONSOLE, originalColors, lengthToCursor, topLeft2, written);
+-                    FillConsoleOutputCharacterW(CONSOLE, ' ', lengthToCursor, topLeft2, written);
+-                    break;
+-                case ERASE_SCREEN_TO_END:
+-                    int lengthToEnd = (info.window.bottom - info.cursorPosition.y) * info.size.x
+-                        + (info.size.x - info.cursorPosition.x);
+-                    FillConsoleOutputAttribute(CONSOLE, originalColors, lengthToEnd, info.cursorPosition.copy(), written);
+-                    FillConsoleOutputCharacterW(CONSOLE, ' ', lengthToEnd, info.cursorPosition.copy(), written);
+-                    break;
+-                default:
+-                    break;
+-            }
+-        }
+-
+-        @Override
+-        protected void processEraseLine(int eraseOption) throws IOException {
+-            getConsoleInfo();
+-            int[] written = new int[1];
+-            switch (eraseOption) {
+-                case ERASE_LINE:
+-                    COORD leftColCurrRow = info.cursorPosition.copy();
+-                    leftColCurrRow.x = 0;
+-                    FillConsoleOutputAttribute(CONSOLE, originalColors, info.size.x, leftColCurrRow, written);
+-                    FillConsoleOutputCharacterW(CONSOLE, ' ', info.size.x, leftColCurrRow, written);
+-                    break;
+-                case ERASE_LINE_TO_BEGINING:
+-                    COORD leftColCurrRow2 = info.cursorPosition.copy();
+-                    leftColCurrRow2.x = 0;
+-                    FillConsoleOutputAttribute(CONSOLE, originalColors, info.cursorPosition.x, leftColCurrRow2, written);
+-                    FillConsoleOutputCharacterW(CONSOLE, ' ', info.cursorPosition.x, leftColCurrRow2, written);
+-                    break;
+-                case ERASE_LINE_TO_END:
+-                    int lengthToLastCol = info.size.x - info.cursorPosition.x;
+-                    FillConsoleOutputAttribute(CONSOLE, originalColors, lengthToLastCol, info.cursorPosition.copy(), written);
+-                    FillConsoleOutputCharacterW(CONSOLE, ' ', lengthToLastCol, info.cursorPosition.copy(), written);
+-                    break;
+-                default:
+-                    break;
+-            }
+-        }
+-
+-        @Override
+-        protected void processCursorLeft(int count) throws IOException {
+-            getConsoleInfo();
+-            info.cursorPosition.x = (short) Math.max(0, info.cursorPosition.x - count);
+-            applyCursorPosition();
+-        }
+-
+-        @Override
+-        protected void processCursorRight(int count) throws IOException {
+-            getConsoleInfo();
+-            info.cursorPosition.x = (short) Math.min(info.window.width(), info.cursorPosition.x + count);
+-            applyCursorPosition();
+-        }
+-
+-        @Override
+-        protected void processCursorDown(int count) throws IOException {
+-            getConsoleInfo();
+-            // The following code was patched according to the following PR: https://github.com/fusesource/jansi/pull/70
+-            info.cursorPosition.y = (short) Math.min(Math.max(0, info.size.y - 1), info.cursorPosition.y + count);
+-            applyCursorPosition();
+-        }
+-
+-        @Override
+-        protected void processCursorUp(int count) throws IOException {
+-            getConsoleInfo();
+-            info.cursorPosition.y = (short) Math.max(info.window.top, info.cursorPosition.y - count);
+-            applyCursorPosition();
+-        }
+-
+-        @Override
+-        protected void processCursorTo(int row, int col) throws IOException {
+-            getConsoleInfo();
+-            info.cursorPosition.y = (short) Math.max(info.window.top, Math.min(info.size.y, info.window.top + row - 1));
+-            info.cursorPosition.x = (short) Math.max(0, Math.min(info.window.width(), col - 1));
+-            applyCursorPosition();
+-        }
+-
+-        @Override
+-        protected void processCursorToColumn(int x) throws IOException {
+-            getConsoleInfo();
+-            info.cursorPosition.x = (short) Math.max(0, Math.min(info.window.width(), x - 1));
+-            applyCursorPosition();
+-        }
+-
+-        @Override
+-        protected void processSetForegroundColor(int color, boolean bright) throws IOException {
+-            info.attributes = (short) ((info.attributes & ~0x000F) | ANSI_FOREGROUND_COLOR_MAP[color]);
+-            if (bright) {
+-                info.attributes |= FOREGROUND_INTENSITY;
+-            }
+-            applyAttribute();
+-        }
+-
+-        @Override
+-        protected void processSetBackgroundColor(int color, boolean bright) throws IOException {
+-            info.attributes = (short) ((info.attributes & ~0x0070) | ANSI_BACKGROUND_COLOR_MAP[color]);
+-            applyAttribute();
+-        }
+-
+-        @Override
+-        protected void processDefaultTextColor() throws IOException {
+-            info.attributes = (short) ((info.attributes & ~0x000F) | (originalColors & 0xF));
+-            applyAttribute();
+-        }
+-
+-        @Override
+-        protected void processDefaultBackgroundColor() throws IOException {
+-            info.attributes = (short) ((info.attributes & ~0x00F0) | (originalColors & 0xF0));
+-            applyAttribute();
+-        }
+-
+-        @Override
+-        protected void processAttributeRest() throws IOException {
+-            info.attributes = (short) ((info.attributes & ~0x00FF) | originalColors);
+-            this.negative = false;
+-            applyAttribute();
+-        }
+-
+-        @Override
+-        protected void processSetAttribute(int attribute) throws IOException {
+-            switch (attribute) {
+-                case ATTRIBUTE_INTENSITY_BOLD:
+-                    info.attributes = (short) (info.attributes | FOREGROUND_INTENSITY);
+-                    applyAttribute();
+-                    break;
+-                case ATTRIBUTE_INTENSITY_NORMAL:
+-                    info.attributes = (short) (info.attributes & ~FOREGROUND_INTENSITY);
+-                    applyAttribute();
+-                    break;
+-
+-                // Yeah, setting the background intensity is not underlining.. but it's best we can do
+-                // using the Windows console API
+-                case ATTRIBUTE_UNDERLINE:
+-                    info.attributes = (short) (info.attributes | BACKGROUND_INTENSITY);
+-                    applyAttribute();
+-                    break;
+-                case ATTRIBUTE_UNDERLINE_OFF:
+-                    info.attributes = (short) (info.attributes & ~BACKGROUND_INTENSITY);
+-                    applyAttribute();
+-                    break;
+-
+-                case ATTRIBUTE_NEGATIVE_ON:
+-                    negative = true;
+-                    applyAttribute();
+-                    break;
+-                case ATTRIBUTE_NEGATIVE_Off:
+-                    negative = false;
+-                    applyAttribute();
+-                    break;
+-                default:
+-                    break;
+-            }
+-        }
+-
+-        @Override
+-        protected void processSaveCursorPosition() throws IOException {
+-            getConsoleInfo();
+-            savedX = info.cursorPosition.x;
+-            savedY = info.cursorPosition.y;
+-        }
+-
+-        @Override
+-        protected void processRestoreCursorPosition() throws IOException {
+-            // restore only if there was a save operation first
+-            if (savedX != -1 && savedY != -1) {
+-                out.flush();
+-                info.cursorPosition.x = savedX;
+-                info.cursorPosition.y = savedY;
+-                applyCursorPosition();
+-            }
+-        }
+-
+-        @Override
+-        protected void processChangeWindowTitle(String label) {
+-            SetConsoleTitle(label);
+-        }
+-    }
+ }
+diff --git a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/console/NativePlatformConsoleDetector.java b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/console/NativePlatformConsoleDetector.java
+index 9a33da78..25e79702 100644
+--- a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/console/NativePlatformConsoleDetector.java
++++ b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/console/NativePlatformConsoleDetector.java
+@@ -16,11 +16,11 @@
+ 
+ package org.gradle.internal.nativeintegration.console;
+ 
+-import net.rubygrapefruit.platform.terminal.Terminals;
++import net.rubygrapefruit.platform.Terminals;
+ import org.gradle.internal.os.OperatingSystem;
+ 
+-import static net.rubygrapefruit.platform.terminal.Terminals.Output.Stderr;
+-import static net.rubygrapefruit.platform.terminal.Terminals.Output.Stdout;
++import static net.rubygrapefruit.platform.Terminals.Output.Stderr;
++import static net.rubygrapefruit.platform.Terminals.Output.Stdout;
+ 
+ public class NativePlatformConsoleDetector implements ConsoleDetector {
+     private final Terminals terminals;
+@@ -50,6 +50,6 @@ public ConsoleMetaData getConsole() {
+ 
+     @Override
+     public boolean isConsoleInput() {
+-        return terminals.isTerminalInput();
++        return System.console() != null;
+     }
+ }
+diff --git a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/console/NativePlatformConsoleMetaData.java b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/console/NativePlatformConsoleMetaData.java
+index 38458dcc..6b337bfb 100644
+--- a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/console/NativePlatformConsoleMetaData.java
++++ b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/console/NativePlatformConsoleMetaData.java
+@@ -16,17 +16,13 @@
+ 
+ package org.gradle.internal.nativeintegration.console;
+ 
+-import net.rubygrapefruit.platform.terminal.TerminalOutput;
+-
+ public class NativePlatformConsoleMetaData implements ConsoleMetaData {
+     private final boolean stdout;
+     private final boolean stderr;
+-    private final TerminalOutput terminal;
+ 
+-    public NativePlatformConsoleMetaData(boolean stdout, boolean stderr, TerminalOutput terminal) {
++    public NativePlatformConsoleMetaData(boolean stdout, boolean stderr, Object terminal) {
+         this.stdout = stdout;
+         this.stderr = stderr;
+-        this.terminal = terminal;
+     }
+ 
+     @Override
+@@ -41,12 +37,12 @@ public boolean isStdErr() {
+ 
+     @Override
+     public int getCols() {
+-        return terminal.getTerminalSize().getCols();
++        return 0;
+     }
+ 
+     @Override
+     public int getRows() {
+-        return terminal.getTerminalSize().getRows();
++        return 0;
+     }
+ 
+     @Override
+diff --git a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/FileSystemServices.java b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/FileSystemServices.java
+index f21b34a2..b1c0434c 100644
+--- a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/FileSystemServices.java
++++ b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/FileSystemServices.java
+@@ -16,7 +16,7 @@
+ 
+ package org.gradle.internal.nativeintegration.filesystem.services;
+ 
+-import net.rubygrapefruit.platform.file.PosixFiles;
++import net.rubygrapefruit.platform.PosixFiles;
+ import org.gradle.internal.nativeintegration.filesystem.FileCanonicalizer;
+ import org.gradle.internal.nativeintegration.filesystem.FileMetadataAccessor;
+ import org.gradle.internal.nativeintegration.filesystem.FileModeAccessor;
+diff --git a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedChmod.java b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedChmod.java
+index ee150213..087c3dd3 100644
+--- a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedChmod.java
++++ b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedChmod.java
+@@ -16,7 +16,7 @@
+ 
+ package org.gradle.internal.nativeintegration.filesystem.services;
+ 
+-import net.rubygrapefruit.platform.file.PosixFiles;
++import net.rubygrapefruit.platform.PosixFiles;
+ import org.gradle.internal.nativeintegration.filesystem.FileModeMutator;
+ 
+ import java.io.File;
+diff --git a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedFileMetadataAccessor.java b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedFileMetadataAccessor.java
+index 3c4ab66a..f367c2ff 100644
+--- a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedFileMetadataAccessor.java
++++ b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedFileMetadataAccessor.java
+@@ -16,8 +16,6 @@
+ 
+ package org.gradle.internal.nativeintegration.filesystem.services;
+ 
+-import net.rubygrapefruit.platform.file.FileInfo;
+-import net.rubygrapefruit.platform.file.Files;
+ import org.gradle.internal.file.DefaultFileMetadata;
+ import org.gradle.internal.file.FileMetadataSnapshot;
+ import org.gradle.internal.nativeintegration.filesystem.FileMetadataAccessor;
+@@ -27,25 +25,15 @@
+ import java.nio.file.Path;
+ 
+ public class NativePlatformBackedFileMetadataAccessor implements FileMetadataAccessor {
+-    private final Files files;
+-
+-    public NativePlatformBackedFileMetadataAccessor(Files files) {
+-        this.files = files;
+-    }
+-
+     @Override
+     public FileMetadataSnapshot stat(File f) {
+-        FileInfo stat = files.stat(f, true);
+-        switch (stat.getType()) {
+-            case File:
+-                return DefaultFileMetadata.file(stat.getLastModifiedTime(), stat.getSize());
+-            case Directory:
+-                return DefaultFileMetadata.directory();
+-            case Missing:
+-                return DefaultFileMetadata.missing();
+-            default:
+-                throw new IllegalArgumentException("Unrecognised file type: " + stat.getType());
++        if (!f.exists()) {
++            return DefaultFileMetadata.missing();
++        }
++        if (f.isDirectory()) {
++            return DefaultFileMetadata.directory();
+         }
++        return DefaultFileMetadata.file(f.lastModified(), f.length());
+     }
+ 
+     @Override
+diff --git a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedStat.java b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedStat.java
+index 52f44c4e..b384c216 100644
+--- a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedStat.java
++++ b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedStat.java
+@@ -16,7 +16,7 @@
+ 
+ package org.gradle.internal.nativeintegration.filesystem.services;
+ 
+-import net.rubygrapefruit.platform.file.PosixFiles;
++import net.rubygrapefruit.platform.PosixFiles;
+ import org.gradle.internal.nativeintegration.filesystem.FileModeAccessor;
+ 
+ import java.io.File;
+diff --git a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedSymlink.java b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedSymlink.java
+index 2061c912..5cf0c983 100644
+--- a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedSymlink.java
++++ b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/NativePlatformBackedSymlink.java
+@@ -16,8 +16,8 @@
+ 
+ package org.gradle.internal.nativeintegration.filesystem.services;
+ 
+-import net.rubygrapefruit.platform.file.FileInfo;
+-import net.rubygrapefruit.platform.file.PosixFiles;
++import net.rubygrapefruit.platform.PosixFile;
++import net.rubygrapefruit.platform.PosixFiles;
+ import org.gradle.internal.nativeintegration.filesystem.Symlink;
+ 
+ import java.io.File;
+@@ -42,6 +42,6 @@ public void symlink(File link, File target) {
+ 
+     @Override
+     public boolean isSymlink(File suspect) {
+-        return posixFiles.stat(suspect).getType() == FileInfo.Type.Symlink;
++        return posixFiles.stat(suspect).getType() == PosixFile.Type.Symlink;
+     }
+ }
+diff --git a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/UnavailablePosixFiles.java b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/UnavailablePosixFiles.java
+index 6cc7aac5..65730223 100644
+--- a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/UnavailablePosixFiles.java
++++ b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/filesystem/services/UnavailablePosixFiles.java
+@@ -16,7 +16,7 @@
+ 
+ package org.gradle.internal.nativeintegration.filesystem.services;
+ 
+-import net.rubygrapefruit.platform.file.PosixFiles;
++import net.rubygrapefruit.platform.PosixFiles;
+ 
+ public interface UnavailablePosixFiles extends PosixFiles {
+ }
+diff --git a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/processenvironment/NativePlatformBackedProcessEnvironment.java b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/processenvironment/NativePlatformBackedProcessEnvironment.java
+index ec3fcefe..4277bff8 100755
+--- a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/processenvironment/NativePlatformBackedProcessEnvironment.java
++++ b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/processenvironment/NativePlatformBackedProcessEnvironment.java
+@@ -18,6 +18,7 @@
+ import net.rubygrapefruit.platform.Process;
+ 
+ import java.io.File;
++import java.lang.reflect.Method;
+ 
+ public class NativePlatformBackedProcessEnvironment extends AbstractProcessEnvironment {
+     private final Process process;
+@@ -53,6 +54,13 @@ public Long getPid() {
+ 
+     @Override
+     public void detachProcess() {
+-        process.detach();
++        try {
++            Method detach = process.getClass().getMethod("detach");
++            detach.invoke(process);
++        } catch (NoSuchMethodException ignored) {
++            // Older native-platform versions do not support detach().
++        } catch (Exception e) {
++            throw new RuntimeException(e);
++        }
+     }
+ }
+diff --git a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/services/NativeServices.java b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/services/NativeServices.java
+index f58ba90d..b40483e6 100755
+--- a/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/services/NativeServices.java
++++ b/subprojects/native/src/main/java/org/gradle/internal/nativeintegration/services/NativeServices.java
+@@ -19,13 +19,11 @@
+ import net.rubygrapefruit.platform.NativeIntegrationUnavailableException;
+ import net.rubygrapefruit.platform.Process;
+ import net.rubygrapefruit.platform.ProcessLauncher;
++import net.rubygrapefruit.platform.PosixFiles;
+ import net.rubygrapefruit.platform.SystemInfo;
++import net.rubygrapefruit.platform.Terminals;
+ import net.rubygrapefruit.platform.WindowsRegistry;
+-import net.rubygrapefruit.platform.file.Files;
+-import net.rubygrapefruit.platform.file.PosixFiles;
+ import net.rubygrapefruit.platform.internal.DefaultProcessLauncher;
+-import net.rubygrapefruit.platform.memory.Memory;
+-import net.rubygrapefruit.platform.terminal.Terminals;
+ import org.gradle.api.JavaVersion;
+ import org.gradle.internal.SystemProperties;
+ import org.gradle.internal.jvm.Jvm;
+@@ -61,7 +59,7 @@
+  */
+ public class NativeServices extends DefaultServiceRegistry implements ServiceRegistry {
+     private static final Logger LOGGER = LoggerFactory.getLogger(NativeServices.class);
+-    private static boolean useNativeIntegrations;
++    private static boolean useNativeIntegrations = "true".equalsIgnoreCase(System.getProperty("org.gradle.native", "true"));
+     private static final NativeServices INSTANCE = new NativeServices();
+     private static final JansiBootPathConfigurer JANSI_BOOT_PATH_CONFIGURER = new JansiBootPathConfigurer();
+     private static boolean initialized;
+@@ -80,7 +78,6 @@ public static void initialize(File userHomeDir) {
+      */
+     public static synchronized void initialize(File userHomeDir, boolean initializeJansi) {
+         if (!initialized) {
+-            useNativeIntegrations = "true".equalsIgnoreCase(System.getProperty("org.gradle.native", "true"));
+             if (useNativeIntegrations) {
+                 File nativeBaseDir = getNativeServicesDir(userHomeDir);
+                 try {
+@@ -208,17 +205,6 @@ protected SystemInfo createSystemInfo() {
+         return notAvailable(SystemInfo.class);
+     }
+ 
+-    protected Memory createMemory() {
+-        if (useNativeIntegrations) {
+-            try {
+-                return net.rubygrapefruit.platform.Native.get(Memory.class);
+-            } catch (NativeIntegrationUnavailableException e) {
+-                LOGGER.debug("Native-platform memory integration is not available. Continuing with fallback.");
+-            }
+-        }
+-        return notAvailable(Memory.class);
+-    }
+-
+     protected ProcessLauncher createProcessLauncher() {
+         if (useNativeIntegrations) {
+             try {
+@@ -250,7 +236,7 @@ protected FileMetadataAccessor createFileMetadataAccessor(OperatingSystem operat
+ 
+         if ((operatingSystem.isMacOsX()) && useNativeIntegrations) {
+             try {
+-                return new NativePlatformBackedFileMetadataAccessor(net.rubygrapefruit.platform.Native.get(Files.class));
++                return new NativePlatformBackedFileMetadataAccessor();
+             } catch (NativeIntegrationUnavailableException e) {
+                 LOGGER.debug("Native-platform files integration is not available. Continuing with fallback.");
+             }
+diff --git a/subprojects/process-services/src/main/java/org/gradle/process/internal/health/memory/NativeOsMemoryInfo.java b/subprojects/process-services/src/main/java/org/gradle/process/internal/health/memory/NativeOsMemoryInfo.java
+index 056508d2..5fe772d7 100644
+--- a/subprojects/process-services/src/main/java/org/gradle/process/internal/health/memory/NativeOsMemoryInfo.java
++++ b/subprojects/process-services/src/main/java/org/gradle/process/internal/health/memory/NativeOsMemoryInfo.java
+@@ -16,24 +16,10 @@
+ 
+ package org.gradle.process.internal.health.memory;
+ 
+-import net.rubygrapefruit.platform.NativeException;
+-import net.rubygrapefruit.platform.memory.Memory;
+-import net.rubygrapefruit.platform.memory.MemoryInfo;
+-import org.gradle.internal.nativeintegration.NativeIntegrationException;
+-import org.gradle.internal.nativeintegration.services.NativeServices;
+-
+ public class NativeOsMemoryInfo implements OsMemoryInfo {
+ 
+     @Override
+     public OsMemoryStatus getOsSnapshot() {
+-        try {
+-            Memory memory = NativeServices.getInstance().get(Memory.class);
+-            MemoryInfo memoryInfo = memory.getMemoryInfo();
+-            return new OsMemoryStatusSnapshot(memoryInfo.getTotalPhysicalMemory(), memoryInfo.getAvailablePhysicalMemory());
+-        } catch (NativeException ex) {
+-            throw new UnsupportedOperationException("Unable to get system memory", ex);
+-        } catch (NativeIntegrationException ex) {
+-            throw new UnsupportedOperationException("Unable to get system memory", ex);
+-        }
++        throw new UnsupportedOperationException("Unable to get system memory");
+     }
+ }

@@ -1,0 +1,150 @@
+{
+  asm_6_2,
+  asm_commons_6_2,
+  asm_tree_6_2,
+  brotli_dec_0_1_2,
+  commons_compress_1_14,
+  dd_plist_1_20,
+  fastutil_7_2_1,
+  findbugs,
+  gradle-legacy-bridge,
+  gradle_4_0,
+  jdk11_headless,
+  jsr305_3_0_2,
+  snakeyaml_1_6,
+  xz_java_1_6,
+}:
+gradle-legacy-bridge {
+  version = "4.10.3";
+  tag = "v4.10.3";
+  hash = "sha256-rpvkNqSdInehucshyQb4X1ZpROkx8n9hga95L8XkKTk=";
+  bootstrapGradle = gradle_4_0;
+  jdk = jdk11_headless;
+  patches = [
+    ./bootstrap-compat.patch
+    ./bootstrap-jdk11-compat.patch
+  ];
+  patchFlags = [ "-p1" ];
+  extraLibs = [
+    "${asm_6_2}/asm-${asm_6_2.version}.jar"
+    "${asm_commons_6_2}/asm-commons-${asm_commons_6_2.version}.jar"
+    "${asm_tree_6_2}/asm-tree-${asm_tree_6_2.version}.jar"
+    "${brotli_dec_0_1_2}/dec-${brotli_dec_0_1_2.version}.jar"
+    "${commons_compress_1_14}/commons-compress-${commons_compress_1_14.version}.jar"
+    "${dd_plist_1_20}/dd-plist-${dd_plist_1_20.version}.jar"
+    "${fastutil_7_2_1}/fastutil-${fastutil_7_2_1.version}.jar"
+    "${findbugs}/share/java/findbugs.jar"
+    "${jsr305_3_0_2}/jsr305-${jsr305_3_0_2.version}.jar"
+    "${snakeyaml_1_6}/snakeyaml-${snakeyaml_1_6.version}.jar"
+    "${xz_java_1_6}/xz-${xz_java_1_6.version}.jar"
+  ];
+  sourceSubprojects = [
+    "announce"
+    "antlr"
+    "api-metadata"
+    "base-services"
+    "base-services-groovy"
+    "build-cache"
+    "build-cache-http"
+    "build-comparison"
+    "build-init"
+    "build-option"
+    "cli"
+    "code-quality"
+    "composite-builds"
+    "core"
+    "core-api"
+    "dependency-management"
+    "installation-beacon"
+    "ivy"
+    "jacoco"
+    "javascript"
+    "jvm-services"
+    "language-groovy"
+    "language-java"
+    "language-jvm"
+    "launcher"
+    "logging"
+    "maven"
+    "messaging"
+    "model-core"
+    "model-groovy"
+    "native"
+    "osgi"
+    "persistent-cache"
+    "platform-base"
+    "platform-jvm"
+    "platform-native"
+    "plugin-development"
+    "plugin-use"
+    "process-services"
+    "publish"
+    "reporting"
+    "resources"
+    "resources-http"
+    "resources-sftp"
+    "runtime-api-info"
+    "test-kit"
+    "testing-base"
+    "tooling-api"
+    "tooling-api-builders"
+    "workers"
+    "wrapper"
+  ];
+  builtRuntimeModules = [
+    "gradle-api-metadata"
+    "gradle-base-services"
+    "gradle-base-services-groovy"
+    "gradle-build-cache"
+    "gradle-build-option"
+    "gradle-cli"
+    "gradle-core"
+    "gradle-core-api"
+    "gradle-installation-beacon"
+    "gradle-jvm-services"
+    "gradle-launcher"
+    "gradle-logging"
+    "gradle-messaging"
+    "gradle-model-core"
+    "gradle-model-groovy"
+    "gradle-native"
+    "gradle-persistent-cache"
+    "gradle-process-services"
+    "gradle-resources"
+    "gradle-runtime-api-info"
+    "gradle-tooling-api"
+    "gradle-wrapper"
+  ];
+  builtPluginModules = [
+    "gradle-announce"
+    "gradle-antlr"
+    "gradle-build-cache-http"
+    "gradle-build-comparison"
+    "gradle-build-init"
+    "gradle-code-quality"
+    "gradle-composite-builds"
+    "gradle-dependency-management"
+    "gradle-ivy"
+    "gradle-jacoco"
+    "gradle-javascript"
+    "gradle-language-groovy"
+    "gradle-language-java"
+    "gradle-language-jvm"
+    "gradle-maven"
+    "gradle-osgi"
+    "gradle-platform-base"
+    "gradle-platform-jvm"
+    "gradle-platform-native"
+    "gradle-plugin-development"
+    "gradle-plugin-use"
+    "gradle-publish"
+    "gradle-reporting"
+    "gradle-resources-http"
+    "gradle-resources-sftp"
+    "gradle-test-kit"
+    "gradle-testing-base"
+    "gradle-tooling-api-builders"
+    "gradle-workers"
+  ];
+  implementationPluginModules = [ "gradle-tooling-api-builders" ];
+}
