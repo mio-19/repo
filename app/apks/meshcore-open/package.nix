@@ -85,7 +85,7 @@ let
         useBwrap = false;
       };
 
-      gradleUpdateTask = ":app:assembleRelease :flserial:extractReleaseAnnotations";
+      gradleUpdateTask = "--init-script gradle-version-normalize.init.gradle :app:assembleRelease :flserial:extractReleaseAnnotations";
 
       dontDartBuild = true;
       dontDartInstall = true;
@@ -128,11 +128,16 @@ let
 
         cat > android/gradle-version-normalize.init.gradle << 'INIT_SCRIPT'
         allprojects {
+          ext.kotlin_version = '1.9.20'
+          ext.kotlinVersion = '1.9.20'
           buildscript {
             configurations.matching { it.name == "classpath" }.all {
               resolutionStrategy.eachDependency { details ->
                 if (details.requested.group == "com.android.tools.build" && details.requested.name == "gradle") {
                   details.useVersion("8.9.1")
+                }
+                if (details.requested.group == "org.jetbrains.kotlin" && details.requested.name == "kotlin-gradle-plugin") {
+                  details.useVersion("1.9.20")
                 }
               }
             }
@@ -147,6 +152,30 @@ let
               }
               if (details.requested.group == "androidx.core" && details.requested.name == "core-ktx") {
                 details.useVersion("1.13.1")
+              }
+            }
+          }
+          plugins.withId("com.android.application") {
+            android {
+              lintOptions {
+                checkReleaseBuilds = false
+                abortOnError = false
+              }
+              lint {
+                checkReleaseBuilds = false
+                abortOnError = false
+              }
+            }
+          }
+          plugins.withId("com.android.library") {
+            android {
+              lintOptions {
+                checkReleaseBuilds = false
+                abortOnError = false
+              }
+              lint {
+                checkReleaseBuilds = false
+                abortOnError = false
               }
             }
           }
@@ -213,6 +242,7 @@ let
           GRADLE_OPTS="$GRADLE_OPTS -Djavax.net.ssl.trustStore=$MITM_CACHE_KEYSTORE"
           GRADLE_OPTS="$GRADLE_OPTS -Djavax.net.ssl.trustStorePassword=$MITM_CACHE_KS_PWD"
         fi
+        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.newDsl=false -Dorg.gradle.project.android.ndkVersion=28.2.13676358"
         export FLUTTER_ROOT="$PWD/flutter-sdk"
         export GRADLE_OPTS
 
@@ -251,97 +281,7 @@ let
           fi
         }
 
-        patch_plugin_gradle_file() {
-          local gradle_file="$1"
-          local target_agp='8.9.1'
-          local target_kotlin='1.9.20'
 
-          [ -f "$gradle_file" ] || return 0
-
-          replace_matches() {
-            local match_pattern="$1"
-            local replacement="$2"
-            local old_value
-
-            while IFS= read -r old_value; do
-              [ -n "$old_value" ] || continue
-              [ "$old_value" = "$replacement" ] && continue
-              substituteInPlace "$gradle_file" \
-                --replace-fail "$old_value" "$replacement"
-            done < <(grep -oE "$match_pattern" "$gradle_file" | sort -u)
-          }
-
-          replace_plugin_version_decls() {
-            local match_pattern="$1"
-            local target_version="$2"
-            local old_value
-            local replacement_suffix
-
-            while IFS= read -r old_value; do
-              [ -n "$old_value" ] || continue
-              case "$old_value" in
-                *" version \"$target_version\"" | *" version '$target_version'" )
-                  continue
-                  ;;
-                *" version \""* )
-                  replacement_suffix=" version \"$target_version\""
-                  ;;
-                *" version '"* )
-                  replacement_suffix=" version '$target_version'"
-                  ;;
-                * )
-                  continue
-                  ;;
-              esac
-              substituteInPlace "$gradle_file" \
-                --replace-fail "$old_value" "''${old_value% version *}$replacement_suffix"
-            done < <(grep -oE "$match_pattern" "$gradle_file" | sort -u)
-          }
-
-          replace_matches 'com\.android\.tools\.build:gradle:[0-9.]+' "com.android.tools.build:gradle:$target_agp"
-          replace_matches 'org\.jetbrains\.kotlin:kotlin-gradle-plugin:[0-9.]+' "org.jetbrains.kotlin:kotlin-gradle-plugin:$target_kotlin"
-          replace_matches "ext\\.kotlin_version = '[0-9.]+'" "ext.kotlin_version = '$target_kotlin'"
-          replace_matches "kotlin_version = '[0-9.]+'" "kotlin_version = '$target_kotlin'"
-          replace_matches 'val kotlinVersion = "[0-9.]+"' "val kotlinVersion = \"$target_kotlin\""
-          replace_matches 'kotlinVersion = "[0-9.]+"' "kotlinVersion = \"$target_kotlin\""
-
-          replace_plugin_version_decls 'id\("com\.android\.(application|library|test)"\) version "[0-9.]+"' "$target_agp"
-          replace_plugin_version_decls 'id "com\.android\.(application|library|test)" version "[0-9.]+"' "$target_agp"
-          replace_plugin_version_decls "id 'com\\.android\\.(application|library|test)' version '[0-9.]+'" "$target_agp"
-          replace_plugin_version_decls 'id\("org\.jetbrains\.kotlin\.(android|jvm)"\) version "[0-9.]+"' "$target_kotlin"
-          replace_plugin_version_decls 'id "org\.jetbrains\.kotlin\.(android|jvm)" version "[0-9.]+"' "$target_kotlin"
-          replace_plugin_version_decls "id 'org\\.jetbrains\\.kotlin\\.(android|jvm)' version '[0-9.]+'" "$target_kotlin"
-
-          patch_ndk_version_file "$gradle_file"
-
-          if ! grep -Fq 'nixDisableReleaseLint' "$gradle_file"; then
-            if [[ "$gradle_file" == *.gradle.kts ]]; then
-              cat >> "$gradle_file" <<'EOF'
-        // nixDisableReleaseLint
-        android {
-          lint {
-            checkReleaseBuilds = false
-            abortOnError = false
-          }
-        }
-        EOF
-            else
-              cat >> "$gradle_file" <<'EOF'
-        // nixDisableReleaseLint
-        android {
-          lintOptions {
-            checkReleaseBuilds false
-            abortOnError false
-          }
-          lint {
-            checkReleaseBuilds false
-            abortOnError false
-          }
-        }
-        EOF
-            fi
-          fi
-        }
 
         patch_ndk_version_file() {
           local file="$1"
@@ -379,7 +319,7 @@ let
           fi
           if [ -d "$work_plugin_dir/android" ]; then
             while IFS= read -r gradle_file; do
-              patch_plugin_gradle_file "$gradle_file"
+              patch_ndk_version_file "$gradle_file"
             done < <(find "$work_plugin_dir/android" -type f \( -name '*.gradle' -o -name '*.gradle.kts' \))
           fi
           if [ -f "$work_plugin_dir/gradle.properties" ]; then
@@ -427,12 +367,13 @@ let
           esac
 
           while IFS= read -r gradle_file; do
-            patch_plugin_gradle_file "$gradle_file"
+            patch_ndk_version_file "$gradle_file"
           done < <(find "$work_package_dir" -type f \( -name '*.gradle' -o -name '*.gradle.kts' \))
 
           while IFS= read -r ndk_file; do
             patch_ndk_version_file "$ndk_file"
           done < <(find "$work_package_dir" -type f -name '*.properties')
+
         done < <(${python3}/bin/python3 - <<'PY'
         import json
         import urllib.parse
