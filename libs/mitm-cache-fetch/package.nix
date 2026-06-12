@@ -31,6 +31,7 @@ let
         "https://cache-redirector.jetbrains.com/redirector.kotlinlang.org/maven/kotlin-ide-plugin-dependencies/"
         "https://cache-redirector.jetbrains.com/packages.jetbrains.team/maven/p/plan/litmuskt/"
         "https://dl.google.com/dl/"
+        "https://maven.google.com/"
         "https://jitpack.io/"
         "https://redirector.kotlinlang.org/maven/kotlin-dependencies/"
       ];
