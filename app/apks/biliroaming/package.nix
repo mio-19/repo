@@ -28,8 +28,8 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "yujincheng08";
     repo = "BiliRoaming";
-    rev = "b0fd682058c3f6826186b030a7d12a3acb4aa029";
-    hash = "sha256-k6T5sGStxmvS0jj+ZI4N47C/DdWa9pPOtMHK7oNdN44=";
+    rev = "b2b8fed9bf494cd82f054d7f05237042a7ceb154";
+    hash = "sha256-4RoS+By2qFSMMMpoQS//TMTATMc/881op0PsGyNfBeg=";
     fetchSubmodules = true;
     gitConfigFile = lib.toFile "gitconfig" ''
       [url "https://github.com/"]
@@ -50,6 +50,10 @@ stdenv.mkDerivation (finalAttrs: {
       --replace-fail \
         'val appVerCode = jgit.repo()?.commitCount("refs/remotes/origin/master") ?: 0' \
         'val appVerCode = jgit.repo()?.commitCount("refs/remotes/origin/master") ?: 1'
+  '';
+
+  postPatch = ''
+    find . -name "*.orig" -delete
   '';
 
   gradleBuildTask = ":app:assembleRelease";
