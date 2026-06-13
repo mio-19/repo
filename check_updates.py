@@ -241,6 +241,8 @@ def main():
                         if version_key(latest) > version_key(current_rev):
                             print(f"[UPDATE] {name_display}: {current_rev} -> {latest}")
                             updates_found = True
+                        elif version_key(latest) < version_key(current_rev):
+                            print(f"[DOWNGRADE] {name_display}: {current_rev} -> {latest}")
                     else:
                         print(f"[WARN]   {name_display}: Could not fetch latest version from {url}")
 
