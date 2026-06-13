@@ -5,10 +5,10 @@ import urllib.request
 import urllib.error
 import json
 import configparser
+import subprocess
 
 def get_nvfetcher_managed():
     managed = set()
-    # Read nvfetcher.toml
     if os.path.exists('nvfetcher.toml'):
         try:
             config = configparser.ConfigParser()
@@ -18,7 +18,6 @@ def get_nvfetcher_managed():
         except Exception as e:
             pass
             
-    # Also parse generated.json if available
     if os.path.exists('_sources/generated.json'):
         try:
             with open('_sources/generated.json') as f:
@@ -29,14 +28,7 @@ def get_nvfetcher_managed():
             pass
     return managed
 
-import subprocess
-
-def get_latest_github_release(owner, repo):
-    # Fallback to tags for git ls-remote
-    return get_latest_github_tag(owner, repo)
-
-def get_latest_github_tag(owner, repo):
-    url = f"https://github.com/{owner}/{repo}.git"
+def get_latest_git_tag_url(url):
     try:
         env = dict(os.environ, GIT_TERMINAL_PROMPT="0")
         output = subprocess.check_output(["git", "ls-remote", "--tags", "--sort=-v:refname", url], stderr=subprocess.DEVNULL, env=env).decode()
@@ -50,10 +42,8 @@ def get_latest_github_tag(owner, repo):
         pass
     return None
 
-def get_latest_github_commit(owner, repo):
-    url = f"https://github.com/{owner}/{repo}.git"
+def get_latest_git_commit_url(url):
     try:
-        # Check HEAD (default branch)
         env = dict(os.environ, GIT_TERMINAL_PROMPT="0")
         output = subprocess.check_output(["git", "ls-remote", url, "HEAD"], stderr=subprocess.DEVNULL, env=env).decode()
         if output:
@@ -63,15 +53,18 @@ def get_latest_github_commit(owner, repo):
     return None
 
 def resolve_version(rev, content):
-    if '${' not in rev:
-        return rev
-    # Try to find all variable definitions like name = "value";
     vars = dict(re.findall(r'([a-zA-Z0-9_-]+)\s*=\s*"([^"]+)"', content))
     
-    # Try to replace placeholders
+    if rev in vars:
+        return vars[rev]
+    if rev == 'version' or rev.endswith('.version'):
+        return vars.get('version', rev)
+
+    if '${' not in rev:
+        return rev
+    
     def replacer(match):
         var_name = match.group(1)
-        # handle finalAttrs.version or finalAttrs0.version
         if var_name.endswith('.version'):
             var_name = 'version'
         return vars.get(var_name, match.group(0))
@@ -80,72 +73,99 @@ def resolve_version(rev, content):
 
 def main():
     managed = get_nvfetcher_managed()
-    apks_dir = 'app/apks'
+    dirs_to_check = ['app/apks', 'app/by-name']
     
-    if not os.path.exists(apks_dir):
-        print(f"Error: {apks_dir} not found. Run from repo root.")
-        return
-
-    print("Checking for APK updates...")
+    print("Checking for updates...")
     print("-" * 50)
     
     updates_found = False
 
-    for pkg in sorted(os.listdir(apks_dir)):
-        pkg_path = os.path.join(apks_dir, pkg)
-        if not os.path.isdir(pkg_path) or pkg.startswith('_'):
+    for d in dirs_to_check:
+        if not os.path.exists(d):
             continue
             
-        pkg_nix = os.path.join(pkg_path, 'package.nix')
-        if not os.path.exists(pkg_nix):
-            pkg_nix = os.path.join(pkg_path, 'default.nix')
-        if not os.path.exists(pkg_nix):
-            continue
+        for pkg in sorted(os.listdir(d)):
+            pkg_path = os.path.join(d, pkg)
+            if not os.path.isdir(pkg_path) or pkg.startswith('_'):
+                continue
+                
+            if pkg in ['morphe-library-m2', 'morphe-patcher-src']:
+                continue
+                
+            pkg_nix = os.path.join(pkg_path, 'package.nix')
+            if not os.path.exists(pkg_nix):
+                pkg_nix = os.path.join(pkg_path, 'default.nix')
+            if not os.path.exists(pkg_nix):
+                continue
+                
+            with open(pkg_nix, 'r') as f:
+                content = f.read()
+                
+            if re.search(r'src\s*=\s*sources\.', content) and 'fetchFromGitHub' not in content and 'fetchFromGitLab' not in content and 'fetchgit' not in content:
+                continue
+                
+            git_match = re.search(r'\bsrc\s*=\s*(?:pkgs\.)?fetchFrom(GitHub|GitLab)\s*\{([^}]+)\}', content, re.MULTILINE | re.DOTALL)
+            fetchgit_match = re.search(r'\bsrc\s*=\s*(?:pkgs\.)?fetchgit\s*\{([^}]+)\}', content, re.MULTILINE | re.DOTALL)
             
-        with open(pkg_nix, 'r') as f:
-            content = f.read()
+            url = None
+            current_rev = None
+            name_display = pkg
             
-        # If it explicitly uses a source from nvfetcher for its main src, skip it
-        # (Often looks like `src = sources.some_name.src`)
-        if re.search(r'src\s*=\s*sources\.', content) and 'fetchFromGitHub' not in content:
-            continue
-            
-        has_update_script = 'passthru.updateScript' in content
-        
-        # Check for fetchFromGitHub. We look specifically for src = fetchFromGitHub
-        github_match = re.search(r'src\s*=\s*(?:pkgs\.)?fetchFromGitHub\s*\{[^}]*owner\s*=\s*"([^"]+)";[^}]*repo\s*=\s*"([^"]+)";[^}]*(?:rev|tag)\s*=\s*"([^"]+)";', content, re.MULTILINE | re.DOTALL)
-        
-        if github_match:
-            owner, repo, current_rev = github_match.groups()
-            current_rev = resolve_version(current_rev, content)
-            
-            is_commit = re.match(r'^[0-9a-f]{40}$', current_rev) is not None
-            
-            if is_commit:
-                latest = get_latest_github_commit(owner, repo)
-                if latest:
-                    if latest != current_rev:
-                        print(f"[UPDATE] {pkg} ({owner}/{repo}): {current_rev[:7]} -> {latest[:7]}")
-                        updates_found = True
-                else:
-                    print(f"[WARN]   {pkg}: Could not fetch latest commit from GitHub API for {owner}/{repo}")
-            else:
-                latest = get_latest_github_release(owner, repo)
-                if not latest:
-                    latest = get_latest_github_tag(owner, repo)
+            if git_match:
+                forge = git_match.group(1)
+                src_block = git_match.group(2)
+                
+                owner_m = re.search(r'\bowner\s*=\s*"([^"]+)"', src_block)
+                repo_m = re.search(r'\brepo\s*=\s*"([^"]+)"', src_block)
+                rev_m = re.search(r'\b(?:rev|tag)\s*=\s*(?:"([^"]+)"|([^";\s]+))', src_block)
+                domain_m = re.search(r'\bdomain\s*=\s*"([^"]+)"', src_block)
+                
+                if owner_m and repo_m and rev_m:
+                    owner = owner_m.group(1)
+                    repo = repo_m.group(1)
+                    current_rev = rev_m.group(1) if rev_m.group(1) else rev_m.group(2)
+                    current_rev = resolve_version(current_rev, content)
                     
-                if latest:
-                    curr_norm = current_rev.lstrip('v')
-                    latest_norm = latest.lstrip('v')
-                    if curr_norm != latest_norm and latest_norm not in curr_norm and curr_norm not in latest_norm:
-                        print(f"[UPDATE] {pkg} ({owner}/{repo}): {current_rev} -> {latest}")
-                        updates_found = True
+                    domain = "github.com"
+                    if forge == "GitLab":
+                        domain = domain_m.group(1) if domain_m else "gitlab.com"
+                    else:
+                        domain = domain_m.group(1) if domain_m else "github.com"
+                        
+                    url = f"https://{domain}/{owner}/{repo}.git"
+                    name_display = f"{pkg} ({owner}/{repo} on {domain})"
+            
+            elif fetchgit_match:
+                src_block = fetchgit_match.group(1)
+                url_m = re.search(r'\burl\s*=\s*(?:"([^"]+)"|([^";\s]+))', src_block)
+                rev_m = re.search(r'\b(?:rev|tag)\s*=\s*(?:"([^"]+)"|([^";\s]+))', src_block)
+                if url_m and rev_m:
+                    url = url_m.group(1) if url_m.group(1) else url_m.group(2)
+                    current_rev = rev_m.group(1) if rev_m.group(1) else rev_m.group(2)
+                    current_rev = resolve_version(current_rev, content)
+                    name_display = f"{pkg} (fetchgit {url})"
+                    
+            if url and current_rev:
+                is_commit = re.match(r'^[0-9a-f]{40}$', current_rev) is not None
+                
+                if is_commit:
+                    latest = get_latest_git_commit_url(url)
+                    if latest:
+                        if latest != current_rev:
+                            print(f"[UPDATE] {name_display}: {current_rev[:7]} -> {latest[:7]}")
+                            updates_found = True
+                    else:
+                        print(f"[WARN]   {name_display}: Could not fetch latest commit from {url}")
                 else:
-                    print(f"[WARN]   {pkg}: Could not fetch latest version from GitHub API for {owner}/{repo}")
-        
-        elif has_update_script:
-            print(f"[MANUAL] {pkg} has an updateScript. Check with `nix-update` or manually.")
-            updates_found = True
+                    latest = get_latest_git_tag_url(url)
+                    if latest:
+                        curr_norm = current_rev.lstrip('v')
+                        latest_norm = latest.lstrip('v')
+                        if curr_norm != latest_norm and latest_norm not in curr_norm and curr_norm not in latest_norm:
+                            print(f"[UPDATE] {name_display}: {current_rev} -> {latest}")
+                            updates_found = True
+                    else:
+                        print(f"[WARN]   {name_display}: Could not fetch latest version from {url}")
 
     if not updates_found:
         print("No updates found.")
