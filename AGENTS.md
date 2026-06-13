@@ -29,3 +29,4 @@
 - JDK 11 can be unstable in some Gradle source builds (daemon crash/disappear). If it fails with that symptom, retry once before changing package logic.
 - When asked for "apk update" generally, do not check or update packages managed by `nvfetcher`. Only check packages with custom update scripts (`updateScript`) or git-based ones not in `nvfetcher.toml`.
 - When asked to check updates, just check and list them. Do not automatically update them unless explicitly told to.
+- The Android SDK 37 naming scheme in `android-nixpkgs` uses `platforms-android-37-0` (instead of `platforms-android-37`), and `build-tools-37-0-0`. Keep this in mind when specifying SDK 37 dependencies.
