@@ -21,7 +21,7 @@ let
       tag = "v${finalAttrs.version}";
       hash = "sha256-hSqAXn5IJfaAQ0qF6us1/GRWHcYJbVxvTRBC41TEUVQ=";
     };
-    patches = [ ./compile-sdk-36.patch ];
+    patches = [  ];
 
     postPatch = ''
       substituteInPlace app/build.gradle.kts \
@@ -35,10 +35,12 @@ let
       s.platforms-android-34
       s.platforms-android-35
       s.platforms-android-36
+      s.platforms-android-37-0
       s.build-tools-34-0-0
       s.build-tools-35-0-0
       s.build-tools-36-0-0
       s.build-tools-36-1-0
+      s.build-tools-37-0-0
     ]);
 
     gradleBuildTask = ":app:assembleRelease";
