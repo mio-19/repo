@@ -28,22 +28,14 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "yujincheng08";
     repo = "BiliRoaming";
-    rev = "b2b8fed9bf494cd82f054d7f05237042a7ceb154";
-    hash = "sha256-4RoS+By2qFSMMMpoQS//TMTATMc/881op0PsGyNfBeg=";
+    rev = "f963f18";
+    hash = "sha256-lYlt4ToOAOc3GLz+mll0rSC9xFK28ejbhQKFzkDRpck=";
     fetchSubmodules = true;
     gitConfigFile = lib.toFile "gitconfig" ''
       [url "https://github.com/"]
         insteadOf = git@github.com:
     '';
   };
-
-  patches = [
-    (fetchpatch {
-      name = "skip ad";
-      url = "https://github.com/yujincheng08/BiliRoaming/pull/1701.patch";
-      hash = "sha256-295vl53oiZfqS+CdAZSwHl/yv4d4uC5vcrhv0oCZBxg=";
-    })
-  ];
 
   postUnpack = ''
     substituteInPlace "$sourceRoot/app/build.gradle.kts" \
