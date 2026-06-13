@@ -28,16 +28,83 @@ def get_nvfetcher_managed():
             pass
     return managed
 
-def get_latest_git_tag_url(url):
+def get_latest_github_release(owner, repo):
+    try:
+        req = urllib.request.Request(f"https://api.github.com/repos/{owner}/{repo}/releases/latest")
+        if 'GITHUB_TOKEN' in os.environ:
+            req.add_header('Authorization', f"token {os.environ['GITHUB_TOKEN']}")
+        with urllib.request.urlopen(req, timeout=5) as response:
+            data = json.loads(response.read().decode())
+            return data.get('tag_name')
+    except Exception:
+        pass
+    return None
+
+def get_latest_github_tag_by_date(owner, repo, current_rev=None):
+    try:
+        req = urllib.request.Request(f"https://github.com/{owner}/{repo}/tags.atom")
+        with urllib.request.urlopen(req, timeout=5) as response:
+            content = response.read().decode()
+            tags = re.findall(r'href="[^"]+/releases/tag/([^"]+)"', content)
+            
+            if current_rev:
+                curr_norm = current_rev.lstrip('vV')
+                if curr_norm and curr_norm[0].isdigit():
+                    tags = [t for t in tags if re.match(r'^[vV]?\d', t)]
+                    if '.' in curr_norm:
+                        tags = [t for t in tags if '.' in t or t.lstrip('vV').isdigit()]
+                        
+            if tags:
+                return tags[0]
+    except Exception:
+        pass
+    return None
+
+def version_key(v):
+    v = v.lstrip('vV')
+    parts = re.findall(r'\d+|\.|[^\d.]+', v)
+    res = []
+    for p in parts:
+        if p.isdigit():
+            res.append((2, int(p)))
+        elif p == '.':
+            res.append((1, p))
+        else:
+            res.append((0, p))
+    res.append((0.5, ''))
+    return res
+
+def get_latest_git_tag_url(url, current_rev=None):
     try:
         env = dict(os.environ, GIT_TERMINAL_PROMPT="0")
-        output = subprocess.check_output(["git", "ls-remote", "--tags", "--sort=-v:refname", url], stderr=subprocess.DEVNULL, env=env).decode()
+        output = subprocess.check_output(["git", "ls-remote", "--tags", url], stderr=subprocess.DEVNULL, env=env).decode()
+        
+        tags = []
         for line in output.splitlines():
             if not line.strip(): continue
             sha, ref = line.split()
             tag = ref.replace("refs/tags/", "")
-            if not tag.endswith('^{}'):
-                return tag
+            if tag.endswith('^{}'):
+                tag = tag[:-3]
+            tags.append(tag)
+            
+        tags = list(set(tags))
+        
+        # Filter garbage tags
+        if current_rev:
+            curr_norm = current_rev.lstrip('vV')
+            if curr_norm and curr_norm[0].isdigit():
+                # Must start with digit
+                tags = [t for t in tags if re.match(r'^[vV]?\d', t)]
+                # If current has dot, tag must have dot OR be just digits
+                if '.' in curr_norm:
+                    tags = [t for t in tags if '.' in t or t.lstrip('vV').isdigit()]
+                
+        if not tags:
+            return None
+            
+        tags.sort(key=version_key, reverse=True)
+        return tags[0]
     except Exception:
         pass
     return None
@@ -53,7 +120,10 @@ def get_latest_git_commit_url(url):
     return None
 
 def resolve_version(rev, content):
-    vars = dict(re.findall(r'([a-zA-Z0-9_-]+)\s*=\s*"([^"]+)"', content))
+    vars = {}
+    for k, v in re.findall(r'([a-zA-Z0-9_-]+)\s*=\s*"([^"]+)"', content):
+        if k not in vars:
+            vars[k] = v
     
     if rev in vars:
         return vars[rev]
@@ -110,6 +180,9 @@ def main():
             url = None
             current_rev = None
             name_display = pkg
+            domain = None
+            owner = None
+            repo = None
             
             if git_match:
                 forge = git_match.group(1)
@@ -146,22 +219,26 @@ def main():
                     name_display = f"{pkg} (fetchgit {url})"
                     
             if url and current_rev:
-                is_commit = re.match(r'^[0-9a-f]{40}$', current_rev) is not None
+                is_commit = bool(re.match(r'^([0-9a-f]{7,8}|[0-9a-f]{40})$', current_rev)) and not current_rev.isdigit()
                 
                 if is_commit:
                     latest = get_latest_git_commit_url(url)
                     if latest:
-                        if latest != current_rev:
+                        if not latest.startswith(current_rev):
                             print(f"[UPDATE] {name_display}: {current_rev[:7]} -> {latest[:7]}")
                             updates_found = True
                     else:
                         print(f"[WARN]   {name_display}: Could not fetch latest commit from {url}")
                 else:
-                    latest = get_latest_git_tag_url(url)
+                    latest = None
+                    if domain == "github.com" and owner and repo:
+                        latest = get_latest_github_release(owner, repo)
+                        if not latest:
+                            latest = get_latest_github_tag_by_date(owner, repo, current_rev)
+                    if not latest:
+                        latest = get_latest_git_tag_url(url, current_rev)
                     if latest:
-                        curr_norm = current_rev.lstrip('v')
-                        latest_norm = latest.lstrip('v')
-                        if curr_norm != latest_norm and latest_norm not in curr_norm and curr_norm not in latest_norm:
+                        if version_key(latest) > version_key(current_rev):
                             print(f"[UPDATE] {name_display}: {current_rev} -> {latest}")
                             updates_found = True
                     else:
