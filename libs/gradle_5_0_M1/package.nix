@@ -49,8 +49,8 @@ let
       ];
 
       patches = [
-        ../../libs-deprecated/gradle_5_0_M1/bootstrap-compat.patch
-        ../../libs-deprecated/gradle_5_0_M1/bootstrap-jdk11-compat.patch
+        ../gradle_5_0/bootstrap-compat.patch
+        ../gradle_5_0/bootstrap-jdk11-compat.patch
       ];
       patchFlags = [ "-p1" ];
 
