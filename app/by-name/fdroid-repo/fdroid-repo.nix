@@ -30,9 +30,7 @@ let
     file = pkgs.writeText "fdroid-metadata-${lib.replaceStrings [ "." ] [ "-" ] app.appId}.yml" app.metadataYml;
   }) apps;
 in
-assert lib.assertMsg (
-  apps != [ ]
-) "fdroid-repo.nix requires at least one app";
+assert lib.assertMsg (apps != [ ]) "fdroid-repo.nix requires at least one app";
 
 pkgs.stdenvNoCC.mkDerivation {
   pname = "fdroid-repo-unsigned";
@@ -43,53 +41,53 @@ pkgs.stdenvNoCC.mkDerivation {
   nativeBuildInputs = [ pkgs.coreutils ];
 
   buildPhase = ''
-    runHook preBuild
+        runHook preBuild
 
-    export HOME="$TMPDIR/home"
-    mkdir -p "$HOME" unsigned repo metadata
+        export HOME="$TMPDIR/home"
+        mkdir -p "$HOME" unsigned repo metadata
 
-    apk_count=0
+        apk_count=0
 
-    process_apk() {
-      local apk="$1"
-      local destDir="$2"
-      local badging pkg ver apk_abs
-      
-      badging="$(${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt dump badging "$apk")"
-      pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
-      ver="$(echo "$badging" | sed -n "s/^package: .* versionCode='\([^']*\)'.*/\1/p")"
-      
-      if [[ -z "$pkg" || -z "$ver" ]]; then
-        echo "Failed to parse package name/versionCode from $apk" >&2
-        exit 1
-      fi
-      
-      apk_abs="$(readlink -f "$apk")"
-      if [[ -z "$apk_abs" ]]; then
-        echo "Failed to resolve absolute path for $apk" >&2
-        exit 1
-      fi
-      
-      ln -s "$apk_abs" "$destDir/''${pkg}_''${ver}.apk"
-      apk_count=$((apk_count + 1))
-    }
+        process_apk() {
+          local apk="$1"
+          local destDir="$2"
+          local badging pkg ver apk_abs
+          
+          badging="$(${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt dump badging "$apk")"
+          pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
+          ver="$(echo "$badging" | sed -n "s/^package: .* versionCode='\([^']*\)'.*/\1/p")"
+          
+          if [[ -z "$pkg" || -z "$ver" ]]; then
+            echo "Failed to parse package name/versionCode from $apk" >&2
+            exit 1
+          fi
+          
+          apk_abs="$(readlink -f "$apk")"
+          if [[ -z "$apk_abs" ]]; then
+            echo "Failed to resolve absolute path for $apk" >&2
+            exit 1
+          fi
+          
+          ln -s "$apk_abs" "$destDir/''${pkg}_''${ver}.apk"
+          apk_count=$((apk_count + 1))
+        }
 
-${appCommands}
+    ${appCommands}
 
-    if [[ "$apk_count" -eq 0 ]]; then
-      echo "No APK files found in apkSources" >&2
-      exit 1
-    fi
+        if [[ "$apk_count" -eq 0 ]]; then
+          echo "No APK files found in apkSources" >&2
+          exit 1
+        fi
 
-    ${lib.concatMapStringsSep "\n" (entry: "cp ${entry.file} metadata/${entry.appId}.yml") appMetadata}
+        ${lib.concatMapStringsSep "\n" (
+          entry: "cp ${entry.file} metadata/${entry.appId}.yml"
+        ) appMetadata}
 
-    cat > config.yml << EOF
-    repo_name: ${repoName}
-    repo_description: ${repoDescription}
-    repo_url: https://mio-19.github.io/fdroid-repo/repo
-    EOF
+        echo "repo_name: ${repoName}" > config.yml
+        echo "repo_description: ${repoDescription}" >> config.yml
+        echo "repo_url: https://mio-19.github.io/fdroid-repo/repo" >> config.yml
 
-    runHook postBuild
+        runHook postBuild
   '';
 
   installPhase = ''

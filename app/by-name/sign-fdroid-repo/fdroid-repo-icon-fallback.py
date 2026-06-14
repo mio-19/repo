@@ -520,35 +520,38 @@ def make_placeholder_icon(label, seed):
 
 
 def build_icon(apk_path):
-    icon_path = parse_icon_path(apk_path)
-    if icon_path is None:
-        return None
-    resources, path_to_resource = parse_resources(apk_path)
-    with zipfile.ZipFile(apk_path) as zf:
-        if icon_path.lower().endswith((".png", ".webp", ".jpg", ".jpeg")):
-            return load_image_from_apk(zf, icon_path)
-
-        image = render_drawable(apk_path, zf, resources, path_to_resource, icon_path)
-        if image is not None:
-            return image
-
-        background_id, foreground_id = parse_adaptive_layers(apk_path, icon_path)
-        if not background_id and not foreground_id:
+    try:
+        icon_path = parse_icon_path(apk_path)
+        if icon_path is None:
             return None
+        resources, path_to_resource = parse_resources(apk_path)
+        with zipfile.ZipFile(apk_path) as zf:
+            if icon_path.lower().endswith((".png", ".webp", ".jpg", ".jpeg")):
+                return load_image_from_apk(zf, icon_path)
 
-        canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
-        rendered_any = False
-        if background_id:
-            background = render_drawable(apk_path, zf, resources, path_to_resource, f"@{background_id}")
-            if background is not None:
-                rendered_any = True
-                composite_image(canvas, background)
-        if foreground_id:
-            foreground = render_drawable(apk_path, zf, resources, path_to_resource, f"@{foreground_id}")
-            if foreground is not None:
-                rendered_any = True
-                composite_image(canvas, foreground)
-        return canvas if rendered_any else None
+            image = render_drawable(apk_path, zf, resources, path_to_resource, icon_path)
+            if image is not None:
+                return image
+
+            background_id, foreground_id = parse_adaptive_layers(apk_path, icon_path)
+            if not background_id and not foreground_id:
+                return None
+
+            canvas = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
+            rendered_any = False
+            if background_id:
+                background = render_drawable(apk_path, zf, resources, path_to_resource, f"@{background_id}")
+                if background is not None:
+                    rendered_any = True
+                    composite_image(canvas, background)
+            if foreground_id:
+                foreground = render_drawable(apk_path, zf, resources, path_to_resource, f"@{foreground_id}")
+                if foreground is not None:
+                    rendered_any = True
+                    composite_image(canvas, foreground)
+            return canvas if rendered_any else None
+    except subprocess.CalledProcessError:
+        return None
 
 
 def ensure_icon(pkg, version_code, apk_rel_path, label):
