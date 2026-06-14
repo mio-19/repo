@@ -231,7 +231,7 @@ def main():
                         print(f"[WARN]   {name_display}: Could not fetch latest commit from {url}")
                 else:
                     latest = None
-                    if domain == "github.com" and owner and repo:
+                    if pkg != "tailscale" and domain == "github.com" and owner and repo:
                         latest = get_latest_github_release(owner, repo)
                         if not latest:
                             latest = get_latest_github_tag_by_date(owner, repo, current_rev)
