@@ -20,6 +20,11 @@ let
         hash = "sha256-l/SZ09YYzRChcwS9MyaHiyJM7hxUSfqmHAdInlpyuYE=";
       };
 
+      litertLMNativeAndroidArm64 = fetchurl {
+        url = "https://github.com/leehack/litert-lm-native/releases/download/v0.13.1-native.1/litert-lm-native-runtime-android-arm64-v0.13.1-native.1.tar.gz";
+        hash = "sha256-JYaj9FOnciNmIQoA/TZUAehBENIU5yMIM0P7YKwRGnQ=";
+      };
+
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
@@ -38,13 +43,13 @@ let
     in
     buildDartApplication.override { dart = flutter338; } (finalAttrs: {
       pname = "meshcore-open";
-      version = "9.0.0+12";
+      version = "9.5.0+13";
 
       src = fetchFromGitHub {
         owner = "zjs81";
         repo = "meshcore-open";
-        rev = "Alpha9";
-        hash = "sha256-9Vx0oWYwk/XPG1a6LnyTARO0Vrw2fvqL0un3drQrPLA=";
+        rev = "PRE-BETA-9.5";
+        hash = "sha256-H2kraJIk9H4FHFQFXU1FLEdjwZpaN6C8lUq42/yE72I=";
       };
 
       pubspecLock = lib.importJSON ./pubspec.lock.json;
@@ -120,6 +125,11 @@ let
       ];
 
       postPatch = ''
+        substituteInPlace lib/screens/channels_screen.dart \
+          --replace-fail 'onReorderItem:' 'onReorder:'
+        substituteInPlace lib/widgets/path_editor_sheet.dart \
+          --replace-fail 'onReorderItem:' 'onReorder:'
+
         # Copy the full Flutter SDK to a writable location so included builds under
         # packages/flutter_tools/gradle can compile and write outputs.
         cp -LR ${flutter338} flutter-sdk
@@ -361,6 +371,7 @@ let
               tar -xzf ${llamadartNativeAndroidArm64} -C "$work_package_dir/third_party/bin/android/arm64"
               if [ -f "$work_package_dir/hook/build.dart" ]; then
                 substituteInPlace "$work_package_dir/hook/build.dart" \
+                  --replace-fail "  final response = await http.get(Uri.parse(bundleSpec.releaseUrl));" $'  await File(\'${litertLMNativeAndroidArm64}\').copy(destination.path);\n  return;\n  final response = await http.get(Uri.parse(bundleSpec.releaseUrl));' \
                   --replace-fail "  final destination = File(destinationPath);" $'  final destination = File(destinationPath);\n  await destination.parent.create(recursive: true);\n  await File(\'${llamadartNativeAndroidArm64}\').copy(destinationPath);\n  log.info(\'Saved native bundle to $destinationPath\');\n  return;'
               fi
               ;;
@@ -397,13 +408,14 @@ let
           mkdir -p .dart-patched/third_party/bin/android/arm64
           tar -xzf ${llamadartNativeAndroidArm64} -C .dart-patched/third_party/bin/android/arm64
           substituteInPlace .dart-patched/hook/build.dart \
+            --replace-fail "  final response = await http.get(Uri.parse(bundleSpec.releaseUrl));" $'  await File(\'${litertLMNativeAndroidArm64}\').copy(destination.path);\n  return;\n  final response = await http.get(Uri.parse(bundleSpec.releaseUrl));' \
             --replace-fail "  final destination = File(destinationPath);" $'  final destination = File(destinationPath);\n  await destination.parent.create(recursive: true);\n  await File(\'${llamadartNativeAndroidArm64}\').copy(destinationPath);\n  log.info(\'Saved native bundle to $destinationPath\');\n  return;'
         fi
       '';
 
       buildPhase = ''
         runHook preBuild
-        flutter build apk --release --no-pub
+        flutter build apk --release --no-pub --target-platform android-arm64
         runHook postBuild
       '';
 
