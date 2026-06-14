@@ -305,3 +305,8 @@ src.git = "https://github.com/google-ai-edge/gallery.git"
 src.branch = "main"
 fetch.git = "https://github.com/google-ai-edge/gallery.git"
 git.fetchSubmodules = true
+
+[grapheneos_vanadium]
+src.git = "https://gitlab.com/grapheneos/platform_external_vanadium.git"
+src.branch = "16-qpr2"
+fetch.git = "https://gitlab.com/grapheneos/platform_external_vanadium.git"

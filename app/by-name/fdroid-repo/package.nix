@@ -17,6 +17,7 @@ let
       "fdroid-repo app ${app.pname or app.name or "<unknown>"} is missing meta.metadataYml";
     {
       apkPath = "${app}/${app.meta.mainApk}";
+      preSigned = app.meta.preSigned or false;
       inherit (app.meta) appId metadataYml;
     };
 

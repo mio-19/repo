@@ -190,17 +190,17 @@
   };
   derpfest_launcher3 = {
     pname = "derpfest_launcher3";
-    version = "21fc063308cd20425f2283593497385fff7f9297";
+    version = "bbfbb8b6361cba8258c0c6e3bc475373feb3929b";
     src = fetchgit {
       url = "https://github.com/DerpFest-AOSP/android_packages_apps_DerpLauncher.git";
-      rev = "21fc063308cd20425f2283593497385fff7f9297";
+      rev = "bbfbb8b6361cba8258c0c6e3bc475373feb3929b";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-eRV4Gsnho2aXoqA6RRHJJptSkN5v9LAG0raJa5X4q90=";
+      sha256 = "sha256-eNaZVUVIAzeP+1l9JghmQlrrvsYUpL/c8epPYMhQY2w=";
     };
-    date = "2026-03-16";
+    date = "2026-06-13";
   };
   evox_launcher3 = {
     pname = "evox_launcher3";
@@ -288,17 +288,31 @@
   };
   grapheneos_pdfviewer = {
     pname = "grapheneos_pdfviewer";
-    version = "042d3862096c93649bc79cc3fa3bbb7b60415636";
+    version = "fd0805c0e68eadae61ef246fa2ec07f70bb8c98a";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/PdfViewer.git";
-      rev = "042d3862096c93649bc79cc3fa3bbb7b60415636";
+      rev = "fd0805c0e68eadae61ef246fa2ec07f70bb8c98a";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-f/nLB2eln/kfMk3+dyq4rn3smXWuKOPEUt+jgNdXnwM=";
+      sha256 = "sha256-NP7zI/6+AqKeCMN6Px4S5WyGoAE0skrrESMmsgvwnco=";
     };
-    date = "2026-06-11";
+    date = "2026-06-12";
+  };
+  grapheneos_vanadium = {
+    pname = "grapheneos_vanadium";
+    version = "3898e1688838396a22825c5147aca2e1aaa5a433";
+    src = fetchgit {
+      url = "https://gitlab.com/grapheneos/platform_external_vanadium.git";
+      rev = "3898e1688838396a22825c5147aca2e1aaa5a433";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-2CH/sqFqbZbHbreGj9ZXidjEPodzZj/q5CI+O1wPnLs=";
+    };
+    date = "2026-06-12";
   };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
@@ -554,17 +568,17 @@
   };
   lineage_kernel_mainline_configs = {
     pname = "lineage_kernel_mainline_configs";
-    version = "495ffbfe05b2f9f09506908b8665381999ace37f";
+    version = "dd2a3da7c3e17c565d8c9af9472771422c46aace";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_kernel_mainline_configs.git";
-      rev = "495ffbfe05b2f9f09506908b8665381999ace37f";
+      rev = "dd2a3da7c3e17c565d8c9af9472771422c46aace";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-7hEO9mQiGWocKR1MHD6CQZrpeEvKp8e3xNShoa9oahg=";
+      sha256 = "sha256-yX+I9BPrblH2woCfMye/rs8Ah2ZQLK5ZprVbZYCEdhY=";
     };
-    date = "2026-06-11";
+    date = "2026-06-12";
   };
   lineage_kernel_virt_virtio = {
     pname = "lineage_kernel_virt_virtio";
@@ -829,12 +843,12 @@
   };
   vendor_gapps16 = {
     pname = "vendor_gapps16";
-    version = "1eb9fa695bb2589c613a20a172fac6bdf78fec48";
+    version = "f8cdcffc2fb9181b8cc5a9b02d4b5908b64e5cdd";
     src = fetchurl {
-      url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/1eb9fa695bb2589c613a20a172fac6bdf78fec48/vendor_gapps-1eb9fa695bb2589c613a20a172fac6bdf78fec48.tar.gz";
-      sha256 = "sha256-C250osLtH2JLUfp7utPG2HzSMRFudR5LEKx45QkfWGI=";
+      url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/f8cdcffc2fb9181b8cc5a9b02d4b5908b64e5cdd/vendor_gapps-f8cdcffc2fb9181b8cc5a9b02d4b5908b64e5cdd.tar.gz";
+      sha256 = "sha256-g/kJGdrl59hZ8ojSD7eH/9nYzhf5u3VXjqUtrnPA7MU=";
     };
-    date = "2026-06-11";
+    date = "2026-06-12";
   };
   vendor_lindroid = {
     pname = "vendor_lindroid";
