@@ -29,6 +29,10 @@ let
     pname = "npatch";
     inherit version;
 
+    # Intentionally pinned to v1.0.0: starting from v1.0.1 the author deleted
+    # all manager UI source code from the public repository ("For important reasons,
+    # we cannot publicly disclose the manager's program code"). Newer tags cannot
+    # be built from source.
     src = fetchFromGitHub {
       owner = "7723mod";
       repo = "NPatch";

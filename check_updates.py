@@ -159,7 +159,7 @@ def main():
             if not os.path.isdir(pkg_path) or pkg.startswith('_'):
                 continue
                 
-            if pkg in ['morphe-library-m2', 'morphe-patcher-src']:
+            if pkg in ['morphe-library-m2', 'morphe-patcher-src', 'npatch']:
                 continue
                 
             pkg_nix = os.path.join(pkg_path, 'package.nix')
