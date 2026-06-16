@@ -12,7 +12,7 @@
   gradle_8_13,
 }:
 let
-  version = "0.8-unstable-20260330";
+  version = "1.0.0";
 
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
@@ -32,7 +32,7 @@ let
     src = fetchFromGitHub {
       owner = "7723mod";
       repo = "NPatch";
-      rev = "41872d8261a956a8bde1b51cf29914bb2e9f36df";
+      tag = "v1.0.0";
       fetchSubmodules = true;
       hash = "sha256-S/0jfMwZEETnuQ5lkKD1I0rFVqVe3zsTb8/rdwMsim8=";
     };
