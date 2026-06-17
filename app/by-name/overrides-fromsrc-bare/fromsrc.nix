@@ -14,16 +14,24 @@
   auto_value_annotations_1_6_3,
   asm_commons_9_9,
   asm_tree_9_9,
+  checker_qual_2_5_8,
+  checker_qual_3_27_0,
   checker_qual_3_33_0,
   checker_qual_3_41_0,
   checker_qual_3_42_0,
   checker_qual_3_43_0,
   checker_qual_3_49_2,
   checker_qual_3_49_3,
+  checker_qual_3_49_5,
+  animal_sniffer_annotations_1_18,
+  animal_sniffer_annotations_1_23,
+  animal_sniffer_annotations_1_24,
   brotli_dec_0_1_2,
   dd_plist_1_21,
   dd_plist_1_27,
   checker_qual_3_37_0,
+  error_prone_annotations_2_22_0,
+  error_prone_annotations_2_47_0,
   error_prone_annotations_2_41_0,
   error_prone_annotations_2_1_3,
   error_prone_annotations_2_5_1,
@@ -47,6 +55,7 @@
   commons_codec_1_19_0,
   commons_lang3_3_12_0,
   commons_lang3_3_16_0,
+  commons_lang3_3_18_0,
   commons_lang_2_6,
   commons_io_2_6,
   commons_io_2_11_0,
@@ -57,6 +66,7 @@
   commons_io_2_18_0,
   commons_io_2_20_0,
   commons_io_2_21_0,
+  commons_io_2_22_0,
   commons_logging_1_2,
   commons_parent_34,
   commons_parent_69,
@@ -358,6 +368,7 @@ in
     "commons-io-2.21.0.jar" = _: "${commons_io_2_21_0}/commons-io-2.21.0.jar";
     "commons-io-2.21.0.pom" = _: "${commons_io_2_21_0}/commons-io-2.21.0.pom";
   };
+  "commons-io:commons-io:2.22.0" = mkMavenSourceJarOverride "commons-io" "2.22.0" commons_io_2_22_0;
   "commons-codec:commons-codec:1.2" = {
     "commons-codec-1.2.jar" = _: "${commons_codec_1_2}/commons-codec-1.2.jar";
     "commons-codec-1.2.pom" = _: "${commons_codec_1_2}/commons-codec-1.2.pom";
@@ -396,6 +407,10 @@ in
   "org.apache.commons:commons-lang3:3.16.0" = {
     "commons-lang3-3.16.0.jar" = _: "${commons_lang3_3_16_0}/commons-lang3-3.16.0.jar";
     "commons-lang3-3.16.0.pom" = _: "${commons_lang3_3_16_0}/commons-lang3-3.16.0.pom";
+  };
+  "org.apache.commons:commons-lang3:3.18.0" = {
+    "commons-lang3-3.18.0.jar" = _: "${commons_lang3_3_18_0}/commons-lang3-3.18.0.jar";
+    "commons-lang3-3.18.0.pom" = _: "${commons_lang3_3_18_0}/commons-lang3-3.18.0.pom";
   };
   "commons-logging:commons-logging:1.2" = {
     "commons-logging-1.2.jar" = _: "${commons_logging_1_2}/commons-logging-1.2.jar";
@@ -643,6 +658,12 @@ in
   "com.google.errorprone:error_prone_annotations:2.42.0" =
     mkMavenSourceJarOverride "error_prone_annotations" "2.42.0"
       error_prone_annotations_2_42_0;
+  "com.google.errorprone:error_prone_annotations:2.22.0" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.22.0"
+      error_prone_annotations_2_22_0;
+  "com.google.errorprone:error_prone_annotations:2.47.0" =
+    mkMavenSourceJarOverride "error_prone_annotations" "2.47.0"
+      error_prone_annotations_2_47_0;
   "com.google.errorprone:error_prone_parent:2.41.0" = {
     "error_prone_parent-2.41.0.pom" =
       _: "${error_prone_annotations_2_41_0}/error_prone_parent-2.41.0.pom";
@@ -847,6 +868,15 @@ in
   "org.checkerframework:checker-qual:3.49.3" =
     mkMavenSourceJarOverride "checker-qual" "3.49.3"
       checker_qual_3_49_3;
+  "org.checkerframework:checker-qual:3.49.5" =
+    mkMavenSourceJarOverride "checker-qual" "3.49.5"
+      checker_qual_3_49_5;
+  "org.checkerframework:checker-qual:3.27.0" =
+    mkMavenSourceJarOverride "checker-qual" "3.27.0"
+      checker_qual_3_27_0;
+  "org.checkerframework:checker-qual:2.5.8" =
+    mkMavenSourceJarOverride "checker-qual" "2.5.8"
+      checker_qual_2_5_8;
   "org.apache.commons:commons-parent:34" = {
     "commons-parent-34.pom" = _: "${commons_parent_34}/commons-parent-34.pom";
   };
@@ -882,4 +912,13 @@ in
   "org.sonatype.oss:oss-parent:7" = {
     "oss-parent-7.pom" = _: "${oss_parent_7}/oss-parent-7.pom";
   };
+  "org.codehaus.mojo:animal-sniffer-annotations:1.18" =
+    mkMavenSourceJarOverride "animal-sniffer-annotations" "1.18"
+      animal_sniffer_annotations_1_18;
+  "org.codehaus.mojo:animal-sniffer-annotations:1.23" =
+    mkMavenSourceJarOverride "animal-sniffer-annotations" "1.23"
+      animal_sniffer_annotations_1_23;
+  "org.codehaus.mojo:animal-sniffer-annotations:1.24" =
+    mkMavenSourceJarOverride "animal-sniffer-annotations" "1.24"
+      animal_sniffer_annotations_1_24;
 }
