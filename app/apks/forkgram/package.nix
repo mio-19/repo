@@ -32,7 +32,7 @@ let
 in
 buildGradlePackage rec {
   pname = "forkgram";
-  version = "12.7.3.0";
+  version = "12.8.2.0";
 
   gradle = gradle_8_14_4;
 
@@ -40,7 +40,7 @@ buildGradlePackage rec {
     owner = "forkgram";
     repo = "TelegramAndroid";
     rev = version;
-    hash = "sha256-zvRL7yZ42lp+DjO1tsoyfJrHWw2v+5XrYPCJ1zaS+ks=";
+    hash = "sha256-6A8Ibbl/c/gLn74vNeubqo2mX7S19hZ7D5++1n5kA5s=";
     fetchSubmodules = true;
   };
 
