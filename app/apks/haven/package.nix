@@ -396,7 +396,7 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk21_headless;
+        JAVA_HOME = jdk21_headless.passthru.home;
         ANDROID_HOME = androidSdkRoot;
         ANDROID_SDK_ROOT = androidSdkRoot;
         ANDROID_NDK_ROOT = androidNdkRoot;
@@ -446,7 +446,7 @@ let
       gradleFlags = [
         "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${aapt2}"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2}"
       ];

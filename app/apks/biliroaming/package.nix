@@ -6,7 +6,6 @@
   androidSdkBuilder,
   jdk21_headless,
   writableTmpDirAsHomeHook,
-  fetchpatch,
 }:
 let
   version = "unstable-2026-06-18";
@@ -19,6 +18,9 @@ let
     s.ndk-29-0-14206865
     s.cmake-4-1-2
   ]);
+  androidSdkRoot = "${androidSdk}/share/android-sdk";
+  aapt2 = "${androidSdkRoot}/build-tools/35.0.0/aapt2";
+
   gradle = gradle_8_12;
 in
 stdenv.mkDerivation (finalAttrs: {
@@ -66,17 +68,18 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   env = {
-    JAVA_HOME = jdk21_headless;
-    ANDROID_HOME = "${androidSdk}/share/android-sdk";
-    ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
-    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+    JAVA_HOME = jdk21_headless.passthru.home;
+    ANDROID_HOME = androidSdkRoot;
+    ANDROID_SDK_ROOT = androidSdkRoot;
+    ANDROID_NDK_ROOT = "${androidSdkRoot}/ndk/29.0.14206865";
+    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = aapt2;
   };
 
   preConfigure = ''
-    export ANDROID_USER_HOME="$PWD/.android"
-    export GRADLE_USER_HOME="$PWD/.gradle"
+    export ANDROID_USER_HOME="$HOME/.android"
+    export GRADLE_USER_HOME="$HOME/.gradle"
     mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"
+    echo "sdk.dir=${androidSdkRoot}" > local.properties
 
     cat >> gradle.properties <<EOF
     org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g
@@ -86,9 +89,9 @@ stdenv.mkDerivation (finalAttrs: {
   gradleFlags = [
     "--no-daemon"
     "-Dorg.gradle.java.installations.auto-download=false"
-    "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
-    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+    "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
+    "-Dandroid.aapt2FromMavenOverride=${aapt2}"
+    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2}"
   ];
 
   installPhase = ''
