@@ -16,7 +16,7 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
-        s.build-tools-35-0-0
+        s.build-tools-36-0-0
       ]);
 
       gradle = gradle_8_13;
@@ -44,6 +44,12 @@ let
         */
       ];
 
+      postPatch = ''
+                substituteInPlace mastodon/build.gradle \
+                  --replace-fail "	compileSdk 36" "	compileSdk 36
+        	buildToolsVersion '36.0.0'"
+      '';
+
       gradleBuildTask = ":mastodon:assembleGithubRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
 
@@ -66,7 +72,7 @@ let
         JAVA_HOME = jdk21_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
       };
 
       preConfigure = ''
@@ -78,9 +84,9 @@ let
       gradleFlags = [
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        "-Dandroid.suppressUnsupportedCompileSdk=35"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dandroid.suppressUnsupportedCompileSdk=36"
       ];
 
       installPhase = ''
