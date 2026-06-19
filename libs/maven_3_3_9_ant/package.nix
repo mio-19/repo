@@ -1,13 +1,24 @@
 {
-  callPackage,
   fetchFromGitHub,
   buildMavenRepositoryFromLockFile,
   buildMavenRepository,
   jdk8_headless,
+  lib,
+  stdenvNoCC,
+  makeWrapper,
+  fetchurl,
   ant,
 }:
 let
-  maven_nixpkgs = callPackage ../maven_3_3_9/nixpkgs.nix { };
+  maven_nixpkgs = import ../maven_3_3_9/nixpkgs.nix {
+    inherit
+      lib
+      stdenvNoCC
+      makeWrapper
+      fetchurl
+      ;
+    jdk_headless = jdk8_headless;
+  };
   inherit (buildMavenRepositoryFromLockFile.passthru) mergeDeps readDeps;
 in
 maven_nixpkgs.overrideAttrs (
@@ -48,10 +59,10 @@ maven_nixpkgs.overrideAttrs (
       ant
     ];
     env = {
-      JAVA_HOME = finalAttrs.jdk;
+      JAVA_HOME = finalAttrs.jdk.passthru.home;
     };
     mavenRepository = buildMavenRepository { dependencies = readDeps finalAttrs.passthru.mavenDeps; };
-    passthru = prevAttrs.passthru // {
+    passthru = (prevAttrs.passthru or { }) // {
       mavenDeps = mergeDeps [
         ./more.json
         ../maven_3_3_9/linux-m2.json
