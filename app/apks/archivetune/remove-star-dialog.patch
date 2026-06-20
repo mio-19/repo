@@ -1,17 +1,16 @@
-diff --git a/app/src/main/kotlin/moe/koiverse/archivetune/MainActivity.kt b/app/src/main/kotlin/moe/koiverse/archivetune/MainActivity.kt
-index 3363c64..dada172 100644
---- a/app/src/main/kotlin/moe/koiverse/archivetune/MainActivity.kt
-+++ b/app/src/main/kotlin/moe/koiverse/archivetune/MainActivity.kt
-@@ -250,7 +250,7 @@ import moe.koiverse.archivetune.ui.component.IconButton
- import moe.koiverse.archivetune.ui.component.LocalBottomSheetPageState
- import moe.koiverse.archivetune.ui.component.LocalMenuState
- import moe.koiverse.archivetune.ui.component.NetworkStatusBanner
--import moe.koiverse.archivetune.ui.component.StarDialog
-+
- import moe.koiverse.archivetune.ui.component.TvNavigationRail
- import moe.koiverse.archivetune.ui.component.MarkdownText
- import moe.koiverse.archivetune.ui.component.TopSearch
-@@ -1170,74 +1170,7 @@ class MainActivity : ComponentActivity() {
+diff --git a/app/src/main/kotlin/moe/rukamori/archivetune/MainActivity.kt b/app/src/main/kotlin/moe/rukamori/archivetune/MainActivity.kt
+index f761138..86bc584 100644
+--- a/app/src/main/kotlin/moe/rukamori/archivetune/MainActivity.kt
++++ b/app/src/main/kotlin/moe/rukamori/archivetune/MainActivity.kt
+@@ -250,7 +250,6 @@ import moe.rukamori.archivetune.ui.component.LocalBottomSheetPageState
+ import moe.rukamori.archivetune.ui.component.LocalMenuState
+ import moe.rukamori.archivetune.ui.component.MarkdownText
+ import moe.rukamori.archivetune.ui.component.NetworkStatusBanner
+-import moe.rukamori.archivetune.ui.component.StarDialog
+ import moe.rukamori.archivetune.ui.component.TopSearch
+ import moe.rukamori.archivetune.ui.component.TvNavigationRail
+ import moe.rukamori.archivetune.ui.component.rememberBottomSheetState
+@@ -1326,77 +1325,7 @@ class MainActivity : ComponentActivity() {
                          }
                      }
  
@@ -19,7 +18,7 @@ index 3363c64..dada172 100644
 -
 -                    LaunchedEffect(Unit) {
 -                        kotlinx.coroutines.delay(3000)
--                        
+-
 -                        withContext(Dispatchers.IO) {
 -                            val current = dataStore[LaunchCountKey] ?: 0
 -                            val newCount = current + 1
@@ -28,11 +27,12 @@ index 3363c64..dada172 100644
 -                            }
 -                        }
 -
--                        val shouldShow = withContext(Dispatchers.IO) {
--                            val hasPressed = dataStore[HasPressedStarKey] ?: false
--                            val remindAfter = dataStore[RemindAfterKey] ?: 3
--                            !hasPressed && (dataStore[LaunchCountKey] ?: 0) >= remindAfter
--                        }
+-                        val shouldShow =
+-                            withContext(Dispatchers.IO) {
+-                                val hasPressed = dataStore[HasPressedStarKey] ?: false
+-                                val remindAfter = dataStore[RemindAfterKey] ?: 3
+-                                !hasPressed && (dataStore[LaunchCountKey] ?: 0) >= remindAfter
+-                            }
 -
 -                        if (shouldShow) {
 -                            var waited = 0L
@@ -45,7 +45,7 @@ index 3363c64..dada172 100644
 -                            showStarDialog = true
 -                        }
 -                    }
- 
+-
 -                    if (showStarDialog) {
 -                        StarDialog(
 -                            onDismissRequest = { showStarDialog = false },
@@ -80,9 +80,12 @@ index 3363c64..dada172 100644
 -                                        showStarDialog = false
 -                                    }
 -                                }
--                            }
+-                            },
 -                        )
 -                    }
- 
-                     val currentTitleRes = remember(navBackStackEntry) {
-                         when (navBackStackEntry?.destination?.route) {
+-
+-                    val currentTitleRes =
++                                        val currentTitleRes =
+                         remember(navBackStackEntry) {
+                             when (navBackStackEntry?.destination?.route) {
+                                 Screens.Home.route -> R.string.home
