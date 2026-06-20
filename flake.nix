@@ -207,7 +207,7 @@
               (fetchpatch {
                 name = "flutter344: init at 3.44.2";
                 url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/531252.patch";
-                hash = "sha256-VHlAjWi2la1FSb9yAmDBgVtQvhmwTtTi+e0x57rf8Ec=";
+                hash = "sha256-LF5OAnlT0WwxPCxOjhgeVbJUjNesJhCvNcTQ0SExdzc=";
               })
               /*
                 # work stopped
