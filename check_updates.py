@@ -138,9 +138,9 @@ def resolve_version(rev, content):
             vars[k] = v
     
     if rev in vars:
-        return vars[rev]
+        rev = vars[rev]
     if rev == 'version' or rev.endswith('.version'):
-        return vars.get('version', rev)
+        rev = vars.get('version', rev)
 
     if '${' not in rev:
         return rev
@@ -186,8 +186,8 @@ def main():
             if re.search(r'src\s*=\s*sources\.', content) and 'fetchFromGitHub' not in content and 'fetchFromGitLab' not in content and 'fetchgit' not in content:
                 continue
                 
-            git_match = re.search(r'\bsrc\s*=\s*(?:pkgs\.)?fetchFrom(GitHub|GitLab)\s*\{([^}]+)\}', content, re.MULTILINE | re.DOTALL)
-            fetchgit_match = re.search(r'\bsrc\s*=\s*(?:pkgs\.)?fetchgit\s*\{([^}]+)\}', content, re.MULTILINE | re.DOTALL)
+            git_match = re.search(r'\bsrc\s*=\s*(?:pkgs\.)?fetchFrom(GitHub|GitLab)\s*\{(.+?)\n\s*\}', content, re.MULTILINE | re.DOTALL)
+            fetchgit_match = re.search(r'\bsrc\s*=\s*(?:pkgs\.)?fetchgit\s*\{(.+?)\n\s*\}', content, re.MULTILINE | re.DOTALL)
             
             url = None
             current_rev = None
@@ -202,13 +202,13 @@ def main():
                 
                 owner_m = re.search(r'\bowner\s*=\s*"([^"]+)"', src_block)
                 repo_m = re.search(r'\brepo\s*=\s*"([^"]+)"', src_block)
-                rev_m = re.search(r'\b(?:rev|tag)\s*=\s*(?:"([^"]+)"|([^";\s]+))', src_block)
+                rev_m = re.search(r'\b(?:inherit\s+(rev|tag)|(?:rev|tag)\s*=\s*(?:"([^"]+)"|([^";\s]+)))', src_block)
                 domain_m = re.search(r'\bdomain\s*=\s*"([^"]+)"', src_block)
                 
                 if owner_m and repo_m and rev_m:
                     owner = owner_m.group(1)
                     repo = repo_m.group(1)
-                    current_rev = rev_m.group(1) if rev_m.group(1) else rev_m.group(2)
+                    current_rev = rev_m.group(1) or rev_m.group(2) or rev_m.group(3)
                     current_rev = resolve_version(current_rev, content)
                     
                     domain = "github.com"
@@ -223,10 +223,10 @@ def main():
             elif fetchgit_match:
                 src_block = fetchgit_match.group(1)
                 url_m = re.search(r'\burl\s*=\s*(?:"([^"]+)"|([^";\s]+))', src_block)
-                rev_m = re.search(r'\b(?:rev|tag)\s*=\s*(?:"([^"]+)"|([^";\s]+))', src_block)
+                rev_m = re.search(r'\b(?:inherit\s+(rev|tag)|(?:rev|tag)\s*=\s*(?:"([^"]+)"|([^";\s]+)))', src_block)
                 if url_m and rev_m:
                     url = url_m.group(1) if url_m.group(1) else url_m.group(2)
-                    current_rev = rev_m.group(1) if rev_m.group(1) else rev_m.group(2)
+                    current_rev = rev_m.group(1) or rev_m.group(2) or rev_m.group(3)
                     current_rev = resolve_version(current_rev, content)
                     name_display = f"{pkg} (fetchgit {url})"
                     
