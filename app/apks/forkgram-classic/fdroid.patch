@@ -1,0 +1,121 @@
+diff --git a/TMessagesProj/build.gradle b/TMessagesProj/build.gradle
+index acb206e6..5cfcb660 100644
+--- a/TMessagesProj/build.gradle
++++ b/TMessagesProj/build.gradle
+@@ -42,12 +42,9 @@ dependencies {
+     implementation 'com.stripe:stripe-android:2.0.2'
+     implementation 'com.google.code.gson:gson:2.11.0'
+     implementation 'com.google.guava:guava:31.1-android'
+-    implementation 'com.google.android.play:integrity:1.3.0'
+-    implementation 'com.google.android.gms:play-services-safetynet:18.0.1'
+ 
+     implementation 'co.nstant.in:cbor:0.8'
+     implementation "androidx.credentials:credentials:1.6.0-alpha04"
+-    implementation "androidx.credentials:credentials-play-services-auth:1.6.0-alpha04"
+ 
+     implementation "io.noties.markwon:core:4.6.2"
+     implementation "io.noties.markwon:ext-strikethrough:4.6.2"
+@@ -76,9 +73,7 @@ def isWindows = String.valueOf(DefaultNativePlatform.currentOperatingSystem.toFa
+ android {
+     compileSdkVersion 35
+     buildToolsVersion '35.0.0'
+-    ndkVersion "27.2.12479018"
+-
+-    sourceSets.main.jniLibs.srcDirs = ['./jni/']
++    ndkVersion "21.4.7075529"
+ 
+     externalNativeBuild {
+         cmake {
+@@ -93,14 +88,14 @@ android {
+     }
+ 
+     compileOptions {
+-        sourceCompatibility JavaVersion.VERSION_17
+-        targetCompatibility JavaVersion.VERSION_17
++        sourceCompatibility JavaVersion.VERSION_21
++        targetCompatibility JavaVersion.VERSION_21
+ 
+         coreLibraryDesugaringEnabled true
+     }
+ 
+     kotlinOptions {
+-        jvmTarget = JavaVersion.VERSION_17
++        jvmTarget = JavaVersion.VERSION_21
+     }
+ 
+     defaultConfig.versionCode = Integer.parseInt(Utils['getVersionCode']())
+diff --git a/TMessagesProj_App/build.gradle b/TMessagesProj_App/build.gradle
+index 8c060a6d..4fb9fe04 100644
+--- a/TMessagesProj_App/build.gradle
++++ b/TMessagesProj_App/build.gradle
+@@ -33,8 +33,6 @@ android {
+ 
+     defaultConfig.applicationId = "org.forkgram.classic"
+ 
+-    sourceSets.main.jniLibs.srcDirs = ['../TMessagesProj/jni/']
+-
+     lintOptions {
+         disable 'MissingTranslation'
+         disable 'ExtraTranslation'
+@@ -42,8 +40,8 @@ android {
+     }
+ 
+     compileOptions {
+-        sourceCompatibility JavaVersion.VERSION_17
+-        targetCompatibility JavaVersion.VERSION_17
++        sourceCompatibility JavaVersion.VERSION_21
++        targetCompatibility JavaVersion.VERSION_21
+ 
+         coreLibraryDesugaringEnabled true
+     }
+@@ -56,7 +54,21 @@ android {
+     }
+ 
+     signingConfigs {
+-        if (!fdroid) {
++        if (fdroid) {
++            debug {
++                storeFile file("../TMessagesProj/config/release.keystore")
++                storePassword "android"
++                keyAlias "androidkey"
++                keyPassword "android"
++            }
++
++            release {
++                storeFile file("../TMessagesProj/config/release.keystore")
++                storePassword "android"
++                keyAlias "androidkey"
++                keyPassword "android"
++            }
++        } else {
+             debug {
+                 storeFile file("../TMessagesProj/config/release.keystore")
+                 storePassword RELEASE_STORE_PASSWORD
+@@ -71,9 +83,6 @@ android {
+                 keyPassword RELEASE_KEY_PASSWORD
+             }
+         }
+-        // When fdroid=true: no signingConfigs declared. AGP auto-signs debug
+-        // variants with the local debug.keystore; release variants are left
+-        // unsigned, which is what the F-Droid build server expects.
+     }
+ 
+     buildTypes {
+@@ -112,7 +121,7 @@ android {
+         release {
+             debuggable false
+             jniDebuggable false
+-            if (!fdroid) signingConfig signingConfigs.release
++            signingConfig signingConfigs.release
+             applicationIdSuffix appSuffix
+             minifyEnabled true
+             shrinkResources false
+@@ -265,7 +274,7 @@ android {
+         minSdkVersion 21
+         targetSdkVersion 35
+         versionName Utils['getVersionName']()
+-        ndkVersion "27.2.12479018"
++        ndkVersion "21.4.7075529"
+ 
+         multiDexEnabled true
+ 

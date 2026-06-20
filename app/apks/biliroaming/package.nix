@@ -9,7 +9,7 @@
   fetchpatch,
 }:
 let
-  version = "unstable-2026-03-17";
+  version = "unstable-2026-06-18";
 
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
@@ -28,8 +28,8 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "yujincheng08";
     repo = "BiliRoaming";
-    rev = "f963f18";
-    hash = "sha256-lYlt4ToOAOc3GLz+mll0rSC9xFK28ejbhQKFzkDRpck=";
+    rev = "7c792dc";
+    hash = "sha256-DqJok2kZHHoE4rhqKRjh4LNcVhS6IOnKAxb2JO3strA=";
     fetchSubmodules = true;
     gitConfigFile = lib.toFile "gitconfig" ''
       [url "https://github.com/"]

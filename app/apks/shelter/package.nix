@@ -18,10 +18,9 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
-        s.platforms-android-34
         s.platforms-android-35
-        s.build-tools-34-0-0
-        s.build-tools-35-0-0
+        s.platforms-android-36
+        s.build-tools-36-0-0
       ]);
 
       gradle = gradle_8_11_1;
@@ -59,13 +58,20 @@ let
         JAVA_HOME = jdk17_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
       };
 
       postPatch = ''
         substituteInPlace app/build.gradle \
+          --replace-fail "    compileSdk 35" "    compileSdk 36" \
+          --replace-fail "    buildToolsVersion = '35.0.0'" "    buildToolsVersion = '36.0.0'" \
+          --replace-fail "        targetSdkVersion 35" "        targetSdkVersion 36" \
           --replace-fail "        versionCode getVersionCode()" "        versionCode 446" \
           --replace-fail "        versionName getVersionName()" "        versionName \"git-${lib.substring 0 8 rev}\""
+        substituteInPlace libs/SetupWizardLibrary/library/standalone.gradle \
+          --replace-fail "android.compileSdk = 34" "android.compileSdk = 36" \
+          --replace-fail "android.namespace 'com.android.setupwizardlib'" "android.buildToolsVersion = '36.0.0'
+        android.namespace 'com.android.setupwizardlib'"
       '';
 
       preConfigure = ''
@@ -78,8 +84,8 @@ let
         "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
 
       installPhase = ''

@@ -26,12 +26,12 @@ let
 
       gradle = gradle_9_4_1;
 
-      xrayLiteVersion = "26.6.2";
+      xrayLiteVersion = "26.6.14";
       androidLibXrayLiteSrc = fetchFromGitHub {
         owner = "2dust";
         repo = "AndroidLibXrayLite";
         tag = "v${xrayLiteVersion}";
-        hash = "sha256-/pYYZMcsO4vbqRYAAZCxompcWJ/akXDzev4VPdQXMCc=";
+        hash = "sha256-l6Y2Q+yZSqywEHPKaOHZZcLOQyau9t7p8zjll341sw0=";
       };
 
       androidLibXrayLiteGoModCache = stdenvNoCC.mkDerivation {
@@ -157,14 +157,14 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "v2rayng";
-      version = "2.2.3";
+      version = "2.2.4";
 
       src = fetchFromGitHub {
         owner = "2dust";
         repo = "v2rayNG";
         tag = finalAttrs.version;
         fetchSubmodules = true;
-        hash = "sha256-crMIue4x5/6sQV2SuBDEIzellcUppHcbngTzSGFpv44=";
+        hash = "sha256-RPOVFc6sZkNeZBLhOpXT7yL0toQeVSTVkYJj3mIEOC8=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/V2rayNG";
@@ -212,7 +212,7 @@ let
           {
             ids = [ "org.jetbrains.kotlin.android" ];
             module = "org.jetbrains.kotlin:kotlin-gradle-plugin";
-            version = "2.3.10";
+            version = "2.4.0";
           }
         ];
       };

@@ -1,0 +1,10 @@
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -125,6 +125,7 @@
+                     cFlags("-std=c18", *flags)
+                     arguments(
+                         "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
++                        "-DCMAKE_CXX_SCAN_FOR_MODULES=OFF",
+                         "-DVERSION_CODE=$verCode",
+                         "-DVERSION_NAME=$verName",
+                     )

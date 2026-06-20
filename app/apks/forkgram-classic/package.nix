@@ -31,16 +31,16 @@ let
   ]);
 in
 buildGradlePackage rec {
-  pname = "forkgram";
-  version = "12.8.2.0";
+  pname = "forkgram-classic";
+  version = "12.7.12.0";
 
   gradle = gradle_8_14_4;
 
   src = fetchFromGitHub {
     owner = "forkgram";
-    repo = "TelegramAndroid";
-    rev = version;
-    hash = "sha256-6A8Ibbl/c/gLn74vNeubqo2mX7S19hZ7D5++1n5kA5s=";
+    repo = "forkgram-classic";
+    tag = version;
+    hash = "sha256-58D+ZbMU31uEWvvb7jhk9F61bsOTwlJ1OEZAcdALdbw=";
     fetchSubmodules = true;
   };
 
@@ -69,9 +69,6 @@ buildGradlePackage rec {
   ];
 
   patches = [
-    # TODO: consider https://github.com/DrKLO/Telegram/pull/1854
-    ./0001-Killergram.patch
-    #./0002-max-account-count.patch
     ./prepare.patch
     ./native-build.patch
     ./fdroid.patch
@@ -80,8 +77,6 @@ buildGradlePackage rec {
   postPatch = ''
     patchShebangs TMessagesProj/jni/
 
-    # F-Droid prebuild: Telegram API credentials, F-Droid mode, NDK pin.
-    # https://gitlab.com/fdroid/fdroiddata/-/blob/master/metadata/org.forkgram.messenger.yml
     echo "APP_ID=14577864" >> gradle.properties
     echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
     substituteInPlace gradle.properties \
@@ -91,15 +86,13 @@ buildGradlePackage rec {
     echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/21.4.7075529" >> local.properties
     echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2" >> gradle.properties
 
-    # F-Droid signing config references release.keystore; regenerate for build, re-sign externally.
     rm -f TMessagesProj/config/release.keystore
     keytool -genkey -v \
       -keystore TMessagesProj/config/release.keystore \
       -alias androidkey -keyalg RSA -keysize 2048 -validity 10000 \
       -storepass android -keypass android \
-      -dname "CN=Forkgram Build"
+      -dname "CN=Forkgram Classic Build"
 
-    # boringssl runs 'go run err_data_generate.go' with vendored golang.org/x/{crypto,net}.
     mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/crypto
     mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/net
     cat > TMessagesProj/jni/boringssl/vendor/modules.txt << 'EOF'
@@ -135,32 +128,32 @@ buildGradlePackage rec {
 
   installPhase = ''
     runHook preInstall
-    install -Dm644 TMessagesProj_App/build/outputs/apk/afatFd_v8a/release/*.apk "$out/forkgram.apk"
+    install -Dm644 TMessagesProj_App/build/outputs/apk/afatFd_v8a/release/*.apk "$out/forkgram-classic.apk"
     runHook postInstall
   '';
 
   passthru.signScript = mkSignScript {
-    name = "sign-forkgram";
-    apkPath = "${placeholder "out"}/forkgram.apk";
-    defaultOut = "forkgram-signed.apk";
+    name = "sign-forkgram-classic";
+    apkPath = "${placeholder "out"}/forkgram-classic.apk";
+    defaultOut = "forkgram-classic-signed.apk";
   };
   meta = with lib; {
-    description = "Telegram Android client fork (ForkGram)";
-    homepage = "https://github.com/forkgram/TelegramAndroid";
+    description = "Telegram Android client fork (Forkgram Classic)";
+    homepage = "https://github.com/forkgram/forkgram-classic";
     license = licenses.gpl2Plus;
     platforms = platforms.unix;
-    mainApk = "forkgram.apk";
-    appId = "org.forkgram.messenger";
+    mainApk = "forkgram-classic.apk";
+    appId = "org.forkgram.classic";
     metadataYml = ''
       Categories:
         - Internet
       License: GPL-2.0-or-later
-      SourceCode: https://github.com/forkgram/TelegramAndroid
-      IssueTracker: https://github.com/forkgram/TelegramAndroid/issues
-      AutoName: Forkgram
-      Summary: Telegram client fork
+      SourceCode: https://github.com/forkgram/forkgram-classic
+      IssueTracker: https://github.com/forkgram/forkgram-classic/issues
+      AutoName: Forkgram Classic
+      Summary: Telegram client fork (classic UI)
       Description: |-
-        Forkgram is a Telegram Android client fork.
+        Forkgram Classic is a Telegram Android client fork with the classic UI.
     '';
   };
 }

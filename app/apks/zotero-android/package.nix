@@ -28,7 +28,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "zotero-android";
-      version = "1.0.0-248";
+      version = "1.0.0-250";
 
       src = fetchFromGitHub {
         owner = "zotero";
@@ -39,7 +39,7 @@ let
         # latest 1.0.0-* tag by time, not raw version ordering:
         # https://github.com/zotero/zotero-android/tags
         tag = finalAttrs.version;
-        hash = "sha256-dxo/6+5MXu+ON47NIYcxwJ+O3zclQ9t/jZr6kAzye8M=";
+        hash = "sha256-2hGZ2PJb7CScasjOUMPqE49Mef+kwANxIICB3VQkcnU=";
       };
 
       patches = [
@@ -47,11 +47,6 @@ let
           name = "Add a button to fetch all";
           url = "https://github.com/zotero/zotero-android/pull/291.patch";
           hash = "sha256-gdDpOwy5PUeDksqxz0B1DMHSSgH3nyj0vdQGSd0oNG4=";
-        })
-        (fetchpatch {
-          name = "Add volume buttons zoom";
-          url = "https://github.com/zotero/zotero-android/pull/298.diff";
-          hash = "sha256-/QGEJkh1VRoby25gHfc8a79hgSU0P3ywQZ3oHovCMao=";
         })
       ];
 
