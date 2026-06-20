@@ -69,6 +69,7 @@ buildGradlePackage rec {
   ];
 
   patches = [
+    ./0001-Killergram.patch
     ./prepare.patch
     ./native-build.patch
     ./fdroid.patch

@@ -1,0 +1,79 @@
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java b/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java
+index 9ab8cd77..51e01489 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/MessagesController.java
+@@ -6648,7 +6648,7 @@ public class MessagesController extends BaseController implements NotificationCe
+     }
+ 
+     public boolean isChatNoForwards(TLRPC.Chat chat) {
+-        if (chat == null) {
++        if (true) { // (chat == null) {
+             return false;
+         }
+         if (chat.migrated_to != null) {
+@@ -6661,7 +6661,7 @@ public class MessagesController extends BaseController implements NotificationCe
+     }
+ 
+     public boolean isChatNoForwards(long chatId) {
+-        return isChatNoForwards(getChat(chatId));
++        return false; // return isChatNoForwards(getChat(chatId));
+     }
+ 
+     public boolean isPeerNoForwards(long dialogId) {
+@@ -20690,7 +20690,7 @@ public class MessagesController extends BaseController implements NotificationCe
+     }
+ 
+     public SponsoredMessagesInfo getSponsoredMessages(long dialogId) {
+-        SponsoredMessagesInfo info = sponsoredMessages.get(dialogId);
++        if (true) { return null; } SponsoredMessagesInfo info = sponsoredMessages.get(dialogId);
+         if (info != null && (info.loading || Math.abs(SystemClock.elapsedRealtime() - info.loadTime) <= 5 * 60 * 1000)) {
+             return info;
+         }
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/SharedConfig.java b/TMessagesProj/src/main/java/org/telegram/messenger/SharedConfig.java
+index 8cf8ef91..a5d8c6ba 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/SharedConfig.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/SharedConfig.java
+@@ -1674,7 +1674,7 @@ public class SharedConfig {
+ 
+     @PerformanceClass
+     public static int getDevicePerformanceClass() {
+-        if (overrideDevicePerformanceClass != -1) {
++        if (true) { return PERFORMANCE_CLASS_HIGH; } if (overrideDevicePerformanceClass != -1) {
+             return overrideDevicePerformanceClass;
+         }
+         if (devicePerformanceClass == -1) {
+diff --git a/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java b/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java
+index e9412f86..4f2f2af3 100644
+--- a/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java
++++ b/TMessagesProj/src/main/java/org/telegram/messenger/UserConfig.java
+@@ -113,7 +113,7 @@ public class UserConfig extends BaseController {
+     }
+ 
+     public static boolean hasPremiumOnAccounts() {
+-        for (int a = 0; a < MAX_ACCOUNT_COUNT; a++) {
++        if (true) { return true; } for (int a = 0; a < MAX_ACCOUNT_COUNT; a++) {
+             if (AccountInstance.getInstance(a).getUserConfig().isClientActivated() && AccountInstance.getInstance(a).getUserConfig().getUserConfig().isPremium()) {
+                 return true;
+             }
+@@ -122,7 +122,7 @@ public class UserConfig extends BaseController {
+     }
+ 
+     public static int getMaxAccountCount() {
+-        return MAX_ACCOUNT_COUNT;
++        return MAX_ACCOUNT_COUNT; // return 999;
+     }
+ 
+     public int getNewMessageId() {
+diff --git a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java b/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
+index 999825dd..0d305cf3 100644
+--- a/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
++++ b/TMessagesProj/src/main/java/org/telegram/ui/ChatActivity.java
+@@ -24630,7 +24630,7 @@ public class ChatActivity extends BaseFragment implements
+     private Pattern sponsoredUrlPattern;
+     private MessageObject botSponsoredMessage;
+     private void addSponsoredMessages(boolean animated) {
+-        if (sponsoredMessagesAdded || chatMode != 0 || !ChatObject.isChannel(currentChat) && !UserObject.isBot(currentUser) || !forwardEndReached[0] || getUserConfig().isPremium() && getMessagesController().isSponsoredDisabled() || isReport()) {
++        if (true) { // if (sponsoredMessagesAdded || chatMode != 0 || !ChatObject.isChannel(currentChat) && !UserObject.isBot(currentUser) || !forwardEndReached[0] || getUserConfig().isPremium() && getMessagesController().isSponsoredDisabled() || isReport()) {
+             return;
+         }
+         MessagesController.SponsoredMessagesInfo res = getMessagesController().getSponsoredMessages(dialog_id);
