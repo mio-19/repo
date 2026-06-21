@@ -20,9 +20,11 @@ let
         s.platforms-android-34
         s.platforms-android-35
         s.platforms-android-36
+        s.platforms-android-37-0
         s.build-tools-34-0-0
         s.build-tools-35-0-0
         s.build-tools-36-1-0
+        s.build-tools-37-0-0
         s.ndk-28-2-13676358
         s.cmake-3-31-6
       ]);
@@ -33,13 +35,13 @@ let
     in
     buildDartApplication.override { dart = flutter344; } (finalAttrs: {
       pname = "rain";
-      version = "1.3.16";
+      version = "1.3.18";
 
       src = fetchFromGitHub {
         owner = "darkmoonight";
         repo = "Rain";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-Q8S1aMWO8AE49sgUAuo8C7Vvvn7d4XOWBzjWbR62wIY=";
+        hash = "sha256-WbujcCwhnEYEWfZ/f7SO34WK5bJaSuYoeKZKIiz/cCE=";
       };
 
       patches = [
@@ -133,7 +135,7 @@ let
                 fi
 
                 substituteInPlace android/app/build.gradle \
-                  --replace-fail "ndkVersion = '29.0.14206865'" "ndkVersion = '28.2.13676358'"
+                  --replace-fail "ndkVersion = '30.0.14904198'" "ndkVersion = '28.2.13676358'"
 
       '';
 

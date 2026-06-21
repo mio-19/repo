@@ -24,13 +24,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "kdeconnect-android";
-      version = "1.35.8";
+      version = "1.35.9";
 
       src = fetchFromGitHub {
         owner = "KDE";
         repo = "kdeconnect-android";
         rev = "v${finalAttrs.version}";
-        hash = "sha256-nF7j1w4uP/99iwJ6F8A9qIdAsIx9aw52OIWeX3fOLCU=";
+        hash = "sha256-R1EjKIedDNmD6MwgyJDJZNH25ULoaWertkNUEmDSuRY=";
       };
 
       gradleBuildTask = "assembleRelease";
