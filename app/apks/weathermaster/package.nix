@@ -21,7 +21,7 @@ let
       tag = "v${finalAttrs.version}";
       hash = "sha256-hSqAXn5IJfaAQ0qF6us1/GRWHcYJbVxvTRBC41TEUVQ=";
     };
-    patches = [  ];
+    patches = [ ];
 
     postPatch = ''
       substituteInPlace app/build.gradle.kts \

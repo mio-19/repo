@@ -35,10 +35,22 @@ def get_latest_github_release(owner, repo):
             req.add_header('Authorization', f"token {os.environ['GITHUB_TOKEN']}")
         with urllib.request.urlopen(req, timeout=5) as response:
             data = json.loads(response.read().decode())
-            return data.get('tag_name')
+            return True, data.get('tag_name')
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            try:
+                req2 = urllib.request.Request(f"https://api.github.com/repos/{owner}/{repo}/releases")
+                if 'GITHUB_TOKEN' in os.environ:
+                    req2.add_header('Authorization', f"token {os.environ['GITHUB_TOKEN']}")
+                with urllib.request.urlopen(req2, timeout=5) as response2:
+                    data2 = json.loads(response2.read().decode())
+                    if data2:
+                        return True, None # Has releases, but no stable
+            except Exception:
+                pass
     except Exception:
         pass
-    return None
+    return False, None
 
 def get_latest_github_tag_by_date(owner, repo, current_rev=None):
     try:
@@ -126,9 +138,9 @@ def resolve_version(rev, content):
             vars[k] = v
     
     if rev in vars:
-        return vars[rev]
+        rev = vars[rev]
     if rev == 'version' or rev.endswith('.version'):
-        return vars.get('version', rev)
+        rev = vars.get('version', rev)
 
     if '${' not in rev:
         return rev
@@ -174,8 +186,8 @@ def main():
             if re.search(r'src\s*=\s*sources\.', content) and 'fetchFromGitHub' not in content and 'fetchFromGitLab' not in content and 'fetchgit' not in content:
                 continue
                 
-            git_match = re.search(r'\bsrc\s*=\s*(?:pkgs\.)?fetchFrom(GitHub|GitLab)\s*\{([^}]+)\}', content, re.MULTILINE | re.DOTALL)
-            fetchgit_match = re.search(r'\bsrc\s*=\s*(?:pkgs\.)?fetchgit\s*\{([^}]+)\}', content, re.MULTILINE | re.DOTALL)
+            git_match = re.search(r'\bsrc\s*=\s*(?:pkgs\.)?fetchFrom(GitHub|GitLab)\s*\{(.+?)\n\s*\}', content, re.MULTILINE | re.DOTALL)
+            fetchgit_match = re.search(r'\bsrc\s*=\s*(?:pkgs\.)?fetchgit\s*\{(.+?)\n\s*\}', content, re.MULTILINE | re.DOTALL)
             
             url = None
             current_rev = None
@@ -190,13 +202,13 @@ def main():
                 
                 owner_m = re.search(r'\bowner\s*=\s*"([^"]+)"', src_block)
                 repo_m = re.search(r'\brepo\s*=\s*"([^"]+)"', src_block)
-                rev_m = re.search(r'\b(?:rev|tag)\s*=\s*(?:"([^"]+)"|([^";\s]+))', src_block)
+                rev_m = re.search(r'\b(?:inherit\s+(rev|tag)|(?:rev|tag)\s*=\s*(?:"([^"]+)"|([^";\s]+)))', src_block)
                 domain_m = re.search(r'\bdomain\s*=\s*"([^"]+)"', src_block)
                 
                 if owner_m and repo_m and rev_m:
                     owner = owner_m.group(1)
                     repo = repo_m.group(1)
-                    current_rev = rev_m.group(1) if rev_m.group(1) else rev_m.group(2)
+                    current_rev = rev_m.group(1) or rev_m.group(2) or rev_m.group(3)
                     current_rev = resolve_version(current_rev, content)
                     
                     domain = "github.com"
@@ -211,12 +223,18 @@ def main():
             elif fetchgit_match:
                 src_block = fetchgit_match.group(1)
                 url_m = re.search(r'\burl\s*=\s*(?:"([^"]+)"|([^";\s]+))', src_block)
-                rev_m = re.search(r'\b(?:rev|tag)\s*=\s*(?:"([^"]+)"|([^";\s]+))', src_block)
+                rev_m = re.search(r'\b(?:inherit\s+(rev|tag)|(?:rev|tag)\s*=\s*(?:"([^"]+)"|([^";\s]+)))', src_block)
                 if url_m and rev_m:
                     url = url_m.group(1) if url_m.group(1) else url_m.group(2)
-                    current_rev = rev_m.group(1) if rev_m.group(1) else rev_m.group(2)
+                    current_rev = rev_m.group(1) or rev_m.group(2) or rev_m.group(3)
                     current_rev = resolve_version(current_rev, content)
                     name_display = f"{pkg} (fetchgit {url})"
+                    
+                    gh_m = re.search(r'github\.com/([^/]+)/([^/.]+)(?:\.git)?', url)
+                    if gh_m:
+                        domain = "github.com"
+                        owner = gh_m.group(1)
+                        repo = gh_m.group(2)
                     
             if url and current_rev:
                 is_commit = bool(re.match(r'^([0-9a-f]{7,8}|[0-9a-f]{40})$', current_rev)) and not current_rev.isdigit()
@@ -231,11 +249,12 @@ def main():
                         print(f"[WARN]   {name_display}: Could not fetch latest commit from {url}")
                 else:
                     latest = None
+                    has_releases = False
                     if pkg != "tailscale" and domain == "github.com" and owner and repo:
-                        latest = get_latest_github_release(owner, repo)
-                        if not latest:
+                        has_releases, latest = get_latest_github_release(owner, repo)
+                        if not has_releases and not latest:
                             latest = get_latest_github_tag_by_date(owner, repo, current_rev)
-                    if not latest:
+                    if not latest and not has_releases:
                         latest = get_latest_git_tag_url(url, current_rev)
                     if latest:
                         if version_key(latest) > version_key(current_rev):

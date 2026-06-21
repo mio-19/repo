@@ -33,22 +33,23 @@ let
 
   appPackage = stdenv.mkDerivation (finalAttrs: {
     pname = "archivetune";
-    version = "13.4.0";
+    version = "13.5.0";
 
     src = fetchFromGitHub {
       owner = "koiverse";
       repo = "ArchiveTune";
       tag = "v${finalAttrs.version}";
-      hash = "sha256-WZWk0IbZP1A5vQN0T1C7tqBV0Hyx7IpZ1hugJK7gL4k=";
+      fetchSubmodules = true;
+      hash = "sha256-oIx5soqkGmR7OQkcHdlRS/jliQJljAZQArnnmY4MkF0=";
     };
 
     patches = [
       ./remove-star-dialog.patch
     ];
 
-    gradleBuildTask = ":app:assembleMobileArm64Release";
-    gradleUpdateTask = ":app:assembleMobileArm64Release";
-    gradleBuildFlags = [ ":app:assembleMobileArm64Release" ];
+    gradleBuildTask = ":app:assembleFossMobileArm64Release";
+    gradleUpdateTask = ":app:assembleFossMobileArm64Release";
+    gradleBuildFlags = [ ":app:assembleFossMobileArm64Release" ];
 
     mitmCache = gradle.fetchDeps {
       inherit (finalAttrs) pname;
@@ -116,12 +117,14 @@ let
       # Only do this if finalAttrs.mitmCache actually evaluates to a path
       substituteInPlace settings.gradle.kts \
         --replace-fail "gradlePluginPortal()" "gradlePluginPortal(); maven { setUrl(uri(\"${finalAttrs.mitmCache}\")) }"
+
+      substituteInPlace app/build.gradle.kts \
+        --replace-warn "buildConfigField(\"boolean\", \"UPDATER_AVAILABLE\", \"true\")" "buildConfigField(\"boolean\", \"UPDATER_AVAILABLE\", \"false\")"
     '';
 
     gradleFlags = [
       "--no-configuration-cache"
-      "-xlintVitalMobileUniversalRelease"
-      "-xlintVitalMobileArmeabiRelease"
+      "-xlintVitalFossMobileArm64Release"
       "-Dorg.gradle.java.home=${jdk21_headless.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
       "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
@@ -156,7 +159,7 @@ mk-apk-package {
   mainApk = "archivetune.apk";
   signScriptName = "sign-archivetune";
   fdroid = {
-    appId = "moe.koiverse.archivetune";
+    appId = "moe.rukamori.archivetune";
     metadataYml = ''
       AntiFeatures:
         NonFreeNet:
