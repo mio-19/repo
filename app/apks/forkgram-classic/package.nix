@@ -73,23 +73,11 @@ buildGradlePackage rec {
     ./prepare.patch
     ./native-build.patch
     ./fdroid.patch
+    ./ndk27.patch
   ];
 
   postPatch = ''
     patchShebangs TMessagesProj/jni/
-
-    find TMessagesProj/jni -name "*.sh" -exec sed -i 's/ANDROID_API=16/ANDROID_API=21/g' {} +
-    find TMessagesProj/jni -name "*.sh" -exec sed -i 's/android-16/android-21/g' {} +
-
-    find TMessagesProj/jni -name "build_*_clang.sh" -exec sed -i 's/''${TOOLS_PREFIX}ar/''${NDK}\/toolchains\/llvm\/prebuilt\/linux-x86_64\/bin\/llvm-ar/g' {} +
-    find TMessagesProj/jni -name "build_*_clang.sh" -exec sed -i 's/''${TOOLS_PREFIX}nm/''${NDK}\/toolchains\/llvm\/prebuilt\/linux-x86_64\/bin\/llvm-nm/g' {} +
-    find TMessagesProj/jni -name "build_*_clang.sh" -exec sed -i 's/''${TOOLS_PREFIX}strip/''${NDK}\/toolchains\/llvm\/prebuilt\/linux-x86_64\/bin\/llvm-strip/g' {} +
-    find TMessagesProj/jni -name "build_*_clang.sh" -exec sed -i 's/''${TOOLS_PREFIX}ranlib/''${NDK}\/toolchains\/llvm\/prebuilt\/linux-x86_64\/bin\/llvm-ranlib/g' {} +
-    find TMessagesProj/jni -name "build_*_clang.sh" -exec sed -i 's/''${TOOLS_PREFIX}ld/''${NDK}\/toolchains\/llvm\/prebuilt\/linux-x86_64\/bin\/ld.lld/g' {} +
-    find TMessagesProj/jni -name "build_*_clang.sh" -exec sed -i 's/^.*CROSS_PREFIX=.*$/export CROSS_PREFIX=\"''${LLVM_BIN}\/llvm-\"/g' {} +
-
-    sed -i 's/export ISYSTEM=.*//g' TMessagesProj/jni/build_libvpx_clang.sh
-    sed -i 's/''${ISYSTEM}//g' TMessagesProj/jni/build_libvpx_clang.sh
 
     echo "APP_ID=14577864" >> gradle.properties
     echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
