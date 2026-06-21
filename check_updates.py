@@ -7,6 +7,14 @@ import json
 import configparser
 import subprocess
 
+def is_stable_tag(tag):
+    tl = tag.lower()
+    if 'dev' in tl or 'beta' in tl or 'alpha' in tl or 'rc' in tl or 'internal' in tl:
+        return False
+    if re.search(r'b\d+$', tl):
+        return False
+    return True
+
 def get_nvfetcher_managed():
     managed = set()
     if os.path.exists('nvfetcher.toml'):
@@ -35,7 +43,11 @@ def get_latest_github_release(owner, repo):
             req.add_header('Authorization', f"token {os.environ['GITHUB_TOKEN']}")
         with urllib.request.urlopen(req, timeout=5) as response:
             data = json.loads(response.read().decode())
-            return True, data.get('tag_name')
+            tag = data.get('tag_name')
+            if tag and is_stable_tag(tag):
+                return True, tag
+            else:
+                return True, None
     except urllib.error.HTTPError as e:
         if e.code == 404:
             try:
@@ -58,6 +70,7 @@ def get_latest_github_tag_by_date(owner, repo, current_rev=None):
         with urllib.request.urlopen(req, timeout=5) as response:
             content = response.read().decode()
             tags = re.findall(r'href="[^"]+/releases/tag/([^"]+)"', content)
+            tags = [t for t in tags if is_stable_tag(t)]
             
             if current_rev:
                 curr_norm = current_rev.lstrip('vV')
@@ -101,6 +114,7 @@ def get_latest_git_tag_url(url, current_rev=None):
             tags.append(tag)
             
         tags = list(set(tags))
+        tags = [t for t in tags if is_stable_tag(t)]
         
         # Filter garbage tags
         if current_rev:
@@ -171,7 +185,7 @@ def main():
             if not os.path.isdir(pkg_path) or pkg.startswith('_'):
                 continue
                 
-            if pkg in ['morphe-library-m2', 'morphe-patcher-src', 'npatch', 'revanced-apktool-m2']:
+            if pkg in ['morphe-library-m2', 'morphe-patcher-src', 'npatch', 'revanced-apktool-m2', 'revanced-library-m2', 'revanced-multidexlib2-m2', 'revanced-patcher-m2', 'revanced-patches-gradle-plugin'] or 'plugin' in pkg:
                 continue
                 
             pkg_nix = os.path.join(pkg_path, 'package.nix')
