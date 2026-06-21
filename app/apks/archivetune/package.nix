@@ -117,6 +117,9 @@ let
       # Only do this if finalAttrs.mitmCache actually evaluates to a path
       substituteInPlace settings.gradle.kts \
         --replace-fail "gradlePluginPortal()" "gradlePluginPortal(); maven { setUrl(uri(\"${finalAttrs.mitmCache}\")) }"
+
+      substituteInPlace app/build.gradle.kts \
+        --replace-warn "buildConfigField(\"boolean\", \"UPDATER_AVAILABLE\", \"true\")" "buildConfigField(\"boolean\", \"UPDATER_AVAILABLE\", \"false\")"
     '';
 
     gradleFlags = [
