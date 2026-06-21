@@ -156,7 +156,7 @@ mk-apk-package {
   mainApk = "archivetune.apk";
   signScriptName = "sign-archivetune";
   fdroid = {
-    appId = "moe.koiverse.archivetune";
+    appId = "moe.rukamori.archivetune";
     metadataYml = ''
       AntiFeatures:
         NonFreeNet:
