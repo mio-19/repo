@@ -17,14 +17,26 @@ def is_stable_tag(tag, allow_prerelease=False):
         return False
     return True
 
-def tag_matches_suffix(tag, current_rev):
+def tag_matches_variant(tag, current_rev):
     if not current_rev:
         return True
+    
+    # suffix check
     match = re.search(r'(-[a-zA-Z0-9]+)$', current_rev)
     if match:
         suffix = match.group(1)
         if suffix in ['-bwpm', '-bwa', '-fdroid']:
-            return tag.endswith(suffix)
+            if not tag.endswith(suffix):
+                return False
+                
+    # prefix check
+    match2 = re.match(r'^([a-zA-Z]+-)', current_rev)
+    if match2:
+        prefix = match2.group(1)
+        if prefix in ['android-']:
+            if not tag.startswith(prefix):
+                return False
+                
     return True
 
 def get_nvfetcher_managed():
@@ -54,6 +66,9 @@ def get_latest_github_release(owner, repo, current_rev=None, allow_prerelease=Fa
         m = re.search(r'(-[a-zA-Z0-9]+)$', current_rev)
         if m and m.group(1) in ['-bwpm', '-bwa', '-fdroid']:
             needs_list = True
+        m2 = re.match(r'^([a-zA-Z]+-)', current_rev)
+        if m2 and m2.group(1) in ['android-']:
+            needs_list = True
 
     try:
         url = f"https://api.github.com/repos/{owner}/{repo}/releases" if (allow_prerelease or needs_list) else f"https://api.github.com/repos/{owner}/{repo}/releases/latest"
@@ -65,14 +80,14 @@ def get_latest_github_release(owner, repo, current_rev=None, allow_prerelease=Fa
             if (allow_prerelease or needs_list) and isinstance(data, list) and data:
                 for rel in data:
                     tag = rel.get('tag_name')
-                    if tag and is_stable_tag(tag, allow_prerelease) and tag_matches_suffix(tag, current_rev):
+                    if tag and is_stable_tag(tag, allow_prerelease) and tag_matches_variant(tag, current_rev):
                         return True, tag
                 return True, None
             elif not (allow_prerelease or needs_list) and isinstance(data, dict):
                 tag = data.get('tag_name')
             else:
                 tag = None
-            if tag and is_stable_tag(tag, allow_prerelease) and tag_matches_suffix(tag, current_rev):
+            if tag and is_stable_tag(tag, allow_prerelease) and tag_matches_variant(tag, current_rev):
                 return True, tag
             else:
                 return True, None
@@ -98,7 +113,7 @@ def get_latest_github_tag_by_date(owner, repo, current_rev=None, allow_prereleas
         with urllib.request.urlopen(req, timeout=5) as response:
             content = response.read().decode()
             tags = re.findall(r'href="[^"]+/releases/tag/([^"]+)"', content)
-            tags = [t for t in tags if is_stable_tag(t, allow_prerelease) and tag_matches_suffix(t, current_rev)]
+            tags = [t for t in tags if is_stable_tag(t, allow_prerelease) and tag_matches_variant(t, current_rev)]
             
             if current_rev:
                 curr_norm = current_rev.lstrip('vV')
@@ -142,7 +157,7 @@ def get_latest_git_tag_url(url, current_rev=None, allow_prerelease=False):
             tags.append(tag)
             
         tags = list(set(tags))
-        tags = [t for t in tags if is_stable_tag(t, allow_prerelease) and tag_matches_suffix(t, current_rev)]
+        tags = [t for t in tags if is_stable_tag(t, allow_prerelease) and tag_matches_variant(t, current_rev)]
         
         # Filter garbage tags
         if current_rev:
