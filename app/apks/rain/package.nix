@@ -25,7 +25,7 @@ let
         s.build-tools-35-0-0
         s.build-tools-36-1-0
         s.build-tools-37-0-0
-        s.ndk-28-2-13676358
+        s.ndk-30-0-14904198
         s.cmake-3-31-6
       ]);
 
@@ -95,8 +95,8 @@ let
         JAVA_HOME = jdk17_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
-        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
+        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/30.0.14904198";
+        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/30.0.14904198";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
       };
 
@@ -134,9 +134,6 @@ let
         EOF
                 fi
 
-                substituteInPlace android/app/build.gradle \
-                  --replace-fail "ndkVersion = '30.0.14904198'" "ndkVersion = '28.2.13676358'"
-
       '';
 
       preConfigure = ''
@@ -145,7 +142,7 @@ let
 
         echo "sdk.dir=${androidSdk}/share/android-sdk" > android/local.properties
         echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6" >> android/local.properties
-        echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/28.2.13676358" >> android/local.properties
+        echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/30.0.14904198" >> android/local.properties
         echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
       '';
 
@@ -206,6 +203,8 @@ let
 
         remap_dart_package "$JNI_DIR" jni
         remap_dart_package "$JNI_FLUTTER_DIR" jni_flutter
+
+        find .dart-patched -name build.gradle -exec sed -i -E "s/ndkVersion.*/ndkVersion = '30.0.14904198'/g" {} +
 
         ${pythonWithYaml}/bin/python3 ${../_shared/generate-flutter-plugins.py}
       '';
