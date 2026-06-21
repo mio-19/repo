@@ -17,6 +17,16 @@ def is_stable_tag(tag, allow_prerelease=False):
         return False
     return True
 
+def tag_matches_suffix(tag, current_rev):
+    if not current_rev:
+        return True
+    match = re.search(r'(-[a-zA-Z0-9]+)$', current_rev)
+    if match:
+        suffix = match.group(1)
+        if suffix in ['-bwpm', '-bwa', '-fdroid']:
+            return tag.endswith(suffix)
+    return True
+
 def get_nvfetcher_managed():
     managed = set()
     if os.path.exists('nvfetcher.toml'):
@@ -38,21 +48,31 @@ def get_nvfetcher_managed():
             pass
     return managed
 
-def get_latest_github_release(owner, repo, allow_prerelease=False):
+def get_latest_github_release(owner, repo, current_rev=None, allow_prerelease=False):
+    needs_list = False
+    if current_rev:
+        m = re.search(r'(-[a-zA-Z0-9]+)$', current_rev)
+        if m and m.group(1) in ['-bwpm', '-bwa', '-fdroid']:
+            needs_list = True
+
     try:
-        url = f"https://api.github.com/repos/{owner}/{repo}/releases" if allow_prerelease else f"https://api.github.com/repos/{owner}/{repo}/releases/latest"
+        url = f"https://api.github.com/repos/{owner}/{repo}/releases" if (allow_prerelease or needs_list) else f"https://api.github.com/repos/{owner}/{repo}/releases/latest"
         req = urllib.request.Request(url)
         if 'GITHUB_TOKEN' in os.environ:
             req.add_header('Authorization', f"token {os.environ['GITHUB_TOKEN']}")
         with urllib.request.urlopen(req, timeout=5) as response:
             data = json.loads(response.read().decode())
-            if allow_prerelease and isinstance(data, list) and data:
-                tag = data[0].get('tag_name')
-            elif not allow_prerelease and isinstance(data, dict):
+            if (allow_prerelease or needs_list) and isinstance(data, list) and data:
+                for rel in data:
+                    tag = rel.get('tag_name')
+                    if tag and is_stable_tag(tag, allow_prerelease) and tag_matches_suffix(tag, current_rev):
+                        return True, tag
+                return True, None
+            elif not (allow_prerelease or needs_list) and isinstance(data, dict):
                 tag = data.get('tag_name')
             else:
                 tag = None
-            if tag and is_stable_tag(tag, allow_prerelease):
+            if tag and is_stable_tag(tag, allow_prerelease) and tag_matches_suffix(tag, current_rev):
                 return True, tag
             else:
                 return True, None
@@ -78,7 +98,7 @@ def get_latest_github_tag_by_date(owner, repo, current_rev=None, allow_prereleas
         with urllib.request.urlopen(req, timeout=5) as response:
             content = response.read().decode()
             tags = re.findall(r'href="[^"]+/releases/tag/([^"]+)"', content)
-            tags = [t for t in tags if is_stable_tag(t, allow_prerelease)]
+            tags = [t for t in tags if is_stable_tag(t, allow_prerelease) and tag_matches_suffix(t, current_rev)]
             
             if current_rev:
                 curr_norm = current_rev.lstrip('vV')
@@ -122,7 +142,7 @@ def get_latest_git_tag_url(url, current_rev=None, allow_prerelease=False):
             tags.append(tag)
             
         tags = list(set(tags))
-        tags = [t for t in tags if is_stable_tag(t, allow_prerelease)]
+        tags = [t for t in tags if is_stable_tag(t, allow_prerelease) and tag_matches_suffix(t, current_rev)]
         
         # Filter garbage tags
         if current_rev:
@@ -274,7 +294,7 @@ def main():
                     latest = None
                     has_releases = False
                     if pkg != "tailscale" and domain == "github.com" and owner and repo:
-                        has_releases, latest = get_latest_github_release(owner, repo, allow_prerelease)
+                        has_releases, latest = get_latest_github_release(owner, repo, current_rev, allow_prerelease)
                         if not has_releases and not latest:
                             latest = get_latest_github_tag_by_date(owner, repo, current_rev, allow_prerelease)
                     if not latest and not has_releases:
