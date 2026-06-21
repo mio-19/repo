@@ -1,12 +1,12 @@
-# Minimal install wrapper for source-built Maven versions.
-# The old vendored nixpkgs copy referenced missing build-maven*.nix files and
-# hard-coded jdk_headless in makeWrapper instead of the per-version jdk attr.
+# https://github.com/NixOS/nixpkgs/blob/f35eaac5f6572939b7ac15a422dd52690b61a55e/pkgs/by-name/ma/maven/package.nix
 {
   lib,
+  callPackage,
   fetchurl,
   jdk_headless,
   makeWrapper,
   stdenvNoCC,
+  testers,
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "maven";
@@ -19,29 +19,75 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
   sourceRoot = ".";
 
-  jdk = jdk_headless;
-
   nativeBuildInputs = [ makeWrapper ];
 
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/maven $out/bin
-    mv apache-maven-${finalAttrs.version}/* $out/maven/
+    mkdir -p $out/maven
+    cp -r apache-maven-${finalAttrs.version}/* $out/maven
 
     makeWrapper $out/maven/bin/mvn $out/bin/mvn \
-      --set-default JAVA_HOME "${finalAttrs.jdk.passthru.home}"
+      --set-default JAVA_HOME "${jdk_headless}"
     makeWrapper $out/maven/bin/mvnDebug $out/bin/mvnDebug \
-      --set-default JAVA_HOME "${finalAttrs.jdk.passthru.home}"
+      --set-default JAVA_HOME "${jdk_headless}"
 
     runHook postInstall
   '';
 
+  passthru =
+    let
+      makeOverridableMavenPackage =
+        mavenRecipe: mavenArgs:
+        let
+          drv = mavenRecipe mavenArgs;
+          overrideWith =
+            newArgs: mavenArgs // (if lib.isFunction newArgs then newArgs mavenArgs else newArgs);
+        in
+        drv
+        // {
+          overrideMavenAttrs = newArgs: makeOverridableMavenPackage mavenRecipe (overrideWith newArgs);
+        };
+    in
+    {
+      buildMaven = callPackage ./build-maven.nix {
+        maven = finalAttrs.finalPackage;
+      };
+
+      buildMavenPackage = makeOverridableMavenPackage (
+        callPackage ./build-maven-package.nix {
+          maven = finalAttrs.finalPackage;
+        }
+      );
+      tests = {
+        version = testers.testVersion {
+          package = finalAttrs.finalPackage;
+          command = ''
+            env MAVEN_OPTS="-Dmaven.repo.local=$TMPDIR/m2" \
+              mvn --version
+          '';
+        };
+      };
+    };
+
   meta = {
     homepage = "https://maven.apache.org/";
     description = "Build automation tool (used primarily for Java projects)";
+    longDescription = ''
+      Apache Maven is a software project management and comprehension
+      tool. Based on the concept of a project object model (POM), Maven can
+      manage a project's build, reporting and documentation from a central piece
+      of information.
+    '';
+    changelog = "https://maven.apache.org/docs/${finalAttrs.version}/release-notes.html";
+    sourceProvenance = with lib.sourceTypes; [
+      binaryBytecode
+      binaryNativeCode
+    ];
     license = lib.licenses.asl20;
     mainProgram = "mvn";
-    inherit (finalAttrs.jdk.meta) platforms;
+    maintainers = with lib.maintainers; [ tricktron ];
+    teams = [ lib.teams.java ];
+    inherit (jdk_headless.meta) platforms;
   };
 })
