@@ -27,12 +27,12 @@ let
     s.platform-tools
     s.platforms-android-35
     s.build-tools-35-0-0
-    s.ndk-21-4-7075529
+    s.ndk-27-2-12479018
   ]);
 in
 buildGradlePackage rec {
   pname = "forkgram-classic";
-  version = "12.7.13.0";
+  version = "12.8.3.0";
 
   gradle = gradle_8_14_4;
 
@@ -40,7 +40,7 @@ buildGradlePackage rec {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-Z4EwDY3EDv38HqQ382RoyFle7xijwNUpJJ2Hz7nGDw4=";
+    hash = "sha256-Dp4PmoCtvCJ3CHrBAJVLXLsO9AzVdhQJp7yuoCrkK68=";
     fetchSubmodules = true;
   };
 
@@ -73,6 +73,7 @@ buildGradlePackage rec {
     ./prepare.patch
     ./native-build.patch
     ./fdroid.patch
+    ./ndk27.patch
   ];
 
   postPatch = ''
@@ -83,8 +84,18 @@ buildGradlePackage rec {
     substituteInPlace gradle.properties \
       --replace-fail "F_DROID=0" "F_DROID=1"
 
+    cat >> build.gradle << 'EOF'
+allprojects {
+    afterEvaluate {
+        if (project.hasProperty("android")) {
+            android.ndkVersion = "27.2.12479018"
+        }
+    }
+}
+EOF
+
     echo "cmake.dir=${cmake}" >> local.properties
-    echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/21.4.7075529" >> local.properties
+    echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/27.2.12479018" >> local.properties
     echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2" >> gradle.properties
 
     rm -f TMessagesProj/config/release.keystore
@@ -111,8 +122,8 @@ buildGradlePackage rec {
   env = {
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-    ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/21.4.7075529";
-    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/21.4.7075529";
+    ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/27.2.12479018";
+    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.2.12479018";
     GOFLAGS = "-mod=vendor";
   };
 
@@ -126,6 +137,8 @@ buildGradlePackage rec {
   '';
 
   gradleBuildFlagsArray = [ ":TMessagesProj_App:assembleAfatFd_v8aRelease" ];
+
+  gradleFlags = [ "-Pandroid.ndkVersion=27.2.12479018" ];
 
   installPhase = ''
     runHook preInstall
