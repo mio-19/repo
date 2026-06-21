@@ -11,13 +11,13 @@
   fetchpatch,
 }:
 let
-  version = "1.8.8";
+  version = "1.8.9.1";
 
   src = fetchFromGitHub {
     owner = "deniscerri";
     repo = "ytdlnis";
     tag = "v${version}";
-    hash = "sha256-fDvi6MFPxSRyIULtqIJq2MSpDFKoH0aRM2zGPaD6f0A=";
+    hash = "sha256-u9Zkr0AlrS1foZ2RghG2acGfaepA+HRQvhN/LorYbQU=";
   };
 
   appPackage =
@@ -47,13 +47,7 @@ let
         useBwrap = false;
       };
 
-      patches = [
-        (fetchpatch {
-          name = "Enable asynchronous memory tagging";
-          url = "https://github.com/deniscerri/ytdlnis/pull/1157.diff";
-          hash = "sha256-tjRvk37L37IoEsxGj9RbSOtZXU57RfmyHCxEDwVEStU=";
-        })
-      ];
+      patches = [ ];
 
       nativeBuildInputs = [
         gradle
@@ -91,7 +85,7 @@ let
       installPhase = ''
         runHook preInstall
 
-        apk_dir="app/build/outputs/apk/release"
+        apk_dir="app/build/outputs/apk/foss/release"
         apk_name="$(sed -n 's/.*"outputFile"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$apk_dir/output-metadata.json" | head -n 1)"
         test -n "$apk_name"
         apk_path="$apk_dir/$apk_name"

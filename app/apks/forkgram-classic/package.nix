@@ -32,7 +32,7 @@ let
 in
 buildGradlePackage rec {
   pname = "forkgram-classic";
-  version = "12.7.12.0";
+  version = "12.7.13.0";
 
   gradle = gradle_8_14_4;
 
@@ -40,7 +40,7 @@ buildGradlePackage rec {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-58D+ZbMU31uEWvvb7jhk9F61bsOTwlJ1OEZAcdALdbw=";
+    hash = "sha256-Z4EwDY3EDv38HqQ382RoyFle7xijwNUpJJ2Hz7nGDw4=";
     fetchSubmodules = true;
   };
 
