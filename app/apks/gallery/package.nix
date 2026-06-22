@@ -5,7 +5,7 @@
   buildGradlePackage,
   lib,
   androidSdkBuilder,
-  gradle_8_10_2,
+  gradle_9_2_1,
   jdk21_headless,
   runCommand,
   fetchurl,
@@ -18,10 +18,12 @@ let
     s.cmdline-tools-latest
     s.platform-tools
     s.platforms-android-35
+    s.platforms-android-37-0
     s.build-tools-35-0-0
+    s.build-tools-37-0-0
   ]);
 
-  gradle = gradle_8_10_2;
+  gradle = gradle_9_2_1;
 
   appVersionName = "1.0.16"; # kept in sync with appVersionName in upstream source code. remember to set upstreamAllowlist's hash to empty to get new hash when bumping version.
   allowlistVersion = lib.replaceStrings [ "." ] [ "_" ] appVersionName;
@@ -121,6 +123,7 @@ let
     buildJdk = jdk21_headless;
 
     nativeBuildInputs = [
+      androidSdk
       gradle
       jdk21_headless
       jq
@@ -133,7 +136,7 @@ let
       JAVA_HOME = jdk21_headless;
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2";
     };
 
     preConfigure = ''
@@ -165,8 +168,8 @@ let
       "-Dorg.gradle.java.home=${jdk21_headless.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
       "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
-      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
+      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
     ];
 
     gradleBuildFlags = ":app:assembleRelease";

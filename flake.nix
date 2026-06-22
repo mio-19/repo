@@ -167,17 +167,20 @@
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
             patches = [
-              # already in staging
+              # in staging, not nixpkgs-unstable yet
               (fetchpatch {
                 name = "rust: 1.95.0 -> 1.96.0";
                 url = "https://github.com/NixOS/nixpkgs/pull/525279.diff";
                 hash = "sha256-bnaT7TKe/yz+7L9xZSSIubuP3YWnIpcKHrX4qYzRGGc=";
               })
-              (fetchpatch {
-                name = "Bootstrap rust";
-                url = "https://github.com/NixOS/nixpkgs/pull/528074.diff";
-                hash = "sha256-thDAiWCbe7MI6DKgAh/au9N1n637VBxBnv58B90rE/M=";
-              })
+              /*
+                # already in nixpkgs-unstable
+                (fetchpatch {
+                  name = "Bootstrap rust";
+                  url = "https://github.com/NixOS/nixpkgs/pull/528074.diff";
+                  hash = "sha256-thDAiWCbe7MI6DKgAh/au9N1n637VBxBnv58B90rE/M=";
+                })
+              */
               /*
                 # conflicts with maven4 patch
                 (fetchpatch {
@@ -204,11 +207,14 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
                 hash = "sha256-vyDAGlg/67ht8BR7ASOS8LYLqclu6lcjzxUIjJoVM3I=";
               })
-              (fetchpatch {
-                name = "flutter344: init at 3.44.2";
-                url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/531252.patch";
-                hash = "sha256-LF5OAnlT0WwxPCxOjhgeVbJUjNesJhCvNcTQ0SExdzc=";
-              })
+              /*
+                # already in nixpkgs-unstable
+                (fetchpatch {
+                  name = "flutter344: init at 3.44.2";
+                  url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/531252.patch";
+                  hash = "sha256-LF5OAnlT0WwxPCxOjhgeVbJUjNesJhCvNcTQ0SExdzc=";
+                })
+              */
               /*
                 # work stopped
                 (fetchpatch {
@@ -217,7 +223,7 @@
                   hash = "sha256-okJ2JXObWNVPpRAbAbj9/ilKKOGR8GBJ010KelLDQqQ=";
                 })
               */
-              # already in staging
+              # in staging, not nixpkgs-unstable yet
               # related to appstream : https://github.com/NixOS/nixpkgs/issues/514566
               (fetchpatch {
                 name = "libfyaml: fixed building issues";

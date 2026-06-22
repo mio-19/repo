@@ -8,6 +8,8 @@
   stdenvNoCC,
   makeWrapper,
   fetchurl,
+  callPackage,
+  testers,
   maven_3_3_9_ant,
 }:
 let
@@ -17,6 +19,8 @@ let
       stdenvNoCC
       makeWrapper
       fetchurl
+      callPackage
+      testers
       ;
     jdk_headless = jdk8_headless;
   };

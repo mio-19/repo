@@ -1,5 +1,7 @@
 {
   fetchFromGitHub,
+  fetchurl,
+  gitUpdater,
   jdk25_headless,
   jdk21_headless,
   lib,
@@ -16,6 +18,8 @@
 let
   ant_nixpkgs = import ./nixpkgs.nix {
     inherit
+      fetchurl
+      gitUpdater
       lib
       stdenv
       coreutils

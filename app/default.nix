@@ -32,6 +32,20 @@
         "ndk-28-2-13676358"
         "ndk-29-0-14206865"
       ];
+      # NDK r21e lldb links against libpython2.7.so.1.0, but the upstream zip only
+      # ships the static archive. Symlink the host Python 2.7 runtime so auto-patchelf
+      # can finish packaging the NDK.
+      fixNdkPython27 =
+        pkg:
+        pkg.overrideAttrs (old: {
+          buildInputs = (old.buildInputs or [ ]) ++ lib.optionals pkgs.stdenv.isLinux [ pkgs.python27 ];
+          preFixup =
+            (old.preFixup or "")
+            + lib.optionalString pkgs.stdenv.isLinux ''
+              ln -sf ${pkgs.python27}/lib/libpython2.7.so.1.0 \
+                $out/toolchains/llvm/prebuilt/linux-x86_64/lib64/libpython2.7.so.1.0
+            '';
+        });
       helpers = {
         buildMavenRepositoryFromLockFile-bare = mvn2nixMaven.buildMavenRepositoryFromLockFile;
         androidSdkBuilder =
@@ -43,7 +57,9 @@
             in
             map (
               pkg:
-              if
+              if pkgs.stdenv.isLinux && lib.isDerivation pkg && (pkg.pname or "") == "ndk-21-4-7075529" then
+                fixNdkPython27 pkg
+              else if
                 pkgs.stdenv.isLinux && lib.isDerivation pkg && lib.elem (pkg.pname or "") sourceBuiltNdkPnames
               then
                 sourceBuiltNdkHelper.mkSourceBuiltNdk pkg
