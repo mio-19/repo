@@ -35,13 +35,13 @@ let
     in
     buildDartApplication.override { dart = flutter344; } (finalAttrs: {
       pname = "rain";
-      version = "1.3.18";
+      version = "1.3.19";
 
       src = fetchFromGitHub {
         owner = "darkmoonight";
         repo = "Rain";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-WbujcCwhnEYEWfZ/f7SO34WK5bJaSuYoeKZKIiz/cCE=";
+        hash = "sha256-/4GbzTfMW9Vh7oIYPRoCylJJ2em96xS4uxNzzHWOxtM=";
       };
 
       patches = [
@@ -79,7 +79,7 @@ let
         useBwrap = false;
       };
 
-      gradleUpdateTask = ":app:checkFlossReleaseAarMetadata :app:assembleFlossRelease :connectivity_plus:extractReleaseAnnotations :dynamic_color:checkReleaseAarMetadata :workmanager_android:checkReleaseAarMetadata";
+      gradleUpdateTask = ":app:checkFlossReleaseAarMetadata :app:assembleFlossRelease :connectivity_plus:extractReleaseAnnotations :dynamic_system_colors:checkReleaseAarMetadata :workmanager_android:checkReleaseAarMetadata";
 
       dontDartBuild = true;
       dontDartInstall = true;
