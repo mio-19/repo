@@ -22,24 +22,24 @@ let
         s.platform-tools
         s.platforms-android-35
         s.platforms-android-36
-        s.build-tools-35-0-0
-        # AGP 9.0.1 / compileSdk 36 resolves aapt2 from build-tools 36.0.0.
+        s.platforms-android-37-0
         s.build-tools-36-0-0
+        s.build-tools-37-0-0
       ]);
 
       gradle = gradle_9_4_1;
 
-      # https://github.com/bitwarden/android/blob/v2026.4.2-bwpm/gradle/libs.versions.toml#L33 bitwardenSdk = "2.0.0-6825-release-hotfix-v2026.4.1-bwpm"
+      # https://github.com/bitwarden/android/blob/v2026.5.1-bwpm/gradle/libs.versions.toml#L33 bitwardenSdk = "3.0.0-7126-025e5d85"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
-        rev = "6c3c4bddaf6054980fce89343014727f6f2b9cc7";
-        hash = "sha256-pWzEqLGyBzDOCBh+c4zwxHcxTmLJpIjizH4LMBK8cGA=";
+        rev = "025e5d85";
+        hash = "sha256-RVQcnV/w8oi1mQTGC2TzGcT+61kVsACL3yX9RhRDUOI=";
       };
 
       sdkSrcLock = fetchurl {
         url = "${sdkSrc.meta.homepage}/raw/${sdkSrc.rev}/Cargo.lock";
-        hash = "sha256-FwHON4+0VqAru1+76yjGhItV7zOCyVqHPcQ6OpdmElU=";
+        hash = "sha256-oXV12GEanTUjXsruDmgowyNCQRQVfaw6R2icNcQ9+so=";
       };
 
       androidCrossConfig = {
@@ -80,7 +80,7 @@ let
         }:
         crossPkgs.rustPlatform.buildRustPackage {
           pname = "bitwarden-uniffi";
-          version = "2.0.0";
+          version = "3.0.0";
 
           src = sdkSrc;
 
@@ -122,7 +122,7 @@ let
 
       uniffiBindgen = rustPlatform.buildRustPackage {
         pname = "bitwarden-uniffi-bindgen";
-        version = "2.0.0";
+        version = "3.0.0";
         src = sdkSrc;
         cargoLock = {
           # this cause whole src to be fetched during evaluation
@@ -142,15 +142,15 @@ let
 
       sdkGeneratedJava = stdenv.mkDerivation {
         pname = "bitwarden-sdk-generated-java";
-        version = "2.0.0";
+        version = "3.0.0";
         src = sdkSrc;
         cargoRoot = ".";
         cargoDeps = rustPlatform.fetchCargoVendor {
           pname = "bitwarden-sdk-generated-java-vendor";
-          version = "2.0.0";
+          version = "3.0.0";
           src = sdkSrc;
           cargoRoot = ".";
-          hash = "sha256-NzLkiAGPaNJ3QgZsgcuzgIDbT3PHe9sOjm8H/LiZqoE=";
+          hash = "sha256-B2SKATWn0+wvPqBJULEiOsO/Mayh4d4H3ku6/vXJb0k=";
         };
         nativeBuildInputs = [
           rustPlatform.cargoSetupHook
@@ -183,13 +183,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-android";
-      version = "2026.4.2";
+      version = "2026.5.1";
 
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
         tag = "v${finalAttrs.version}-bwpm";
-        hash = "sha256-3eX73TsN/1MB6MeoSqCWHGVwksSW6fIhWO5RRUhufCQ=";
+        hash = "sha256-Q7P7ivgPOPTGzWy6xTJmiiE+kPfsB+KY2U4qXH/rqmI=";
       };
 
       gradleBuildTask = ":app:assembleFdroidRelease";
@@ -214,7 +214,7 @@ let
         JAVA_HOME = jdk25_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2";
       };
 
       preConfigure = ''
@@ -242,12 +242,12 @@ let
           )
         fi
         substituteInPlace gradle/libs.versions.toml \
-          --replace-fail 'bitwarden-sdk = { module = "com.bitwarden:sdk-android.dev", version.ref = "bitwardenSdk" }' 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version = "LOCAL" }'
+          --replace-fail 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version.ref = "bitwardenSdk" }' 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version = "LOCAL" }'
         cat >> build.gradle.kts <<'EOF'
         val nixBootstrap by configurations.creating
         dependencies {
             nixBootstrap("org.jetbrains.kotlin:kotlin-stdlib:2.2.10")
-            nixBootstrap("org.jetbrains.kotlin:kotlin-stdlib:2.3.20")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-stdlib:2.3.21")
             nixBootstrap("org.jetbrains.kotlin:kotlin-reflect:2.2.10")
             nixBootstrap("org.jetbrains:annotations:23.0.0")
             nixBootstrap("commons-codec:commons-codec:1.17.1")
@@ -268,8 +268,8 @@ let
             nixBootstrap("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2")
             nixBootstrap("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0")
             nixBootstrap("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0@jar")
-            nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-compat:2.3.20")
-            nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-impl:2.3.20")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-compat:2.3.21")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-impl:2.3.21")
             nixBootstrap("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
         }
         tasks.register("resolveNixBootstrapDeps") {
@@ -350,9 +350,9 @@ let
                 substituteInPlace build.gradle \
                   --replace-fail "id 'com.android.application' version '8.9.0' apply false" "id 'com.android.application' version '9.2.1' apply false" \
                   --replace-fail "id 'com.android.library' version '8.9.0' apply false" "id 'com.android.library' version '9.2.1' apply false" \
-                  --replace-fail "id 'org.jetbrains.kotlin.android' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.android' version '2.3.20' apply false" \
-                  --replace-fail "id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.serialization' version '2.3.20' apply false" \
-                  --replace-fail "id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.compose' version '2.3.20' apply false"
+                  --replace-fail "id 'org.jetbrains.kotlin.android' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.android' version '2.3.21' apply false" \
+                  --replace-fail "id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.serialization' version '2.3.21' apply false" \
+                  --replace-fail "id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.compose' version '2.3.21' apply false"
                 substituteInPlace app/build.gradle \
                   --replace-fail "id 'kotlinx-serialization'" "id 'org.jetbrains.kotlin.plugin.serialization'"
                 substituteInPlace sdk/build.gradle \
@@ -374,7 +374,7 @@ let
                                   useModule(\"com.android.tools.build:gradle:9.2.1\")
                               }
                               if (requested.id.id == \"org.jetbrains.kotlin.android\" || requested.id.id == \"org.jetbrains.kotlin.plugin.serialization\" || requested.id.id == \"org.jetbrains.kotlin.plugin.compose\") {
-                                  useModule(\"org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.20\")
+                                  useModule(\"org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.21\")
                               }
                           }
                       }"
@@ -417,8 +417,8 @@ let
         "-xlintVitalFdroidRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk25_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
       ];
 
       installPhase = ''
