@@ -75,6 +75,10 @@ in
   buildDateTime = 1780886752;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
+  apps = {
+    updater.enable = true;
+    updater.url = "https://gos.at.mio19.uk/";
+  };
   source.dirs."packages/apps/NetworkLocation".patches = [
     (fetchpatch {
       name = "Fix cell-based location accuracy and geocoder robustness";
