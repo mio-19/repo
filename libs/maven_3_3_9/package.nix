@@ -1,15 +1,29 @@
 {
-  callPackage,
   fetchFromGitHub,
   buildMavenRepositoryFromLockFile,
   buildMavenRepository,
   libsUtils,
   jdk8_headless,
   lib,
+  stdenvNoCC,
+  makeWrapper,
+  fetchurl,
+  callPackage,
+  testers,
   maven_3_3_9_ant,
 }:
 let
-  maven_nixpkgs = callPackage ./nixpkgs.nix { };
+  maven_nixpkgs = import ./nixpkgs.nix {
+    inherit
+      lib
+      stdenvNoCC
+      makeWrapper
+      fetchurl
+      callPackage
+      testers
+      ;
+    jdk_headless = jdk8_headless;
+  };
   inherit (libsUtils) checkMavenProvides exposeMavenProvides;
   inherit (buildMavenRepositoryFromLockFile.passthru) mergeDeps readDeps;
 in
@@ -65,7 +79,7 @@ maven_nixpkgs.overrideAttrs (
     mavenRepository = buildMavenRepository { dependencies = readDeps finalAttrs.passthru.mavenDeps; };
     doInstallCheck = true;
     installCheckPhase = checkMavenProvides finalAttrs;
-    passthru = prevAttrs.passthru // {
+    passthru = (prevAttrs.passthru or { }) // {
       # also run jq -S '.' on it.
       # also need to manually remove 3.3.9 entries from linux-m2.json
       # jq '.dependencies |= with_entries(select(.key | test("^org\\.apache\\.maven[^:]*:[^:]+:[^:]+:3\\.3\\.9(:[^:]+)?$") | not))' linux-m2.json > tmp && mv tmp linux-m2.json

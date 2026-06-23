@@ -1,10 +1,13 @@
 {
   fetchFromGitHub,
+  fetchurl,
+  gitUpdater,
   jdk25_headless,
   jdk21_headless,
   lib,
   stdenv,
-  callPackage,
+  coreutils,
+  makeWrapper,
   jdk8_headless,
   libsUtils,
   applyPatches,
@@ -13,7 +16,16 @@
   junit_4,
 }:
 let
-  ant_nixpkgs = callPackage ./nixpkgs.nix { };
+  ant_nixpkgs = import ./nixpkgs.nix {
+    inherit
+      fetchurl
+      gitUpdater
+      lib
+      stdenv
+      coreutils
+      makeWrapper
+      ;
+  };
   inherit (libsUtils) checkMavenProvides exposeMavenProvides;
 in
 ant_nixpkgs.overrideAttrs (
@@ -38,6 +50,7 @@ ant_nixpkgs.overrideAttrs (
       tag = "rel/${finalAttrs.version}";
       hash = "sha256-wAwS/8mu3Iq0o3uxPWFKKgP57ffX1xXQkMTAP9e8mL0=";
     };
+    inherit jdk;
     nativeBuildInputs = [ jdk ];
     # https://ant.apache.org/manual/install.html#buildingant Since Ant 1.7.0, Ant has a hard dependency on JUnit.
     postPatch =
