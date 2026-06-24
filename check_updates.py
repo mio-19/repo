@@ -36,6 +36,11 @@ def tag_matches_variant(tag, current_rev):
         if prefix in ['android-']:
             if not tag.startswith(prefix):
                 return False
+
+    # thunderbird special case
+    if current_rev.startswith('THUNDERBIRD_'):
+        if not tag.startswith('THUNDERBIRD_'):
+            return False
                 
     return True
 
