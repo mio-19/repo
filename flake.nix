@@ -18,7 +18,7 @@
       #url = "git+https://github.com/nix-community/robotnix.git?shallow=1";
       #url = "git+https://github.com/nix-community/robotnix.git?shallow=1&ref=grapheneos_2026-05-07";
       #url = "github:nix-community/robotnix/grapheneos_2026-04-04";
-      url = "github:mio-19/robotnix";
+      url = "github:mio-19/robotnix/gos17";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.androidPkgs.follows = "android-nixpkgs";
       inputs.nixpkgs-nixfmt-old.follows = "nixpkgs";
