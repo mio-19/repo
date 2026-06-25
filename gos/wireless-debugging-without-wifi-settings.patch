@@ -44,7 +44,7 @@ diff --git a/src/com/android/settings/development/AdbWirelessDebuggingPreference
 index 9410004..70f5d9a 100644
 --- a/src/com/android/settings/development/AdbWirelessDebuggingPreferenceController.java
 +++ b/src/com/android/settings/development/AdbWirelessDebuggingPreferenceController.java
-@@ -19,17 +19,14 @@ import android.content.ContentResolver;
+@@ -19,19 +19,14 @@ import android.content.ContentResolver;
  import android.content.Context;
  import android.database.ContentObserver;
  import android.debug.IAdbManager;
