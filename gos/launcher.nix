@@ -68,23 +68,7 @@ in
       else
         assert config.launcherVariant == "stock";
         {
-          patches = [
-            (fetchpatch {
-              name = "allapps: make search bar look good";
-              url = "https://github.com/GrapheneOS/platform_packages_apps_Launcher3/pull/69.diff";
-              hash = "sha256-sDwsfex93ZiQcVWZ/4GCL69XV/F0p1vONqL8Dy+Tr7I=";
-            })
-            (fetchpatch {
-              name = "Launcher3: Add hasNavigationBar() check.patch";
-              url = "https://github.com/VoltageOS/packages_apps_Launcher3/commit/bdd98e87d1438e13f95ad4992071ef44fd931695.patch";
-              hash = "sha256-Ke0NsftuKxJrDTyAZdj4tOrInNDf2aA2gRd1rs84dsk=";
-            })
-            (fetchpatch {
-              name = "Launcher3: Hide scrollbar when searching All Apps";
-              url = "https://github.com/VoltageOS/packages_apps_Launcher3/commit/8f2bb1a5685bc043e4b52d7a79291994f8a32078.patch";
-              hash = "sha256-ukOdTP5Ks91d5Q8aGjF0h/6tdM2HCHc5vScbtx9CaCk=";
-            })
-          ];
+          patches = [ ];
         };
   };
 }
