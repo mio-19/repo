@@ -8,7 +8,7 @@ args@{
   imports = [
     ./gos
   ];
-  advancedPowerMenu = true;
+  advancedPowerMenu = false;
   launcherVariant = "los";
   allowAdbWirelessWithoutWifi = true;
   enableLindroid = true;

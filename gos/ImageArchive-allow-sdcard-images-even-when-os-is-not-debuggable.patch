@@ -1,0 +1,103 @@
+diff --git a/android/TerminalApp/java/com/android/virtualization/terminal/ImageArchive.kt b/android/TerminalApp/java/com/android/virtualization/terminal/ImageArchive.kt
+index 08009f9..40d0690 100644
+--- a/android/TerminalApp/java/com/android/virtualization/terminal/ImageArchive.kt
++++ b/android/TerminalApp/java/com/android/virtualization/terminal/ImageArchive.kt
+@@ -311,7 +311,7 @@ internal class ImageArchive {
+ 
+         /** Return whether sdcard image would be used for debugging purpose. */
+         fun isLocalImage(): Boolean {
+-            return Build.isDebuggable() && fromSdCard().exists()
++            return fromSdCard().exists()
+         }
+ 
+         /**
+diff --git a/android/TerminalApp/java/com/android/virtualization/terminal/InstallerActivity.kt b/android/TerminalApp/java/com/android/virtualization/terminal/InstallerActivity.kt
+index 327eb0c..b1e5501 100644
+--- a/android/TerminalApp/java/com/android/virtualization/terminal/InstallerActivity.kt
++++ b/android/TerminalApp/java/com/android/virtualization/terminal/InstallerActivity.kt
+@@ -64,6 +64,7 @@ public class InstallerActivity : BaseActivity() {
+ 
+         setContentView(R.layout.activity_installer)
+         updateSizeEstimation(ESTIMATED_IMG_SIZE_BYTES)
++        sdcardLocation(fromSdCard().getPath())
+         measureImageSizeAndUpdateDescription()
+ 
+         waitForWifiCheckbox = findViewById<CheckBox>(R.id.installer_wait_for_wifi_checkbox)
+@@ -78,6 +79,15 @@ public class InstallerActivity : BaseActivity() {
+         }
+     }
+ 
++    private fun sdcardLocation(dst: String) {
++        val desc =
++            getString(R.string.installer_sdcard_info_text_format, dst)
++        runOnUiThread {
++            val view = findViewById<TextView>(R.id.installer_sdcard_info)
++            view.text = desc
++        }
++    }
++
+     private fun updateSizeEstimation(est: Long) {
+         val desc = getString(R.string.installer_desc, Formatter.formatShortFileSize(this, est))
+         runOnUiThread {
+@@ -108,7 +118,7 @@ public class InstallerActivity : BaseActivity() {
+     override fun onResume() {
+         super.onResume()
+ 
+-        if (autoInstall || (Build.isDebuggable() && fromSdCard().exists())) {
++        if (autoInstall || fromSdCard().exists()) {
+             showSnackBar("Auto installing", Snackbar.LENGTH_LONG)
+             requestInstall()
+         }
+diff --git a/android/TerminalApp/java/com/android/virtualization/terminal/InstallerService.kt b/android/TerminalApp/java/com/android/virtualization/terminal/InstallerService.kt
+index afdb854..c3f0798 100644
+--- a/android/TerminalApp/java/com/android/virtualization/terminal/InstallerService.kt
++++ b/android/TerminalApp/java/com/android/virtualization/terminal/InstallerService.kt
+@@ -155,11 +155,7 @@ class InstallerService : Service() {
+         val archive = fromSdCard()
+         val archive_path = archive.getPath()
+ 
+-        // Installing from sdcard is preferred, but only supported only in debuggable build.
+-        if (!Build.isDebuggable()) {
+-            Log.i(TAG, "Non-debuggable build doesn't support installation from $archive_path")
+-            return false
+-        }
++
+         if (!archive.exists()) {
+             return false
+         }
+diff --git a/android/TerminalApp/res/layout/activity_installer.xml b/android/TerminalApp/res/layout/activity_installer.xml
+index 3b9d67f..a817bc0 100644
+--- a/android/TerminalApp/res/layout/activity_installer.xml
++++ b/android/TerminalApp/res/layout/activity_installer.xml
+@@ -63,6 +63,18 @@
+         android:layout_marginHorizontal="32dp"
+         android:textSize="16sp" />
+ 
++        <TextView
++            android:id="@+id/installer_sdcard_info"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:singleLine="false"
++            android:layout_below="@id/installer_desc"
++            android:lineSpacingExtra="5dp"
++            android:layout_marginTop="24dp"
++            android:layout_marginHorizontal="32dp"
++            android:textSize="16sp" />
++
++
+     <CheckBox
+         android:id="@+id/installer_wait_for_wifi_checkbox"
+         android:layout_width="wrap_content"
+diff --git a/android/TerminalApp/res/values/strings.xml b/android/TerminalApp/res/values/strings.xml
+index d5fa2cf..22a1133 100644
+--- a/android/TerminalApp/res/values/strings.xml
++++ b/android/TerminalApp/res/values/strings.xml
+@@ -51,6 +51,8 @@
+     <string name="installer_title">Install Linux terminal</string>
+     <!-- Installer activity description format [CHAR LIMIT=none] -->
+     <string name="installer_desc">To launch Linux terminal, you need to download roughly <xliff:g id="expected_size" example="350GB">\u200E%1$s\u200E</xliff:g> of data over the network.\nWould you like to proceed?</string>
++    <!-- Installer activity extra description [CHAR LIMIT=none] -->
++    <string name="installer_sdcard_info_text_format">Alternatively, if you want to provide your own custom image, you can place it under <xliff:g id="sdcard_loc">%1$s</xliff:g> using adb or the Files app</string>
+     <!-- Checkbox at the installer activity to download when Wi-Fi is available to prevent from paying network traffic [CHAR LIMIT=none] -->
+     <string name="installer_chkbox_wifi_only">Download using Wi-Fi only</string>
+     <!-- Button at the installer activity to confirm installation [CHAR LIMIT=16] -->

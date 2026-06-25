@@ -1,0 +1,45 @@
+diff --git a/packages/SystemUI/shared/src/com/android/systemui/shared/recents/ISystemUiProxy.aidl b/packages/SystemUI/shared/src/com/android/systemui/shared/recents/ISystemUiProxy.aidl
+index 1f6bcbcc6..0f370f71f 100644
+--- a/packages/SystemUI/shared/src/com/android/systemui/shared/recents/ISystemUiProxy.aidl
++++ b/packages/SystemUI/shared/src/com/android/systemui/shared/recents/ISystemUiProxy.aidl
+@@ -207,5 +207,10 @@ interface ISystemUiProxy {
+      */
+     oneway void onOverviewHidden(int displayId) = 62;
+ 
+-    // Next id = 63
++    /**
++     * Notifies SystemUI of a double tap to sleep event.
++     */
++    oneway void onSleepEvent(in MotionEvent event) = 63;
++
++    // Next id = 64
+ }
+diff --git a/packages/SystemUI/src/com/android/systemui/LauncherProxyService.java b/packages/SystemUI/src/com/android/systemui/LauncherProxyService.java
+index 234541e66..f70427797 100644
+--- a/packages/SystemUI/src/com/android/systemui/LauncherProxyService.java
++++ b/packages/SystemUI/src/com/android/systemui/LauncherProxyService.java
+@@ -64,6 +64,7 @@ import android.os.IBinder;
+ import android.os.IRemoteCallback;
+ import android.os.Looper;
+ import android.os.PatternMatcher;
++import android.os.PowerManager;
+ import android.os.RemoteException;
+ import android.os.SystemClock;
+ import android.os.Trace;
+@@ -515,6 +516,16 @@ public class LauncherProxyService implements CallbackController<LauncherProxyLis
+                     mCommandQueue.toggleQuickSettingsPanel());
+         }
+ 
++        @Override
++        public void onSleepEvent(MotionEvent event) {
++            verifyCallerAndClearCallingIdentity("onSleepEvent", () -> {
++                mHandler.post(() -> {
++                    mContext.getSystemService(PowerManager.class)
++                            .goToSleep(event.getEventTime());
++                    event.recycle();
++                });
++            });
++        }
+         private boolean verifyCaller(String reason) {
+             final int callerId = Binder.getCallingUserHandle().getIdentifier();
+             if (callerId != mCurrentBoundedUserId || mLauncherProxy == null) {

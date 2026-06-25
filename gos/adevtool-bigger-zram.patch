@@ -111,7 +111,7 @@ index 6bd60bb8..718c3a10 100644
 @@ -37,7 +37,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
  mmd.zram.enabled=true
- mmd.zram.size=3221225472
+ mmd.zram.size=50%
 -mmd.zram.writeback.device_size=1073741824
 +mmd.zram.writeback.device_size=4294967296
  mmd.zram.writeback.enabled=true
@@ -139,7 +139,7 @@ index bc3d3a42..631f9887 100644
 @@ -36,7 +36,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
  mmd.zram.enabled=true
- mmd.zram.size=3221225472
+ mmd.zram.size=50%
 -mmd.zram.writeback.device_size=1073741824
 +mmd.zram.writeback.device_size=4294967296
  mmd.zram.writeback.enabled=true
@@ -197,7 +197,7 @@ index e16ca18b..c235ad33 100644
 @@ -33,7 +33,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
  mmd.zram.enabled=true
- mmd.zram.size=3221225472
+ mmd.zram.size=50%
 -mmd.zram.writeback.device_size=1073741824
 +mmd.zram.writeback.device_size=4294967296
  mmd.zram.writeback.enabled=true
@@ -238,7 +238,7 @@ index 4fe6937c..96f965fd 100644
 @@ -37,7 +37,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
  mmd.zram.enabled=true
- mmd.zram.size=3221225472
+ mmd.zram.size=50%
 -mmd.zram.writeback.device_size=1073741824
 +mmd.zram.writeback.device_size=4294967296
  mmd.zram.writeback.enabled=true
@@ -294,7 +294,7 @@ index 3d493187..a2634f13 100644
 @@ -33,7 +33,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
  mmd.zram.enabled=true
- mmd.zram.size=3221225472
+ mmd.zram.size=50%
 -mmd.zram.writeback.device_size=1073741824
 +mmd.zram.writeback.device_size=4294967296
  mmd.zram.writeback.enabled=true
