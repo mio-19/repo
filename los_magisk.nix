@@ -170,7 +170,9 @@ let
 
       export PATH=${lib.getBin pkgs.zip}/bin:${lib.getBin pkgs.unzip}/bin:$PATH
       ${pkgs.runtimeShell} ${config.source.dirs."device/common".src}/generate-factory-images-common.sh
-      mv $PRODUCT-factory-$VERSION.zip ${out}
+      if [[ "$PRODUCT-factory-$VERSION.zip" != "${out}" ]]; then
+        mv "$PRODUCT-factory-$VERSION.zip" ${out}
+      fi
     '';
 in
 {
