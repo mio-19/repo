@@ -72,7 +72,7 @@ in
     ./launcher.nix
     ./gos_userdebug.nix
   ];
-  buildDateTime = 1780886752;
+  buildDateTime = 1782455149;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   apps = {
