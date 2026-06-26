@@ -95,6 +95,7 @@ in
 
     #./Disable-FLAG_SECURE.patch
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
+    # from https://github.com/GrapheneOS/platform_frameworks_base/pull/313.patch
     ./Add-a-toggle-to-allow-screenshots-through-FLAG-SECURE.patch
 
     (fetchpatch {
@@ -141,6 +142,7 @@ in
   source.dirs."packages/apps/AppCompatConfig".patches = [
   ];
   source.dirs."packages/modules/Virtualization".patches = [
+    # from https://github.com/GrapheneOS/platform_packages_modules_Virtualization/pull/5.patch
     ./ImageArchive-allow-sdcard-images-even-when-os-is-not-debuggable.patch
   ];
   source.dirs."packages/apps/ExactCalculator" = lib.mkIf (!useOriginalGrapheneosAppSources) (

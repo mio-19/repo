@@ -43,7 +43,9 @@ in
       ./settings-add-taskbar-navigation-options.patch
     ];
     source.dirs."frameworks/base".patches = lib.mkIf los_fork [
+      # from https://github.com/LineageOS/android_frameworks_base/commit/bc48bf59e0a30111ffb6001689490cc939290693.patch
       ./SystemUIProxy-Add-onLongPressKeyEvent.patch
+      # from https://github.com/LineageOS/android_frameworks_base/commit/3ca5f9315f722436ef205291fc860c262b602c64.patch
       ./SystemUIProxy-Add-onSleepEvent.patch
       # TODO: check https://github.com/LineageOS/android_frameworks_base/commit/310d180a3cb18d82dccce28c6757cb9427b1cd99
     ];
@@ -59,6 +61,7 @@ in
               assert config.launcherVariant == "evox";
               sources.evox_launcher3.src;
           patches = [
+            # from https://github.com/GrapheneOS/platform_packages_apps_Launcher3/pull/69.diff
             ./los-allapps-make-search-bar-look-good-https-github.com-G.patch
           ]
           ++ lib.optionals (config.launcherVariant == "evox") [
