@@ -77,42 +77,42 @@ buildGradlePackage rec {
   ];
 
   postPatch = ''
-    patchShebangs TMessagesProj/jni/
+        patchShebangs TMessagesProj/jni/
 
-    echo "APP_ID=14577864" >> gradle.properties
-    echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
-    substituteInPlace gradle.properties \
-      --replace-fail "F_DROID=0" "F_DROID=1"
+        echo "APP_ID=14577864" >> gradle.properties
+        echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
+        substituteInPlace gradle.properties \
+          --replace-fail "F_DROID=0" "F_DROID=1"
 
-    cat >> build.gradle << 'EOF'
-allprojects {
-    afterEvaluate {
-        if (project.hasProperty("android")) {
-            android.ndkVersion = "27.2.12479018"
+        cat >> build.gradle << 'EOF'
+    allprojects {
+        afterEvaluate {
+            if (project.hasProperty("android")) {
+                android.ndkVersion = "27.2.12479018"
+            }
         }
     }
-}
-EOF
-
-    echo "cmake.dir=${cmake}" >> local.properties
-    echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/27.2.12479018" >> local.properties
-    echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2" >> gradle.properties
-
-    rm -f TMessagesProj/config/release.keystore
-    keytool -genkey -v \
-      -keystore TMessagesProj/config/release.keystore \
-      -alias androidkey -keyalg RSA -keysize 2048 -validity 10000 \
-      -storepass android -keypass android \
-      -dname "CN=Forkgram Classic Build"
-
-    mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/crypto
-    mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/net
-    cat > TMessagesProj/jni/boringssl/vendor/modules.txt << 'EOF'
-    # golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
-    ## explicit; go 1.11
-    # golang.org/x/net v0.0.0-20210614182718-04defd469f4e
-    ## explicit; go 1.17
     EOF
+
+        echo "cmake.dir=${cmake}" >> local.properties
+        echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/27.2.12479018" >> local.properties
+        echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2" >> gradle.properties
+
+        rm -f TMessagesProj/config/release.keystore
+        keytool -genkey -v \
+          -keystore TMessagesProj/config/release.keystore \
+          -alias androidkey -keyalg RSA -keysize 2048 -validity 10000 \
+          -storepass android -keypass android \
+          -dname "CN=Forkgram Classic Build"
+
+        mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/crypto
+        mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/net
+        cat > TMessagesProj/jni/boringssl/vendor/modules.txt << 'EOF'
+        # golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
+        ## explicit; go 1.11
+        # golang.org/x/net v0.0.0-20210614182718-04defd469f4e
+        ## explicit; go 1.17
+        EOF
   '';
 
   dontUseCmakeConfigure = true;

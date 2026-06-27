@@ -203,12 +203,12 @@
                 })
               */
               /*
-              (fetchpatch {
-                name = "maven: 3.9.12 -> 3.9.16";
-                url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
-                hash = "sha256-pU4AOx6najbNm5utBuiQ7kEaq40ZTpQT6PJ+1YcO1g8=";
-                excludes = [ "pkgs/by-name/op/opendataloader-pdf/package.nix" ];
-              })
+                (fetchpatch {
+                  name = "maven: 3.9.12 -> 3.9.16";
+                  url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
+                  hash = "sha256-pU4AOx6najbNm5utBuiQ7kEaq40ZTpQT6PJ+1YcO1g8=";
+                  excludes = [ "pkgs/by-name/op/opendataloader-pdf/package.nix" ];
+                })
               */
               /*
                 # already in nixpkgs-unstable
@@ -234,11 +234,11 @@
                 hash = "sha256-lPg+NKhTJVCDLuuDaKF9o7evPxjcGxD9Gh/M1X3yqag=";
               })
               /*
-              (fetchpatch {
-                name = "maven_4: init at 4.0.0-rc5";
-                url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
-                hash = "sha256-sQdzgOlieIX0DMyJ7WXr9L7bDakGplEP79D+7EGbGWE=";
-              })
+                (fetchpatch {
+                  name = "maven_4: init at 4.0.0-rc5";
+                  url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
+                  hash = "sha256-sQdzgOlieIX0DMyJ7WXr9L7bDakGplEP79D+7EGbGWE=";
+                })
               */
             ];
             postPatch = ''
