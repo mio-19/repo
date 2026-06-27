@@ -18,7 +18,7 @@
       #url = "git+https://github.com/nix-community/robotnix.git?shallow=1";
       #url = "git+https://github.com/nix-community/robotnix.git?shallow=1&ref=grapheneos_2026-05-07";
       #url = "github:nix-community/robotnix/grapheneos_2026-04-04";
-      url = "github:mio-19/robotnix";
+      url = "github:mio-19/robotnix/gos17";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.androidPkgs.follows = "android-nixpkgs";
       inputs.nixpkgs-nixfmt-old.follows = "nixpkgs";
@@ -202,11 +202,13 @@
                   hash = "sha256-jjzVh6rOZ/wcLbR4SfOcjts9IUWt/GbQPZXRDveV+c4=";
                 })
               */
+              /*
               (fetchpatch {
                 name = "maven: 3.9.12 -> 3.9.16";
                 url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
                 hash = "sha256-vyDAGlg/67ht8BR7ASOS8LYLqclu6lcjzxUIjJoVM3I=";
               })
+              */
               /*
                 # already in nixpkgs-unstable
                 (fetchpatch {
@@ -230,11 +232,13 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/515614.patch";
                 hash = "sha256-lPg+NKhTJVCDLuuDaKF9o7evPxjcGxD9Gh/M1X3yqag=";
               })
+              /*
               (fetchpatch {
                 name = "maven_4: init at 4.0.0-rc5";
                 url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
                 hash = "sha256-sQdzgOlieIX0DMyJ7WXr9L7bDakGplEP79D+7EGbGWE=";
               })
+              */
             ];
             postPatch = ''
               # workaround for faulty applyPatches which doesn't work with renaming files

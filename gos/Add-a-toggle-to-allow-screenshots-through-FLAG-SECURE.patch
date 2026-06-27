@@ -1,0 +1,185 @@
+diff --git a/core/java/android/provider/Settings.java b/core/java/android/provider/Settings.java
+index f21c1ce26..de3bf8d14 100644
+--- a/core/java/android/provider/Settings.java
++++ b/core/java/android/provider/Settings.java
+@@ -14127,6 +14127,19 @@ public final class Settings {
+          */
+         public static final String DISABLE_SECURE_WINDOWS = "disable_secure_windows";
+ 
++        /**
++
++         Whether to allow user-initiated screenshots of secure windows.
++
++         When this setting is set to a non-zero value, user-initiated screenshots
++         will capture content in windows with
++         {@link android.view.WindowManager.LayoutParams#FLAG_SECURE}.
++         Other FLAG_SECURE behaviors (recents thumbnails, casting, screen recording)
++         are preserved.
++         @hide */
++        public static final String FORCE_SCREENSHOT_SECURE_WINDOWS = "force_screenshot_secure_windows";
++
++
+         /**
+          * Controls if the adaptive authentication feature should be disabled, which
+          * will attempt to lock the device after a number of consecutive authentication
+diff --git a/services/core/java/com/android/server/wm/WindowManagerService.java b/services/core/java/com/android/server/wm/WindowManagerService.java
+index b50c541b8..dd660cc7f 100644
+--- a/services/core/java/com/android/server/wm/WindowManagerService.java
++++ b/services/core/java/com/android/server/wm/WindowManagerService.java
+@@ -115,6 +115,7 @@ import static android.view.flags.Flags.sensitiveContentAppProtection;
+ import static android.window.ScreenCapture.ScreenCaptureParams.CAPTURE_MODE_REQUIRE_OPTIMIZED;
+ import static android.window.ScreenCapture.ScreenCaptureParams.PROTECTED_CONTENT_POLICY_THROW_EXCEPTION;
+ import static android.window.ScreenCapture.ScreenCaptureParams.SECURE_CONTENT_POLICY_THROW_EXCEPTION;
++import static android.window.ScreenCapture.ScreenCaptureParams.SECURE_CONTENT_POLICY_CAPTURE;
+ import static android.window.WindowProviderService.isWindowProviderService;
+ 
+ import static com.android.internal.protolog.WmProtoLogGroups.WM_DEBUG_ADD_REMOVE;
+@@ -844,6 +845,8 @@ public class WindowManagerService extends IWindowManager.Stub
+                 Settings.Secure.getUriFor(Settings.Secure.IMMERSIVE_MODE_CONFIRMATIONS);
+         private final Uri mDisableSecureWindowsUri =
+                 Settings.Secure.getUriFor(Settings.Secure.DISABLE_SECURE_WINDOWS);
++        private final Uri mForceScreenshotSecureWindowsUri =
++                Settings.Secure.getUriFor(Settings.Secure.FORCE_SCREENSHOT_SECURE_WINDOWS);
+         private final Uri mMagnifyImeEnabledUri = Settings.Secure.getUriFor(
+                 Settings.Secure.ACCESSIBILITY_MAGNIFICATION_MAGNIFY_NAV_AND_IME);
+         private final Uri mPolicyControlUri =
+@@ -878,6 +881,8 @@ public class WindowManagerService extends IWindowManager.Stub
+                     UserHandle.USER_ALL);
+             resolver.registerContentObserver(mDisableSecureWindowsUri, false, this,
+                     UserHandle.USER_ALL);
++            resolver.registerContentObserver(mForceScreenshotSecureWindowsUri, false, this,
++                    UserHandle.USER_ALL);
+             resolver.registerContentObserver(mMagnifyImeEnabledUri, false, this,
+                     UserHandle.USER_ALL);
+             resolver.registerContentObserver(mPolicyControlUri, false, this, UserHandle.USER_ALL);
+@@ -941,6 +946,11 @@ public class WindowManagerService extends IWindowManager.Stub
+                 return;
+             }
+ 
++            if (mForceScreenshotSecureWindowsUri.equals(uri)) {
++                updateForceScreenshotSecureWindows();
++                return;
++            }
++
+             if (mMagnifyImeEnabledUri.equals(uri)) {
+                 updateMagnifyIme();
+             }
+@@ -969,6 +979,7 @@ public class WindowManagerService extends IWindowManager.Stub
+         void loadSettings() {
+             updateMaximumObscuringOpacityForTouch();
+             updateDisableSecureWindows();
++            updateForceScreenshotSecureWindows();
+             updateMagnifyIme();
+         }
+ 
+@@ -1079,6 +1090,19 @@ public class WindowManagerService extends IWindowManager.Stub
+             }
+         }
+ 
++        void updateForceScreenshotSecureWindows() {
++
++            boolean forceScreenshotSecureWindows;
++            try {
++                forceScreenshotSecureWindows = Settings.Secure.getIntForUser(
++                        mContext.getContentResolver(),
++                        Settings.Secure.FORCE_SCREENSHOT_SECURE_WINDOWS, 0) != 0;
++            } catch (Settings.SettingNotFoundException e) {
++                forceScreenshotSecureWindows = false;
++            }
++            mForceScreenshotSecureWindows = forceScreenshotSecureWindows;
++        }
++        
+         void updateMagnifyIme() {
+             boolean enabledMagnifyIme = Settings.Secure.getIntForUser(
+                     mContext.getContentResolver(),
+@@ -1284,6 +1308,7 @@ public class WindowManagerService extends IWindowManager.Stub
+     private final ScreenRecordingCallbackController mScreenRecordingCallbackController;
+ 
+     private volatile boolean mDisableSecureWindows = false;
++    private volatile boolean mForceScreenshotSecureWindows = false;
+ 
+     /** Creates an instance of the WindowManagerService for the system server. */
+     public static WindowManagerService main(@NonNull final Context context,
+@@ -11095,10 +11120,17 @@ public class WindowManagerService extends IWindowManager.Stub
+             }
+         }
+ 
+-        return new ScreenCaptureInternal.LayerCaptureArgs.Builder(
++        ScreenCaptureInternal.LayerCaptureArgs.Builder builder =
++                new ScreenCaptureInternal.LayerCaptureArgs.Builder(
+                         displaySurfaceControl, captureArgs)
+-                .setSourceCrop(mTmpRect)
+-                .build();
++                        .setSourceCrop(mTmpRect);
++
++        if (mForceScreenshotSecureWindows) {
++            builder = builder.setSecureContentPolicy(
++                    SECURE_CONTENT_POLICY_CAPTURE);
++        }
++
++        return builder.build();
+     }
+ 
+     @Override
+@@ -11480,6 +11512,10 @@ public class WindowManagerService extends IWindowManager.Stub
+         return mDisableSecureWindows;
+     }
+ 
++    boolean getForceScreenshotSecureWindows() {
++        return mForceScreenshotSecureWindows;
++    }
++
+     /**
+      * Called to notify WMS that the specified window has become visible. This shows a Toast if the
+      * window is deemed to hold sensitive content.
+diff --git a/services/tests/wmtests/src/com/android/server/wm/WindowManagerServiceTests.java b/services/tests/wmtests/src/com/android/server/wm/WindowManagerServiceTests.java
+index b2e2500d6..dbf752da1 100644
+--- a/services/tests/wmtests/src/com/android/server/wm/WindowManagerServiceTests.java
++++ b/services/tests/wmtests/src/com/android/server/wm/WindowManagerServiceTests.java
+@@ -92,6 +92,7 @@ import android.app.IApplicationThread;
+ import android.content.pm.ActivityInfo;
+ import android.content.pm.ApplicationInfo;
+ import android.content.pm.PackageManager;
++import android.content.ContentResolver;
+ import android.graphics.Rect;
+ import android.os.Binder;
+ import android.os.IBinder;
+@@ -132,6 +133,7 @@ import android.window.ClientWindowFrames;
+ import android.window.ConfigurationChangeSetting;
+ import android.window.IDisplayEngagementModeCallback;
+ import android.window.InputTransferToken;
++import android.window.ScreenCapture;
+ import android.window.ScreenCaptureInternal;
+ import android.window.WindowContainerToken;
+ 
+@@ -1566,6 +1568,30 @@ public class WindowManagerServiceTests extends WindowTestsBase {
+         assertEquals(validRect, resultingArgs.mSourceCrop);
+     }
+ 
++    @Test
++    public void testCaptureArgs_forceScreenshotSecureWindows() {
++        Rect displayBounds = new Rect(0, 0, 100, 200);
++        spyOn(mDisplayContent);
++        when(mDisplayContent.getBounds()).thenReturn(displayBounds);
++        ContentResolver cr = useFakeSettingsProvider();
++
++        // secureContentPolicy should be REDACT (default) when setting is disabled
++        Settings.Secure.putInt(cr, Settings.Secure.FORCE_SCREENSHOT_SECURE_WINDOWS, 0);
++        mWm.mSettingsObserver.onChange(false,
++                Settings.Secure.getUriFor(Settings.Secure.FORCE_SCREENSHOT_SECURE_WINDOWS));
++        ScreenCaptureInternal.LayerCaptureArgs resultingArgs =
++                mWm.getCaptureArgs(DEFAULT_DISPLAY, null);
++        assertEquals(ScreenCapture.ScreenCaptureParams.SECURE_CONTENT_POLICY_REDACT,
++                resultingArgs.mSecureContentPolicy);
++
++        // secureContentPolicy should be CAPTURE when setting is enabled
++        Settings.Secure.putInt(cr, Settings.Secure.FORCE_SCREENSHOT_SECURE_WINDOWS, 1);
++        mWm.mSettingsObserver.onChange(false,
++                Settings.Secure.getUriFor(Settings.Secure.FORCE_SCREENSHOT_SECURE_WINDOWS));
++        resultingArgs = mWm.getCaptureArgs(DEFAULT_DISPLAY, null);
++        assertEquals(ScreenCapture.ScreenCaptureParams.SECURE_CONTENT_POLICY_CAPTURE,
++                resultingArgs.mSecureContentPolicy);
++    }
+     @Test
+     public void testGrantInputChannel_sanitizeSpyWindowForApplications() {
+         final Session session = mock(Session.class);

@@ -1,5 +1,42 @@
---- a/src/com/android/settings/development/AdbWirelessDebuggingPreferenceController.java
-+++ b/src/com/android/settings/development/AdbWirelessDebuggingPreferenceController.java
+--- a/src/com/android/settings/development/AdbIpAddressPreferenceController.java	2026-06-25 19:02:36.962721210 +1000
++++ b/src/com/android/settings/development/AdbIpAddressPreferenceController.java	2026-06-25 19:03:06.254722021 +1000
+@@ -121,11 +121,7 @@
+     protected void updateConnectivity() {
+         String ipAddress = getIpv4Address();
+         int port = getPort();
+-        if (!AdbWirelessDebuggingPreferenceController.isWifiConnected(mContext)) {
+-            mAdbIpAddrPref.setSummary(mContext.getString(
+-                    com.android.settingslib.R.string.adb_wireless_unavailable_disconnected
+-            ));
+-        } else if (port <= 0) {
++        if (port <= 0) {
+             mAdbIpAddrPref.setSummary(mContext.getString(
+                     com.android.settingslib.R.string.adb_wireless_unavailable_not_allowed
+             ));
+--- a/src/com/android/settings/development/AdbWirelessDebuggingEnabler.java	2026-06-25 19:02:36.962721210 +1000
++++ b/src/com/android/settings/development/AdbWirelessDebuggingEnabler.java	2026-06-25 19:03:06.254722021 +1000
+@@ -24,7 +24,6 @@
+ import android.os.Looper;
+ import android.provider.Settings;
+ import android.util.Log;
+-import android.widget.Toast;
+ 
+ import com.android.settings.widget.SwitchWidgetController;
+ import com.android.settingslib.core.lifecycle.Lifecycle;
+@@ -122,11 +121,6 @@
+ 
+     @Override
+     public boolean onSwitchToggled(boolean isChecked) {
+-        if (isChecked && !AdbWirelessDebuggingPreferenceController.isWifiConnected(mContext)) {
+-            Toast.makeText(mContext, com.android.settingslib.R.string.adb_wireless_no_network_msg,
+-                            Toast.LENGTH_LONG)
+-                    .show();
+-        }
+         writeAdbWifiSetting(isChecked);
+         return true;
+     }
+--- a/src/com/android/settings/development/AdbWirelessDebuggingPreferenceController.java	2026-06-25 19:02:36.962721210 +1000
++++ b/src/com/android/settings/development/AdbWirelessDebuggingPreferenceController.java	2026-06-25 19:03:06.255722022 +1000
 @@ -19,9 +19,6 @@
  import android.content.Context;
  import android.database.ContentObserver;
@@ -10,16 +47,15 @@
  import android.net.Uri;
  import android.os.Handler;
  import android.os.Looper;
-@@ -29,8 +26,6 @@
+@@ -29,7 +26,6 @@
  import android.os.ServiceManager;
  import android.provider.Settings;
  import android.util.Log;
 -import android.widget.Toast;
--
+ 
  import androidx.preference.Preference;
  import androidx.preference.PreferenceScreen;
- 
-@@ -136,39 +131,9 @@
+@@ -143,38 +139,9 @@
          ((PrimarySwitchPreference) preference).setChecked(enabled);
      }
  
@@ -27,8 +63,7 @@
 -     * Returns true if connected to Wi-Fi network.
 -     */
 -    public static boolean isWifiConnected(Context context) {
--        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(
--                Context.CONNECTIVITY_SERVICE);
+-        ConnectivityManager cm = context.getSystemService(ConnectivityManager.class);
 -        if (cm == null) {
 -            return false;
 -        }
@@ -37,7 +72,9 @@
 -            if (nc == null) {
 -                continue;
 -            }
--            if (nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+-            if (nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+-                    // NET_CAPABILITY_INTERNET to filter out hotspot networks.
+-                    && nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
 -                return true;
 -            }
 -        }
@@ -48,88 +85,54 @@
      public boolean onPreferenceChange(Preference preference, Object newValue) {
          final boolean enabled = (Boolean) newValue;
 -        if (enabled && !isWifiConnected(mContext)) {
--            // Cannot enable ADB over Wi-Fi if we're not connected to wifi.
 -            Toast.makeText(
 -                    mContext, com.android.settingslib.R.string.adb_wireless_no_network_msg,
 -                            Toast.LENGTH_LONG)
 -                    .show();
--            return false;
 -        }
 -
          Settings.Global.putInt(mContext.getContentResolver(),
                  Settings.Global.ADB_WIFI_ENABLED,
                  enabled ? AdbPreferenceController.ADB_SETTING_ON
---- a/src/com/android/settings/development/qstile/DevelopmentTiles.java
-+++ b/src/com/android/settings/development/qstile/DevelopmentTiles.java
-@@ -41,11 +41,8 @@
- import android.view.IWindowManager;
- import android.view.ThreadedRenderer;
- import android.view.WindowManagerGlobal;
--import android.widget.Toast;
--
- import com.android.internal.app.LocalePicker;
- import com.android.internal.statusbar.IStatusBarService;
--import com.android.settings.development.AdbWirelessDebuggingPreferenceController;
- import com.android.settings.overlay.FeatureFactory;
- import com.android.settingslib.core.instrumentation.MetricsFeatureProvider;
- import com.android.settingslib.development.DevelopmentSettingsEnabler;
-@@ -245,7 +242,6 @@
-     public static class WirelessDebugging extends DevelopmentTiles {
-         private Context mContext;
-         private KeyguardManager mKeyguardManager;
--        private Toast mToast;
-         private final Handler mHandler = new Handler(Looper.getMainLooper());
-         private final ContentObserver mSettingsObserver = new ContentObserver(mHandler) {
-             @Override
-@@ -260,9 +256,6 @@
-             mContext = getApplicationContext();
-             mKeyguardManager = (KeyguardManager) mContext.getSystemService(
-                     Context.KEYGUARD_SERVICE);
--            mToast = Toast.makeText(mContext,
--                    com.android.settingslib.R.string.adb_wireless_no_network_msg,
--                    Toast.LENGTH_LONG);
-         }
- 
-         @Override
-@@ -291,14 +284,6 @@
-                 return;
-             }
- 
--            // Show error toast if not connected to Wi-Fi
--            if (isEnabled && !AdbWirelessDebuggingPreferenceController.isWifiConnected(mContext)) {
--                // Close quick shade
--                sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
--                mToast.show();
--                return;
--            }
--
-             writeAdbWifiSetting(isEnabled);
-         }
- 
---- a/src/com/android/settings/development/AdbWirelessDebuggingEnabler.java
-+++ b/src/com/android/settings/development/AdbWirelessDebuggingEnabler.java
-@@ -24,8 +24,6 @@
+--- a/src/com/android/settings/development/qstile/AdbWirelessDebuggingDevelopmentTile.java	2026-06-25 19:02:36.973721210 +1000
++++ b/src/com/android/settings/development/qstile/AdbWirelessDebuggingDevelopmentTile.java	2026-06-25 19:03:06.256722022 +1000
+@@ -27,7 +27,6 @@
+ import android.os.Handler;
  import android.os.Looper;
  import android.provider.Settings;
- import android.util.Log;
 -import android.widget.Toast;
--
- import com.android.settings.widget.SwitchWidgetController;
- import com.android.settingslib.core.lifecycle.Lifecycle;
- import com.android.settingslib.core.lifecycle.LifecycleObserver;
-@@ -122,15 +120,6 @@
+ 
+ import com.android.settings.development.AdbWirelessDebuggingPreferenceController;
+ 
+@@ -37,7 +36,6 @@
+ public class AdbWirelessDebuggingDevelopmentTile extends DevelopmentTiles {
+     private Context mContext;
+     private KeyguardManager mKeyguardManager;
+-    private Toast mToast;
+     private final Handler mHandler = new Handler(Looper.getMainLooper());
+     private final ContentObserver mSettingsObserver = new ContentObserver(mHandler) {
+         @Override
+@@ -51,9 +49,6 @@
+         super.onCreate();
+         mContext = getApplicationContext();
+         mKeyguardManager = mContext.getSystemService(KeyguardManager.class);
+-        mToast = Toast.makeText(mContext,
+-                com.android.settingslib.R.string.adb_wireless_no_network_msg,
+-                Toast.LENGTH_LONG);
+     }
  
      @Override
-     public boolean onSwitchToggled(boolean isChecked) {
--        if (isChecked && !AdbWirelessDebuggingPreferenceController.isWifiConnected(mContext)) {
--            // No connected Wi-Fi network. Reset the switch to off.
--            Toast.makeText(mContext, com.android.settingslib.R.string.adb_wireless_no_network_msg,
--                            Toast.LENGTH_LONG)
--                    .show();
--            mSwitchWidget.setChecked(false);
--            return false;
+@@ -82,13 +77,6 @@
+             return;
+         }
+ 
+-        // Show error toast if not connected to Wi-Fi
+-        if (isEnabled && !AdbWirelessDebuggingPreferenceController.isWifiConnected(mContext)) {
+-            // Close quick shade
+-            sendBroadcast(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+-            mToast.show();
 -        }
 -
-         writeAdbWifiSetting(isChecked);
-         return true;
+         writeAdbWifiSetting(isEnabled);
      }
+ 

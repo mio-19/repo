@@ -1,0 +1,39 @@
+--- a/config/device/common/file-exclusion.yml
++++ b/config/device/common/file-exclusion.yml
+@@ -194,6 +194,36 @@
+       - vendor/etc/init/mte_launcher.rc # MTE is always enabled on GrapheneOS
+       - vendor/etc/init/storage.intelligence.rc # TODO
+       - vendor/lib64/libaconfig_mte_launcher_flags_rust.dylib.so # MTE is always enabled on GrapheneOS
++      - recovery/root/system/lib64/libfec_rs.dylib.so
++      - recovery/root/system/lib64/libfec_rs.so
++      - vendor/lib64/android.hardware.audio.common-V5-ndk.so
++      - vendor/lib64/android.hardware.audio.core.sounddose-V4-ndk.so
++      - vendor/lib64/android.hardware.bluetooth.lmp_event-V1-ndk.so
++      - vendor/lib64/android.hardware.bluetooth.ranging-V2-ndk.so
++      - vendor/lib64/android.hardware.contexthub-V5-ndk.so
++      - vendor/lib64/android.hardware.health-V5-ndk.so
++      - vendor/lib64/android.hardware.media.c2-V2-ndk.so
++      - vendor/lib64/android.hardware.radio.config-V3-ndk.so
++      - vendor/lib64/android.hardware.radio.data-V3-ndk.so
++      - vendor/lib64/android.hardware.radio.modem-V3-ndk.so
++      - vendor/lib64/android.hardware.radio.network-V3-ndk.so
++      - vendor/lib64/android.hardware.radio-V3-ndk.so
++      - vendor/lib64/android.hardware.radio.voice-V3-ndk.so
++      - vendor/lib64/android.hardware.security.keymint-V5-ndk.so
++      - vendor/lib64/android.hardware.security.timestamp-V1-ndk.so
++      - vendor/lib64/android.hardware.usb.flags-aconfig-cc-lib.so
++      - vendor/lib64/android.hardware.usb.gadget-V2-ndk.so
++      - vendor/lib64/android.hardware.usb-V4-ndk.so
++      - vendor/lib64/android.hardware.weaver-V3-ndk.so
++      - vendor/lib64/android.media.audio.common.types-V5-ndk.so
++      - vendor/lib64/android.media.audio.eraser.types-V2-ndk.so
++      - vendor/lib64/android.media.soundtrigger.types-V4-ndk.so
++      - vendor/lib64/libcodec2_aidl_V2.so
++      - vendor/lib64/libfec_rs.dylib.so
++      - vendor/lib64/libfec_rs.so
++      - vendor/lib64/libgui.so
++      - vendor/lib/libfec_rs.dylib.so
++      - vendor/lib/libfec_rs.so
+       - vendor_boot/bootconfig
+       - vendor_boot/vendor_ramdisk00
+       - vendor_ramdisk/avb/q-developer-gsi.avbpubkey

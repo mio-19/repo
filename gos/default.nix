@@ -72,7 +72,7 @@ in
     ./launcher.nix
     ./gos_userdebug.nix
   ];
-  buildDateTime = 1780886752;
+  buildDateTime = 1782455250;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   apps = {
@@ -95,11 +95,8 @@ in
 
     #./Disable-FLAG_SECURE.patch
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
-    (fetchpatch {
-      name = "Add a toggle to allow screenshots through FLAG SECURE";
-      url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/313.patch";
-      hash = "sha256-S3zWY9AFAS2iKVPEl8p03HhidOxdKXs0BEG10jVxWZQ=";
-    })
+    # from https://github.com/GrapheneOS/platform_frameworks_base/pull/313.patch
+    ./Add-a-toggle-to-allow-screenshots-through-FLAG-SECURE.patch
 
     (fetchpatch {
       name = "Add toggle to hide location access indicator on a per-app basis.patch";
@@ -145,11 +142,8 @@ in
   source.dirs."packages/apps/AppCompatConfig".patches = [
   ];
   source.dirs."packages/modules/Virtualization".patches = [
-    (fetchpatch {
-      name = "ImageArchive: allow sdcard images even when os is not debuggable.patch";
-      url = "https://github.com/GrapheneOS/platform_packages_modules_Virtualization/pull/5.patch";
-      hash = "sha256-hru78WppRuNKWIbqrRQdm86Y8fuuZcPmM6MYXfS6Lmw=";
-    })
+    # from https://github.com/GrapheneOS/platform_packages_modules_Virtualization/pull/5.patch
+    ./ImageArchive-allow-sdcard-images-even-when-os-is-not-debuggable.patch
   ];
   source.dirs."packages/apps/ExactCalculator" = lib.mkIf (!useOriginalGrapheneosAppSources) (
     lib.mkForce {
@@ -209,6 +203,7 @@ in
   source.dirs."vendor/adevtool".patches = [
     ./adevtool-bigger-zram.patch # changing here is no effect but mightbe needed somewhere??
     ./adevtool-100p-4G.patch
+    ./adevtool-exclude-replacements.patch
   ];
   /*
     preBuild = ''

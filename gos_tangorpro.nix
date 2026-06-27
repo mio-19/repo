@@ -8,11 +8,11 @@ args@{
   imports = [
     ./gos
   ];
-  advancedPowerMenu = true;
-  launcherVariant = "los";
+  advancedPowerMenu = false;
+  launcherVariant = "stock";
   allowAdbWirelessWithoutWifi = true;
-  enableLindroid = true;
-  enableDroidspaces = true;
+  enableLindroid = false;
+  enableDroidspaces = false;
   device = "tangorpro";
   source.dirs."device/google/tangorpro-kernels/6.1" = lib.mkForce {
     src =

@@ -1,0 +1,75 @@
+diff --git a/packages/SystemUI/shared/src/com/android/systemui/shared/recents/ISystemUiProxy.aidl b/packages/SystemUI/shared/src/com/android/systemui/shared/recents/ISystemUiProxy.aidl
+index 48f90b73c..1f6bcbcc6 100644
+--- a/packages/SystemUI/shared/src/com/android/systemui/shared/recents/ISystemUiProxy.aidl
++++ b/packages/SystemUI/shared/src/com/android/systemui/shared/recents/ISystemUiProxy.aidl
+@@ -113,6 +113,12 @@ interface ISystemUiProxy {
+     /** Sets home rotation enabled. */
+     oneway void setHomeRotationEnabled(boolean enabled) = 45;
+ 
++    /**
++     * Notifies SystemUI of a long press KeyEvent of the specified type
++     * (e.g. KEYCODE_BACK, KEYCODE_HOME).
++     */
++    oneway void onLongPressKeyEvent(int keycode, int displayId) = 46;
++
+     /** Notifies when taskbar status updated */
+     oneway void notifyTaskbarStatus(boolean visible, boolean stashed) = 47;
+ 
+diff --git a/packages/SystemUI/src/com/android/systemui/LauncherProxyService.java b/packages/SystemUI/src/com/android/systemui/LauncherProxyService.java
+index e6ad618d5..234541e66 100644
+--- a/packages/SystemUI/src/com/android/systemui/LauncherProxyService.java
++++ b/packages/SystemUI/src/com/android/systemui/LauncherProxyService.java
+@@ -77,6 +77,8 @@ import android.view.KeyCharacterMap;
+ import android.view.KeyEvent;
+ import android.view.MotionEvent;
+ import android.view.Surface;
++import android.view.View;
++import android.view.ViewConfiguration;
+ import android.view.accessibility.AccessibilityManager;
+ import android.view.inputmethod.InputMethodManager;
+ 
+@@ -335,6 +337,19 @@ public class LauncherProxyService implements CallbackController<LauncherProxyLis
+                     });
+         }
+ 
++        @Override
++        public void onLongPressKeyEvent(int keycode, int displayId) throws RemoteException {
++            verifyCallerAndClearCallingIdentityPostMain("onLongPressKeyEvent", () -> {
++                sendEvent(KeyEvent.ACTION_DOWN, keycode, displayId, 0, 0);
++                mHandler.postDelayed(() -> {
++                    sendEvent(KeyEvent.ACTION_DOWN, keycode, displayId, 1,
++                            KeyEvent.FLAG_LONG_PRESS);
++                    sendEvent(KeyEvent.ACTION_UP, keycode, displayId, 0,
++                            KeyEvent.FLAG_CANCELED);
++                }, ViewConfiguration.getLongPressTimeout());
++            });
++        }
++
+         @Override
+         public void onImeSwitcherPressed() {
+             // TODO(b/204901476) We're intentionally using the default display for now since
+@@ -387,17 +402,21 @@ public class LauncherProxyService implements CallbackController<LauncherProxyLis
+                     onRecentsButtonPositionChanged(position));
+         }
+ 
+-        private boolean sendEvent(int action, int code, int displayId) {
++        private boolean sendEvent(int action, int code, int displayId, int repeat, int flags) {
+             long when = SystemClock.uptimeMillis();
+-            final KeyEvent ev = new KeyEvent(when, when, action, code, 0 /* repeat */,
++            final KeyEvent ev = new KeyEvent(when, when, action, code, repeat,
+                     0 /* metaState */, KeyCharacterMap.VIRTUAL_KEYBOARD, 0 /* scancode */,
+-                    KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY,
++                    flags | KeyEvent.FLAG_FROM_SYSTEM | KeyEvent.FLAG_VIRTUAL_HARD_KEY,
+                     InputDevice.SOURCE_KEYBOARD);
+             ev.setDisplayId(displayId);
+             return InputManagerGlobal.getInstance()
+                     .injectInputEvent(ev, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+         }
+ 
++        private boolean sendEvent(int action, int code, int displayId) {
++            return sendEvent(action, code, displayId, 0, 0);
++        }
++
+         @Override
+         public void onOverviewShownDeprecated(boolean fromHome) {
+             if (betterDeskDeactivationInRecentsTransition()) return;
