@@ -20,7 +20,7 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
-        s.platforms-android-36
+        s.platforms-android-36-1
         s.build-tools-36-1-0
       ]);
 
@@ -30,13 +30,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gadgetbridge";
-      version = "0.91.1";
+      version = "0.92.0";
 
       src = fetchgit {
         url = "https://codeberg.org/Freeyourgadget/Gadgetbridge.git";
         rev = finalAttrs.version;
         fetchSubmodules = true;
-        hash = "sha256-tM5U0FhG8hPmBK8umjv5nOp0Gj3fo4C+DjiDxWoNAoY=";
+        hash = "sha256-7LeyFCryGl4Be9X8vxCMQ0kYBf0q9f7QzlbAdpTEq6Y=";
       };
 
       patches = [
@@ -76,8 +76,6 @@ let
       };
 
       postPatch = ''
-        substituteInPlace app/build.gradle \
-          --replace-fail "    buildToolsVersion = '36.0.0'" "    buildToolsVersion = '36.1.0'"
 
         rm -f external/jerryscript/tools/babel/package.json
       '';
