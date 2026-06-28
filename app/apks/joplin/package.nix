@@ -35,22 +35,18 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "joplin";
-      version = "3.6.20";
+      version = "3.7.2";
 
       src = fetchFromGitHub {
         owner = "laurent22";
         repo = "joplin";
         tag = "android-v${finalAttrs.version}";
-        hash = "sha256-jnK3Wo2jXK/d8muHISjQJe7aWg8g09PJh3nU4UqYqfQ=";
+        hash = "sha256-FktKFoeQMX1NlogpPvtHLGBbc8aMGhjDHiQLcXAwhMA=";
       };
 
       sourceRoot = "${finalAttrs.src.name}";
 
-      patches = [
-        # Remove after upstream updates to Yarn 4.14.
-        # https://github.com/laurent22/joplin/blob/dev/package.json#L103
-        ./yarn-4.14-support.patch
-      ];
+      patches = [ ];
 
       missingHashes = ./missing-hashes.json;
 
@@ -60,7 +56,7 @@ let
           patches
           missingHashes
           ;
-        hash = "sha256-ejg0u9Dy3iaBusH248IbtJNpvd/zADyPJ9CplIK1A/w=";
+        hash = "sha256-OIal3Q/08tPVq53BzLg+ju+0cYP+YR3v3k5qRQFunv0=";
       };
 
       gradleBuildTask = ":app:assembleRelease -x :app:lintVitalAnalyzeRelease -x :app:lintVitalReportRelease -x :app:lintVitalRelease";
@@ -312,6 +308,7 @@ let
                 (cd packages/turndown && npm run build-cjs)
                 (cd packages/turndown-plugin-gfm && ${nodejs}/bin/node ../turndown/node_modules/rollup/dist/bin/rollup -c config/rollup.config.cjs.js && ${nodejs}/bin/node ../turndown/node_modules/rollup/dist/bin/rollup -c config/rollup.config.browser.cjs.js)
                 ${lib.getExe yarn-berry_4} workspace @joplin/whisper-voice-typing build
+                ${lib.getExe yarn-berry_4} workspace @joplin/fork-htmlparser2 build
                 ${lib.getExe yarn-berry_4} tsc
                 ${lib.getExe yarn-berry_4} workspace @joplin/app-mobile buildInjectedJs
                 ${lib.getExe yarn-berry_4} workspace @joplin/app-mobile gulp encodeAssets
