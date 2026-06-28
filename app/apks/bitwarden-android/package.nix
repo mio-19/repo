@@ -29,17 +29,17 @@ let
 
       gradle = gradle_9_4_1;
 
-      # https://github.com/bitwarden/android/blob/v2026.5.1-bwpm/gradle/libs.versions.toml#L33 bitwardenSdk = "3.0.0-7126-025e5d85"
+      # https://github.com/bitwarden/android/blob/v2026.6.0-bwpm/gradle/libs.versions.toml#L33 bitwardenSdk = "3.0.0-7338-5bdc976f"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
-        rev = "025e5d85";
-        hash = "sha256-RVQcnV/w8oi1mQTGC2TzGcT+61kVsACL3yX9RhRDUOI=";
+        rev = "5bdc976f";
+        hash = "sha256-MDfunieTKD7LEQZGit/rSkGaaT/0OfciFUhjaL6Wquw=";
       };
 
       sdkSrcLock = fetchurl {
         url = "${sdkSrc.meta.homepage}/raw/${sdkSrc.rev}/Cargo.lock";
-        hash = "sha256-oXV12GEanTUjXsruDmgowyNCQRQVfaw6R2icNcQ9+so=";
+        hash = "sha256-JW7E2E2XPera0S6FvH5zsi4Mh9JV/vZ/YycZtDwvOQk=";
       };
 
       androidCrossConfig = {
@@ -150,7 +150,7 @@ let
           version = "3.0.0";
           src = sdkSrc;
           cargoRoot = ".";
-          hash = "sha256-B2SKATWn0+wvPqBJULEiOsO/Mayh4d4H3ku6/vXJb0k=";
+          hash = "sha256-hWiuFZfuX76Rs7lSelV/vjqj9/ZUeB9tAIyIFC+3H4w=";
         };
         nativeBuildInputs = [
           rustPlatform.cargoSetupHook
@@ -183,13 +183,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-android";
-      version = "2026.5.1";
+      version = "2026.6.0";
 
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
         tag = "v${finalAttrs.version}-bwpm";
-        hash = "sha256-Q7P7ivgPOPTGzWy6xTJmiiE+kPfsB+KY2U4qXH/rqmI=";
+        hash = "sha256-JueJPhf74NJIJj0XWIuuNbJ57MYsZxX+kSGVBsk9rVM=";
       };
 
       gradleBuildTask = ":app:assembleFdroidRelease";
@@ -233,6 +233,8 @@ let
         localSdk=true
         gitHubToken=
         EOF
+        find . -name "*.lockfile" -delete
+        substituteInPlace build.gradle.kts           --replace-fail "lockMode.set(LockMode.STRICT)" "lockMode.set(LockMode.LENIENT)" 
         if [[ -n "''${IN_GRADLE_UPDATE_DEPS:-}" ]]; then
           gradleFlagsArray+=(
             "-Dhttp.proxyHost=$MITM_CACHE_HOST"
@@ -244,6 +246,11 @@ let
         substituteInPlace gradle/libs.versions.toml \
           --replace-fail 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version.ref = "bitwardenSdk" }' 'bitwarden-sdk = { module = "com.bitwarden:sdk-android", version = "LOCAL" }'
         cat >> build.gradle.kts <<'EOF'
+        buildscript.configurations.all { resolutionStrategy.deactivateDependencyLocking() }
+        allprojects {
+            buildscript.configurations.all { resolutionStrategy.deactivateDependencyLocking() }
+            configurations.all { resolutionStrategy.deactivateDependencyLocking() }
+        }
         val nixBootstrap by configurations.creating
         dependencies {
             nixBootstrap("org.jetbrains.kotlin:kotlin-stdlib:2.2.10")
@@ -330,7 +337,15 @@ let
                 configurations.detachedConfiguration(core115).apply {
                     isTransitive = false
                 }.resolve()
-                buildscript.configurations.getByName("classpath").resolve()
+                buildscript.configurations.getByName("classpath").apply {
+                    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-stdlib:2.3.21")
+                    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-reflect:2.3.21")
+                    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-stdlib:2.3.20")
+                    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-reflect:2.3.20")
+                    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-stdlib:2.3.0")
+                    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
+                    resolutionStrategy.deactivateDependencyLocking()
+                }.resolve()
                 allprojects.forEach {
                     it.buildscript.configurations.findByName("classpath")?.resolve()
                 }
