@@ -40,7 +40,7 @@ let
     buildJdk = jdk17_headless;
 
     patches = [
-      ./0001-always-show-vanadium.patch # TODO: test
+      #./0001-always-show-vanadium.patch # TODO: test
       (fetchpatch {
         name = "Do not reserve space for an icon in settings list";
         url = "https://github.com/GrapheneOS/AppStore/pull/395.patch";
