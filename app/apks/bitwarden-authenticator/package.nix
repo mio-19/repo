@@ -29,17 +29,17 @@ let
 
       gradle = gradle_9_4_1;
 
-      # https://github.com/bitwarden/android/blob/v2026.5.1-bwa/gradle/libs.versions.toml#L33 bitwardenSdk = "3.0.0-7126-025e5d85"
+      # https://github.com/bitwarden/android/blob/v2026.6.0-bwa/gradle/libs.versions.toml#L33 bitwardenSdk = "3.0.0-7338-5bdc976f"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
-        rev = "025e5d85";
-        hash = "sha256-RVQcnV/w8oi1mQTGC2TzGcT+61kVsACL3yX9RhRDUOI=";
+        rev = "5bdc976f";
+        hash = "sha256-MDfunieTKD7LEQZGit/rSkGaaT/0OfciFUhjaL6Wquw=";
       };
 
       sdkSrcLock = fetchurl {
         url = "${sdkSrc.meta.homepage}/raw/${sdkSrc.rev}/Cargo.lock";
-        hash = "sha256-oXV12GEanTUjXsruDmgowyNCQRQVfaw6R2icNcQ9+so=";
+        hash = "sha256-JW7E2E2XPera0S6FvH5zsi4Mh9JV/vZ/YycZtDwvOQk=";
       };
 
       androidCrossConfig = {
@@ -150,7 +150,7 @@ let
           version = "3.0.0";
           src = sdkSrc;
           cargoRoot = ".";
-          hash = "sha256-B2SKATWn0+wvPqBJULEiOsO/Mayh4d4H3ku6/vXJb0k=";
+          hash = "sha256-hWiuFZfuX76Rs7lSelV/vjqj9/ZUeB9tAIyIFC+3H4w=";
         };
         nativeBuildInputs = [
           rustPlatform.cargoSetupHook
@@ -183,13 +183,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-authenticator";
-      version = "2026.5.1";
+      version = "2026.6.0";
 
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
         tag = "v${finalAttrs.version}-bwa";
-        hash = "sha256-Q7P7ivgPOPTGzWy6xTJmiiE+kPfsB+KY2U4qXH/rqmI=";
+        hash = "sha256-JueJPhf74NJIJj0XWIuuNbJ57MYsZxX+kSGVBsk9rVM=";
       };
 
       gradleBuildTask = ":authenticator:assembleRelease";
@@ -229,6 +229,8 @@ let
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
 
         # Use locally built sdk-internal artifact instead of private GitHub Packages.
+        find . -name "*.lockfile" -delete || true
+        substituteInPlace build.gradle.kts --replace-fail "lockMode.set(LockMode.STRICT)" "" || true
         cat > user.properties <<EOF
         localSdk=true
         gitHubToken=
