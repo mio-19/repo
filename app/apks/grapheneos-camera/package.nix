@@ -52,6 +52,11 @@ let
         url = "https://github.com/GrapheneOS/Camera/pull/553.patch";
         hash = "sha256-QU/69Ugl8BQhwoYcs1izA9reRqcUi0/6sX8YzPr9yMg=";
       })
+      (fetchpatch {
+        name = "PR 639";
+        url = "https://github.com/GrapheneOS/Camera/pull/639.patch";
+        hash = "sha256-X7grvxGsBO09+eVDt9MjfyKK/6pKaSS6ysTLzsvRxcw=";
+      })
     ];
 
     postPatch = ''
