@@ -23,13 +23,13 @@ let
 
   appPackage = gradle_9_5_1.stdenv.mkDerivation (finalAttrs: {
     pname = "nextcloud-android";
-    version = "34.0.0";
+    version = "34.0.1";
 
     src = fetchFromGitHub {
       owner = "nextcloud";
       repo = "android";
       tag = "stable-${finalAttrs.version}";
-      hash = "sha256-K25YL5tlmDNWYmHz1UVkj3sewFI909odaRsoPw5k9kA=";
+      hash = "sha256-M+XbB35eNgMFGvoPaIxKMqfgen/BUwdtjwJDwdj/RiI=";
     };
 
     patches = [

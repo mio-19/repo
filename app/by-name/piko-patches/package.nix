@@ -38,13 +38,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "piko-patches";
-  version = "3.6.0";
+  version = "3.7.0";
 
   src = fetchFromGitHub {
     owner = "crimera";
     repo = "piko";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-H92wpOkpcc594N7PiOGynbPjyE7wxiQoVh5xq9SuFQw=";
+    hash = "sha256-qLgcZcMLlOFVo7gBnRbuAICSC12r00keRE/biMqPRm4=";
   };
 
   sourceRoot = "source";
@@ -69,7 +69,7 @@ stdenv.mkDerivation (finalAttrs: {
     chmod -R u+w "$root/multidexlib2"
 
     substituteInPlace "$sourceRoot/gradle/libs.versions.toml" \
-      --replace-fail 'morphe-patches-library = "1.2.0"' 'morphe-patches-library = "1.3.1"'
+      --replace-fail 'morphe-patches-library = "1.4.1"' 'morphe-patches-library = "1.3.1"'
 
     patch -d "$sourceRoot" -p0 < ${./settings.gradle.kts.patch}
 

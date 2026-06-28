@@ -22,10 +22,9 @@
    "pom": "sha256-dOFjsZNfBKOwrvi2ibW/rRBq1bzSjj1YJLGrmbQ1+qA=",
    "jar": "sha256-5rip/3raCEEZixjeLW/ZNfH4dU08hLjo49wYQGSNWV0="
   },
-  "nextcloud#android-library/2.24.0": {
-   "module": "sha256-InZSvp/zFMUg8FXQAzi2kVpdEY26XUr4eFqEUs3sDwc=",
-   "pom": "sha256-9v5daOCtGi0SK367kPk5kYjWG+LM/aalcFAJLITQgds=",
-   "aar": "sha256-+cc3k4KPbYGIgIaKD66RavT9gi5eLhqcnvnbogOoh1g="
+  "nextcloud#android-library/rc-2.24.1-1": {
+   "module": "sha256-fX4BPzk65qCjfDy5Doa861gkcB4cRNE/ffC3cIRiGmk=",
+   "pom": "sha256-3ZztMFX3/KiFNgYVxCs8mginP1UDg+66qiIN90eqt0M="
   },
   "nextcloud-deps#qrcodescanner/0.1.2.4": {
    "module": "sha256-+90Ty/PwKIoGNgLQ7/g1cgOfjmI2Eldto+EKSTScYKk=",
@@ -71,11 +70,19 @@
   "nextcloud/android-common/ui/0.33.2/ui-0.33.2": {
    "aar": "sha256-5BZS++rVQtpSwJ3tpWt5Krea1UIIukV3xBhm+5OGRWA="
   },
-  "nextcloud/android-library/2.24.0/android-library-2.24.0": {
-   "aar": "sha256-+cc3k4KPbYGIgIaKD66RavT9gi5eLhqcnvnbogOoh1g="
+  "nextcloud/android-library/rc-2.24.1-1/android-library-rc-2.24.1-1": {
+   "aar": "sha256-DvTO9DVhIIfoGHm3zTg2XycNJonitlDrSUhSdRuWDF4="
   },
   "tmurakami#dexopener/2.0.5": {
    "pom": "sha256-a6G1rGVGjVxleOM00ypx8ZMGw+4QJeV5n0bZsnXvkpU="
+  },
+  "nextcloud#android-library/2.24.0": {
+   "module": "sha256-InZSvp/zFMUg8FXQAzi2kVpdEY26XUr4eFqEUs3sDwc=",
+   "pom": "sha256-9v5daOCtGi0SK367kPk5kYjWG+LM/aalcFAJLITQgds=",
+   "aar": "sha256-+cc3k4KPbYGIgIaKD66RavT9gi5eLhqcnvnbogOoh1g="
+  },
+  "nextcloud/android-library/2.24.0/android-library-2.24.0": {
+   "aar": "sha256-+cc3k4KPbYGIgIaKD66RavT9gi5eLhqcnvnbogOoh1g="
   }
  },
  "https://maven.google.com": {
@@ -5627,6 +5634,9 @@
    "jar": "sha256-Ap278Ez7DWolB+t6WnzDZNqrO/3MmecaadAial0AOg0=",
    "pom": "sha256-Eeaf3NdwtrJLFFmoV7lrM1E6bhgIiAQf4cM0vgNX9rE="
   },
+  "com/google/guava#guava/33.6.0-android": {
+   "jar": "sha256-lTLKm6is60zSBnFx+YHHmZiLf1hE4+J0gRo7t1cDS8Q="
+  },
   "io/coil-kt#coil/2.7.0": {
    "module": "sha256-h4Ui/R+Sn2Yd/ERZ6Te/dLUULLoywWAo97zRZa9vJwI=",
    "pom": "sha256-BOKKDSEa11YYrRGkQNmElFbFK3QVbVFmvVRZ8xWEjgg=",
@@ -5654,9 +5664,6 @@
   },
   "org/jetbrains/kotlinx#kotlinx-serialization-core/1.11.0": {
    "jar": "sha256-Xw0W3F0IA7c+FLupBFUHVl0vp7AYbQ3DgkqUA6Bx0Hs="
-  },
-  "com/google/guava#guava/33.6.0-android": {
-   "jar": "sha256-lTLKm6is60zSBnFx+YHHmZiLf1hE4+J0gRo7t1cDS8Q="
   }
  }
 }
