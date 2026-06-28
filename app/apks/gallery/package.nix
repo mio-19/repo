@@ -30,7 +30,7 @@ let
 
   upstreamAllowlist = fetchurl {
     # https://github.com/google-ai-edge/gallery/blob/ff16cf71ca75dcf83072bd69546051d10c85039f/Android/src/app/src/main/java/com/google/ai/edge/gallery/ui/modelmanager/ModelManagerViewModel.kt#L86
-    # https://github.com/google-ai-edge/gallery/tree/ff16cf71ca75dcf83072bd69546051d10c85039f/model_allowlists
+    # https://github.com/google-ai-edge/gallery/tree/main/model_allowlists
     #url = "https://raw.githubusercontent.com/google-ai-edge/gallery/refs/heads/main/model_allowlists/${allowlistVersion}.json";
     url = "https://raw.githubusercontent.com/google-ai-edge/gallery/refs/heads/main/model_allowlists/1_0_15.json"; # 1.0.16 not yet added
     hash = "sha256-EMNpTi4RSvr8GsjKjVBJbGeYogf8f753q5nfGoU0kPk=";
