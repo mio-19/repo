@@ -1,7 +1,6 @@
 {
   agp-resolution,
   mk-apk-package,
-  overrides-fromsrc,
   gradle_9_4_1,
   lib,
   stdenv,
@@ -11,7 +10,6 @@
   unzip,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  overrides-fromsrc-updated,
   writeShellScript,
   _experimental-update-script-combinators,
   nix-update-script,
