@@ -30,14 +30,14 @@ let
 
   gradle = gradle_7_2;
 
-  version = "unstable-2026-01-24";
-  rev = "556ca6740ce1c2171db6bd028de6690bc7094453";
+  version = "unstable-2026-06-28";
+  rev = "b10f3b5";
 
   src = fetchgit {
     url = "https://github.com/nspire-emus/firebird.git";
     inherit rev;
     fetchSubmodules = true;
-    hash = "sha256-JOKz9nKPxP/rE1JQLY6VR+PduGEM0sXBBwT5Mk65Na0=";
+    hash = "sha256-RwzQqadYcqwAoY1VvsCgJ88KovttmQmu9oO3do8OtYY=";
   };
 
   qtArchiveBaseUrl = "https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5152/qt.qt5.5152.android";
@@ -166,11 +166,6 @@ let
         name = "[Mobile UI] Introduce separate keypad fill modes (#297)";
         url = "https://github.com/nspire-emus/firebird/pull/298.diff";
         hash = "sha256-pJf3nUJ3BbbCOx+yvUtchfzts0dbCMaa3essTDcbB4o=";
-      })
-      (fetchpatch {
-        name = "[Android] Simple haptic feedback";
-        url = "https://github.com/nspire-emus/firebird/pull/362.diff";
-        hash = "sha256-ls/cC0dVetjYrMAi1HHGZBiz4b9R4kk+98ak6v2c6kU=";
       })
     ];
 
