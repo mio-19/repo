@@ -193,10 +193,12 @@ def get_latest_git_commit_url(url):
         pass
     return None
 
-def resolve_version(rev, content):
+def resolve_version(rev, content, src_start=-1):
     vars = {}
-    for k, v in re.findall(r'([a-zA-Z0-9_-]+)\s*=\s*"([^"]+)";', content):
-        vars[k] = v
+    for match in re.finditer(r'([a-zA-Z0-9_-]+)\s*=\s*"([^"]+)";', content):
+        if src_start != -1 and match.start() > src_start:
+            continue
+        vars[match.group(1)] = match.group(2)
 
     
     if rev in vars:
@@ -271,7 +273,7 @@ def main():
                     owner = owner_m.group(1)
                     repo = repo_m.group(1)
                     current_rev = rev_m.group(1) or rev_m.group(2) or rev_m.group(3)
-                    current_rev = resolve_version(current_rev, content)
+                    current_rev = resolve_version(current_rev, content, git_match.start())
                     
                     domain = "github.com"
                     if forge == "GitLab":
@@ -289,7 +291,7 @@ def main():
                 if url_m and rev_m:
                     url = url_m.group(1) if url_m.group(1) else url_m.group(2)
                     current_rev = rev_m.group(1) or rev_m.group(2) or rev_m.group(3)
-                    current_rev = resolve_version(current_rev, content)
+                    current_rev = resolve_version(current_rev, content, fetchgit_match.start())
                     name_display = f"{pkg} (fetchgit {url})"
                     
                     gh_m = re.search(r'github\.com/([^/]+)/([^/.]+)(?:\.git)?', url)
