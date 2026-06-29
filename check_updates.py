@@ -196,8 +196,7 @@ def get_latest_git_commit_url(url):
 def resolve_version(rev, content):
     vars = {}
     for k, v in re.findall(r'([a-zA-Z0-9_-]+)\s*=\s*"([^"]+)";', content):
-        if k not in vars:
-            vars[k] = v
+        vars[k] = v
 
     
     if rev in vars:
