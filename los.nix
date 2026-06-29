@@ -124,7 +124,7 @@ in
     };
   };
   config = {
-    buildDateTime = 1782455250;
+    buildDateTime = 1782736653;
     flavor = "lineageos";
     microg.enable = lib.mkDefault true;
     apps.fdroid.enable = true;
