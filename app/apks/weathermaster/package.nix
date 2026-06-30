@@ -13,13 +13,13 @@
 let
   appPackage = stdenv.mkDerivation (finalAttrs: {
     pname = "weathermaster";
-    version = "3.5.1";
+    version = "3.6.0";
 
     src = fetchFromGitHub {
       owner = "PranshulGG";
       repo = "WeatherMaster";
       tag = "v${finalAttrs.version}";
-      hash = "sha256-iBRxejG+HGZ4Sfj8lfUTTcgHsuZdbCS2prn3d0OKcqE=";
+      hash = "sha256-yLV5HUQYDJ9Al62XV0a60k6EYhnY/pS6dhV/CStQV+o=";
     };
     patches = [ ];
 

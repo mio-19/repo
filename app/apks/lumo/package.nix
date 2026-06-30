@@ -10,7 +10,7 @@
   androidSdkBuilder,
 }:
 let
-  version = "1.5.4-nogms";
+  version = "2.0.0-nogms";
 
   src = fetchFromGitHub {
     owner = "ProtonLumo";
