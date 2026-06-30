@@ -131,6 +131,59 @@ let
         ];
       };
 
+      spiceCargoDeps = rustPlatform.fetchCargoVendor {
+        pname = "haven-spice-transport-jni-libs";
+        inherit (finalAttrs0) version src;
+        cargoRoot = "spice-kotlin/rust";
+        hash = "sha256-JUJ9vDrCgsCtVEkLdV86qJqfOVKTWq3VbdCVZFojEeM=";
+      };
+
+      mkSpiceTransportJniLib =
+        {
+          crossPkgs,
+          rustTarget,
+          abi,
+        }:
+        crossPkgs.rustPlatform.buildRustPackage {
+          pname = "haven-spice-transport-jni-lib-${abi}";
+          inherit (finalAttrs0) version src;
+
+          sourceRoot = "${finalAttrs0.src.name}/spice-kotlin/rust";
+          cargoDeps = spiceCargoDeps;
+
+          CARGO_BUILD_TARGET = rustTarget;
+          doCheck = false;
+
+          env = {
+            ANDROID_HOME = androidSdkRoot;
+            ANDROID_SDK_ROOT = androidSdkRoot;
+            ANDROID_NDK_ROOT = androidNdkRoot;
+            ANDROID_NDK_HOME = androidNdkRoot;
+          };
+
+          installPhase = ''
+            runHook preInstall
+            install -Dm755 target/${rustTarget}/release/libspice_transport.so               "$out/${abi}/libspice_transport.so"
+            runHook postInstall
+          '';
+        };
+
+      spiceTransportJniLibs = pkgs.symlinkJoin {
+        name = "haven-spice-transport-jni-libs";
+        paths = [
+          (mkSpiceTransportJniLib {
+            crossPkgs = aarch64AndroidPkgs;
+            rustTarget = "aarch64-linux-android";
+            abi = "arm64-v8a";
+          })
+          (mkSpiceTransportJniLib {
+            crossPkgs = x86_64AndroidPkgs;
+            rustTarget = "x86_64-linux-android";
+            abi = "x86_64";
+          })
+        ];
+      };
+
       prepareXMobile = replacement: ''
         cp -R ${xMobileSrc} x-mobile
         chmod -R u+w x-mobile
@@ -324,14 +377,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.60.7";
+      version = "5.62.0";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-bzclU0zztBBde+2VVzlGsjfPzQvMwN81AYBPcVXujso=";
+        hash = "sha256-qcx6vtSCcFSostgIhtvyhIfSyK5BZXfsodW/uUXiS8w=";
       };
 
       patches = [
@@ -340,6 +393,7 @@ let
         # Build the Rust JNI libraries in Nix instead of invoking cargo-ndk from Gradle.
         ./skip-gradle-rdp-native-build.patch
         ./skip-gradle-rclone-native-build.patch
+        ./skip-gradle-spice-native-build.patch
       ];
 
       postPatch = ''
@@ -411,6 +465,9 @@ let
 
         mkdir -p rdp-kotlin/jniLibs
         cp -r ${rdpTransportJniLibs}/. rdp-kotlin/jniLibs/
+
+        mkdir -p spice-kotlin/jniLibs
+        cp -r ${spiceTransportJniLibs}/. spice-kotlin/jniLibs/
 
         mkdir -p rclone-android/jniLibs
         cp -r ${rcloneTransportJniLibs}/jniLibs/. rclone-android/jniLibs/
