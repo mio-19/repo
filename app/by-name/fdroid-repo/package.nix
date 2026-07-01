@@ -64,7 +64,6 @@ let
     "gallery"
 
     # need to update golang hash for darwin:
-    "nekobox-for-android"
 
     # need to update npm lock for darwin:
     "pdfviewer"
