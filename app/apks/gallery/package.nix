@@ -119,6 +119,18 @@ let
           cp ${src} $out
           chmod +x $out
         '';
+      "com.google.protobuf:protoc:4.26.1"."protoc-4.26.1-osx-aarch_64.exe" =
+        src:
+        runCommand "protoc-4.26.1-osx-aarch_64.exe" { } ''
+          cp ${src} $out
+          chmod +x $out
+        '';
+      "com.google.protobuf:protoc:4.26.1"."protoc-4.26.1-osx-x86_64.exe" =
+        src:
+        runCommand "protoc-4.26.1-osx-x86_64.exe" { } ''
+          cp ${src} $out
+          chmod +x $out
+        '';
     };
     buildJdk = jdk21_headless;
 
