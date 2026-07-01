@@ -61,7 +61,6 @@ let
     "duolingo-hoodles"
     "instagram-brosssh"
     "twitter-piko"
-    "gallery"
 
     # need to update golang hash for darwin:
 
