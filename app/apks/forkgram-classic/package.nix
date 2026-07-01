@@ -32,7 +32,7 @@ let
 in
 buildGradlePackage rec {
   pname = "forkgram-classic";
-  version = "12.8.7.0";
+  version = "12.8.8.0";
 
   gradle = gradle_8_14_4;
 
@@ -42,9 +42,9 @@ buildGradlePackage rec {
     tag = version;
     hash =
       if stdenv.isDarwin then
-        "sha256-3i5OvMXC6Omn0D5Cu1BSHh2sAH/IpL6ECmAuu4QwX54="
+        "sha256-+W1wCi4p1244iXsJ+SqGYToTAP024Ly1VYUqhJrV7gQ="
       else
-        "sha256-KEx/KoF7zis4ZixUHb4mE3+iu3JbgPnoDAjfXyB9M88=";
+        "sha256-aMOolUDDPa2f0IGs5PMaQ59gB644GpeNj/BQsURq/W8=";
     fetchSubmodules = true;
   };
 
