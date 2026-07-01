@@ -88,6 +88,13 @@ buildGradlePackage rec {
         substituteInPlace gradle.properties \
           --replace-fail "F_DROID=0" "F_DROID=1"
 
+        if [ "$(uname -s)" = "Darwin" ]; then
+          substituteInPlace TMessagesProj/jni/build_dav1d_clang.sh \
+            TMessagesProj/jni/build_ffmpeg_clang.sh \
+            TMessagesProj/jni/build_libvpx_clang.sh \
+            --replace-warn "linux-x86_64" "darwin-x86_64"
+        fi
+
         cat >> build.gradle << 'EOF'
     allprojects {
         afterEvaluate {
