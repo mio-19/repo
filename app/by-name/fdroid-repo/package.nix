@@ -87,7 +87,6 @@ let
 
     "sunup" # Internal compiler error. See log for more details
     "ytdlnis" # fails on darwin with 404 for newpipeextractor
-    "forkgram-classic" # hash mismatch on darwin
   ];
 
   excludedApkNames = [
