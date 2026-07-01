@@ -7,7 +7,7 @@
     android-nixpkgs = {
       #url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
-      url = "github:tadfisher/android-nixpkgs/2026-06-29-stable";
+      url = "github:tadfisher/android-nixpkgs/2026-06-26-stable";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
@@ -165,12 +165,14 @@
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
             patches = [
-              # in staging, not nixpkgs-unstable yet
-              (fetchpatch {
-                name = "rust: 1.95.0 -> 1.96.0";
-                url = "https://github.com/NixOS/nixpkgs/pull/525279.diff";
-                hash = "sha256-bnaT7TKe/yz+7L9xZSSIubuP3YWnIpcKHrX4qYzRGGc=";
-              })
+              /*
+                # in staging, not nixpkgs-unstable yet
+                (fetchpatch {
+                  name = "rust: 1.95.0 -> 1.96.0";
+                  url = "https://github.com/NixOS/nixpkgs/pull/525279.diff";
+                  hash = "sha256-bnaT7TKe/yz+7L9xZSSIubuP3YWnIpcKHrX4qYzRGGc=";
+                })
+              */
               /*
                 # already in nixpkgs-unstable
                 (fetchpatch {
@@ -239,10 +241,10 @@
                 })
               */
             ];
-            postPatch = ''
-              # workaround for faulty applyPatches which doesn't work with renaming files
-              mv pkgs/development/compilers/rust/1_95.nix pkgs/development/compilers/rust/1_96.nix
-            '';
+            #postPatch = ''
+            #  # workaround for faulty applyPatches which doesn't work with renaming files
+            #  mv pkgs/development/compilers/rust/1_95.nix pkgs/development/compilers/rust/1_96.nix
+            #'';
           };
           nixpkgsSrc2 = applyPatches {
             src = nixpkgsSrc;

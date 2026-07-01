@@ -32,6 +32,7 @@ mkMavenPackageWithLock rec {
 
   installPhase = ''
     runHook preInstall
+    # retry
 
     mkdir -p "$out"
     cp pom.xml "$out/guava-parent-33.3.1-jre.pom"
