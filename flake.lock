@@ -11,16 +11,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1782508747,
-        "narHash": "sha256-+9kzquDl4irt8RgHhm2ndWFFBKD3CmcFmIUSUtdZ/HI=",
+        "lastModified": 1782854939,
+        "narHash": "sha256-LMGvN9MIIG/C8mEO6WIDeZRZeGUeslEAVTuyg2hTyZ4=",
         "owner": "tadfisher",
         "repo": "android-nixpkgs",
-        "rev": "7cfc879f6d32089b2a3a317d5739cd9f322033a8",
+        "rev": "9aa5d80e604d59fddb9fd9d4fd73813a3ebd9c8e",
         "type": "github"
       },
       "original": {
         "owner": "tadfisher",
-        "ref": "2026-06-26-stable",
+        "ref": "2026-06-30-stable",
         "repo": "android-nixpkgs",
         "type": "github"
       }
@@ -120,11 +120,11 @@
         "nixpkgs-lib": "nixpkgs-lib"
       },
       "locked": {
-        "lastModified": 1778716662,
-        "narHash": "sha256-m1Yf0wZ8j1OHjTc2UwHwyQRSnNeSgLJOd7q5Y45hzi4=",
+        "lastModified": 1782949081,
+        "narHash": "sha256-vp6Y/Grm98ESt6ceOkWiHWyZRDV3J1RID4w+6NWK9yA=",
         "owner": "hercules-ci",
         "repo": "flake-parts",
-        "rev": "f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb",
+        "rev": "17c9d6cdfc60c64f4ee8d306f9bc0b4ccb51481e",
         "type": "github"
       },
       "original": {
@@ -332,11 +332,11 @@
     },
     "nixpkgs-lib": {
       "locked": {
-        "lastModified": 1777168982,
-        "narHash": "sha256-GOkGPcboWE9BmGCRMLX3worL4EMnsnG8MyKmXNeYuhQ=",
+        "lastModified": 1782614948,
+        "narHash": "sha256-ePjCwr1sNm9NYUqywL7QfK3JnlS015msC+eBu2zKlp8=",
         "owner": "nix-community",
         "repo": "nixpkgs.lib",
-        "rev": "f5901329dade4a6ea039af1433fb087bd9c1fe14",
+        "rev": "db3f255737b94216eb71cce308e2912cf6bc2d7c",
         "type": "github"
       },
       "original": {
@@ -347,34 +347,28 @@
     },
     "nixpkgs-python27": {
       "locked": {
-        "lastModified": 1782044651,
-        "narHash": "sha256-0dqP+gKPPJMdeTlxQ/Aqr7y69wHLHVQmymGp2vq0B00=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "c1613e51db95a25d33e7d41b525e765258a202db",
-        "type": "github"
+        "lastModified": 1782888529,
+        "narHash": "sha256-lMp6obekqwkVMlOAfgHGYduzN6QxVb8Ub8aSk0ezcqU=",
+        "rev": "677a406d412bda6608d291b5d4958afd02aabaab",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixos/26.05-small/nixos-26.05.3900.677a406d412b/nixexprs.tar.xz"
       },
       "original": {
-        "owner": "NixOS",
-        "ref": "nixos-26.05-small",
-        "repo": "nixpkgs",
-        "type": "github"
+        "type": "tarball",
+        "url": "https://nixos.org/channels/nixos-26.05-small/nixexprs.tar.xz"
       }
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1782175435,
-        "narHash": "sha256-EMzXKmnOtBQ2MnvpiNOm7E+kOMvdPrIKaeg52Tip2Uk=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "89570f24e97e614aa34aa9ab1c927b6578a43775",
-        "type": "github"
+        "lastModified": 1782821651,
+        "narHash": "sha256-OBddwHNJ+qxOHaKih0bE2PXJeZHlzUC8WOHZrUcnFwY=",
+        "rev": "e52c192be9d7b2c4bd4aed326c8731b35f8bb75c",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.11pre1025128.e52c192be9d7/nixexprs.tar.xz"
       },
       "original": {
-        "owner": "NixOS",
-        "ref": "nixpkgs-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
+        "type": "tarball",
+        "url": "https://nixos.org/channels/nixpkgs-unstable/nixexprs.tar.xz"
       }
     },
     "nur-xddxdd": {

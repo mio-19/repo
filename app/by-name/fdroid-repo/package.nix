@@ -61,10 +61,8 @@ let
     "duolingo-hoodles"
     "instagram-brosssh"
     "twitter-piko"
-    "gallery"
 
     # need to update golang hash for darwin:
-    "nekobox-for-android"
 
     # need to update npm lock for darwin:
     "pdfviewer"
@@ -86,6 +84,7 @@ let
     "joplin"
 
     "sunup" # Internal compiler error. See log for more details
+    "ytdlnis" # fails on darwin with 404 for newpipeextractor
   ];
 
   excludedApkNames = [

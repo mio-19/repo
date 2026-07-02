@@ -40,7 +40,7 @@ buildGradlePackage rec {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-aEUMQMdrydL1IwMG8yENTp0GgkXf07Z2MFGF//i7IUk=";
+    hash = if stdenv.isDarwin then "" else "sha256-aEUMQMdrydL1IwMG8yENTp0GgkXf07Z2MFGF//i7IUk=";
     fetchSubmodules = true;
   };
 
@@ -83,6 +83,13 @@ buildGradlePackage rec {
         echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
         substituteInPlace gradle.properties \
           --replace-fail "F_DROID=0" "F_DROID=1"
+
+        if [ "$(uname -s)" = "Darwin" ]; then
+          substituteInPlace TMessagesProj/jni/build_dav1d_clang.sh \
+            TMessagesProj/jni/build_ffmpeg_clang.sh \
+            TMessagesProj/jni/build_libvpx_clang.sh \
+            --replace-warn "linux-x86_64" "darwin-x86_64"
+        fi
 
         cat >> build.gradle << 'EOF'
     allprojects {
