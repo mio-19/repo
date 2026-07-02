@@ -4,6 +4,7 @@
   jdk11_headless,
   jdk17_headless,
   jdk21_headless,
+  gradle_8_11_20240905_1,
   gradle_8_11_20240906,
   gradle-from-source,
   mergeLock,
@@ -43,5 +44,6 @@ gradle-from-source {
       fi
     done
   '';
-  bootstrapGradle = gradle_8_11_20240906;
+  # bootstrap chain skip; standalone build still uses gradle_8_11_20240906
+  bootstrapGradle = gradle_8_11_20240905_1;
 }
