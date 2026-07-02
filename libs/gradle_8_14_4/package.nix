@@ -1,7 +1,7 @@
 {
   jdk17_headless,
   jdk21_headless,
-  gradle_8_14,
+  gradle_8_12_1,
   gradle-from-source,
   stdenv,
   gradle-packages,
@@ -21,5 +21,6 @@ else
     defaultJava = jdk21_headless;
     buildJdk = jdk17_headless;
     # nix run github:tadfisher/gradle2nix/53672d5e875235c34dee1a4c012b0269ba76e440  -- --gradle-wrapper=8.14
-    bootstrapGradle = gradle_8_14;
+    # bootstrap chain skip; standalone build still uses gradle_8_14
+    bootstrapGradle = gradle_8_12_1;
   }
