@@ -2,7 +2,7 @@
   jdk17_headless,
   jdk21_headless,
   gradle-from-source,
-  gradle_8_14_4,
+  gradle_9_0_0_M10,
   stdenv,
   gradle-packages,
 }:
@@ -21,7 +21,6 @@ else
     defaultJava = jdk21_headless;
     buildJdk = jdk17_headless;
     # nix run github:tadfisher/gradle2nix/v2 -- --gradle-dist=https://services.gradle.org/distributions/gradle-9.0.0-milestone-10-bin.zip
-    # bootstrap chain skip; standalone build still uses gradle_9_0_0_M10
-    bootstrapGradle = gradle_8_14_4;
+    bootstrapGradle = gradle_9_0_0_M10;
     configureOnDemand = true;
   }
