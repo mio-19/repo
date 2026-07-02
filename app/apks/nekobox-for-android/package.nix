@@ -60,7 +60,11 @@ let
         ];
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-4o9EGVYSmDXf2qpID+ZWUjDP6YSV6PzpE1URcfRzuj0=";
+        outputHash =
+          if stdenv.isDarwin then
+            "sha256-ixIJcbvXXcogQxZsMIieW0563AId2QDtv1WqhaWXTwA="
+          else
+            "sha256-4o9EGVYSmDXf2qpID+ZWUjDP6YSV6PzpE1URcfRzuj0=";
         dontConfigure = true;
         dontFixup = true;
 

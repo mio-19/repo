@@ -12,6 +12,7 @@
   jq,
   writableTmpDirAsHomeHook,
   sources,
+  mergeLock,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -111,11 +112,26 @@ let
 
     sourceRoot = "${src.name}/Android/src";
 
-    lockFile = ./gradle.lock;
+    lockFile = mergeLock [
+      ./gradle.lock
+      ./more.gradle.lock
+    ];
     overrides = overrides-fromsrc-updated // {
       "com.google.protobuf:protoc:4.26.1"."protoc-4.26.1-linux-x86_64.exe" =
         src:
         runCommand "protoc-4.26.1-linux-x86_64.exe" { } ''
+          cp ${src} $out
+          chmod +x $out
+        '';
+      "com.google.protobuf:protoc:4.26.1"."protoc-4.26.1-osx-aarch_64.exe" =
+        src:
+        runCommand "protoc-4.26.1-osx-aarch_64.exe" { } ''
+          cp ${src} $out
+          chmod +x $out
+        '';
+      "com.google.protobuf:protoc:4.26.1"."protoc-4.26.1-osx-x86_64.exe" =
+        src:
+        runCommand "protoc-4.26.1-osx-x86_64.exe" { } ''
           cp ${src} $out
           chmod +x $out
         '';

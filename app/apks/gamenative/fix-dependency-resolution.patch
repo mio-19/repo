@@ -1,6 +1,6 @@
 --- a/app/build.gradle.kts
 +++ b/app/build.gradle.kts
-@@ -247,6 +247,10 @@
+@@ -369,6 +369,10 @@ dependencies {
      implementation(libs.datastore.preferences)
      implementation(libs.jetbrains.kotlinx.json)
      implementation(libs.kotlin.coroutines)
@@ -13,13 +13,13 @@
  
 --- a/gradle/libs.versions.toml
 +++ b/gradle/libs.versions.toml
-@@ -12,8 +12,8 @@
+@@ -12,8 +12,8 @@ espressoCore = "3.6.1" # https://mvnrepository.com/artifact/androidx.test.espres
  feature-delivery = "2.1.0" # https://mvnrepository.com/artifact/com.google.android.play/feature-delivery
  play-integrity = "1.6.0" # https://mvnrepository.com/artifact/com.google.android.play/integrity
  hiltNavigationCompose = "1.2.0" # https://mvnrepository.com/artifact/androidx.hilt/hilt-navigation-compose
--javasteam = "1.8.0.1-19-SNAPSHOT" # https://mvnrepository.com/artifact/in.dragonbra/javasteam
+-javasteam = "1.8.0.1-21-SNAPSHOT" # https://github.com/joshuatam/JavaSteam/tree/gamenative-latest
 -json = "1.8.0" # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json
-+javasteam = "1.8.0.1-18-20260407.035245-1" # https://mvnrepository.com/artifact/in.dragonbra/javasteam
++javasteam = "1.8.0.1-18-20260407.035245-1" # https://github.com/joshuatam/JavaSteam/tree/gamenative-latest
 +json = "1.8.1" # https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json
  junit = "4.13.2" # https://mvnrepository.com/artifact/junit/junit
  junitVersion = "1.2.1" # https://mvnrepository.com/artifact/androidx.test.ext/junit
