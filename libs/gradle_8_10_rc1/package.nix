@@ -3,7 +3,7 @@
   jdk11_headless,
   jdk17_headless,
   jdk21_headless,
-  gradle_8_10_20240724,
+  gradle_8_10_20240711,
   gradle-from-source,
 }:
 gradle-from-source {
@@ -38,5 +38,6 @@ gradle-from-source {
       fi
     done
   '';
-  bootstrapGradle = gradle_8_10_20240724;
+  # bootstrap chain skip; standalone build still uses gradle_8_10_20240724
+  bootstrapGradle = gradle_8_10_20240711;
 }
