@@ -4,6 +4,7 @@
   jdk11_headless,
   jdk17_headless,
   jdk21_headless,
+  gradle_8_11_20240906,
   gradle_8_11_20240911,
   gradle-from-source,
   mergeLock,
@@ -42,5 +43,6 @@ gradle-from-source {
         --replace-fail 'vendor = JvmVendorSpec.ADOPTIUM' ""
     '';
   gradleFlags = [ "-Dorg.gradle.ignoreBuildJavaVersionCheck=true" ];
-  bootstrapGradle = gradle_8_11_20240911;
+  # bootstrap chain skip; standalone build still uses gradle_8_11_20240911
+  bootstrapGradle = gradle_8_11_20240906;
 }
