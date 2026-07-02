@@ -3,6 +3,7 @@
   jdk11_headless,
   jdk17_headless,
   jdk21_headless,
+  gradle_8_2_bootstrap,
   gradle_8_3,
   gradle-from-source,
   mergeLock,
@@ -27,7 +28,8 @@ gradle-from-source {
   gradleFlags = [
     "-PbuildKotlinVersion=1.9.10"
   ];
-  bootstrapGradle = gradle_8_3;
+  # bootstrap chain skip; standalone build still uses gradle_8_3
+  bootstrapGradle = gradle_8_2_bootstrap;
   postPatch = ''
     for file in \
       build-logic-settings/build-environment/build.gradle.kts \
