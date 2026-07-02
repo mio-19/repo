@@ -4,7 +4,7 @@
   jdk11_headless,
   jdk17_headless,
   jdk21_headless,
-  gradle_8_9_rc2,
+  gradle_8_9_20240529,
   gradle-from-source,
 }:
 gradle-from-source {
@@ -39,5 +39,6 @@ gradle-from-source {
   '';
   # nix-shell -p javaPackages.compiler.openjdk11-bootstrap
   # nix run github:tadfisher/gradle2nix/v2  -- --gradle-wrapper=8.9-rc-2
-  bootstrapGradle = gradle_8_9_rc2;
+  # bootstrap chain skip; standalone build still uses gradle_8_9_rc2
+  bootstrapGradle = gradle_8_9_20240529;
 }
