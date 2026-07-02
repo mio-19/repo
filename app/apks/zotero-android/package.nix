@@ -28,7 +28,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "zotero-android";
-      version = "1.0.0-255";
+      version = "1.0.0-256";
 
       src = fetchFromGitHub {
         owner = "zotero";
