@@ -4,6 +4,7 @@
   jdk11_headless,
   jdk17_headless,
   jdk21_headless,
+  gradle_8_7_20240118_1,
   gradle_8_7_20240118_3,
   gradle-from-source,
   mergeLock,
@@ -22,7 +23,8 @@ gradle-from-source {
     jdk11_headless
     jdk17_headless
   ];
-  bootstrapGradle = gradle_8_7_20240118_3;
+  # bootstrap chain skip; standalone build still uses gradle_8_7_20240118_3
+  bootstrapGradle = gradle_8_7_20240118_1;
   postPatch = ''
     for file in \
       build-logic-settings/build-environment/build.gradle.kts \
