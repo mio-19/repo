@@ -67,6 +67,7 @@ in
     ./gos-apple.nix
     ./gos_adb_wireless_no_wifi.nix
     ./gos_advanced_power_menu.nix
+    ./gos_hide_carrier_info.nix
     ./gos_husky_high_emission_frequency.nix
     ./gos_lindroid.nix
     ./launcher.nix
