@@ -1,8 +1,8 @@
 diff --git a/app/src/main/kotlin/moe/rukamori/archivetune/MainActivity.kt b/app/src/main/kotlin/moe/rukamori/archivetune/MainActivity.kt
-index f761138..86bc584 100644
+index 3751dfd..4bad6df 100644
 --- a/app/src/main/kotlin/moe/rukamori/archivetune/MainActivity.kt
 +++ b/app/src/main/kotlin/moe/rukamori/archivetune/MainActivity.kt
-@@ -250,7 +250,6 @@ import moe.rukamori.archivetune.ui.component.LocalBottomSheetPageState
+@@ -252,7 +252,6 @@ import moe.rukamori.archivetune.ui.component.LocalBottomSheetPageState
  import moe.rukamori.archivetune.ui.component.LocalMenuState
  import moe.rukamori.archivetune.ui.component.MarkdownText
  import moe.rukamori.archivetune.ui.component.NetworkStatusBanner
@@ -10,7 +10,7 @@ index f761138..86bc584 100644
  import moe.rukamori.archivetune.ui.component.TopSearch
  import moe.rukamori.archivetune.ui.component.TvNavigationRail
  import moe.rukamori.archivetune.ui.component.rememberBottomSheetState
-@@ -1326,77 +1325,7 @@ class MainActivity : ComponentActivity() {
+@@ -1374,76 +1373,6 @@ class MainActivity : ComponentActivity() {
                          }
                      }
  
@@ -71,7 +71,7 @@ index f761138..86bc584 100644
 -                                        val launch = withContext(Dispatchers.IO) { dataStore[LaunchCountKey] ?: 0 }
 -                                        withContext(Dispatchers.IO) {
 -                                            dataStore.edit { prefs ->
--                                                prefs[RemindAfterKey] = launch + 10
+-                                                prefs[RemindAfterKey] = launch + 20
 -                                            }
 -                                        }
 -                                    } catch (e: Exception) {
@@ -84,8 +84,6 @@ index f761138..86bc584 100644
 -                        )
 -                    }
 -
--                    val currentTitleRes =
-+                                        val currentTitleRes =
+                     val currentTitleRes =
                          remember(navBackStackEntry) {
                              when (navBackStackEntry?.destination?.route) {
-                                 Screens.Home.route -> R.string.home

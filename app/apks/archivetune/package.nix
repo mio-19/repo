@@ -26,19 +26,19 @@ let
     s.cmake-3-22-1
   ]);
 
-  # https://github.com/koiverse/ArchiveTune/blob/v13.6.0/gradle/wrapper/gradle-wrapper.properties
+  # https://github.com/koiverse/ArchiveTune/blob/v13.7.0/gradle/wrapper/gradle-wrapper.properties
   gradle = gradle_9_4_1;
 
   appPackage = stdenv.mkDerivation (finalAttrs: {
     pname = "archivetune";
-    version = "13.6.0";
+    version = "13.7.0";
 
     src = fetchFromGitHub {
       owner = "koiverse";
       repo = "ArchiveTune";
       tag = "v${finalAttrs.version}";
       fetchSubmodules = true;
-      hash = "sha256-baKyOaqcBuG0dmn2Z0UUWHBHV7OrCcmkZt1mWLezWws=";
+      hash = "sha256-jVArqc3X1vxo883y3LMr95nW9M+12B8RquPRLFp70F4=";
     };
 
     patches = [

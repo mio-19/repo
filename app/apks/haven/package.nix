@@ -342,6 +342,7 @@ let
         let
           aarch64LinuxGnuCc = pkgs.pkgsCross.aarch64-multiplatform.stdenv.cc;
           x86_64LinuxGnuCc = pkgs.pkgsCross.gnu64.stdenv.cc;
+          armv7LinuxGnuCc = pkgs.pkgsCross.armv7l-hf-multiplatform.stdenv.cc;
         in
         pkgs.runCommand "haven-wayvnc-shim-toolchain" { } ''
           mkdir -p "$out/bin"
@@ -373,18 +374,32 @@ let
           EOF
           chmod +x "$out/bin/x86_64-linux-gnu-gcc"
           ln -s ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}strip "$out/bin/x86_64-linux-gnu-strip"
+
+          cat > "$out/bin/arm-linux-gnueabihf-gcc" <<'EOF'
+          #!${pkgs.runtimeShell}
+          args=()
+          for arg in "$@"; do
+            args+=("$arg")
+            if [ "$arg" = "-static" ]; then
+              args+=("-L${pkgs.pkgsCross.armv7l-hf-multiplatform.glibc.static}/lib" "-B${pkgs.pkgsCross.armv7l-hf-multiplatform.glibc.static}/lib")
+            fi
+          done
+          exec ${armv7LinuxGnuCc}/bin/${armv7LinuxGnuCc.targetPrefix}gcc "''${args[@]}"
+          EOF
+          chmod +x "$out/bin/arm-linux-gnueabihf-gcc"
+          ln -s ${armv7LinuxGnuCc}/bin/${armv7LinuxGnuCc.targetPrefix}strip "$out/bin/arm-linux-gnueabihf-strip"
         '';
     in
     {
       pname = "haven";
-      version = "5.66.3";
+      version = "5.68.3";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-ynnOhMrz8viyDaTGGI2ZQaaFaNns4xzhLDWHie2e2mY=";
+        hash = "sha256-Qw5nVWbNiD9gGHNXT7zVCkW5f/Hv9hkdgHesNtiYfPI=";
       };
 
       patches = [

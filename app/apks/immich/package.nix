@@ -4,7 +4,7 @@
   buildDartApplication,
   runCommand,
   fetchFromGitHub,
-  flutter335,
+  flutter344,
   git,
   jdk17_headless,
   curl,
@@ -12,7 +12,8 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   applyPatches,
-  gradle_8_13,
+  gradle_8_14_3,
+  zip,
 }:
 let
   appPackage =
@@ -20,7 +21,11 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
+        s.platforms-android-33
+        s.platforms-android-34
+        s.platforms-android-35
         s.platforms-android-36
+        s.build-tools-35-0-0
         s.build-tools-36-1-0
         s.ndk-27-0-12077973
         s.ndk-28-2-13676358
@@ -28,7 +33,17 @@ let
         s.cmake-3-31-6
       ]);
 
-      gradle = gradle_8_13;
+      gradle = gradle_8_14_3;
+
+      gradleZip =
+        runCommand "gradle-${gradle.version}-wrapper.zip"
+          {
+            nativeBuildInputs = [ zip ];
+          }
+          ''
+            cd ${gradle}/libexec/gradle
+            zip -qr $out .
+          '';
 
       pythonWithYaml = python3.withPackages (ps: [ ps.pyyaml ]);
       androidSdkRoot = "${androidSdk}/share/android-sdk";
@@ -40,9 +55,9 @@ let
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2Path}"
       ];
     in
-    buildDartApplication.override { dart = flutter335; } (finalAttrs: {
+    buildDartApplication.override { dart = flutter344; } (finalAttrs: {
       pname = "immich";
-      version = "2.7.5";
+      version = "3.0.1";
 
       src = applyPatches {
         src = fetchFromGitHub {
@@ -50,7 +65,7 @@ let
           repo = "immich";
           tag = "v${finalAttrs.version}";
           fetchSubmodules = true;
-          hash = "sha256-6EGJBt52SH9QKwBmaukyx71J3KeUK9UmMyQq2YPXvj8=";
+          hash = "sha256-wXKRsogYn2rrzBjstMBoBW7chF8xtxlrcrGE2C/J7iA=";
         };
         patches = [
           /*
@@ -94,8 +109,8 @@ let
           name:
           runCommand "flutter-sdk-${name}" { passthru.packageRoot = "."; } ''
             for path in \
-              '${flutter335}/packages/${name}' \
-              '${flutter335}/bin/cache/pkg/${name}'; do
+              '${flutter344}/packages/${name}' \
+              '${flutter344}/bin/cache/pkg/${name}'; do
               if [ -d "$path" ]; then
                 ln -s "$path" "$out"
                 break
@@ -116,7 +131,14 @@ let
         useBwrap = false;
       };
 
-      gradleUpdateTask = ":app:assembleRelease :home_widget:assembleRelease home_widget:extractReleaseAnnotations :home_widget:mapReleaseSourceSetPaths :home_widget:mapReleaseSourceSetPaths";
+      gradleUpdateTask = ":app:assembleRelease extractReleaseAnnotations";
+
+      gradleUpdateScript = ''
+        runHook preBuild
+        runHook preGradleUpdate
+        flutter build apk --release --no-pub --dart-define=cronetHttpNoPlay=true
+        runHook postGradleUpdate
+      '';
 
       dontDartBuild = true;
       dontDartInstall = true;
@@ -145,57 +167,31 @@ let
       ++ gradleCommonOpts;
 
       postPatch = ''
-        cp -LR ${flutter335} flutter-sdk
+        cp -LR ${flutter344} flutter-sdk
         chmod -R u+w flutter-sdk
         touch flutter-sdk/bin/cache/engine.realm # https://github.com/NixOS/nixpkgs/pull/500309#issuecomment-4192628176
-
-        cat > android/gradle-version-normalize.init.gradle << 'INIT_SCRIPT'
-        allprojects {
-          configurations.configureEach {
-            resolutionStrategy.eachDependency { details ->
-              if (details.requested.group == "androidx.appcompat" && details.requested.name == "appcompat") {
-                details.useVersion("1.7.0")
-              }
-              if (details.requested.group == "androidx.appcompat" && details.requested.name == "appcompat-resources") {
-                details.useVersion("1.7.0")
-              }
-              if (details.requested.group == "androidx.transition" && details.requested.name == "transition") {
-                details.useVersion("1.5.0")
-              }
-              if (details.requested.group == "androidx.media" && details.requested.name == "media") {
-                details.useVersion("1.1.0")
-              }
-              if (details.requested.group == "androidx.slidingpanelayout" && details.requested.name == "slidingpanelayout") {
-                details.useVersion("1.2.0")
-              }
-              if (details.requested.group == "androidx.exifinterface" && details.requested.name == "exifinterface") {
-                details.useVersion("1.3.7")
-              }
-              if (details.requested.group == "com.google.android.material" && details.requested.name == "material") {
-                details.useVersion("1.7.0")
-              }
-            }
-          }
-        }
-        INIT_SCRIPT
-
-        cat > android/gradlew << 'GRADLEW_SCRIPT'
-        #!/bin/sh
-        exec ${gradle}/bin/gradle -I "$PWD/gradle-version-normalize.init.gradle" "$@"
-        GRADLEW_SCRIPT
-        chmod +x android/gradlew
-
-        substituteInPlace android/build.gradle \
-          --replace-fail 'buildToolsVersion "36.0.0"' 'buildToolsVersion "36.1.0"'
 
         substituteInPlace android/app/build.gradle \
           --replace-fail "//f configurations.all {" "configurations.all {" \
           --replace-fail "//f     exclude group: 'com.google.android.gms'" "    exclude group: 'com.google.android.gms'" \
           --replace-fail "//f }" "}" \
-          --replace-fail "      signingConfig signingConfigs.release" ""
+          --replace-fail "signingConfig hasKeystore ? signingConfigs.release : signingConfigs.debug" "signingConfig signingConfigs.debug"
 
         substituteInPlace android/gradle.properties \
           --replace-fail "org.gradle.jvmargs=-Xmx4096M" "org.gradle.jvmargs=-Xmx8192M"
+
+        printf '%s\n' '#!/bin/sh' 'exec ${gradle}/bin/gradle "$@"' > android/gradlew
+        chmod +x android/gradlew
+
+        {
+          echo 'distributionBase=GRADLE_USER_HOME'
+          echo 'distributionPath=wrapper/dists'
+          echo "distributionUrl=file\://${gradleZip}"
+          echo 'networkTimeout=10000'
+          echo 'validateDistributionUrl=false'
+          echo 'zipStoreBase=GRADLE_USER_HOME'
+          echo 'zipStorePath=wrapper/dists'
+        } > android/gradle/wrapper/gradle-wrapper.properties
 
       '';
 
@@ -207,8 +203,8 @@ let
         echo "sdk.dir=${androidSdkRoot}" > android/local.properties
         echo "cmake.dir=${androidSdkRoot}/cmake/3.31.6" >> android/local.properties
         echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
-        echo "flutter.versionName=2.7.2" >> android/local.properties
-        echo "flutter.versionCode=3043" >> android/local.properties
+        echo "flutter.versionName=3.0.1" >> android/local.properties
+        echo "flutter.versionCode=3054" >> android/local.properties
       '';
 
       preBuild = ''
@@ -229,10 +225,16 @@ let
 
         if [[ -n "''${MITM_CACHE_HOST:-}" && -n "''${MITM_CACHE_PORT:-}" && -n "''${MITM_CACHE_CA:-}" ]]; then
           for artifact_url in \
+            https://dl.google.com/dl/android/maven2/androidx/appcompat/appcompat/1.2.0/appcompat-1.2.0.aar \
+            https://dl.google.com/dl/android/maven2/androidx/appcompat/appcompat-resources/1.2.0/appcompat-resources-1.2.0.aar \
+            https://dl.google.com/dl/android/maven2/androidx/transition/transition/1.4.1/transition-1.4.1.aar \
             https://dl.google.com/dl/android/maven2/androidx/room/room-ktx/2.5.0/room-ktx-2.5.0.aar \
             https://dl.google.com/dl/android/maven2/androidx/room/room-runtime/2.5.0/room-runtime-2.5.0.aar \
             https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite-framework/2.3.0/sqlite-framework-2.3.0.aar \
-            https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite/2.3.0/sqlite-2.3.0.aar
+            https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite/2.3.0/sqlite-2.3.0.aar \
+            https://dl.google.com/dl/android/maven2/androidx/profileinstaller/profileinstaller/1.3.1/profileinstaller-1.3.1.aar \
+            https://dl.google.com/dl/android/maven2/androidx/compose/remote/remote-creation-android/1.0.0-alpha14/remote-creation-android-1.0.0-alpha14.aar \
+            https://dl.google.com/dl/android/maven2/androidx/compose/remote/remote-creation/1.0.0-alpha14/remote-creation-1.0.0-alpha14.aar
           do
             ${curl}/bin/curl --silent --show-error --fail --location \
               --proxy "http://$MITM_CACHE_HOST:$MITM_CACHE_PORT" \
@@ -333,7 +335,7 @@ let
           if [ -n "$NATIVE_VIDEO_PLAYER_DIR" ]; then
             patched_native_video_player_dir="$(clone_dart_package "$NATIVE_VIDEO_PLAYER_DIR" native_video_player)"
             substituteInPlace "$patched_native_video_player_dir/android/build.gradle" \
-              --replace-fail '     implementation("androidx.media3:media3-ui:1.9.2")' \
+              --replace-warn '     implementation("androidx.media3:media3-ui:1.9.2")' \
                 "     implementation(\"androidx.media3:media3-ui:1.9.2\")
          implementation \"androidx.annotation:annotation:1.8.0\"
          compileOnly \"io.flutter:flutter_embedding_release:1.0.0-$flutter_engine_version\""
@@ -344,7 +346,7 @@ let
           if [ -n "$HOME_WIDGET_DIR" ]; then
             patched_home_widget_dir="$(clone_dart_package "$HOME_WIDGET_DIR" home_widget)"
             substituteInPlace "$patched_home_widget_dir/android/build.gradle" \
-              --replace-fail '    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+"' \
+              --replace-warn '    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+"' \
                 "    implementation \"org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+\"
         compileOnly \"io.flutter:flutter_embedding_release:1.0.0-$flutter_engine_version\""
             remap_dart_package_root "$HOME_WIDGET_DIR" "$patched_home_widget_dir"
@@ -371,8 +373,8 @@ let
 
           if ! grep -Fq "implementation project(':native_video_player')" android/app/build.gradle; then
             substituteInPlace android/app/build.gradle \
-              --replace-fail 'implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serialization_version"' \
-                $'implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$serialization_version"\n  implementation project(\x27:native_video_player\x27)\n  implementation project(\x27:home_widget\x27)'
+              --replace-fail '  implementation libs.kotlinx.serialization.json' \
+                $'  implementation libs.kotlinx.serialization.json\n  implementation project(\x27:native_video_player\x27)\n  implementation project(\x27:home_widget\x27)'
           fi
         fi
 
