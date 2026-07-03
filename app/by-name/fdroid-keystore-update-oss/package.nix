@@ -1,5 +1,5 @@
 {
-  fdroid-repo,
+  fdroid-repo-oss,
   writeShellScriptBin,
   jdk,
   androidSdkBuilder,
@@ -13,6 +13,6 @@ let
     ;
 in
 mkFdroidKeystoreUpdateScript {
-  name = "fdroid-keystore-update";
-  repoPath = "${fdroid-repo}";
+  name = "fdroid-keystore-update-oss";
+  repoPath = "${fdroid-repo-oss}";
 }

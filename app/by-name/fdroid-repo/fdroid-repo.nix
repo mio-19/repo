@@ -5,6 +5,7 @@
   repoVersion ? "unstable",
   repoName ? "Unofficial Repo",
   repoDescription ? "Unsigned F-Droid repository",
+  repoUrl ? "https://mio-19.github.io/fdroid-repo/repo",
 }:
 
 let
@@ -85,7 +86,7 @@ pkgs.stdenvNoCC.mkDerivation {
 
         echo "repo_name: ${repoName}" > config.yml
         echo "repo_description: ${repoDescription}" >> config.yml
-        echo "repo_url: https://mio-19.github.io/fdroid-repo/repo" >> config.yml
+        echo "repo_url: ${repoUrl}" >> config.yml
 
         runHook postBuild
   '';

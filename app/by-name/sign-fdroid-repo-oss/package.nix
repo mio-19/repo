@@ -1,5 +1,5 @@
 {
-  fdroid-repo,
+  fdroid-repo-oss,
   androidSdkBuilder,
   python3,
   dejavu_fonts,
@@ -20,13 +20,13 @@ let
         lib
         fdroidserver
         ;
-      iconFallbackScript = ./fdroid-repo-icon-fallback.py;
+      iconFallbackScript = ../sign-fdroid-repo/fdroid-repo-icon-fallback.py;
     })
     mkFdroidRepoSignScript
     ;
 in
 mkFdroidRepoSignScript {
-  name = "sign-fdroid-repo";
-  repoPath = "${fdroid-repo}";
-  defaultOut = "fdroid-repo-signed";
+  name = "sign-fdroid-repo-oss";
+  repoPath = "${fdroid-repo-oss}";
+  defaultOut = "fdroid-repo-oss-signed";
 }

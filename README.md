@@ -170,6 +170,12 @@ nix build .#fdroid-repo -o fdroid-repo
 # Unsigned APK staging at fdroid-repo/unsigned
 ```
 
+For a redistribution-safe subset (no patched proprietary APKs, no `License: Proprietary` apps), use [`fdroid-repo-oss`](./app/by-name/fdroid-repo-oss/README.md):
+
+```zsh
+nix build .#fdroid-repo-oss -o fdroid-repo-oss
+```
+
 ### Sign APKs and F-Droid repo with your key
 
 ```zsh
@@ -189,6 +195,16 @@ NIXPKGS_ALLOW_UNFREE=1 nix run --impure .#sign-fdroid-repo -- \
 ```
 
 Signed repo output is in `fdroid-repo-signed/repo`.
+
+OSS repo signing (see [fdroid-repo-oss guide](./app/by-name/fdroid-repo-oss/README.md)):
+
+```zsh
+nix build .#sign-fdroid-repo-oss -o sign-fdroid-repo-oss
+./sign-fdroid-repo-oss/bin/sign-fdroid-repo-oss my-release-key.jks \
+  --ks-pass password \
+  --repo-url https://YOUR_USER.github.io/fdroid-repo-oss/repo \
+  --out fdroid-repo-oss-signed
+```
 
 Alias behavior is automatic (no `--alias` flag):
 
@@ -218,6 +234,8 @@ If `--alias` is omitted, it auto-discovers APK package names from `.#fdroid-repo
 ```zsh
 nix run .#fdroid-keystore-update -- my-release-key.jks --ks-pass password
 ```
+
+For the OSS repo, use `.#fdroid-keystore-update-oss` instead (see [fdroid-repo-oss guide](./app/by-name/fdroid-repo-oss/README.md)).
 
 ## update
 
