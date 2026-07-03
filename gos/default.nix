@@ -129,6 +129,12 @@ in
     })
   ];
   source.dirs."packages/apps/Dialer".patches = [
+    (fetchpatch {
+      # use combined .diff: the 34-commit .patch series does not apply with GNU patch
+      name = "add automatic call recording + rework call recording for better testing";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_Dialer/pull/58.diff";
+      hash = "sha256-F2tOz11Cg/l06/upyW7sUIJMpnO0MmlVzKrFEWrL6JE=";
+    })
     /*
       # buggy
       # https://github.com/GrapheneOS/platform_packages_apps_Dialer/pull/48
@@ -138,6 +144,20 @@ in
         hash = "sha256-ceo+c99iyYeaweks1Hk/VYXl8pa3PMGtcbHcxOLRM4k=";
       })
     */
+  ];
+  source.dirs."packages/apps/Updater".patches = [
+    (fetchpatch {
+      name = "Implement support for out of band OTAs via file picker";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_Updater/pull/127.patch";
+      hash = "sha256-32bWUQovFdG7xwv49QoqdXFgbMWg2X2Qg7d81mbduik=";
+    })
+  ];
+  source.dirs."packages/services/Telecomm".patches = [
+    (fetchpatch {
+      name = "Telecom: allow Android Auto to resolve PhoneAccounts for SIM disambiguation";
+      url = "https://github.com/GrapheneOS/platform_packages_services_Telecomm/pull/25.patch";
+      hash = "sha256-7zj4CqgChIQQnVC86BUI101Z2MSgTjUsLt8+/k+HXCw=";
+    })
   ];
   source.dirs."packages/apps/AppCompatConfig".patches = [
   ];
