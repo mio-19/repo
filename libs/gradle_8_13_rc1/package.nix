@@ -3,7 +3,7 @@
   jdk11_headless,
   jdk17_headless,
   jdk21_headless,
-  gradle_8_13_M3,
+  gradle_8_13_M2,
   gradle-from-source,
 }:
 gradle-from-source {
@@ -19,7 +19,8 @@ gradle-from-source {
   ];
   # nix-shell -p javaPackages.compiler.openjdk17-bootstrap
   # nix run github:tadfisher/gradle2nix/53672d5e875235c34dee1a4c012b0269ba76e440  -- --gradle-wrapper=8.13-milestone-3
-  bootstrapGradle = gradle_8_13_M3;
+  # bootstrap chain skip; standalone build still uses gradle_8_13_M3
+  bootstrapGradle = gradle_8_13_M2;
   postPatch =
     let
       # grep -rl 'vendor = JvmVendorSpec.ADOPTIUM' . | sed 's/.*/"&"/'
