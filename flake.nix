@@ -209,13 +209,6 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/515614.patch";
                 hash = "sha256-lPg+NKhTJVCDLuuDaKF9o7evPxjcGxD9Gh/M1X3yqag=";
               })
-              /*
-                (fetchpatch {
-                  name = "maven_4: init at 4.0.0-rc5";
-                  url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
-                  hash = "sha256-sQdzgOlieIX0DMyJ7WXr9L7bDakGplEP79D+7EGbGWE=";
-                })
-              */
             ];
             #postPatch = ''
             #  # workaround for faulty applyPatches which doesn't work with renaming files
