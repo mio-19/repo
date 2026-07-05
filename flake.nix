@@ -174,14 +174,6 @@
                 })
               */
               /*
-                # already in nixpkgs-unstable
-                (fetchpatch {
-                  name = "Bootstrap rust";
-                  url = "https://github.com/NixOS/nixpkgs/pull/528074.diff";
-                  hash = "sha256-thDAiWCbe7MI6DKgAh/au9N1n637VBxBnv58B90rE/M=";
-                })
-              */
-              /*
                 # conflicts with maven4 patch
                 (fetchpatch {
                   name = "maven: provide default plugins per Maven version to buildMavenPackage";
@@ -208,14 +200,6 @@
                   url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
                   hash = "sha256-pU4AOx6najbNm5utBuiQ7kEaq40ZTpQT6PJ+1YcO1g8=";
                   excludes = [ "pkgs/by-name/op/opendataloader-pdf/package.nix" ];
-                })
-              */
-              /*
-                # already in nixpkgs-unstable
-                (fetchpatch {
-                  name = "flutter344: init at 3.44.2";
-                  url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/531252.patch";
-                  hash = "sha256-LF5OAnlT0WwxPCxOjhgeVbJUjNesJhCvNcTQ0SExdzc=";
                 })
               */
               /*
