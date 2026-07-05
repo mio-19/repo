@@ -63,6 +63,11 @@ in
           patches = [
             # from https://github.com/GrapheneOS/platform_packages_apps_Launcher3/pull/69.diff
             ./los-allapps-make-search-bar-look-good-https-github.com-G.patch
+            (fetchpatch {
+              name = "Move IDesktopMode to desktopmode.api";
+              url = "https://github.com/GrapheneOS/platform_packages_apps_Launcher3/commit/eacf5cd09f473bbd01bb6bdf3d0ae6296a44b7dc.diff";
+              hash = "sha256-PXwyBYBVL8VrVV2ZwuSMuWG7mY+YMmU/SKzH75UwHjc=";
+            })
           ]
           ++ lib.optionals (config.launcherVariant == "evox") [
             ./evox-launcher3-add-current-aconfig-flags.patch
