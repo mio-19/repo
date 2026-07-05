@@ -114,7 +114,7 @@
               inputs.robotnix.inputs
               // {
                 self = robotnixPatched;
-                nixpkgs = nixpkgs2;
+                inherit nixpkgs;
                 androidPkgs = android-nixpkgs;
               }
             )
