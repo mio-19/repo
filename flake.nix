@@ -114,7 +114,7 @@
               inputs.robotnix.inputs
               // {
                 self = robotnixPatched;
-                nixpkgs = nixpkgs2;
+                inherit nixpkgs;
                 androidPkgs = android-nixpkgs;
               }
             )
@@ -165,30 +165,6 @@
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
             patches = [
-              /*
-                # in staging, not nixpkgs-unstable yet
-                (fetchpatch {
-                  name = "rust: 1.95.0 -> 1.96.0";
-                  url = "https://github.com/NixOS/nixpkgs/pull/525279.diff";
-                  hash = "sha256-bnaT7TKe/yz+7L9xZSSIubuP3YWnIpcKHrX4qYzRGGc=";
-                })
-              */
-              /*
-                # already in nixpkgs-unstable
-                (fetchpatch {
-                  name = "Bootstrap rust";
-                  url = "https://github.com/NixOS/nixpkgs/pull/528074.diff";
-                  hash = "sha256-thDAiWCbe7MI6DKgAh/au9N1n637VBxBnv58B90rE/M=";
-                })
-              */
-              /*
-                # conflicts with maven4 patch
-                (fetchpatch {
-                  name = "maven: provide default plugins per Maven version to buildMavenPackage";
-                  url = "https://github.com/NixOS/nixpkgs/pull/527061.patch";
-                  hash = "sha256-9asBRe+7FtAZ/066/9OOTbQYt/sS9pYHe6G3xZhAP7U=";
-                })
-              */
               (fetchpatch {
                 name = "gradle: reduce keytool noise";
                 url = "https://github.com/NixOS/nixpkgs/pull/472580.patch";
@@ -200,22 +176,6 @@
                   name = "openjdk26: init at 26-ga";
                   url = "https://github.com/NixOS/nixpkgs/pull/506259.patch";
                   hash = "sha256-jjzVh6rOZ/wcLbR4SfOcjts9IUWt/GbQPZXRDveV+c4=";
-                })
-              */
-              /*
-                (fetchpatch {
-                  name = "maven: 3.9.12 -> 3.9.16";
-                  url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
-                  hash = "sha256-pU4AOx6najbNm5utBuiQ7kEaq40ZTpQT6PJ+1YcO1g8=";
-                  excludes = [ "pkgs/by-name/op/opendataloader-pdf/package.nix" ];
-                })
-              */
-              /*
-                # already in nixpkgs-unstable
-                (fetchpatch {
-                  name = "flutter344: init at 3.44.2";
-                  url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/531252.patch";
-                  hash = "sha256-LF5OAnlT0WwxPCxOjhgeVbJUjNesJhCvNcTQ0SExdzc=";
                 })
               */
               /*
@@ -233,18 +193,7 @@
                 url = "https://github.com/NixOS/nixpkgs/pull/515614.patch";
                 hash = "sha256-lPg+NKhTJVCDLuuDaKF9o7evPxjcGxD9Gh/M1X3yqag=";
               })
-              /*
-                (fetchpatch {
-                  name = "maven_4: init at 4.0.0-rc5";
-                  url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
-                  hash = "sha256-sQdzgOlieIX0DMyJ7WXr9L7bDakGplEP79D+7EGbGWE=";
-                })
-              */
             ];
-            #postPatch = ''
-            #  # workaround for faulty applyPatches which doesn't work with renaming files
-            #  mv pkgs/development/compilers/rust/1_95.nix pkgs/development/compilers/rust/1_96.nix
-            #'';
           };
           nixpkgsSrc2 = applyPatches {
             src = nixpkgsSrc;
