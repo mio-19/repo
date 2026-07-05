@@ -195,14 +195,6 @@
                 })
               */
               /*
-                (fetchpatch {
-                  name = "maven: 3.9.12 -> 3.9.16";
-                  url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
-                  hash = "sha256-pU4AOx6najbNm5utBuiQ7kEaq40ZTpQT6PJ+1YcO1g8=";
-                  excludes = [ "pkgs/by-name/op/opendataloader-pdf/package.nix" ];
-                })
-              */
-              /*
                 # work stopped
                 (fetchpatch {
                   name = "ant: build from source";
