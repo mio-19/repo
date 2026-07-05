@@ -3,6 +3,7 @@
   jdk11_headless,
   jdk17_headless,
   jdk21_headless,
+  gradle_8_9_20240529,
   gradle_8_9_rc2,
   gradle-from-source,
   mergeLock,
@@ -47,6 +48,7 @@ else
         fi
       done
     '';
-    bootstrapGradle = gradle_8_9_rc2;
+    # bootstrap chain skip; standalone build still uses gradle_8_9_rc2
+    bootstrapGradle = gradle_8_9_20240529;
     # nix run github:tadfisher/gradle2nix/v2 -- --gradle-wrapper=8.9-rc-2
   }

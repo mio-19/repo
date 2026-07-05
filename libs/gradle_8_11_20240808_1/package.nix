@@ -4,6 +4,7 @@
   jdk11_headless,
   jdk17_headless,
   jdk21_headless,
+  gradle_8_10,
   gradle_8_11_20240807,
   gradle-from-source,
   runCommand,
@@ -45,5 +46,6 @@ gradle-from-source {
       fi
     done
   '';
-  bootstrapGradle = gradle_8_11_20240807;
+  # bootstrap chain skip; standalone build still uses gradle_8_11_20240807
+  bootstrapGradle = gradle_8_10;
 }

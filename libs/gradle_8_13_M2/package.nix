@@ -3,7 +3,7 @@
   jdk11_headless,
   jdk17_headless,
   jdk21_headless,
-  gradle_8_12_1,
+  gradle_8_12_20241015,
   gradle-from-source,
 }:
 gradle-from-source {
@@ -19,7 +19,8 @@ gradle-from-source {
   ];
   # nix-shell -p javaPackages.compiler.openjdk17-bootstrap
   # nix run github:tadfisher/gradle2nix/53672d5e875235c34dee1a4c012b0269ba76e440  -- --gradle-wrapper=8.12.1
-  bootstrapGradle = gradle_8_12_1;
+  # bootstrap chain skip; standalone build still uses gradle_8_12_1
+  bootstrapGradle = gradle_8_12_20241015;
   postPatch = ''
     for file in \
       build-logic-settings/configuration-cache-compatibility/build.gradle.kts \

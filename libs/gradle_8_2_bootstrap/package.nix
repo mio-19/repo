@@ -4,6 +4,7 @@
   jdk17_headless,
   jdk21_headless,
   gradle_8_1,
+  gradle_8_1_rc4,
   gradle-from-source,
   mergeLock,
 }:
@@ -21,7 +22,8 @@ gradle-from-source {
     jdk11_headless
     jdk17_headless
   ];
-  bootstrapGradle = gradle_8_1;
+  # bootstrap chain skip; standalone build still uses gradle_8_1
+  bootstrapGradle = gradle_8_1_rc4;
   patches = [
     ./internal-integ-testing-bootstrap.patch
   ];
