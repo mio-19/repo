@@ -9,7 +9,6 @@ args@{
     ./gos
   ];
   advancedPowerMenu = false;
-  launcherVariant = "stock";
   allowAdbWirelessWithoutWifi = true;
   enableLindroid = false;
   enableDroidspaces = false;

@@ -62,6 +62,12 @@ fetch.git = "https://github.com/LineageOS/android_packages_apps_ExactCalculator.
 src.git = "https://github.com/LineageOS/android_packages_apps_Launcher3.git"
 src.branch = "lineage-23.2"
 fetch.git = "https://github.com/LineageOS/android_packages_apps_Launcher3.git"
+[lineage_launcher3_wip]
+src.git = "https://github.com/LineageOS/android_packages_apps_Launcher3.git"
+# https://review.lineageos.org/c/LineageOS/android_packages_apps_Launcher3/+/493267/2
+src.rev = "83b004393707ab3906be80fe4115c40896dc16ca"
+fetch.git = "https://github.com/LineageOS/android_packages_apps_Launcher3.git"
+
 [derpfest_launcher3]
 src.git = "https://github.com/DerpFest-AOSP/android_packages_apps_DerpLauncher.git"
 src.branch = "16.2"

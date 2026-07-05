@@ -9,7 +9,6 @@ args@{
     ./gos
   ];
   advancedPowerMenu = false;
-  launcherVariant = "stock";
   enableLindroid = false; # basic stuff works. systemd units launched. sddm black screen.
   enableDroidspaces = false;
   huskyHighEmissionFrequency = true;

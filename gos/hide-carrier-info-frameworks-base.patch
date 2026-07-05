@@ -1,0 +1,1055 @@
+diff --git a/core/java/android/app/ActivityThreadHooks.java b/core/java/android/app/ActivityThreadHooks.java
+index dfd34d0a9..677f54118 100644
+--- a/core/java/android/app/ActivityThreadHooks.java
++++ b/core/java/android/app/ActivityThreadHooks.java
+@@ -4,6 +4,7 @@ import android.annotation.Nullable;
+ import android.content.Context;
+ import android.content.pm.GosPackageState;
+ import android.content.pm.SrtPermissions;
++import android.ext.carrierinfo.HideCarrierInfo;
+ import android.ext.dcl.DynCodeLoading;
+ import android.location.HookedLocationManager;
+ import android.os.Bundle;
+@@ -42,6 +43,8 @@ class ActivityThreadHooks {
+ 
+         DynCodeLoading.handleAppBindFlags(flags[AppBindArgs.FLAGS_IDX_DYN_CODE_LOADING]);
+ 
++        HideCarrierInfo.handleAppBindFlags(flags[AppBindArgs.FLAGS_IDX_HIDE_CARRIER_INFO]);
++
+         return args;
+     }
+ 
+@@ -59,6 +62,7 @@ class ActivityThreadHooks {
+         if (!Process.isIsolated()) {
+             StorageScopesAppHooks.maybeEnable(state);
+             ContactScopes.maybeEnable(ctx, state);
++            HideCarrierInfo.onGosPackageStateChanged(ctx, state);
+         }
+     }
+ 
+diff --git a/core/java/android/app/AppBindArgs.java b/core/java/android/app/AppBindArgs.java
+index 1609a7499..dd005a6cd 100644
+--- a/core/java/android/app/AppBindArgs.java
++++ b/core/java/android/app/AppBindArgs.java
+@@ -8,6 +8,7 @@ public interface AppBindArgs {
+     int FLAGS_IDX_SPECIAL_RUNTIME_PERMISSIONS = 0;
+     int FLAGS_IDX_HOOKED_LOCATION_MANAGER = 1;
+     int FLAGS_IDX_DYN_CODE_LOADING = 2;
++    int FLAGS_IDX_HIDE_CARRIER_INFO = 3;
+ 
+     int FLAGS_ARRAY_LEN = 10;
+ }
+diff --git a/core/java/android/app/IActivityManager.aidl b/core/java/android/app/IActivityManager.aidl
+index 9ed351e1e..3088b3c02 100644
+--- a/core/java/android/app/IActivityManager.aidl
++++ b/core/java/android/app/IActivityManager.aidl
+@@ -1071,4 +1071,6 @@ interface IActivityManager {
+      * Unregisters the listener previously registered for ANR warning.
+      */
+     void unregisterAnrWarningListener(in IAnrWarningCallback callback);
++
++    boolean shouldHideCarrierInfoForUid(int targetUid, String apiName);
+ }
+diff --git a/core/java/android/content/pm/GosPackageStateFlag.java b/core/java/android/content/pm/GosPackageStateFlag.java
+index ab4a8ca27..ce681217c 100644
+--- a/core/java/android/content/pm/GosPackageStateFlag.java
++++ b/core/java/android/content/pm/GosPackageStateFlag.java
+@@ -37,6 +37,8 @@ public interface GosPackageStateFlag {
+     /** @hide */ int SUPPRESS_PLAY_INTEGRITY_API_NOTIF = 27;
+     /** @hide */ int BLOCK_PLAY_INTEGRITY_API = 28;
+     /* SysApi */ int HIDE_LOCATION_INDICATOR = 29;
++    /** @hide */ int HIDE_CARRIER_INFO_NON_DEFAULT = 30;
++    /** @hide */ int HIDE_CARRIER_INFO = 31;
+ 
+     /** @hide */
+     @IntDef(value = {
+@@ -66,6 +68,8 @@ public interface GosPackageStateFlag {
+             SUPPRESS_PLAY_INTEGRITY_API_NOTIF,
+             BLOCK_PLAY_INTEGRITY_API,
+             HIDE_LOCATION_INDICATOR,
++            HIDE_CARRIER_INFO_NON_DEFAULT,
++            HIDE_CARRIER_INFO,
+     })
+     @Retention(RetentionPolicy.SOURCE)
+     @interface Enum {}
+diff --git a/core/java/android/ext/SettingsIntents.java b/core/java/android/ext/SettingsIntents.java
+index 956b1144b..52dad501f 100644
+--- a/core/java/android/ext/SettingsIntents.java
++++ b/core/java/android/ext/SettingsIntents.java
+@@ -13,6 +13,7 @@ public class SettingsIntents {
+     public static final String APP_MEMORY_DYN_CODE_LOADING = "android.settings.OPEN_APP_MEMORY_DYN_CODE_LOADING_SETTINGS";
+     public static final String APP_STORAGE_DYN_CODE_LOADING = "android.settings.OPEN_APP_STORAGE_DYN_CODE_LOADING_SETTINGS";
+     public static final String APP_MANAGE_PLAY_INTEGRITY_API = "android.settings.OPEN_APP_MANAGE_PLAY_INTEGRITY_API_SETTINGS";
++    public static final String APP_HIDE_CARRIER_INFO = "android.settings.OPEN_APP_HIDE_CARRIER_INFO_SETTINGS";
+ 
+     public static Intent getAppIntent(Context ctx, String action, String pkgName) {
+         var i = new Intent(action);
+diff --git a/core/java/android/ext/carrierinfo/HideCarrierInfo.java b/core/java/android/ext/carrierinfo/HideCarrierInfo.java
+new file mode 100644
+index 000000000..77846688a
+--- /dev/null
++++ b/core/java/android/ext/carrierinfo/HideCarrierInfo.java
+@@ -0,0 +1,47 @@
++package android.ext.carrierinfo;
++
++import android.app.AppGlobals;
++import android.app.Application;
++import android.content.Context;
++import android.content.pm.ApplicationInfo;
++import android.content.pm.GosPackageState;
++import android.ext.settings.app.AswHideCarrierInfo;
++import android.os.UserHandle;
++
++/** @hide */
++public class HideCarrierInfo {
++    /** @hide */
++    public static final int FLAG_HIDE_CARRIER_INFO = 1;
++
++    private static volatile int flags;
++
++    /** @hide */
++    public static int getAppBindFlags(Context ctx, int userId, ApplicationInfo appInfo,
++                                      GosPackageState gosPs) {
++        if (AswHideCarrierInfo.I.get(ctx, userId, appInfo, gosPs)) {
++            return FLAG_HIDE_CARRIER_INFO;
++        }
++        return 0;
++    }
++
++    /** @hide */
++    public static void handleAppBindFlags(int v) {
++        flags = v;
++    }
++
++    /** @hide */
++    public static void onGosPackageStateChanged(Context ctx, GosPackageState gosPs) {
++        Application app = AppGlobals.getInitialApplication();
++        if (app == null) {
++            return;
++        }
++        flags = getAppBindFlags(ctx, UserHandle.myUserId(), app.getApplicationInfo(), gosPs);
++    }
++
++    /** @hide */
++    public static boolean isEnabled() {
++        return (flags & FLAG_HIDE_CARRIER_INFO) != 0;
++    }
++
++    private HideCarrierInfo() {}
++}
+diff --git a/core/java/android/ext/settings/ExtSettings.java b/core/java/android/ext/settings/ExtSettings.java
+index 821f3d238..37850fe6b 100644
+--- a/core/java/android/ext/settings/ExtSettings.java
++++ b/core/java/android/ext/settings/ExtSettings.java
+@@ -100,6 +100,10 @@ public class ExtSettings {
+     public static final BoolSetting DISALLOW_DELAYED_LOCKING_ON_USER_STOP = new BoolSetting(
+             Setting.Scope.PER_USER, Settings.Secure.DISALLOW_DELAYED_LOCKING_ON_USER_STOP, false);
+ 
++    public static final BoolSetting HIDE_CARRIER_INFO_BY_DEFAULT = new BoolSetting(
++            Setting.Scope.GLOBAL, Settings.Global.HIDE_CARRIER_INFO_BY_DEFAULT,
++            defaultBool(R.bool.setting_default_hide_carrier_info));
++
+     private ExtSettings() {}
+ 
+     public static Function<Context, Boolean> defaultBool(@BoolRes int res) {
+diff --git a/core/java/android/ext/settings/app/AswHideCarrierInfo.java b/core/java/android/ext/settings/app/AswHideCarrierInfo.java
+new file mode 100644
+index 000000000..affcdcda4
+--- /dev/null
++++ b/core/java/android/ext/settings/app/AswHideCarrierInfo.java
+@@ -0,0 +1,34 @@
++package android.ext.settings.app;
++
++import android.content.Context;
++import android.content.pm.ApplicationInfo;
++import android.content.pm.GosPackageState;
++import android.content.pm.GosPackageStateFlag;
++import android.ext.settings.ExtSettings;
++
++/** @hide */
++public class AswHideCarrierInfo extends AppSwitch {
++    public static final AswHideCarrierInfo I = new AswHideCarrierInfo();
++
++    private AswHideCarrierInfo() {
++        gosPsFlagNonDefault = GosPackageStateFlag.HIDE_CARRIER_INFO_NON_DEFAULT;
++        gosPsFlag = GosPackageStateFlag.HIDE_CARRIER_INFO;
++    }
++
++    @Override
++    public Boolean getImmutableValue(Context ctx, int userId, ApplicationInfo appInfo,
++                                     GosPackageState ps, StateInfo si) {
++        if (appInfo.isSystemApp()) {
++            si.immutabilityReason = IR_IS_SYSTEM_APP;
++            return false;
++        }
++        return null;
++    }
++
++    @Override
++    protected boolean getDefaultValueInner(Context ctx, int userId, ApplicationInfo appInfo,
++            GosPackageState ps, StateInfo si) {
++        si.defaultValueReason = DVR_DEFAULT_SETTING;
++        return ExtSettings.HIDE_CARRIER_INFO_BY_DEFAULT.get(ctx, userId);
++    }
++}
+diff --git a/core/java/android/provider/Settings.java b/core/java/android/provider/Settings.java
+index cbc30187d..f0b593814 100644
+--- a/core/java/android/provider/Settings.java
++++ b/core/java/android/provider/Settings.java
+@@ -14536,6 +14536,10 @@ public final class Settings {
+         @Protected(restrictReads = false, readWrite = KnownSystemPackage.SETTINGS)
+         public static final String CERT_TRANSPARENCY_DOWNLOADER = "cert_transparency_downloader";
+ 
++        /** @hide */
++        @Protected(readWrite = KnownSystemPackage.SETTINGS)
++        public static final String HIDE_CARRIER_INFO_BY_DEFAULT = "hide_carrier_info";
++
+         // ExtSettings END
+ 
+         // NOTE: If you add new settings here, be sure to add them to
+diff --git a/core/java/com/android/internal/os/ZygoteExtraArgs.java b/core/java/com/android/internal/os/ZygoteExtraArgs.java
+index 5790a1dca..4905e2009 100644
+--- a/core/java/com/android/internal/os/ZygoteExtraArgs.java
++++ b/core/java/com/android/internal/os/ZygoteExtraArgs.java
+@@ -4,6 +4,7 @@ import android.annotation.Nullable;
+ import android.content.Context;
+ import android.content.pm.ApplicationInfo;
+ import android.content.pm.GosPackageState;
++import android.ext.settings.app.AswHideCarrierInfo;
+ 
+ // Extra args for:
+ // - children of main zygote{,64}, including AppZygotes, but excluding WebViewZygote
+@@ -13,17 +14,20 @@ import android.content.pm.GosPackageState;
+ // (see android.app.ZygotePreload).
+ public class ZygoteExtraArgs {
+     public final long selinuxFlags;
++    public final boolean bindMountExtendedSyspropOverrides;
+ 
+     public static final String PREFIX = "--flat-extra-args=";
+ 
+-    public static final ZygoteExtraArgs DEFAULT = new ZygoteExtraArgs(0L);
++    public static final ZygoteExtraArgs DEFAULT = new ZygoteExtraArgs(0L, false);
+ 
+-    public ZygoteExtraArgs(long selinuxFlags) {
++    public ZygoteExtraArgs(long selinuxFlags, boolean bindMountExtendedSyspropOverrides) {
+         this.selinuxFlags = selinuxFlags;
++        this.bindMountExtendedSyspropOverrides = bindMountExtendedSyspropOverrides;
+     }
+ 
+     private static final int IDX_SELINUX_FLAGS = 0;
+-    private static final int ARR_LEN = 1;
++    private static final int IDX_BIND_MOUNT_EXTENDED_SYSPROP_OVERRIDES = 1;
++    private static final int ARR_LEN = 2;
+     private static final String SEPARATOR = "\t";
+ 
+     public static String createFlat(Context ctx, int userId, ApplicationInfo appInfo,
+@@ -33,6 +37,8 @@ public class ZygoteExtraArgs {
+         arr[IDX_SELINUX_FLAGS] = Long.toHexString(
+             SELinuxFlags.get(ctx, userId, appInfo, ps, isIsolatedProcess)
+         );
++        arr[IDX_BIND_MOUNT_EXTENDED_SYSPROP_OVERRIDES] =
++                AswHideCarrierInfo.I.get(ctx, userId, appInfo, ps) ? "1" : "0";
+         return PREFIX + String.join(SEPARATOR, arr);
+     }
+ 
+@@ -42,19 +48,24 @@ public class ZygoteExtraArgs {
+         arr[IDX_SELINUX_FLAGS] = Long.toHexString(
+             SELinuxFlags.getForWebViewProcess(ctx, userId, callerAppInfo, callerPs)
+         );
++        arr[IDX_BIND_MOUNT_EXTENDED_SYSPROP_OVERRIDES] = "0";
+         return PREFIX + String.join(SEPARATOR, arr);
+     }
+ 
+     public static ZygoteExtraArgs parse(String flat) {
+         String[] arr = flat.split(SEPARATOR);
+         long selinuxFlags = Long.parseLong(arr[IDX_SELINUX_FLAGS], 16);
+-        return new ZygoteExtraArgs(selinuxFlags);
++        boolean bindMountExtendedSyspropOverrides =
++                arr.length > IDX_BIND_MOUNT_EXTENDED_SYSPROP_OVERRIDES
++                && "1".equals(arr[IDX_BIND_MOUNT_EXTENDED_SYSPROP_OVERRIDES]);
++        return new ZygoteExtraArgs(selinuxFlags, bindMountExtendedSyspropOverrides);
+     }
+ 
+     // keep in sync with ExtraArgs struct in core/jni/com_android_internal_os_Zygote.cpp
+     public long[] makeJniLongArray() {
+         long[] res = new long[ARR_LEN];
+         res[IDX_SELINUX_FLAGS] = selinuxFlags;
++        res[IDX_BIND_MOUNT_EXTENDED_SYSPROP_OVERRIDES] = bindMountExtendedSyspropOverrides ? 1L : 0L;
+         return res;
+     }
+ }
+diff --git a/core/jni/com_android_internal_os_Zygote.cpp b/core/jni/com_android_internal_os_Zygote.cpp
+index 0446c3051..dc249a065 100644
+--- a/core/jni/com_android_internal_os_Zygote.cpp
++++ b/core/jni/com_android_internal_os_Zygote.cpp
+@@ -362,14 +362,16 @@ enum RuntimeFlags : uint32_t {
+ 
+ struct ExtraArgs {
+     uint64_t selinux_flags = 0;
++    bool bind_mount_extended_sysprop_overrides = false;
+ 
+     ExtraArgs() {}
+ 
+     ExtraArgs(JNIEnv* env, jlongArray jlongArgs) {
+-        const size_t num_jlong_args = 1;
++        const size_t num_jlong_args = 2;
+         jlong jlong_arr[num_jlong_args];
+         env->GetLongArrayRegion(jlongArgs, 0, num_jlong_args, (jlong *) &jlong_arr);
+         selinux_flags = (uint64_t) jlong_arr[0];
++        bind_mount_extended_sysprop_overrides = (jlong_arr[1] != 0);
+     }
+ };
+ 
+@@ -1753,6 +1755,11 @@ static void BindMountSyspropOverride(fail_fn_t fail_fn, JNIEnv* env) {
+     // TODO: when ReloadBuildJavaConstants is needed, make it skip reloading of unaffected constants
+ }
+ 
++static void BindMountExtendedSyspropOverride(fail_fn_t fail_fn, JNIEnv* env) {
++    __system_properties_enable_extended_override();
++    // see the TODO above BindMountSyspropOverride
++}
++
+ static void BindMountStorageToLowerFs(const userid_t user_id, const uid_t uid,
+     const char* dir_name, const char* package, fail_fn_t fail_fn) {
+     bool hasSdcardFs = IsSdcardfsUsed();
+@@ -1978,7 +1985,9 @@ static void SpecializeCommon(JNIEnv* env, uid_t uid, gid_t gid, jintArray gids,
+                              fail_fn);
+     }
+ 
+-    if (mount_sysprop_overrides) {
++    if (extra_args.bind_mount_extended_sysprop_overrides) {
++        BindMountExtendedSyspropOverride(fail_fn, env);
++    } else if (mount_sysprop_overrides) {
+         BindMountSyspropOverride(fail_fn, env);
+     }
+ 
+diff --git a/core/res/res/values/config_ext.xml b/core/res/res/values/config_ext.xml
+index 9f66d22bc..a406e391d 100644
+--- a/core/res/res/values/config_ext.xml
++++ b/core/res/res/values/config_ext.xml
+@@ -51,4 +51,7 @@
+     </string-array>
+     <java-symbol type="array" name="read_additional_security_state_known_signers" />
+ 
++    <bool name="setting_default_hide_carrier_info">false</bool>
++    <java-symbol type="bool" name="setting_default_hide_carrier_info" />
++
+ </resources>
+diff --git a/services/core/java/com/android/server/CountryDetectorService.java b/services/core/java/com/android/server/CountryDetectorService.java
+index a6549253d..d25f21d4b 100644
+--- a/services/core/java/com/android/server/CountryDetectorService.java
++++ b/services/core/java/com/android/server/CountryDetectorService.java
+@@ -17,13 +17,20 @@
+ package com.android.server;
+ 
+ import android.content.Context;
++import android.content.pm.ApplicationInfo;
++import android.content.pm.GosPackageState;
++import android.content.pm.PackageManager;
++import android.ext.settings.app.AswHideCarrierInfo;
+ import android.location.Country;
+ import android.location.CountryListener;
+ import android.location.ICountryDetector;
+ import android.location.ICountryListener;
++import android.os.Binder;
+ import android.os.Handler;
+ import android.os.IBinder;
++import android.os.Process;
+ import android.os.RemoteException;
++import android.os.UserHandle;
+ import android.text.TextUtils;
+ import android.util.PrintWriterPrinter;
+ import android.util.Printer;
+@@ -58,10 +65,16 @@ public class CountryDetectorService extends ICountryDetector.Stub {
+     private final class Receiver implements IBinder.DeathRecipient {
+         private final ICountryListener mListener;
+         private final IBinder mKey;
++        private final boolean mHideCarrierSource;
+ 
+-        public Receiver(ICountryListener listener) {
++        public Receiver(ICountryListener listener, boolean hideCarrierSource) {
+             mListener = listener;
+             mKey = listener.asBinder();
++            mHideCarrierSource = hideCarrierSource;
++        }
++
++        public boolean shouldHideCarrierSource() {
++            return mHideCarrierSource;
+         }
+ 
+         public void binderDied() {
+@@ -112,13 +125,37 @@ public class CountryDetectorService extends ICountryDetector.Stub {
+         mHandler = handler;
+     }
+ 
++    private boolean shouldHideCarrierSourceForCallingUid() {
++        int callingUid = Binder.getCallingUid();
++        if (callingUid == Process.myUid()) {
++            return false;
++        }
++        int userId = UserHandle.getUserId(callingUid);
++        final long token = Binder.clearCallingIdentity();
++        try {
++            String[] pkgs = mContext.getPackageManager().getPackagesForUid(callingUid);
++            if (pkgs == null) {
++                return false;
++            }
++            ApplicationInfo appInfo;
++            try {
++                appInfo = mContext.getPackageManager().getApplicationInfo(pkgs[0], 0);
++            } catch (PackageManager.NameNotFoundException e) {
++                return false;
++            }
++            GosPackageState ps = GosPackageState.get(pkgs[0], userId);
++            return AswHideCarrierInfo.I.get(mContext, userId, appInfo, ps);
++        } finally {
++            Binder.restoreCallingIdentity(token);
++        }
++    }
++
+     @Override
+     public Country detectCountry() {
+         if (!mSystemReady) {
+             return null; // server not yet active
+-        } else {
+-            return mCountryDetector.detectCountry();
+         }
++        return mCountryDetector.detectCountry(shouldHideCarrierSourceForCallingUid());
+     }
+ 
+     /**
+@@ -129,7 +166,7 @@ public class CountryDetectorService extends ICountryDetector.Stub {
+         if (!mSystemReady) {
+             throw new RemoteException();
+         }
+-        addListener(listener);
++        addListener(listener, shouldHideCarrierSourceForCallingUid());
+     }
+ 
+     /**
+@@ -143,12 +180,12 @@ public class CountryDetectorService extends ICountryDetector.Stub {
+         removeListener(listener.asBinder());
+     }
+ 
+-    private void addListener(ICountryListener listener) {
++    private void addListener(ICountryListener listener, boolean hideCarrierSource) {
+         synchronized (mReceivers) {
+-            Receiver r = new Receiver(listener);
++            Receiver r = new Receiver(listener, hideCarrierSource);
+             try {
+                 listener.asBinder().linkToDeath(r, 0);
+-                final Country country = detectCountry();
++                final Country country = mCountryDetector.detectCountry(hideCarrierSource);
+                 if (country != null) {
+                     listener.onCountryDetected(country);
+                 }
+@@ -175,8 +212,15 @@ public class CountryDetectorService extends ICountryDetector.Stub {
+ 
+     protected void notifyReceivers(Country country) {
+         synchronized (mReceivers) {
++            final boolean carrierDerived = country != null
++                    && (country.getSource() == Country.COUNTRY_SOURCE_NETWORK
++                            || country.getSource() == Country.COUNTRY_SOURCE_SIM);
+             for (Receiver receiver : mReceivers.values()) {
+                 try {
++                    if (carrierDerived && receiver.shouldHideCarrierSource()) {
++                        // drop carrier-derived updates for flagged listeners
++                        continue;
++                    }
+                     receiver.getListener().onCountryDetected(country);
+                 } catch (RemoteException e) {
+                     // TODO: Shall we remove the receiver?
+diff --git a/services/core/java/com/android/server/am/ActivityManagerService.java b/services/core/java/com/android/server/am/ActivityManagerService.java
+index cccff7b5d..423875941 100644
+--- a/services/core/java/com/android/server/am/ActivityManagerService.java
++++ b/services/core/java/com/android/server/am/ActivityManagerService.java
+@@ -344,6 +344,7 @@ import android.content.pm.AllowComponentAccessPolicyInfo;
+ import android.content.pm.ApplicationInfo;
+ import android.content.pm.ApplicationInfo.HiddenApiEnforcementPolicy;
+ import android.content.pm.GosPackageState;
++import android.content.pm.GosPackageStateFlag;
+ import android.content.pm.IPackageDataObserver;
+ import android.content.pm.IPackageManager;
+ import android.content.pm.IncrementalStatesInfo;
+@@ -458,6 +459,8 @@ import android.view.View;
+ import android.view.WindowManager;
+ import android.view.autofill.AutofillManagerInternal;
+ 
++import android.ext.settings.app.AswHideCarrierInfo;
++
+ import com.android.internal.annotations.CompositeRWLock;
+ import com.android.internal.annotations.GuardedBy;
+ import com.android.internal.annotations.SystemServerLock;
+@@ -21372,4 +21375,32 @@ public class ActivityManagerService extends IActivityManager.Stub
+         mAnrWarningController.notifyAnrWarning(
+                 uid, anrId, errorId, anrType, consumedTimeMs, timeoutMs, description);
+     }
++
++    @Override
++    public boolean shouldHideCarrierInfoForUid(int targetUid, String apiName) {
++        final int callerUid = Binder.getCallingUid();
++        if (callerUid != Process.PHONE_UID
++                && UserHandle.getAppId(callerUid) != Process.SYSTEM_UID) {
++            throw new SecurityException(
++                    "shouldHideCarrierInfoForUid requires system/phone caller, got uid " + callerUid);
++        }
++        final long token = Binder.clearCallingIdentity();
++        try {
++            String[] pkgs = mContext.getPackageManager().getPackagesForUid(targetUid);
++            if (pkgs == null) {
++                return false;
++            }
++            int userId = UserHandle.getUserId(targetUid);
++            ApplicationInfo appInfo;
++            try {
++                appInfo = mContext.getPackageManager().getApplicationInfo(pkgs[0], 0);
++            } catch (NameNotFoundException e) {
++                return false;
++            }
++            GosPackageState ps = GosPackageState.get(pkgs[0], userId);
++            return AswHideCarrierInfo.I.get(mContext, userId, appInfo, ps);
++        } finally {
++            Binder.restoreCallingIdentity(token);
++        }
++    }
+ }
+diff --git a/services/core/java/com/android/server/ext/PackageManagerHooks.java b/services/core/java/com/android/server/ext/PackageManagerHooks.java
+index 832b0818c..1d1436076 100644
+--- a/services/core/java/com/android/server/ext/PackageManagerHooks.java
++++ b/services/core/java/com/android/server/ext/PackageManagerHooks.java
+@@ -120,6 +120,9 @@ public class PackageManagerHooks {
+         flagsArr[AppBindArgs.FLAGS_IDX_DYN_CODE_LOADING] =
+                 android.ext.dcl.DynCodeLoading.getAppBindFlags(context, userId, appInfo, unfilteredGosPs);
+ 
++        flagsArr[AppBindArgs.FLAGS_IDX_HIDE_CARRIER_INFO] =
++                android.ext.carrierinfo.HideCarrierInfo.getAppBindFlags(context, userId, appInfo, unfilteredGosPs);
++
+         var b = new Bundle();
+         b.putParcelable(AppBindArgs.KEY_GOS_PACKAGE_STATE, gosPs);
+         b.putIntArray(AppBindArgs.KEY_FLAGS_ARRAY, flagsArr);
+diff --git a/services/core/java/com/android/server/location/countrydetector/ComprehensiveCountryDetector.java b/services/core/java/com/android/server/location/countrydetector/ComprehensiveCountryDetector.java
+index dda502b2b..68bb88cec 100644
+--- a/services/core/java/com/android/server/location/countrydetector/ComprehensiveCountryDetector.java
++++ b/services/core/java/com/android/server/location/countrydetector/ComprehensiveCountryDetector.java
+@@ -151,6 +151,19 @@ public class ComprehensiveCountryDetector extends CountryDetectorBase {
+         return detectCountry(false, !mStopped);
+     }
+ 
++    @Override
++    public Country detectCountry(boolean hideCarrierSource) {
++        if (!hideCarrierSource) {
++            return detectCountry();
++        }
++        Country result = getLastKnownLocationBasedCountry();
++        if (result == null) {
++            result = getLocaleCountry();
++        }
++        addToLogs(result);
++        return result;
++    }
++
+     @Override
+     public void stop() {
+         // Note: this method in this subclass called only by tests.
+diff --git a/services/core/java/com/android/server/location/countrydetector/CountryDetectorBase.java b/services/core/java/com/android/server/location/countrydetector/CountryDetectorBase.java
+index 6e2e28caf..8a9f2f7d9 100644
+--- a/services/core/java/com/android/server/location/countrydetector/CountryDetectorBase.java
++++ b/services/core/java/com/android/server/location/countrydetector/CountryDetectorBase.java
+@@ -51,6 +51,17 @@ public abstract class CountryDetectorBase {
+      */
+     public abstract Country detectCountry();
+ 
++    /**
++     * unknown subclasses return null because they may use
++     * SIM/network without the caller being able to tell.
++     */
++    public Country detectCountry(boolean hideCarrierSource) {
++        if (hideCarrierSource) {
++            return null;
++        }
++        return detectCountry();
++    }
++
+     /**
+      * Register a listener to receive the notification when the country is detected or changed.
+      * <p>
+diff --git a/services/core/java/com/android/server/pm/GosPackageStatePermissions.java b/services/core/java/com/android/server/pm/GosPackageStatePermissions.java
+index 2e128b7be..11834928a 100644
+--- a/services/core/java/com/android/server/pm/GosPackageStatePermissions.java
++++ b/services/core/java/com/android/server/pm/GosPackageStatePermissions.java
+@@ -32,6 +32,8 @@ import static android.content.pm.GosPackageStateFlag.HIDE_LOCATION_INDICATOR;
+ import static android.content.pm.GosPackageStateFlag.FORCE_MEMTAG;
+ import static android.content.pm.GosPackageStateFlag.FORCE_MEMTAG_NON_DEFAULT;
+ import static android.content.pm.GosPackageStateFlag.FORCE_MEMTAG_SUPPRESS_NOTIF;
++import static android.content.pm.GosPackageStateFlag.HIDE_CARRIER_INFO;
++import static android.content.pm.GosPackageStateFlag.HIDE_CARRIER_INFO_NON_DEFAULT;
+ import static android.content.pm.GosPackageStateFlag.PLAY_INTEGRITY_API_USED_AT_LEAST_ONCE;
+ import static android.content.pm.GosPackageStateFlag.RESTRICT_MEMORY_DYN_CODE_LOADING;
+ import static android.content.pm.GosPackageStateFlag.RESTRICT_MEMORY_DYN_CODE_LOADING_NON_DEFAULT;
+@@ -77,7 +79,7 @@ class GosPackageStatePermissions {
+ 
+         selfAccessPermission = builder()
+                 .readFlags(STORAGE_SCOPES_ENABLED, ALLOW_ACCESS_TO_OBB_DIRECTORY,
+-                        CONTACT_SCOPES_ENABLED)
++                        CONTACT_SCOPES_ENABLED, HIDE_CARRIER_INFO)
+                 .readFlags(playIntegrityFlags)
+                 .readWriteFlag(PLAY_INTEGRITY_API_USED_AT_LEAST_ONCE)
+                 .create();
+@@ -145,6 +147,8 @@ class GosPackageStatePermissions {
+                 FORCE_MEMTAG,
+                 FORCE_MEMTAG_SUPPRESS_NOTIF,
+                 ENABLE_EXPLOIT_PROTECTION_COMPAT_MODE,
++                HIDE_CARRIER_INFO_NON_DEFAULT,
++                HIDE_CARRIER_INFO,
+         };
+         builder()
+                 .readWriteFlags(settingsReadWriteFlags)
+diff --git a/tests/HardeningTest/Android.bp b/tests/HardeningTest/Android.bp
+index 36afa481b..06af69f0e 100644
+--- a/tests/HardeningTest/Android.bp
++++ b/tests/HardeningTest/Android.bp
+@@ -1,3 +1,8 @@
++filegroup {
++    name: "HardeningTestUtils",
++    srcs: ["src/grapheneos/hardeningtest/TestUtils.java"],
++}
++
+ java_test_host {
+     name: "HardeningTest",
+     srcs: [
+diff --git a/tests/HardeningTest/src/grapheneos/hardeningtest/SELinuxTest.java b/tests/HardeningTest/src/grapheneos/hardeningtest/SELinuxTest.java
+index b1e0e1455..0e1ef0ac3 100644
+--- a/tests/HardeningTest/src/grapheneos/hardeningtest/SELinuxTest.java
++++ b/tests/HardeningTest/src/grapheneos/hardeningtest/SELinuxTest.java
+@@ -12,8 +12,6 @@ import org.junit.runner.RunWith;
+ 
+ import java.util.function.Consumer;
+ 
+-import static org.junit.Assert.assertEquals;
+-
+ @RunWith(DeviceJUnit4ClassRunner.class)
+ public class SELinuxTest extends BaseHostJUnit4Test {
+ 
+@@ -36,29 +34,6 @@ public class SELinuxTest extends BaseHostJUnit4Test {
+         }
+     }
+ 
+-    private void editGosPackageState(String pkgName, int[] addFlags, int[] clearFlags) {
+-        try {
+-            var device = getDevice();
+-            var cmd = new StringBuilder("pm edit-gos-package-state " + pkgName + " " + device.getCurrentUser());
+-            for (int flag : addFlags) {
+-                cmd.append(" add-flag ").append(flag);
+-            }
+-            for (int flag : clearFlags) {
+-                cmd.append(" clear-flag ").append(flag);
+-            }
+-            var edRes = device.executeShellV2Command(cmd.toString());
+-            assertEquals(edRes.toString(), 0L, (long) edRes.getExitCode());
+-        } catch (DeviceNotAvailableException e) {
+-            throw new IllegalStateException(e);
+-        }
+-    }
+-
+-    private void setComplexFlagState(String pkgName, int flag, int nonDefaultFlag, boolean isSet) {
+-        int[] addFlags = isSet ? new int[] { nonDefaultFlag, flag } : new int[] { nonDefaultFlag };
+-        int[] clearFlags = isSet ? new int[0] : new int[] { flag };
+-        editGosPackageState(pkgName, addFlags, clearFlags);
+-    }
+-
+     private void forEachPackage(Consumer<String> action) {
+         for (String pkg : new String[] {TEST_PACKAGE_SDK_27, TEST_PACKAGE_SDK_LATEST, TEST_PACKAGE_SDK_LATEST_PREINSTALLED}) {
+             if (pkg == TEST_PACKAGE_SDK_LATEST_PREINSTALLED) {
+@@ -97,12 +72,12 @@ public class SELinuxTest extends BaseHostJUnit4Test {
+     public void testDynamicCodeLoadingRestricted() {
+         forEachPackage(pkg -> {
+             for (var t : DclTestType.values()) {
+-                setComplexFlagState(pkg, t.gosPsFlag, t.gosPsNonDefaultFlag, true);
++                TestUtils.setComplexFlagState(this, pkg, t.gosPsFlag, t.gosPsNonDefaultFlag, true);
+                 runDeviceTest(pkg, t.testName("DclRestricted"));
+ 
+                 if (pkg == TEST_PACKAGE_SDK_LATEST_PREINSTALLED) {
+                     // check that DCL is blocked regardless of GosPackageState flags
+-                    setComplexFlagState(pkg, t.gosPsFlag, t.gosPsNonDefaultFlag, false);
++                    TestUtils.setComplexFlagState(this, pkg, t.gosPsFlag, t.gosPsNonDefaultFlag, false);
+                     runDeviceTest(pkg, t.testName("DclRestricted"));
+                 }
+             }
+@@ -118,7 +93,7 @@ public class SELinuxTest extends BaseHostJUnit4Test {
+             }
+ 
+             for (var t : DclTestType.values()) {
+-                setComplexFlagState(pkg, t.gosPsFlag, t.gosPsNonDefaultFlag, false);
++                TestUtils.setComplexFlagState(this, pkg, t.gosPsFlag, t.gosPsNonDefaultFlag, false);
+                 runDeviceTest(pkg, t.testName("DclAllowed"));
+             }
+         });
+@@ -132,7 +107,7 @@ public class SELinuxTest extends BaseHostJUnit4Test {
+                 return;
+             }
+ 
+-            setComplexFlagState(pkg,
++            TestUtils.setComplexFlagState(this, pkg,
+                 GosPackageStateFlag.BLOCK_NATIVE_DEBUGGING,
+                 GosPackageStateFlag.BLOCK_NATIVE_DEBUGGING_NON_DEFAULT,
+                 false);
+@@ -143,7 +118,7 @@ public class SELinuxTest extends BaseHostJUnit4Test {
+     @Test
+     public void testPtraceDenied() {
+         forEachPackage(pkg -> {
+-            setComplexFlagState(pkg,
++            TestUtils.setComplexFlagState(this, pkg,
+                 GosPackageStateFlag.BLOCK_NATIVE_DEBUGGING,
+                 GosPackageStateFlag.BLOCK_NATIVE_DEBUGGING_NON_DEFAULT,
+                 true);
+diff --git a/tests/HardeningTest/src/grapheneos/hardeningtest/TestUtils.java b/tests/HardeningTest/src/grapheneos/hardeningtest/TestUtils.java
+new file mode 100644
+index 000000000..ba8c131f3
+--- /dev/null
++++ b/tests/HardeningTest/src/grapheneos/hardeningtest/TestUtils.java
+@@ -0,0 +1,37 @@
++package grapheneos.hardeningtest;
++
++import com.android.tradefed.device.DeviceNotAvailableException;
++import com.android.tradefed.testtype.junit4.BaseHostJUnit4Test;
++import com.android.tradefed.testtype.junit4.DeviceTestRunOptions;
++
++import static org.junit.Assert.assertEquals;
++
++public class TestUtils {
++    private TestUtils() {}
++
++    public static void editGosPackageState(BaseHostJUnit4Test host, String pkgName,
++                                           int[] addFlags, int[] clearFlags) {
++        try {
++            var device = host.getDevice();
++            var cmd = new StringBuilder("pm edit-gos-package-state " + pkgName
++                    + " " + device.getCurrentUser());
++            for (int flag : addFlags) {
++                cmd.append(" add-flag ").append(flag);
++            }
++            for (int flag : clearFlags) {
++                cmd.append(" clear-flag ").append(flag);
++            }
++            var edRes = device.executeShellV2Command(cmd.toString());
++            assertEquals(edRes.toString(), 0L, (long) edRes.getExitCode());
++        } catch (DeviceNotAvailableException e) {
++            throw new IllegalStateException(e);
++        }
++    }
++
++    public static void setComplexFlagState(BaseHostJUnit4Test host, String pkgName,
++                                           int flag, int nonDefaultFlag, boolean isSet) {
++        int[] addFlags = isSet ? new int[] { nonDefaultFlag, flag } : new int[] { nonDefaultFlag };
++        int[] clearFlags = isSet ? new int[0] : new int[] { flag };
++        editGosPackageState(host, pkgName, addFlags, clearFlags);
++    }
++}
+diff --git a/tests/HideCarrierInfoTest/Android.bp b/tests/HideCarrierInfoTest/Android.bp
+new file mode 100644
+index 000000000..5f957dfa7
+--- /dev/null
++++ b/tests/HideCarrierInfoTest/Android.bp
+@@ -0,0 +1,31 @@
++java_test_host {
++    name: "HideCarrierInfoTest",
++    srcs: [
++        "src/**/*.java",
++        ":GosPackageStateFlags",
++        ":HardeningTestUtils",
++    ],
++
++    libs: [
++        "tradefed",
++        "compatibility-tradefed",
++        "compatibility-host-util",
++    ],
++
++    static_libs: [
++        "framework-annotations-lib",
++        "frameworks-base-hostutils",
++    ],
++
++    test_suites: [
++        "general-tests",
++    ],
++
++    device_common_data: [
++        ":HideCarrierInfoTestApp",
++    ],
++
++    data_device_bins_64: [
++        "bionic-sysprop-tests",
++    ],
++}
+diff --git a/tests/HideCarrierInfoTest/AndroidTest.xml b/tests/HideCarrierInfoTest/AndroidTest.xml
+new file mode 100644
+index 000000000..cbe8f05eb
+--- /dev/null
++++ b/tests/HideCarrierInfoTest/AndroidTest.xml
+@@ -0,0 +1,20 @@
++<?xml version="1.0" encoding="utf-8"?>
++<configuration>
++
++    <target_preparer class="com.android.tradefed.targetprep.RootTargetPreparer" />
++
++    <target_preparer class="com.android.tradefed.targetprep.suite.SuiteApkInstaller">
++        <option name="cleanup-apks" value="true" />
++        <option name="test-file-name" value="HideCarrierInfoTestApp.apk" />
++    </target_preparer>
++
++    <target_preparer class="com.android.tradefed.targetprep.PushFilePreparer">
++        <option name="cleanup" value="true" />
++        <option name="push-file" key="bionic-sysprop-tests" value="/data/nativetest64/bionic-sysprop-tests/bionic-sysprop-tests" />
++    </target_preparer>
++
++    <test class="com.android.compatibility.common.tradefed.testtype.JarHostTest" >
++        <option name="jar" value="HideCarrierInfoTest.jar" />
++    </test>
++
++</configuration>
+diff --git a/tests/HideCarrierInfoTest/HideCarrierInfoTestApp/Android.bp b/tests/HideCarrierInfoTest/HideCarrierInfoTestApp/Android.bp
+new file mode 100644
+index 000000000..2bcd8a9e0
+--- /dev/null
++++ b/tests/HideCarrierInfoTest/HideCarrierInfoTestApp/Android.bp
+@@ -0,0 +1,18 @@
++android_test_helper_app {
++    name: "HideCarrierInfoTestApp",
++
++    srcs: [
++        "src/**/*.java",
++        "src/**/*.kt",
++    ],
++
++    platform_apis: true,
++
++    optimize: { enabled: false },
++
++    static_libs: [
++        "androidx.appcompat_appcompat",
++        "androidx.test.core",
++        "androidx.test.rules",
++    ],
++}
+diff --git a/tests/HideCarrierInfoTest/HideCarrierInfoTestApp/AndroidManifest.xml b/tests/HideCarrierInfoTest/HideCarrierInfoTestApp/AndroidManifest.xml
+new file mode 100644
+index 000000000..b0285a091
+--- /dev/null
++++ b/tests/HideCarrierInfoTest/HideCarrierInfoTestApp/AndroidManifest.xml
+@@ -0,0 +1,13 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="app.grapheneos.hidecarrierinfotest">
++
++    <application>
++        <uses-library android:name="android.test.runner" />
++    </application>
++
++    <instrumentation
++        android:name="androidx.test.runner.AndroidJUnitRunner"
++        android:targetPackage="${applicationId}" />
++
++</manifest>
+diff --git a/tests/HideCarrierInfoTest/HideCarrierInfoTestApp/src/app/grapheneos/hidecarrierinfotest/HideCarrierInfoDeviceTest.kt b/tests/HideCarrierInfoTest/HideCarrierInfoTestApp/src/app/grapheneos/hidecarrierinfotest/HideCarrierInfoDeviceTest.kt
+new file mode 100644
+index 000000000..e50f89993
+--- /dev/null
++++ b/tests/HideCarrierInfoTest/HideCarrierInfoTestApp/src/app/grapheneos/hidecarrierinfotest/HideCarrierInfoDeviceTest.kt
+@@ -0,0 +1,117 @@
++package app.grapheneos.hidecarrierinfotest
++
++import android.app.Application
++import android.ext.carrierinfo.HideCarrierInfo
++import android.location.Country
++import android.location.CountryDetector
++import android.os.SystemProperties
++import android.telephony.TelephonyManager
++import androidx.test.core.app.ApplicationProvider
++import androidx.test.runner.AndroidJUnit4
++import org.junit.Assert
++import org.junit.Test
++import org.junit.runner.RunWith
++import java.util.concurrent.CountDownLatch
++import java.util.concurrent.TimeUnit
++
++@RunWith(AndroidJUnit4::class)
++class HideCarrierInfoDeviceTest {
++    private val ctx = ApplicationProvider.getApplicationContext<Application>()
++    private val tm = ctx.getSystemService(TelephonyManager::class.java)!!
++
++    @Test
++    fun testCarrierInfoHidden() {
++        Assert.assertTrue("HideCarrierInfo.isEnabled()", HideCarrierInfo.isEnabled())
++
++        // TelephonyManager
++        Assert.assertEquals("", tm.networkOperatorName)
++        Assert.assertEquals("", tm.networkOperator)
++        Assert.assertEquals("", tm.networkCountryIso)
++        Assert.assertEquals("", tm.simOperator)
++        Assert.assertEquals("", tm.simOperatorName)
++        Assert.assertEquals("", tm.simCountryIso)
++        Assert.assertFalse(tm.isNetworkRoaming)
++        Assert.assertEquals(TelephonyManager.SIM_STATE_ABSENT, tm.simState)
++        Assert.assertEquals(TelephonyManager.SIM_STATE_ABSENT, tm.getSimState(0))
++
++        // double check sysprops overrides
++        Assert.assertEquals("", SystemProperties.get("gsm.sim.operator.alpha"))
++        Assert.assertEquals("", SystemProperties.get("gsm.sim.operator.numeric"))
++        Assert.assertEquals("", SystemProperties.get("gsm.operator.alpha"))
++        Assert.assertEquals("", SystemProperties.get("gsm.operator.numeric"))
++        Assert.assertEquals("def", SystemProperties.get("gsm.sim.operator.alpha", "def"))
++        Assert.assertNull(SystemProperties.find("gsm.sim.operator.alpha"))
++
++        // non-replacements
++        Assert.assertNotEquals("", SystemProperties.get("ro.product.cpu.abi"))
++
++        // CountryDetector
++        val cd = ctx.getSystemService(CountryDetector::class.java)
++        if (cd != null) {
++            val country = cd.detectCountry()
++            if (country != null) {
++                val src = country.source
++                Assert.assertTrue(
++                    "Country.getSource()=$src must be LOCATION or LOCALE when hidden",
++                    src == Country.COUNTRY_SOURCE_LOCATION ||
++                        src == Country.COUNTRY_SOURCE_LOCALE,
++                )
++            }
++
++            val latch = CountDownLatch(1)
++            var listenerCountry: Country? = null
++            val callback: (Country) -> Unit = { c ->
++                listenerCountry = c
++                latch.countDown()
++            }
++            cd.registerCountryDetectorCallback({ it.run() }, callback)
++            cd.unregisterCountryDetectorCallback(callback)
++            Assert.assertTrue("CountryDetectorCallback was not called on registration",
++                latch.await(5, TimeUnit.SECONDS))
++            val listenerSrc = listenerCountry!!.source
++            Assert.assertTrue(
++                "CountryDetectorCallback source=$listenerSrc must be LOCATION or LOCALE when hidden",
++                listenerSrc == Country.COUNTRY_SOURCE_LOCATION ||
++                    listenerSrc == Country.COUNTRY_SOURCE_LOCALE,
++            )
++        }
++    }
++
++    @Test
++    fun testCarrierInfoVisible() {
++        Assert.assertFalse("HideCarrierInfo.isEnabled()", HideCarrierInfo.isEnabled())
++
++        // non-carrier sysprop still readable
++        Assert.assertNotEquals("", SystemProperties.get("ro.product.cpu.abi"))
++
++        // gsm sysprops are not filtered
++        val alpha = SystemProperties.get("gsm.sim.operator.alpha")
++        if (alpha.isNotEmpty()) {
++            Assert.assertNotNull(SystemProperties.find("gsm.sim.operator.alpha"))
++            Assert.assertNotEquals("def", SystemProperties.get("gsm.sim.operator.alpha", "def"))
++        }
++
++        // CountryDetector
++        val cd = ctx.getSystemService(CountryDetector::class.java)
++        if (cd != null) {
++            val latch = CountDownLatch(1)
++            var listenerCountry: Country? = null
++            val callback: (Country) -> Unit = { c ->
++                listenerCountry = c
++                latch.countDown()
++            }
++            cd.registerCountryDetectorCallback({ it.run() }, callback)
++            cd.unregisterCountryDetectorCallback(callback)
++            Assert.assertTrue("CountryDetectorCallback was not called on registration",
++                latch.await(5, TimeUnit.SECONDS))
++            val validSources = setOf(
++                Country.COUNTRY_SOURCE_NETWORK,
++                Country.COUNTRY_SOURCE_LOCATION,
++                Country.COUNTRY_SOURCE_SIM,
++                Country.COUNTRY_SOURCE_LOCALE,
++            )
++            Assert.assertTrue("CountryDetectorCallback source=${listenerCountry!!.source} is not a valid source",
++                listenerCountry!!.source in validSources)
++        }
++    }
++}
+diff --git a/tests/HideCarrierInfoTest/src/grapheneos/hidecarrierinfotest/HideCarrierInfoTest.java b/tests/HideCarrierInfoTest/src/grapheneos/hidecarrierinfotest/HideCarrierInfoTest.java
+new file mode 100644
+index 000000000..b6d7e8245
+--- /dev/null
++++ b/tests/HideCarrierInfoTest/src/grapheneos/hidecarrierinfotest/HideCarrierInfoTest.java
+@@ -0,0 +1,73 @@
++package grapheneos.hidecarrierinfotest;
++
++import android.content.pm.GosPackageStateFlag;
++
++import com.android.tradefed.device.DeviceNotAvailableException;
++import com.android.tradefed.testtype.DeviceJUnit4ClassRunner;
++import com.android.tradefed.testtype.junit4.BaseHostJUnit4Test;
++import com.android.tradefed.testtype.junit4.DeviceTestRunOptions;
++
++import grapheneos.hardeningtest.TestUtils;
++
++import org.junit.Assert;
++import org.junit.Test;
++import org.junit.runner.RunWith;
++
++@RunWith(DeviceJUnit4ClassRunner.class)
++public class HideCarrierInfoTest extends BaseHostJUnit4Test {
++
++    private static final String TEST_PACKAGE = "app.grapheneos.hidecarrierinfotest";
++    private static final String DEVICE_TEST_CLASS = TEST_PACKAGE + ".HideCarrierInfoDeviceTest";
++
++    private static final String BIONIC_TEST_BINARY =
++            "/data/nativetest64/bionic-sysprop-tests/bionic-sysprop-tests";
++    private static final String BIONIC_HCI_FILTER =
++            "properties.__system_property_add_extended_override:" +
++            "properties.__system_property_update_extended_override_denylist";
++
++    private void runDeviceTest(String methodName) {
++        var opts = new DeviceTestRunOptions(TEST_PACKAGE);
++        opts.setTestClassName(DEVICE_TEST_CLASS);
++        opts.setTestMethodName(methodName);
++        try {
++            runDeviceTests(opts);
++        } catch (DeviceNotAvailableException e) {
++            throw new IllegalStateException(e);
++        }
++    }
++
++    private void setHideCarrierInfo(boolean isSet) {
++        TestUtils.setComplexFlagState(this, TEST_PACKAGE,
++                GosPackageStateFlag.HIDE_CARRIER_INFO,
++                GosPackageStateFlag.HIDE_CARRIER_INFO_NON_DEFAULT,
++                isSet);
++    }
++
++    // covers new extended sysprop overrides area
++    // + inheritance of ro.appcompat
++    // see bionic/tests/system_properties_test.cpp
++    // __system_property_add_extended_override()
++    // __system_property_update_extended_override_denylist()
++    @Test
++    public void testBionicProperties() throws DeviceNotAvailableException {
++        if (!getDevice().doesFileExist(BIONIC_TEST_BINARY)) {
++            return;
++        }
++        var result = getDevice().executeShellV2Command(
++                BIONIC_TEST_BINARY + " --gtest_filter=" + BIONIC_HCI_FILTER);
++        Assert.assertEquals(result.getStdout() + result.getStderr(),
++                0L, (long) result.getExitCode());
++    }
++
++    @Test
++    public void testCarrierInfoHidden() {
++        setHideCarrierInfo(true);
++        runDeviceTest("testCarrierInfoHidden");
++    }
++
++    @Test
++    public void testCarrierInfoVisible() {
++        setHideCarrierInfo(false);
++        runDeviceTest("testCarrierInfoVisible");
++    }
++}

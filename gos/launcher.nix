@@ -30,7 +30,7 @@ in
         "derpfest"
         "evox"
       ];
-      default = "stock";
+      default = "los";
       description = "launcher variant to build";
     };
   };
@@ -54,7 +54,7 @@ in
         lib.mkForce {
           src =
             if (config.launcherVariant == "los") then
-              sources.lineage_launcher3.src
+              sources.lineage_launcher3_wip.src
             else if (config.launcherVariant == "derpfest") then
               sources.derpfest_launcher3.src
             else
