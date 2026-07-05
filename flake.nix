@@ -165,14 +165,6 @@
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
             patches = [
-              /*
-                # in staging, not nixpkgs-unstable yet
-                (fetchpatch {
-                  name = "rust: 1.95.0 -> 1.96.0";
-                  url = "https://github.com/NixOS/nixpkgs/pull/525279.diff";
-                  hash = "sha256-bnaT7TKe/yz+7L9xZSSIubuP3YWnIpcKHrX4qYzRGGc=";
-                })
-              */
               (fetchpatch {
                 name = "gradle: reduce keytool noise";
                 url = "https://github.com/NixOS/nixpkgs/pull/472580.patch";
@@ -202,10 +194,6 @@
                 hash = "sha256-lPg+NKhTJVCDLuuDaKF9o7evPxjcGxD9Gh/M1X3yqag=";
               })
             ];
-            #postPatch = ''
-            #  # workaround for faulty applyPatches which doesn't work with renaming files
-            #  mv pkgs/development/compilers/rust/1_95.nix pkgs/development/compilers/rust/1_96.nix
-            #'';
           };
           nixpkgsSrc2 = applyPatches {
             src = nixpkgsSrc;
