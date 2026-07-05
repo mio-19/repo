@@ -30,7 +30,7 @@ in
         "derpfest"
         "evox"
       ];
-      default = "stock";
+      default = "los";
       description = "launcher variant to build";
     };
   };
