@@ -30,7 +30,7 @@ in
         "derpfest"
         "evox"
       ];
-      default = "los";
+      default = "stock";
       description = "launcher variant to build";
     };
   };
@@ -67,6 +67,11 @@ in
               name = "Move IDesktopMode to desktopmode.api";
               url = "https://github.com/GrapheneOS/platform_packages_apps_Launcher3/commit/eacf5cd09f473bbd01bb6bdf3d0ae6296a44b7dc.diff";
               hash = "sha256-PXwyBYBVL8VrVV2ZwuSMuWG7mY+YMmU/SKzH75UwHjc=";
+            })
+            (fetchpatch {
+              name = "Move RecentsDependencies usages to Dagger";
+              url = "https://github.com/GrapheneOS/platform_packages_apps_Launcher3/commit/81a7d61262b0bd6148a57933c2ecb773b70953f9.diff";
+              hash = "sha256-iojXHxoYV7XCZ8y+zPzjHfwQJnmWpGLQHMhzkLP+8bc=";
             })
           ]
           ++ lib.optionals (config.launcherVariant == "evox") [
