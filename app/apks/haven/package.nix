@@ -3,7 +3,7 @@
   lib,
   pkgs,
   jdk21_headless,
-  gradle_9_3_1,
+  gradle_9_4_1,
   stdenv,
   stdenvNoCC,
   fetchFromGitHub,
@@ -25,7 +25,9 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
+        s.platforms-android-37-0
         s.platforms-android-36
+        s.build-tools-37-0-0
         s.build-tools-36-0-0
         s.build-tools-35-0-0
         s.ndk-29-0-14206865
@@ -33,9 +35,9 @@ let
       ]);
       androidSdkRoot = "${androidSdk}/share/android-sdk";
       androidNdkRoot = "${androidSdkRoot}/ndk/29.0.14206865";
-      aapt2 = "${androidSdkRoot}/build-tools/36.0.0/aapt2";
+      aapt2 = "${androidSdkRoot}/build-tools/37.0.0/aapt2";
 
-      gradle = gradle_9_3_1;
+      gradle = gradle_9_4_1;
 
       xMobileSrc = fetchFromGitHub {
         owner = "golang";
@@ -81,7 +83,7 @@ let
         pname = "haven-rdp-transport-jni-libs";
         inherit (finalAttrs0) version src;
         cargoRoot = "rdp-kotlin/rust";
-        hash = "sha256-JTKDua+NjKtvNi8p0tY3UpvXYSYMzar/kYVwiBRgBM4=";
+        hash = "sha256-X60SJvO6Z5S6juonb2JqT2eKU1AeAE8MPuPs/eAM5rM=";
       };
 
       mkRdpTransportJniLib =
@@ -205,7 +207,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-0aIDOMSXFyHQs6Zzvinv6O26qHLizalo1RwPOpdXN1g=";
+        outputHash = "sha256-nzxS0RexWki3q0YDwCGjHiWbu2toCLKrGJzl8oS27uM=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -392,14 +394,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.68.12";
+      version = "5.68.17";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-6TL2eMEhzbEGCE0Grxy4p1hUckt4oU3pxoaL3F02bbE=";
+        hash = "sha256-/VJmAnuwD2xUDOPbhFsHMfFkmkP4ZBAeaQFZHsnWh1o=";
       };
 
       patches = [
