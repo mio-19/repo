@@ -6,7 +6,7 @@ This repository contains build scripts for android applications, operating syste
 
 This repository implemented a build system for gradle and maven to replace prebuilt jar with versions built with source code. Of couse the versions built with source code still have their own prebuilt dependencies jar. But now it is possible to gradually work towards the goal of fully building from source code. A challenge is bootstrapping.
 
-[Android App Readme](./app)
+For a redistribution-safe subset (no patched proprietary APKs, no `License: Proprietary` apps), use [`fdroid-repo-oss`](./app/by-name/fdroid-repo-oss/README.md).
 
 android devices rom configurations
 
@@ -15,42 +15,17 @@ modifications include kernelsu and pixel8 pro pwm mod.
 command examples:
 
 ```zsh
-nix build -L --max-jobs 4 .#los.gta4xlwifi.ota -o gta4xlwifi.zip
-nix build -L --max-jobs 4 .#los.gts7lwifi.ota -o gts7lwifi.zip
-nix build -L --max-jobs 4 .#losNoCcache.gts7lwifi.ota -o gts7l.zip
-nix build -L --max-jobs 4 .#los.gts7l.ota -o gts7l.zip
-nix build -L --max-jobs 4 .#losNoCcache.gts7l.ota -o gts7l.zip
-nix build -L --max-jobs 4 .#los.gts9wifi.ota -o gts9wifi.zip
-
 nix build -L --max-jobs 4 .#los.enchilada.ota -o enchilada.zip
 nix build -L --max-jobs 4 .#los.enchilada.img -o enchilada-img.zip
 nix build -L --max-jobs 4 .#los.enchilada_derpfest16.img -o enchilada-img.zip
 nix build -L --max-jobs 4 .#losNoCcache.enchilada.img -o enchilada-img.zip
 nix build -L --max-jobs 4 .#los.enchilada_mainline.img -o enchilada_mainline-img.zip
-nix build -L --max-jobs 4 .#los.utm.img -o utm-img.zip
 
-nix build -L --max-jobs 4 .#los.dm3q_cola2261.ota -o dm3q.zip
-nix build -L --max-jobs 4 .#los.gts9wifi.ota -o gts9wifi.zip
-
-nix build -L --max-jobs 4 .#gos.akita.ota
-
-
-
-nix build -L --max-jobs 4 .#los.gta4xlwifi.releaseScript -o release
-./release ./keys-akita
-
-
-
-nix build -L --max-jobs 4 .#gos.akita.releaseScript -o release && ./release ./keys-akita
 nix build -L --max-jobs 4 .#gos.husky.releaseScript -o release && ./release ./keys-husky
 nix build -L --max-jobs 4 .#gosNoCcache.husky.releaseScript -o release && ./release ./keys-husky
+
 nix build -L --max-jobs 4 .#gos.tangorpro.releaseScript -o release && ./release ./keys-tangorpro
 nix build -L --max-jobs 4 .#gosNoCcache.tangorpro.releaseScript -o release && ./release ./keys-tangorpro
-nix build -L --max-jobs 4 .#gos.mustang.releaseScript -o release && ./release ./keys-mustang
-nix build -L --max-jobs 4 .#gos.cheetah.releaseScript -o release && ./release ./keys-cheetah
-nix build -L --max-jobs 4 .#gosNoCcache.cheetah.releaseScript -o release && ./release ./keys-cheetah
-nix build -L --max-jobs 4 .#gos.caiman.releaseScript -o release && ./release ./keys-caiman
-nix build -L --max-jobs 4 .#gosNoCcache.caiman.releaseScript -o release && ./release ./keys-caiman
 ```
 
 It is recommended to have OEM unlocking to be on in developer options when flashing new versions to avoid bricked devices.
@@ -58,32 +33,18 @@ It is recommended to have OEM unlocking to be on in developer options when flash
 generate keys/updating keys:
 
 ```zsh
-nix build -L .#gos.akita.generateKeysScript -o generate-keys && ./generate-keys ./keys-akita
 nix build -L .#gos.husky.generateKeysScript -o generate-keys && ./generate-keys ./keys-husky
 nix build -L .#gos.tangorpro.generateKeysScript -o generate-keys && ./generate-keys ./keys-tangorpro
-nix build -L .#gos.mustang.generateKeysScript -o generate-keys && ./generate-keys ./keys-mustang
-nix build -L .#gos.cheetah.generateKeysScript -o generate-keys && ./generate-keys ./keys-cheetah
-nix build -L .#gosNoCcache.cheetah.generateKeysScript -o generate-keys && ./generate-keys ./keys-cheetah
-nix build -L .#gos.caiman.generateKeysScript -o generate-keys && ./generate-keys ./keys-caiman
-nix build -L .#gosNoCcache.caiman.generateKeysScript -o generate-keys && ./generate-keys ./keys-caiman
-nix build -L .#los.gta4xlwifi.generateKeysScript -o generate-keys && ./generate-keys ./keys-gta4xlwifi
 ```
 
 build kernels (for debugging and developement only):
 
 ```zsh
-nix build -L .#gta4xlwifi -o gta4xlwifi
-
-nix build -L .#gts7l_standalone -o gts7l
-
 # GrapheneOS husky (Pixel 8 Pro) kernel dist files
 nix build -L .#grapheneos-husky-kernel -o husky-kernel-dist
 
 # GrapheneOS tangorpro (Pixel Tablet) kernel dist files
 nix build -L .#grapheneos-tangorpro-kernel -o tangorpro-kernel-dist
-
-# GrapheneOS mustang (Pixel 10 Pro XL) kernel dist files
-nix build -L .#grapheneos-mustang-kernel -o mustang-kernel-dist
 ```
 
 ## ForkGram and other android applications
