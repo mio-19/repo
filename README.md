@@ -208,7 +208,7 @@ Still, it is a goal to improve this code. When resources are available, those co
 
 ## Disclaimers
 
-This repository is only available as source code only. The source code of build scripts in this repository are never executed but only looked at and reasoned about in human brains. The source code of build scripts are for demonstration purpose only, not for actually running. The source code describing a possiblity of building an application does not mean that the application is actually being built.
+This repository is only available as source code only. The source code of build scripts in this repository are never executed but only looked at and reasoned about in human brains. The source code of build scripts are for demonstration purpose only, not for actually running. The source code describing a possiblity of building an application does not mean that the application is actually being built. The source code might be a way of expression and not a usable tool. If you obtain a program from the source code here, the program is created by you.
 
 Using this repository may result in data loss, boot loops, bricked devices, injuries due to exploded devices, dead SD cards, thermonuclear war, lawsuit, banned account, money loss, or you getting fired because the alarm app failed. By proceeding, you accept full responsibility for any issues that may arise.
 
