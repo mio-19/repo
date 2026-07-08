@@ -3,8 +3,8 @@
   lib,
   stdenv,
   fetchurl,
-  morphe-cli,
-  morphe-patches,
+  morphe-cli_1_10_0_dev_9,
+  morphe-patches_1_34_0_dev_4,
   zip,
   unzip,
   androidSdkBuilder,
@@ -25,16 +25,16 @@ let
         hash = "sha256-8bSHG+zZXj/pWiDztoQR+5PpzrecXHiP9QTty9BOlfA=";
       };
 
-      morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
+      morphePatches = "${morphe-patches_1_34_0_dev_4}/patches-${morphe-patches_1_34_0_dev_4.version}.mpp";
     in
     stdenv.mkDerivation {
       pname = "reddit-morphe";
-      version = "2026.04.0-patches-${morphe-patches.version}";
+      version = "2026.04.0-patches-${morphe-patches_1_34_0_dev_4.version}";
 
       dontUnpack = true;
 
       nativeBuildInputs = [
-        morphe-cli
+        morphe-cli_1_10_0_dev_9
         unzip
         zip
       ];
