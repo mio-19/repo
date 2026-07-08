@@ -26,13 +26,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "thunderbird-android";
-      version = "20.0";
+      version = "20.1";
 
       src = fetchFromGitHub {
         owner = "thunderbird";
         repo = "thunderbird-android";
-        tag = "THUNDERBIRD_20_0";
-        hash = "sha256-0o1KVp73iVNFPOCLSB76IS2oYmSqWtsxvAVJocs6Bg0=";
+        tag = "THUNDERBIRD_20_1";
+        hash = "sha256-PAEchSUb8IE1cDfSVkWyx9EYZbZS+MKZ4X59Ars5+Mg=";
       };
 
       patches = [
