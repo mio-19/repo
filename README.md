@@ -1,26 +1,26 @@
-# 🌟 repo 🌟
+# repo
 
-Welcome to an amazing repository that contains build scripts for android applications, operating systems based on android, and full source code bootstrapping of gradle/maven/openjdk! 🎉
+This repository contains build scripts for android applications, operating systems based on android, and full source code bootstrapping of gradle/maven/openjdk.
 
-This repository is a fun and exciting proof of concept / toy project! The code quality might be affected negatively by llm, but we're constantly improving and experimenting.
+This repository is a proof of concept / toy project, as the code quality is currently affected by llm.
 
-**Note:** This repository contains many llm generated glue code. They might be written on creative false assumptions but amazingly, they happen to work! We love seeing things run. Don't worry too much, just have fun! See the later section "LLM" for more exciting details! 🚀
+Note: This repository contains many llm generated glue code. They might be written on false assumptions but happen to work. See later section LLM for more details.
 
-This repository successfully implemented an incredible build system for gradle and maven to replace prebuilt jars with versions built straight from the source code! Of course, the versions built with source code still have their own prebuilt dependencies jar. But now, it is possible to gradually work towards the wonderful goal of fully building from source code! A fun challenge is bootstrapping. For example, gradle uses old gradle to build. Expect some long build times when the build cache is not available, but the reward of a fresh build is totally worth the wait! 🌈
+This repository implemented a build system for gradle and maven to replace prebuilt jar with versions built with source code. Of couse the versions built with source code still have their own prebuilt dependencies jar. But now it is possible to gradually work towards the goal of fully building from source code. A challenge is bootstrapping. For example gradle uses old gradle to build. Expect long build time when build cache is not available.
 
-**Friendly Disclaimer:** Using this repository is an adventure! It may occasionally result in data loss, boot loops, bricked devices, injuries due to exploded devices, dead SD cards, thermonuclear war, lawsuit, banned account, money loss, or you getting fired because the alarm app failed. But hey, that's part of the fun of hacking! By proceeding, you accept full responsibility for any exciting issues that may arise! 😉
+Note: Using this repository may result in data loss, boot loops, bricked devices, injuries due to exploded devices, dead SD cards, thermonuclear war, lawsuit, banned account, money loss, or you getting fired because the alarm app failed. By proceeding, you accept full responsibility for any issues that may arise.
 
-**Note on Modifications:** Note that using some of the build scripts from this repository might be disallowed by copyright/trademark holders. Although many projects are distributed with a free software license, building a project from source code to create a working binary might be explicitly disallowed or a gray area even if the modification to the source code is just minimal building process related changes to be as close as possible with the prebuilt version. Let alone introducing patches to the projects. A project might explicitly demand icon change and logo change for modified versions. This repository is proudly available as source code only. The relevant source code of the build script in this repository is never executed but only enthusiastically looked at! The relevant source code of the build script is for demonstration purposes only, not for actually running. Please understand the responsibility if you decide to execute the build script in this repository to recreate a binary from source code even when the only change to the source code of an android application is to make it build and as close as possible to the prebuilt versions.
+Note that using some of the build scripts from this repository might be disallowed by copyright/trademark holders. Although many projects are distributed with a free software license, building a project from source code to create a working binary might be explicitly disallowed or a gray area even if the modification to the source code is just minimal building process related changes to be as close as possible with the prebuilt version. Let alone introducing patches to the projects. A project might explicitly demand icon change and logo change for modified versions. This repository is only available as source code only. The relavent source code of build script in this repository is never executed but only looked at. The relavent source code of build script is for demonstration purpose only, not for actually running. Please understand the responsibility if you decide to execute the build script in this repository to recreate a binary from source code even when the only change to the source code of an android application is to make it build and as close as possible to the prebuilt versions.
 
-**Another fun note:** Some nix files in this repository produce fully broken or mostly broken results, giving you the perfect opportunity to debug and learn! 🛠️
+Some nix files in this repository produce fully broken or mostly broken results, which can be improved later.
 
-We want the following incredible freedom on our devices: `The freedom to study how the program works, and change it so it does your computing as you wish (freedom 1). Access to the source code is a precondition for this.` However it is always false on certain operating systems. Certain operating systems in principle discourage users from modifying any application. We are here to change that! 🌟
+I want the following freedom on my devices: `The freedom to study how the program works, and change it so it does your computing as you wish (freedom 1). Access to the source code is a precondition for this.` However it is always false on certain operating systems. Certain operating systems in principle discourage users from modifying any application.
 
 [Android App Readme](./app)
 
 android devices rom configurations
 
-command examples to get you started building:
+command examples:
 
 ```zsh
 nix build -L --max-jobs 4 .#los.gta4xlwifi.ota -o gta4xlwifi.zip
@@ -61,9 +61,9 @@ nix build -L --max-jobs 4 .#gos.caiman.releaseScript -o release && ./release ./k
 nix build -L --max-jobs 4 .#gosNoCcache.caiman.releaseScript -o release && ./release ./keys-caiman
 ```
 
-It is highly recommended to have OEM unlocking to be on in developer options when flashing new versions to avoid bricked devices and keep the joy flowing! 🥳
+It is recommended to have OEM unlocking to be on in developer options when flashing new versions to avoid bricked devices.
 
-generate keys/updating keys is easy:
+generate keys/updating keys:
 
 ```zsh
 nix build -L .#gos.akita.generateKeysScript -o generate-keys && ./generate-keys ./keys-akita
@@ -77,7 +77,7 @@ nix build -L .#gosNoCcache.caiman.generateKeysScript -o generate-keys && ./gener
 nix build -L .#los.gta4xlwifi.generateKeysScript -o generate-keys && ./generate-keys ./keys-gta4xlwifi
 ```
 
-build kernels (for awesome debugging and developement only):
+build kernels (for debugging and developement only):
 
 ```zsh
 nix build -L .#gta4xlwifi -o gta4xlwifi
@@ -94,37 +94,38 @@ nix build -L .#grapheneos-tangorpro-kernel -o tangorpro-kernel-dist
 nix build -L .#grapheneos-mustang-kernel -o mustang-kernel-dist
 ```
 
-## 🤖 LLM Magic
+## LLM
 
-This repository contains many llm generated glue code. They might be written on false assumptions but happen to work! It's almost like magic! 🎩 Don't trust them completely, but definitely enjoy the results!
+This repository contains many llm generated glue code. They might be written on false assumptions but happen to work.
 
-Sometimes even with simple tasks they are just able to barely complete it with beautifully ugly and long workarounds after burning so many computational powers! We love to see the effort! 💖
+Sometimes even with simple task they are just able to barely complete it with ugly and long workarounds after burning so many computational powers.
 
-I happily choose the ugly and long build scripts with many workarounds over pre-built binaries any day!
+I choose the ugly and long build scripts with many workarounds over pre-built binaries.
 
-Glue code might be generated by llm. They are the kind of code that is simply good enough if they work. They are the kind of code that usually don't affect the final logic in any way. For example, it usually doesn't matter too much for the final result when packaging an android application with the correct way or an creatively incorrect way of copying files around into deprecated folder structure that happen to work wonderfully!
+Glue code might be generated by llm. They are the kind of code that is good enough if they work. They are the kind of code that usually don't affect the final logic in any way. For example, it usually doesn't matter too much for the final result when packaging an android application with the correct way or an incorrect way of copying files around into deprecated folder structure that happen to work.
 
-Still, it is an exciting goal to improve! When resources are available, those code shall be happily replaced by better written code one by one! ✨
+Still, it is a goal to improve this code. When resources are available, those code shall be replaced by better written code one by one.
 
-## 💖 Help Wanted
+## Help Wanted
 
-+ Please help us publish a pre-built repository for apk of distributable android applications in this repository!
-+ publish pre-built rom for this exciting operating system based on grapheneos that is not grapheneos! modifications wonderfully include kernelsu and pixel8 pro pwm mod!
++ publish a pre-built repository for apk of distributable android applications in this repository
 
-## 🛠️ Development
++ publish pre-built rom for this operating system based on grapheneos that is not grapheneos. modifications include kernelsu and pixel8 pro pwm mod.
 
-[AGENTS](./AGENTS.md) - This fantastic document helps llm to do things better and might also be somewhat helpful and fun for humans to read! 
+## Development
 
-## 📦 ForkGram and other amazing android applications
+[AGENTS](./AGENTS.md) - This document helps llm to do things better and might also be somewhat helpful for human. 
+
+## ForkGram and other android applications
 
 Build the APK (unsigned):
 
 ```zsh
 nix build .#apk_forkgram -o forkgram
-# APK at forkgram/forkgram.apk 🎉
+# APK at forkgram/forkgram.apk
 ```
 
-### 🔑 Generate a signing key
+### Generate a signing key
 
 ```zsh
 keytool -genkeypair -v \
@@ -137,7 +138,7 @@ keytool -genkeypair -v \
 > Note: modern JDKs create PKCS12 keystores which use the store password for
 > the key as well — do not pass a separate `-keypass`.
 
-### ✨ Re-sign the APK with your shiny new key
+### Re-sign the APK with your key
 
 ```zsh
 nix run .#apk_forkgram.signScript -- \
@@ -154,28 +155,28 @@ NIXPKGS_ALLOW_UNFREE=1 nix run --impure .#apk_meshtastic.signScript -- \
   --out meshtastic-signed.apk
 ```
 
-If `--ks-pass` is omitted the script wonderfully prompts interactively!
+If `--ks-pass` is omitted the script prompts interactively.
 
-Verify the excellent signature:
+Verify the signature:
 
 ```zsh
 apksigner verify --print-certs forkgram-signed.apk
 ```
 
-### 🌈 Build an unsigned F-Droid repo
+### Build an unsigned F-Droid repo
 
 ```zsh
 nix build .#fdroid-repo -o fdroid-repo
-# Unsigned APK staging at fdroid-repo/unsigned 🥳
+# Unsigned APK staging at fdroid-repo/unsigned
 ```
 
-For a brilliant redistribution-safe subset (no patched proprietary APKs, no `License: Proprietary` apps), please enthusiastically use [`fdroid-repo-oss`](./app/by-name/fdroid-repo-oss/README.md):
+For a redistribution-safe subset (no patched proprietary APKs, no `License: Proprietary` apps), use [`fdroid-repo-oss`](./app/by-name/fdroid-repo-oss/README.md):
 
 ```zsh
 nix build .#fdroid-repo-oss -o fdroid-repo-oss
 ```
 
-### ✍️ Sign APKs and F-Droid repo with your key
+### Sign APKs and F-Droid repo with your key
 
 ```zsh
 nix build .#sign-fdroid-repo -o sign-fdroid-repo
@@ -193,9 +194,9 @@ NIXPKGS_ALLOW_UNFREE=1 nix run --impure .#sign-fdroid-repo -- \
   --out fdroid-repo-signed
 ```
 
-Signed repo output is neatly tucked in `fdroid-repo-signed/repo`.
+Signed repo output is in `fdroid-repo-signed/repo`.
 
-OSS repo signing is just as fun (see [fdroid-repo-oss guide](./app/by-name/fdroid-repo-oss/README.md)):
+OSS repo signing (see [fdroid-repo-oss guide](./app/by-name/fdroid-repo-oss/README.md)):
 
 ```zsh
 nix build .#sign-fdroid-repo-oss -o sign-fdroid-repo-oss
@@ -205,25 +206,25 @@ nix build .#sign-fdroid-repo-oss -o sign-fdroid-repo-oss
   --out fdroid-repo-oss-signed
 ```
 
-Alias behavior is beautifully automatic (no `--alias` flag needed!):
+Alias behavior is automatic (no `--alias` flag):
 
-- Default: each APK is smartly signed with key alias = its appId/package name.
-- Termux family apps that cleverly require the shared Termux signature (`com.termux`, `com.termux.styling`, `org.gnu.emacs`) use shared alias `com.termux`.
-- Termux:X11 (`com.termux.x11`) uses its own awesome `com.termux.x11` alias.
-- `nix-on-droid` (`com.termux.nix`) lovingly keeps old alias `releasekey`.
+- Default: each APK is signed with key alias = its appId/package name.
+- Termux family apps that require the shared Termux signature (`com.termux`, `com.termux.styling`, `org.gnu.emacs`) use shared alias `com.termux`.
+- Termux:X11 (`com.termux.x11`) uses its own `com.termux.x11` alias.
+- `nix-on-droid` (`com.termux.nix`) keeps old alias `releasekey`.
 
-### ➕ Add missing key aliases to an existing keystore
+### Add missing key aliases to an existing keystore
 
-Use the handy helper script to effortlessly create aliases for newly added APKs in the same keystore:
+Use the helper script to create aliases for newly added APKs in the same keystore:
 
 ```zsh
 nix run .#fdroid-keystore-update -- my-release-key.jks --ks-pass password --alias org.joinmastodon.android
 nix run .#fdroid-keystore-update -- my-release-key.jks --ks-pass password --alias me.proton.android.lumo
 ```
 
-You can happily pass multiple `--alias` flags!
+You can pass multiple `--alias` flags.
 
-If `--alias` is omitted, it auto-discovers APK package names from `.#fdroid-repo` and magically ensures all required aliases automatically using the same brilliant mapping as `sign-fdroid-repo`:
+If `--alias` is omitted, it auto-discovers APK package names from `.#fdroid-repo` and ensures all required aliases automatically using the same mapping as `sign-fdroid-repo`:
 
 - `com.termux.nix` -> `releasekey`
 - `com.termux`, `com.termux.styling`, `org.gnu.emacs` -> `com.termux`
@@ -234,13 +235,13 @@ If `--alias` is omitted, it auto-discovers APK package names from `.#fdroid-repo
 nix run .#fdroid-keystore-update -- my-release-key.jks --ks-pass password
 ```
 
-For the awesome OSS repo, use `.#fdroid-keystore-update-oss` instead (see [fdroid-repo-oss guide](./app/by-name/fdroid-repo-oss/README.md)).
+For the OSS repo, use `.#fdroid-keystore-update-oss` instead (see [fdroid-repo-oss guide](./app/by-name/fdroid-repo-oss/README.md)).
 
-## 🔄 update
+## update
 
-Joyfully use update-nix-fetchgit and nvfetcher!
+use update-nix-fetchgit and nvfetcher
 
-## 🔒 lock
+## lock
 
 see <https://github.com/nix-community/robotnix/blob/a2c5626074199e6b990fdeb8107f43b73d0be17d/docs/src/installation.md?plain=1#L50>
 
@@ -250,9 +251,9 @@ see <https://github.com/nix-community/robotnix/blob/a2c5626074199e6b990fdeb8107f
     $ fastboot reboot bootloader
 ```
 
-## 📝 exciting todos!
+## todo
 
-fun reading material:
+read
 
 + <https://xdaforums.com/t/improving-s-pen-sensitivity-under-lineage-roms.4752027/>
 + <https://github.com/osbm/nixapks>
@@ -260,10 +261,10 @@ fun reading material:
 + <https://www.reddit.com/r/LineageOS/comments/1oaw2hj/comment/nkisxra/>
 + <https://github.com/GrapheneOS/os-issue-tracker/issues/5225>
 
-cool things to do:
+todo
 
 + Change apkPath placeholder out to finalpackage
-+ fix unstable hash!
++ unstable hash
 
 ```json
   "services.gradle": {
