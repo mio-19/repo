@@ -101,7 +101,7 @@ nix build .#fdroid-repo -o fdroid-repo
 # Unsigned APK staging at fdroid-repo/unsigned
 ```
 
-For a redistribution-safe subset (no patched proprietary APKs, no `License: Proprietary` apps), use [`fdroid-repo-oss`](./app/by-name/fdroid-repo-oss/README.md):
+For a probably redistribution-safe subset, use [`fdroid-repo-oss`](./app/by-name/fdroid-repo-oss/README.md):
 
 ```zsh
 nix build .#fdroid-repo-oss -o fdroid-repo-oss
