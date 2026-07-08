@@ -4,7 +4,7 @@ I want the following freedom on my devices: `The freedom to study how the progra
 
 This repository contains build scripts for android applications, operating systems based on android, and full source code bootstrapping of gradle/maven/openjdk.
 
-This repository implemented a build system for gradle and maven to replace prebuilt jar with versions built with source code. Of couse the versions built with source code still have their own prebuilt dependencies jar. But now it is possible to gradually work towards the goal of fully building from source code. A challenge is bootstrapping.
+This repository implemented a build system for gradle and maven to replace prebuilt jar with versions built with source code. Of couse the versions built with source code still have their own prebuilt dependencies jar. But now it is possible to gradually work towards the goal of fully building from source code.
 
 For a probably redistribution-safe subset, use [`fdroid-repo-oss`](./app/by-name/fdroid-repo-oss/README.md).
 
