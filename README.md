@@ -1,6 +1,6 @@
 # repo
 
-I want the following freedom on my devices: `The freedom to study how the program works, and change it so it does your computing as you wish (freedom 1). Access to the source code is a precondition for this.` F-Droid does not help. I need to build apps myself. I cannot figure out how to set up a fdroid build server properly to re-use their build scripts without errors, so I now have my nix build scripts.
+I want the following freedom on my devices: `The freedom to study how the program works, and change it so it does your computing as you wish (freedom 1). Access to the source code is a precondition for this.` F-Droid does not help. I need to build apps myself. I cannot figure out how to set up a fdroid build server properly to re-use their build scripts without errors, and I want more repeatable results, so I now have my nix build scripts.
 
 This repository contains build scripts for android applications, operating systems based on android, and full source code bootstrapping of gradle/maven/openjdk.
 
