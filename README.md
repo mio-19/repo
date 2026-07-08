@@ -1,6 +1,6 @@
 # repo
 
-I want the following freedom on my devices: `The freedom to study how the program works, and change it so it does your computing as you wish (freedom 1). Access to the source code is a precondition for this.`
+I want the following freedom on my devices: `The freedom to study how the program works, and change it so it does your computing as you wish (freedom 1). Access to the source code is a precondition for this.` F-Droid does not help. I need to build apps myself.
 
 This repository contains build scripts for android applications, operating systems based on android, and full source code bootstrapping of gradle/maven/openjdk.
 
