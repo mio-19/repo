@@ -6,7 +6,7 @@ This repository contains build scripts for android applications, operating syste
 
 This repository implemented a build system for gradle and maven to replace prebuilt jar with versions built with source code. Of couse the versions built with source code still have their own prebuilt dependencies jar. But now it is possible to gradually work towards the goal of fully building from source code. A challenge is bootstrapping.
 
-For a redistribution-safe subset (no patched proprietary APKs, no `License: Proprietary` apps), use [`fdroid-repo-oss`](./app/by-name/fdroid-repo-oss/README.md).
+For a probably redistribution-safe subset, use [`fdroid-repo-oss`](./app/by-name/fdroid-repo-oss/README.md).
 
 android devices rom configurations
 
