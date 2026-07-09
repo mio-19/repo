@@ -1,64 +1,31 @@
 # repo
 
+I want the following freedom on my devices: `The freedom to study how the program works, and change it so it does your computing as you wish (freedom 1). Access to the source code is a precondition for this.` F-Droid does not help. I need to build apps myself. I cannot figure out how to set up a fdroid build server properly to re-use their build scripts without errors, and I want more repeatable results, so I now have my nix build scripts.
+
 This repository contains build scripts for android applications, operating systems based on android, and full source code bootstrapping of gradle/maven/openjdk.
 
-This repository shall be treated only as a proof of concept / toy project as the code quality is affected negatively by llm.
+This repository implemented a build system for gradle and maven to replace prebuilt jar with versions built with source code. Of couse the versions built with source code still have their own prebuilt dependencies jar. But now it is possible to gradually work towards the goal of fully building from source code.
 
-Warning: This repository contains many llm generated glue code. They might be written on false assumptions but happen to work. Don't trust them. See later section LLM for more details.
-
-This repository implemented a build system for gradle and maven to replace prebuilt jar with versions built with source code. Of couse the versions built with source code still have their own prebuilt dependencies jar. But now it is possible to gradually work towards the goal of fully building from source code. A problem is bootstrapping. For example gradle uses old gradle to build. Expect long build time when build cache is not available.
-
-Warning: Using this repository may result in data loss, boot loops, bricked devices, injuries due to exploded devices, dead SD cards, thermonuclear war, lawsuit, banned account, money loss, or you getting fired because the alarm app failed. By proceeding, you accept full responsibility for any issues that may arise.
-
-Warning: Note that using some of the build scripts from this repository might be disallowed by copyright/trademark holders. Although many projects are distributed with a free software license, building a project from source code to create a working binary  might be explicitly disallowed or a gray area even if the modification to the source code is just minimal building process related changes to be as close as possible with the prebuilt version. Let alone introducing patches to the projects. A project might explicitly demand icon change and logo change for modified versions. This repository is only available as source code only. The relavent source code of build script in this repository is never executed but only looked at. The relavent source code of build script is for demonstration purpose only, not for actually running. Please understand the responsibility if you decide to possibly break the law to execute the build script in this repository to recreate a binary from source code even when the only change to the source code of an android application is to make it build and as close as possible to the prebuilt versions.
-
-Warning: Some nix files in this repository produce fully broken or mostly broken results.
-
-I want the following freedom on my devices: `The freedom to study how the program works, and change it so it does your computing as you wish (freedom 1). Access to the source code is a precondition for this.` However it is always false on certain operating systems. Certain operating systems in principle discourage users from modifying any application.
-
-[Android App Readme](./app)
+For a probably redistribution-safe subset, use [`fdroid-repo-oss`](./app/by-name/fdroid-repo-oss/README.md).
 
 android devices rom configurations
+
+modifications include kernelsu and pixel8 pro pwm mod.
 
 command examples:
 
 ```zsh
-nix build -L --max-jobs 4 .#los.gta4xlwifi.ota -o gta4xlwifi.zip
-nix build -L --max-jobs 4 .#los.gts7lwifi.ota -o gts7lwifi.zip
-nix build -L --max-jobs 4 .#losNoCcache.gts7lwifi.ota -o gts7l.zip
-nix build -L --max-jobs 4 .#los.gts7l.ota -o gts7l.zip
-nix build -L --max-jobs 4 .#losNoCcache.gts7l.ota -o gts7l.zip
-nix build -L --max-jobs 4 .#los.gts9wifi.ota -o gts9wifi.zip
-
 nix build -L --max-jobs 4 .#los.enchilada.ota -o enchilada.zip
 nix build -L --max-jobs 4 .#los.enchilada.img -o enchilada-img.zip
 nix build -L --max-jobs 4 .#los.enchilada_derpfest16.img -o enchilada-img.zip
 nix build -L --max-jobs 4 .#losNoCcache.enchilada.img -o enchilada-img.zip
 nix build -L --max-jobs 4 .#los.enchilada_mainline.img -o enchilada_mainline-img.zip
-nix build -L --max-jobs 4 .#los.utm.img -o utm-img.zip
 
-nix build -L --max-jobs 4 .#los.dm3q_cola2261.ota -o dm3q.zip
-nix build -L --max-jobs 4 .#los.gts9wifi.ota -o gts9wifi.zip
-
-nix build -L --max-jobs 4 .#gos.akita.ota
-
-
-
-nix build -L --max-jobs 4 .#los.gta4xlwifi.releaseScript -o release
-./release ./keys-akita
-
-
-
-nix build -L --max-jobs 4 .#gos.akita.releaseScript -o release && ./release ./keys-akita
 nix build -L --max-jobs 4 .#gos.husky.releaseScript -o release && ./release ./keys-husky
 nix build -L --max-jobs 4 .#gosNoCcache.husky.releaseScript -o release && ./release ./keys-husky
+
 nix build -L --max-jobs 4 .#gos.tangorpro.releaseScript -o release && ./release ./keys-tangorpro
 nix build -L --max-jobs 4 .#gosNoCcache.tangorpro.releaseScript -o release && ./release ./keys-tangorpro
-nix build -L --max-jobs 4 .#gos.mustang.releaseScript -o release && ./release ./keys-mustang
-nix build -L --max-jobs 4 .#gos.cheetah.releaseScript -o release && ./release ./keys-cheetah
-nix build -L --max-jobs 4 .#gosNoCcache.cheetah.releaseScript -o release && ./release ./keys-cheetah
-nix build -L --max-jobs 4 .#gos.caiman.releaseScript -o release && ./release ./keys-caiman
-nix build -L --max-jobs 4 .#gosNoCcache.caiman.releaseScript -o release && ./release ./keys-caiman
 ```
 
 It is recommended to have OEM unlocking to be on in developer options when flashing new versions to avoid bricked devices.
@@ -66,55 +33,19 @@ It is recommended to have OEM unlocking to be on in developer options when flash
 generate keys/updating keys:
 
 ```zsh
-nix build -L .#gos.akita.generateKeysScript -o generate-keys && ./generate-keys ./keys-akita
 nix build -L .#gos.husky.generateKeysScript -o generate-keys && ./generate-keys ./keys-husky
 nix build -L .#gos.tangorpro.generateKeysScript -o generate-keys && ./generate-keys ./keys-tangorpro
-nix build -L .#gos.mustang.generateKeysScript -o generate-keys && ./generate-keys ./keys-mustang
-nix build -L .#gos.cheetah.generateKeysScript -o generate-keys && ./generate-keys ./keys-cheetah
-nix build -L .#gosNoCcache.cheetah.generateKeysScript -o generate-keys && ./generate-keys ./keys-cheetah
-nix build -L .#gos.caiman.generateKeysScript -o generate-keys && ./generate-keys ./keys-caiman
-nix build -L .#gosNoCcache.caiman.generateKeysScript -o generate-keys && ./generate-keys ./keys-caiman
-nix build -L .#los.gta4xlwifi.generateKeysScript -o generate-keys && ./generate-keys ./keys-gta4xlwifi
 ```
 
 build kernels (for debugging and developement only):
 
 ```zsh
-nix build -L .#gta4xlwifi -o gta4xlwifi
-
-nix build -L .#gts7l_standalone -o gts7l
-
 # GrapheneOS husky (Pixel 8 Pro) kernel dist files
 nix build -L .#grapheneos-husky-kernel -o husky-kernel-dist
 
 # GrapheneOS tangorpro (Pixel Tablet) kernel dist files
 nix build -L .#grapheneos-tangorpro-kernel -o tangorpro-kernel-dist
-
-# GrapheneOS mustang (Pixel 10 Pro XL) kernel dist files
-nix build -L .#grapheneos-mustang-kernel -o mustang-kernel-dist
 ```
-
-## LLM
-
-This repository contains many llm generated glue code. They might be written on false assumptions but happen to work. Don't trust them.
-
-Sometimes even with simple task they are just able to barely complete it with ugly and long workarounds after burning so many computational powers.
-
-I choose the ugly and long build scripts with many workarounds over pre-built binaries.
-
-Glue code might be generated by llm. They are the kind of code that is good enough if they work. They are the kind of code that usually don't affect the final logic in any way. For example, it usually doesn't matter too much for the final result when packaging an android application with the correct way or an incorrect way of copying files around into deprecated folder structure that happen to work.
-
-Still, it is not good enough to have low quality code. When resources are available, those code shall be replaced by better written code one by one.
-
-## Help Wanted
-
-+ publish a pre-built repository for apk of distributable android applications in this repository
-
-+ publish pre-built rom for this operating system based on grapheneos that is not grapheneos. modifications include kernelsu and pixel8 pro pwm mod.
-
-## Development
-
-[AGENTS](./AGENTS.md) - This document helps llm to do things better and might also be somewhat helpful for human. 
 
 ## ForkGram and other android applications
 
@@ -170,7 +101,7 @@ nix build .#fdroid-repo -o fdroid-repo
 # Unsigned APK staging at fdroid-repo/unsigned
 ```
 
-For a redistribution-safe subset (no patched proprietary APKs, no `License: Proprietary` apps), use [`fdroid-repo-oss`](./app/by-name/fdroid-repo-oss/README.md):
+For a probably redistribution-safe subset, use [`fdroid-repo-oss`](./app/by-name/fdroid-repo-oss/README.md):
 
 ```zsh
 nix build .#fdroid-repo-oss -o fdroid-repo-oss
@@ -237,6 +168,16 @@ nix run .#fdroid-keystore-update -- my-release-key.jks --ks-pass password
 
 For the OSS repo, use `.#fdroid-keystore-update-oss` instead (see [fdroid-repo-oss guide](./app/by-name/fdroid-repo-oss/README.md)).
 
+## Help Wanted
+
++ publish a pre-built repository for apk of distributable android applications in this repository
+
++ publish pre-built rom for this operating system based on grapheneos that is not grapheneos.
+
+## Development
+
+[AGENTS](./AGENTS.md) - This document helps llm to do things better and might also be somewhat helpful for human. 
+
 ## update
 
 use update-nix-fetchgit and nvfetcher
@@ -250,6 +191,30 @@ see <https://github.com/nix-community/robotnix/blob/a2c5626074199e6b990fdeb8107f
     $ fastboot flash avb_custom_key ./avb_pkmd.bin
     $ fastboot reboot bootloader
 ```
+
+## LLM
+
+This repository is a proof of concept / toy project, as the code quality is currently affected by llm.
+
+This repository contains many llm generated glue code. They might be written on false assumptions but happen to work.
+
+Sometimes even with simple task they are just able to barely complete it with ugly and long workarounds after burning so many computational powers.
+
+I choose the ugly and long build scripts with many workarounds over pre-built binaries.
+
+Glue code might be generated by llm. They are the kind of code that is good enough if they work. They are the kind of code that usually don't affect the final logic in any way. For example, it usually doesn't matter too much for the final result when packaging an android application with the correct way or an incorrect way of copying files around into deprecated folder structure that happen to work.
+
+Still, it is a goal to improve this code. When resources are available, those code shall be replaced by better written code one by one.
+
+## Disclaimers
+
+This repository is only available as source code only. The source code of build scripts in this repository are never executed but only looked at and reasoned about in human brains. The source code of build scripts are for demonstration purpose only, not for actually running. The source code describing a possiblity of building an application does not mean that the application is actually being built. The source code might be a way of expression and not a usable tool. If you obtain a program from the source code here, the program is created by you.
+
+Using this repository may result in data loss, boot loops, bricked devices, injuries due to exploded devices, dead SD cards, thermonuclear war, lawsuit, banned account, money loss, or you getting fired because the alarm app failed. By proceeding, you accept full responsibility for any issues that may arise.
+
+Note that using some of the build scripts from this repository might be disallowed by copyright/trademark holders. Although many projects are distributed with a free software license, building a project from source code to create a working binary might be explicitly disallowed or a gray area even if the modification to the source code is just minimal building process related changes to be as close as possible with the prebuilt version. Let alone introducing patches to the projects. A project might explicitly demand icon change and logo change for modified versions.
+
+Some nix files in this repository produce fully broken or mostly broken results.
 
 ## todo
 

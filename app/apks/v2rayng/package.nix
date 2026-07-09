@@ -157,14 +157,14 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "v2rayng";
-      version = "2.2.5";
+      version = "2.2.6";
 
       src = fetchFromGitHub {
         owner = "2dust";
         repo = "v2rayNG";
         tag = finalAttrs.version;
         fetchSubmodules = true;
-        hash = "sha256-gqMeToGTHfKhmZf+vjMRXLdsDMwhL3Yoe4Qf/GVYJVE=";
+        hash = "sha256-X2qDQ8GYcXwGWUpStBlps7z2ZiGwXwoE//b6SU/hFBk=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/V2rayNG";

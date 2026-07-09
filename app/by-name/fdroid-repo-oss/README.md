@@ -1,21 +1,17 @@
 # fdroid-repo-oss
 
-An F-Droid repository containing only apps that are built from open-source code and are safe to redistribute. This is a subset of the full [`fdroid-repo`](../fdroid-repo/package.nix).
+TODO: This guide is from LLM. need to rewrite by human when time is available.
+
+An F-Droid repository containing only apps that are built from open-source code and are probably safe to redistribute. This is a subset of the full [`fdroid-repo`](../fdroid-repo/package.nix).
 
 ## What is included
 
 Apps are included when they:
 
 - have F-Droid metadata (`metadataYml` and `appId`)
-- are **not** marked `License: Proprietary` in that metadata
+- open source
 - are **not** on the explicit exclusion list (currently Telegram forks: `forkgram`, `forkgram-classic`)
 - can be built on the current platform (same Linux-only exclusions as `fdroid-repo`)
-
-Excluded categories in the full repo but **not** in this OSS repo:
-
-- ReVanced / Morphe / Piko / Hoodles / Brosssh patched proprietary APKs
-- other apps whose metadata declares a proprietary license
-- Telegram trademark derivatives (`forkgram`, `forkgram-classic`)
 
 ## Build the unsigned repo
 

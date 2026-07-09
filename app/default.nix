@@ -84,13 +84,16 @@
         directory = ./apks;
       };
       libBase = lib.makeScope pkgs.newScope (_: helpers // byName);
-      libs = lib.filesystem.packagesFromDirectoryRecursive {
-        inherit (libBase)
-          callPackage
-          newScope
-          ;
-        directory = ../libs;
-      };
+      libs = lib.makeScope libBase.newScope (
+        self:
+        let
+          libsRaw = lib.filesystem.packagesFromDirectoryRecursive {
+            callPackage = self.callPackage;
+            directory = ../libs;
+          };
+        in
+        lib.foldl' (acc: v: acc // v) { } (lib.attrValues libsRaw)
+      );
       byNameBase = lib.makeScope libBase.newScope (
         _:
         {

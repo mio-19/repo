@@ -83,7 +83,7 @@ let
         pname = "haven-rdp-transport-jni-libs";
         inherit (finalAttrs0) version src;
         cargoRoot = "rdp-kotlin/rust";
-        hash = "sha256-X60SJvO6Z5S6juonb2JqT2eKU1AeAE8MPuPs/eAM5rM=";
+        hash = "sha256-31gcLH1YvC5I6yo7eklY46vWpy7puc4H5O0WbEEdXK4=";
       };
 
       mkRdpTransportJniLib =
@@ -394,14 +394,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.68.17";
+      version = "5.68.20";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-/VJmAnuwD2xUDOPbhFsHMfFkmkP4ZBAeaQFZHsnWh1o=";
+        hash = "sha256-D5kjJWBSFk1l8gXEKxJBoeEGXNrA9DtJa4P3brQgtc4=";
       };
 
       patches = [
@@ -473,6 +473,7 @@ let
         ANDROID_NDK_ROOT = androidNdkRoot;
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = aapt2;
         HAVEN_SKIP_PYTHON_REQUIREMENTS = "1";
+        SKIP_QEMU_LOADERS = "1";
       };
 
       preConfigure = ''
