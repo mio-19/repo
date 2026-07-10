@@ -3,8 +3,8 @@
   lib,
   stdenv,
   fetchurl,
-  morphe-cli_1_10_0_dev_9,
-  morphe-patches_1_34_0_dev_4,
+  morphe-cli,
+  morphe-patches,
 }:
 let
   appPackage =
@@ -16,16 +16,16 @@ let
         hash = "sha256-5RijXuGlSq1lOgOU3OlZt3D1bckVmGoZng33GvNkr+0=";
       };
 
-      morphePatches = "${morphe-patches_1_34_0_dev_4}/patches-${morphe-patches_1_34_0_dev_4.version}.mpp";
+      morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
     in
     stdenv.mkDerivation {
       pname = "youtube-morphe";
-      version = "20.47.62-patches-${morphe-patches_1_34_0_dev_4.version}";
+      version = "20.47.62-patches-${morphe-patches.version}";
 
       dontUnpack = true;
 
       nativeBuildInputs = [
-        morphe-cli_1_10_0_dev_9
+        morphe-cli
       ];
 
       buildPhase = ''
@@ -35,7 +35,7 @@ let
         mkdir -p "$workdir"
         cp ${youtubeApk} "$workdir/input.apk"
         chmod u+w "$workdir/input.apk"
-        export MORPHE_VERSION_NAME_SUFFIX="-patches-${morphe-patches_1_34_0_dev_4.version}"
+        export MORPHE_VERSION_NAME_SUFFIX="-patches-${morphe-patches.version}"
 
         morphe-cli patch \
           --patches=${morphePatches} \
