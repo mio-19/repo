@@ -97,6 +97,7 @@ stdenv.mkDerivation (finalAttrs: {
       '        google()' \
       '        mavenCentral()' \
       '        maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }' \
+      '        maven { url = uri("file://" + System.getenv("INSTAGRAM_MORPHE_PATCHES_LIBRARY_M2")) }' \
       '        maven { url = uri("https://jitpack.io") }' \
       '    }' \
       '}' \
@@ -133,6 +134,7 @@ stdenv.mkDerivation (finalAttrs: {
         google()
         mavenCentral()
         maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }
+        maven { url = uri("file://" + System.getenv("INSTAGRAM_MORPHE_PATCHES_LIBRARY_M2")) }
         maven { url = uri("https://jitpack.io") }
     }
 
@@ -161,6 +163,33 @@ stdenv.mkDerivation (finalAttrs: {
         google()
         mavenCentral()
         maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }
+        maven { url = uri("file://" + System.getenv("INSTAGRAM_MORPHE_PATCHES_LIBRARY_M2")) }
+        maven { url = uri("https://jitpack.io") }
+    }
+    EOF
+
+    cat >> "$sourceRoot/extensions/shared/build.gradle.kts" << 'EOF'
+
+    repositories {
+        mavenLocal()
+        maven { url = rootProject.layout.buildDirectory.dir("m2").get().asFile.toURI() }
+        google()
+        mavenCentral()
+        maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }
+        maven { url = uri("file://" + System.getenv("INSTAGRAM_MORPHE_PATCHES_LIBRARY_M2")) }
+        maven { url = uri("https://jitpack.io") }
+    }
+    EOF
+
+    cat >> "$sourceRoot/extensions/shared/library/build.gradle.kts" << 'EOF'
+
+    repositories {
+        mavenLocal()
+        maven { url = rootProject.layout.buildDirectory.dir("m2").get().asFile.toURI() }
+        google()
+        mavenCentral()
+        maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }
+        maven { url = uri("file://" + System.getenv("INSTAGRAM_MORPHE_PATCHES_LIBRARY_M2")) }
         maven { url = uri("https://jitpack.io") }
     }
     EOF

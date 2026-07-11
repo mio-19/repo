@@ -1,6 +1,6 @@
 --- settings.gradle.kts
 +++ settings.gradle.kts
-@@ -5,14 +5,9 @@
+@@ -5,14 +5,10 @@
          mavenLocal()
          gradlePluginPortal()
          google()
@@ -12,6 +12,7 @@
 -                password = providers.gradleProperty("gpr.key").getOrElse(System.getenv("GITHUB_TOKEN"))
 -            }
 -        }
++        mavenCentral()
 +        maven { url = uri("file://" + System.getenv("MORPHE_PLUGIN_M2")) }
 +        maven { url = uri("file://" + System.getenv("MORPHE_LIBRARY_M2")) }
 +        maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }

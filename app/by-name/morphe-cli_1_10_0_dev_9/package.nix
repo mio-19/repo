@@ -2,6 +2,7 @@
   lib,
   jdk21_headless,
   gradle_8_14_3,
+  gradle_9_3_1,
   stdenv,
   fetchFromGitHub,
   makeWrapper,
@@ -23,7 +24,7 @@ let
     s.build-tools-35-0-0
   ]);
 
-  gradle = gradle_8_14_3;
+  gradle = gradle_9_3_1;
 
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
@@ -75,6 +76,7 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+    MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
   };
 
   # Set up the workspace: arrange all dependency sources as sibling directories,
