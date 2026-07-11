@@ -10,17 +10,16 @@ let
   appPackage =
     let
       youtubeApk = fetchurl {
-        # https://youtube.en.uptodown.com/android/download/1165342360
-        name = "youtube-20.47.62.apk";
-        url = "https://web.archive.org/web/20260507095312if_/https://dw.uptodown.net/dwn/IdhnqP6xT2dcasDhCpJg-1yfGw-8LuHpOvCHJQPRcEQRfjAshlfmJk5eMZEMFkLUFiDymwMcjGX7LS7GFgL8CFrZJ8ejG9wR6IeOm26dQIUKipReOhMLgwtXT_EPK3wJ/nI3U-UOyc3J3D4GJmZrN6DPh42TLqFmNYYdo4bpI_Jyq5F6lzwfaY4aqHGGO8tPIt3hX1qIW8eX7nsPCnJDZAJbKyrLmPaSdrKxGHc4KLCsZ2d9Wb6KcSM0YK94vnXis/E1bjO47fwVYrrSIV5f4pB0v9tSuWUqMpJWHBjjQNdawIIHSdbOuhoTnLW-CHFaCkUD9_ZmWOQC1WPMm-ARgmOw==/youtube-20-47-62.apk";
-        hash = "sha256-5RijXuGlSq1lOgOU3OlZt3D1bckVmGoZng33GvNkr+0=";
+        name = "youtube-21.25.523.xapk";
+        url = "https://web.archive.org/web/20260711073652if_/https://data.winudf.com/XAPK/Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmVfMTU2MTE3OTk3Nl9iZjNkMjMxZQ?_p=Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmU%3D&download_id=1376001748427698&filename=YouTube_21.25.523_APKPure.xapk&full_size=152431534&is_hot=true&k=93e080bdc2bf8f1bfe753e78959a76a56a549569&package_name=com.google.android.youtube&source=web&token=1783755369-9884ee6b38-0-1d3fb56337050385ea862c0aec7acea0";
+        hash = "";
       };
 
       morphePatches = "${morphe-patches_1_34_0_dev_4}/patches-${morphe-patches_1_34_0_dev_4.version}.mpp";
     in
     stdenv.mkDerivation {
       pname = "youtube-morphe";
-      version = "20.47.62-patches-${morphe-patches_1_34_0_dev_4.version}";
+      version = "21.25.523-patches-${morphe-patches_1_34_0_dev_4.version}";
 
       dontUnpack = true;
 
