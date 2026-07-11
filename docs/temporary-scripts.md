@@ -1,3 +1,12 @@
+# Temporary Scripts
+
+This document stores temporary scripts created to solve specific problems. These scripts should generally only be used when normal methods (such as update scripts) have failed.
+
+## get_hashes.sh
+
+This script was used to fetch the source tarball hashes for a list of applications to fix hash mismatch issues during package updates when `check_updates.py` failed to provide accurate hashes.
+
+```bash
 #!/usr/bin/env bash
 urls=(
   "biliroaming https://github.com/yujincheng08/BiliRoaming/archive/5653b06.tar.gz"
@@ -16,3 +25,4 @@ for entry in "${urls[@]}"; do
   hash=$(nix-prefetch-url --unpack "$url" 2>/dev/null)
   nix hash to-sri --type sha256 "$hash"
 done
+```
