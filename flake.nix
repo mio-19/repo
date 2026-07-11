@@ -298,7 +298,9 @@
 
           # nix run github:mio-19/repo#gradle2nix
           packages.gradle2nix = gradle2nixPatched.packages.${system}.gradle2nix;
-          packages.gradle2nixSrc = gradle2nixPatched.outPath;
+          packages.gradle2nixSrc = pkgs.runCommand "gradle2nixSrc" {} ''
+            ln -s ${gradle2nixPatched.outPath} $out
+          '';
           # nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json
           packages.mvn2nix = inputs.mvn2nix.packages.${system}.mvn2nix;
 
