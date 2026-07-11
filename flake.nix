@@ -1,8 +1,7 @@
 {
   inputs = {
-    #nixpkgs.url = "https://nixos.org/channels/nixpkgs-unstable/nixexprs.tar.xz";
+    nixpkgs.url = "https://nixos.org/channels/nixpkgs-unstable/nixexprs.tar.xz";
     #nixpkgs.url = "https://nixos.org/channels/nixos-unstable-small/nixexprs.tar.xz";
-    nixpkgs.url = "github:NixOS/nixpkgs/0bb7ec54c8483066ec9d7720e780a5caa71f8612"; # from https://hydra.nixos.org/job/nixos/unstable/tested#tabs-constituents
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs-python27.url = "https://nixos.org/channels/nixos-26.05-small/nixexprs.tar.xz";
@@ -298,7 +297,7 @@
 
           # nix run github:mio-19/repo#gradle2nix
           packages.gradle2nix = gradle2nixPatched.packages.${system}.gradle2nix;
-          packages.gradle2nixSrc = pkgs.runCommand "gradle2nixSrc" {} ''
+          packages.gradle2nixSrc = pkgs.runCommand "gradle2nixSrc" { } ''
             ln -s ${gradle2nixPatched.outPath} $out
           '';
           # nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json
