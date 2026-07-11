@@ -93,11 +93,14 @@ in
       url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/263.diff";
       hash = "sha256-Hw3BLHwJsXmu5482QWZC+DsqBDxaV0F1fCDgwna5AVQ=";
     })
-    (fetchpatch {
-      name = "SystemUI: Add Usb Tethering QS Tile";
-      url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/336.diff";
-      hash = "sha256-4cwOJBeXOAYtLUsJCpK/bSXRIM1JjkgSStQuz1jy0fM=";
-    })
+    /*
+      # merge conflict
+      (fetchpatch {
+        name = "SystemUI: Add Usb Tethering QS Tile";
+        url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/336.diff";
+        hash = "sha256-4cwOJBeXOAYtLUsJCpK/bSXRIM1JjkgSStQuz1jy0fM=";
+      })
+    */
 
     #./Disable-FLAG_SECURE.patch
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
