@@ -84,7 +84,7 @@ in
     (fetchpatch {
       name = "Fix cell-based location accuracy and geocoder robustness";
       url = "https://github.com/GrapheneOS/platform_packages_apps_NetworkLocation/pull/35.diff";
-      hash = "sha256-Qfo8Z4em5cU+v1u2cignkWqVsO76J7sAMvr90GWYFU0=";
+      hash = "sha256-IrlSRaaJwaVkuTr1apNBD1etnh4p1MnPTNc7jc2ZIDc=";
     })
   ];
   source.dirs."frameworks/base".patches = [
