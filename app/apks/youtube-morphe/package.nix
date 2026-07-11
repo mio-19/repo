@@ -32,8 +32,6 @@ let
 
         workdir="$TMPDIR/youtube-morphe"
         mkdir -p "$workdir"
-        cp ${youtubeApk} "$workdir/input.apk"
-        chmod u+w "$workdir/input.apk"
         export MORPHE_VERSION_NAME_SUFFIX="-patches-${morphe-patches_1_34_0_dev_4.version}"
 
         morphe-cli patch \
@@ -44,7 +42,7 @@ let
           --unsigned \
           --temporary-files-path "$workdir/tmp" \
           --out "$workdir/youtube-morphe.apk" \
-          "$workdir/input.apk"
+          ${youtubeApk}
 
         runHook postBuild
       '';
