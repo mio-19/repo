@@ -4,7 +4,7 @@
   stdenv,
   fetchurl,
   morphe-cli_1_10_0_dev_9,
-  morphe-patches_1_34_0_dev_4,
+  morphe-patches,
 }:
 let
   appPackage =
@@ -15,11 +15,11 @@ let
         hash = "sha256-TmppeMyIEgQrQaa6jKBh8BOJe+Mqjv7gthnC3TV4n0A=";
       };
 
-      morphePatches = "${morphe-patches_1_34_0_dev_4}/patches-${morphe-patches_1_34_0_dev_4.version}.mpp";
+      morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
     in
     stdenv.mkDerivation {
       pname = "youtube-morphe";
-      version = "21.25.523-patches-${morphe-patches_1_34_0_dev_4.version}";
+      version = "21.25.523-patches-${morphe-patches.version}";
 
       dontUnpack = true;
 
@@ -32,7 +32,7 @@ let
 
         workdir="$TMPDIR/youtube-morphe"
         mkdir -p "$workdir"
-        export MORPHE_VERSION_NAME_SUFFIX="-patches-${morphe-patches_1_34_0_dev_4.version}"
+        export MORPHE_VERSION_NAME_SUFFIX="-patches-${morphe-patches.version}"
 
         morphe-cli patch \
           --patches=${morphePatches} \
