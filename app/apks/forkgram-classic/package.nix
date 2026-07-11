@@ -40,7 +40,11 @@ buildGradlePackage rec {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = if stdenv.isDarwin then "" else "sha256-JVKaymjjkL1APsRX/AwYCRT8cXLQVt3yzQN/mQTUZNs=";
+    hash =
+      if stdenv.isDarwin then
+        "sha256-ELz4NpROICcEUcTtinpdzjIMuXR/9Gyz8DmGmZXTBzM="
+      else
+        "sha256-JVKaymjjkL1APsRX/AwYCRT8cXLQVt3yzQN/mQTUZNs=";
     fetchSubmodules = true;
   };
 
