@@ -1,0 +1,22 @@
+--- PatchesExtension.kt
++++ PatchesExtension.kt
+@@ -25,12 +25,12 @@
+      * Used by the patches plugin to create the manifest file and set up the publication of the patches project.
+      */
+     class About {
+-        var name: String? = null
+-        var description: String? = null
+-        var source: String? = null
+-        var author: String? = null
+-        var contact: String? = null
+-        var website: String? = null
+-        var license: String? = null
++        var name: String? = "Morphe Patches"
++        var description: String? = "Patches for Morphe"
++        var source: String? = "git@github.com:MorpheApp/morphe-patches.git"
++        var author: String? = "MorpheApp"
++        var contact: String? = "na"
++        var website: String? = "https://morphe.software"
++        var license: String? = "GNU General Public License v3.0, with additional GPL section 7 requirements"
+     }
+ }

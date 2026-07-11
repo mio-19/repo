@@ -3,29 +3,28 @@
   lib,
   stdenv,
   fetchurl,
-  morphe-cli,
-  morphe-patches,
+  morphe-cli_1_10_0_dev_9,
+  morphe-patches_1_34_0_dev_4,
 }:
 let
   appPackage =
     let
       youtubeMusicApk = fetchurl {
-        # https://youtube-music.en.uptodown.com/android/download/1164645913-x
-        name = "youtube-music-8.47.56.apk";
-        url = "https://web.archive.org/web/20260507094903if_/https://dw.uptodown.net/dwn/MFhQ8_gxRt-iwo-ip3SSEvXz2URDWbEvJa1VW5E5CY00eaurN8S5euBXJStp8VNfRc6T_8UPIBZzZDDRsjTsw-UsqM4QHo__2GOB25F3d6HKuP_WvTUFqp8vIi110pnN/uMMoLcNJq_uDd3yis7FL-VEta8MdZQXkGUsKlsa7XnAW61zplE8l3J6Myzv8993gAHuHbqcWfSWqbx9d9GNLSjd4TwTmAUV9Bw6tk3mo1Ju6Ze_SBa6aPGjN5gQJBlEn/pxOEgaYm2OPaBFn76E2LzVBd96O6d_0rtEKf0gjLcLbXF9bt0U4fkEUw08SOmschh_mCqlDtxrXCmsilH6qEwenDPf56d17EhJzaeYG2dZY=/youtube-music-8-47-56.apk";
-        hash = "sha256-yTTvRQ3TywSpOh6EKmdRJTihAckBFUION8RndH6P7NI=";
+        name = "youtube-music-9.25.50_APKPure.apk";
+        url = "https://web.archive.org/web/20260711073943if_/https://data.winudf.com/APK/Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpY185MjU1MDI0MF80MTAxOTAzNA?_p=Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpYw%3D%3D&download_id=1024603002796928&filename=YouTube+Music_9.25.50_APKPure.apk&full_size=67702020&is_hot=true&k=c2605596946d1b3733bf611bc4adbdcd6a5495e1&package_name=com.google.android.apps.youtube.music&source=web&token=1783755489-c07846e6dc-0-0d041d9ab9e1e92fe10727380d92c0e8";
+        hash = "sha256-5FnbADy/45YSx/hD/OHPKVShgNugxYSl8GJfwNUbEf0=";
       };
 
-      morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
+      morphePatches = "${morphe-patches_1_34_0_dev_4}/patches-${morphe-patches_1_34_0_dev_4.version}.mpp";
     in
     stdenv.mkDerivation {
       pname = "youtube-music-morphe";
-      version = "8.44.54-patches-${morphe-patches.version}";
+      version = "9.25.50-patches-${morphe-patches_1_34_0_dev_4.version}";
 
       dontUnpack = true;
 
       nativeBuildInputs = [
-        morphe-cli
+        morphe-cli_1_10_0_dev_9
       ];
 
       buildPhase = ''
@@ -33,7 +32,7 @@ let
 
         workdir="$TMPDIR/youtube-music-morphe"
         mkdir -p "$workdir"
-        export MORPHE_VERSION_NAME_SUFFIX="-patches-${morphe-patches.version}"
+        export MORPHE_VERSION_NAME_SUFFIX="-patches-${morphe-patches_1_34_0_dev_4.version}"
 
         morphe-cli patch \
           --patches=${morphePatches} \

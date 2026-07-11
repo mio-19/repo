@@ -69,6 +69,7 @@ stdenv.mkDerivation (finalAttrs: {
     cp -a ${jadb-src} "$root/jadb"
     chmod -R u+w "$root/jadb"
     mkdir -p "$root/.m2/repository/app/morphe/jadb/1.2.1"
+    mkdir -p "$root/.m2/repository/app/morphe/jadb/1.2.3"
     (
       cd "$root/jadb"
       find src -name '*.java' > /tmp/jadb-sources.txt
@@ -78,6 +79,7 @@ stdenv.mkDerivation (finalAttrs: {
         @/tmp/jadb-sources.txt 2>/dev/null || true
       cd build/classes
       jar cf "$root/.m2/repository/app/morphe/jadb/1.2.1/jadb-1.2.1.jar" .
+      jar cf "$root/.m2/repository/app/morphe/jadb/1.2.3/jadb-1.2.3.jar" .
     )
     cat > "$root/.m2/repository/app/morphe/jadb/1.2.1/jadb-1.2.1.pom" << 'POMEOF'
     <?xml version="1.0" encoding="UTF-8"?>
@@ -86,6 +88,15 @@ stdenv.mkDerivation (finalAttrs: {
       <groupId>app.morphe</groupId>
       <artifactId>jadb</artifactId>
       <version>1.2.1</version>
+    </project>
+    POMEOF
+    cat > "$root/.m2/repository/app/morphe/jadb/1.2.3/jadb-1.2.3.pom" << 'POMEOF'
+    <?xml version="1.0" encoding="UTF-8"?>
+    <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+      <modelVersion>4.0.0</modelVersion>
+      <groupId>app.morphe</groupId>
+      <artifactId>jadb</artifactId>
+      <version>1.2.3</version>
     </project>
     POMEOF
 

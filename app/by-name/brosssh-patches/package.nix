@@ -8,7 +8,8 @@
   writableTmpDirAsHomeHook,
   morphe-patches-gradle-plugin_1_3_2_dev_2,
   morphe-library-m2,
-  morphe-patches-library-m2_1_3_3,
+  morphe-patches-library-m2_1_4_1_dev_5,
+  instagram-morphe-patches-library-m2_1_1_0_dev_3,
   apktool-src,
   multidexlib2-src,
   morphe-patcher-src,
@@ -44,13 +45,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "brosssh-patches";
-  version = "2.6.3";
+  version = "2.8.0";
 
   src = fetchFromGitHub {
     owner = "brosssh";
     repo = "morphe-patches";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-+RGK9sq56BMJTIpj/aacV/i8zJlets+QzL4xk3Lj6+A=";
+    hash = "sha256-+1TCyOZj3xLIUuQl+cSgb5ljswYyNyQ4oTs/yW/LtPA=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -70,8 +71,6 @@ stdenv.mkDerivation (finalAttrs: {
     chmod -R u+w "$root/multidexlib2"
     patch -d "$root/multidexlib2" -p3 < ${./multidexlib2-gradle-9.patch}
 
-    substituteInPlace "$sourceRoot/gradle/libs.versions.toml" \
-      --replace-fail 'morphe-patches-library = "1.2.0"' 'morphe-patches-library = "1.3.3"'
 
     cat >> "$sourceRoot/build.gradle.kts" <<EOF
 
@@ -82,6 +81,7 @@ stdenv.mkDerivation (finalAttrs: {
             mavenCentral()
             google()
             maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }
+            maven { url = uri("file://" + System.getenv("INSTAGRAM_MORPHE_PATCHES_LIBRARY_M2")) }
             maven { url = uri("https://jitpack.io") }
         }
     }
@@ -97,6 +97,7 @@ stdenv.mkDerivation (finalAttrs: {
       '        google()' \
       '        mavenCentral()' \
       '        maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }' \
+      '        maven { url = uri("file://" + System.getenv("INSTAGRAM_MORPHE_PATCHES_LIBRARY_M2")) }' \
       '        maven { url = uri("https://jitpack.io") }' \
       '    }' \
       '}' \
@@ -133,6 +134,7 @@ stdenv.mkDerivation (finalAttrs: {
         google()
         mavenCentral()
         maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }
+        maven { url = uri("file://" + System.getenv("INSTAGRAM_MORPHE_PATCHES_LIBRARY_M2")) }
         maven { url = uri("https://jitpack.io") }
     }
 
@@ -161,6 +163,33 @@ stdenv.mkDerivation (finalAttrs: {
         google()
         mavenCentral()
         maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }
+        maven { url = uri("file://" + System.getenv("INSTAGRAM_MORPHE_PATCHES_LIBRARY_M2")) }
+        maven { url = uri("https://jitpack.io") }
+    }
+    EOF
+
+    cat >> "$sourceRoot/extensions/shared/build.gradle.kts" << 'EOF'
+
+    repositories {
+        mavenLocal()
+        maven { url = rootProject.layout.buildDirectory.dir("m2").get().asFile.toURI() }
+        google()
+        mavenCentral()
+        maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }
+        maven { url = uri("file://" + System.getenv("INSTAGRAM_MORPHE_PATCHES_LIBRARY_M2")) }
+        maven { url = uri("https://jitpack.io") }
+    }
+    EOF
+
+    cat >> "$sourceRoot/extensions/shared/library/build.gradle.kts" << 'EOF'
+
+    repositories {
+        mavenLocal()
+        maven { url = rootProject.layout.buildDirectory.dir("m2").get().asFile.toURI() }
+        google()
+        mavenCentral()
+        maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }
+        maven { url = uri("file://" + System.getenv("INSTAGRAM_MORPHE_PATCHES_LIBRARY_M2")) }
         maven { url = uri("https://jitpack.io") }
     }
     EOF
@@ -192,7 +221,8 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
     MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_2_dev_2}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
-    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_3_3}";
+    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_4_1_dev_5}";
+    INSTAGRAM_MORPHE_PATCHES_LIBRARY_M2 = "${instagram-morphe-patches-library-m2_1_1_0_dev_3}";
   };
 
   preConfigure = ''

@@ -2,6 +2,7 @@
   lib,
   jdk21_headless,
   gradle_8_14_3,
+  gradle_9_3_1,
   stdenv,
   fetchFromGitHub,
   makeWrapper,
@@ -23,7 +24,7 @@ let
     s.build-tools-35-0-0
   ]);
 
-  gradle = gradle_8_14_3;
+  gradle = gradle_9_3_1;
 
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
@@ -33,8 +34,8 @@ let
   };
 
   revanced-cli-deps = lib.importJSON ../revanced-cli/revanced-cli_deps.json;
-  morphe-patches-deps = lib.importJSON ../morphe-patches/morphe-patches_deps.json;
-  morphe-cli-deps = lib.importJSON ./morphe-cli_deps.json;
+  morphe-patches-deps = lib.importJSON ../morphe-patches_1_34_0_dev_4/morphe-patches_1_34_0_dev_4_deps.json;
+  morphe-cli-deps = lib.importJSON ./morphe-cli_1_10_0_dev_9_deps.json;
   morphe-cli-deps-filtered = morphe-cli-deps // {
     "https:/" = builtins.removeAttrs morphe-cli-deps."https:/" [ "api.github" ];
   };
@@ -42,13 +43,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-cli";
-  version = "1.9.1";
+  version = "1.10.0-dev.9";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-cli";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-Sskl5TvEuelLu/aMSAXp7pRdz4qw8nJhFGnDw98u/DA=";
+    hash = "sha256-/Gz7nJnvvMwPCmqFopC/krfVMZa+n+ifw3q65tc6YVA=";
   };
 
   gradleBuildTask = "shadowJar";
@@ -75,6 +76,7 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+    MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
   };
 
   # Set up the workspace: arrange all dependency sources as sibling directories,

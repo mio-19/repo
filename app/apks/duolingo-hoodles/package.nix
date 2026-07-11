@@ -3,7 +3,7 @@
   lib,
   stdenv,
   fetchurl,
-  morphe-cli,
+  morphe-cli_1_10_0_dev_9,
   hoodles-patches,
   zip,
   unzip,
@@ -35,7 +35,7 @@ let
       dontUnpack = true;
 
       nativeBuildInputs = [
-        morphe-cli
+        morphe-cli_1_10_0_dev_9
         unzip
         zip
       ];

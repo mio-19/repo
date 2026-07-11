@@ -4,7 +4,7 @@
   lib,
   stdenv,
   fetchurl,
-  morphe-cli,
+  morphe-cli_1_10_0_dev_9,
   brosssh-patches,
 }:
 let
@@ -33,7 +33,7 @@ let
       cp ${instagramApkm} "$workdir/input.apkm"
       chmod u+w "$workdir/input.apkm"
 
-      ${lib.getExe morphe-cli} patch \
+      ${lib.getExe morphe-cli_1_10_0_dev_9} patch \
         --patches=${brossshPatches} \
         --unsigned \
         --enable="Sanitize sharing URLs" \
