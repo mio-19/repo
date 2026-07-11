@@ -12,7 +12,7 @@ let
       youtubeApk = fetchurl {
         name = "youtube-21.25.523.xapk";
         url = "https://web.archive.org/web/20260711073652if_/https://data.winudf.com/XAPK/Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmVfMTU2MTE3OTk3Nl9iZjNkMjMxZQ?_p=Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmU%3D&download_id=1376001748427698&filename=YouTube_21.25.523_APKPure.xapk&full_size=152431534&is_hot=true&k=93e080bdc2bf8f1bfe753e78959a76a56a549569&package_name=com.google.android.youtube&source=web&token=1783755369-9884ee6b38-0-1d3fb56337050385ea862c0aec7acea0";
-        hash = "";
+        hash = "sha256-TmppeMyIEgQrQaa6jKBh8BOJe+Mqjv7gthnC3TV4n0A=";
       };
 
       morphePatches = "${morphe-patches_1_34_0_dev_4}/patches-${morphe-patches_1_34_0_dev_4.version}.mpp";
