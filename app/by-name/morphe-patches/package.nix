@@ -94,6 +94,9 @@ stdenv.mkDerivation (finalAttrs: {
     substituteInPlace "$sourceRoot/settings.gradle.kts" \
       --replace-fail 'version "1.3.3-dev.2"' 'version "1.3.3-dev.1"'
 
+    substituteInPlace "$sourceRoot/gradle/libs.versions.toml" \
+      --replace-fail 'morphe-patches-library = "1.5.0-dev.3"' 'morphe-patches-library = "1.4.2-dev.3"'
+
     cat >> "$sourceRoot/build.gradle.kts" << 'EOF'
 
     allprojects {
