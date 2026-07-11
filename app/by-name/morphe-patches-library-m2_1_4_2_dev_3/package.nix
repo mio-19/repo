@@ -26,7 +26,7 @@ let
     owner = "MorpheApp";
     repo = "ARSCLib";
     rev = "d003b5ff1ca91fb8c5105619cf1108b450387061";
-    hash = "sha256:1bp24gd20rf4mycdvkicldmxs7c17m9j20py1kbg2iafmk9v9cvm";
+    hash = "sha256-2UO6zDAFeURrt9U9f7gNDA8J5X3o8Ct96/rItUq644g=";
   };
 in
 stdenv.mkDerivation (finalAttrs: {
@@ -36,8 +36,8 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches-library";
-    rev = "v${finalAttrs.version}";
-    hash = "sha256:1bp24gd20rf4mycdvkicldmxs7c17m9j20py1kbg2iafmk9v9cvm";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-dbO006xORfHWDP4CIVM9gR3da6Mszt2Yr8RlINoj4q4=";
   };
 
   gradleBuildTask = "publish";
@@ -75,6 +75,8 @@ stdenv.mkDerivation (finalAttrs: {
     root="$PWD"
     cp -a ${morphe-patcher-src} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
+    cp -a ${arsclib-src} "$root/ARSCLib"
+    chmod -R u+w "$root/ARSCLib"
     cp -a ${apktool-src} "$root/Apktool"
     chmod -R u+w "$root/Apktool"
     patch -d "$root/Apktool" -p3 < ${../brosssh-patches/apktool-gradle-9.patch}
