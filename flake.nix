@@ -227,8 +227,12 @@
                 fdroidserver = pkgs.fdroidserver.override {
                   python3Packages = pkgs.python312Packages.override {
                     overrides = pfinal: pprev: {
-                      mwclient = pprev.mwclient.overridePythonAttrs (old: { doCheck = false; });
-                      ruamel-yaml = pprev.ruamel-yaml.overridePythonAttrs (old: { doCheck = false; });
+                      mwclient = pprev.mwclient.overridePythonAttrs (old: {
+                        doCheck = false;
+                      });
+                      ruamel-yaml = pprev.ruamel-yaml.overridePythonAttrs (old: {
+                        doCheck = false;
+                      });
                     };
                   };
                 };
