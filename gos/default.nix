@@ -208,7 +208,7 @@ in
   source.dirs."external/Info".postPatch = replace_app "Info" "apk_grapheneos-info";
   source.dirs."external/Camera".postPatch = replace_app "Camera" "apk_grapheneos-camera";
   source.dirs."external/AppStore".postPatch = replace_app "app-release" "apk_appstore";
-  source.dirs."external/PdfViewer".postPatch = replace_app "PdfViewer" "apk_pdfviewer";
+  source.dirs."external/PdfViewer".postPatch = replace_app "app-release" "apk_pdfviewer";
   signing.extraApks = {
     "InfoApp.apk" = "grapheneos_info";
     "Camera.apk" = "grapheneos_camera";
