@@ -259,34 +259,36 @@
                 #});
 
                 python3 = prev.python3.override (old: {
-                  packageOverrides = prev.lib.composeExtensions (old.packageOverrides or (_: _: {})) (pfinal: pprev: {
-                    protobuf = pprev.protobuf.overridePythonAttrs (pold: {
-                      postPatch = (pold.postPatch or "") + ''
-                        substituteInPlace setup.py \
-                          --replace-fail 'import pkg_resources' 'import sys' \
-                          --replace-fail 'pkg_resources.parse_version' 'str' \
-                          --replace-fail "namespace_packages=['google']," ""
-                        substituteInPlace google/__init__.py \
-                          --replace-fail "__import__('pkg_resources').declare_namespace(__name__)" "__path__ = __import__('pkgutil').extend_path(__path__, __name__)"
-                      '';
-                    });
-                    protobuf4 = pprev.protobuf4.overridePythonAttrs (pold: {
-                      postPatch = (pold.postPatch or "") + ''
-                        substituteInPlace setup.py \
-                          --replace-fail 'import pkg_resources' 'import sys' \
-                          --replace-fail 'pkg_resources.parse_version' 'str' \
-                          --replace-fail "namespace_packages=['google']," ""
-                        substituteInPlace google/__init__.py \
-                          --replace-fail "__import__('pkg_resources').declare_namespace(__name__)" "__path__ = __import__('pkgutil').extend_path(__path__, __name__)"
-                      '';
-                    });
-                  });
+                  packageOverrides = prev.lib.composeExtensions (old.packageOverrides or (_: _: { })) (
+                    pfinal: pprev: {
+                      protobuf = pprev.protobuf.overridePythonAttrs (pold: {
+                        postPatch = (pold.postPatch or "") + ''
+                          substituteInPlace setup.py \
+                            --replace-fail 'import pkg_resources' 'import sys' \
+                            --replace-fail 'pkg_resources.parse_version' 'str' \
+                            --replace-fail "namespace_packages=['google']," ""
+                          substituteInPlace google/__init__.py \
+                            --replace-fail "__import__('pkg_resources').declare_namespace(__name__)" "__path__ = __import__('pkgutil').extend_path(__path__, __name__)"
+                        '';
+                      });
+                      protobuf4 = pprev.protobuf4.overridePythonAttrs (pold: {
+                        postPatch = (pold.postPatch or "") + ''
+                          substituteInPlace setup.py \
+                            --replace-fail 'import pkg_resources' 'import sys' \
+                            --replace-fail 'pkg_resources.parse_version' 'str' \
+                            --replace-fail "namespace_packages=['google']," ""
+                          substituteInPlace google/__init__.py \
+                            --replace-fail "__import__('pkg_resources').declare_namespace(__name__)" "__path__ = __import__('pkgutil').extend_path(__path__, __name__)"
+                        '';
+                      });
+                    }
+                  );
                 });
               })
             ];
           };
           inputsPatched = inputs // {
-            robotnix = robotnixPatched;
+            #robotnix = robotnixPatched;
             gradle2nix = gradle2nixPatched;
             inherit nixpkgs android-nixpkgs;
           };
