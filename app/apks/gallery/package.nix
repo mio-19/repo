@@ -26,7 +26,7 @@ let
 
   gradle = gradle_9_2_1;
 
-  appVersionName = "1.0.16"; # kept in sync with appVersionName in upstream source code. remember to set upstreamAllowlist's hash to empty to get new hash when bumping version.
+  appVersionName = "1.0.17"; # kept in sync with appVersionName in upstream source code. remember to set upstreamAllowlist's hash to empty to get new hash when bumping version.
   allowlistVersion = lib.replaceStrings [ "." ] [ "_" ] appVersionName;
 
   upstreamAllowlist = fetchurl {
