@@ -80,7 +80,6 @@ in
     updater.enable = true;
     updater.url = "https://gos.at.mio19.uk/";
   };
-  envVars.DISABLE_STUB_VALIDATION = "true";
   source.dirs."packages/apps/NetworkLocation".patches = [
     (fetchpatch {
       name = "Fix cell-based location accuracy and geocoder robustness";
