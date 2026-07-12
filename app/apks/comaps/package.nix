@@ -134,6 +134,7 @@ let
       preBuild = ''
         pushd ..
         export PATH="${(python3.withPackages (ps: [ ps.protobuf4 ]))}/bin:$PATH"
+        export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
         rm -rf 3party/boost/boost
         ln -s ${boost.dev}/include/boost 3party/boost/boost
         ${python3}/bin/python3 ./tools/python/categories/json_to_txt.py data/categories-strings data/categories.txt
