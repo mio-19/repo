@@ -83,6 +83,8 @@ let
 
     "sunup" # Internal compiler error. See log for more details
     "ytdlnis" # fails on darwin with 404 for newpipeextractor
+
+    "gamenative" # fails on darwin with 404
   ];
 
   # Apps with OSS-looking licenses that still should not be published in fdroid-repo-oss
