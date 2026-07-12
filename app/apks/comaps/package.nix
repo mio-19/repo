@@ -18,7 +18,7 @@
   icu,
   boost,
   qt6,
-  python3,
+  python312,
 }:
 let
   version = "2026.06.05-11";
@@ -93,13 +93,13 @@ let
         ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
         ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
-        PYTHON = python3;
+        PYTHON = python312;
       };
 
       # CoMaps CMake requires python protobuf >=3.20 and <4.0.
       # Nixpkgs default protobuf is 7.x, so provide a compatible interpreter.
       prePatch = ''
-        export PATH="${(python3.withPackages (ps: [ ps.protobuf4 ]))}/bin:$PATH"
+        export PATH="${(python312.withPackages (ps: [ ps.protobuf4 ]))}/bin:$PATH"
         substituteInPlace ../tools/unix/version.sh \
           --replace-fail '    local COUNT_AND_DATE=( 0 $(date +%Y.%m.%d) )' \
             '    local COUNT_AND_DATE=( ${versionCount} ${versionDate} )'
@@ -133,11 +133,11 @@ let
 
       preBuild = ''
         pushd ..
-        export PATH="${(python3.withPackages (ps: [ ps.protobuf4 ]))}/bin:$PATH"
+        export PATH="${(python312.withPackages (ps: [ ps.protobuf4 ]))}/bin:$PATH"
         rm -rf 3party/boost/boost
         ln -s ${boost.dev}/include/boost 3party/boost/boost
-        ${python3}/bin/python3 ./tools/python/categories/json_to_txt.py data/categories-strings data/categories.txt
-        ${python3}/bin/python3 ./tools/python/generate_desktop_ui_strings.py
+        ${python312}/bin/python312 ./tools/python/categories/json_to_txt.py data/categories-strings data/categories.txt
+        ${python312}/bin/python312 ./tools/python/generate_desktop_ui_strings.py
         bash ./tools/unix/generate_drules.sh
         for required in \
           data/classificator.txt \

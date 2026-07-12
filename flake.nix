@@ -254,16 +254,9 @@
                   });
 
                 # needed with rustc patches:
-                gjs = prev.gjs.overrideAttrs (old: {
-                  doCheck = false;
-                });
-                python3 = prev.python3.override (old: {
-                  packageOverrides = prev.lib.composeExtensions (old.packageOverrides or (_: _: {})) (pfinal: pprev: {
-                    protobuf = pprev.protobuf.overridePythonAttrs (pold: {
-                      buildInputs = (pold.buildInputs or []) ++ [ pfinal.setuptools ];
-                    });
-                  });
-                });
+                #gjs = prev.gjs.overrideAttrs (old: {
+                #  doCheck = false;
+                #});
               })
             ];
           };
