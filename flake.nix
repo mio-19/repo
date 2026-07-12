@@ -224,7 +224,18 @@
             overlays = [
               inputs.android-nixpkgs.overlays.default
               (final: prev: rec {
-                inherit (pkgs) fdroidserver;
+                fdroidserver = pkgs.fdroidserver.override {
+                  python3Packages = pkgs.python312Packages.override {
+                    overrides = pfinal: pprev: {
+                      mwclient = pprev.mwclient.overridePythonAttrs (old: {
+                        doCheck = false;
+                      });
+                      ruamel-yaml = pprev.ruamel-yaml.overridePythonAttrs (old: {
+                        doCheck = false;
+                      });
+                    };
+                  };
+                };
                 inherit (selfPackages) ant;
                 python27 =
                   (import inputs.nixpkgs-python27 {
