@@ -82,9 +82,11 @@ let
     "joplin"
 
     "sunup" # Internal compiler error. See log for more details
-    "ytdlnis" # fails on darwin with 404 for newpipeextractor
 
+    "ytdlnis" # fails on darwin with 404 for newpipeextractor
     "gamenative" # fails on darwin with 404
+
+    "ollama-app" # gtk4 failed on darwin
   ];
 
   # Apps with OSS-looking licenses that still should not be published in fdroid-repo-oss
