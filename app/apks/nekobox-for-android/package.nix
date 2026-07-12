@@ -62,7 +62,7 @@ let
         outputHashAlgo = "sha256";
         outputHash =
           if stdenv.isDarwin then
-            "sha256-ixIJcbvXXcogQxZsMIieW0563AId2QDtv1WqhaWXTwA="
+            "sha256-rQXYYF73Az68cO9Cf6KEAzkOZ4SzRGsugzObm3a9iOE="
           else
             "sha256-4o9EGVYSmDXf2qpID+ZWUjDP6YSV6PzpE1URcfRzuj0=";
         dontConfigure = true;

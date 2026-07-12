@@ -73,7 +73,7 @@ in
     ./launcher.nix
     ./gos_userdebug.nix
   ];
-  buildDateTime = 1783406453;
+  buildDateTime = 1783821679; # builtins.currentTime
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   apps = {
@@ -84,7 +84,7 @@ in
     (fetchpatch {
       name = "Fix cell-based location accuracy and geocoder robustness";
       url = "https://github.com/GrapheneOS/platform_packages_apps_NetworkLocation/pull/35.diff";
-      hash = "sha256-Qfo8Z4em5cU+v1u2cignkWqVsO76J7sAMvr90GWYFU0=";
+      hash = "sha256-IrlSRaaJwaVkuTr1apNBD1etnh4p1MnPTNc7jc2ZIDc=";
     })
   ];
   source.dirs."frameworks/base".patches = [
@@ -93,17 +93,22 @@ in
       url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/263.diff";
       hash = "sha256-Hw3BLHwJsXmu5482QWZC+DsqBDxaV0F1fCDgwna5AVQ=";
     })
+    /*
+      # merge conflict
+      (fetchpatch {
+        name = "SystemUI: Add Usb Tethering QS Tile";
+        url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/336.diff";
+        hash = "sha256-4cwOJBeXOAYtLUsJCpK/bSXRIM1JjkgSStQuz1jy0fM=";
+      })
+    */
 
     #./Disable-FLAG_SECURE.patch
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
     # from https://github.com/GrapheneOS/platform_frameworks_base/pull/313.patch
     ./Add-a-toggle-to-allow-screenshots-through-FLAG-SECURE.patch
 
-    (fetchpatch {
-      name = "Add toggle to hide location access indicator on a per-app basis.patch";
-      url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/305.patch";
-      hash = "sha256-VGaxcAWyLeItvQjSFJceCWhWj8IvJ7iquuJOLwpfo1I=";
-    })
+    # https://github.com/GrapheneOS/platform_frameworks_base/pull/305
+    ./Add-toggle-to-hide-location-access-indicator-on-a-per-app-basis.patch
 
     # this is incorrect, but I prefer this way
     (fetchpatch {
@@ -203,7 +208,7 @@ in
   source.dirs."external/Info".postPatch = replace_app "Info" "apk_grapheneos-info";
   source.dirs."external/Camera".postPatch = replace_app "Camera" "apk_grapheneos-camera";
   source.dirs."external/AppStore".postPatch = replace_app "app-release" "apk_appstore";
-  source.dirs."external/PdfViewer".postPatch = replace_app "PdfViewer" "apk_pdfviewer";
+  source.dirs."external/PdfViewer".postPatch = replace_app "app-release" "apk_pdfviewer";
   signing.extraApks = {
     "InfoApp.apk" = "grapheneos_info";
     "Camera.apk" = "grapheneos_camera";

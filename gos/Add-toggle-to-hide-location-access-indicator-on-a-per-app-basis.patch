@@ -1,0 +1,122 @@
+From 11cf5c6323a0827489ed4908b0f29958c9b909a5 Mon Sep 17 00:00:00 2001
+From: Elian Khalaf <ek@elian.dev>
+Date: Tue, 27 Jan 2026 12:57:57 -0500
+Subject: [PATCH] Add toggle to hide location access indicator on a per-app
+ basis
+
+---
+ core/api/system-current.txt                     |  1 +
+ .../android/content/pm/GosPackageStateFlag.java |  2 ++
+ .../privacy/AppOpsPrivacyItemMonitor.kt         | 17 ++++++++++++++++-
+ .../server/pm/GosPackageStatePermissions.java   |  6 +++++-
+ 4 files changed, 24 insertions(+), 2 deletions(-)
+
+diff --git a/core/api/system-current.txt b/core/api/system-current.txt
+index 1e6f13b34a0fb..66862d21aca07 100644
+--- a/core/api/system-current.txt
++++ b/core/api/system-current.txt
+@@ -4386,6 +4386,7 @@ package android.content.pm {
+ 
+   public interface GosPackageStateFlag {
+     field public static final int CONTACT_SCOPES_ENABLED = 5; // 0x5
++    field public static final int HIDE_LOCATION_INDICATOR = 31; // 0x1f
+     field public static final int STORAGE_SCOPES_ENABLED = 0; // 0x0
+   }
+ 
+diff --git a/core/java/android/content/pm/GosPackageStateFlag.java b/core/java/android/content/pm/GosPackageStateFlag.java
+index 21abe5f9398d0..ab4a8ca27ad23 100644
+--- a/core/java/android/content/pm/GosPackageStateFlag.java
++++ b/core/java/android/content/pm/GosPackageStateFlag.java
+@@ -38,6 +38,7 @@ public interface GosPackageStateFlag {
+     /** @hide */ int BLOCK_PLAY_INTEGRITY_API = 28;
+     /** @hide */ int USE_EXEC_SPAWNING_NON_DEFAULT = 29;
+     /** @hide */ int USE_EXEC_SPAWNING = 30;
++    /* SysApi */ int HIDE_LOCATION_INDICATOR = 31;
+ 
+     /** @hide */
+     @IntDef(value = {
+@@ -70,6 +71,7 @@ public interface GosPackageStateFlag {
+             BLOCK_PLAY_INTEGRITY_API,
+             USE_EXEC_SPAWNING_NON_DEFAULT,
+             USE_EXEC_SPAWNING,
++            HIDE_LOCATION_INDICATOR,
+     })
+     @Retention(RetentionPolicy.SOURCE)
+     @interface Enum {}
+diff --git a/packages/SystemUI/src/com/android/systemui/privacy/AppOpsPrivacyItemMonitor.kt b/packages/SystemUI/src/com/android/systemui/privacy/AppOpsPrivacyItemMonitor.kt
+index 967a16b1c0ddf..b89d3a1b3ac0f 100644
+--- a/packages/SystemUI/src/com/android/systemui/privacy/AppOpsPrivacyItemMonitor.kt
++++ b/packages/SystemUI/src/com/android/systemui/privacy/AppOpsPrivacyItemMonitor.kt
+@@ -39,6 +39,8 @@ import com.android.systemui.util.concurrency.DelayableExecutor
+ import com.android.systemui.util.withIncreasedIndent
+ import java.io.PrintWriter
+ import javax.inject.Inject
++import android.content.pm.GosPackageState
++import android.content.pm.GosPackageStateFlag
+ 
+ /**
+  * Monitors privacy items backed by app ops:
+@@ -430,11 +432,14 @@ constructor(
+             if (result) {
+                 synchronized(lock) { hasNonSystemForegroundLocationAccess = true }
+             }
+-            return result
++            // must return false when HIDE_LOCATION_INDICATOR flag is set
++            // this hides the location indicator (green dot) without preventing logging of location access
++            return result && !isHideLocationIndicatorFlagSet(item)
+         }
+         if (item.code == AppOpsManager.OP_MONITOR_HIGH_POWER_LOCATION) {
+             synchronized(lock) { hasHighPowerLocationAccess = true }
+         }
++        // dont need to check hide location indicator as it only shows for fine location access
+         return true
+     }
+ 
+@@ -498,6 +503,16 @@ constructor(
+         return false
+     }
+ 
++    private fun isHideLocationIndicatorFlagSet(item: AppOpItem): Boolean {
++        try {
++            val userId = UserHandle.getUserId(item.uid)
++            val packageState = GosPackageState.get(item.packageName, userId)
++            return packageState.hasFlag(GosPackageStateFlag.HIDE_LOCATION_INDICATOR)
++        } catch (_: Exception) {
++            return false
++        }
++    }
++
+     override fun dump(pw: PrintWriter, args: Array<out String>) {
+         val ipw = pw.asIndenting()
+         ipw.println("AppOpsPrivacyItemMonitor:")
+diff --git a/services/core/java/com/android/server/pm/GosPackageStatePermissions.java b/services/core/java/com/android/server/pm/GosPackageStatePermissions.java
+index f3fcd750cfe45..6e3a9eccb4735 100644
+--- a/services/core/java/com/android/server/pm/GosPackageStatePermissions.java
++++ b/services/core/java/com/android/server/pm/GosPackageStatePermissions.java
+@@ -28,6 +28,7 @@
+ import static android.content.pm.GosPackageStateFlag.BLOCK_PLAY_INTEGRITY_API;
+ import static android.content.pm.GosPackageStateFlag.CONTACT_SCOPES_ENABLED;
+ import static android.content.pm.GosPackageStateFlag.ENABLE_EXPLOIT_PROTECTION_COMPAT_MODE;
++import static android.content.pm.GosPackageStateFlag.HIDE_LOCATION_INDICATOR;
+ import static android.content.pm.GosPackageStateFlag.FORCE_MEMTAG;
+ import static android.content.pm.GosPackageStateFlag.FORCE_MEMTAG_NON_DEFAULT;
+ import static android.content.pm.GosPackageStateFlag.FORCE_MEMTAG_SUPPRESS_NOTIF;
+@@ -108,7 +109,7 @@ static void init(PackageManagerService pm) {
+                 .crossUserPermission(ALLOW_CROSS_USER_PROFILE_READS)
+                 .apply(ksp.launcher, computer);
+         builder()
+-                .readWriteFlags(STORAGE_SCOPES_ENABLED, CONTACT_SCOPES_ENABLED)
++                .readWriteFlags(STORAGE_SCOPES_ENABLED, CONTACT_SCOPES_ENABLED, HIDE_LOCATION_INDICATOR)
+                 .readWriteFields(FIELD_STORAGE_SCOPES, FIELD_CONTACT_SCOPES,
+                         FIELD_PACKAGE_FLAGS)
+                 // in some cases PermissionController handles user profile from profile parent user
+@@ -118,6 +119,9 @@ static void init(PackageManagerService pm) {
+                 .readFlags(playIntegrityFlags)
+                 .readWriteFlag(SUPPRESS_PLAY_INTEGRITY_API_NOTIF)
+                 .apply(GmsCompatApp.PKG_NAME, computer);
++        builder()
++                .readFlags(HIDE_LOCATION_INDICATOR)
++                .apply(ksp.systemUi, computer);
+ 
+         @GosPackageStateFlag.Enum int[] settingsReadWriteFlags = {
+                 ALLOW_ACCESS_TO_OBB_DIRECTORY,

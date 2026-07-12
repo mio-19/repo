@@ -1,13 +1,14 @@
 {
   inputs = {
     nixpkgs.url = "https://nixos.org/channels/nixpkgs-unstable/nixexprs.tar.xz";
+    #nixpkgs.url = "https://nixos.org/channels/nixos-unstable-small/nixexprs.tar.xz";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs-python27.url = "https://nixos.org/channels/nixos-26.05-small/nixexprs.tar.xz";
     android-nixpkgs = {
       #url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
-      url = "github:tadfisher/android-nixpkgs/2026-06-30-stable";
+      url = "github:tadfisher/android-nixpkgs/2026-07-11-stable";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
@@ -114,7 +115,7 @@
               inputs.robotnix.inputs
               // {
                 self = robotnixPatched;
-                nixpkgs = nixpkgs2;
+                inherit nixpkgs;
                 androidPkgs = android-nixpkgs;
               }
             )
@@ -165,30 +166,6 @@
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
             patches = [
-              /*
-                # in staging, not nixpkgs-unstable yet
-                (fetchpatch {
-                  name = "rust: 1.95.0 -> 1.96.0";
-                  url = "https://github.com/NixOS/nixpkgs/pull/525279.diff";
-                  hash = "sha256-bnaT7TKe/yz+7L9xZSSIubuP3YWnIpcKHrX4qYzRGGc=";
-                })
-              */
-              /*
-                # already in nixpkgs-unstable
-                (fetchpatch {
-                  name = "Bootstrap rust";
-                  url = "https://github.com/NixOS/nixpkgs/pull/528074.diff";
-                  hash = "sha256-thDAiWCbe7MI6DKgAh/au9N1n637VBxBnv58B90rE/M=";
-                })
-              */
-              /*
-                # conflicts with maven4 patch
-                (fetchpatch {
-                  name = "maven: provide default plugins per Maven version to buildMavenPackage";
-                  url = "https://github.com/NixOS/nixpkgs/pull/527061.patch";
-                  hash = "sha256-9asBRe+7FtAZ/066/9OOTbQYt/sS9pYHe6G3xZhAP7U=";
-                })
-              */
               (fetchpatch {
                 name = "gradle: reduce keytool noise";
                 url = "https://github.com/NixOS/nixpkgs/pull/472580.patch";
@@ -203,22 +180,6 @@
                 })
               */
               /*
-                (fetchpatch {
-                  name = "maven: 3.9.12 -> 3.9.16";
-                  url = "https://github.com/NixOS/nixpkgs/pull/497416.diff";
-                  hash = "sha256-pU4AOx6najbNm5utBuiQ7kEaq40ZTpQT6PJ+1YcO1g8=";
-                  excludes = [ "pkgs/by-name/op/opendataloader-pdf/package.nix" ];
-                })
-              */
-              /*
-                # already in nixpkgs-unstable
-                (fetchpatch {
-                  name = "flutter344: init at 3.44.2";
-                  url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/531252.patch";
-                  hash = "sha256-LF5OAnlT0WwxPCxOjhgeVbJUjNesJhCvNcTQ0SExdzc=";
-                })
-              */
-              /*
                 # work stopped
                 (fetchpatch {
                   name = "ant: build from source";
@@ -226,25 +187,7 @@
                   hash = "sha256-okJ2JXObWNVPpRAbAbj9/ilKKOGR8GBJ010KelLDQqQ=";
                 })
               */
-              # in staging, not nixpkgs-unstable yet
-              # related to appstream : https://github.com/NixOS/nixpkgs/issues/514566
-              (fetchpatch {
-                name = "libfyaml: fixed building issues";
-                url = "https://github.com/NixOS/nixpkgs/pull/515614.patch";
-                hash = "sha256-lPg+NKhTJVCDLuuDaKF9o7evPxjcGxD9Gh/M1X3yqag=";
-              })
-              /*
-                (fetchpatch {
-                  name = "maven_4: init at 4.0.0-rc5";
-                  url = "https://github.com/NixOS/nixpkgs/pull/516100.diff";
-                  hash = "sha256-sQdzgOlieIX0DMyJ7WXr9L7bDakGplEP79D+7EGbGWE=";
-                })
-              */
             ];
-            #postPatch = ''
-            #  # workaround for faulty applyPatches which doesn't work with renaming files
-            #  mv pkgs/development/compilers/rust/1_95.nix pkgs/development/compilers/rust/1_96.nix
-            #'';
           };
           nixpkgsSrc2 = applyPatches {
             src = nixpkgsSrc;
@@ -311,17 +254,41 @@
                   });
 
                 # needed with rustc patches:
-                gjs = prev.gjs.overrideAttrs (old: {
-                  doCheck = false;
-                });
-                git = prev.git.overrideAttrs (old: {
-                  doInstallCheck = false;
+                #gjs = prev.gjs.overrideAttrs (old: {
+                #  doCheck = false;
+                #});
+
+                python3 = prev.python3.override (old: {
+                  packageOverrides = prev.lib.composeExtensions (old.packageOverrides or (_: _: { })) (
+                    pfinal: pprev: {
+                      protobuf = pprev.protobuf.overridePythonAttrs (pold: {
+                        postPatch = (pold.postPatch or "") + ''
+                          substituteInPlace setup.py \
+                            --replace-fail 'import pkg_resources' 'import sys' \
+                            --replace-fail 'pkg_resources.parse_version' 'str' \
+                            --replace-fail "namespace_packages=['google']," ""
+                          substituteInPlace google/__init__.py \
+                            --replace-fail "__import__('pkg_resources').declare_namespace(__name__)" "__path__ = __import__('pkgutil').extend_path(__path__, __name__)"
+                        '';
+                      });
+                      protobuf4 = pprev.protobuf4.overridePythonAttrs (pold: {
+                        postPatch = (pold.postPatch or "") + ''
+                          substituteInPlace setup.py \
+                            --replace-fail 'import pkg_resources' 'import sys' \
+                            --replace-fail 'pkg_resources.parse_version' 'str' \
+                            --replace-fail "namespace_packages=['google']," ""
+                          substituteInPlace google/__init__.py \
+                            --replace-fail "__import__('pkg_resources').declare_namespace(__name__)" "__path__ = __import__('pkgutil').extend_path(__path__, __name__)"
+                        '';
+                      });
+                    }
+                  );
                 });
               })
             ];
           };
           inputsPatched = inputs // {
-            robotnix = robotnixPatched;
+            #robotnix = robotnixPatched;
             gradle2nix = gradle2nixPatched;
             inherit nixpkgs android-nixpkgs;
           };
@@ -354,7 +321,9 @@
 
           # nix run github:mio-19/repo#gradle2nix
           packages.gradle2nix = gradle2nixPatched.packages.${system}.gradle2nix;
-          packages.gradle2nixSrc = gradle2nixPatched.outPath;
+          packages.gradle2nixSrc = pkgs.runCommand "gradle2nixSrc" { } ''
+            ln -s ${gradle2nixPatched.outPath} $out
+          '';
           # nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json
           packages.mvn2nix = inputs.mvn2nix.packages.${system}.mvn2nix;
 
