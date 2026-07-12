@@ -107,11 +107,8 @@ in
     # from https://github.com/GrapheneOS/platform_frameworks_base/pull/313.patch
     ./Add-a-toggle-to-allow-screenshots-through-FLAG-SECURE.patch
 
-    (fetchpatch {
-      name = "Add toggle to hide location access indicator on a per-app basis.patch";
-      url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/305.patch";
-      hash = "sha256-VGaxcAWyLeItvQjSFJceCWhWj8IvJ7iquuJOLwpfo1I=";
-    })
+    # https://github.com/GrapheneOS/platform_frameworks_base/pull/305
+    ./Add-toggle-to-hide-location-access-indicator-on-a-per-app-basis.patch
 
     # this is incorrect, but I prefer this way
     (fetchpatch {
