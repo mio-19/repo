@@ -43,15 +43,15 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "meditrak";
-      version = "0.17.7";
+      version = "0.17.8";
 
       src = fetchFromGitHub {
         owner = "AdamGuidarini";
         repo = "MediTrak";
         # Upstream tagged this release "vo.17.7" (letter o, a typo) instead of
         # "v0.17.7", so pin the literal tag rather than deriving it from version.
-        tag = "vo.17.7";
-        hash = "sha256-vEPvMXidrWJa0iwakgRDG+w8D707RPCsGeusxFkXRH4=";
+        tag = "v0.17.8";
+        hash = "sha256-LhjTGMLsxAbOTo0JfDc/78uG+W0QK2SakFGHDeEotdI=";
       };
 
       patches = [
