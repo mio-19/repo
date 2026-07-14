@@ -42,19 +42,20 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-cli";
-  version = "1.9.1";
+  version = "1.11.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-cli";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-Sskl5TvEuelLu/aMSAXp7pRdz4qw8nJhFGnDw98u/DA=";
+    hash = "sha256-7hGHwrZc1ZNs+MvLaXzga/p6WDVF4dsvRp95eQ//U44=";
   };
 
   gradleBuildTask = "shadowJar";
   gradleUpdateTask = "resolveRuntimeClasspath ${finalAttrs.gradleBuildTask}";
 
   mitmCache = gradle.fetchDeps {
+    attrPath = "morphe-cli";
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
     data = lib.recursiveUpdate (lib.recursiveUpdate revanced-cli-deps morphe-patches-deps) morphe-cli-deps-filtered;
@@ -175,4 +176,5 @@ stdenv.mkDerivation (finalAttrs: {
     platforms = platforms.unix;
     mainProgram = "morphe-cli";
   };
+  passthru = { mitmCache = finalAttrs.mitmCache; };
 })

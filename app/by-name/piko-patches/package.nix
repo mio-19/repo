@@ -29,7 +29,7 @@ let
 
   morphe-cli-deps-filtered = lib.filterAttrs (
     name: _: !lib.any (pattern: !builtins.isNull (builtins.match pattern name)) [ "api.github" ]
-  ) (lib.importJSON ../morphe-patches_1_33_0/morphe-patches_1_33_0_deps.json);
+  ) (lib.importJSON ../morphe-patches/morphe-patches_deps.json);
 
   hoodles-patches-deps = lib.importJSON ../hoodles-patches/morphe-patches_deps.json;
   brosssh-patches-deps = lib.importJSON ../brosssh-patches/morphe-patches_deps.json;
