@@ -338,7 +338,7 @@
           # nix run github:mio-19/repo#mvn2nix > mvn2nix-lock.json
           packages.mvn2nix = inputs.mvn2nix.packages.${system}.mvn2nix;
 
-          formatter = pkgs.nixfmt;
+          formatter = pkgs.nixfmt-tree;
 
           packages.github-actions-cached = pkgs.symlinkJoin {
             name = "github-actions-cached";
