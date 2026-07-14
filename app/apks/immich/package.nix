@@ -183,34 +183,31 @@ let
 
         sed -i '1i subprojects { afterEvaluate { project -> if (project.hasProperty("android")) { project.android.buildToolsVersion = "36.1.0" } } }' android/build.gradle
 
-        mkdir -p android/app/src/main/jniLibs/armeabi-v7a
-        cp ${
-          fetchurl {
-            url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.3.2/libsqlite3.arm.android.so";
-            sha256 = "1jbmma7vvnn2kigvvzlfp55wbi08rw03cwl6w93xcn6kxja9aw91";
-          }
-        } android/app/src/main/jniLibs/armeabi-v7a/libsqlite3.so
-        mkdir -p android/app/src/main/jniLibs/arm64-v8a
-        cp ${
-          fetchurl {
-            url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.3.2/libsqlite3.arm64.android.so";
-            sha256 = "1n5sca3ps0avxfxjdcjyxrxpjrm7kixbvd8dw8j367g38mj1f79z";
-          }
-        } android/app/src/main/jniLibs/arm64-v8a/libsqlite3.so
-        mkdir -p android/app/src/main/jniLibs/x86_64
-        cp ${
-          fetchurl {
-            url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.3.2/libsqlite3.x64.android.so";
-            sha256 = "18d6idsw5plcp951nadh86klfv814mmpy6iv8v0pjdxz5kwck9h7";
-          }
-        } android/app/src/main/jniLibs/x86_64/libsqlite3.so
-        mkdir -p android/app/src/main/jniLibs/x86
-        cp ${
-          fetchurl {
-            url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.3.2/libsqlite3.ia32.android.so";
-            sha256 = "1sb0rmbxvs9x1fz458i1yxk30hy2c990dkxac4fdbv9430pzvspf";
-          }
-        } android/app/src/main/jniLibs/x86/libsqlite3.so
+        ${lib.concatStringsSep "\n" (
+          lib.mapAttrsToList
+            (arch: src: ''
+              mkdir -p android/app/src/main/jniLibs/${arch}
+              cp ${src} android/app/src/main/jniLibs/${arch}/libsqlite3.so
+            '')
+            {
+              "armeabi-v7a" = fetchurl {
+                url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.3.2/libsqlite3.arm.android.so";
+                sha256 = "1jbmma7vvnn2kigvvzlfp55wbi08rw03cwl6w93xcn6kxja9aw91";
+              };
+              "arm64-v8a" = fetchurl {
+                url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.3.2/libsqlite3.arm64.android.so";
+                sha256 = "1n5sca3ps0avxfxjdcjyxrxpjrm7kixbvd8dw8j367g38mj1f79z";
+              };
+              "x86_64" = fetchurl {
+                url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.3.2/libsqlite3.x64.android.so";
+                sha256 = "18d6idsw5plcp951nadh86klfv814mmpy6iv8v0pjdxz5kwck9h7";
+              };
+              "x86" = fetchurl {
+                url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.3.2/libsqlite3.ia32.android.so";
+                sha256 = "1sb0rmbxvs9x1fz458i1yxk30hy2c990dkxac4fdbv9430pzvspf";
+              };
+            }
+        )}
 
         printf '%s\n' '#!/bin/sh' 'exec ${gradle}/bin/gradle "$@"' > android/gradlew
         chmod +x android/gradlew
