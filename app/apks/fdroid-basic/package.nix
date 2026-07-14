@@ -11,6 +11,7 @@
   mkSignScript,
   writableTmpDirAsHomeHook,
   overrides-fromsrc-updated,
+  mergeLock,
 }:
 
 let
@@ -27,17 +28,21 @@ let
 in
 buildGradlePackage rec {
   pname = "fdroid-basic";
-  version = "2.0-alpha10";
+  version = "2.0-alpha11";
 
   src = fetchgit {
     url = "https://gitlab.com/fdroid/fdroidclient.git";
     tag = version;
-    hash = "sha256-Zr6RexDLPxK1E0cHlNfy7wx8mPUBXlmyZY9UkCB5a80=";
+    hash = "sha256-nXZXASrwBzhVN3LRQeR3Wfangy/aVk5DihVos1kc1Do=";
   };
 
   patches = [ ./version-name-update.patch ];
 
-  lockFile = ./gradle.lock;
+  lockFile = mergeLock [
+    ./gradle.lock
+    ./missing.lock
+    ../pdfviewer/gradle.lock
+  ];
 
   inherit gradle;
 
