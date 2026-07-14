@@ -3,7 +3,7 @@
   lib,
   stdenv,
   fetchurl,
-  morphe-cli_1_10_0_dev_9,
+  morphe-cli,
   morphe-patches,
 }:
 let
@@ -24,7 +24,7 @@ let
       dontUnpack = true;
 
       nativeBuildInputs = [
-        morphe-cli_1_10_0_dev_9
+        morphe-cli
       ];
 
       buildPhase = ''
