@@ -9,7 +9,7 @@
   morphe-patches-gradle-plugin_1_3_2_dev_2,
   morphe-library-m2,
   morphe-patches-library-m2_1_4_1_dev_5,
-  instagram-morphe-patches-library-m2_1_1_0_dev_3,
+  instagram-morphe-patches-library-m2_1_1_0_dev_4,
   apktool-src,
   multidexlib2-src,
   morphe-patcher-src,
@@ -45,13 +45,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "brosssh-patches";
-  version = "2.8.0";
+  version = "2.8.1";
 
   src = fetchFromGitHub {
     owner = "brosssh";
     repo = "morphe-patches";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-+1TCyOZj3xLIUuQl+cSgb5ljswYyNyQ4oTs/yW/LtPA=";
+    hash = "sha256-toiLaH2AiyIwVgmjqHdvpLZ3Od+6ee+5yPvnaNUAWGs=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -222,7 +222,7 @@ stdenv.mkDerivation (finalAttrs: {
     MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_2_dev_2}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
     MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_4_1_dev_5}";
-    INSTAGRAM_MORPHE_PATCHES_LIBRARY_M2 = "${instagram-morphe-patches-library-m2_1_1_0_dev_3}";
+    INSTAGRAM_MORPHE_PATCHES_LIBRARY_M2 = "${instagram-morphe-patches-library-m2_1_1_0_dev_4}";
   };
 
   preConfigure = ''

@@ -21,7 +21,7 @@
   python3,
 }:
 let
-  version = "2026.06.05-11";
+  version = "2026.07.16-10";
   versionParts = builtins.match "([0-9]{4}\\.[0-9]{2}\\.[0-9]{2})-([0-9]+)" version;
   versionDate = builtins.elemAt versionParts 0;
   versionCount = builtins.elemAt versionParts 1;
@@ -49,7 +49,7 @@ let
         url = "https://codeberg.org/comaps/comaps.git";
         tag = "v${finalAttrs.version}";
         fetchSubmodules = true;
-        hash = "sha256-W05fZT82H78TqlH4MFaIexX1LYhjATYL1E6e0WCYrBI=";
+        hash = "sha256-KmnoQH7xgXH0aJWCuJkM00672SICOC959AWp45w5snc=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/android";
@@ -135,9 +135,10 @@ let
         pushd ..
         export PATH="${(python3.withPackages (ps: [ ps.protobuf4 ]))}/bin:$PATH"
         export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+        export SKIP_PYTHON_VENV=1
         rm -rf 3party/boost/boost
         ln -s ${boost.dev}/include/boost 3party/boost/boost
-        ${python3}/bin/python3 ./tools/python/categories/json_to_txt.py data/categories-strings data/categories.txt
+        ${python3}/bin/python3 ./tools/python/categories/json_to_txt.py data/translations/categories-strings data/categories.txt
         ${python3}/bin/python3 ./tools/python/generate_desktop_ui_strings.py
         bash ./tools/unix/generate_drules.sh
         for required in \

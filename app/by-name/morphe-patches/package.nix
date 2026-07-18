@@ -8,10 +8,10 @@
   writableTmpDirAsHomeHook,
   morphe-patches-gradle-plugin_1_3_3_dev_1,
   morphe-library-m2,
-  morphe-patches-library-m2_1_4_2_dev_3,
+  morphe-patches-library-m2_1_5_1,
   apktool-src,
   multidexlib2-src,
-  morphe-patcher-src,
+  morphe-patcher-src_1_5_2,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -38,13 +38,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches";
-  version = "1.34.0";
+  version = "1.35.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-Rh8riENIPiughL0ndJ9ogtKrZDn1zW+3CMsshplLAJY=";
+    hash = "sha256-6uR47ST8QK3u1vrjdES0Uh2A5Bxh2qw127YswEgK/tQ=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -71,12 +71,12 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_3_dev_1}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
-    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_4_2_dev_3}";
+    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_5_1}";
   };
 
   postUnpack = ''
     root="$PWD"
-    cp -a ${morphe-patcher-src} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_1_5_2} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
     cp -a ${arsclib-src} "$root/ARSCLib"
     chmod -R u+w "$root/ARSCLib"
@@ -92,10 +92,10 @@ stdenv.mkDerivation (finalAttrs: {
     patch -d "$sourceRoot" -p1 < ${./morphe-patches-version-name-suffix-compatible.patch}
 
     substituteInPlace "$sourceRoot/settings.gradle.kts" \
-      --replace-fail 'version "1.3.3-dev.2"' 'version "1.3.3-dev.1"'
+      --replace-fail 'version "1.3.3"' 'version "1.3.3-dev.1"'
 
     substituteInPlace "$sourceRoot/gradle/libs.versions.toml" \
-      --replace-fail 'morphe-patches-library = "1.5.0-dev.3"' 'morphe-patches-library = "1.4.2-dev.3"'
+      --replace-fail 'morphe-patches-library = "1.5.1-dev.2"' 'morphe-patches-library = "1.5.1"'
 
     cat >> "$sourceRoot/build.gradle.kts" << 'EOF'
 

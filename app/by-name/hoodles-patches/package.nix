@@ -3,6 +3,7 @@
   stdenv,
   fetchFromGitHub,
   gradle_9_3_1,
+  jdk17_headless,
   jdk21_headless,
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
@@ -38,13 +39,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "hoodles-patches";
-  version = "1.38.2";
+  version = "1.39.0";
 
   src = fetchFromGitHub {
     owner = "hoo-dles";
     repo = "morphe-patches";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-Z7das5SqwJ8DjgXRK6zYC2/X9l+QF7czmLAVKbrBr7U=";
+    hash = "sha256-ouJJgaDzx2mIszItG92xutRKBR5bBamYUFaNyA6iQFk=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -60,6 +61,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     gradle
+    jdk17_headless
     jdk21_headless
     writableTmpDirAsHomeHook
   ];
@@ -170,7 +172,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   gradleFlags = [
     "-Dorg.gradle.java.installations.auto-download=false"
-    "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
+    "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME},${jdk17_headless.passthru.home}"
     "-Dmaven.repo.local=build/m2"
     "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
     "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
