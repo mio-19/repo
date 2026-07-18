@@ -3,12 +3,13 @@
   stdenv,
   fetchFromGitHub,
   gradle_9_3_1,
+  jdk17_headless,
   jdk21_headless,
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
   morphe-patches-gradle-plugin_1_3_2,
   morphe-library-m2,
-  morphe-patches-library-m2_1_4_1_dev_5,
+  morphe-patches-library-m2_1_4_1_dev_6,
   apktool-src,
   multidexlib2-src,
   morphe-patcher-src,
@@ -38,13 +39,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "hoodles-patches";
-  version = "1.38.2";
+  version = "1.39.0";
 
   src = fetchFromGitHub {
     owner = "hoo-dles";
     repo = "morphe-patches";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-Z7das5SqwJ8DjgXRK6zYC2/X9l+QF7czmLAVKbrBr7U=";
+    hash = "sha256-ouJJgaDzx2mIszItG92xutRKBR5bBamYUFaNyA6iQFk=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -60,6 +61,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     gradle
+    jdk17_headless
     jdk21_headless
     writableTmpDirAsHomeHook
   ];
@@ -71,7 +73,7 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_2}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
-    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_4_1_dev_5}";
+    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_4_1_dev_6}";
   };
 
   postUnpack = ''
@@ -89,9 +91,6 @@ stdenv.mkDerivation (finalAttrs: {
     patch -d "$root/multidexlib2" -p3 < ${../brosssh-patches/multidexlib2-gradle-9.patch}
 
     patch -d "$sourceRoot" -p0 < ${./hoodles-patches-settings.patch}
-
-    substituteInPlace "$sourceRoot/gradle/libs.versions.toml" \
-      --replace-warn 'morphe-patches-library = "1.4.1-dev.6"' 'morphe-patches-library = "1.4.1-dev.5"'
 
     cat >> "$sourceRoot/build.gradle.kts" << 'EOF'
 
@@ -170,7 +169,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   gradleFlags = [
     "-Dorg.gradle.java.installations.auto-download=false"
-    "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
+    "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME},${jdk17_headless.passthru.home}"
     "-Dmaven.repo.local=build/m2"
     "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
     "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"

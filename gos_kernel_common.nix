@@ -35,7 +35,7 @@
   version ? src.tag,
   src ? fetchgit {
     url = "https://gitlab.com/grapheneos/kernel_pixel.git";
-    tag = "2026071100";
+    tag = "2026071500";
     hash = "sha256-/J72IhbxoCVe5FEslOhSRNSYky5e9BfwkeebnByB3Ig=";
     fetchSubmodules = true;
     deepClone = false;
