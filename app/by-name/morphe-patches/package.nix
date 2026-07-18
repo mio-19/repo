@@ -6,9 +6,9 @@
   jdk21_headless,
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
-  morphe-patches-gradle-plugin_1_3_3_dev_1,
+  morphe-patches-gradle-plugin_1_3_3,
   morphe-library-m2,
-  morphe-patches-library-m2_1_5_1,
+  morphe-patches-library-m2_1_5_1_dev_2,
   apktool-src,
   multidexlib2-src,
   morphe-patcher-src_1_5_2,
@@ -69,9 +69,9 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
-    MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_3_dev_1}";
+    MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_3}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
-    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_5_1}";
+    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_5_1_dev_2}";
   };
 
   postUnpack = ''
@@ -90,12 +90,6 @@ stdenv.mkDerivation (finalAttrs: {
 
     patch -d "$sourceRoot" -p0 < ${./morphe-patches-settings.patch}
     patch -d "$sourceRoot" -p1 < ${./morphe-patches-version-name-suffix-compatible.patch}
-
-    substituteInPlace "$sourceRoot/settings.gradle.kts" \
-      --replace-fail 'version "1.3.3"' 'version "1.3.3-dev.1"'
-
-    substituteInPlace "$sourceRoot/gradle/libs.versions.toml" \
-      --replace-fail 'morphe-patches-library = "1.5.1-dev.2"' 'morphe-patches-library = "1.5.1"'
 
     cat >> "$sourceRoot/build.gradle.kts" << 'EOF'
 
