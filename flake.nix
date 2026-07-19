@@ -189,13 +189,6 @@
               */
             ];
           };
-          nixpkgsSrc2 = applyPatches {
-            src = nixpkgsSrc;
-            name = "nixpkgs-patched";
-            patches = [
-              ./0001-git-no-doInstallCheck-incorrect.patch
-            ];
-          };
           nixpkgs =
             (import "${nixpkgsSrc}/flake.nix").outputs (
               inputs.nixpkgs.inputs
@@ -205,16 +198,6 @@
             )
             // {
               inherit (nixpkgsSrc) outPath;
-            };
-          nixpkgs2 =
-            (import "${nixpkgsSrc2}/flake.nix").outputs (
-              inputs.nixpkgs.inputs
-              // {
-                self = nixpkgs2;
-              }
-            )
-            // {
-              inherit (nixpkgsSrc2) outPath;
             };
           pkgsPatched = import nixpkgs {
             config = pkgs.config // {
@@ -263,11 +246,6 @@
                       fetch = selfLegacyPackages.mitm-cache-fetch;
                     };
                   });
-
-                # needed with rustc patches:
-                #gjs = prev.gjs.overrideAttrs (old: {
-                #  doCheck = false;
-                #});
 
                 python3 = prev.python3.override (old: {
                   packageOverrides = prev.lib.composeExtensions (old.packageOverrides or (_: _: { })) (
