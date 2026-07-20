@@ -235,7 +235,7 @@ def main():
             if not os.path.isdir(pkg_path) or pkg.startswith('_'):
                 continue
                 
-            if pkg in ['biliroaming', 'morphe-library-m2', 'morphe-patcher-src', 'npatch', 'revanced-apktool-m2', 'revanced-library-m2', 'revanced-multidexlib2-m2', 'revanced-patcher-m2', 'revanced-patches-gradle-plugin'] or 'plugin' in pkg or 'library-m2' in pkg:
+            if pkg in ['biliroaming', 'morphe-library-m2', 'npatch', 'revanced-apktool-m2', 'revanced-library-m2', 'revanced-multidexlib2-m2', 'revanced-patcher-m2', 'revanced-patches-gradle-plugin'] or pkg.startswith('morphe-patcher-src') or 'plugin' in pkg or 'library-m2' in pkg:
                 continue
                 
             pkg_nix = os.path.join(pkg_path, 'package.nix')

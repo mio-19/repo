@@ -1,7 +1,7 @@
 {
   agp-resolution,
   mk-apk-package,
-  gradle_9_4_1,
+  gradle_9_6_1,
   lib,
   stdenv,
   jdk21_headless,
@@ -26,19 +26,19 @@ let
     s.cmake-3-22-1
   ]);
 
-  # https://github.com/koiverse/ArchiveTune/blob/v13.7.0/gradle/wrapper/gradle-wrapper.properties
-  gradle = gradle_9_4_1;
+  # https://github.com/koiverse/ArchiveTune/blob/v14.0.0/gradle/wrapper/gradle-wrapper.properties
+  gradle = gradle_9_6_1;
 
   appPackage = stdenv.mkDerivation (finalAttrs: {
     pname = "archivetune";
-    version = "13.7.0";
+    version = "14.0.0";
 
     src = fetchFromGitHub {
       owner = "koiverse";
       repo = "ArchiveTune";
       tag = "v${finalAttrs.version}";
       fetchSubmodules = true;
-      hash = "sha256-jVArqc3X1vxo883y3LMr95nW9M+12B8RquPRLFp70F4=";
+      hash = "sha256-pyKyzY2NEQXYKw/0850PW/WckwS72OEb2azKJkWvxAY=";
     };
 
     patches = [
