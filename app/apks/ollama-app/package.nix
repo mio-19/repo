@@ -12,6 +12,9 @@
   androidSdkBuilder,
 }:
 let
+  flutterApkHelpers = ../_shared/flutter-apk-helpers.sh;
+  mkFlutterSdkSourceBuilder = import ../_shared/mk-flutter-sdk-source-builder.nix;
+
   appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
@@ -31,6 +34,9 @@ let
       ]);
 
       gradle = gradle_8_10_2;
+      androidSdkRoot = "${androidSdk}/share/android-sdk";
+      aapt2 = "${androidSdkRoot}/build-tools/36.0.0/aapt2";
+      ndkVersion = "27.0.12077973";
       pythonWithYaml = python3.withPackages (ps: [ ps.pyyaml ]);
     in
     buildDartApplication.override { dart = flutter329; } (finalAttrs: {
@@ -50,26 +56,15 @@ let
       };
 
       sdkSourceBuilders = {
-        flutter =
-          name:
-          runCommand "flutter-sdk-${name}" { passthru.packageRoot = "."; } ''
-            for path in \
-              '${flutter329}/packages/${name}' \
-              '${flutter329}/bin/cache/pkg/${name}'; do
-              if [ -d "$path" ]; then
-                ln -s "$path" "$out"
-                break
-              fi
-            done
-            if [ ! -e "$out" ]; then
-              echo 1>&2 'The Flutter SDK does not contain the requested package: ${name}!'
-              exit 1
-            fi
-          '';
+        flutter = mkFlutterSdkSourceBuilder {
+          inherit runCommand;
+          flutter = flutter329;
+        };
       };
 
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
+        attrPath = "apk_ollama-app";
         pkg = finalAttrs.finalPackage;
         # removed master-index and group-index and play-sdk/index/snapshot.gz manually
         data = ./ollama-app_deps.json;
@@ -95,12 +90,12 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk17_headless;
-        ANDROID_HOME = "${androidSdk}/share/android-sdk";
-        ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/27.0.12077973";
-        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.0.12077973";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+        JAVA_HOME = jdk17_headless.passthru.home;
+        ANDROID_HOME = androidSdkRoot;
+        ANDROID_SDK_ROOT = androidSdkRoot;
+        ANDROID_NDK_HOME = "${androidSdkRoot}/ndk/${ndkVersion}";
+        ANDROID_NDK_ROOT = "${androidSdkRoot}/ndk/${ndkVersion}";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = aapt2;
       };
 
       sdkSetupScript = ''
@@ -111,35 +106,33 @@ let
         "--project-dir"
         "android"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home}"
+        "-Dandroid.aapt2FromMavenOverride=${aapt2}"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2}"
       ];
 
       postPatch = ''
-        cp -LR ${flutter329} flutter-sdk
-        chmod -R u+w flutter-sdk
-        touch flutter-sdk/bin/cache/engine.realm # https://github.com/NixOS/nixpkgs/pull/500309#issuecomment-4192628176
-
-        cat > android/gradlew << 'GRADLEW_SCRIPT'
-        #!/bin/sh
-        exec ${gradle}/bin/gradle "$@"
-        GRADLEW_SCRIPT
-        chmod +x android/gradlew
+        . ${flutterApkHelpers}
+        setup_writable_flutter_sdk ${flutter329}
+        setup_pinned_gradlew ${gradle}/bin/gradle
       '';
 
       preConfigure = ''
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
-        echo "sdk.dir=${androidSdk}/share/android-sdk" > android/local.properties
-        echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.22.1" >> android/local.properties
-        echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/27.0.12077973" >> android/local.properties
-        echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
-        echo "flutter.versionName=1.2.0" >> android/local.properties
-        echo "flutter.versionCode=9" >> android/local.properties
+        {
+          echo "sdk.dir=${androidSdkRoot}"
+          echo "cmake.dir=${androidSdkRoot}/cmake/3.22.1"
+          echo "ndk.dir=${androidSdkRoot}/ndk/${ndkVersion}"
+          echo "flutter.sdk=$PWD/flutter-sdk"
+          echo "flutter.versionName=1.2.0"
+          echo "flutter.versionCode=9"
+        } > android/local.properties
       '';
 
       preBuild = ''
+        . ${flutterApkHelpers}
+
         printf '%s\n' \
           'storePassword=android' \
           'keyPassword=android' \
@@ -159,19 +152,11 @@ let
 
         GRADLE_OPTS="''${GRADLE_OPTS:-}"
         GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.auto-download=false"
-        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        GRADLE_OPTS="$GRADLE_OPTS -Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-        if [[ -n "''${MITM_CACHE_KEYSTORE:-}" ]]; then
-          GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyHost=$MITM_CACHE_HOST"
-          GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyPort=$MITM_CACHE_PORT"
-          GRADLE_OPTS="$GRADLE_OPTS -Dhttps.proxyHost=$MITM_CACHE_HOST"
-          GRADLE_OPTS="$GRADLE_OPTS -Dhttps.proxyPort=$MITM_CACHE_PORT"
-          GRADLE_OPTS="$GRADLE_OPTS -Djavax.net.ssl.trustStore=$MITM_CACHE_KEYSTORE"
-          GRADLE_OPTS="$GRADLE_OPTS -Djavax.net.ssl.trustStorePassword=$MITM_CACHE_KS_PWD"
-        fi
+        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home}"
+        GRADLE_OPTS="$GRADLE_OPTS -Dandroid.aapt2FromMavenOverride=${aapt2}"
+        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2}"
+        append_mitm_gradle_opts
         export FLUTTER_ROOT="$PWD/flutter-sdk"
-        export GRADLE_OPTS
 
         ${pythonWithYaml}/bin/python3 ${../_shared/generate-flutter-plugins.py}
       '';
