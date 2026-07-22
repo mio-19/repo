@@ -13,11 +13,16 @@
   androidSdkBuilder,
 }:
 let
+  flutterApkHelpers = ../_shared/flutter-apk-helpers.sh;
+  mkFlutterSdkSourceBuilder = import ../_shared/mk-flutter-sdk-source-builder.nix;
+
   appPackage =
     let
+      # Upstream llamadart downloads these at build time; vendor the release
+      # tarballs instead so the sandboxed build stays offline.
       llamadartNativeAndroidArm64 = fetchurl {
-        url = "https://github.com/leehack/llamadart-native/releases/download/b8638/llamadart-native-android-arm64-b8638.tar.gz";
-        hash = "sha256-l/SZ09YYzRChcwS9MyaHiyJM7hxUSfqmHAdInlpyuYE=";
+        url = "https://github.com/leehack/llamadart-native/releases/download/b9587/llamadart-native-android-arm64-b9587.tar.gz";
+        hash = "sha256-XSqFp2MIiD+TQf2bCtjjwL3a/T9Ym+Mz0v8wZecg6qc=";
       };
 
       litertLMNativeAndroidArm64 = fetchurl {
@@ -33,11 +38,16 @@ let
         # AGP may resolve aapt2 from build-tools 35.0.0 even with compileSdk 36.
         s.build-tools-35-0-0
         s.build-tools-36-0-0
+        # App uses 29 (upstream); jni/jni_flutter plugins still declare 28.2.
+        # Do not set ndk.dir in local.properties — let AGP pick per-module.
         s.ndk-28-2-13676358
+        s.ndk-29-0-14206865
         s.cmake-3-31-6
       ]);
 
       gradle = gradle_8_12;
+      androidSdkRoot = "${androidSdk}/share/android-sdk";
+      aapt2 = "${androidSdkRoot}/build-tools/35.0.0/aapt2";
 
       pythonWithYaml = python3.withPackages (ps: [ ps.pyyaml ]);
     in
@@ -59,38 +69,23 @@ let
       };
 
       sdkSourceBuilders = {
-        flutter =
-          name:
-          runCommand "flutter-sdk-${name}" { passthru.packageRoot = "."; } ''
-            for path in \
-              '${flutter338}/packages/${name}' \
-              '${flutter338}/bin/cache/pkg/${name}'; do
-              if [ -d "$path" ]; then
-                ln -s "$path" "$out"
-                break
-              fi
-            done
-            if [ ! -e "$out" ]; then
-              echo 1>&2 'The Flutter SDK does not contain the requested package: ${name}!'
-              exit 1
-            fi
-          '';
+        flutter = mkFlutterSdkSourceBuilder {
+          inherit runCommand;
+          flutter = flutter338;
+        };
       };
 
-      # MITM cache for offline Gradle/Maven dependency resolution (including
-      # Gradle Plugin Portal requests for Kotlin and AGP plugins).
-      # To regenerate after a version bump:
-      #   nix build --impure .#meshcore-open.mitmCache.updateScript
-      #   Run the resulting fetch-deps.sh from the repo root.
+      # $(nix build .#apk_meshcore-open.mitmCache.updateScript --no-link --print-out-paths)
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
+        attrPath = "apk_meshcore-open";
         pkg = finalAttrs.finalPackage;
         data = ./meshcore-open_deps.json;
         silent = false;
         useBwrap = false;
       };
 
-      gradleUpdateTask = "--init-script gradle-version-normalize.init.gradle :app:assembleRelease :flserial:extractReleaseAnnotations";
+      gradleUpdateTask = "--init-script ${./androidx-resolution.init.gradle} :app:assembleRelease :flserial:extractReleaseAnnotations";
 
       dontDartBuild = true;
       dontDartInstall = true;
@@ -104,242 +99,70 @@ let
 
       env = {
         JAVA_HOME = jdk17_headless;
-        ANDROID_HOME = "${androidSdk}/share/android-sdk";
-        ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+        ANDROID_HOME = androidSdkRoot;
+        ANDROID_SDK_ROOT = androidSdkRoot;
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = aapt2;
       };
 
       sdkSetupScript = ''
         flutter config --no-analytics >/dev/null 2>&1 || true
       '';
 
-      # Flags used by the gradle() shell function in the fetchDeps update run.
       gradleFlags = [
         "-xlintVitalRelease"
         "--project-dir"
         "android"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${aapt2}"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2}"
       ];
 
       postPatch = ''
+        . ${flutterApkHelpers}
+
+        # Upstream still uses the old ReorderableListView callback name.
         substituteInPlace lib/screens/channels_screen.dart \
           --replace-fail 'onReorderItem:' 'onReorder:'
         substituteInPlace lib/widgets/path_editor_sheet.dart \
           --replace-fail 'onReorderItem:' 'onReorder:'
 
-        # Copy the full Flutter SDK to a writable location so included builds under
-        # packages/flutter_tools/gradle can compile and write outputs.
-        cp -LR ${flutter338} flutter-sdk
-        chmod -R u+w flutter-sdk
-        touch flutter-sdk/bin/cache/engine.realm # https://github.com/NixOS/nixpkgs/pull/500309#issuecomment-4192628176
-
-        cat > android/gradle-version-normalize.init.gradle << 'INIT_SCRIPT'
-        allprojects {
-          ext.kotlin_version = '1.9.20'
-          ext.kotlinVersion = '1.9.20'
-          buildscript {
-            configurations.matching { it.name == "classpath" }.all {
-              resolutionStrategy.eachDependency { details ->
-                if (details.requested.group == "com.android.tools.build" && details.requested.name == "gradle") {
-                  details.useVersion("8.9.1")
-                }
-                if (details.requested.group == "org.jetbrains.kotlin" && details.requested.name == "kotlin-gradle-plugin") {
-                  details.useVersion("1.9.20")
-                }
-              }
-            }
-          }
-          configurations.configureEach {
-            resolutionStrategy.eachDependency { details ->
-              if (details.requested.group == "androidx.annotation" && details.requested.name == "annotation") {
-                details.useVersion("1.8.0")
-              }
-              if (details.requested.group == "androidx.core" && details.requested.name == "core") {
-                details.useVersion("1.13.1")
-              }
-              if (details.requested.group == "androidx.core" && details.requested.name == "core-ktx") {
-                details.useVersion("1.13.1")
-              }
-            }
-          }
-          plugins.withId("com.android.application") {
-            android {
-              lintOptions {
-                checkReleaseBuilds = false
-                abortOnError = false
-              }
-              lint {
-                checkReleaseBuilds = false
-                abortOnError = false
-              }
-            }
-          }
-          plugins.withId("com.android.library") {
-            android {
-              lintOptions {
-                checkReleaseBuilds = false
-                abortOnError = false
-              }
-              lint {
-                checkReleaseBuilds = false
-                abortOnError = false
-              }
-            }
-          }
-        }
-        INIT_SCRIPT
-
-        # Replace the Gradle wrapper with our pinned Gradle binary.
-        cat > android/gradlew << 'GRADLEW_SCRIPT'
-        #!/bin/sh
-        exec ${gradle}/bin/gradle -I "$PWD/gradle-version-normalize.init.gradle" "$@"
-        GRADLEW_SCRIPT
-        chmod +x android/gradlew
-        if grep -Fq 'ndkVersion = "29.0.14206865"' android/app/build.gradle.kts; then
-          substituteInPlace android/app/build.gradle.kts \
-            --replace-fail 'ndkVersion = "29.0.14206865"' 'ndkVersion = "28.2.13676358"'
-        elif grep -Fq 'ndkVersion = flutter.ndkVersion' android/app/build.gradle.kts; then
-          substituteInPlace android/app/build.gradle.kts \
-            --replace-fail 'ndkVersion = flutter.ndkVersion' 'ndkVersion = "28.2.13676358"'
-        fi
-
-        if grep -Fq 'android.newDsl=true' android/gradle.properties; then
-          substituteInPlace android/gradle.properties \
-            --replace-fail 'android.newDsl=true' 'android.newDsl=false'
-        elif ! grep -Fq 'android.newDsl=' android/gradle.properties; then
-          echo 'android.newDsl=false' >> android/gradle.properties
-        fi
-
-        cat >> android/app/build.gradle.kts << 'EOF'
-        android {
-          lint {
-            checkReleaseBuilds = false
-            abortOnError = false
-          }
-        }
-        EOF
+        setup_writable_flutter_sdk ${flutter338}
+        setup_pinned_gradlew ${gradle}/bin/gradle "-I ${./androidx-resolution.init.gradle} "
       '';
 
       preConfigure = ''
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
-        # local.properties is read by settings.gradle.kts (flutter.sdk) and AGP (sdk.dir).
-        echo "sdk.dir=${androidSdk}/share/android-sdk" > android/local.properties
-        echo "cmake.dir=${androidSdk}/share/android-sdk/cmake/3.31.6" >> android/local.properties
-        echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/28.2.13676358" >> android/local.properties
-        echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
+        {
+          echo "sdk.dir=${androidSdkRoot}"
+          echo "cmake.dir=${androidSdkRoot}/cmake/3.31.6"
+          echo "flutter.sdk=$PWD/flutter-sdk"
+        } > android/local.properties
       '';
 
       preBuild = ''
-        # Propagate MITM proxy and toolchain settings to JVM instances invoked by
-        # Flutter's internal Gradle calls (via android/gradlew).  The gradle setup
-        # hook writes proxy flags to gradleFlagsArray for the gradle() shell function,
-        # but Flutter calls gradlew directly.  GRADLE_OPTS is forwarded to the JVM.
+        . ${flutterApkHelpers}
+
         GRADLE_OPTS="''${GRADLE_OPTS:-}"
         GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.auto-download=false"
         GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        GRADLE_OPTS="$GRADLE_OPTS -Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        export LLAMADART_ALLOW_LEGACY_LOCAL_BUNDLES=1
-        if [[ -n "''${MITM_CACHE_KEYSTORE:-}" ]]; then
-          GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyHost=$MITM_CACHE_HOST"
-          GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyPort=$MITM_CACHE_PORT"
-          GRADLE_OPTS="$GRADLE_OPTS -Dhttps.proxyHost=$MITM_CACHE_HOST"
-          GRADLE_OPTS="$GRADLE_OPTS -Dhttps.proxyPort=$MITM_CACHE_PORT"
-          GRADLE_OPTS="$GRADLE_OPTS -Djavax.net.ssl.trustStore=$MITM_CACHE_KEYSTORE"
-          GRADLE_OPTS="$GRADLE_OPTS -Djavax.net.ssl.trustStorePassword=$MITM_CACHE_KS_PWD"
-        fi
-        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.newDsl=false -Dorg.gradle.project.android.ndkVersion=28.2.13676358"
+        GRADLE_OPTS="$GRADLE_OPTS -Dandroid.aapt2FromMavenOverride=${aapt2}"
+        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2}"
+        append_mitm_gradle_opts
         export FLUTTER_ROOT="$PWD/flutter-sdk"
-        export GRADLE_OPTS
+        export LLAMADART_ALLOW_LEGACY_LOCAL_BUNDLES=1
 
         mkdir -p .dart-patched
-
-        clone_dart_package() {
-          local source_dir="$1"
-          local patched_name="$2"
-          local patched_dir="$PWD/.dart-patched/$patched_name"
-
-          cp -LR "$source_dir" "$patched_dir"
-          chmod -R u+w "$patched_dir"
-          printf '%s\n' "$patched_dir"
-        }
-
-        replace_dart_package_root() {
-          local original_dir="$1"
-          local patched_dir="$2"
-
-          substituteInPlace .dart_tool/package_config.json \
-            --replace-fail "$original_dir" "$patched_dir"
-        }
-
-        replace_flutter_plugin_root() {
-          local original_dir="$1"
-          local patched_dir="$2"
-
-          if [ -f .flutter-plugins-dependencies ] && grep -Fq "$original_dir" .flutter-plugins-dependencies; then
-            substituteInPlace .flutter-plugins-dependencies \
-              --replace-fail "$original_dir" "$patched_dir"
-          fi
-
-          if [ -f .flutter-plugins ] && grep -Fq "$original_dir" .flutter-plugins; then
-            substituteInPlace .flutter-plugins \
-              --replace-fail "$original_dir" "$patched_dir"
-          fi
-        }
-
-
-
-        patch_ndk_version_file() {
-          local file="$1"
-          local old_value
-          [ -f "$file" ] || return 0
-
-          while IFS= read -r old_value; do
-            [ -n "$old_value" ] || continue
-            substituteInPlace "$file" \
-              --replace-fail "$old_value" '28.2.13676358'
-          done < <(grep -oE '27\.0\.12077973|28\.2\.13676358|29\.0\.14206865' "$file" | sort -u)
-
-          if grep -Fq 'android.newDsl=true' "$file"; then
-            substituteInPlace "$file" \
-              --replace-fail 'android.newDsl=true' 'android.newDsl=false'
-          fi
-        }
-
         declare -A patched_pkg_dirs
 
         ${pythonWithYaml}/bin/python3 ${../_shared/generate-flutter-plugins.py}
 
+        # Flutter plugins live in the Nix store; CMake/AGP write under plugin
+        # android/ trees (e.g. flserial .cxx/), so clone them to a writable dir.
         while IFS= read -r plugin_dir; do
           [ -n "$plugin_dir" ] || continue
-          work_plugin_dir="$plugin_dir"
-          if [[ "$plugin_dir" == /nix/store/* ]]; then
-            if [ -z "''${patched_pkg_dirs[$plugin_dir]:-}" ]; then
-              patched_pkg_dirs[$plugin_dir]="$(clone_dart_package "$plugin_dir" "$(basename "$plugin_dir")")"
-              if grep -Fq "$plugin_dir" .dart_tool/package_config.json; then
-                replace_dart_package_root "$plugin_dir" "''${patched_pkg_dirs[$plugin_dir]}"
-              fi
-              replace_flutter_plugin_root "$plugin_dir" "''${patched_pkg_dirs[$plugin_dir]}"
-            fi
-            work_plugin_dir="''${patched_pkg_dirs[$plugin_dir]}"
-          fi
-          if [ -d "$work_plugin_dir/android" ]; then
-            while IFS= read -r gradle_file; do
-              patch_ndk_version_file "$gradle_file"
-            done < <(find "$work_plugin_dir/android" -type f \( -name '*.gradle' -o -name '*.gradle.kts' \))
-          fi
-          if [ -f "$work_plugin_dir/gradle.properties" ]; then
-            patch_ndk_version_file "$work_plugin_dir/gradle.properties"
-          fi
-          if [ -d "$work_plugin_dir/android" ]; then
-            while IFS= read -r ndk_file; do
-              patch_ndk_version_file "$ndk_file"
-            done < <(find "$work_plugin_dir/android" -type f -name '*.properties')
-          fi
+          ensure_writable_dart_package "$plugin_dir" >/dev/null
         done < <(${python3}/bin/python3 - <<'PY'
         import json
 
@@ -352,49 +175,29 @@ let
         PY
         )
 
+        # Vendor llamadart / litert native bundles so hook/build.dart does not
+        # hit the network during the sandboxed Flutter build.
         while IFS= read -r package_dir; do
           [ -n "$package_dir" ] || continue
-          work_package_dir="$package_dir"
-          if [[ "$package_dir" == /nix/store/* ]]; then
-            if [ -z "''${patched_pkg_dirs[$package_dir]:-}" ]; then
-              patched_pkg_dirs[$package_dir]="$(clone_dart_package "$package_dir" "$(basename "$package_dir")")"
-              if grep -Fq "$package_dir" .dart_tool/package_config.json; then
-                replace_dart_package_root "$package_dir" "''${patched_pkg_dirs[$package_dir]}"
-              fi
-            fi
-            work_package_dir="''${patched_pkg_dirs[$package_dir]}"
-          fi
-
-          case "$(basename "$work_package_dir")" in
-            *llamadart*)
-              mkdir -p "$work_package_dir/third_party/bin/android/arm64"
-              tar -xzf ${llamadartNativeAndroidArm64} -C "$work_package_dir/third_party/bin/android/arm64"
-              if [ -f "$work_package_dir/hook/build.dart" ]; then
-                substituteInPlace "$work_package_dir/hook/build.dart" \
-                  --replace-fail "  final response = await http.get(Uri.parse(bundleSpec.releaseUrl));" $'  await File(\'${litertLMNativeAndroidArm64}\').copy(destination.path);\n  return;\n  final response = await http.get(Uri.parse(bundleSpec.releaseUrl));' \
-                  --replace-fail "  final destination = File(destinationPath);" $'  final destination = File(destinationPath);\n  await destination.parent.create(recursive: true);\n  await File(\'${llamadartNativeAndroidArm64}\').copy(destinationPath);\n  log.info(\'Saved native bundle to $destinationPath\');\n  return;'
-              fi
-              ;;
-          esac
-
-          while IFS= read -r gradle_file; do
-            patch_ndk_version_file "$gradle_file"
-          done < <(find "$work_package_dir" -type f \( -name '*.gradle' -o -name '*.gradle.kts' \))
-
-          while IFS= read -r ndk_file; do
-            patch_ndk_version_file "$ndk_file"
-          done < <(find "$work_package_dir" -type f -name '*.properties')
-
+          work_package_dir="$(ensure_writable_dart_package "$package_dir")"
+          mkdir -p "$work_package_dir/third_party/bin/android/arm64"
+          tar -xzf ${llamadartNativeAndroidArm64} -C "$work_package_dir/third_party/bin/android/arm64"
+          substituteInPlace "$work_package_dir/hook/build.dart" \
+            --replace-fail \
+              "  final request = http.Request('GET', Uri.parse(url));" \
+              $'  await File(\'${llamadartNativeAndroidArm64}\').copy(destinationPath);\n  log.info(\'Saved vendored native bundle to $destinationPath\');\n  return;\n  final request = http.Request(\'GET\', Uri.parse(url));' \
+            --replace-fail \
+              "  final response = await http.get(Uri.parse(bundleSpec.releaseUrl));" \
+              $'  await destination.writeAsBytes(await File(\'${litertLMNativeAndroidArm64}\').readAsBytes());\n  return;\n  final response = await http.get(Uri.parse(bundleSpec.releaseUrl));'
         done < <(${python3}/bin/python3 - <<'PY'
         import json
         import urllib.parse
 
-        wanted = {"jni", "jni_flutter", "llamadart"}
         with open(".dart_tool/package_config.json") as f:
             data = json.load(f)
 
         for package in data.get("packages", []):
-            if package.get("name") not in wanted:
+            if package.get("name") != "llamadart":
                 continue
             root_uri = package.get("rootUri", "")
             if root_uri.startswith("file://"):
@@ -403,14 +206,6 @@ let
                 print(root_uri)
         PY
         )
-
-        if [ -f .dart-patched/hook/build.dart ]; then
-          mkdir -p .dart-patched/third_party/bin/android/arm64
-          tar -xzf ${llamadartNativeAndroidArm64} -C .dart-patched/third_party/bin/android/arm64
-          substituteInPlace .dart-patched/hook/build.dart \
-            --replace-fail "  final response = await http.get(Uri.parse(bundleSpec.releaseUrl));" $'  await File(\'${litertLMNativeAndroidArm64}\').copy(destination.path);\n  return;\n  final response = await http.get(Uri.parse(bundleSpec.releaseUrl));' \
-            --replace-fail "  final destination = File(destinationPath);" $'  final destination = File(destinationPath);\n  await destination.parent.create(recursive: true);\n  await File(\'${llamadartNativeAndroidArm64}\').copy(destinationPath);\n  log.info(\'Saved native bundle to $destinationPath\');\n  return;'
-        fi
       '';
 
       buildPhase = ''
