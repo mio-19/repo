@@ -1,0 +1,9 @@
+// Force build-tools 36.1.0 across Android projects. AGP otherwise
+// may pick 35.x, which produces corrupted APKs with newer AGP.
+allprojects {
+  afterEvaluate { project ->
+    if (project.hasProperty("android")) {
+      project.android.buildToolsVersion = "36.1.0"
+    }
+  }
+}

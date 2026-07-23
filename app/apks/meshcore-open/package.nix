@@ -98,7 +98,7 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk17_headless;
+        JAVA_HOME = jdk17_headless.passthru.home;
         ANDROID_HOME = androidSdkRoot;
         ANDROID_SDK_ROOT = androidSdkRoot;
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = aapt2;
@@ -113,7 +113,7 @@ let
         "--project-dir"
         "android"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${aapt2}"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2}"
       ];
@@ -146,7 +146,7 @@ let
 
         GRADLE_OPTS="''${GRADLE_OPTS:-}"
         GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.auto-download=false"
-        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.paths=${jdk17_headless}"
+        GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home}"
         GRADLE_OPTS="$GRADLE_OPTS -Dandroid.aapt2FromMavenOverride=${aapt2}"
         GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2}"
         append_mitm_gradle_opts

@@ -17,6 +17,9 @@
   fetchurl,
 }:
 let
+  flutterApkHelpers = ../_shared/flutter-apk-helpers.sh;
+  mkFlutterSdkSourceBuilder = import ../_shared/mk-flutter-sdk-source-builder.nix;
+
   appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
@@ -49,9 +52,10 @@ let
       pythonWithYaml = python3.withPackages (ps: [ ps.pyyaml ]);
       androidSdkRoot = "${androidSdk}/share/android-sdk";
       aapt2Path = "${androidSdkRoot}/build-tools/36.1.0/aapt2";
+      jdkHome = jdk17_headless.passthru.home;
       gradleCommonOpts = [
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdkHome}"
         "-Dandroid.aapt2FromMavenOverride=${aapt2Path}"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2Path}"
       ];
@@ -106,33 +110,22 @@ let
       gitHashes = lib.importJSON ./git-hashes.json;
 
       sdkSourceBuilders = {
-        flutter =
-          name:
-          runCommand "flutter-sdk-${name}" { passthru.packageRoot = "."; } ''
-            for path in \
-              '${flutter344}/packages/${name}' \
-              '${flutter344}/bin/cache/pkg/${name}'; do
-              if [ -d "$path" ]; then
-                ln -s "$path" "$out"
-                break
-              fi
-            done
-            if [ ! -e "$out" ]; then
-              echo 1>&2 'The Flutter SDK does not contain the requested package: ${name}!'
-              exit 1
-            fi
-          '';
+        flutter = mkFlutterSdkSourceBuilder {
+          inherit runCommand;
+          flutter = flutter344;
+        };
       };
 
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
+        attrPath = "apk_immich";
         pkg = finalAttrs.finalPackage;
         data = ./immich_deps.json;
         silent = false;
         useBwrap = false;
       };
 
-      gradleUpdateTask = ":app:assembleRelease extractReleaseAnnotations";
+      gradleUpdateTask = "--init-script ${./build-tools-pin.init.gradle} :app:assembleRelease extractReleaseAnnotations";
 
       gradleUpdateScript = ''
         runHook preBuild
@@ -154,7 +147,7 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk17_headless;
+        JAVA_HOME = jdkHome;
         ANDROID_HOME = androidSdkRoot;
         ANDROID_SDK_ROOT = androidSdkRoot;
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = aapt2Path;
@@ -168,9 +161,8 @@ let
       ++ gradleCommonOpts;
 
       postPatch = ''
-        cp -LR ${flutter344} flutter-sdk
-        chmod -R u+w flutter-sdk
-        touch flutter-sdk/bin/cache/engine.realm # https://github.com/NixOS/nixpkgs/pull/500309#issuecomment-4192628176
+        . ${flutterApkHelpers}
+        setup_writable_flutter_sdk ${flutter344}
 
         substituteInPlace android/app/build.gradle \
           --replace-fail "//f configurations.all {" "configurations.all {" \
@@ -180,8 +172,6 @@ let
 
         substituteInPlace android/gradle.properties \
           --replace-fail "org.gradle.jvmargs=-Xmx4096M" "org.gradle.jvmargs=-Xmx8192M"
-
-        sed -i '1i subprojects { afterEvaluate { project -> if (project.hasProperty("android")) { project.android.buildToolsVersion = "36.1.0" } } }' android/build.gradle
 
         ${lib.concatStringsSep "\n" (
           lib.mapAttrsToList
@@ -209,8 +199,7 @@ let
             }
         )}
 
-        printf '%s\n' '#!/bin/sh' 'exec ${gradle}/bin/gradle "$@"' > android/gradlew
-        chmod +x android/gradlew
+        setup_pinned_gradlew ${gradle}/bin/gradle "-I ${./build-tools-pin.init.gradle} "
 
         {
           echo 'distributionBase=GRADLE_USER_HOME'
@@ -237,20 +226,14 @@ let
       '';
 
       preBuild = ''
+        . ${flutterApkHelpers}
+
         GRADLE_OPTS="''${GRADLE_OPTS:-}"
         for gradle_opt in ${lib.escapeShellArgs gradleCommonOpts}; do
           GRADLE_OPTS="$GRADLE_OPTS $gradle_opt"
         done
-        if [[ -n "''${MITM_CACHE_KEYSTORE:-}" ]]; then
-          GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyHost=$MITM_CACHE_HOST"
-          GRADLE_OPTS="$GRADLE_OPTS -Dhttp.proxyPort=$MITM_CACHE_PORT"
-          GRADLE_OPTS="$GRADLE_OPTS -Dhttps.proxyHost=$MITM_CACHE_HOST"
-          GRADLE_OPTS="$GRADLE_OPTS -Dhttps.proxyPort=$MITM_CACHE_PORT"
-          GRADLE_OPTS="$GRADLE_OPTS -Djavax.net.ssl.trustStore=$MITM_CACHE_KEYSTORE"
-          GRADLE_OPTS="$GRADLE_OPTS -Djavax.net.ssl.trustStorePassword=$MITM_CACHE_KS_PWD"
-        fi
+        append_mitm_gradle_opts
         export FLUTTER_ROOT="$PWD/flutter-sdk"
-        export GRADLE_OPTS
 
         if [[ -n "''${MITM_CACHE_HOST:-}" && -n "''${MITM_CACHE_PORT:-}" && -n "''${MITM_CACHE_CA:-}" ]]; then
           for artifact_url in \
@@ -278,47 +261,7 @@ let
         dart format lib/generated/codegen_loader.g.dart lib/generated/translations.g.dart
 
         mkdir -p .dart-patched
-
-        clone_dart_package() {
-          local source_dir="$1"
-          local patched_name="$2"
-          local patched_dir="$PWD/.dart-patched/$patched_name"
-
-          cp -LR "$source_dir" "$patched_dir"
-          chmod -R u+w "$patched_dir"
-          printf '%s\n' "$patched_dir"
-        }
-
-        replace_dart_package_root() {
-          local original_dir="$1"
-          local patched_dir="$2"
-
-          substituteInPlace .dart_tool/package_config.json \
-            --replace-fail "$original_dir" "$patched_dir"
-        }
-
-        replace_flutter_plugin_root() {
-          local original_dir="$1"
-          local patched_dir="$2"
-
-          if [ -f .flutter-plugins-dependencies ] && grep -Fq "$original_dir" .flutter-plugins-dependencies; then
-            substituteInPlace .flutter-plugins-dependencies \
-              --replace-fail "$original_dir" "$patched_dir"
-          fi
-
-          if [ -f .flutter-plugins ] && grep -Fq "$original_dir" .flutter-plugins; then
-            substituteInPlace .flutter-plugins \
-              --replace-fail "$original_dir" "$patched_dir"
-          fi
-        }
-
-        remap_dart_package_root() {
-          local original_dir="$1"
-          local patched_dir="$2"
-
-          replace_dart_package_root "$original_dir" "$patched_dir"
-          replace_flutter_plugin_root "$original_dir" "$patched_dir"
-        }
+        declare -A patched_pkg_dirs
 
         ${python3}/bin/python3 - <<'PY' > dart_package_dirs.sh
         import json
@@ -357,6 +300,7 @@ let
             -p1 < ${./geolocator-force-locationmanager.patch}
 
           remap_dart_package_root "$GEOLOCATOR_ANDROID_DIR" "$patched_geolocator_android_dir"
+          patched_pkg_dirs["$GEOLOCATOR_ANDROID_DIR"]="$patched_geolocator_android_dir"
         fi
 
         flutter_engine_version="$(cat flutter-sdk/bin/internal/engine.version)"
@@ -369,6 +313,7 @@ let
          implementation \"androidx.annotation:annotation:1.8.0\"
          compileOnly \"io.flutter:flutter_embedding_release:1.0.0-$flutter_engine_version\""
             remap_dart_package_root "$NATIVE_VIDEO_PLAYER_DIR" "$patched_native_video_player_dir"
+            patched_pkg_dirs["$NATIVE_VIDEO_PLAYER_DIR"]="$patched_native_video_player_dir"
             NATIVE_VIDEO_PLAYER_DIR="$patched_native_video_player_dir"
           fi
 
@@ -379,6 +324,7 @@ let
                 "    implementation \"org.jetbrains.kotlinx:kotlinx-coroutines-android:1.+\"
         compileOnly \"io.flutter:flutter_embedding_release:1.0.0-$flutter_engine_version\""
             remap_dart_package_root "$HOME_WIDGET_DIR" "$patched_home_widget_dir"
+            patched_pkg_dirs["$HOME_WIDGET_DIR"]="$patched_home_widget_dir"
             HOME_WIDGET_DIR="$patched_home_widget_dir"
           fi
 
@@ -407,14 +353,9 @@ let
           fi
         fi
 
-        declare -A patched_pkg_dirs
         while IFS= read -r pkg_dir; do
           [ -d "$pkg_dir/android" ] || continue
-          [[ "$pkg_dir" == /nix/store/* ]] || continue
-          if [ -z "''${patched_pkg_dirs[$pkg_dir]:-}" ]; then
-            patched_pkg_dirs[$pkg_dir]="$(clone_dart_package "$pkg_dir" "$(basename "$pkg_dir")")"
-          fi
-          remap_dart_package_root "$pkg_dir" "''${patched_pkg_dirs[$pkg_dir]}"
+          ensure_writable_dart_package "$pkg_dir" >/dev/null
         done < <(${python3}/bin/python3 - <<'PY'
         import json
         import urllib.parse
