@@ -11,7 +11,7 @@
   morphe-patches-library-m2_1_5_1_dev_2,
   apktool-src,
   multidexlib2-src,
-  morphe-patcher-src_1_5_2,
+  morphe-patcher-src_1_7_0,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -38,13 +38,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches";
-  version = "1.35.0";
+  version = "1.36.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-6uR47ST8QK3u1vrjdES0Uh2A5Bxh2qw127YswEgK/tQ=";
+    hash = "sha256-dbJhVT2tQfbODNBuG0G8OkpUxYMruZdphGaS69DljJo=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -76,7 +76,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   postUnpack = ''
     root="$PWD"
-    cp -a ${morphe-patcher-src_1_5_2} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_1_7_0} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
     cp -a ${arsclib-src} "$root/ARSCLib"
     chmod -R u+w "$root/ARSCLib"

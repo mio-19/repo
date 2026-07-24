@@ -1,0 +1,162 @@
+# Builds morphe-library and publishes to a local maven repo layout.
+# This is needed because morphe-library is Kotlin Multiplatform and its
+# -jvm variant can't be cleanly substituted via Gradle composite builds.
+{
+  lib,
+  jdk21_headless,
+  gradle_8_14_3,
+  stdenv,
+  fetchFromGitHub,
+  writableTmpDirAsHomeHook,
+  androidSdkBuilder,
+}:
+let
+  androidSdk = androidSdkBuilder (s: [
+    s.cmdline-tools-latest
+    s.platform-tools
+    s.platforms-android-35
+    s.platforms-android-36
+    s.build-tools-34-0-0
+    s.build-tools-35-0-0
+  ]);
+
+  gradle = gradle_8_14_3;
+
+  jadb-src = fetchFromGitHub {
+    owner = "MorpheApp";
+    repo = "jadb";
+    rev = "6fdaa5bec8369487e6c9d0460f02ac9970709d34";
+    hash = "sha256-aMXkdyDOfR74HZFBnvseciONLDQcwj/b2TWRdJ2ThT8=";
+  };
+in
+stdenv.mkDerivation (finalAttrs: {
+  pname = "morphe-library-m2";
+  version = "1.4.0";
+
+  src = fetchFromGitHub {
+    owner = "MorpheApp";
+    repo = "morphe-library";
+    rev = "v${finalAttrs.version}";
+    hash = "sha256-gXPFNpnQnXk/KClaE0pIlYJFzlPsa/MXiyGLLZvydVM=";
+  };
+
+  gradleBuildTask = "publish";
+  gradleUpdateTask = finalAttrs.gradleBuildTask;
+
+  mitmCache = gradle.fetchDeps {
+    pname = "morphe-library";
+    pkg = finalAttrs.finalPackage;
+    data = ./morphe-library_deps.json;
+    silent = false;
+    useBwrap = false;
+  };
+
+  nativeBuildInputs = [
+    gradle
+    jdk21_headless
+    writableTmpDirAsHomeHook
+  ];
+
+  env = {
+    JAVA_HOME = jdk21_headless.passthru.home;
+    ANDROID_HOME = "${androidSdk}/share/android-sdk";
+    ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+  };
+
+  postUnpack = ''
+    root="$PWD"
+
+    # Build jadb (zero runtime deps) into local maven repo.
+    cp -a ${jadb-src} "$root/jadb"
+    chmod -R u+w "$root/jadb"
+    mkdir -p "$root/.m2/repository/app/morphe/jadb/1.2.1"
+    mkdir -p "$root/.m2/repository/app/morphe/jadb/1.2.3"
+    (
+      cd "$root/jadb"
+      find src -name '*.java' > /tmp/jadb-sources.txt
+      mkdir -p build/classes
+      javac -source 1.8 -target 1.8 \
+        -d build/classes \
+        @/tmp/jadb-sources.txt 2>/dev/null || true
+      cd build/classes
+      jar cf "$root/.m2/repository/app/morphe/jadb/1.2.1/jadb-1.2.1.jar" .
+      jar cf "$root/.m2/repository/app/morphe/jadb/1.2.3/jadb-1.2.3.jar" .
+    )
+    cat > "$root/.m2/repository/app/morphe/jadb/1.2.1/jadb-1.2.1.pom" << 'POMEOF'
+    <?xml version="1.0" encoding="UTF-8"?>
+    <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+      <modelVersion>4.0.0</modelVersion>
+      <groupId>app.morphe</groupId>
+      <artifactId>jadb</artifactId>
+      <version>1.2.1</version>
+    </project>
+    POMEOF
+    cat > "$root/.m2/repository/app/morphe/jadb/1.2.3/jadb-1.2.3.pom" << 'POMEOF'
+    <?xml version="1.0" encoding="UTF-8"?>
+    <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+      <modelVersion>4.0.0</modelVersion>
+      <groupId>app.morphe</groupId>
+      <artifactId>jadb</artifactId>
+      <version>1.2.3</version>
+    </project>
+    POMEOF
+
+    # Patch out GitHub Packages from morphe-library.
+    substituteInPlace "$sourceRoot/build.gradle.kts" \
+      --replace-fail '    maven {
+            // A repository must be specified for some reason. "registry" is a dummy.
+            url = uri("https://maven.pkg.github.com/MorpheApp/registry")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+            }
+        }' '    maven { url = uri("file://'"$root"'/.m2/repository") }'
+
+    # Disable signing.
+    echo 'tasks.withType<Sign> { enabled = false }' >> "$sourceRoot/build.gradle.kts"
+
+    # Remove GitHub Packages from publishing and add a local one for 'publish' task
+    substituteInPlace "$sourceRoot/build.gradle.kts" \
+      --replace-fail '        maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/MorpheApp/morphe-library")
+                credentials {
+                    username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+                    password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+                }
+            }' '        maven { url = uri("file://" + rootProject.projectDir.resolve("build/m2").absolutePath) }'
+  '';
+
+  preConfigure = ''
+    export ANDROID_USER_HOME="$HOME/.android"
+    mkdir -p "$ANDROID_USER_HOME"
+    echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+  '';
+
+  gradleFlags = [
+    "-Dorg.gradle.java.installations.auto-download=false"
+    "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
+  ];
+
+  installPhase = ''
+    runHook preInstall
+    mkdir -p "$out"
+    # Copy artifacts from the local maven repo and jadb
+    # Jadb is in ../.m2/repository
+    # Library artifacts are in build/m2
+    if [ -d "build/m2" ]; then
+      cp -a build/m2/. "$out/"
+    fi
+    if [ -d "../.m2/repository" ]; then
+      cp -a ../.m2/repository/. "$out/"
+    fi
+    runHook postInstall
+  '';
+
+  meta = with lib; {
+    description = "Morphe Library pre-built to local maven repo";
+    homepage = "https://github.com/MorpheApp/morphe-library";
+    license = licenses.gpl3Only;
+    platforms = platforms.unix;
+  };
+})
