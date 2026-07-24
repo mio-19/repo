@@ -15,6 +15,7 @@ let
     s.cmdline-tools-latest
     s.platform-tools
     s.platforms-android-36
+    s.platforms-android-37-0
     s.build-tools-35-0-0
     s.build-tools-36-0-0
     s.ndk-29-0-14206865
@@ -23,13 +24,13 @@ let
 
   appPackage = gradle_9_5_1.stdenv.mkDerivation (finalAttrs: {
     pname = "nextcloud-android";
-    version = "34.0.1";
+    version = "34.1.0";
 
     src = fetchFromGitHub {
       owner = "nextcloud";
       repo = "android";
       tag = "stable-${finalAttrs.version}";
-      hash = "sha256-M+XbB35eNgMFGvoPaIxKMqfgen/BUwdtjwJDwdj/RiI=";
+      hash = "sha256-Odt3AKQOU0cJjxhXJkTvFJAIAW6nU7RdOZKP8GAELkQ=";
     };
 
     patches = [
