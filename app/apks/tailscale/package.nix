@@ -5,7 +5,7 @@
   stdenvNoCC,
   fetchFromGitHub,
   androidSdkBuilder,
-  gradle_8_7,
+  gradle_8,
   go_1_26,
   jdk17_headless,
   writableTmpDirAsHomeHook,
@@ -17,21 +17,21 @@
 let
   appPackage =
     let
-      version = "1.100.0-td727cb81f-ge7966699a";
+      version = "1.102.0-t17248865a-g3bdbb2cef";
       tailscaleVersion = lib.head (lib.splitString "-" version);
 
       src = fetchFromGitHub {
         owner = "tailscale";
         repo = "tailscale-android";
         tag = version;
-        hash = "sha256-sjNk+YSG2/9MOPPUDIJgp2VuFqChyI5bQO6FSLiGrLA=";
+        hash = "sha256-R2AloE/hzuitcn3V+2gEM8Ly1GZ8wyVxR4ug0o7hb48=";
       };
 
       tailscaleSrc = fetchFromGitHub {
         owner = "tailscale";
         repo = "tailscale";
         tag = "v${tailscaleVersion}";
-        hash = "sha256-Z24bwKKYxet/hLRdN10PHg3TK01MxPjldNHnsCZ6htE=";
+        hash = "sha256-Cm/TfxklHhCgd5XclwXdMXQmNCJBj+Nonh90lR2Y3ls=";
       };
 
       xMobileSrc = fetchFromGitHub {
@@ -54,7 +54,7 @@ let
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
         # Update hash to trigger rebuild with internet access
-        outputHash = "sha256-10QBPVkzl0ySit7Y/+McBZHPpwBQD9Y9bSF4dZtJthA=";
+        outputHash = "sha256-Kam+2e/QzjSSd8s5mZxAj6k4ahScaRFj4Jc4CYonHLU=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -102,12 +102,14 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
+        s.platforms-android-36
         s.platforms-android-34
+        s.build-tools-35-0-0
         s.build-tools-34-0-0
         s.ndk-27-3-13750724
       ]);
 
-      gradle = gradle_8_7;
+      gradle = gradle_8;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "tailscale";
@@ -152,7 +154,7 @@ let
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
         NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
       };
 
       preBuild = ''
@@ -225,15 +227,14 @@ let
         substituteInPlace android/build.gradle \
           --replace-fail 'ndkVersion "23.1.7779620"' 'ndkVersion "27.3.13750724"'
         substituteInPlace android/build.gradle \
-          --replace-fail 'versionCode 468' 'versionCode 576'
 
         substituteInPlace Makefile \
           --replace-fail 'ndk;23.1.7779620' 'ndk;27.3.13750724'
 
         echo "org.gradle.jvmargs=-Xmx4096m" >> android/gradle.properties
         cat >> android/gradle.properties <<EOF
-        android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2
-        org.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2
+        android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2
+        org.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2
         EOF
 
         make env
@@ -246,8 +247,8 @@ let
         "android"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
       ];
 
       installPhase = ''
