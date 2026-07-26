@@ -1,0 +1,12 @@
+diff --git a/packages/app-mobile/android/app/build.gradle b/packages/app-mobile/android/app/build.gradle
+--- a/packages/app-mobile/android/app/build.gradle
++++ b/packages/app-mobile/android/app/build.gradle
+@@ -118,7 +118,7 @@ android {
+         release {
+             // Caution! In production, you need to generate your own keystore file.
+             // see https://reactnative.dev/docs/signed-apk-android.
+-            signingConfig signingConfigs.release
++            signingConfig signingConfigs.debug
+             minifyEnabled enableMinifyInReleaseBuilds
+             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+         }
