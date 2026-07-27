@@ -8,10 +8,10 @@
   writableTmpDirAsHomeHook,
   git,
   androidSdkBuilder,
-  morphe-library-m2,
   apktool-src,
   multidexlib2-src,
-  morphe-patcher-src,
+  morphe-patcher-src_1_7_0,
+  morphe-library-m2_1_4_0,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -28,8 +28,8 @@ let
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "ARSCLib";
-    rev = "d003b5ff1ca91fb8c5105619cf1108b450387061";
-    hash = "sha256-2UO6zDAFeURrt9U9f7gNDA8J5X3o8Ct96/rItUq644g=";
+    rev = "a28c6fb2a7";
+    hash = "sha256-0SwowTDkgF9Rdenx/nlSPuGf3kvk7ucxtr7D6r9fU/c=";
   };
 
   revanced-cli-deps = lib.importJSON ../revanced-cli/revanced-cli_deps.json;
@@ -42,13 +42,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-cli";
-  version = "1.11.0";
+  version = "1.12.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-cli";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-7hGHwrZc1ZNs+MvLaXzga/p6WDVF4dsvRp95eQ//U44=";
+    hash = "sha256-GxXVeg31KVIi8+8ey8y12B0Yl3eIDjPegCI6OSur7T8=";
   };
 
   gradleBuildTask = "shadowJar";
@@ -84,7 +84,7 @@ stdenv.mkDerivation (finalAttrs: {
     root="$PWD"
 
     # Copy dependency sources as writable sibling directories.
-    cp -a ${morphe-patcher-src} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_1_7_0} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
 
     cp -a ${arsclib-src} "$root/ARSCLib"
@@ -98,7 +98,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     # Set up local maven repo with pre-built morphe-library (from separate derivation).
     mkdir -p "$root/.m2/repository"
-    cp -a ${morphe-library-m2}/* "$root/.m2/repository/"
+    cp -a ${morphe-library-m2_1_4_0}/* "$root/.m2/repository/"
     chmod -R u+w "$root/.m2/repository"
 
     # ---- Patch GitHub Packages repos out of build.gradle files ----
@@ -123,9 +123,11 @@ stdenv.mkDerivation (finalAttrs: {
       --replace-fail '    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"' ""
 
     # Use the pinned Nix JDK instead of Gradle-managed Java toolchains.
-    substituteInPlace "$sourceRoot/build.gradle.kts" \
-      --replace-fail '        languageVersion.set(JavaLanguageVersion.of(17))' \
-                     '        languageVersion.set(JavaLanguageVersion.of(21))'
+    if grep -q 'languageVersion.set(JavaLanguageVersion.of(17))' "$sourceRoot/build.gradle.kts"; then
+      substituteInPlace "$sourceRoot/build.gradle.kts" \
+        --replace-fail '        languageVersion.set(JavaLanguageVersion.of(17))' \
+                       '        languageVersion.set(JavaLanguageVersion.of(21))'
+    fi
     if grep -q 'vendor.set(JvmVendorSpec.ADOPTIUM)' "$sourceRoot/build.gradle.kts"; then
       substituteInPlace "$sourceRoot/build.gradle.kts" \
         --replace-fail '        vendor.set(JvmVendorSpec.ADOPTIUM)' ""
@@ -134,9 +136,11 @@ stdenv.mkDerivation (finalAttrs: {
       substituteInPlace "$sourceRoot/build.gradle.kts" \
         --replace-fail '        vendor.set(JvmVendorSpec.JETBRAINS)' ""
     fi
-    substituteInPlace "$sourceRoot/build.gradle.kts" \
-      --replace-fail '        jvmTarget.set(JvmTarget.JVM_17)' \
-                     '        jvmTarget.set(JvmTarget.JVM_21)'
+    if grep -q 'jvmTarget.set(JvmTarget.JVM_17)' "$sourceRoot/build.gradle.kts"; then
+      substituteInPlace "$sourceRoot/build.gradle.kts" \
+        --replace-fail '        jvmTarget.set(JvmTarget.JVM_17)' \
+                       '        jvmTarget.set(JvmTarget.JVM_21)'
+    fi
 
     # ---- Disable signing tasks (no GPG in sandbox) ----
     cat >> "$sourceRoot/build.gradle.kts" <<'EOF'
@@ -176,5 +180,7 @@ stdenv.mkDerivation (finalAttrs: {
     platforms = platforms.unix;
     mainProgram = "morphe-cli";
   };
-  passthru = { mitmCache = finalAttrs.mitmCache; };
+  passthru = {
+    mitmCache = finalAttrs.mitmCache;
+  };
 })

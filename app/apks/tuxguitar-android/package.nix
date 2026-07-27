@@ -15,46 +15,42 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
-        # compileSdkVersion 31 in apk/build.gradle.
-        s.platforms-android-31
+        # compileSdkVersion 35 in apk/build.gradle.
+        s.platforms-android-35
         # AGP 8.7.3 resolves aapt2 from build-tools 34.0.0 by default.
         s.build-tools-34-0-0
+        s.build-tools-35-0-0
       ]);
 
       gradle = gradle_8_9;
+      androidSdkRoot = "${androidSdk}/share/android-sdk";
+      aapt2 = "${androidSdkRoot}/build-tools/34.0.0/aapt2";
+      jdkHome = jdk21_headless.passthru.home;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "tuxguitar-android";
-      version = "2.0.1";
+      version = "2.1.0";
 
       src = fetchFromGitHub {
         owner = "helge17";
         repo = "tuxguitar";
-        rev = finalAttrs.version;
-        hash = "sha256-USdYj8ebosXkiZpDqyN5J+g1kjyWm225iQlx/szXmLA=";
+        # Prefer tag=; this project tags releases as bare version strings.
+        tag = finalAttrs.version;
+        hash = "sha256-JaR9gagVXgcf1bQ0v/9KO3SzqAXSpjJpCuCRQXs9Wzg=";
       };
 
       gradleBuildTask = "assembleRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
 
-      postPatch = ''
-        substituteInPlace android/build-scripts/tuxguitar-android/apk/build.gradle \
-          --replace-fail \
-            'versionName "9.99-SNAPSHOT"' \
-            'versionName "${finalAttrs.version}"' \
-          --replace-fail \
-            "versionCode Integer.parseInt(new Date().format('yyMMddHH'))" \
-            'versionCode 20001'
-      '';
-
       # Lock refresh steps:
       # 1. If TuxGuitar bumps Gradle, update gradle.version and gradle.hash.
       # 2. Build the updater:
-      #    nix build --impure .#tuxguitar-android.mitmCache.updateScript
+      #    nix build --impure .#apk_tuxguitar-android.mitmCache.updateScript
       # 3. Run the resulting fetch-deps.sh from the repo root to regenerate
-      #    app/tuxguitar/tuxguitar_deps.json.
+      #    app/apks/tuxguitar-android/tuxguitar_deps.json.
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
+        attrPath = "apk_tuxguitar-android";
         pkg = finalAttrs.finalPackage;
         data = ./tuxguitar_deps.json;
         silent = false;
@@ -69,10 +65,10 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk21_headless;
-        ANDROID_HOME = "${androidSdk}/share/android-sdk";
-        ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2";
+        JAVA_HOME = jdkHome;
+        ANDROID_HOME = androidSdkRoot;
+        ANDROID_SDK_ROOT = androidSdkRoot;
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = aapt2;
       };
 
       # The Gradle project root lives in a subdirectory of the monorepo.
@@ -81,7 +77,7 @@ let
       preConfigure = ''
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
-        echo "sdk.dir=${androidSdk}/share/android-sdk" \
+        echo "sdk.dir=${androidSdkRoot}" \
           > android/build-scripts/tuxguitar-android/local.properties
         cd android/build-scripts/tuxguitar-android
       '';
@@ -89,15 +85,15 @@ let
       gradleFlags = [
         "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/34.0.0/aapt2"
+        "-Dorg.gradle.java.installations.paths=${jdkHome}"
+        "-Dandroid.aapt2FromMavenOverride=${aapt2}"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2}"
       ];
 
       installPhase = ''
         runHook preInstall
         install -Dm644 \
-          apk/build/outputs/apk/release/tuxguitar-android-9.99-SNAPSHOT-release-unsigned.apk \
+          apk/build/outputs/apk/release/tuxguitar-android-${finalAttrs.version}-release-unsigned.apk \
           "$out/tuxguitar-android.apk"
         runHook postInstall
       '';

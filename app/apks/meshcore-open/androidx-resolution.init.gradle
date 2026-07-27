@@ -1,0 +1,18 @@
+// Keep Flutter plugin androidx requests within versions present in
+// meshcore-open_deps.json (mitmCache). Without this, plugins ask for
+// core/core-ktx 1.16+/1.17+ which are not locked.
+allprojects {
+  configurations.configureEach {
+    resolutionStrategy.eachDependency { details ->
+      if (details.requested.group == "androidx.annotation" && details.requested.name == "annotation") {
+        details.useVersion("1.8.0")
+      }
+      if (details.requested.group == "androidx.core" && details.requested.name == "core") {
+        details.useVersion("1.13.1")
+      }
+      if (details.requested.group == "androidx.core" && details.requested.name == "core-ktx") {
+        details.useVersion("1.13.1")
+      }
+    }
+  }
+}

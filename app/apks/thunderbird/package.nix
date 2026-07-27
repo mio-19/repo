@@ -9,7 +9,7 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   fetchpatch,
-  gradle_9_3_1,
+  gradle_9_5_1,
 }:
 let
   appPackage =
@@ -22,17 +22,17 @@ let
         s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_3_1;
+      gradle = gradle_9_5_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "thunderbird-android";
-      version = "20.1";
+      version = "21.0";
 
       src = fetchFromGitHub {
         owner = "thunderbird";
         repo = "thunderbird-android";
-        tag = "THUNDERBIRD_20_1";
-        hash = "sha256-PAEchSUb8IE1cDfSVkWyx9EYZbZS+MKZ4X59Ars5+Mg=";
+        tag = "THUNDERBIRD_21_0";
+        hash = "sha256-Xn1B2i5Cm9vyOhrZ0QPF738+WxTk5mKb5LDJtShnAF0=";
       };
 
       patches = [
