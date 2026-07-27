@@ -73,30 +73,7 @@ let
           hash = "sha256-pzO5c6fP3G5x+cN2QS6LyjZlNXujFWxz8W9RqX8g5Es=";
         };
         patches = [
-          /*
-            # TODO:
-            (fetchpatch {
-              name = "feat: show notification and battery optimization warning";
-              url = "https://github.com/immich-app/immich/pull/26610.diff";
-              hash = "sha256-pzO5c6fP3G5x+cN2QS6LyjZlNXujFWxz8W9RqX8g5Es=";
-            })
-          */
-          /*
-            # TODO:
-            (fetchpatch {
-              name = "feat(mobile): Android. Immich as a gallery / image viewer app";
-              url = "https://github.com/immich-app/immich/pull/26109.diff";
-              hash = "sha256-pzO5c6fP3G5x+cN2QS6LyjZlNXujFWxz8W9RqX8g5Es=";
-            })
-          */
-          /*
-            # TODO:
-            (fetchpatch {
-              name = "feat(mobile): increased tap area on video player overlay";
-              url = "https://github.com/immich-app/immich/pull/27269.diff";
-              hash = "sha256-pzO5c6fP3G5x+cN2QS6LyjZlNXujFWxz8W9RqX8g5Es=";
-            })
-          */
+
         ];
       };
 
