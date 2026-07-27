@@ -7,7 +7,7 @@
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
   morphe-patches-gradle-plugin_1_3_3,
-  morphe-patches-library-m2_1_5_1,
+  morphe-patches-library-m2_1_5_0,
   apktool-src,
   multidexlib2-src,
   morphe-patcher-src_1_7_0,
@@ -55,7 +55,7 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_3}";
-    MORPHE_LIBRARY_M2 = "${morphe-patches-library-m2_1_5_1}";
+    MORPHE_LIBRARY_M2 = "${morphe-patches-library-m2_1_5_0}";
   };
 
   postUnpack = ''
@@ -67,9 +67,6 @@ stdenv.mkDerivation (finalAttrs: {
 
     cp -a ${multidexlib2-src} "$root/multidexlib2"
     chmod -R u+w "$root/multidexlib2"
-
-    substituteInPlace "$sourceRoot/gradle/libs.versions.toml" \
-      --replace-fail 'morphe-patches-library = "1.5.0"' 'morphe-patches-library = "1.5.1"'
 
     patch -d "$sourceRoot" -p0 < ${./settings.gradle.kts.patch}
 
