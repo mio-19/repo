@@ -394,7 +394,7 @@ let
     in
     {
       pname = "haven";
-      version = "5.83.18";
+      version = "5.84.1";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";

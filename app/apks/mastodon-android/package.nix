@@ -39,7 +39,7 @@ let
           (fetchpatch {
             name = "Enable more comprehensive R8 optimizations (#1079)";
             url = "https://github.com/mastodon/mastodon-android/pull/1079.diff";
-            hash = "sha256-8pcIg8Qmv30WCQJsrJOqvP20pCcfov4F9XZbOZVOS+Y=";
+            hash = "sha256-k8z1TO2Gq4/QM7/OhjBED9PTYhaivrWbJBgBJh4xpXc=";
           })
         */
       ];

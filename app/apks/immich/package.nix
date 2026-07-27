@@ -78,7 +78,7 @@ let
             (fetchpatch {
               name = "feat: show notification and battery optimization warning";
               url = "https://github.com/immich-app/immich/pull/26610.diff";
-              hash = "sha256-TBXPSuikeq0S2o/+sl6F+twfMxJBkCuiwpdK88mn6L8=";
+              hash = "sha256-pzO5c6fP3G5x+cN2QS6LyjZlNXujFWxz8W9RqX8g5Es=";
             })
           */
           /*
@@ -86,7 +86,7 @@ let
             (fetchpatch {
               name = "feat(mobile): Android. Immich as a gallery / image viewer app";
               url = "https://github.com/immich-app/immich/pull/26109.diff";
-              hash = "sha256-+RyJYGO4YYs/xDHIfpi1dHXW11avny7gLZ2Ew15gJY0=";
+              hash = "sha256-pzO5c6fP3G5x+cN2QS6LyjZlNXujFWxz8W9RqX8g5Es=";
             })
           */
           /*
@@ -94,7 +94,7 @@ let
             (fetchpatch {
               name = "feat(mobile): increased tap area on video player overlay";
               url = "https://github.com/immich-app/immich/pull/27269.diff";
-              hash = "sha256-/Sc+Z6K23QgKjVUemI4TkD0MqXdfzeTFl4hZHuSW7Ng=";
+              hash = "sha256-pzO5c6fP3G5x+cN2QS6LyjZlNXujFWxz8W9RqX8g5Es=";
             })
           */
         ];
