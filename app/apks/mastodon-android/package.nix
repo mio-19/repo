@@ -35,13 +35,7 @@ let
       patches = [
         # https://github.com/mastodon/mastodon-android/pull/1039
         ./0001-furigana-rebased.patch
-        /*
-          (fetchpatch {
-            name = "Enable more comprehensive R8 optimizations (#1079)";
-            url = "https://github.com/mastodon/mastodon-android/pull/1079.diff";
-            hash = "sha256-8pcIg8Qmv30WCQJsrJOqvP20pCcfov4F9XZbOZVOS+Y=";
-          })
-        */
+
       ];
 
       postPatch = ''

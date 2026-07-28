@@ -26,6 +26,7 @@
   util-linux,
   meson,
   curl,
+  wget,
   buildPackages,
   bash,
   buildFHSEnv,
@@ -74,6 +75,7 @@ stdenv.mkDerivation (
           util-linux
           meson
           curl
+          wget
           bash
           jdk17_headless
 
@@ -85,14 +87,14 @@ stdenv.mkDerivation (
   in
   {
     pname = "koreader";
-    version = "2026.03";
+    version = "2026.07";
     src = fetchFromGitHub {
       name = "koreader";
       owner = "koreader";
       repo = "koreader";
       tag = "v${finalAttrs.version}";
       leaveDotGit = true;
-      hash = "sha256-Ww2DBPkr7Q5Is+HHrmjt9WfIordHRGdMuunFfB+G2hg=";
+      hash = "sha256-d1yvVxcvV8htCzFxG+o5q5yNoZTDt4PkaczolIg7IWo=";
       fetchSubmodules = true;
     };
     sourceRoot = "${finalAttrs.src.name}";
@@ -109,6 +111,10 @@ stdenv.mkDerivation (
           --replace-fail \
             'ANDROID_VERSION ?= $(shell git rev-list --count HEAD)' \
             'ANDROID_VERSION ?= ${androidVersionCodeBase}'
+      substituteInPlace base/Makefile.defs \
+          --replace-fail \
+            'set(CMAKE_CXX_FLAGS_INIT "$(strip $(CXXFLAGS))")' \
+            'set(CMAKE_CXX_FLAGS_INIT "$(strip $(CXXFLAGS)) -Wno-register")'
       substituteInPlace $(find . -name CMakeLists.txt) ${lib.concatMapStrings repos-replace repos}
       # LuaJIT uses CROSS+CC for the cross-compiler (TARGET_CC), so CC must be
       # "clang" to form "aarch64-linux-android21-clang". But HOST_CC (used to
@@ -172,6 +178,7 @@ stdenv.mkDerivation (
       util-linux
       meson
       curl
+      wget
       buildPackages.stdenv.cc
       bash
     ];
@@ -221,6 +228,10 @@ stdenv.mkDerivation (
       export PATH="$tmpbin:$PATH"
       ${fhsEnv}/bin/koreader-build-env -c "
         set -e
+        export TARGET_CFLAGS=\"-Wno-error -Wno-register\"
+        export HOST_CFLAGS=\"-Wno-error -Wno-register\"
+        export CFLAGS=\"-Wno-error -Wno-register\"
+        export CXXFLAGS=\"-Wno-error -Wno-register\"
         bash ./kodev release -i android-${androidArch}
       "
     '';

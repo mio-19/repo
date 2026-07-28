@@ -2,19 +2,19 @@
   mk-apk-package,
   lib,
   jdk21_headless,
-  gradle_9_4_1,
+  gradle_9_5_1,
   stdenv,
   fetchgit,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
 let
-  version = "4.8.3";
+  version = "4.8.4";
 
   src = fetchgit {
     url = "https://gitlab.com/AuroraOSS/AuroraStore.git";
     tag = version;
-    hash = "sha256-8sY+fm0uBadRWhIN6o5FeIGYbNMmbe4ozwCPFJd/XpA=";
+    hash = "sha256-Xmzu4CGhzM1qZZm6WpVW4lbZZHo83hpsctWxezfO23Q=";
   };
 
   androidSdk = androidSdkBuilder (s: [
@@ -27,7 +27,7 @@ let
     s.build-tools-36-1-0
   ]);
 
-  gradle = gradle_9_4_1;
+  gradle = gradle_9_5_1;
 
   appPackage = stdenv.mkDerivation (finalAttrs: {
     pname = "aurorastore";
@@ -104,6 +104,9 @@ let
                 'val lastCommitHash = providers.exec {' \
                 'val lastCommitHash = providers.provider { "unknown" } /* patched for nix builds: no .git metadata */ ; if (false) { providers.exec {' \
               --replace-fail \
+                'val lastCommitTimestamp = providers.exec {' \
+                'val lastCommitTimestamp = providers.provider { "0" } /* patched */ ; if (false) { providers.exec {' \
+              --replace-warn \
                 '}.standardOutput.asText.map { it.trim() }' \
                 '}.standardOutput.asText.map { it.trim() } }'
 

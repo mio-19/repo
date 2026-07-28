@@ -37,14 +37,11 @@ let
           url = "https://github.com/termux/termux-app/pull/5025.patch";
           hash = "sha256-07jVCLJX96jZDoWcMlBLtjh2K9dLC1ciVOBzfC1kTpU=";
         })
-        /*
-          # did not apply
-          (fetchpatch {
-            name = "Add graphics in terminal support: - Sixel and iTerm2 protocols";
-            url = "https://github.com/termux/termux-app/pull/5003.patch";
-            hash = "sha256-RYxFj06h4Zm46Rlu2plKXGLS2rqAxegbkcR164yON6c=";
-          })
-        */
+        (fetchpatch {
+          name = "Add graphics in terminal support: - Sixel and iTerm2 protocols";
+          url = "https://github.com/termux/termux-app/pull/2973.diff";
+          hash = "sha256-tHmbmj3Q6E1RR8eEvxaeBmWwpuTSQBL7TscndBy3zD4=";
+        })
         (fetchpatch {
           name = "feat: multi window support";
           url = "https://github.com/termux/termux-app/pull/4961.diff";

@@ -20,6 +20,7 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-35
+        s.platforms-android-36
         s.build-tools-33-0-1
         s.build-tools-35-0-0
       ]);
@@ -28,7 +29,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "zotero-android";
-      version = "1.0.0-258";
+      version = "1.0.0-260";
 
       src = fetchFromGitHub {
         owner = "zotero";
@@ -39,7 +40,7 @@ let
         # latest 1.0.0-* tag by time, not raw version ordering:
         # https://github.com/zotero/zotero-android/tags
         tag = finalAttrs.version;
-        hash = "sha256-HlaH54SESJQavI7iakLrpF+wJWfjsuME6rOHnVjnk8Y=";
+        hash = "sha256-SJoYhVe5MHKs7remyeJF8ymN+5sBvTTHsFBxLZa6zGI=";
       };
 
       patches = [

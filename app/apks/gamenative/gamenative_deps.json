@@ -2,15 +2,27 @@
  "!comment": "This is a nixpkgs Gradle dependency lockfile. For more details, refer to the Gradle section in the nixpkgs manual.",
  "!version": 1,
  "https://central.sonatype.com/repository/maven-snapshots/io/github": {
-  "joshuatam#javasteam-depotdownloader/1.8.0.1-18-20260407.035245-1/SNAPSHOT": {
-   "jar": "sha256-oXYbTvuuKd4h3Y6WDt4Zt/2lkQldwKKkRpfqIm49y1k=",
-   "module": "sha256-znt1IRI55WcPQts8rWhunFQCHjOs3v5pHvknV3n5x3c=",
-   "pom": "sha256-y2BvlSiB16ogpNa5OJfopPTYqyEsFkEz2TmFj4l/ZHA="
+  "joshuatam#javasteam-depotdownloader/1.8.0.1-24-20260717.081651-1/SNAPSHOT": {
+   "jar": "sha256-c4SJ1jXYcF94kBvG+gTMsOphacBUPa0zYMsjCPtktko=",
+   "module": "sha256-ebaJI+XeNyNbjq5vKstohGhLLW66xQbcfg8PFN4fZaQ=",
+   "pom": "sha256-DYUIsVAzp8oGhKcd2Id6CFJw+P/zaB7Fp59ZQV+JSU4="
   },
-  "joshuatam#javasteam/1.8.0.1-18-20260407.035245-1/SNAPSHOT": {
-   "jar": "sha256-b1XgTrhDAPS9ggtgqdcYyX2bNqQJ7lPp0Q3zSXDIZI0=",
-   "module": "sha256-gWVkXm/a4ZJVPTeq/DX9lfeaTXhwILk/gJ1nNVam7r8=",
-   "pom": "sha256-fn6tVl/pmz2R9AbH5DwBk8DW2TtnL10ogO7f76XhJeE="
+  "joshuatam#javasteam/1.8.0.1-24-20260717.081651-1/SNAPSHOT": {
+   "jar": "sha256-s6k0t7q4NLL5ek2Y0v3lKHHhNl0Ir7WuPy42OqyBppA=",
+   "module": "sha256-P2u3mRmLHJlr7yfSQMgmElXoSAvcTBjfjsf/ApyfWJ8=",
+   "pom": "sha256-qtG3fWUkvJfgX1l/GimpMvDWhgyjp9D2QnVCumiH5Do="
+  },
+  "joshuatam/javasteam-depotdownloader/1.8.0.1-24-SNAPSHOT/maven-metadata": {
+   "xml": {
+    "groupId": "io.github.joshuatam",
+    "lastUpdated": "20260721202515"
+   }
+  },
+  "joshuatam/javasteam/1.8.0.1-24-SNAPSHOT/maven-metadata": {
+   "xml": {
+    "groupId": "io.github.joshuatam",
+    "lastUpdated": "20260721202513"
+   }
   }
  },
  "https://dl.google.com/dl/android/maven2": {
@@ -54,10 +66,6 @@
    "module": "sha256-tQplfZR1b2kEq6oAWH+bmbIj8PbmNj2l4ZMD6cM/ov8=",
    "pom": "sha256-epRZU5mTHCWkn5r5PapOl33C03VFjk50u40168tRhI0="
   },
-  "androidx/annotation#annotation-jvm/1.8.1": {
-   "module": "sha256-yVnjsM3HXBXv4BYF+laqefAz45I44VBji4+r3mqhIaA=",
-   "pom": "sha256-1JIDczqm+uBGw6PeTnlu7TR1lXVUhqZCc5iYRHWXULQ="
-  },
   "androidx/annotation#annotation-jvm/1.9.1": {
    "jar": "sha256-HjQ5F+vye6lv5NxSscrX/TK3OPvGNVu2zVs7MF1yEtA=",
    "module": "sha256-A/tlkXfIYY5HQlklwRvJHzhHA+omwmW+myXNeSkrURw=",
@@ -66,10 +74,6 @@
   "androidx/annotation#annotation/1.2.0": {
    "module": "sha256-Lvyrge+RshG6zSBuqs2ZWlH2M6Lpa1eo/AAUTF+cVrM=",
    "pom": "sha256-Yvttyid37+COcHfWuHLWkRBhnff8Icmab1QGZJnMA4M="
-  },
-  "androidx/annotation#annotation/1.6.0": {
-   "module": "sha256-YUa2E4ZDsqwFkN9QndUauup2nHn9dgLrIXFo/lr3jNI=",
-   "pom": "sha256-3YgrTBlFrRMSHs32UeumZKmyJrVduE+nVTkt5eENHls="
   },
   "androidx/annotation#annotation/1.8.1": {
    "module": "sha256-5jhuha/dhlBE4hZXXkk+05pjpjJb2SU3miFCnDlByLU=",
@@ -2309,6 +2313,13 @@
   "junit#junit/4.12": {
    "jar": "sha256-WXIfCAXiI9hLkGd4h9n/Vn3FNNfFAsqQPAwrF/BcEWo=",
    "pom": "sha256-kPFj944/+28cetl96efrpO6iWAcUG4XW0SvmfKJUScQ="
+  },
+  "me/zhanghai/android/libarchive#library/1.1.6": {
+   "module": "sha256-2u6TzPyZjFtSGjWyk1hW1tVAnWZIb9WNEKebdMOrBaQ=",
+   "pom": "sha256-Df+BFGpVzzyv6y26fHWsThrd9CtQC2E/Uk/OrxgJgtg="
+  },
+  "me/zhanghai/android/libarchive/library/1.1.6/library-1.1.6": {
+   "aar": "sha256-Btl6N4cqlXTOsr+Uo62Nw4/MiaYPJCQGeyDrXvqmIYk="
   },
   "net/java#jvnet-parent/1": {
    "pom": "sha256-KBRAgRJo5l2eJms8yJgpfiFOBPCXQNA4bO60qJI9Y78="
