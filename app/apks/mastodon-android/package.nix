@@ -15,33 +15,31 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
-        s.platforms-android-36
-        s.build-tools-36-0-0
+        s.platforms-android-37-0
+        s.build-tools-37-0-0
       ]);
 
       gradle = gradle_8_13;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "mastodon-android";
-      version = "2.13.1";
+      version = "2.13.2";
 
       src = fetchFromGitHub {
         owner = "mastodon";
         repo = "mastodon-android";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-k8z1TO2Gq4/QM7/OhjBED9PTYhaivrWbJBgBJh4xpXc=";
+        hash = "sha256-TJaIoUfmXLFSFLNOwCtUD0EmzGPiBfpYWpSZ6nLFbcY=";
       };
 
       patches = [
-        # https://github.com/mastodon/mastodon-android/pull/1039
-        ./0001-furigana-rebased.patch
 
       ];
 
       postPatch = ''
                 substituteInPlace mastodon/build.gradle \
-                  --replace-fail "	compileSdk 36" "	compileSdk 36
-        	buildToolsVersion '36.0.0'"
+                  --replace-fail "	compileSdk 37" "	compileSdk 37
+        	buildToolsVersion '37.0.0'"
       '';
 
       gradleBuildTask = ":mastodon:assembleGithubRelease";
@@ -66,7 +64,7 @@ let
         JAVA_HOME = jdk21_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2";
       };
 
       preConfigure = ''
@@ -78,14 +76,14 @@ let
       gradleFlags = [
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-        "-Dandroid.suppressUnsupportedCompileSdk=36"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
+        "-Dandroid.suppressUnsupportedCompileSdk=37"
       ];
 
       installPhase = ''
         runHook preInstall
-        apk_path="mastodon/build/outputs/apk/githubRelease/mastodon-githubRelease.apk"
+        apk_path="$(echo mastodon/build/outputs/apk/githubRelease/*.apk)"
         install -Dm644 "$apk_path" "$out/mastodon-android.apk"
         runHook postInstall
       '';
