@@ -71,6 +71,8 @@ buildGradlePackage rec {
   patches = [
     # TODO: consider https://github.com/DrKLO/Telegram/pull/1854
     ./0001-Killergram.patch
+    # NOTE: The max account patch renders the application unusable.
+    # It is kept here for reference only.
     #./0002-max-account-count.patch
     ./prepare.patch
     ./native-build.patch
