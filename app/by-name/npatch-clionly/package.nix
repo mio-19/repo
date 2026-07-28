@@ -13,7 +13,7 @@
   git,
 }:
 let
-  version = "1.0.5";
+  version = "1.0.6";
 
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
@@ -28,18 +28,6 @@ let
 
   gradle = gradle_8_13;
 
-  # We use the Vector commit cf1153e025318045d76ba64d0667e2a41c58ceaf (April 29, 2026)
-  # which includes the :legacy module required by NPatch v1.0.5 but may not have the breaking API changes.
-  # fetchSubmodules = true fetches all Vector sub-submodules (dobby, fmt, lsplant, etc.)
-  # needed for the native patch-loader CMake build.
-  coreSrc = fetchFromGitHub {
-    owner = "HSSkyBoy";
-    repo = "Vector";
-    rev = "cf1153e025318045d76ba64d0667e2a41c58ceaf";
-    fetchSubmodules = true;
-    hash = "sha256-Y4LYSg8dKk6HIcVbG+h3k2iieqFDG/3k4I/h6jHoKgE=";
-  };
-
   common = stdenv.mkDerivation (finalAttrs: {
     pname = "npatch-clionly";
     inherit version;
@@ -50,61 +38,115 @@ let
     src = fetchFromGitHub {
       owner = "7723mod";
       repo = "NPatch";
-      tag = "v1.0.5";
-      fetchSubmodules = false;
-      hash = "sha256-lqOBSjOm8M7RvS6r+1a8OKQtwig39rITf53KOlD46uU=";
+      tag = "v1.0.6";
+      fetchSubmodules = true;
+      hash = "sha256-3JPtO35CeRnXdZXmIMMt+ZkymUMX6qaJCMQqoJtAbtE=";
     };
 
     postPatch = ''
-      # Copy full core so settings.gradle.kts includeBuild("core") works
-      # at Gradle configuration time — needed for both the normal build
-      # and the mitmCache update script (which only runs postPatch, not postUnpack).
-      # Remove the empty submodule placeholder first so cp -r doesn't nest inside it.
-      rm -rf core
-      cp -r --no-preserve=mode,ownership ${coreSrc} core
+            substituteInPlace build.gradle.kts \
+              --replace-fail 'val androidCompileNdkVersion by extra("29.0.13599879")' \
+                'val androidCompileNdkVersion by extra("29.0.13113456")' || true
 
-      substituteInPlace build.gradle.kts \
-        --replace-fail 'val androidCompileNdkVersion by extra("29.0.13599879")' \
-          'val androidCompileNdkVersion by extra("29.0.13113456")'
-      # versionCode falls back to 0 without a .git repo; Android rejects 0
-      substituteInPlace build.gradle.kts \
-        --replace-fail 'val verCode by extra(commitCount)' \
-          'val verCode by extra(10005)'
+            substituteInPlace settings.gradle.kts \
+              --replace-quiet '":manager",' "" || true
 
-      substituteInPlace patch-loader/src/main/java/top/nkbe/npatch/loader/LSPApplication.java \
-        --replace-fail 'XposedBridge.setLogPrinter' '// XposedBridge.setLogPrinter' || true
+            substituteInPlace patch-loader/src/main/java/top/nkbe/npatch/loader/LSPLoader.java \
+              --replace-quiet 'instance.attachFramework(vectorContext);' 'instance.attachFramework(vectorContext, () -> {});' || true
 
-      substituteInPlace patch-loader/src/main/java/top/nkbe/npatch/loader/LSPLoader.java \
-        --replace-fail 'if (NativeAPI.initializeNativeEntrypoint(libName, candidate)) {' \
-                       'if (false) {' || true
+            for f in patch-loader/src/main/java/top/nkbe/npatch/loader/LSPLoader.java \
+                     patch-loader/src/main/java/top/nkbe/npatch/service/IntegrApplicationService.java \
+                     patch-loader/src/main/java/top/nkbe/npatch/service/RemoteApplicationService.java \
+                     patch-loader/src/main/java/top/nkbe/npatch/service/NeoLocalApplicationService.java; do
+              sed -i '/public boolean isLogMuted() throws RemoteException {/i \        public long registerHotReloadTarget(String s, long l, org.lsposed.lspd.service.IHotReloadTarget t) throws android.os.RemoteException {\n            return 0L;\n        }\n' "$f" || true
+            done
 
-      printf '\n' >> build.gradle.kts
-      cat >> build.gradle.kts <<'EOF'
-      allprojects {
-          configurations.configureEach {
-              resolutionStrategy.eachDependency {
-                  if (requested.group == "androidx.savedstate"
-                      && (requested.name == "savedstate-android" || requested.name == "savedstate-compose-android")
-                      && (requested.version == "1.3.0" || requested.version == "1.3.1")
-                  ) {
-                      useVersion("1.3.3")
-                      because("pin savedstate artifacts to versions present in offline lockfile")
-                  }
-                  // commons-lang3 3.14+ made MemberUtils methods private; pin to last compatible version
-                  if (requested.group == "org.apache.commons" && requested.name == "commons-lang3") {
-                      useVersion("3.13.0")
-                      because("Vector core MemberUtilsX needs package-private MemberUtils API from 3.13.0")
-                  }
-              }
+            substituteInPlace meta-loader/src/main/java/top/nkbe/npatch/metaloader/LSPAppComponentFactoryStub.java \
+              --replace-quiet 'var cl = Objects.requireNonNull' 'ClassLoader cl = Objects.requireNonNull' \
+              --replace-quiet 'try (var is = cl.getResourceAsStream(Constants.CONFIG_ASSET_PATH);' 'try (java.io.InputStream is = cl.getResourceAsStream(Constants.CONFIG_ASSET_PATH);' \
+              --replace-quiet 'var reader = new JsonReader' 'android.util.JsonReader reader = new JsonReader' \
+              --replace-quiet 'var name = reader.nextName();' 'String name = reader.nextName();' \
+              --replace-quiet 'var ipm = IPackageManager.Stub.asInterface' 'android.content.pm.IPackageManager ipm = IPackageManager.Stub.asInterface' \
+              --replace-quiet 'try (var zip = new ZipFile' 'try (java.util.zip.ZipFile zip = new ZipFile' \
+              --replace-quiet 'var is = zip.getInputStream' 'java.io.InputStream is = zip.getInputStream' \
+              --replace-quiet 'var os = new ByteArrayOutputStream' 'java.io.ByteArrayOutputStream os = new ByteArrayOutputStream' \
+              --replace-quiet 'try (var is = cl.getResourceAsStream(Constants.LOADER_DEX_ASSET_PATH);' 'try (java.io.InputStream is = cl.getResourceAsStream(Constants.LOADER_DEX_ASSET_PATH);' \
+              --replace-quiet 'try (var is = soSourceApk != null' 'try (java.io.InputStream is = soSourceApk != null' \
+              --replace-quiet 'try (var os = new FileOutputStream(soFile))' 'try (java.io.FileOutputStream os = new FileOutputStream(soFile))' \
+              --replace-quiet 'var currentPackageName = ActivityThread.class.getDeclaredMethod("currentPackageName");' 'java.lang.reflect.Method currentPackageName = ActivityThread.class.getDeclaredMethod("currentPackageName");' \
+              --replace-quiet 'var app = ActivityThread.currentApplication();' 'android.app.Application app = ActivityThread.currentApplication();' \
+              --replace-quiet 'var info = app.getApplicationInfo();' 'android.content.pm.ApplicationInfo info = app.getApplicationInfo();' || true
+
+            for f in $(find . -name "build.gradle.kts"); do
+              substituteInPlace "$f" \
+                --replace-quiet 'val androidSourceCompatibility: JavaVersion by rootProject.extra' 'val androidSourceCompatibility = JavaVersion.VERSION_21' \
+                --replace-quiet 'val androidTargetCompatibility: JavaVersion by rootProject.extra' 'val androidTargetCompatibility = JavaVersion.VERSION_21' \
+                --replace-quiet 'val androidCompileNdkVersion: String by rootProject.extra' 'val androidCompileNdkVersion = "29.0.13113456"' \
+                --replace-quiet 'val verCode: Int by rootProject.extra' 'val verCode = 733' \
+                --replace-quiet 'val verName: String by rootProject.extra' 'val verName = "1.0.6"' \
+                --replace-quiet 'val apiCode: Int by rootProject.extra' 'val apiCode = 102' \
+                --replace-quiet 'val coreVerCode: Int by rootProject.extra' 'val coreVerCode = 10005' \
+                --replace-quiet 'val coreVerName: String by rootProject.extra' 'val coreVerName = "1.0.6"' \
+                --replace-quiet 'val defaultManagerPackageName: String by rootProject.extra' 'val defaultManagerPackageName = "top.nkbe.npatch"' \
+                --replace-quiet 'rootProject.extra["apiCode"]' '102' \
+                --replace-quiet 'rootProject.extra["defaultManagerPackageName"]' '"top.nkbe.npatch"' \
+                --replace-quiet 'rootProject.extra["coreVerCode"]' '10005' \
+                --replace-quiet 'rootProject.extra["coreVerName"]' '"1.0.6"' \
+                --replace-quiet 'rootProject.extra["verCode"]' '733' \
+                --replace-quiet 'rootProject.extra["verName"]' '"1.0.6"' \
+                --replace-quiet 'arguments += "-DEXTERNAL_ROOT=''${File(rootDir.absolutePath, "core/external") }"' 'arguments += "-DEXTERNAL_ROOT=''${File(rootDir.absolutePath, "core/external") }"
+                      arguments += "-DVECTOR_ROOT=''${File(rootDir.absolutePath, "core") }"' \
+                --replace-quiet 'android {' 'android {
+          compileSdk = 37
+          ndkVersion = "29.0.13113456"
+          buildToolsVersion = "37.0.0"
+          compileOptions {
+              sourceCompatibility = JavaVersion.VERSION_21
+              targetCompatibility = JavaVersion.VERSION_21
           }
-      }
+          defaultConfig {
+              minSdk = 28
+              targetSdk = 37
+          }'
+            done
+            substituteInPlace build.gradle.kts \
+              --replace-fail 'val verCode by extra(commitCount)' \
+                'val verCode by extra(10005)' || true
+
+            substituteInPlace patch-loader/src/main/java/top/nkbe/npatch/loader/LSPApplication.java \
+              --replace-fail 'XposedBridge.setLogPrinter' '// XposedBridge.setLogPrinter' || true
+
+            substituteInPlace patch-loader/src/main/java/top/nkbe/npatch/loader/LSPLoader.java \
+              --replace-fail 'if (NativeAPI.initializeNativeEntrypoint(libName, candidate)) {' \
+                             'if (false) {' || true
+
+            printf '\n' >> build.gradle.kts
+            cat >> build.gradle.kts <<'EOF'
+            allprojects {
+                configurations.configureEach {
+                    resolutionStrategy.eachDependency {
+                        if (requested.group == "androidx.savedstate"
+                            && (requested.name == "savedstate-android" || requested.name == "savedstate-compose-android")
+                            && (requested.version == "1.3.0" || requested.version == "1.3.1")
+                        ) {
+                            useVersion("1.3.3")
+                            because("pin savedstate artifacts to versions present in offline lockfile")
+                        }
+                        // commons-lang3 3.14+ made MemberUtils methods private; pin to last compatible version
+                        if (requested.group == "org.apache.commons" && requested.name == "commons-lang3") {
+                            useVersion("3.13.0")
+                            because("Vector core MemberUtilsX needs package-private MemberUtils API from 3.13.0")
+                        }
+                    }
+                }
+            }
       EOF
 
-      # AGP calls git during configuration; init a dummy repo so it doesn't fail
-      git init
-      git config user.email "nix@build"
-      git config user.name "Nix"
-      git commit --allow-empty -m "init"
+            # AGP calls git during configuration; init a dummy repo so it doesn't fail
+            git init
+            git config user.email "nix@build"
+            git config user.name "Nix"
+            git commit --allow-empty -m "init"
     '';
 
     # Build only the jar subproject — avoids the closed-source manager module

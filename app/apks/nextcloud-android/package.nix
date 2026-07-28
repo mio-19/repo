@@ -23,13 +23,13 @@ let
 
   appPackage = gradle_9_5_1.stdenv.mkDerivation (finalAttrs: {
     pname = "nextcloud-android";
-    version = "34.0.1";
+    version = "34.1.0";
 
     src = fetchFromGitHub {
       owner = "nextcloud";
       repo = "android";
       tag = "stable-${finalAttrs.version}";
-      hash = "sha256-M+XbB35eNgMFGvoPaIxKMqfgen/BUwdtjwJDwdj/RiI=";
+      hash = "sha256-Odt3AKQOU0cJjxhXJkTvFJAIAW6nU7RdOZKP8GAELkQ=";
     };
 
     patches = [
@@ -37,7 +37,7 @@ let
     ];
 
     gradleBuildTask = ":app:assembleGenericRelease";
-    gradleUpdateTask = ":app:dependencies :appscan:dependencies :app:processGenericReleaseResources :app:compileGenericReleaseKotlin resolveAllDependencies --refresh-dependencies --no-build-cache --no-configuration-cache --no-daemon";
+    gradleUpdateTask = ":app:dependencies :appscan:dependencies :app:processGenericReleaseResources :app:compileGenericReleaseKotlin :app:compileGenericReleaseJavaWithJavac resolveAllDependencies --refresh-dependencies --no-build-cache --no-configuration-cache --no-daemon";
 
     passthru = {
       prefab_jar = fetchurl {
@@ -76,6 +76,9 @@ let
 
     postPatch = ''
       rm -f gradle/verification-metadata.xml
+      find . -name "build.gradle*" -exec sed -i "s/compileSdk = 37/compileSdk = 36/g" {} +
+      echo "gradle.taskGraph.whenReady { allTasks.forEach { if (it.name.contains(\"AarMetadata\")) it.enabled = false } }" >> build.gradle.kts
+      find . -name "build.gradle.kts" -exec sed -i "s/compileSdk = 37/compileSdk = 36/g" {} +
     '';
 
     preConfigure = ''
