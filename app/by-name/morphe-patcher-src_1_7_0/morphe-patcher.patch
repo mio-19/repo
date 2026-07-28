@@ -1,0 +1,43 @@
+--- build.gradle.kts
++++ build.gradle.kts
+@@ -52,14 +52,7 @@ repositories {
+             includeGroup("com.github.REAndroid")
+         }
+     }
+-    maven {
+-        // A repository must be specified for some reason. "registry" is a dummy.
+-        url = uri("https://maven.pkg.github.com/MorpheApp/registry")
+-        credentials {
+-            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+-            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+-        }
+-    }
++    maven { url = uri("file://" + System.getenv("MORPHE_LIBRARY_M2")) }
+ }
+ 
+ dependencies {
+@@ -118,14 +111,7 @@ java {
+ 
+ publishing {
+     repositories {
+-        maven {
+-            name = "GitHubPackages"
+-            url = uri("https://maven.pkg.github.com/MorpheApp/morphe-patcher")
+-            credentials {
+-                username = System.getenv("GITHUB_ACTOR")
+-                password = System.getenv("GITHUB_TOKEN")
+-            }
+-        }
++        maven { url = uri("file://" + project.projectDir.resolve("build/m2").absolutePath) }
+     }
+ 
+     publications {
+@@ -162,7 +148,4 @@ publishing {
+     }
+ }
+ 
+-signing {
+-    useGpgCmd()
+-    sign(publishing.publications["morphe-patcher-publication"])
+-}
++tasks.withType<Sign> { enabled = false }

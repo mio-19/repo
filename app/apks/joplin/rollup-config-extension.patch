@@ -1,0 +1,19 @@
+diff --git a/packages/turndown-plugin-gfm/config/rollup.config.cjs.js b/packages/turndown-plugin-gfm/config/rollup.config.cjs.js
+--- a/packages/turndown-plugin-gfm/config/rollup.config.cjs.js
++++ b/packages/turndown-plugin-gfm/config/rollup.config.cjs.js
+@@ -1,4 +1,4 @@
+-import config from './rollup.config';
++import config from './rollup.config.js';
+ 
+ export default config({
+ 	output: {
+
+diff --git a/packages/turndown-plugin-gfm/config/rollup.config.browser.cjs.js b/packages/turndown-plugin-gfm/config/rollup.config.browser.cjs.js
+--- a/packages/turndown-plugin-gfm/config/rollup.config.browser.cjs.js
++++ b/packages/turndown-plugin-gfm/config/rollup.config.browser.cjs.js
+@@ -1,4 +1,4 @@
+-import config from './rollup.config';
++import config from './rollup.config.js';
+ 
+ export default config({
+ 	output: {

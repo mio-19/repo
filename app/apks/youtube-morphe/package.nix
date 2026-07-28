@@ -10,16 +10,16 @@ let
   appPackage =
     let
       youtubeApk = fetchurl {
-        name = "youtube-21.25.523.xapk";
-        url = "https://web.archive.org/web/20260711073652if_/https://data.winudf.com/XAPK/Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmVfMTU2MTE3OTk3Nl9iZjNkMjMxZQ?_p=Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmU%3D&download_id=1376001748427698&filename=YouTube_21.25.523_APKPure.xapk&full_size=152431534&is_hot=true&k=93e080bdc2bf8f1bfe753e78959a76a56a549569&package_name=com.google.android.youtube&source=web&token=1783755369-9884ee6b38-0-1d3fb56337050385ea862c0aec7acea0";
-        hash = "sha256-TmppeMyIEgQrQaa6jKBh8BOJe+Mqjv7gthnC3TV4n0A=";
+        name = "youtube-21.28.204.apk";
+        url = "https://web.archive.org/web/20260724082833if_/https://data.winudf.com/APK/Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmVfMTU2MTE4NTA5M181ZDc0YTMxYw?_p=Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmU%3D&download_id=1691204850574436&filename=YouTube_21.28.204_APKPure.apk&full_size=199012427&is_hot=true&k=3d7b88fbaf3305c7a6312aca48522a426a65c509&package_name=com.google.android.youtube&source=web&token=1784881673-c86bf78fca-0-e6a621791b3c71bdf938b9bb45911f81";
+        hash = "sha256-fF+hnxSvX7pt8lPiPMoQyNcYcCikmsOJooinvxJ1hJw=";
       };
 
       morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
     in
     stdenv.mkDerivation {
       pname = "youtube-morphe";
-      version = "21.25.523-patches-${morphe-patches.version}";
+      version = "21.28.204-patches-${morphe-patches.version}";
 
       dontUnpack = true;
 
