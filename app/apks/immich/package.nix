@@ -6,7 +6,7 @@
   fetchFromGitHub,
   flutter344,
   git,
-  jdk17_headless,
+  jdk21_headless,
   curl,
   python3,
   writableTmpDirAsHomeHook,
@@ -29,7 +29,6 @@ let
         s.platforms-android-34
         s.platforms-android-35
         s.platforms-android-36
-        s.build-tools-35-0-0
         s.build-tools-36-1-0
         s.ndk-27-0-12077973
         s.ndk-28-2-13676358
@@ -52,7 +51,7 @@ let
       pythonWithYaml = python3.withPackages (ps: [ ps.pyyaml ]);
       androidSdkRoot = "${androidSdk}/share/android-sdk";
       aapt2Path = "${androidSdkRoot}/build-tools/36.1.0/aapt2";
-      jdkHome = jdk17_headless.passthru.home;
+      jdkHome = jdk21_headless.passthru.home;
       gradleCommonOpts = [
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdkHome}"
@@ -62,7 +61,7 @@ let
     in
     buildDartApplication.override { dart = flutter344; } (finalAttrs: {
       pname = "immich";
-      version = "3.0.3";
+      version = "3.1.0";
 
       src = applyPatches {
         src = fetchFromGitHub {
@@ -70,7 +69,7 @@ let
           repo = "immich";
           tag = "v${finalAttrs.version}";
           fetchSubmodules = true;
-          hash = "sha256-pzO5c6fP3G5x+cN2QS6LyjZlNXujFWxz8W9RqX8g5Es=";
+          hash = "sha256-7wmPR/yps24UZU3N+Xi1QKsa7GMQq03Ju1c0KbP4u1U=";
         };
         patches = [
 
@@ -118,7 +117,7 @@ let
         curl
         gradle
         git
-        jdk17_headless
+        jdk21_headless
         python3
         writableTmpDirAsHomeHook
       ];
@@ -200,6 +199,11 @@ let
         echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
         echo "flutter.versionName=3.0.1" >> android/local.properties
         echo "flutter.versionCode=3054" >> android/local.properties
+        
+        # Opt out of AGP 9.0+ new DSL to prevent Flutter Gradle plugin errors
+        echo "android.newDsl=false" >> android/gradle.properties
+        echo "android.builtInKotlin=false" >> android/gradle.properties
+        echo "-dontwarn com.google.android.gms.**" >> android/app/proguard-rules.pro
       '';
 
       preBuild = ''
@@ -252,6 +256,7 @@ let
             "geolocator_android": "GEOLOCATOR_ANDROID_DIR",
             "native_video_player": "NATIVE_VIDEO_PLAYER_DIR",
             "home_widget": "HOME_WIDGET_DIR",
+            "maplibre_gl": "MAPLIBRE_GL_DIR",
         }
 
         found = {env_name: "" for env_name in wanted.values()}
@@ -305,6 +310,17 @@ let
             HOME_WIDGET_DIR="$patched_home_widget_dir"
           fi
 
+          if [ -n "$MAPLIBRE_GL_DIR" ]; then
+            patched_maplibre_gl_dir="$(clone_dart_package "$MAPLIBRE_GL_DIR" maplibre_gl)"
+            substituteInPlace "$patched_maplibre_gl_dir/android/build.gradle" \
+              --replace-warn 'ext.kotlin_version = "2.4.0"' 'ext.kotlin_version = "2.1.0"' \
+              --replace-warn "ext.kotlin_version = '2.4.0'" "ext.kotlin_version = '2.1.0'" \
+              --replace-warn "org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.0" "org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0"
+            remap_dart_package_root "$MAPLIBRE_GL_DIR" "$patched_maplibre_gl_dir"
+            patched_pkg_dirs["$MAPLIBRE_GL_DIR"]="$patched_maplibre_gl_dir"
+            MAPLIBRE_GL_DIR="$patched_maplibre_gl_dir"
+          fi
+
           : > android/local-plugin-settings.gradle
           if [ -n "$NATIVE_VIDEO_PLAYER_DIR" ]; then
             printf '%s\n' \
@@ -318,6 +334,12 @@ let
               "project(\":home_widget\").projectDir = new File(\"$HOME_WIDGET_DIR/android\")" \
               >> android/local-plugin-settings.gradle
           fi
+          if [ -n "$MAPLIBRE_GL_DIR" ]; then
+            printf '%s\n' \
+              'include(":maplibre_gl")' \
+              "project(\":maplibre_gl\").projectDir = new File(\"$MAPLIBRE_GL_DIR/android\")" \
+              >> android/local-plugin-settings.gradle
+          fi
 
           if ! grep -Fq 'apply from: "local-plugin-settings.gradle"' android/settings.gradle; then
             printf '\napply from: "local-plugin-settings.gradle"\n' >> android/settings.gradle
@@ -326,7 +348,7 @@ let
           if ! grep -Fq "implementation project(':native_video_player')" android/app/build.gradle; then
             substituteInPlace android/app/build.gradle \
               --replace-fail '  implementation libs.kotlinx.serialization.json' \
-                $'  implementation libs.kotlinx.serialization.json\n  implementation project(\x27:native_video_player\x27)\n  implementation project(\x27:home_widget\x27)'
+                $'  implementation libs.kotlinx.serialization.json\n  implementation project(\x27:native_video_player\x27)\n  implementation project(\x27:home_widget\x27)\n  implementation project(\x27:maplibre_gl\x27)'
           fi
         fi
 

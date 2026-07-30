@@ -76,9 +76,9 @@ let
 
     postPatch = ''
       rm -f gradle/verification-metadata.xml
-      find . -name "build.gradle*" -exec sed -i "s/compileSdk = 37/compileSdk = 36/g" {} +
+      substituteInPlace appscan/build.gradle.kts app/build.gradle.kts \
+        --replace-warn "compileSdk = 37" "compileSdk = 36"
       echo "gradle.taskGraph.whenReady { allTasks.forEach { if (it.name.contains(\"AarMetadata\")) it.enabled = false } }" >> build.gradle.kts
-      find . -name "build.gradle.kts" -exec sed -i "s/compileSdk = 37/compileSdk = 36/g" {} +
     '';
 
     preConfigure = ''

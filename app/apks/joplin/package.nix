@@ -40,13 +40,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "joplin";
-      version = "3.7.3";
+      version = "3.7.4";
 
       src = fetchFromGitHub {
         owner = "laurent22";
         repo = "joplin";
         tag = "android-v${finalAttrs.version}";
-        hash = "sha256-aDgEwU2DulTcAQQ0JxZkbNunzLxMd0s1gCna3Sl2qOU=";
+        hash = "sha256-hcAkKFr7bI+MTi1iOz+vKdLEmGLk8QuOAaB4rXSjiu8=";
       };
 
       sourceRoot = "${finalAttrs.src.name}";
@@ -64,7 +64,7 @@ let
           patches
           missingHashes
           ;
-        hash = "sha256-40uvZ5J1TBnGNYC79TId74gPbK5L0/eKh8CkFxzxsFc=";
+        hash = "sha256-CeiP6M25DNZ9NGFxeLK0Rz83c1ok1qKsS2uGfEkenqU=";
       };
 
       gradleBuildTask = ":app:assembleRelease -x :app:lintVitalAnalyzeRelease -x :app:lintVitalReportRelease -x :app:lintVitalRelease";
@@ -119,8 +119,7 @@ let
 
       preBuild = ''
         # Foojay toolchain resolver tries to download JDKs; we pin installations via GRADLE_OPTS.
-        substituteInPlace packages/app-mobile/node_modules/@react-native/gradle-plugin/settings.gradle.kts \
-          --replace-fail 'id("org.gradle.toolchains.foojay-resolver-convention").version("0.5.0")' ""
+        # Removed substituteInPlace because foojay plugin was removed in upstream RN plugin 0.81.6
 
         source ${./rewrite-mitm-repos.sh}
         pin_expo_kotlin_jvm_plugin

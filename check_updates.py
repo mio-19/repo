@@ -315,7 +315,7 @@ def main():
                     allow_prerelease = not is_stable_tag(current_rev)
                     latest = None
                     has_releases = False
-                    if pkg != "tailscale" and domain == "github.com" and owner and repo:
+                    if pkg not in ["tailscale", "joplin"] and domain == "github.com" and owner and repo:
                         has_releases, latest = get_latest_github_release(owner, repo, current_rev, allow_prerelease)
                         if not has_releases and not latest:
                             latest = get_latest_github_tag_by_date(owner, repo, current_rev, allow_prerelease)
