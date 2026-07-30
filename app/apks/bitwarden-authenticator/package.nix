@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  pkgs,
+  path,
   gradle_9_4_1,
   jdk25_headless,
   stdenv,
@@ -44,10 +44,10 @@ let
 
       androidCrossConfig = {
         config.allowUnfree = true;
-        localSystem = pkgs.stdenv.buildPlatform.system;
+        localSystem = stdenv.buildPlatform.system;
       };
 
-      aarch64AndroidPkgs = import pkgs.path (
+      aarch64AndroidPkgs = import path (
         androidCrossConfig
         // {
           crossSystem = {
@@ -60,7 +60,7 @@ let
         }
       );
 
-      x86_64AndroidPkgs = import pkgs.path (
+      x86_64AndroidPkgs = import path (
         androidCrossConfig
         // {
           crossSystem = {

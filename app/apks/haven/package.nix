@@ -1,7 +1,11 @@
 {
   mk-apk-package,
   lib,
-  pkgs,
+  path,
+  pkgsCross,
+  symlinkJoin,
+  runCommand,
+  runtimeShell,
   jdk21_headless,
   gradle_9_4_1,
   stdenv,
@@ -48,7 +52,7 @@ let
 
       androidCrossConfig = {
         config.allowUnfree = true;
-        localSystem = pkgs.stdenv.buildPlatform.system;
+        localSystem = stdenv.buildPlatform.system;
       };
 
       mkAndroidPkgs =
@@ -56,7 +60,7 @@ let
           config,
           rustTarget,
         }:
-        import pkgs.path (
+        import path (
           androidCrossConfig
           // {
             crossSystem = {
@@ -117,7 +121,7 @@ let
           '';
         };
 
-      rdpTransportJniLibs = pkgs.symlinkJoin {
+      rdpTransportJniLibs = symlinkJoin {
         name = "haven-rdp-transport-jni-libs";
         paths = [
           (mkRdpTransportJniLib {
@@ -170,7 +174,7 @@ let
           '';
         };
 
-      spiceTransportJniLibs = pkgs.symlinkJoin {
+      spiceTransportJniLibs = symlinkJoin {
         name = "haven-spice-transport-jni-libs";
         paths = [
           (mkSpiceTransportJniLib {
@@ -342,20 +346,20 @@ let
 
       wayvncShimToolchain =
         let
-          aarch64LinuxGnuCc = pkgs.pkgsCross.aarch64-multiplatform.stdenv.cc;
-          x86_64LinuxGnuCc = pkgs.pkgsCross.gnu64.stdenv.cc;
-          armv7LinuxGnuCc = pkgs.pkgsCross.armv7l-hf-multiplatform.stdenv.cc;
+          aarch64LinuxGnuCc = pkgsCross.aarch64-multiplatform.stdenv.cc;
+          x86_64LinuxGnuCc = pkgsCross.gnu64.stdenv.cc;
+          armv7LinuxGnuCc = pkgsCross.armv7l-hf-multiplatform.stdenv.cc;
         in
-        pkgs.runCommand "haven-wayvnc-shim-toolchain" { } ''
+        runCommand "haven-wayvnc-shim-toolchain" { } ''
           mkdir -p "$out/bin"
 
           cat > "$out/bin/aarch64-linux-gnu-gcc" <<'EOF'
-          #!${pkgs.runtimeShell}
+          #!${runtimeShell}
           args=()
           for arg in "$@"; do
             args+=("$arg")
             if [ "$arg" = "-static" ]; then
-              args+=("-L${pkgs.pkgsCross.aarch64-multiplatform.glibc.static}/lib" "-B${pkgs.pkgsCross.aarch64-multiplatform.glibc.static}/lib")
+              args+=("-L${pkgsCross.aarch64-multiplatform.glibc.static}/lib" "-B${pkgsCross.aarch64-multiplatform.glibc.static}/lib")
             fi
           done
           exec ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}gcc "''${args[@]}"
@@ -364,12 +368,12 @@ let
           ln -s ${aarch64LinuxGnuCc}/bin/${aarch64LinuxGnuCc.targetPrefix}strip "$out/bin/aarch64-linux-gnu-strip"
 
           cat > "$out/bin/x86_64-linux-gnu-gcc" <<'EOF'
-          #!${pkgs.runtimeShell}
+          #!${runtimeShell}
           args=()
           for arg in "$@"; do
             args+=("$arg")
             if [ "$arg" = "-static" ]; then
-              args+=("-L${pkgs.pkgsCross.gnu64.glibc.static}/lib" "-B${pkgs.pkgsCross.gnu64.glibc.static}/lib")
+              args+=("-L${pkgsCross.gnu64.glibc.static}/lib" "-B${pkgsCross.gnu64.glibc.static}/lib")
             fi
           done
           exec ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}gcc "''${args[@]}"
@@ -378,12 +382,12 @@ let
           ln -s ${x86_64LinuxGnuCc}/bin/${x86_64LinuxGnuCc.targetPrefix}strip "$out/bin/x86_64-linux-gnu-strip"
 
           cat > "$out/bin/arm-linux-gnueabihf-gcc" <<'EOF'
-          #!${pkgs.runtimeShell}
+          #!${runtimeShell}
           args=()
           for arg in "$@"; do
             args+=("$arg")
             if [ "$arg" = "-static" ]; then
-              args+=("-L${pkgs.pkgsCross.armv7l-hf-multiplatform.glibc.static}/lib" "-B${pkgs.pkgsCross.armv7l-hf-multiplatform.glibc.static}/lib")
+              args+=("-L${pkgsCross.armv7l-hf-multiplatform.glibc.static}/lib" "-B${pkgsCross.armv7l-hf-multiplatform.glibc.static}/lib")
             fi
           done
           exec ${armv7LinuxGnuCc}/bin/${armv7LinuxGnuCc.targetPrefix}gcc "''${args[@]}"
