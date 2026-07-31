@@ -8,7 +8,7 @@
     android-nixpkgs = {
       #url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
-      url = "github:tadfisher/android-nixpkgs/2026-07-11-stable";
+      url = "github:tadfisher/android-nixpkgs/2026-07-29-stable";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
@@ -189,13 +189,6 @@
               */
             ];
           };
-          nixpkgsSrc2 = applyPatches {
-            src = nixpkgsSrc;
-            name = "nixpkgs-patched";
-            patches = [
-              ./0001-git-no-doInstallCheck-incorrect.patch
-            ];
-          };
           nixpkgs =
             (import "${nixpkgsSrc}/flake.nix").outputs (
               inputs.nixpkgs.inputs
@@ -205,16 +198,6 @@
             )
             // {
               inherit (nixpkgsSrc) outPath;
-            };
-          nixpkgs2 =
-            (import "${nixpkgsSrc2}/flake.nix").outputs (
-              inputs.nixpkgs.inputs
-              // {
-                self = nixpkgs2;
-              }
-            )
-            // {
-              inherit (nixpkgsSrc2) outPath;
             };
           pkgsPatched = import nixpkgs {
             config = pkgs.config // {
@@ -263,38 +246,6 @@
                       fetch = selfLegacyPackages.mitm-cache-fetch;
                     };
                   });
-
-                # needed with rustc patches:
-                #gjs = prev.gjs.overrideAttrs (old: {
-                #  doCheck = false;
-                #});
-
-                python3 = prev.python3.override (old: {
-                  packageOverrides = prev.lib.composeExtensions (old.packageOverrides or (_: _: { })) (
-                    pfinal: pprev: {
-                      protobuf = pprev.protobuf.overridePythonAttrs (pold: {
-                        postPatch = (pold.postPatch or "") + ''
-                          substituteInPlace setup.py \
-                            --replace-fail 'import pkg_resources' 'import sys' \
-                            --replace-fail 'pkg_resources.parse_version' 'str' \
-                            --replace-fail "namespace_packages=['google']," ""
-                          substituteInPlace google/__init__.py \
-                            --replace-fail "__import__('pkg_resources').declare_namespace(__name__)" "__path__ = __import__('pkgutil').extend_path(__path__, __name__)"
-                        '';
-                      });
-                      protobuf4 = pprev.protobuf4.overridePythonAttrs (pold: {
-                        postPatch = (pold.postPatch or "") + ''
-                          substituteInPlace setup.py \
-                            --replace-fail 'import pkg_resources' 'import sys' \
-                            --replace-fail 'pkg_resources.parse_version' 'str' \
-                            --replace-fail "namespace_packages=['google']," ""
-                          substituteInPlace google/__init__.py \
-                            --replace-fail "__import__('pkg_resources').declare_namespace(__name__)" "__path__ = __import__('pkgutil').extend_path(__path__, __name__)"
-                        '';
-                      });
-                    }
-                  );
-                });
               })
             ];
           };
