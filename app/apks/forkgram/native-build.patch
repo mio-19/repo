@@ -60,7 +60,7 @@ index 4631dbc5..8797b6c0 100644
  
          default:
 diff --git a/TMessagesProj/jni/tde2e/build-tdlib.sh b/TMessagesProj/jni/tde2e/build-tdlib.sh
-index dbf7cfc2..8b4ea528 100755
+index dbf7cfc2..5443e0e7 100755
 --- a/TMessagesProj/jni/tde2e/build-tdlib.sh
 +++ b/TMessagesProj/jni/tde2e/build-tdlib.sh
 @@ -1,7 +1,7 @@
@@ -68,7 +68,7 @@ index dbf7cfc2..8b4ea528 100755
  
  ANDROID_SDK_ROOT=${1:-SDK}
 -ANDROID_NDK_VERSION=${2:-23.2.8568313}
-+ANDROID_NDK_VERSION=${2:-21.4.7075529}
++ANDROID_NDK_VERSION=${2:-27.2.12479018}
  OPENSSL_INSTALL_DIR=${3:-third-party/openssl}
  ANDROID_STL=${4:-c++_static}
  TDLIB_INTERFACE=${5:-Java}

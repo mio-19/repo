@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk17_headless,
-  gradle_9_4_1,
+  gradle_9_5_1,
   stdenv,
   fetchFromGitHub,
   writeShellScript,
@@ -21,15 +21,17 @@ let
         s.platform-tools
         s.platforms-android-35
         s.platforms-android-36
+        s.platforms-android-37-0
         s.build-tools-33-0-1
         s.build-tools-35-0-0
+        s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_4_1;
+      gradle = gradle_9_5_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "zotero-android";
-      version = "1.0.0-260";
+      version = "1.0.0-262";
 
       src = fetchFromGitHub {
         owner = "zotero";
@@ -40,7 +42,7 @@ let
         # latest 1.0.0-* tag by time, not raw version ordering:
         # https://github.com/zotero/zotero-android/tags
         tag = finalAttrs.version;
-        hash = "sha256-SJoYhVe5MHKs7remyeJF8ymN+5sBvTTHsFBxLZa6zGI=";
+        hash = "sha256-1ZPNPWkXRqMK9r80iQrkOo0tgtQrQ8UYJ0bAeQEseOs=";
       };
 
       patches = [
@@ -116,7 +118,7 @@ let
       prePatch = ''
         substituteInPlace app/build.gradle.kts \
           --replace-fail 'import com.github.triplet.gradle.androidpublisher.ResolutionStrategy' "" \
-          --replace-fail '    id("com.github.triplet.play") version "3.12.1"' "" \
+          --replace-fail '    id("com.github.triplet.play") version "4.0.0"' "" \
           --replace-fail $'play {\n    track.set("internal")\n    defaultToAppBundles.set(true)\n    resolutionStrategy.set(ResolutionStrategy.AUTO)\n}\n' "" \
           --replace-fail '            signingConfig = signingConfigs.getAt("release")' ""
         echo cyB6IEYgdCBsIEYgUCAyIDEgYiA5IF8gXyBsIFEgMSBsIFEgTCB2IFQgWCBNIHcgeiBHIHogYSBxIHMgTiA0IDUgMCBJIGkgMyBTIHcgYyBCIEYgTSAxIFggZyBNIEQgeSB1IDQgaSBuIFEgaCA5IDAgQSBNIHAgVCBCIG8gMiA5IDQgVSB5IHkgLSB1IHogdCBTIEggZyBRIHQgOSA5IFkgSiBYIDYgVCAzIEkgRSBSIGwgRyBrIHkgeiBqIEkgdCBVIEMgUSAyIF8gNCBkIFEgMyB1IEggXyBsIFogYiBVIFogeCA1IDMgZCAyIGkgNiBvIGEgSSB1IGwgaCAzIDQgcyA3IFkgdiBRIHEgayB2IDQgRyBCIFQgdCBKIFYgWCB4IDAgSCBWIDEgZiByIDMgWSBmIHEgdCBOIG0geSBBIFAgXyBSIC0gcSBwIHcgOCB1IC0gNSBMIFggUyB5IDcgRyA5IFAgeSBUIEIgQyBVIGMgZyA0IFAgSCBoIFAgRiB2IEkgRyAtIEcgUCByIGIgYyA5IE8gdiBzIGIgVyBSIEggQiAtIC0gcCBDIGIgMiBTIDkgRiBYIFggNCBRIDUgeSBWIFIgUSBMIFogaSBqIEUgUSBsIFAgOCBsIHYgXyBuIFAgMyBJIHkgdyB4IC0gSCA1IDMgNSBEIHkgZiBGIEkgcyB1IHkgYyB1IHQgdyA4IHMgSCBmIHogMSBNIGsgMSBVIFIgciBlIG8gWSA5IDggUiBtIEMgZSA1IEogeiA4IFAgVCBhIHMgNCBCIC0gWiBvIGEgQiA5IEwgZyBTIGEgaCBEIDggeiBvIFMgeCB3IEkgNCByIEogSSBTIFAgViBQIDMgeSB3IEcgeSBQIFggeCBJIHkgVCBHIDEgQSBaIEIgbiBFIEMgVyBsIGQgRSBiIEUgaiA0IEEgeiBUIGwgQyB2IDAgNCBiIEQgNCB5IHMgNiB5IHogdCB1IHIgVSB0IFcgaiBxIEwgeCByIGkgNSBwIGcgZyBSIFcgdyA5IFcgRSBPIGkgSSBMIEggbSA0IFEgRCBaIFQgbiBNIHcgRiBEIHMgOCBxIEcgQSB1IFIgUSBhIGggUSBwIEkgaiAzIEUgbCB2IEsgbSBUIG4gMCBaIHogViBIIEsgViBsIGwgayA0IEogVCAtIEYgeSBzIE0gLSBGIDggVCBwIDIgWiBsIGwgTSBuIEYgeCB3IG0gaSBuIHQgbSBkIFcgRyBoIGwgRyBNIDMgVCBhIF8gcCBNIDYgQSBjIDcgYSBfIDUgSyBTIFggZSBLIHUgcCBqIEEgdSBQIEcgcCBfIEwgbSA1IEkgQyB1IGcgWiBRIFYgMSA5IFogNCBhIDUgYyBOIGogeCBuIDMgTyBSIEQgeSBoIGYgdyBiIE0gciBZIGYgWSBJIEogVCBiIEogTyB6IHMgbCBNIEEgZyBPIGIgdSBTIDUgeSAzIDUgbyB3IFAgaiBoIE4gSyAzIFcgSiBpIGcgMCB0IFkgNSBnIEYgaSBWIFAgNiBPIEUgWiBuIEkgZCAyIEcgcCB3IG0gVCBxIDQgSyBGIG0geiBNIF8gcCBYIFkgRSBPIHUgNiA5IFMgRCBhIE4gRCBwIEggXyBzIHcgTSB2IDUgTCBzIE0gSiBvIEkgSiBMIHQgeiBoIGEgSSBGIGggeSBnIEwgaiBVIDQgdCBJIGYgVyAK | base64 -d > pspdfkit-key.txt

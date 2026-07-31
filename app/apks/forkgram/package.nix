@@ -27,12 +27,12 @@ let
     s.platform-tools
     s.platforms-android-35
     s.build-tools-35-0-0
-    s.ndk-21-4-7075529
+    s.ndk-27-2-12479018
   ]);
 in
 buildGradlePackage rec {
   pname = "forkgram";
-  version = "12.9.0.0";
+  version = "12.9.1.0";
 
   gradle = gradle_8_14_4;
 
@@ -40,7 +40,7 @@ buildGradlePackage rec {
     owner = "forkgram";
     repo = "TelegramAndroid";
     rev = version;
-    hash = "sha256-kWb5RUEqHl3maYChZ+wvWHXJIIN6Mv5XsRZMQrdIoD8=";
+    hash = "sha256-EO1caof5EaiHwTBoDPZiq1z59Mc6DiN+nkD+8ys29tM=";
     fetchSubmodules = true;
   };
 
@@ -90,7 +90,7 @@ buildGradlePackage rec {
       --replace-fail "F_DROID=0" "F_DROID=1"
 
     echo "cmake.dir=${cmake}" >> local.properties
-    echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/21.4.7075529" >> local.properties
+    echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/27.2.12479018" >> local.properties
     echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2" >> gradle.properties
 
     # F-Droid signing config references release.keystore; regenerate for build, re-sign externally.
@@ -100,6 +100,32 @@ buildGradlePackage rec {
       -alias androidkey -keyalg RSA -keysize 2048 -validity 10000 \
       -storepass android -keypass android \
       -dname "CN=Forkgram Build"
+
+    for f in TMessagesProj/jni/build_dav1d_clang.sh \
+             TMessagesProj/jni/build_ffmpeg_clang.sh \
+             TMessagesProj/jni/build_libvpx_clang.sh \
+             TMessagesProj/jni/build_boringssl.sh \
+             TMessagesProj/jni/tde2e/build-tdlib.sh; do
+      if grep -q "ANDROID_API=16" "$f" 2>/dev/null; then
+        substituteInPlace "$f" --replace-fail "ANDROID_API=16" "ANDROID_API=21"
+      fi
+      if grep -q "android-16" "$f" 2>/dev/null; then
+        substituteInPlace "$f" --replace-fail "android-16" "android-21"
+      fi
+      substituteInPlace "$f" \
+        --replace-quiet "\''${TOOLS_PREFIX}ar" "\''${LLVM_BIN}/llvm-ar" \
+        --replace-quiet "\''${TOOLS_PREFIX}ld" "\''${LLVM_BIN}/ld.lld" \
+        --replace-quiet "\''${TOOLS_PREFIX}strip" "\''${LLVM_BIN}/llvm-strip" \
+        --replace-quiet "\''${TOOLS_PREFIX}nm" "\''${LLVM_BIN}/llvm-nm"
+    done
+
+    substituteInPlace TMessagesProj/jni/build_libvpx_clang.sh \
+      --replace-fail 'export ISYSTEM="-isystem ''${LLVM_PREFIX}/sysroot/usr/include/''${ARCH_NAME}-linux-''${BIN_MIDDLE} -isystem ''${LLVM_PREFIX}/sysroot/usr/include"' 'export ISYSTEM=""'
+
+    substituteInPlace TMessagesProj/jni/build_ffmpeg_clang.sh \
+      --replace-fail '--ar=''${AR} \' '--ar=''${AR} --ranlib=''${LLVM_BIN}/llvm-ranlib \'
+
+
 
     # boringssl runs 'go run err_data_generate.go' with vendored golang.org/x/{crypto,net}.
     mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/crypto
@@ -119,8 +145,8 @@ buildGradlePackage rec {
   env = {
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-    ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/21.4.7075529";
-    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/21.4.7075529";
+    ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/27.2.12479018";
+    ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.2.12479018";
     GOFLAGS = "-mod=vendor";
   };
 
