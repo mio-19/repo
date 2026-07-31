@@ -215,6 +215,11 @@
                       });
                       ruamel-yaml = pprev.ruamel-yaml.overridePythonAttrs (old: {
                         doCheck = false;
+                        pythonMetadataCheckPhase = "true";
+                        pythonCatchConflictsPhase = "true";
+                      });
+                      scipy = pprev.scipy.overridePythonAttrs (old: {
+                        doCheck = false;
                       });
                     };
                   };

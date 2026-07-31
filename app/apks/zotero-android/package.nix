@@ -23,7 +23,6 @@ let
         s.platforms-android-36
         s.platforms-android-37-0
         s.build-tools-33-0-1
-        s.build-tools-35-0-0
         s.build-tools-36-0-0
       ]);
 
@@ -111,7 +110,7 @@ let
         JAVA_HOME = jdk17_headless;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
         REALM_DISABLE_ANALYTICS = "true";
       };
 
@@ -139,8 +138,8 @@ let
       gradleFlags = [
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk17_headless}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
 
       installPhase = ''
