@@ -29,6 +29,8 @@ let
       # Check GitHub's Latest release before bumping; newer tags may not be the
       # actual latest release:
       # https://github.com/ONLYOFFICE/documents-app-android/releases/latest
+      # Note: Upstream GitHub repository was closed/deleted.
+      # See: https://news.ycombinator.com/item?id=48209865
       version = "9.4.0-708";
 
       /*
