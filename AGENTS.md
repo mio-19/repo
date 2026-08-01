@@ -1,5 +1,6 @@
 # Repo Rules
 
+- DO NOT git push --force
 - Do not manually edit generated source files such as `_sources/generated.nix` or `_sources/generated.json`. When source metadata needs to be refreshed, run `nix run nixpkgs#nvfetcher` from the repo root and let it update generated files.
 - Do not manually edit generated Gradle MITM lockfiles such as `*_deps.json` / `immich_deps.json`; regenerate them only via the package's `mitmCache.updateScript`. If the `updateScript` itself fails (e.g. composite build env issues, version mismatches, Gradle 8/9 resolution differences), see [docs/gradle-deps-troubleshooting.md](docs/gradle-deps-troubleshooting.md) for a diagnostic checklist — only consult this when the normal `updateScript` approach has failed.
 - Use `nurl --fetcher=fetchpatch`, or run `nix run nixpkgs#nurl -- --fetcher=fetchpatch <url to patch>`, to get a `fetchpatch` expression for patch URLs.
