@@ -10,9 +10,9 @@ let
   appPackage =
     let
       youtubeMusicApk = fetchurl {
-        name = "youtube-music-9.25.50_APKPure.apk";
-        url = "https://web.archive.org/web/20260711073943if_/https://data.winudf.com/APK/Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpY185MjU1MDI0MF80MTAxOTAzNA?_p=Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpYw%3D%3D&download_id=1024603002796928&filename=YouTube+Music_9.25.50_APKPure.apk&full_size=67702020&is_hot=true&k=c2605596946d1b3733bf611bc4adbdcd6a5495e1&package_name=com.google.android.apps.youtube.music&source=web&token=1783755489-c07846e6dc-0-0d041d9ab9e1e92fe10727380d92c0e8";
-        hash = "sha256-5FnbADy/45YSx/hD/OHPKVShgNugxYSl8GJfwNUbEf0=";
+        name = "YouTube+Music_9.28.51_APKPure.apk";
+        url = "https://files.catbox.moe/pjb1do.apk";
+        hash = "sha256-rCXarswj14Jb2heEKivfEEN9y5+F5sF/kKL0qGspRGg=";
       };
 
       morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
