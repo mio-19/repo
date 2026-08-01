@@ -32,7 +32,7 @@ let
 in
 buildGradlePackage rec {
   pname = "forkgram-classic";
-  version = "12.9.5.0";
+  version = "12.9.6.0";
 
   gradle = gradle_8_14_4;
 
@@ -40,7 +40,7 @@ buildGradlePackage rec {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-+b700y0xvfgO72Iu1pCTY9crO8cqrdWx2x/EQ9iGR08=";
+    hash = "sha256-ZQUDhlSBw1ls6Hcmc4o2D7CGfe3UJVC8RZAi2/zkNYM=";
     fetchSubmodules = true;
   };
 
@@ -78,6 +78,9 @@ buildGradlePackage rec {
 
   postPatch = ''
         patchShebangs TMessagesProj/jni/
+
+        substituteInPlace build.gradle \
+          --replace-warn "ext.kotlin_version = '2.4.10'" "ext.kotlin_version = '2.1.0'"
 
         echo "APP_ID=14577864" >> gradle.properties
         echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
