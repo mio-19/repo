@@ -199,7 +199,7 @@ let
         echo "flutter.sdk=$PWD/flutter-sdk" >> android/local.properties
         echo "flutter.versionName=3.0.1" >> android/local.properties
         echo "flutter.versionCode=3054" >> android/local.properties
-        
+
         # Opt out of AGP 9.0+ new DSL to prevent Flutter Gradle plugin errors
         echo "android.newDsl=false" >> android/gradle.properties
         echo "android.builtInKotlin=false" >> android/gradle.properties
@@ -312,10 +312,6 @@ let
 
           if [ -n "$MAPLIBRE_GL_DIR" ]; then
             patched_maplibre_gl_dir="$(clone_dart_package "$MAPLIBRE_GL_DIR" maplibre_gl)"
-            substituteInPlace "$patched_maplibre_gl_dir/android/build.gradle" \
-              --replace-warn 'ext.kotlin_version = "2.4.0"' 'ext.kotlin_version = "2.1.0"' \
-              --replace-warn "ext.kotlin_version = '2.4.0'" "ext.kotlin_version = '2.1.0'" \
-              --replace-warn "org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.0" "org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0"
             remap_dart_package_root "$MAPLIBRE_GL_DIR" "$patched_maplibre_gl_dir"
             patched_pkg_dirs["$MAPLIBRE_GL_DIR"]="$patched_maplibre_gl_dir"
             MAPLIBRE_GL_DIR="$patched_maplibre_gl_dir"
