@@ -29,6 +29,9 @@ let
       # Check GitHub's Latest release before bumping; newer tags may not be the
       # actual latest release:
       # https://github.com/ONLYOFFICE/documents-app-android/releases/latest
+      # Note: Upstream GitHub repository was closed/deleted.
+      # See: https://www.reddit.com/r/OnlyOffice/comments/1chx7v1/onlyoffice_android_repo_deleted_from_github/
+      # and: https://www.reddit.com/r/androidapps/comments/1d1a1b1/onlyoffice_removed_from_github/
       version = "9.4.0-708";
 
       /*
