@@ -3,7 +3,7 @@
   mk-apk-package,
   lib,
   stdenvNoCC,
-  gradle_9_4_1,
+  gradle_9_5_0,
   jdk25_headless,
   go_1_26,
   stdenv,
@@ -24,7 +24,7 @@ let
         s.ndk-28-2-13676358
       ]);
 
-      gradle = gradle_9_4_1;
+      gradle = gradle_9_5_0;
 
       xrayLiteVersion = "26.6.14";
       androidLibXrayLiteSrc = fetchFromGitHub {
@@ -157,14 +157,14 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "v2rayng";
-      version = "2.2.6";
+      version = "2.3.1";
 
       src = fetchFromGitHub {
         owner = "2dust";
         repo = "v2rayNG";
         tag = finalAttrs.version;
         fetchSubmodules = true;
-        hash = "sha256-X2qDQ8GYcXwGWUpStBlps7z2ZiGwXwoE//b6SU/hFBk=";
+        hash = "sha256-F4q03hsOb5O1qQOcUMb2YQQYkx13AbxCEvPGSjf2b34=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/V2rayNG";
