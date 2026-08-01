@@ -37,6 +37,7 @@ stdenv.mkDerivation (
   finalAttrs:
   let
     androidLauncherDir = "platform/android/luajit-launcher";
+    # To update repos.nix, run: nix shell nixpkgs#nurl -c python3 ./gits.py /path/to/koreader/source > ./repos.nix
     repos = import ./repos.nix { inherit fetchgit; };
     repos-replace = repo: ''--replace-quiet "${repo.url}" "${repo}" '';
     androidSdk = androidSdkBuilder (s: [
@@ -87,14 +88,14 @@ stdenv.mkDerivation (
   in
   {
     pname = "koreader";
-    version = "2026.07";
+    version = "2026.07.1";
     src = fetchFromGitHub {
       name = "koreader";
       owner = "koreader";
       repo = "koreader";
       tag = "v${finalAttrs.version}";
       leaveDotGit = true;
-      hash = "sha256-d1yvVxcvV8htCzFxG+o5q5yNoZTDt4PkaczolIg7IWo=";
+      hash = "sha256-pNZKjYsG5U1HM8yRtK06besRheq5nIosHazF7wK4XUg=";
       fetchSubmodules = true;
     };
     sourceRoot = "${finalAttrs.src.name}";

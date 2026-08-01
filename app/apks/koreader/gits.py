@@ -58,7 +58,14 @@ def main():
             if not (ref_match and url_match):
                 continue
 
-            expr = run_nurl(url_match.group(0), ref_match.group(1))
+            ref = ref_match.group(1)
+            g_match = re.search(r"-g([0-9a-f]{7,40})$", ref)
+            if g_match:
+                ref = g_match.group(1)
+                if ref == "69e23da":
+                    ref = "69e23da9876baa7fc052d6b2e03e62e3095ec2f1"
+
+            expr = run_nurl(url_match.group(0), ref)
             if expr:
                 exprs.append(f"({expr})")
 
