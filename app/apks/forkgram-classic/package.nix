@@ -79,8 +79,6 @@ buildGradlePackage rec {
   postPatch = ''
         patchShebangs TMessagesProj/jni/
 
-        substituteInPlace build.gradle \
-          --replace-warn "ext.kotlin_version = '2.4.10'" "ext.kotlin_version = '2.1.0'"
 
         echo "APP_ID=14577864" >> gradle.properties
         echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
