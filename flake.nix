@@ -310,25 +310,6 @@
               ];
           };
 
-          packages.garnix-cached = pkgs.symlinkJoin {
-            name = "garnix-cached";
-            paths =
-              with selfPackages;
-              [
-                github-actions-cached
-
-                apk_comaps
-                apk_tailscale
-                apk_pdfviewer
-                apk_gamenative
-                apk_droidspaces
-                apk_forkgram.signScript
-              ]
-              ++ lib.optionals stdenv.isLinux [
-                apk_immich
-              ];
-          };
-
           # https://github.com/nix-community/nixos-apple-silicon/pull/353
           packages.zfs-installer =
             (nixpkgs.lib.nixosSystem {
@@ -362,12 +343,9 @@
     };
   nixConfig = {
     extra-substituters = [
-      # https://garnix.io/docs/caching # garnix sometimes often 504 Gateway Time-out. to avoid waiting on this garnix, supply `--offline` to nix commands.
-      "https://cache.garnix.io"
       "https://mio-repo.cachix.org"
     ];
     extra-trusted-public-keys = [
-      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
       "mio-repo.cachix.org-1:+l5kqQn5w9e3i3tDZY9o3pVQABC0Z/d0kAqhQpqKP8g="
     ];
   };
