@@ -166,11 +166,6 @@
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
             patches = [
-              (fetchpatch {
-                name = "gradle: reduce keytool noise";
-                url = "https://github.com/NixOS/nixpkgs/pull/472580.patch";
-                hash = "sha256-dtQ8pFVnvTFwmpbMxEG9mnCbi1t6wweA1E/ufBdPsws=";
-              })
               /*
                 # conflicts with https://github.com/NixOS/nixpkgs/pull/506356
                 (fetchpatch {
