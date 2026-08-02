@@ -166,6 +166,11 @@
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
             patches = [
+              (fetchpatch {
+                name = "fdroidserver: fix build, 2.4.3 -> 2.4.5";
+                url = "https://github.com/NixOS/nixpkgs/pull/548263.diff";
+                hash = "sha256-oARICQHIRDMsm4PSI8H4hIXdudNzkMrJJWOHJDPGOcw=";
+              })
               /*
                 # conflicts with https://github.com/NixOS/nixpkgs/pull/506356
                 (fetchpatch {
@@ -202,23 +207,6 @@
             overlays = [
               inputs.android-nixpkgs.overlays.default
               (final: prev: rec {
-                fdroidserver = pkgs.fdroidserver.override {
-                  python3Packages = pkgs.python312Packages.override {
-                    overrides = pfinal: pprev: {
-                      mwclient = pprev.mwclient.overridePythonAttrs (old: {
-                        doCheck = false;
-                      });
-                      ruamel-yaml = pprev.ruamel-yaml.overridePythonAttrs (old: {
-                        doCheck = false;
-                        pythonMetadataCheckPhase = "true";
-                        pythonCatchConflictsPhase = "true";
-                      });
-                      scipy = pprev.scipy.overridePythonAttrs (old: {
-                        doCheck = false;
-                      });
-                    };
-                  };
-                };
                 inherit (selfPackages) ant;
                 python27 =
                   (import inputs.nixpkgs-python27 {
