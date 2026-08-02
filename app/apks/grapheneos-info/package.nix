@@ -5,7 +5,7 @@
   sources,
   lib,
   jdk17_headless,
-  gradle_9_4_0,
+  gradle_9_6_1,
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -18,9 +18,11 @@ let
     s.platform-tools
     s.platforms-android-36
     s.build-tools-36-1-0
+    s."platforms-android-37-0"
+    s."build-tools-37-0-0"
   ]);
 
-  gradle = gradle_9_4_0;
+  gradle = gradle_9_6_1;
 
   appPackage = buildGradlePackage rec {
     pname = "grapheneos-info";
@@ -61,7 +63,7 @@ let
     env = {
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
+      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2";
     };
 
     preConfigure = ''
@@ -77,8 +79,8 @@ let
       "-Dorg.gradle.java.home=${jdk17_headless.passthru.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
       "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home}"
-      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
+      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
     ];
 
     gradleBuildFlags = ":app:assembleRelease";

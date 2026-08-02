@@ -4,7 +4,7 @@
   stdenv,
   sources,
   androidSdkBuilder,
-  gradle_9_4_1,
+  gradle_9_5_1,
   jdk17_headless,
 
   writableTmpDirAsHomeHook,
@@ -30,15 +30,15 @@ let
         s.cmake-3-31-6
       ]);
 
-      gradle = gradle_9_4_1;
+      gradle = gradle_9_5_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "termux-x11";
       inherit version;
       inherit src;
 
-      gradleBuildTask = ":app:assembleDebug";
-      gradleUpdateTask = finalAttrs.gradleBuildTask;
+      gradleBuildFlags = ":lorie-app:assembleRelease";
+      gradleUpdateTask = "${finalAttrs.gradleBuildFlags} :shell-loader:stub:extractDebugAnnotations";
 
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
@@ -68,21 +68,17 @@ let
       };
 
       postPatch = ''
-        substituteInPlace app/build.gradle \
-          --replace-fail "    compileSdkVersion 34
-        " "    compileSdkVersion 34
-            ndkVersion \"29.0.14206865\"
-        "
+        substituteInPlace lorie/version.gradle \
+          --replace-fail "def commit = 'git rev-parse --verify --short HEAD'.execute().text.trim()" "def commit = System.getenv('TERMUX_X11_GIT_SHORT_COMMIT') ?: '${shortRev}'" \
+          --replace-fail '-''${commit.length() == 1 ? "nongit" : commit}-''${(new Date()).format("dd.MM.yy")}' '+git.''${commit}'
 
-        substituteInPlace app/build.gradle \
-          --replace-fail "def commit= 'git rev-parse --verify --short HEAD'.execute().text.trim()" "def commit = System.getenv('TERMUX_X11_GIT_SHORT_COMMIT') ?: '${shortRev}'" \
-          --replace-fail '-''${commit.length()==1?"nongit":commit}-''${(new Date()).format("dd.MM.yy")}' '+git.''${commit}' \
+        substituteInPlace lorie/build.gradle \
           --replace-fail "\"\\\"\" + (\"git rev-parse HEAD\\n\".execute().getText().trim() ?: (System.getenv('CURRENT_COMMIT') ?: \"NO_COMMIT\")) + \"\\\"\"" "\"\\\"\" + (System.getenv('CURRENT_COMMIT') ?: \"${rev}\") + \"\\\"\""
 
         substituteInPlace shell-loader/build.gradle \
           --replace-fail "\"\\\"\" + (\"git rev-parse HEAD\\n\".execute().getText().trim() ?: (System.getenv('CURRENT_COMMIT') ?: \"NO_COMMIT\")) + \"\\\"\"" "\"\\\"\" + (System.getenv('CURRENT_COMMIT') ?: \"${rev}\") + \"\\\"\""
 
-        substituteInPlace app/src/main/cpp/recipes/xkbcomp.cmake \
+        substituteInPlace lorie/src/main/cpp/recipes/xkbcomp.cmake \
           --replace-fail 'COMMAND "/usr/bin/gcc"' 'COMMAND "${gcc}/bin/gcc"'
       '';
 
@@ -106,7 +102,13 @@ let
 
       installPhase = ''
         runHook preInstall
-        install -Dm644 app/build/outputs/apk/debug/app-universal-debug.apk "$out/termux-x11.apk"
+        apk_path="$(find lorie-app -name "*.apk" | grep -v unaligned | head -n 1)"
+        if [ -z "$apk_path" ]; then
+          echo "Failed to find APK!"
+          find . -name "*.apk"
+          exit 1
+        fi
+        install -Dm644 "$apk_path" "$out/termux-x11.apk"
         runHook postInstall
       '';
 

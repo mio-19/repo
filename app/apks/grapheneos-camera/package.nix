@@ -7,7 +7,7 @@
   lib,
   jdk25_headless,
   jdk17_headless,
-  gradle_9_4_0,
+  gradle_9_6_1,
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -24,9 +24,11 @@ let
     s.platform-tools
     s.platforms-android-36
     s.build-tools-36-1-0
+    s."platforms-android-37-0"
+    s."build-tools-37-0-0"
   ]);
 
-  gradle = gradle_9_4_0;
+  gradle = gradle_9_6_1;
 
   appPackage = buildGradlePackage rec {
     pname = "grapheneos-camera";
@@ -42,16 +44,7 @@ let
         url = "https://github.com/GrapheneOS/Camera/pull/351.patch";
         hash = "sha256-H/mU1tF/GgIMwnEpF5OKbp3u1J+cFBK8cKbB3cb7nA4=";
       })
-      (fetchpatch {
-        name = "Replace orientation API calls with sensor calculated orientation";
-        url = "https://github.com/GrapheneOS/Camera/pull/535.patch";
-        hash = "sha256-P4T5aKouSxAA0Q53vO6kJLputt3bSiPzR9EHwX8alSc=";
-      })
-      (fetchpatch {
-        name = "Support beginning a video recording with the microphone muted";
-        url = "https://github.com/GrapheneOS/Camera/pull/553.patch";
-        hash = "sha256-QU/69Ugl8BQhwoYcs1izA9reRqcUi0/6sX8YzPr9yMg=";
-      })
+
       (fetchpatch {
         name = "PR 639";
         url = "https://github.com/GrapheneOS/Camera/pull/639.patch";
@@ -77,7 +70,7 @@ let
     env = {
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
+      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2";
     };
 
     preConfigure = ''
@@ -93,8 +86,8 @@ let
       "-Dorg.gradle.java.home=${jdk25_headless.passthru.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
       "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home},${jdk25_headless.passthru.home}"
-      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
+      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
     ];
 
     gradleBuildFlags = ":app:assembleRelease";
