@@ -20,6 +20,7 @@ let
     };
 
   linuxOnlyApkNames = [
+    "komi-store"
     "tailscale"
     "termux"
     "termux-styling"
