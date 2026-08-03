@@ -1,0 +1,18 @@
+--- a/desktopApp/build.gradle.kts
++++ b/desktopApp/build.gradle.kts
+@@ -93,7 +93,6 @@
+ kotlin {
+     jvmToolchain {
+         languageVersion.set(JavaLanguageVersion.of(25))
+-        vendor.set(JvmVendorSpec.JETBRAINS)
+     }
+     compilerOptions {
+         jvmTarget.set(JvmTarget.JVM_25)
+@@ -124,7 +123,6 @@
+             javaToolchains
+                 .launcherFor {
+                     languageVersion.set(JavaLanguageVersion.of(25))
+-                    vendor.set(JvmVendorSpec.JETBRAINS)
+                 }
+                 .map { it.metadata.installationPath.asFile.absolutePath }
+                 .get()
