@@ -1,0 +1,23 @@
+diff --git a/build-logic/convention/src/main/kotlin/zed/rainxch/githubstore/convention/KotlinAndroid.kt b/build-logic/convention/src/main/kotlin/zed/rainxch/githubstore/convention/KotlinAndroid.kt
+index 4f77849..3773095 100644
+--- a/build-logic/convention/src/main/kotlin/zed/rainxch/githubstore/convention/KotlinAndroid.kt
++++ b/build-logic/convention/src/main/kotlin/zed/rainxch/githubstore/convention/KotlinAndroid.kt
+@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+ 
+ internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension<*, *, *, *, *, *>) {
+     with(commonExtension) {
++        buildToolsVersion = "36.0.0"
+         compileSdk =
+             libs
+                 .findVersion("projectCompileSdkVersion")
+@@ -33,9 +34,7 @@ internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension<*,
+         configureKotlin()
+ 
+         dependencies {
+-            "coreLibraryDesugaring" {
+-                libs.findLibrary("android-desugarJdkLibs").get()
+-            }
++            add("coreLibraryDesugaring", libs.findLibrary("android-desugarJdkLibs").get())
+         }
+     }
+ }
