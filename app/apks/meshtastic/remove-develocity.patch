@@ -1,17 +1,20 @@
+diff --git a/settings.gradle.kts b/settings.gradle.kts
+index 20362f3..74377b0 100644
 --- a/settings.gradle.kts
 +++ b/settings.gradle.kts
-@@ -32,7 +32,6 @@
+@@ -32,7 +32,6 @@ pluginManagement {
  }
  
  plugins {
--    id("com.gradle.develocity") version "4.4.2"
-     id("org.meshtastic.flatpak.sources.settings") version "0.1.2"
+-    id("com.gradle.develocity") version "4.5.0"
+     id("org.meshtastic.flatpak.sources.settings") version "0.1.5"
  }
  
-@@ -72,18 +71,6 @@
+@@ -72,19 +71,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+ // Build Cache configuration (HTTP remote cache + local)
  apply(from = "gradle/build-cache.settings.gradle")
  
- // Build Scans — publish in CI only for debugging and performance profiling.
+-// Build Scans — publish in CI only for debugging and performance profiling.
 -develocity {
 -    buildScan {
 -        capture {

@@ -1,9 +1,10 @@
 {
   mk-apk-package,
   lib,
-  gradle_9_4_1,
+  gradle_9_5_1,
   jdk21_headless,
   jdk17_headless,
+  jdk25_headless,
   stdenv,
   fetchFromGitHub,
 
@@ -21,17 +22,17 @@ let
         s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_4_1;
+      gradle = gradle_9_5_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "meshtastic";
-      version = "2.7.14";
+      version = "2.8.0";
 
       src = fetchFromGitHub {
         owner = "meshtastic";
         repo = "Meshtastic-Android";
         rev = "v${finalAttrs.version}";
-        hash = "sha256-YsHSW6E6Dpqc8C9MCmHjnTGPwMWiiJHQrw1tM1Pu1vk=";
+        hash = "sha256-wujTTZEtqOlDSQpCxoXXwurclfhKt+rPxVnsXqnTGlw=";
         fetchSubmodules = true;
       };
 
@@ -43,7 +44,8 @@ let
         # Remove develocity build-scan plugin (not needed for building,
         # and causes class-load errors with Gradle 9.3.1)
         ./remove-develocity.patch
-
+        # Remove desktopApp vendor requirement
+        ./remove-desktopApp-vendor.patch
         # Remove firebase plugin declarations (unneeded for fdroid flavor)
         ./remove-firebase-root.patch
         ./remove-firebase-convention.patch
@@ -52,8 +54,15 @@ let
         ./remove-firebase-analytics-plugin.patch
       ];
 
+      postPatch = ''
+        substituteInPlace gradle/libs.versions.toml \
+          --replace-fail 'meshtastic-protobufs = "2.7.26.138-g26db1b5-SNAPSHOT"' 'meshtastic-protobufs = "2.7.26"'
+        substituteInPlace settings.gradle.kts \
+          --replace-fail 'mavenContent { snapshotsOnly() }' ""
+      '';
+
       gradleBuildTask = ":androidApp:assembleFdroidRelease";
-      gradleUpdateTask = finalAttrs.gradleBuildTask;
+      gradleUpdateTask = "${finalAttrs.gradleBuildTask} --refresh-dependencies :core:model:dependencies :androidApp:dependencies";
 
       # Lock refresh steps:
       # 1. If Meshtastic bumps Gradle, update `gradle.version` and `gradle.hash`.
@@ -66,7 +75,7 @@ let
         pkg = finalAttrs.finalPackage;
         data = ./meshtastic_deps.json;
         silent = false;
-        useBwrap = false;
+        useBwrap = true;
       };
 
       nativeBuildInputs = [
@@ -78,7 +87,7 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk21_headless.passthru.home;
+        JAVA_HOME = jdk25_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
@@ -104,7 +113,7 @@ let
         "checkDebugAarMetadata"
         "--no-configuration-cache"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home},${jdk21_headless.passthru.home}"
+        "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home},${jdk21_headless.passthru.home},${jdk25_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
