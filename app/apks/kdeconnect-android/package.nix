@@ -17,20 +17,22 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
+        s."platforms-android-37-0"
         s.build-tools-36-0-0
+        s."build-tools-37-0-0"
       ]);
 
       gradle = gradle_9_4_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "kdeconnect-android";
-      version = "1.35.9";
+      version = "1.35.11";
 
       src = fetchFromGitHub {
         owner = "KDE";
         repo = "kdeconnect-android";
         rev = "v${finalAttrs.version}";
-        hash = "sha256-R1EjKIedDNmD6MwgyJDJZNH25ULoaWertkNUEmDSuRY=";
+        hash = "sha256-mEP+6cYSnG/xnUoRaEd/gHoLuHUukRLkzMjKkKrAkqI=";
       };
 
       gradleBuildTask = "assembleRelease";

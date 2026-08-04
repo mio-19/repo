@@ -28,12 +28,12 @@ let
 in
 buildGradlePackage rec {
   pname = "fdroid-basic";
-  version = "2.0-alpha11";
+  version = "2.0-rc0";
 
   src = fetchgit {
     url = "https://gitlab.com/fdroid/fdroidclient.git";
     tag = version;
-    hash = "sha256-nXZXASrwBzhVN3LRQeR3Wfangy/aVk5DihVos1kc1Do=";
+    hash = "sha256-0+DoNOyyBGlNnCxGLlYlO+P7+e8CTGd7rP2XioAXpUM=";
   };
 
   patches = [ ./version-name-update.patch ];
