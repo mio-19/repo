@@ -88,14 +88,14 @@ stdenv.mkDerivation (
   in
   {
     pname = "koreader";
-    version = "2026.07.2";
+    version = "2026.07.1";
     src = fetchFromGitHub {
       name = "koreader";
       owner = "koreader";
       repo = "koreader";
       tag = "v${finalAttrs.version}";
       leaveDotGit = true;
-      hash = "sha256-VIivscKMDx3pZ32JoVZYrt2SBBD3Gn8UvcENrLnmSws=";
+      hash = "sha256-pNZKjYsG5U1HM8yRtK06besRheq5nIosHazF7wK4XUg=";
       fetchSubmodules = true;
     };
     sourceRoot = "${finalAttrs.src.name}";
