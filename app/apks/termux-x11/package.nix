@@ -76,7 +76,11 @@ let
           --replace-fail "\"\\\"\" + (\"git rev-parse HEAD\\n\".execute().getText().trim() ?: (System.getenv('CURRENT_COMMIT') ?: \"NO_COMMIT\")) + \"\\\"\"" "\"\\\"\" + (System.getenv('CURRENT_COMMIT') ?: \"${rev}\") + \"\\\"\""
 
         substituteInPlace shell-loader/build.gradle \
-          --replace-fail "\"\\\"\" + (\"git rev-parse HEAD\\n\".execute().getText().trim() ?: (System.getenv('CURRENT_COMMIT') ?: \"NO_COMMIT\")) + \"\\\"\"" "\"\\\"\" + (System.getenv('CURRENT_COMMIT') ?: \"${rev}\") + \"\\\"\""
+          --replace-fail "\"\\\"\" + (\"git rev-parse HEAD\\n\".execute().getText().trim() ?: (System.getenv('CURRENT_COMMIT') ?: \"NO_COMMIT\")) + \"\\\"\"" "\"\\\"\" + (System.getenv('CURRENT_COMMIT') ?: \"${rev}\") + \"\\\"\"" \
+          --replace-fail "apply from: 'companion-package.gradle'" "// companion packages not needed for APK build"
+
+        substituteInPlace lorie-app/build.gradle \
+          --replace-fail "tasks.matching { it.name == 'assembleDebug' }.configureEach { dependsOn ':shell-loader:buildCompanionPackage' }" "// companion packages not needed for APK build"
 
         substituteInPlace lorie/src/main/cpp/recipes/xkbcomp.cmake \
           --replace-fail 'COMMAND "/usr/bin/gcc"' 'COMMAND "${gcc}/bin/gcc"'
