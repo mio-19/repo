@@ -87,7 +87,7 @@ let
         pname = "haven-rdp-transport-jni-libs";
         inherit (finalAttrs0) version src;
         cargoRoot = "rdp-kotlin/rust";
-        hash = "sha256-6kPusCh/HGkefdtT4IPEdeUs+qbeMLMY5ySog+DA1no=";
+        hash = "sha256-MrWaFCWNJ0iqcB+SKlU+CZBU7VZ3L3Ddf/I/nEVW6ks=";
       };
 
       mkRdpTransportJniLib =
@@ -398,14 +398,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.86.34";
+      version = "5.86.40";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-8oY2oboxmgERJuJywa7EA41Cat28kTmyG23jk56pibk=";
+        hash = "sha256-Z8GKZyVdPPGAXrPKG2PkHwJNoVeW+27Jgk6rWiZwa+c=";
       };
 
       patches = [
@@ -528,6 +528,12 @@ let
         "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${aapt2}"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2}"
+        # Upstream builds these from source in Gradle (no longer ships jniLibs).
+        # The Nix sandbox cannot clone ffmpeg deps, and wayland needs more
+        # host tooling wired up; skip for now so the APK still builds.
+        "-PskipWaylandNatives=true"
+        "-PskipFfmpegNatives=true"
+        "-PtargetAbi=arm64"
       ];
 
       installPhase = ''

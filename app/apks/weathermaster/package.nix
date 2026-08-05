@@ -13,20 +13,20 @@
 let
   appPackage = stdenv.mkDerivation (finalAttrs: {
     pname = "weathermaster";
-    version = "3.7.0";
+    version = "3.8.0";
 
     src = fetchFromGitHub {
       owner = "PranshulGG";
       repo = "WeatherMaster";
       tag = "v${finalAttrs.version}";
-      hash = "sha256-5Izdc8e2ijNwWFHNf1XzT0YbN9rAlwUbb4QB2rvvnYA=";
+      hash = "sha256-P4EGMrOCyfWyJAco3b/zPpejtZSpTDl2+VZTU2AXqlI=";
     };
     patches = [ ];
 
     postPatch = ''
       substituteInPlace app/build.gradle.kts \
-        --replace-fail '            signingConfig = signingConfigs.getByName("release")' \
-                       '            // Signing is handled by the Nix/F-Droid packaging flow.'
+        --replace-fail '                signingConfig = signingConfigs.getByName("release")' \
+                       '                // Signing is handled by the Nix/F-Droid packaging flow.'
     '';
 
     androidSdk = androidSdkBuilder (s: [

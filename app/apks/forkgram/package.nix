@@ -13,6 +13,7 @@
   meson,
   ninja,
   perl,
+  pkg-config,
   python3,
   stdenv,
   unzip,
@@ -32,7 +33,7 @@ let
 in
 buildGradlePackage rec {
   pname = "forkgram";
-  version = "12.9.1.0";
+  version = "12.9.2.0";
 
   gradle = gradle_8_14_4;
 
@@ -40,7 +41,7 @@ buildGradlePackage rec {
     owner = "forkgram";
     repo = "TelegramAndroid";
     rev = version;
-    hash = "sha256-EO1caof5EaiHwTBoDPZiq1z59Mc6DiN+nkD+8ys29tM=";
+    hash = "sha256-gTtX04NZgbR6QrLfzLpN/5iicjP3IpV84KPM9SPnwAw=";
     fetchSubmodules = true;
   };
 
@@ -62,6 +63,7 @@ buildGradlePackage rec {
     python3
     unzip
     which
+    pkg-config
     writableTmpDirAsHomeHook
   ]
   ++ lib.optionals stdenv.isDarwin [
@@ -73,14 +75,22 @@ buildGradlePackage rec {
     ./0001-Killergram.patch
     # NOTE: The max account patch renders the application unusable.
     # It is kept here for reference only.
-    #./0002-max-account-count.patch
-    ./prepare.patch
+    # ./0002-max-account-count.patch
     ./native-build.patch
     ./fdroid.patch
   ];
 
   postPatch = ''
     patchShebangs TMessagesProj/jni/
+
+    substituteInPlace TMessagesProj/jni/prepare.py \
+      --replace-fail "return 'rm -rf ' + folder" "return 'true'" \
+      --replace-fail 'executable="/bin/bash"' 'executable="bash"' \
+      --replace-quiet "git submodule init && git submodule update" "" \
+      --replace-quiet "cd boringssl && git reset --hard HEAD && cd .." "" \
+      --replace-quiet "git reset HEAD tde2e/ && git checkout -- tde2e/" "" \
+      --replace-quiet "cd tde2e_source && git reset --hard HEAD && cd .." "" \
+      --replace-quiet "git checkout -- ffmpeg" ""
 
     # F-Droid prebuild: Telegram API credentials, F-Droid mode, NDK pin.
     # https://gitlab.com/fdroid/fdroiddata/-/blob/master/metadata/org.forkgram.messenger.yml
@@ -101,11 +111,9 @@ buildGradlePackage rec {
       -storepass android -keypass android \
       -dname "CN=Forkgram Build"
 
-    for f in TMessagesProj/jni/build_dav1d_clang.sh \
-             TMessagesProj/jni/build_ffmpeg_clang.sh \
-             TMessagesProj/jni/build_libvpx_clang.sh \
-             TMessagesProj/jni/build_boringssl.sh \
+    for f in TMessagesProj/jni/build_boringssl.sh \
              TMessagesProj/jni/tde2e/build-tdlib.sh; do
+      if [ ! -f "$f" ]; then continue; fi
       if grep -q "ANDROID_API=16" "$f" 2>/dev/null; then
         substituteInPlace "$f" --replace-fail "ANDROID_API=16" "ANDROID_API=21"
       fi
@@ -118,13 +126,6 @@ buildGradlePackage rec {
         --replace-quiet "\''${TOOLS_PREFIX}strip" "\''${LLVM_BIN}/llvm-strip" \
         --replace-quiet "\''${TOOLS_PREFIX}nm" "\''${LLVM_BIN}/llvm-nm"
     done
-
-    substituteInPlace TMessagesProj/jni/build_libvpx_clang.sh \
-      --replace-fail 'export ISYSTEM="-isystem ''${LLVM_PREFIX}/sysroot/usr/include/''${ARCH_NAME}-linux-''${BIN_MIDDLE} -isystem ''${LLVM_PREFIX}/sysroot/usr/include"' 'export ISYSTEM=""'
-
-    substituteInPlace TMessagesProj/jni/build_ffmpeg_clang.sh \
-      --replace-fail '--ar=''${AR} \' '--ar=''${AR} --ranlib=''${LLVM_BIN}/llvm-ranlib \'
-
 
 
     # boringssl runs 'go run err_data_generate.go' with vendored golang.org/x/{crypto,net}.

@@ -17,21 +17,21 @@
 let
   appPackage =
     let
-      version = "1.102.1-t8ebe8f7c3-g616a069d9";
+      version = "1.102.2-t6cac91817-g8c99ed49d";
       tailscaleVersion = lib.head (lib.splitString "-" version);
 
       src = fetchFromGitHub {
         owner = "tailscale";
         repo = "tailscale-android";
         tag = version;
-        hash = "sha256-cnyhZUjJa53BgQsnhUGBfiVFTxJpN5JztrcLXgY+/3M=";
+        hash = "sha256-NnDHUBtel+BtwHEWbtrYI3qzZYm23YwXCi86wa7Vqo0=";
       };
 
       tailscaleSrc = fetchFromGitHub {
         owner = "tailscale";
         repo = "tailscale";
         tag = "v${tailscaleVersion}";
-        hash = "sha256-zsYFnk6QI1MAc8ROL3RPSoQTKtmINYWAbAsaDwom0WI=";
+        hash = "sha256-vqNShvER4jT+8WJCcaSVboXPEP6S3QacmkC39tJkR4g=";
       };
 
       xMobileSrc = fetchFromGitHub {

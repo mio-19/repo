@@ -13,6 +13,7 @@
   meson,
   ninja,
   perl,
+  pkg-config,
   python3,
   stdenv,
   unzip,
@@ -32,7 +33,7 @@ let
 in
 buildGradlePackage rec {
   pname = "forkgram-classic";
-  version = "12.9.8.0";
+  version = "12.9.10.0";
 
   gradle = gradle_8_14_4;
 
@@ -40,7 +41,7 @@ buildGradlePackage rec {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-RlPR9+fHubHZHxL1h5tEjuhigBP0Wy0TEkROZ7WHBLk=";
+    hash = "sha256-cV4XO92VSztw8q2L7L6copbKMkYGrL1afD6T4jo81TI=";
     fetchSubmodules = true;
   };
 
@@ -62,6 +63,7 @@ buildGradlePackage rec {
     python3
     unzip
     which
+    pkg-config
     writableTmpDirAsHomeHook
   ]
   ++ lib.optionals stdenv.isDarwin [
@@ -70,14 +72,21 @@ buildGradlePackage rec {
 
   patches = [
     ./0001-Killergram.patch
-    ./prepare.patch
     ./native-build.patch
     ./fdroid.patch
-    ./ndk27.patch
   ];
 
   postPatch = ''
         patchShebangs TMessagesProj/jni/
+
+        substituteInPlace TMessagesProj/jni/prepare.py \
+          --replace-fail "return 'rm -rf ' + folder" "return 'true'" \
+          --replace-fail 'executable="/bin/bash"' 'executable="bash"' \
+          --replace-quiet "git submodule init && git submodule update" "" \
+          --replace-quiet "cd boringssl && git reset --hard HEAD && cd .." "" \
+          --replace-quiet "git reset HEAD tde2e/ && git checkout -- tde2e/" "" \
+          --replace-quiet "cd tde2e_source && git reset --hard HEAD && cd .." "" \
+          --replace-quiet "git checkout -- ffmpeg" ""
 
 
         echo "APP_ID=14577864" >> gradle.properties
@@ -86,9 +95,7 @@ buildGradlePackage rec {
           --replace-fail "F_DROID=0" "F_DROID=1"
 
         if [ "$(uname -s)" = "Darwin" ]; then
-          substituteInPlace TMessagesProj/jni/build_dav1d_clang.sh \
-            TMessagesProj/jni/build_ffmpeg_clang.sh \
-            TMessagesProj/jni/build_libvpx_clang.sh \
+          substituteInPlace TMessagesProj/jni/tde2e/build-tdlib.sh \
             --replace-warn "linux-x86_64" "darwin-x86_64"
         fi
 
