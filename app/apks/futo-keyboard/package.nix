@@ -28,14 +28,14 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "futo-keyboard";
-      version = "0.1.29.1";
+      version = "0.1.30";
 
       src = fetchgit {
         url = "https://github.com/futo-org/android-keyboard.git";
         tag = finalAttrs.version;
         fetchSubmodules = true;
         fetchLFS = true;
-        hash = "sha256-tag0KBUMgylCrt+GV5SLiHMhMtojP//kpSQNkaL+TGg=";
+        hash = "sha256-rs87aTnOL4sNV64EZ81a00bqOlR4OsyAj+c4dye/oTQ=";
       };
 
       dontFixup = true;
@@ -69,7 +69,7 @@ let
         ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
         VERSION_NAME = finalAttrs.version;
-        VERSION_CODE = "12900";
+        VERSION_CODE = "13000";
         BRANCH_NAME = "master";
       };
 
@@ -135,7 +135,7 @@ mk-apk-package {
         - Customizable layouts and themes
 
         This package builds the stable flavor from source using the
-        upstream GitHub release tag v0.1.29.
+        upstream GitHub release tag v0.1.30.
     '';
   };
 }
