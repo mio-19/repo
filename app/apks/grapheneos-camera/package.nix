@@ -8,7 +8,6 @@
   jdk25_headless,
   jdk17_headless,
   gradle_9_6_1,
-  mergeLock,
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -35,10 +34,7 @@ let
     pname = "grapheneos-camera";
     inherit version src gradle;
 
-    lockFile = mergeLock [
-      ./gradle.lock
-      ../../by-name/buildGradlePackage/plugin-markers.gradle.lock
-    ];
+    lockFile = ./gradle.lock;
     overrides = overrides-fromsrc;
     buildJdk = jdk25_headless;
 
