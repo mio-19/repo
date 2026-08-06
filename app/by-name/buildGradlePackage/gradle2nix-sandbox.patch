@@ -1,0 +1,10 @@
+--- a/nix/gradle2nix.nix
++++ b/nix/gradle2nix.nix
+@@ -10,6 +10,7 @@
+   pname = "gradle2nix";
+   version = "2.0.0";
+   lockFile = ../gradle.lock;
++  __darwinAllowLocalNetworking = true;
+ 
+   src = lib.cleanSourceWith {
+     filter = lib.cleanSourceFilter;
