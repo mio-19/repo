@@ -148,6 +148,7 @@
                 url = "https://github.com/tadfisher/gradle2nix/pull/88.patch";
                 hash = "sha256-mvtKycVDJ3NMV/CPRcsWKg0irLDxYDlLRU/3X3YBB60=";
               })
+
             ];
           };
           gradle2nixPatched =

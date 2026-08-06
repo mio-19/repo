@@ -124,8 +124,6 @@ let
     "weathermaster" # misses AGP plugin marker from deps.json on darwin
     "rain" # misses Gradle plugin marker from deps.json on darwin
     "nekobox-for-android" # misses Gradle plugin marker from deps.json on darwin
-    "grapheneos-camera" # Gradle Worker Daemon fails to start on darwin
-    "gallery" # misses lint-gradle dependency on darwin
   ];
 
   # Apps with OSS-looking licenses that still should not be published in fdroid-repo-oss

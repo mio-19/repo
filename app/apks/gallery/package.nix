@@ -115,6 +115,7 @@ let
     lockFile = mergeLock [
       ./gradle.lock
       ./more.gradle.lock
+      ../../by-name/buildGradlePackage/plugin-markers.gradle.lock
     ];
     overrides = overrides-fromsrc-updated // {
       "com.google.protobuf:protoc:4.26.1"."protoc-4.26.1-linux-x86_64.exe" =
