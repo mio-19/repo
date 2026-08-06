@@ -88,7 +88,7 @@ stdenv.mkDerivation (
   in
   {
     pname = "koreader";
-    version = "2026.07.2";
+    version = "2026.07.1";
     src = fetchFromGitHub {
       name = "koreader";
       owner = "koreader";
