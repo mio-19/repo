@@ -40,10 +40,6 @@ let
     # cannot build on darwin due to fhs
     "koreader"
 
-    # can build locally but not on garnix - Operation not permitted
-    "recorder"
-    "archivetune"
-
     # gradle lock platform dependent issue. need update lock for darwin:
     "youtube-morphe"
     "youtube-music-morphe"
@@ -88,6 +84,48 @@ let
     "gamenative" # fails on darwin with 404
 
     "ollama-app" # gtk4 failed on darwin
+
+    "vpnhotspot" # too complicated to build on darwin due to mitm-cache/gradle proxy, ksp, daemon socket and memory issues
+    "eden" # buildPhase fails mysteriously/killed on darwin
+    "tuxguitar-android" # buildPhase fails mysteriously/killed on darwin
+    "amethyst" # misses AGP plugin marker from deps.json on darwin
+    "droidspaces" # build fails mysteriously on darwin
+    "fdroid-basic" # build fails mysteriously on darwin
+    "meditrak" # fails with FSEvents stream error on darwin
+    "shelter" # Gradle fails to use mitmCache proxy on darwin
+    "v2rayng" # misses AGP plugin marker from deps.json on darwin
+    "forkgram" # buildPhase fails mysteriously/killed on darwin
+    "forkgram-classic" # buildPhase fails mysteriously/killed on darwin
+    "element-android" # misses Gradle plugin marker from deps.json on darwin
+    "archivetune" # misses Gradle plugin marker from deps.json on darwin
+    "gh4a" # misses AGP plugin marker from deps.json on darwin
+    "breezy-weather" # misses Gradle plugin marker from deps.json on darwin
+    "futo-keyboard" # misses AGP plugin marker from deps.json on darwin
+    "mastodon-android" # Gradle fails to use mitmCache proxy on darwin
+    "microg-re" # Gradle fails to use mitmCache proxy on darwin
+    "aurorastore" # depends on gradle_9_5_1 which fails to compile on darwin
+    "komi-store" # depends on gradle_9_5_1 which fails to compile on darwin
+    "meshtastic" # depends on gradle_9_5_1 which fails to compile on darwin
+    "nextcloud-android" # depends on gradle_9_5_1 which fails to compile on darwin
+    "pdfviewer" # depends on gradle_9_5_1 which fails to compile on darwin
+    "termux-x11" # depends on gradle_9_5_1 which fails to compile on darwin
+    "thunderbird" # depends on gradle_9_5_1 which fails to compile on darwin
+    "zotero-android" # depends on gradle_9_5_1 which fails to compile on darwin
+    "mpv-android" # Gradle fails to use mitmCache proxy on darwin
+    "kdeconnect-android" # buildPhase fails mysteriously/killed on darwin
+    "luanti" # Gradle fails to use mitmCache proxy on darwin
+    "lspatch" # ephemeral-port-reserve throws Operation not permitted on darwin
+    "lumo" # Gradle plugin and FSEvents stream error on darwin
+    "lspatch-manager" # depends on lspatch
+    "meshcore-open" # buildPhase fails mysteriously/killed on darwin
+    "mpvex" # Gradle fails to resolve foojay-resolver plugin on darwin
+    "onlyoffice-documents" # misses Gradle plugin marker from deps.json on darwin
+    "immich" # misses Gradle plugin marker from deps.json on darwin
+    "weathermaster" # misses AGP plugin marker from deps.json on darwin
+    "rain" # misses Gradle plugin marker from deps.json on darwin
+    "nekobox-for-android" # misses Gradle plugin marker from deps.json on darwin
+    "grapheneos-camera" # Gradle Worker Daemon fails to start on darwin
+    "gallery" # misses lint-gradle dependency on darwin
   ];
 
   # Apps with OSS-looking licenses that still should not be published in fdroid-repo-oss

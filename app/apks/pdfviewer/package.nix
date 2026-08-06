@@ -53,20 +53,17 @@ let
       };
 
       patches = [
+        (fetchpatch {
+          name = "Add find in document (fixes #4)";
+          url = "https://github.com/GrapheneOS/PdfViewer/pull/579.diff";
+          hash = "sha256-H+/oEIdQQjhI/avzBqOlwgWLi+4vnjWXYB82Y8lZKpo=";
+        })
         /*
           TODO: fix merge conflicts
           (fetchpatch {
             name = "Add page persistence";
             url = "https://github.com/GrapheneOS/PdfViewer/pull/598.diff";
             hash = "sha256-xE8bc5u2IoRhfay8eJo+vUzzQEr4jGTWNEuciNT5W1U=";
-          })
-        */
-        /*
-          TODO: fix merge conflicts
-          (fetchpatch {
-            name = "feat: Search (Fixes #4)";
-            url = "https://github.com/GrapheneOS/PdfViewer/pull/579.diff";
-            hash = "sha256-COVebkjyEIrQf7Q1VBLaRwthO2bG+/Uy/tBqoLueqwY=";
           })
         */
       ];

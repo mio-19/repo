@@ -73,7 +73,7 @@ in
     ./launcher.nix
     ./gos_userdebug.nix
   ];
-  buildDateTime = 1785634134; # builtins.currentTime
+  buildDateTime = 1786023964; # builtins.currentTime
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   apps = {
@@ -206,7 +206,7 @@ in
     src = sources.lineage_latinime.src;
   };
   source.dirs."external/Info".postPatch = replace_app "app-release" "apk_grapheneos-info";
-  source.dirs."external/Camera".postPatch = replace_app "Camera" "apk_grapheneos-camera";
+  source.dirs."external/Camera".postPatch = replace_app "app-release" "apk_grapheneos-camera";
   source.dirs."external/AppStore".postPatch = replace_app "app-release" "apk_appstore";
   source.dirs."external/PdfViewer".postPatch = replace_app "app-release" "apk_pdfviewer";
   signing.extraApks = {

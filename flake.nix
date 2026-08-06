@@ -4,11 +4,11 @@
     #nixpkgs.url = "https://nixos.org/channels/nixos-unstable-small/nixexprs.tar.xz";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
-    nixpkgs-python27.url = "https://nixos.org/channels/nixos-26.05-small/nixexprs.tar.xz";
+    nixpkgs-python27.url = "https://nixos.org/channels/nixos-26.05/nixexprs.tar.xz";
     android-nixpkgs = {
       #url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
-      url = "github:tadfisher/android-nixpkgs/2026-08-01-stable";
+      url = "github:tadfisher/android-nixpkgs/2026-08-03-stable";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
@@ -166,6 +166,11 @@
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
             patches = [
+              (fetchpatch {
+                name = "fdroidserver: fix build, 2.4.3 -> 2.4.5";
+                url = "https://github.com/NixOS/nixpkgs/pull/548263.diff";
+                hash = "sha256-oARICQHIRDMsm4PSI8H4hIXdudNzkMrJJWOHJDPGOcw=";
+              })
               /*
                 # conflicts with https://github.com/NixOS/nixpkgs/pull/506356
                 (fetchpatch {
@@ -202,23 +207,6 @@
             overlays = [
               inputs.android-nixpkgs.overlays.default
               (final: prev: rec {
-                fdroidserver = pkgs.fdroidserver.override {
-                  python3Packages = pkgs.python312Packages.override {
-                    overrides = pfinal: pprev: {
-                      mwclient = pprev.mwclient.overridePythonAttrs (old: {
-                        doCheck = false;
-                      });
-                      ruamel-yaml = pprev.ruamel-yaml.overridePythonAttrs (old: {
-                        doCheck = false;
-                        pythonMetadataCheckPhase = "true";
-                        pythonCatchConflictsPhase = "true";
-                      });
-                      scipy = pprev.scipy.overridePythonAttrs (old: {
-                        doCheck = false;
-                      });
-                    };
-                  };
-                };
                 inherit (selfPackages) ant;
                 python27 =
                   (import inputs.nixpkgs-python27 {
@@ -310,25 +298,6 @@
               ];
           };
 
-          packages.garnix-cached = pkgs.symlinkJoin {
-            name = "garnix-cached";
-            paths =
-              with selfPackages;
-              [
-                github-actions-cached
-
-                apk_comaps
-                apk_tailscale
-                apk_pdfviewer
-                apk_gamenative
-                apk_droidspaces
-                apk_forkgram.signScript
-              ]
-              ++ lib.optionals stdenv.isLinux [
-                apk_immich
-              ];
-          };
-
           # https://github.com/nix-community/nixos-apple-silicon/pull/353
           packages.zfs-installer =
             (nixpkgs.lib.nixosSystem {
@@ -362,12 +331,9 @@
     };
   nixConfig = {
     extra-substituters = [
-      # https://garnix.io/docs/caching # garnix sometimes often 504 Gateway Time-out. to avoid waiting on this garnix, supply `--offline` to nix commands.
-      "https://cache.garnix.io"
       "https://mio-repo.cachix.org"
     ];
     extra-trusted-public-keys = [
-      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
       "mio-repo.cachix.org-1:+l5kqQn5w9e3i3tDZY9o3pVQABC0Z/d0kAqhQpqKP8g="
     ];
   };
