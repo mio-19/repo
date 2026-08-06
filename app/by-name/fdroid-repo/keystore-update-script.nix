@@ -39,7 +39,7 @@ let
         local pkg="$1"
         case "$pkg" in
           com.termux.nix) echo "releasekey" ;;
-          com.termux|com.termux.styling|org.gnu.emacs) echo "com.termux" ;;
+          com.termux|com.termux.styling|com.termux.x11|org.gnu.emacs) echo "com.termux" ;;
           *) echo "$pkg" ;;
         esac
       }
