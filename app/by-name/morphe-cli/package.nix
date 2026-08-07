@@ -10,7 +10,7 @@
   androidSdkBuilder,
   apktool-src,
   multidexlib2-src,
-  morphe-patcher-src_1_7_0,
+  morphe-patcher-src_1_8_0_dev_3,
   morphe-library-m2_1_4_0,
 }:
 let
@@ -85,7 +85,7 @@ stdenv.mkDerivation (finalAttrs: {
     root="$PWD"
 
     # Copy dependency sources as writable sibling directories.
-    cp -a ${morphe-patcher-src_1_7_0} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_1_8_0_dev_3} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
 
     cp -a ${arsclib-src} "$root/ARSCLib"
