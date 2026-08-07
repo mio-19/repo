@@ -28,14 +28,14 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "futo-keyboard";
-      version = "0.1.29.1";
+      version = "0.1.30";
 
       src = fetchgit {
         url = "https://github.com/futo-org/android-keyboard.git";
         tag = finalAttrs.version;
         fetchSubmodules = true;
         fetchLFS = true;
-        hash = "sha256-tag0KBUMgylCrt+GV5SLiHMhMtojP//kpSQNkaL+TGg=";
+        hash = "sha256-rs87aTnOL4sNV64EZ81a00bqOlR4OsyAj+c4dye/oTQ=";
       };
 
       dontFixup = true;
