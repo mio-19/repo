@@ -87,7 +87,7 @@ let
         pname = "haven-rdp-transport-jni-libs";
         inherit (finalAttrs0) version src;
         cargoRoot = "rdp-kotlin/rust";
-        hash = "sha256-b7K0gngQL5JI/oSsnHmxUdgRtbbqIziL6PDP6+/7rUk=";
+        hash = "sha256-2Y6JhoY4jxaRClkp9pKh6iJojm9nre08VJ31PgLmbhc=";
       };
 
       mkRdpTransportJniLib =
@@ -211,8 +211,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-HXkzl2q8AC5sH4D+F/ifTyIAt6LOgMgslK6XOU53Ml4=";
-
+        outputHash = "sha256-9Pz1379UvokIP9QjOk6deF2wnGcUteA8bHOIhW8VniY=";
         dontConfigure = true;
         dontFixup = true;
 
@@ -398,14 +397,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.86.50";
+      version = "5.87.0";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-GUgLS9zHYhjwpj8ilWhYqZl6jrNG6Wcd34ZAY3k4Z+M=";
+        hash = "sha256-aDKufm5VbjGS4M5DZgpB+9rOmmI48zhs3+eX77EAtA8=";
       };
 
       patches = [
@@ -421,7 +420,7 @@ let
         rm -f gradle/verification-metadata.xml
       '';
 
-      gradleBuildTask = ":app:assembleArm64Release";
+      gradleBuildTask = ":app:assembleArm64FullRelease";
       gradleUpdateTask = finalAttrs0.gradleBuildTask;
 
       # $(nix build .#apk_haven.mitmCache.updateScript --no-link --print-out-paths)
@@ -538,7 +537,7 @@ let
 
       installPhase = ''
         runHook preInstall
-        apk_path="$(echo app/build/outputs/apk/arm64/release/haven-*-arm64-release.apk)"
+        apk_path="$(find app/build/outputs -name "*.apk" | head -n 1)"
         install -Dm644 "$apk_path" "$out/haven.apk"
         runHook postInstall
       '';
