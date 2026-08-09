@@ -28,7 +28,7 @@ let
     in
     stdenv.mkDerivation {
       pname = "reddit-morphe";
-      version = "2026.04.0-patches-${morphe-patches.version}";
+      version = "2026.14.0-patches-${morphe-patches.version}";
 
       dontUnpack = true;
 
