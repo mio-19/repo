@@ -37,7 +37,7 @@ let
         morphe-cli patch \
           --patches=${morphePatches} \
           --enable="Hide ads" \
-          --enable="Change package name" \
+          --enable="Clone app" \
           --enable="Disable Play Store updates" \
           --unsigned \
           --temporary-files-path "$workdir/tmp" \

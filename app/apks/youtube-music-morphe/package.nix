@@ -37,7 +37,7 @@ let
         morphe-cli patch \
           --patches=${morphePatches} \
           --enable="Hide 'Get Music Premium'" \
-          --enable="Change package name" \
+          --enable="Clone app" \
           --unsigned \
           --temporary-files-path "$workdir/tmp" \
           --out "$workdir/youtube-music-morphe.apk" \
