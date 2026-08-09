@@ -21,7 +21,7 @@ let
       redditXapk = fetchurl {
         name = "reddit-2026.14.0.xapk";
         url = "https://web.archive.org/web/20260809105447/https://data.winudf.com/XAPK/Y29tLnJlZGRpdC5mcm9udHBhZ2VfMjYxNDE0MF8yMTJjOTViYw?_p=Y29tLnJlZGRpdC5mcm9udHBhZ2U%3D&download_id=1402505559203032&filename=Reddit_2026.14.0_APKPure.xapk&full_size=130005156&is_hot=true&k=80a5b404b388d98bf14c8203f58b564c6a7aff32&package_name=com.reddit.frontpage&source=web&token=1786272818-99908d31f8-0-f09009bf47dfa01e110785dff6b98ef4";
-        hash = "";
+        hash = "sha256-reNTTc7+vzjk6cXkMkWJbEyEnKd5tbOaesG1tPUCGkc=";
       };
 
       morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
