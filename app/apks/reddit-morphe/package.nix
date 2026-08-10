@@ -19,17 +19,16 @@ let
       ]);
 
       redditXapk = fetchurl {
-        # APKPure page: https://apkpure.com/reddit-app/com.reddit.frontpage/download/2026.04.0
-        name = "reddit-2026.04.0.xapk";
-        url = "https://web.archive.org/web/20260407145944if_/https://d-14.winudf.com/b/XAPK/Y29tLnJlZGRpdC5mcm9udHBhZ2VfMjYwNDA0MV8zYTZiNjQxMg?_fn=UmVkZGl0XzIwMjYuMDQuMF9BUEtQdXJlLnhhcGs&_p=Y29tLnJlZGRpdC5mcm9udHBhZ2U%3D&download_id=otr_1559604511559923&is_hot=true&k=5fdfbf8d6daa67af899596a95d08eabf69d66ce6";
-        hash = "sha256-8bSHG+zZXj/pWiDztoQR+5PpzrecXHiP9QTty9BOlfA=";
+        name = "reddit-2026.14.0.xapk";
+        url = "https://web.archive.org/web/20260809105447/https://data.winudf.com/XAPK/Y29tLnJlZGRpdC5mcm9udHBhZ2VfMjYxNDE0MF8yMTJjOTViYw?_p=Y29tLnJlZGRpdC5mcm9udHBhZ2U%3D&download_id=1402505559203032&filename=Reddit_2026.14.0_APKPure.xapk&full_size=130005156&is_hot=true&k=80a5b404b388d98bf14c8203f58b564c6a7aff32&package_name=com.reddit.frontpage&source=web&token=1786272818-99908d31f8-0-f09009bf47dfa01e110785dff6b98ef4";
+        hash = "sha256-reNTTc7+vzjk6cXkMkWJbEyEnKd5tbOaesG1tPUCGkc=";
       };
 
       morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
     in
     stdenv.mkDerivation {
       pname = "reddit-morphe";
-      version = "2026.04.0-patches-${morphe-patches.version}";
+      version = "2026.14.0-patches-${morphe-patches.version}";
 
       dontUnpack = true;
 
@@ -46,7 +45,7 @@ let
 
         morphe-cli patch \
           --patches=${morphePatches} \
-          --enable="Change package name" \
+          --enable="Clone app" \
           --enable="Disable Play Store updates" \
           --unsigned \
           --temporary-files-path "$workdir/tmp" \

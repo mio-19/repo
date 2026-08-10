@@ -43,22 +43,20 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "meditrak";
-      version = "0.17.9";
+      version = "0.17.10";
 
       src = fetchFromGitHub {
         owner = "AdamGuidarini";
         repo = "MediTrak";
         # Upstream tagged this release "vo.17.7" (letter o, a typo) instead of
         # "v0.17.7", so pin the literal tag rather than deriving it from version.
-        tag = "v0.17.9";
-        hash = "sha256-WcVwW6mDXGys1oRkgqLovgViEBzjG6K6hqrntPS+It4=";
+        tag = "v0.17.10";
+        hash = "sha256-W/MCLtfrAqpgw87/SXjQ4v2T6xnAso57WbRM8im0ZOY=";
       };
 
       patches = [
         # Pin NDK version so AGP does not attempt to download it from the network.
         ./set-ndk-version.patch
-        # Disable upstream JVM auto-resolution so Gradle uses the Nix-provided JDK offline.
-        ./gradle-offline-toolchain.patch
       ];
 
       postPatch = ''
@@ -72,7 +70,8 @@ let
         cp ${nlohmannJsonHeader} app/src/main/cpp/json/nlohmann/json.hpp
 
         substituteInPlace app/build.gradle \
-          --replace-fail "            version '3.22.1'" "            version '3.31.6'"
+          --replace-fail "            version '3.22.1'" "            version '3.31.6'" \
+          --replace-fail "vendor.set(JvmVendorSpec.ADOPTIUM)" ""
       '';
 
       gradleBuildTask = ":app:assembleRelease";

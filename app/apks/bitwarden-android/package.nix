@@ -29,17 +29,17 @@ let
 
       gradle = gradle_9_4_1;
 
-      # https://github.com/bitwarden/android/blob/v2026.7.0-bwpm/gradle/libs.versions.toml#L32 bitwardenSdk = "3.0.0-7673-101364a4"
+      # https://github.com/bitwarden/android/blob/v2026.7.1-bwpm/gradle/libs.versions.toml#L32 bitwardenSdk = "3.0.0-7926-a9b0e184"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
-        rev = "101364a4";
-        hash = "sha256-W7y/aUyJ3G+AlaU0RbYRbjyIzNz/6h/GhZoM73VOtVk=";
+        rev = "a9b0e184";
+        hash = "sha256-PHmhF+P4xhJwygBh3qIkkUSai0q22Ih4ofO4Lgna0bc=";
       };
 
       sdkSrcLock = fetchurl {
         url = "${sdkSrc.meta.homepage}/raw/${sdkSrc.rev}/Cargo.lock";
-        hash = "sha256-IxnNE3GNQvPW3ZIXigIrrmn4MlvRGUoYnu34KVw37N4=";
+        hash = "sha256-/qtaFupxdf/C79oLIlLZGf4L3UzUSywUsTvoNLJddtE=";
       };
 
       androidCrossConfig = {
@@ -152,7 +152,7 @@ let
           version = "3.0.0";
           src = sdkSrc;
           cargoRoot = ".";
-          hash = "sha256-BH0FZQ35xQ9n8mlHcAJogMmb+SQ6WVxXEfV9wSwj7Q8=";
+          hash = "sha256-ScTqcu98/fXpd1mWTykbDJgfPAhT/5hHpBTVKv+hPBE=";
         };
         nativeBuildInputs = [
           rustPlatform.cargoSetupHook
@@ -185,13 +185,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-android";
-      version = "2026.7.0";
+      version = "2026.7.1";
 
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
         tag = "v${finalAttrs.version}-bwpm";
-        hash = "sha256-rsNpVwgo4W12+U9YFkSF9iKlAXDMi6B0SdYuVbFhlVI=";
+        hash = "sha256-gyg9D93TevwIeKyDdJS9A3auipKTlIAqF57YhxkM/Lg=";
       };
 
       gradleBuildTask = ":app:assembleFdroidRelease";
@@ -280,6 +280,10 @@ let
             nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-compat:2.3.21")
             nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-impl:2.3.21")
             nixBootstrap("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.21")
+            nixBootstrap("org.jetbrains.kotlin.android:org.jetbrains.kotlin.android.gradle.plugin:2.3.21")
+            nixBootstrap("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:2.3.21")
+            nixBootstrap("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:2.3.21")
         }
         tasks.register("resolveNixBootstrapDeps") {
             doLast {

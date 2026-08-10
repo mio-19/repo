@@ -39,7 +39,7 @@ let
         revanced-cli patch \
           -b \
           -p ${revancedBundle} \
-          --enable="Change package name" \
+          --enable="Clone app" \
           --enable="Hide ads" \
           --enable="GmsCore support" \
           --enable="MicroG support" \
