@@ -30,13 +30,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gadgetbridge";
-      version = "0.92.2";
+      version = "0.93.0";
 
       src = fetchgit {
         url = "https://codeberg.org/Freeyourgadget/Gadgetbridge.git";
         rev = finalAttrs.version;
         fetchSubmodules = true;
-        hash = "sha256-mxoZTYiv4C61QWS1UDmcG4jJxj8GlKnoUiF1CDJioKk=";
+        hash = "sha256-l25PPd/WQtTjMAUWbVogoX26kfcv/wAGs9uFyFLMg2g=";
       };
 
       patches = [
@@ -71,7 +71,7 @@ let
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
-        GADGETBRIDGE_VERSION_CODE = "246";
+        GADGETBRIDGE_VERSION_CODE = "252";
         GADGETBRIDGE_GIT_HASH_SHORT = "release";
       };
 

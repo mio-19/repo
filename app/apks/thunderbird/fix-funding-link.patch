@@ -1,6 +1,8 @@
+diff --git a/app-thunderbird/build.gradle.kts b/app-thunderbird/build.gradle.kts
+index af5e193..01dd868 100644
 --- a/app-thunderbird/build.gradle.kts
 +++ b/app-thunderbird/build.gradle.kts
-@@ -250,10 +250,10 @@
+@@ -256,10 +256,10 @@ dependencies {
  
      "fossImplementation"(projects.feature.funding.link)
  

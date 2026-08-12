@@ -5,7 +5,7 @@
   runCommand,
   fetchFromGitHub,
   fetchurl,
-  flutter338,
+  flutter344,
   jdk17_headless,
   python3,
   gradle_8_12,
@@ -21,13 +21,23 @@ let
       # Upstream llamadart downloads these at build time; vendor the release
       # tarballs instead so the sandboxed build stays offline.
       llamadartNativeAndroidArm64 = fetchurl {
-        url = "https://github.com/leehack/llamadart-native/releases/download/b9587/llamadart-native-android-arm64-b9587.tar.gz";
-        hash = "sha256-XSqFp2MIiD+TQf2bCtjjwL3a/T9Ym+Mz0v8wZecg6qc=";
+        url = "https://github.com/leehack/llamadart-native/releases/download/b10333/llamadart-native-android-arm64-b10333.tar.gz";
+        hash = "sha256-rYpBFWodOT5d4QKkfhvUFWFmrdcuDbBU0y3Iyc8bpjA=";
+      };
+
+      llamadartNativeAndroidX64 = fetchurl {
+        url = "https://github.com/leehack/llamadart-native/releases/download/b10333/llamadart-native-android-x64-b10333.tar.gz";
+        hash = "sha256-N7FfbLri+5p9C6Cc+NJ06g2vAq3CyjbQSdQwf6STRyo=";
       };
 
       litertLMNativeAndroidArm64 = fetchurl {
-        url = "https://github.com/leehack/litert-lm-native/releases/download/v0.13.1-native.1/litert-lm-native-runtime-android-arm64-v0.13.1-native.1.tar.gz";
-        hash = "sha256-JYaj9FOnciNmIQoA/TZUAehBENIU5yMIM0P7YKwRGnQ=";
+        url = "https://github.com/leehack/litert-lm-native/releases/download/v0.15.0-native.3/litert-lm-native-runtime-android-arm64-v0.15.0-native.3.tar.gz";
+        hash = "sha256-42Las5QePXrBB9Ntna/l9Lva/uwKL6WXjKsnxArmooE=";
+      };
+
+      litertLMNativeAndroidX64 = fetchurl {
+        url = "https://github.com/leehack/litert-lm-native/releases/download/v0.15.0-native.3/litert-lm-native-runtime-android-x64-v0.15.0-native.3.tar.gz";
+        hash = "sha256-X2Ldi8vsg8Pb5cMvpZVtjGXfKD7k6xGJFPMhgYPBDso=";
       };
 
       androidSdk = androidSdkBuilder (s: [
@@ -51,15 +61,15 @@ let
 
       pythonWithYaml = python3.withPackages (ps: [ ps.pyyaml ]);
     in
-    buildDartApplication.override { dart = flutter338; } (finalAttrs: {
+    buildDartApplication.override { dart = flutter344; } (finalAttrs: {
       pname = "meshcore-open";
-      version = "9.5.0+13";
+      version = "9.5.0+16";
 
       src = fetchFromGitHub {
         owner = "zjs81";
         repo = "meshcore-open";
-        rev = "PRE-BETA-9.5";
-        hash = "sha256-H2kraJIk9H4FHFQFXU1FLEdjwZpaN6C8lUq42/yE72I=";
+        rev = "PRE-BETA-9.5.1";
+        hash = "sha256-LbD2en3tolaDCr7ybGNJvNsBn7gS48oJQ38px+/WhoQ=";
       };
 
       pubspecLock = lib.importJSON ./pubspec.lock.json;
@@ -71,7 +81,7 @@ let
       sdkSourceBuilders = {
         flutter = mkFlutterSdkSourceBuilder {
           inherit runCommand;
-          flutter = flutter338;
+          flutter = flutter344;
         };
       };
 
@@ -127,7 +137,7 @@ let
         substituteInPlace lib/widgets/path_editor_sheet.dart \
           --replace-fail 'onReorderItem:' 'onReorder:'
 
-        setup_writable_flutter_sdk ${flutter338}
+        setup_writable_flutter_sdk ${flutter344}
         setup_pinned_gradlew ${gradle}/bin/gradle "-I ${./androidx-resolution.init.gradle} "
       '';
 
@@ -175,20 +185,32 @@ let
         PY
         )
 
+        # Newer Flutter plugins add a kotlin { compilerOptions } block without
+        # applying the Kotlin Android plugin. Apply it so the block compiles
+        # and Kotlin pigeon sources (e.g. url_launcher Messages.kt) are built.
+        while IFS= read -r plugin_gradle; do
+          [ -n "$plugin_gradle" ] || continue
+          case "$plugin_gradle" in
+            *example*) continue ;;
+          esac
+          if grep -qx 'kotlin {' "$plugin_gradle"; then
+            substituteInPlace "$plugin_gradle" \
+              --replace-fail 'id("com.android.library")' $'id("com.android.library")\n    id("org.jetbrains.kotlin.android")'
+          fi
+        done < <(find .dart-patched -path '*/android/build.gradle.kts' -print)
+
         # Vendor llamadart / litert native bundles so hook/build.dart does not
         # hit the network during the sandboxed Flutter build.
         while IFS= read -r package_dir; do
           [ -n "$package_dir" ] || continue
           work_package_dir="$(ensure_writable_dart_package "$package_dir")"
-          mkdir -p "$work_package_dir/third_party/bin/android/arm64"
+          mkdir -p "$work_package_dir/third_party/bin/android/arm64" "$work_package_dir/third_party/bin/android/x64"
           tar -xzf ${llamadartNativeAndroidArm64} -C "$work_package_dir/third_party/bin/android/arm64"
+          tar -xzf ${llamadartNativeAndroidX64} -C "$work_package_dir/third_party/bin/android/x64"
           substituteInPlace "$work_package_dir/hook/build.dart" \
             --replace-fail \
               "  final request = http.Request('GET', Uri.parse(url));" \
-              $'  await File(\'${llamadartNativeAndroidArm64}\').copy(destinationPath);\n  log.info(\'Saved vendored native bundle to $destinationPath\');\n  return;\n  final request = http.Request(\'GET\', Uri.parse(url));' \
-            --replace-fail \
-              "  final response = await http.get(Uri.parse(bundleSpec.releaseUrl));" \
-              $'  await destination.writeAsBytes(await File(\'${litertLMNativeAndroidArm64}\').readAsBytes());\n  return;\n  final response = await http.get(Uri.parse(bundleSpec.releaseUrl));'
+              $'  if (url.contains("llamadart-native-android-arm64")) { await File(\'${llamadartNativeAndroidArm64}\').copy(destination.path); return; } else if (url.contains("llamadart-native-android-x64")) { await File(\'${llamadartNativeAndroidX64}\').copy(destination.path); return; } else if (url.contains("litert-lm-native-runtime-android-arm64")) { await File(\'${litertLMNativeAndroidArm64}\').copy(destination.path); return; } else if (url.contains("litert-lm-native-runtime-android-x64")) { await File(\'${litertLMNativeAndroidX64}\').copy(destination.path); return; }\n  final request = http.Request(\'GET\', Uri.parse(url));'
         done < <(${python3}/bin/python3 - <<'PY'
         import json
         import urllib.parse
