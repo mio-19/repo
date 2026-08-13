@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk17_headless,
-  gradle_9_3_1,
+  gradle_9_4_1,
   stdenv,
   fetchFromGitHub,
 
@@ -21,17 +21,17 @@ let
         s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_3_1;
+      gradle = gradle_9_4_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "mpv-android";
-      version = "2026-04-25";
+      version = "2026-08-11";
 
       src = fetchFromGitHub {
         owner = "mpv-android";
         repo = "mpv-android";
         tag = finalAttrs.version;
-        hash = "sha256-rUxy4pda313JrU+G9m9Zn8Zn1nfKn35O8eASrcHoktU=";
+        hash = "sha256-kZ68Y0Dm99RtpACz625AOHjv4TcBIYvQGYJ+LjR+fLw=";
       };
 
       gradleBuildTask = ":app:assembleDefaultDebug";
@@ -63,7 +63,8 @@ let
         (fetchpatch {
           name = "YTDL support";
           url = "https://github.com/mpv-android/mpv-android/pull/58.diff";
-          hash = "sha256-1e/VhH1G59b9hgK6EV80DOUQStTlApAKsB6YspA1jPI=";
+          excludes = [ "app/build.gradle" ];
+          hash = "sha256-mBFEpMrIUS4OQvYDaUU8tIEswrglNAk60+k4m7FWoUw=";
         })
       ];
 
@@ -72,6 +73,10 @@ let
         cat > local.properties <<LOCALPROPS
         sdk.dir=${androidSdk}/share/android-sdk
         LOCALPROPS
+
+        substituteInPlace app/build.gradle \
+          --replace-fail "targetSdk 36" "targetSdk 28" \
+          --replace-fail 'isDefault true' 'isDefault true; applicationIdSuffix ".ytdl"'
       '';
 
       gradleFlags = [

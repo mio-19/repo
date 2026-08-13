@@ -9,7 +9,7 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   fetchpatch,
-  gradle_9_5_1,
+  gradle_9_6_1,
 }:
 let
   appPackage =
@@ -18,21 +18,21 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
-        s.build-tools-35-0-0
+        # AGP 9.x: do not include build-tools-35-0-0 (corrupts APKs).
         s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_5_1;
+      gradle = gradle_9_6_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "thunderbird-android";
-      version = "21.1";
+      version = "22.0";
 
       src = fetchFromGitHub {
         owner = "thunderbird";
         repo = "thunderbird-android";
-        tag = "THUNDERBIRD_21_1";
-        hash = "sha256-yOONpZr1Jcpn3+tJNZfOkb+UT2sxIwaZ7LuUzoyTZtA=";
+        tag = "THUNDERBIRD_22_0";
+        hash = "sha256-2KX5JX6k1QyND/k+shHAY+JSnejXLMTPvZ6bFFU83Y4=";
       };
 
       patches = [
@@ -95,7 +95,7 @@ let
       '';
 
       gradleFlags = [
-        "-xlintVitalRelease"
+        "-xlintVitalFossRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk25_headless}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
