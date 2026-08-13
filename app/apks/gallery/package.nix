@@ -9,12 +9,21 @@
   jdk21_headless,
   runCommand,
   fetchurl,
+  fetchFromGitHub,
   jq,
   writableTmpDirAsHomeHook,
-  sources,
   mergeLock,
 }:
 let
+  version = "1.0.18";
+
+  src = fetchFromGitHub {
+    owner = "google-ai-edge";
+    repo = "gallery";
+    tag = version;
+    hash = "sha256-oEpmcyCZpSnMLNWsimhnTexDz2gXXrHJbD+r/5QQ8X8=";
+  };
+
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
@@ -26,14 +35,13 @@ let
 
   gradle = gradle_9_2_1;
 
-  appVersionName = "1.0.18"; # kept in sync with appVersionName in upstream source code. remember to set upstreamAllowlist's hash to empty to get new hash when bumping version.
-  allowlistVersion = lib.replaceStrings [ "." ] [ "_" ] appVersionName;
+  # kept in sync with versionName in upstream source code. remember to set upstreamAllowlist's hash to empty to get new hash when bumping version.
+  allowlistVersion = lib.replaceStrings [ "." ] [ "_" ] version;
 
   upstreamAllowlist = fetchurl {
     # https://github.com/google-ai-edge/gallery/blob/ff16cf71ca75dcf83072bd69546051d10c85039f/Android/src/app/src/main/java/com/google/ai/edge/gallery/ui/modelmanager/ModelManagerViewModel.kt#L86
     # https://github.com/google-ai-edge/gallery/tree/main/model_allowlists
-    #url = "https://raw.githubusercontent.com/google-ai-edge/gallery/refs/heads/main/model_allowlists/${allowlistVersion}.json";
-    url = "https://raw.githubusercontent.com/google-ai-edge/gallery/refs/heads/main/model_allowlists/1_0_17.json"; # 1.0.18 not yet added
+    url = "https://raw.githubusercontent.com/google-ai-edge/gallery/refs/heads/main/model_allowlists/${allowlistVersion}.json";
     hash = "sha256-EMNpTi4RSvr8GsjKjVBJbGeYogf8f753q5nfGoU0kPk=";
   };
 
@@ -106,9 +114,7 @@ let
 
   appPackage = buildGradlePackage rec {
     pname = "gallery";
-    inherit gradle;
-    inherit (sources.google_gallery) src;
-    version = sources.google_gallery.date;
+    inherit version src gradle;
 
     sourceRoot = "${src.name}/Android/src";
 
@@ -170,7 +176,7 @@ let
       substituteInPlace app/build.gradle.kts \
         --replace-fail "REPLACE_WITH_YOUR_REDIRECT_SCHEME_IN_HUGGINGFACE_APP" "com.google.ai.edge.gallery.oauthredirect" \
         --replace-fail 'applicationId = "com.google.aiedge.gallery"' 'applicationId = "com.google.ai.edge.gallery"' \
-        --replace-fail 'versionName = "${appVersionName}"' 'versionName = "${appVersionName}"' # not actually replacing. this makes sure that appVersionName is kept in sync with the version in source code.
+        --replace-fail 'versionName = "${version}"' 'versionName = "${version}"' # not actually replacing. this makes sure that version is kept in sync with the version in source code.
       substituteInPlace app/src/main/java/com/google/ai/edge/gallery/common/ProjectConfig.kt \
         --replace-fail "REPLACE_WITH_YOUR_CLIENT_ID_IN_HUGGINGFACE_APP" "$(echo MWYwNTA3YzAtNWRiMi00MTc5LWFhYTEtYjVmZTRjNDhmYjU5Cg== | base64 -d | tr -d '\n')" \
         --replace-fail "REPLACE_WITH_YOUR_REDIRECT_URI_IN_HUGGINGFACE_APP" "com.google.ai.edge.gallery.oauthredirect://oauth_redirect"

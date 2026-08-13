@@ -1,4 +1,74 @@
 {
+  "com.google.android.datatransport:transport-backend-cct:3.1.0": {
+    "transport-backend-cct-3.1.0.aar": {
+      "url": "https://dl.google.com/dl/android/maven2/com/google/android/datatransport/transport-backend-cct/3.1.0/transport-backend-cct-3.1.0.aar",
+      "hash": "sha256-ybX1UCQVVUwcqFRZ5MyKGS56uEdBPleoqEFIFmBLWR0="
+    },
+    "transport-backend-cct-3.1.0.pom": {
+      "url": "https://dl.google.com/dl/android/maven2/com/google/android/datatransport/transport-backend-cct/3.1.0/transport-backend-cct-3.1.0.pom",
+      "hash": "sha256-vMNcNm840mms0R0TiV3YSJf7RKHRD+FbmiOJxHliZfU="
+    }
+  },
+  "com.google.android.datatransport:transport-runtime:3.1.0": {
+    "transport-runtime-3.1.0.aar": {
+      "url": "https://dl.google.com/dl/android/maven2/com/google/android/datatransport/transport-runtime/3.1.0/transport-runtime-3.1.0.aar",
+      "hash": "sha256-5ZJBrlDYetqgyt7yKPM2qqKwAT8IwkFuOKTDuT5vOYw="
+    },
+    "transport-runtime-3.1.0.pom": {
+      "url": "https://dl.google.com/dl/android/maven2/com/google/android/datatransport/transport-runtime/3.1.0/transport-runtime-3.1.0.pom",
+      "hash": "sha256-R5/zTKzue+AX3IFBZI/ohAUKcXSJHko3gwBjPlvDvFI="
+    }
+  },
+  "com.google.flogger:flogger:0.6": {
+    "flogger-0.6.jar": {
+      "url": "https://repo.maven.apache.org/maven2/com/google/flogger/flogger/0.6/flogger-0.6.jar",
+      "hash": "sha256-MUVmnbYMex1jtOH3E36hpd5uqRxRamjoz90leU2Bt8Q="
+    },
+    "flogger-0.6.pom": {
+      "url": "https://repo.maven.apache.org/maven2/com/google/flogger/flogger/0.6/flogger-0.6.pom",
+      "hash": "sha256-vw4oguIF74Kk/euEM33l65ZCRptiRXwFTvGqiURDx40="
+    }
+  },
+  "com.google.flogger:flogger-system-backend:0.6": {
+    "flogger-system-backend-0.6.jar": {
+      "url": "https://repo.maven.apache.org/maven2/com/google/flogger/flogger-system-backend/0.6/flogger-system-backend-0.6.jar",
+      "hash": "sha256-r3+fBJx59nlB4eR2N7IGNFlHiDmKoKq83bx68K899bE="
+    },
+    "flogger-system-backend-0.6.pom": {
+      "url": "https://repo.maven.apache.org/maven2/com/google/flogger/flogger-system-backend/0.6/flogger-system-backend-0.6.pom",
+      "hash": "sha256-hRaQXgzkT9D0bZGttH3FGlcNRwYGHNfF2pCjAZqN3Ew="
+    }
+  },
+  "com.google.guava:guava:27.0.1-android": {
+    "guava-27.0.1-android.jar": {
+      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/27.0.1-android/guava-27.0.1-android.jar",
+      "hash": "sha256-yvCVWu0poebRSfhc+2JaiRYbXPiODiRlUrf/o1ggTig="
+    },
+    "guava-27.0.1-android.pom": {
+      "url": "https://repo.maven.apache.org/maven2/com/google/guava/guava/27.0.1-android/guava-27.0.1-android.pom",
+      "hash": "sha256-7/Vpp/Oq3CPYluL9dznPpoFFGj+xE0LvoB2tnXiJzXU="
+    }
+  },
+  "com.google.mediapipe:tasks-core:1.0.0": {
+    "tasks-core-1.0.0.aar": {
+      "url": "https://dl.google.com/dl/android/maven2/com/google/mediapipe/tasks-core/1.0.0/tasks-core-1.0.0.aar",
+      "hash": "sha256-YJxvz+WfWMlzkZT2WuWIIoHDJ3EOGmFqp/UzpNkjjKM="
+    },
+    "tasks-core-1.0.0.pom": {
+      "url": "https://dl.google.com/dl/android/maven2/com/google/mediapipe/tasks-core/1.0.0/tasks-core-1.0.0.pom",
+      "hash": "sha256-A8+msDhCOEqXQOMGQ2cqjo0/WIrnPPVF6n/nrOQslbs="
+    }
+  },
+  "com.google.mediapipe:tasks-vision:1.0.0": {
+    "tasks-vision-1.0.0.aar": {
+      "url": "https://dl.google.com/dl/android/maven2/com/google/mediapipe/tasks-vision/1.0.0/tasks-vision-1.0.0.aar",
+      "hash": "sha256-U9RVaWSf9+nYRFfwcEgdu3ed3QV2cdStzZq8t3/xcsY="
+    },
+    "tasks-vision-1.0.0.pom": {
+      "url": "https://dl.google.com/dl/android/maven2/com/google/mediapipe/tasks-vision/1.0.0/tasks-vision-1.0.0.pom",
+      "hash": "sha256-K3fHkXV+EOhdlrvRpoaFdTKfbI6QVzDJ/bRNLXVZ6ZE="
+    }
+  },
   "com.google.protobuf:protoc:4.26.1": {
     "protoc-4.26.1-osx-aarch_64.exe": {
       "url": "https://repo.maven.apache.org/maven2/com/google/protobuf/protoc/4.26.1/protoc-4.26.1-osx-aarch_64.exe",
