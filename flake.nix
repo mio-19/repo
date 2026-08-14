@@ -166,11 +166,6 @@
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
             patches = [
-              (fetchpatch {
-                name = "fdroidserver: fix build, 2.4.3 -> 2.4.5";
-                url = "https://github.com/NixOS/nixpkgs/pull/548263.diff";
-                hash = "sha256-oARICQHIRDMsm4PSI8H4hIXdudNzkMrJJWOHJDPGOcw=";
-              })
               /*
                 # conflicts with https://github.com/NixOS/nixpkgs/pull/506356
                 (fetchpatch {
