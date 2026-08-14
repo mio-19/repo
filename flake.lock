@@ -402,6 +402,26 @@
         "type": "github"
       }
     },
+    "nurpkgs": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1786719786,
+        "narHash": "sha256-ypRnTYLKeOqJ8lgCGBEeLas1wE1UO8b6dIok4Tech68=",
+        "owner": "mio-19",
+        "repo": "nurpkgs",
+        "rev": "4a6fc25396bba55503e2492d17d8ef45b598970a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mio-19",
+        "repo": "nurpkgs",
+        "type": "github"
+      }
+    },
     "openwrt-imagebuilder": {
       "inputs": {
         "flake-parts": [
@@ -497,6 +517,7 @@
         "nixos-apple-silicon": "nixos-apple-silicon",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-python27": "nixpkgs-python27",
+        "nurpkgs": "nurpkgs",
         "openwrt-imagebuilder": "openwrt-imagebuilder",
         "robotnix": "robotnix",
         "squish-find-the-brains": "squish-find-the-brains",

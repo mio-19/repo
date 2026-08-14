@@ -76,6 +76,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
+    nurpkgs = {
+      url = "github:mio-19/nurpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -168,8 +172,8 @@
             patches = [
               (fetchpatch {
                 name = "fdroidserver: fix build, 2.4.3 -> 2.4.5";
-                url = "https://github.com/NixOS/nixpkgs/pull/548263.diff";
-                hash = "sha256-oARICQHIRDMsm4PSI8H4hIXdudNzkMrJJWOHJDPGOcw=";
+                url = "https://github.com/NixOS/nixpkgs/commit/f42d5a3ec6796814444e5af04b53ed4a78dcc9db.patch";
+                hash = "sha256-7/N/URn0gjiNPvPC1fLWknGut+SIaeg/ZktT/LhRvt4=";
               })
               /*
                 # conflicts with https://github.com/NixOS/nixpkgs/pull/506356

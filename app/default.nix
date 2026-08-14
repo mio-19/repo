@@ -74,6 +74,7 @@
           pkgsPatched
           libs
           squish-find-the-brains
+          inputs
           ;
         apktool-src = sources.morphe_apktool.src;
         multidexlib2-src = sources.morphe_multidexlib2.src;

@@ -118,6 +118,7 @@ let
     "lumo" # Gradle plugin and FSEvents stream error on darwin
     "lspatch-manager" # depends on lspatch
     "meshcore-open" # buildPhase fails mysteriously/killed on darwin
+    "uplink" # pkgsCross Android NDK rust + Flutter APK
     "mpvex" # Gradle fails to resolve foojay-resolver plugin on darwin
     "onlyoffice-documents" # misses Gradle plugin marker from deps.json on darwin
     "immich" # misses Gradle plugin marker from deps.json on darwin
