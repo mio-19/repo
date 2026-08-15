@@ -1,0 +1,15 @@
+--- a/core/prns/build.gradle.kts
++++ b/core/prns/build.gradle.kts
+@@ -79,12 +79,6 @@
+     )
+ }
+ 
+-tasks.configureEach {
+-    if (name == "preBuild") {
+-        dependsOn(buildPrnsNative)
+-    }
+-}
+-
+ dependencies {
+     // Upstream's JVM SDK, substituted from the included build inside the
+     // prns submodule (settings.gradle.kts). Its declared JNA is the desktop

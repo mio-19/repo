@@ -397,14 +397,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.87.16";
+      version = "5.87.26";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-GNNJ0pCQO7fguoFI0SHzCebstelvcgmjvnDQj3CMDio=";
+        hash = "sha256-c+fZEF/1rPobiMOxViuMfTdSz08aHcigmyaAjw3dqh8=";
       };
 
       patches = [
@@ -414,6 +414,7 @@ let
         ./skip-gradle-rdp-native-build.patch
         ./skip-gradle-rclone-native-build.patch
         ./skip-gradle-spice-native-build.patch
+        ./skip-gradle-prns-native-build.patch
       ];
 
       postPatch = ''
