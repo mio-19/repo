@@ -8,7 +8,7 @@
     android-nixpkgs = {
       #url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
-      url = "github:tadfisher/android-nixpkgs/2026-08-03-stable";
+      url = "github:tadfisher/android-nixpkgs/2026-08-09-stable";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
@@ -170,11 +170,6 @@
             src = inputs.nixpkgs;
             name = "nixpkgs-patched";
             patches = [
-              (fetchpatch {
-                name = "fdroidserver: fix build, 2.4.3 -> 2.4.5";
-                url = "https://github.com/NixOS/nixpkgs/commit/f42d5a3ec6796814444e5af04b53ed4a78dcc9db.patch";
-                hash = "sha256-7/N/URn0gjiNPvPC1fLWknGut+SIaeg/ZktT/LhRvt4=";
-              })
               /*
                 # conflicts with https://github.com/NixOS/nixpkgs/pull/506356
                 (fetchpatch {
