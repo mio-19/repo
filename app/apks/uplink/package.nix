@@ -146,6 +146,10 @@ let
       '';
 
       preBuild = ''
+        for d in android/app/src/main/res/mipmap-*/; do
+          cp assets/icon.png "$d/ic_launcher.png" || true
+        done
+
         . ${flutterApkHelpers}
 
         mkdir -p .bin
