@@ -43,15 +43,15 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "meditrak";
-      version = "0.17.10";
+      version = "0.17.11";
 
       src = fetchFromGitHub {
         owner = "AdamGuidarini";
         repo = "MediTrak";
         # Upstream tagged this release "vo.17.7" (letter o, a typo) instead of
         # "v0.17.7", so pin the literal tag rather than deriving it from version.
-        tag = "v0.17.10";
-        hash = "sha256-W/MCLtfrAqpgw87/SXjQ4v2T6xnAso57WbRM8im0ZOY=";
+        tag = "v0.17.11";
+        hash = "sha256-/qsdYaFtCAR+vwCawaueyjozxI+VFEcFIHiMawzvUI8=";
       };
 
       patches = [
@@ -70,8 +70,7 @@ let
         cp ${nlohmannJsonHeader} app/src/main/cpp/json/nlohmann/json.hpp
 
         substituteInPlace app/build.gradle \
-          --replace-fail "            version '3.22.1'" "            version '3.31.6'" \
-          --replace-fail "vendor.set(JvmVendorSpec.ADOPTIUM)" ""
+          --replace-fail "            version '3.22.1'" "            version '3.31.6'"
       '';
 
       gradleBuildTask = ":app:assembleRelease";

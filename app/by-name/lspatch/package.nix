@@ -9,8 +9,8 @@
   jre_headless,
   writableTmpDirAsHomeHook,
   runCommand,
-  fetchpatch,
-  gradle_8_13,
+  gradle_9,
+  git,
 }:
 let
   version = "0.8-unstable-20260330";
@@ -19,7 +19,9 @@ let
     s.cmdline-tools-latest
     s.platform-tools
     s.platforms-android-36
+    s.platforms-android-37-0
     s.build-tools-36-0-0
+    s.build-tools-37-0-0
     # Tried NDK 29.0.14206865 here, but LSPatch then failed in native x86
     # lsplant builds with duplicate SSE intrinsic definitions under Clang 21,
     # so this stays on the baseline NDK for now.
@@ -27,7 +29,7 @@ let
     s.cmake-3-31-6
   ]);
 
-  gradle = gradle_8_13;
+  gradle = gradle_9;
 
   common = stdenv.mkDerivation (finalAttrs: {
     pname = "lspatch";
@@ -36,20 +38,19 @@ let
     src = fetchFromGitHub {
       owner = "JingMatrix";
       repo = "LSPatch";
-      rev = "ae8b908305a348ec80f7900599c2dab30d56f901";
+      rev = "75e613a";
       fetchSubmodules = true;
-      hash = "sha256-pM2E5Rgjrj1/ajGeCghCsnTaeEErjx+ExjCRSfeFjCk=";
+      hash = "sha256-mpMczRKQCVyMvn/f39Uf5QCU6clN7wwPr6FksOb59f0=";
     };
 
     patches = [
       ./build-gradle-fixed-version.patch
-      ./build-gradle-disable-cxx-modules.patch
-      (fetchpatch {
-        name = "[translation] Update translation from Crowdin";
-        url = "https://github.com/JingMatrix/LSPatch/pull/57.patch";
-        hash = "sha256-GlnGFFudZvol13LFQ/T9vcVVA4Y3OpWGPc95rt0mjd8=";
-      })
     ];
+
+    postPatch = ''
+      substituteInPlace core/build.gradle.kts \
+        --replace-fail 'val androidCompileNdkVersion = "29.0.14206865"' 'val androidCompileNdkVersion = "29.0.13113456"'
+    '';
 
     gradleBuildTask = "buildRelease";
     gradleUpdateTask = finalAttrs.gradleBuildTask;
@@ -63,6 +64,7 @@ let
     };
 
     nativeBuildInputs = [
+      git
       gradle
       jdk21_headless
       writableTmpDirAsHomeHook
@@ -101,7 +103,7 @@ let
     installPhase = ''
       runHook preInstall
 
-      jar_path="$(echo out/release/jar-v*-release.jar | awk '{print $1}')"
+      jar_path="$(echo out/release/lspatch-v*-release.jar | awk '{print $1}')"
       apk_path="$(echo out/release/manager-v*-release.apk | awk '{print $1}')"
 
       install -Dm644 "$jar_path" "$out/lspatch.jar"

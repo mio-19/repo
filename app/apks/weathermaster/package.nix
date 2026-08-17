@@ -1,25 +1,25 @@
 {
   mk-apk-package,
   lib,
-  jdk21_headless,
+  jdk25_headless,
   stdenv,
   fetchFromGitHub,
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   gradle,
-  gradle_9_4_1,
+  gradle_9,
 }:
 let
   appPackage = stdenv.mkDerivation (finalAttrs: {
     pname = "weathermaster";
-    version = "3.8.0";
+    version = "3.9.1";
 
     src = fetchFromGitHub {
       owner = "PranshulGG";
       repo = "WeatherMaster";
       tag = "v${finalAttrs.version}";
-      hash = "sha256-P4EGMrOCyfWyJAco3b/zPpejtZSpTDl2+VZTU2AXqlI=";
+      hash = "sha256-/BfklIDADwoVLlgvEDhRUfv2YH2KD0Q2Y+GDYHDFxxA=";
     };
     patches = [ ];
 
@@ -55,14 +55,14 @@ let
     };
 
     nativeBuildInputs = [
-      gradle_9_4_1
-      jdk21_headless
+      gradle_9
+      jdk25_headless
 
       writableTmpDirAsHomeHook
     ];
 
     env = {
-      JAVA_HOME = jdk21_headless.passthru.home;
+      JAVA_HOME = jdk25_headless.passthru.home;
       ANDROID_HOME = "${finalAttrs.androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${finalAttrs.androidSdk}/share/android-sdk";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${finalAttrs.androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
@@ -94,7 +94,7 @@ let
       "-x"
       "checkReleaseAarMetadata"
       "-Dorg.gradle.java.installations.auto-download=false"
-      "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
+      "-Dorg.gradle.java.installations.paths=${jdk25_headless.passthru.home}"
       "-Dandroid.aapt2FromMavenOverride=${finalAttrs.androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
       "-Dorg.gradle.project.android.aapt2FromMavenOverride=${finalAttrs.androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
     ];
