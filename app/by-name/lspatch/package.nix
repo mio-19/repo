@@ -38,9 +38,9 @@ let
     src = fetchFromGitHub {
       owner = "JingMatrix";
       repo = "LSPatch";
-      rev = "75e613a";
+      rev = "945585d";
       fetchSubmodules = true;
-      hash = "sha256-mpMczRKQCVyMvn/f39Uf5QCU6clN7wwPr6FksOb59f0=";
+      hash = "sha256-6tcwMhMDbTSuQKxYKRRgX5kGnmsDbFpK7jhSnM+/4kQ=";
     };
 
     patches = [
