@@ -7,7 +7,7 @@
   stdenv,
   gradle-packages,
 }:
-if stdenv.isDarwin then
+if stdenv.hostPlatform.isDarwin then
   # darwin only: cannot build
   (gradle-packages.mkGradle {
     version = "8.14.4";

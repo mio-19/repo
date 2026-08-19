@@ -66,7 +66,7 @@ buildGradlePackage rec {
     pkg-config
     writableTmpDirAsHomeHook
   ]
-  ++ lib.optionals stdenv.isDarwin [
+  ++ lib.optionals stdenv.hostPlatform.isDarwin [
     darwin.system_cmds
   ];
 
@@ -151,7 +151,7 @@ buildGradlePackage rec {
     GOFLAGS = "-mod=vendor";
   };
 
-  preBuild = lib.optionalString stdenv.isDarwin ''
+  preBuild = lib.optionalString stdenv.hostPlatform.isDarwin ''
     export HOME="$TMPDIR/home"
     mkdir -p "$HOME"
     export ANDROID_USER_HOME="$HOME/.android"

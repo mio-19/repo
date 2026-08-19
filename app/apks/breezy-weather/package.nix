@@ -92,7 +92,7 @@ let
         echo "breezy.metie.key=$(echo ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6STFOaUo5LmV5SnBjM01pT2lKdFpYUXRhbmQwSWl3aWMzVmlJam94TENKcFlYUWlPakUxTWpnNE1USTJNRFVzSW1WNGNDSTZOemd6TmpBeE1qWXdOWDAuTVpTQkRrU1JHMnVXZ1hfVVZLX1BhMk9mdzFMeGpVczF6Sks3TnkwM3NCUQo= | base64 -d)" >> local.properties
       '';
 
-      preConfigure = lib.optionalString stdenv.isDarwin ''
+      preConfigure = lib.optionalString stdenv.hostPlatform.isDarwin ''
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
         echo "sdk.dir=${androidSdk}/share/android-sdk" >> local.properties

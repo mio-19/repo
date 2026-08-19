@@ -38,10 +38,10 @@
       fixNdkPython27 =
         pkg:
         pkg.overrideAttrs (old: {
-          buildInputs = (old.buildInputs or [ ]) ++ lib.optionals pkgs.stdenv.isLinux [ pkgs.python27 ];
+          buildInputs = (old.buildInputs or [ ]) ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.python27 ];
           preFixup =
             (old.preFixup or "")
-            + lib.optionalString pkgs.stdenv.isLinux ''
+            + lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''
               ln -sf ${pkgs.python27}/lib/libpython2.7.so.1.0 \
                 $out/toolchains/llvm/prebuilt/linux-x86_64/lib64/libpython2.7.so.1.0
             '';
@@ -57,10 +57,10 @@
             in
             map (
               pkg:
-              if pkgs.stdenv.isLinux && lib.isDerivation pkg && (pkg.pname or "") == "ndk-21-4-7075529" then
+              if pkgs.stdenv.hostPlatform.isLinux && lib.isDerivation pkg && (pkg.pname or "") == "ndk-21-4-7075529" then
                 fixNdkPython27 pkg
               else if
-                pkgs.stdenv.isLinux && lib.isDerivation pkg && lib.elem (pkg.pname or "") sourceBuiltNdkPnames
+                pkgs.stdenv.hostPlatform.isLinux && lib.isDerivation pkg && lib.elem (pkg.pname or "") sourceBuiltNdkPnames
               then
                 sourceBuiltNdkHelper.mkSourceBuiltNdk pkg
               else
@@ -109,7 +109,7 @@
           ;
         directory = ./by-name;
       };
-      darwinExcludedPackageNames = lib.optionals pkgs.stdenv.isDarwin [
+      darwinExcludedPackageNames = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
         "jdk8"
         "jdk11"
         "jdk17"

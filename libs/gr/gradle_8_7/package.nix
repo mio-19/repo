@@ -8,7 +8,7 @@
   gradle-packages,
   stdenv,
 }:
-if stdenv.isDarwin then
+if stdenv.hostPlatform.isDarwin then
   # no termurin-bin-* on darwin
   (gradle-packages.mkGradle {
     version = "8.7";

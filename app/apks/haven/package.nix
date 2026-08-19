@@ -514,7 +514,7 @@ let
         fi
       '';
 
-      preBuild = lib.optionalString stdenv.isDarwin ''
+      preBuild = lib.optionalString stdenv.hostPlatform.isDarwin ''
         # AGP writes SDK metadata under ~/.android; /var/empty is read-only on Darwin sandboxes.
         export ANDROID_USER_HOME="$HOME/.android"
         export GRADLE_USER_HOME="$HOME/.gradle"

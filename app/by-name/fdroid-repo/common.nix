@@ -152,7 +152,7 @@ let
 
   hasFdroidMetadata = app: (app ? meta) && (app.meta ? metadataYml) && (app.meta ? appId);
 
-  platformOk = name: stdenv.isLinux || !(builtins.elem name linuxOnlyApkNames);
+  platformOk = name: stdenv.hostPlatform.isLinux || !(builtins.elem name linuxOnlyApkNames);
 
   mkFdroidApkFilter =
     {
