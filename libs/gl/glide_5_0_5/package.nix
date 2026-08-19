@@ -91,7 +91,7 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir -p "$ANDROID_USER_HOME"
     echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
   ''
-  + lib.optionalString stdenv.isDarwin ''
+  + lib.optionalString stdenv.hostPlatform.isDarwin ''
     export MAVEN_OPTS="-Dmaven.repo.local=$HOME/.m2/repository"
     mkdir -p "$HOME/.m2/repository"
     echo "DEBUG: maven local repository: $HOME/.m2/repository"
@@ -107,7 +107,7 @@ stdenv.mkDerivation (finalAttrs: {
     runHook preInstall
 
     repoBase="${
-      if stdenv.isDarwin then "$HOME" else "$NIX_BUILD_TOP"
+      if stdenv.hostPlatform.isDarwin then "$HOME" else "$NIX_BUILD_TOP"
     }/.m2/repository/com/github/bumptech/glide"
     mkdir -p "$out"
     install -Dm644 "$repoBase/glide/${finalAttrs.version}/glide-${finalAttrs.version}.aar" "$out/glide-${finalAttrs.version}.aar"

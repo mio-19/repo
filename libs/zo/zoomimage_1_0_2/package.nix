@@ -90,7 +90,7 @@ buildGradlePackage rec {
     ":zoomimage-view-glide:publishToMavenLocal"
   ];
 
-  preBuild = lib.optionalString stdenv.isDarwin ''
+  preBuild = lib.optionalString stdenv.hostPlatform.isDarwin ''
     export ANDROID_USER_HOME="$HOME/.android"
     export GRADLE_USER_HOME="$HOME/.gradle"
     mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"
@@ -102,7 +102,7 @@ buildGradlePackage rec {
     runHook preInstall
 
     repoBase="${
-      if stdenv.isDarwin then "$HOME" else "$NIX_BUILD_TOP"
+      if stdenv.hostPlatform.isDarwin then "$HOME" else "$NIX_BUILD_TOP"
     }/.m2/repository/io/github/panpf/zoomimage"
     mkdir -p "$out"
     install -Dm644 "$repoBase/zoomimage-core-android/${version}/zoomimage-core-android-${version}.aar" "$out/zoomimage-core-android-${version}.aar"

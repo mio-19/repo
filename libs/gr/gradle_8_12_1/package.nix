@@ -6,7 +6,7 @@
   stdenv,
   gradle-packages,
 }:
-if stdenv.isDarwin then
+if stdenv.hostPlatform.isDarwin then
   # darwin only: w: Configure scripting: unable to process classpath entry /nix/var/nix/builds/nix-82557-795482488/tmp.yAOSnH1ntA/caches/8.12-rc-1/transforms/8b83ebbdc509908836b9875da2cd5e1c/transformed/original/kotlin-daemon-embeddable-2.0.21.jar: java.util.zip.ZipException: zip file is empty
   (gradle-packages.mkGradle {
     version = "8.12.1";

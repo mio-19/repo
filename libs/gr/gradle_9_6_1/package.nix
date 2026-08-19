@@ -7,7 +7,7 @@
   stdenv,
   gradle-packages,
 }:
-if stdenv.isDarwin then
+if stdenv.hostPlatform.isDarwin then
   (gradle-packages.mkGradle {
     version = "9.6.1";
     hash = "sha256-nA9/ruswbLFOQnmj4ITKa1lolAiaBjjmigfJRaMsnhQ=";

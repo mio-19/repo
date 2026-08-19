@@ -292,7 +292,7 @@
                 apk_meditrak
                 apk_sunup
               ]
-              ++ lib.optionals stdenv.isLinux [
+              ++ lib.optionals stdenv.hostPlatform.isLinux [
                 apk_nix-on-droid
               ];
           };
