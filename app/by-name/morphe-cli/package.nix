@@ -42,13 +42,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-cli";
-  version = "1.13.1";
+  version = "1.13.2";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-cli";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-DfS1W4rT8zP6qQmPdSsyowbuK2eSTM9/VZoHsBLwqM8=";
+    hash = "sha256-8QHaEvZNJ8n+1hHPUkTqhj4K9jEA99y0le9H3mIVi7o=";
   };
 
   gradleBuildTask = "shadowJar";
