@@ -1,20 +1,18 @@
-diff --git a/settings.gradle.kts b/settings.gradle.kts
-index f32ada4..20362f3 100644
---- a/settings.gradle.kts
-+++ b/settings.gradle.kts
-@@ -33,7 +33,6 @@ pluginManagement {
+--- orig/settings.gradle.kts	2026-08-22 15:12:26.104063597 +1000
++++ patched/settings.gradle.kts	2026-08-22 15:12:32.183043406 +1000
+@@ -34,8 +34,6 @@
  
  plugins {
-     id("com.gradle.develocity") version "4.5.0"
+     // Develocity + CCUD + build cache; shared with build-logic, versions from the catalog.
+-    id("meshtastic.develocity")
 -    id("org.gradle.toolchains.foojay-resolver") version "1.0.0"
-     id("org.meshtastic.flatpak.sources.settings") version "0.1.5"
- }
+     // 0.1.7 fixed the Isolated Projects incompatibility (shares state via a BuildService instead of
+     // gradle.extensions) that previously required gating this behind an opt-in property.
+     id("org.meshtastic.flatpak.sources.settings") version "0.1.7"
+@@ -76,15 +74,6 @@
  
-@@ -87,16 +86,6 @@ develocity {
-     }
- }
  
--@Suppress("UnstableApiUsage")
+ @Suppress("UnstableApiUsage")
 -toolchainManagement {
 -    jvm {
 -        javaRepositories {

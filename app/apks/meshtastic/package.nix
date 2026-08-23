@@ -26,13 +26,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "meshtastic";
-      version = "2.8.0";
+      version = "2.8.1";
 
       src = fetchFromGitHub {
         owner = "meshtastic";
         repo = "Meshtastic-Android";
         rev = "v${finalAttrs.version}";
-        hash = "sha256-wujTTZEtqOlDSQpCxoXXwurclfhKt+rPxVnsXqnTGlw=";
+        hash = "sha256-t0z69+JTse2KOxBiMGvBQVeh9j4fHlubZkFJoRYGBWY=";
         fetchSubmodules = true;
       };
 
@@ -43,7 +43,6 @@ let
         ./remove-foojay.patch
         # Remove develocity build-scan plugin (not needed for building,
         # and causes class-load errors with Gradle 9.3.1)
-        ./remove-develocity.patch
         # Remove desktopApp vendor requirement
         ./remove-desktopApp-vendor.patch
         # Remove firebase plugin declarations (unneeded for fdroid flavor)
@@ -54,15 +53,8 @@ let
         ./remove-firebase-analytics-plugin.patch
       ];
 
-      postPatch = ''
-        substituteInPlace gradle/libs.versions.toml \
-          --replace-fail 'meshtastic-protobufs = "2.7.26.138-g26db1b5-SNAPSHOT"' 'meshtastic-protobufs = "2.7.26"'
-        substituteInPlace settings.gradle.kts \
-          --replace-fail 'mavenContent { snapshotsOnly() }' ""
-      '';
-
       gradleBuildTask = ":androidApp:assembleFdroidRelease";
-      gradleUpdateTask = "${finalAttrs.gradleBuildTask} --refresh-dependencies :core:model:dependencies :androidApp:dependencies";
+      gradleUpdateTask = finalAttrs.gradleBuildTask;
 
       # Lock refresh steps:
       # 1. If Meshtastic bumps Gradle, update `gradle.version` and `gradle.hash`.
@@ -102,6 +94,49 @@ let
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+
+        # gradle.fetchDeps writes invalid Maven snapshot metadata for this
+        # hyphenated snapshot version. Provide a normalized local repository
+        # before Gradle resolves the KMP published variants.
+        cacheRoot="${finalAttrs.mitmCache}/https/central.sonatype.com/repository/maven-snapshots/org/meshtastic"
+        repoRoot="offline-repository/org/meshtastic"
+        for artifact in protobufs protobufs-android protobufs-jvm protobufs-iosarm64 protobufs-iossimulatorarm64; do
+          srcDir="$cacheRoot/$artifact/2.7.26.151-gef0ae57-SNAPSHOT"
+          dstDir="$repoRoot/$artifact/2.7.26.151-gef0ae57-SNAPSHOT"
+          if [ ! -d "$srcDir" ]; then
+            continue
+          fi
+
+          mkdir -p "$dstDir"
+          for file in "$srcDir"/*; do
+            target="$dstDir/$(basename "$file")"
+            if [ ! -e "$target" ]; then
+              ln -s "$(readlink -f "$file")" "$target"
+            fi
+          done
+
+          metadata="$dstDir/maven-metadata.xml"
+          if [ -e "$srcDir/maven-metadata.xml" ]; then
+            if [ -e "$metadata" ]; then
+              mv "$metadata" "$metadata.orig"
+            fi
+            cp "$(readlink -f "$srcDir/maven-metadata.xml")" "$metadata"
+            chmod u+w "$metadata"
+            substituteInPlace "$metadata" \
+              --replace-fail '<timestamp>gef0ae57</timestamp>' '<timestamp>20260819.194522</timestamp>' \
+              --replace-fail '<buildNumber>20260819.194522</buildNumber>' '<buildNumber>1</buildNumber>' \
+              --replace-fail '<classifier>1</classifier>' "" \
+              --replace-fail '<updated>gef0ae57</updated>' '<updated>20260819194522</updated>'
+          fi
+
+          for ext in module pom aar jar; do
+            timestamped="$dstDir/$artifact-2.7.26.151-gef0ae57-20260819.194522-1.$ext"
+            snapshot="$dstDir/$artifact-2.7.26.151-gef0ae57-SNAPSHOT.$ext"
+            if [ -e "$timestamped" ] && [ ! -e "$snapshot" ]; then
+              ln -s "$(basename "$timestamped")" "$snapshot"
+            fi
+          done
+        done
       '';
 
       gradleFlags = [
@@ -120,7 +155,16 @@ let
 
       installPhase = ''
         runHook preInstall
-        apk_path="androidApp/build/outputs/apk/fdroid/release/androidApp-fdroid-universal-release.apk"
+        apk_dir="androidApp/build/outputs/apk/fdroid/release"
+        apk_path="$(find "$apk_dir" -maxdepth 1 -type f -name '*universal*.apk' | sort | head -n1)"
+        if [ -z "$apk_path" ]; then
+          apk_path="$(find "$apk_dir" -maxdepth 1 -type f -name '*.apk' | sort | head -n1)"
+        fi
+        if [ -z "$apk_path" ]; then
+          echo "No APK found in $apk_dir" >&2
+          find "$apk_dir" -maxdepth 1 -print >&2
+          exit 1
+        fi
         install -Dm644 "$apk_path" "$out/meshtastic.apk"
         runHook postInstall
       '';
