@@ -10,7 +10,7 @@
   androidSdkBuilder,
   apktool-src,
   multidexlib2-src,
-  morphe-patcher-src_1_8_0_dev_3,
+
   morphe-library-m2_1_4_0,
 }:
 let
@@ -24,6 +24,13 @@ let
   ]);
 
   gradle = gradle_9_5_1;
+
+  morphe-patcher-src = fetchFromGitHub {
+    owner = "MorpheApp";
+    repo = "morphe-patcher";
+    rev = "v1.11.0";
+    hash = "sha256-i6C1/T3NCqf9H2pmNrooM2sHj2gQOVIOw35FvfVRWvA=";
+  };
 
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
@@ -42,13 +49,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-cli";
-  version = "1.13.2";
+  version = "1.14.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-cli";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-8QHaEvZNJ8n+1hHPUkTqhj4K9jEA99y0le9H3mIVi7o=";
+    hash = "sha256-7apiSIJJ/Cf+mPs/EjUP4rR6rJh9E5etyRzDTp4HrnQ=";
   };
 
   gradleBuildTask = "shadowJar";
@@ -85,7 +92,7 @@ stdenv.mkDerivation (finalAttrs: {
     root="$PWD"
 
     # Copy dependency sources as writable sibling directories.
-    cp -a ${morphe-patcher-src_1_8_0_dev_3} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
 
     cp -a ${arsclib-src} "$root/ARSCLib"

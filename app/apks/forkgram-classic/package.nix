@@ -3,6 +3,9 @@
   cmake,
   darwin,
   fetchFromGitHub,
+  git,
+  path,
+  rustPlatform,
   go,
   overrides-fromsrc,
   buildGradlePackage,
@@ -23,6 +26,16 @@
 }:
 
 let
+  version = "12.10.2.0";
+
+  src = fetchFromGitHub {
+    owner = "forkgram";
+    repo = "forkgram-classic";
+    tag = version;
+    hash = "sha256-Z1DGZRt/Og/KsQssZEjPjFH6VhCum52K7hcZHdGIoBQ=";
+    fetchSubmodules = true;
+  };
+
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
@@ -30,20 +43,106 @@ let
     s.build-tools-35-0-0
     s.ndk-27-2-12479018
   ]);
+
+  androidCrossConfig = {
+    config.allowUnfree = true;
+    localSystem = stdenv.buildPlatform.system;
+  };
+
+  mkAndroidPkgs =
+    {
+      config,
+      rustTarget,
+    }:
+    import path (
+      androidCrossConfig
+      // {
+        crossSystem = {
+          inherit config;
+          androidSdkVersion = "35";
+          androidNdkVersion = "29";
+          useAndroidPrebuilt = true;
+          rust.rustcTarget = rustTarget;
+        };
+      }
+    );
+
+  aarch64AndroidPkgs = mkAndroidPkgs {
+    config = "aarch64-unknown-linux-android";
+    rustTarget = "aarch64-linux-android";
+  };
+
+  armv7AndroidPkgs = mkAndroidPkgs {
+    config = "armv7a-unknown-linux-androideabi";
+    rustTarget = "armv7-linux-androideabi";
+  };
+
+  tlottieCargoDeps = rustPlatform.fetchCargoVendor {
+    pname = "forkgram-tlottie";
+    inherit version src;
+    cargoRoot = "TMessagesProj/jni/tlottie";
+    hash = "sha256-XPagRmugqmrCYKVFvvOfGZ7Ew3qcpQizENcztbKQ1Zs=";
+  };
+
+  mkTlottieArchive =
+    {
+      abi,
+      crossPkgs,
+      rustTarget,
+    }:
+    crossPkgs.rustPlatform.buildRustPackage {
+      pname = "forkgram-tlottie-${abi}";
+      inherit version src;
+
+      sourceRoot = "${src.name}/TMessagesProj/jni/tlottie";
+      cargoDeps = tlottieCargoDeps;
+      CARGO_BUILD_TARGET = rustTarget;
+      doCheck = false;
+
+      buildPhase = ''
+        runHook preBuild
+        cargo rustc \
+          --profile release-nostd \
+          --target ${rustTarget} \
+          --lib \
+          --no-default-features \
+          --features cpu,no-std,c-api \
+          --crate-type staticlib
+        runHook postBuild
+      '';
+
+      installPhase = ''
+        runHook preInstall
+        install -Dm644 target/${rustTarget}/release-nostd/libtlottie.a \
+          "$out/${abi}/libtlottie.a"
+        runHook postInstall
+      '';
+    };
+
+  tlottieArm64 = mkTlottieArchive {
+    abi = "arm64-v8a";
+    crossPkgs = aarch64AndroidPkgs;
+    rustTarget = "aarch64-linux-android";
+  };
+
+  tlottieArmv7 = mkTlottieArchive {
+    abi = "armeabi-v7a";
+    crossPkgs = armv7AndroidPkgs;
+    rustTarget = "armv7-linux-androideabi";
+  };
 in
 buildGradlePackage rec {
   pname = "forkgram-classic";
-  version = "12.9.17.0";
-
-  gradle = gradle_8_14_4;
-
+  version = "12.10.2.0";
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-4oFT2ffoG44hxDDgJSirHfR9pLUK89wD2K042+t+JXw=";
+    hash = "sha256-Z1DGZRt/Og/KsQssZEjPjFH6VhCum52K7hcZHdGIoBQ=";
     fetchSubmodules = true;
   };
+
+  gradle = gradle_8_14_4;
 
   lockFile = ./gradle.lock;
 
@@ -77,7 +176,19 @@ buildGradlePackage rec {
   ];
 
   postPatch = ''
+
+        find . -name "build.gradle" -type f -exec sed -i 's/androidx.annotation:annotation:/androidx.annotation:annotation-jvm:/g' {} +
         patchShebangs TMessagesProj/jni/
+
+        substituteInPlace TMessagesProj/jni/prepare.py \
+          --replace-quiet "git checkout -- tlottie_lib" "" \
+          --replace-quiet './tlottie_lib/build.sh' 'test -f tlottie_lib/arm64-v8a/libtlottie.a && test -f tlottie_lib/armeabi-v7a/libtlottie.a'
+
+        install -Dm644 ${tlottieArm64}/arm64-v8a/libtlottie.a \
+          TMessagesProj/jni/tlottie_lib/arm64-v8a/libtlottie.a
+        install -Dm644 ${tlottieArmv7}/armeabi-v7a/libtlottie.a \
+          TMessagesProj/jni/tlottie_lib/armeabi-v7a/libtlottie.a
+
 
         substituteInPlace TMessagesProj/jni/prepare.py \
           --replace-fail "return 'rm -rf ' + folder" "return 'true'" \

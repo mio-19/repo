@@ -6,12 +6,12 @@
   jdk21_headless,
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
-  morphe-patches-gradle-plugin_1_3_3,
+  morphe-patches-gradle-plugin_1_3_4,
   morphe-library-m2,
-  morphe-patches-library-m2_1_6_0_dev_2,
+  morphe-patches-library-m2_1_6_2,
   apktool-src,
   multidexlib2-src,
-  morphe-patcher-src_1_7_0,
+
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -28,6 +28,13 @@ let
 
   gradle = gradle_9_3_1;
 
+  morphe-patcher-src = fetchFromGitHub {
+    owner = "MorpheApp";
+    repo = "morphe-patcher";
+    rev = "v1.10.0";
+    hash = "sha256-LG7dbu0g6qYJTattah5clmfVtHQ6w92Hh5DgXbBHIoA=";
+  };
+
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "ARSCLib";
@@ -38,13 +45,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches";
-  version = "1.39.1";
+  version = "1.40.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-ahz2iO9Zb+uiXhOvvuH9sXoSOON7CoLgoKHIxzUZ0jo=";
+    hash = "sha256-iMpZpwXegI3htin+b1KWnLocL9DC0mbHfk7T+HVcpes=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -69,14 +76,14 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
-    MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_3}";
+    MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_4}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
-    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_6_0_dev_2}";
+    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_6_2}";
   };
 
   postUnpack = ''
     root="$PWD"
-    cp -a ${morphe-patcher-src_1_7_0} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
     cp -a ${arsclib-src} "$root/ARSCLib"
     chmod -R u+w "$root/ARSCLib"
