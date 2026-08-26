@@ -10,16 +10,16 @@ let
   appPackage =
     let
       youtubeMusicApk = fetchurl {
-        name = "YouTube+Music_9.28.51_APKPure.apk";
-        url = "https://files.catbox.moe/pjb1do.apk";
-        hash = "sha256-rCXarswj14Jb2heEKivfEEN9y5+F5sF/kKL0qGspRGg=";
+        name = "YouTube+Music_9.31.51_APKPure.apk";
+        url = "https://web.archive.org/web/20260826153421if_/https://data.winudf.com/APK/Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpY185MzE1MTI0MF84ODM2MTRhOQ?_p=Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpYw%3D%3D&download_id=1242004326266762&filename=YouTube+Music_9.31.51_APKPure.apk&full_size=70342349&is_hot=true&k=7e7d3aa772664f1700b00c3d4802f5d66a91aa5b&package_name=com.google.android.apps.youtube.music&source=web&token=1787758427-7cbded102f-0-dd16cb7a62759d10bc9c4291e73df892";
+        hash = "sha256-B8yYLWsTR2OuCY+dljmeYmFm5TishWbV2vqUbk4Wu+g=";
       };
 
       morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
     in
     stdenv.mkDerivation {
       pname = "youtube-music-morphe";
-      version = "9.25.50-patches-${morphe-patches.version}";
+      version = "9.31.51-patches-${morphe-patches.version}";
 
       dontUnpack = true;
 
