@@ -12,7 +12,7 @@ let
       youtubeMusicApk = fetchurl {
         name = "YouTube+Music_9.31.51_APKPure.apk";
         url = "https://web.archive.org/web/20260826153421if_/https://data.winudf.com/APK/Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpY185MzE1MTI0MF84ODM2MTRhOQ?_p=Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpYw%3D%3D&download_id=1242004326266762&filename=YouTube+Music_9.31.51_APKPure.apk&full_size=70342349&is_hot=true&k=7e7d3aa772664f1700b00c3d4802f5d66a91aa5b&package_name=com.google.android.apps.youtube.music&source=web&token=1787758427-7cbded102f-0-dd16cb7a62759d10bc9c4291e73df892";
-        hash = "sha256-ajDMdTJRBwL0IqC2BDYz5JG0IoxjMAF3dVBpYAtKg88=";
+        hash = "sha256-B8yYLWsTR2OuCY+dljmeYmFm5TishWbV2vqUbk4Wu+g=";
       };
 
       morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
