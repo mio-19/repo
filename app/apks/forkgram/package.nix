@@ -26,21 +26,21 @@
 }:
 
 let
-  version = "12.9.7.0";
+  version = "12.10.1.0";
 
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "TelegramAndroid";
     rev = version;
-    hash = "sha256-3sPvwZm3w7k7IdvoEa6lRT1Bl98a2YMf9GnwB6VpX1Q=";
+    hash = "sha256-lFXr3egHPn8s9Obep07oQPUFlVuFRsFaq0BhCRSCV9Y=";
     fetchSubmodules = true;
   };
 
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
-    s.platforms-android-35
-    s.build-tools-35-0-0
+    s.platforms-android-36
+    s.build-tools-36-0-0
     s.ndk-27-2-12479018
   ]);
 
@@ -173,6 +173,8 @@ buildGradlePackage rec {
   ];
 
   postPatch = ''
+
+        find . -name "build.gradle" -type f -exec sed -i 's/androidx.annotation:annotation:/androidx.annotation:annotation-jvm:/g' {} +
         patchShebangs TMessagesProj/jni/
 
         substituteInPlace TMessagesProj/jni/prepare.py \
@@ -183,14 +185,14 @@ buildGradlePackage rec {
           --replace-quiet "git reset HEAD tde2e/ && git checkout -- tde2e/" "" \
           --replace-quiet "cd tde2e_source && git reset --hard HEAD && cd .." "" \
           --replace-quiet "git checkout -- ffmpeg" "" \
-          --replace-quiet "git checkout -- tlottie_lib" ""
+          --replace-quiet "git checkout -- prebuild" ""
 
         install -Dm644 ${tlottieArm64}/arm64-v8a/libtlottie.a \
-          TMessagesProj/jni/tlottie_lib/arm64-v8a/libtlottie.a
+          TMessagesProj/jni/prebuild/arm64-v8a/libtlottie.a
         install -Dm644 ${tlottieArmv7}/armeabi-v7a/libtlottie.a \
-          TMessagesProj/jni/tlottie_lib/armeabi-v7a/libtlottie.a
+          TMessagesProj/jni/prebuild/armeabi-v7a/libtlottie.a
         substituteInPlace TMessagesProj/jni/prepare.py \
-          --replace-fail './tlottie_lib/build.sh' 'test -f tlottie_lib/arm64-v8a/libtlottie.a && test -f tlottie_lib/armeabi-v7a/libtlottie.a'
+          --replace-quiet './prebuild/build_tlottie.sh' 'test -f prebuild/arm64-v8a/libtlottie.a && test -f prebuild/armeabi-v7a/libtlottie.a'
 
         substituteInPlace TMessagesProj/jni/CMakeLists.txt \
           --replace-fail 'set(CMAKE_C_FLAGS "''${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections -fvisibility=hidden -flto=full")' 'set(CMAKE_C_FLAGS "''${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections -fvisibility=hidden")' \
@@ -218,7 +220,7 @@ buildGradlePackage rec {
 
         echo "cmake.dir=${cmake}" >> local.properties
         echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/27.2.12479018" >> local.properties
-        echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2" >> gradle.properties
+        echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2" >> gradle.properties
 
         substituteInPlace TMessagesProj/jni/tde2e/build-tdlib.sh \
           --replace-fail 'ANDROID_NDK_VERSION=''${2:-23.2.8568313}' 'ANDROID_NDK_VERSION=''${2:-27.2.12479018}' \

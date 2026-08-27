@@ -1,0 +1,17 @@
+--- SettingsPlugin.kt
++++ SettingsPlugin.kt
+@@ -42,13 +42,7 @@
+             maven { repository -> repository.url = URI("https://jitpack.io") }
+             maven { repository ->
+                 // A repository must be specified. "registry" is a dummy.
+-                repository.url = URI("https://maven.pkg.github.com/MorpheApp/registry")
+-                repository.credentials {
+-                    it.username = providers.gradleProperty("gpr.user")
+-                        .orElse(System.getenv("GITHUB_ACTOR")).get()
+-                    it.password = providers.gradleProperty("gpr.key")
+-                        .orElse(System.getenv("GITHUB_TOKEN")).get()
+-                }
++                repository.url = URI("file://" + System.getenv("MORPHE_PLUGIN_M2"))
+             }
+         }
+     }

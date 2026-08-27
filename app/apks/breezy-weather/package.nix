@@ -3,14 +3,14 @@
   lib,
   # https://github.com/breezy-weather/breezy-weather/blob/c342320fe7c1a9f5f80869e2bc25f299cffba1a4/.github/.java-version
   jdk21_headless,
-  gradle_9_4_1,
+  gradle_9_5_0,
   stdenv,
   fetchFromGitHub,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
 let
-  version = "6.2.1";
+  version = "6.2.2";
   rev = "v${version}";
   gradleFlavor = "Basic";
   releaseFlavor = "standard";
@@ -27,7 +27,7 @@ let
       ]);
 
       # https://github.com/breezy-weather/breezy-weather/blob/c342320fe7c1a9f5f80869e2bc25f299cffba1a4/gradle/wrapper/gradle-wrapper.properties
-      gradle = gradle_9_4_1;
+      gradle = gradle_9_5_0;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "breezy-weather";
@@ -37,7 +37,7 @@ let
         owner = "breezy-weather";
         repo = "breezy-weather";
         inherit rev;
-        hash = "sha256-inNZ5ViyrIQ5QLLe4mjTlttXDJmSrSY3M5gCRluJkwg=";
+        hash = "sha256-aNL5ffKhVlMAJdB4/mKPQSdFGQnkaQR7knnjRYQFUBk=";
       };
 
       patches = [
@@ -46,7 +46,7 @@ let
 
       # Upstream's user-facing Standard release is the internal Gradle "basic" flavor.
       gradleBuildTask = ":app:assemble${gradleFlavor}Release";
-      gradleUpdateTask = finalAttrs.gradleBuildTask;
+      gradleUpdateTask = "dependencies ${finalAttrs.gradleBuildTask}";
 
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
@@ -70,6 +70,7 @@ let
       };
 
       postPatch = ''
+        substituteInPlace gradle/wrapper/gradle-wrapper.properties --replace-fail "gradle-9.4.1" "gradle-9.5.0" || true
         substituteInPlace buildSrc/src/main/kotlin/breezy/buildlogic/Commands.kt \
           --replace-fail 'return runCommand("git rev-list --count HEAD")' 'return "60127"' \
           --replace-fail 'return runCommand("git rev-parse --short=8 HEAD")' 'return "${lib.substring 0 8 rev}"'

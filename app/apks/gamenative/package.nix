@@ -12,7 +12,15 @@
 let
   appPackage =
     let
+
+      javasteamSrc = fetchFromGitHub {
+        owner = "joshuatam";
+        repo = "JavaSteam";
+        rev = "433f2ad15c36d5e690a4fe77401ec3f6b960641e";
+        hash = "sha256-ciH6F0wO2P1Vypf4d5fpo4qTl1IybwzwEGJZAmswVeQ=";
+      };
       androidSdk = androidSdkBuilder (s: [
+
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-35
@@ -25,13 +33,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gamenative";
-      version = "1.1.1";
+      version = "1.2.0";
 
       src = fetchFromGitHub {
         owner = "utkarshdalal";
         repo = "GameNative";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-oN5GSO3SK0GHNRqOfv4y57+pesYR7KwaTr5ZAaHWYOY=";
+        hash = "sha256-r8WirYCto07qKT6X2x1hBhabBqv7b0qwxc7cM+ebbOY=";
       };
 
       patches = [
@@ -73,6 +81,10 @@ let
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+
+        cp -r ${javasteamSrc} JavaSteam
+        chmod -R +w JavaSteam
+        sed -i '1iincludeBuild("JavaSteam")' settings.gradle.kts
       '';
 
       gradleFlags = [

@@ -27,17 +27,17 @@ let
       versionCode = "310050029";
       androidAbi = "arm64-v8a";
       minSdk = "29";
-      internalVersion = "31.0.91";
+      internalVersion = "31.1";
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "emacs";
-      version = "31.0.91";
+      version = "31.1";
 
       src = fetchFromGitHub {
         owner = "emacs-mirror";
         repo = "emacs";
-        tag = "emacs-31.0.91";
-        hash = "sha256-3nvCiLiEtII1C57CLfDIbVqhiwadYViF9Nv32yDtLIQ=";
+        tag = "emacs-31.1";
+        hash = "sha256-lFT5Vt49G17t/fRm5yppO5p9ui10I9JNJVaGO1GPZFI=";
       };
 
       nativeBuildInputs = [
