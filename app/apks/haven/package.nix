@@ -87,7 +87,7 @@ let
         pname = "haven-rdp-transport-jni-libs";
         inherit (finalAttrs0) version src;
         cargoRoot = "rdp-kotlin/rust";
-        hash = "sha256-2Y6JhoY4jxaRClkp9pKh6iJojm9nre08VJ31PgLmbhc=";
+        hash = "sha256-81QSFJv14AkIumrlv3KB0h1BQRjzApEw6kzkV7T8d/k=";
       };
 
       mkRdpTransportJniLib =
@@ -211,7 +211,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-WoRAyUBRYQisyTDte9n4d0TSb4uDiWzMgYPU1t2sq4s=";
+        outputHash = "sha256-Kxbl1bmII2zY33pzf+9ewhnx2rDr3avuh5cXUizI9I0=";
         dontConfigure = true;
         dontFixup = true;
 
@@ -223,6 +223,9 @@ let
           export GOPATH="$TMPDIR/go"
           export GOCACHE="$TMPDIR/go-build-cache"
           export GOMODCACHE="$TMPDIR/go-mod-cache"
+          # Allow downloading go1.26.6 toolchain into the module cache (nix go is 1.26.5;
+          # upstream go.mod / tailscale require >= 1.26.6).
+          export GOTOOLCHAIN=auto
           export GOPROXY=https://proxy.golang.org,direct
           export GOSUMDB=sum.golang.org
 
@@ -288,6 +291,11 @@ let
           mkdir -p "$GOBIN"
           export PATH="$GOBIN:$PATH"
 
+          # Upstream/tailscale need go >= 1.26.6; nixpkgs go_1_26 is 1.26.5.
+          # Use the toolchain downloaded into the module cache during the FOD fetch.
+          export GOROOT="$GOMODCACHE/golang.org/toolchain@v0.0.1-go1.26.6.linux-amd64"
+          export PATH="$GOROOT/bin:$PATH"
+          export GOTOOLCHAIN=local
           export GOPROXY=off
           export GOSUMDB=off
         '';
@@ -397,14 +405,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.87.61";
+      version = "5.87.63";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-bxH558cPRehXicXm9gUew+JSGFssMFMKQfvybpeWRYw=";
+        hash = "sha256-fjlaX2yExB1Iaqsj02TSdvjnILRgtNJT69FTEbR9xMc=";
       };
 
       patches = [
