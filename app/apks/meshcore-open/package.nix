@@ -95,7 +95,7 @@ let
         useBwrap = false;
       };
 
-      gradleUpdateTask = "--init-script ${./androidx-resolution.init.gradle} :app:assembleRelease :flserial:extractReleaseAnnotations";
+      gradleUpdateTask = ":app:assembleRelease :flserial:extractReleaseAnnotations";
 
       dontDartBuild = true;
       dontDartInstall = true;
@@ -138,7 +138,7 @@ let
           --replace-fail 'onReorderItem:' 'onReorder:'
 
         setup_writable_flutter_sdk ${flutter344}
-        setup_pinned_gradlew ${gradle}/bin/gradle "-I ${./androidx-resolution.init.gradle} "
+        setup_pinned_gradlew ${gradle}/bin/gradle
       '';
 
       preConfigure = ''
