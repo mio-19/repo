@@ -52,6 +52,10 @@ let
         runHook postInstall
       '';
 
+      passthru = {
+        inherit youtubeMusicApk morphePatches;
+      };
+
       meta = with lib; {
         description = "Patched YouTube Music APK built with Morphe patches";
         homepage = "https://github.com/MorpheApp/morphe-patches";
