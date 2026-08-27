@@ -65,6 +65,15 @@ appPackage.overrideAttrs (
 
       disableGradleLintTasks
     '';
+
+    # Darwin: mitm-cache needs loopback (nixpkgs gradle docs) and preferIPv4Stack
+    # so Java dual-stack ::ffff:127.0.0.1 is not treated as non-localhost
+    # (see NixOS/nix#11270 discussion).
+    darwinGradleMitmHook = ''
+      if [[ "$(uname -s)" = Darwin ]]; then
+        export GRADLE_OPTS="''${GRADLE_OPTS:-} -Djava.net.preferIPv4Stack=true"
+      fi
+    '';
   in
   {
     passthru = (old.passthru or { }) // {
@@ -83,7 +92,8 @@ appPackage.overrideAttrs (
       // lib.optionalAttrs (fdroid != null) fdroid;
   }
   // lib.optionalAttrs hasGradleBuild {
-    preBuild = disableLintHook + (old.preBuild or "");
-    preGradleUpdate = disableLintHook + (old.preGradleUpdate or "");
+    preBuild = disableLintHook + darwinGradleMitmHook + (old.preBuild or "");
+    preGradleUpdate = disableLintHook + darwinGradleMitmHook + (old.preGradleUpdate or "");
+    __darwinAllowLocalNetworking = true;
   }
 )
