@@ -51,10 +51,6 @@ let
         --replace-fail 'val androidCompileNdkVersion by extra("29.0.13599879")' \
           'val androidCompileNdkVersion by extra("29.0.13113456")'
       substituteInPlace gradle/lspatch.versions.toml \
-        --replace-fail 'compose-bom = "2025.12.01"' \
-          'compose-bom = "2025.11.00"' \
-        --replace-fail 'core-ktx = "1.17.0"' \
-          'core-ktx = "1.16.0"' \
         --replace-fail 'androidx-lifecycle-viewmodel-compose = "androidx.lifecycle:lifecycle-viewmodel-compose:2.9.2"' \
           'androidx-lifecycle-viewmodel-compose = "androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4"'
       printf '\n' >> build.gradle.kts

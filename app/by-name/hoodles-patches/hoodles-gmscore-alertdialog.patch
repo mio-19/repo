@@ -1,0 +1,38 @@
+--- a/extensions/shared/library/src/main/java/hoodles/morphe/extension/shared/GmsCoreSupport.java
++++ b/extensions/shared/library/src/main/java/hoodles/morphe/extension/shared/GmsCoreSupport.java
+@@ -35,7 +35,7 @@
+ 
+ import app.morphe.extension.shared.Logger;
+ import app.morphe.extension.shared.Utils;
+-import app.morphe.extension.shared.ui.CustomDialog;
++import android.app.AlertDialog;
+ import hoodles.morphe.extension.shared.requests.Requester;
+ import hoodles.morphe.extension.shared.requests.Route;
+ 
+@@ -101,21 +101,11 @@
+         // Use a delay to allow the activity to finish initializing.
+         // Otherwise, if device is in dark mode the dialog is shown with wrong color scheme.
+         Utils.runOnMainThreadDelayed(() -> {
+-            // Create the custom dialog.
+-            Pair<Dialog, LinearLayout> dialogPair = CustomDialog.create(
+-                    context,
+-                    str("gms_core_dialog_title"), // Title.
+-                    str(dialogMessageRef), // Message.
+-                    null, // No EditText.
+-                    str(positiveButtonTextRef), // OK button text.
+-                    () -> onPositiveClickListener.onClick(null, 0), // Convert DialogInterface.OnClickListener to Runnable.
+-                    null, // No Cancel button action.
+-                    null, // No Neutral button text.
+-                    null, // No Neutral button action.
+-                    true // Dismiss dialog when onNeutralClick.
+-            );
+-
+-            Dialog dialog = dialogPair.first;
++            AlertDialog dialog = new AlertDialog.Builder(context)
++                    .setTitle(str("gms_core_dialog_title"))
++                    .setMessage(str(dialogMessageRef))
++                    .setPositiveButton(str(positiveButtonTextRef), onPositiveClickListener)
++                    .create();
+ 
+             // Do not set cancelable to false, to allow using back button to skip the action,
+             // just in case the battery change can never be satisfied.

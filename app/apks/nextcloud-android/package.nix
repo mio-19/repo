@@ -23,13 +23,13 @@ let
 
   appPackage = gradle_9_5_1.stdenv.mkDerivation (finalAttrs: {
     pname = "nextcloud-android";
-    version = "34.1.0";
+    version = "34.1.1";
 
     src = fetchFromGitHub {
       owner = "nextcloud";
       repo = "android";
       tag = "stable-${finalAttrs.version}";
-      hash = "sha256-Odt3AKQOU0cJjxhXJkTvFJAIAW6nU7RdOZKP8GAELkQ=";
+      hash = "sha256-81gSIMUiXmJ578IIIV5zL7uo+xDoBTfuT0Sr02AaZIs=";
     };
 
     patches = [
@@ -37,7 +37,8 @@ let
     ];
 
     gradleBuildTask = ":app:assembleGenericRelease";
-    gradleUpdateTask = ":app:dependencies :appscan:dependencies :app:processGenericReleaseResources :app:compileGenericReleaseKotlin :app:compileGenericReleaseJavaWithJavac resolveAllDependencies --refresh-dependencies --no-build-cache --no-configuration-cache --no-daemon";
+    # Include assemble so mitm captures jars (metadata-only tasks can omit them).
+    gradleUpdateTask = ":app:assembleGenericRelease resolveAllDependencies --refresh-dependencies --no-build-cache --no-configuration-cache --no-daemon";
 
     passthru = {
       prefab_jar = fetchurl {

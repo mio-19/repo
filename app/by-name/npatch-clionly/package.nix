@@ -132,11 +132,6 @@ let
                             useVersion("1.3.3")
                             because("pin savedstate artifacts to versions present in offline lockfile")
                         }
-                        // commons-lang3 3.14+ made MemberUtils methods private; pin to last compatible version
-                        if (requested.group == "org.apache.commons" && requested.name == "commons-lang3") {
-                            useVersion("3.13.0")
-                            because("Vector core MemberUtilsX needs package-private MemberUtils API from 3.13.0")
-                        }
                     }
                 }
             }

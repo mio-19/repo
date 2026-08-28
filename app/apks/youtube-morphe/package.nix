@@ -10,16 +10,17 @@ let
   appPackage =
     let
       youtubeApk = fetchurl {
-        name = "youtube-21.28.204.apk";
-        url = "https://web.archive.org/web/20260724082833if_/https://data.winudf.com/APK/Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmVfMTU2MTE4NTA5M181ZDc0YTMxYw?_p=Y29tLmdvb2dsZS5hbmRyb2lkLnlvdXR1YmU%3D&download_id=1691204850574436&filename=YouTube_21.28.204_APKPure.apk&full_size=199012427&is_hot=true&k=3d7b88fbaf3305c7a6312aca48522a426a65c509&package_name=com.google.android.youtube&source=web&token=1784881673-c86bf78fca-0-e6a621791b3c71bdf938b9bb45911f81";
-        hash = "sha256-fF+hnxSvX7pt8lPiPMoQyNcYcCikmsOJooinvxJ1hJw=";
+        # https://www.apkmirror.com/apk/google-inc/youtube/youtube-21-28-208-release/youtube-21-28-208-android-apk-download/download/?key=6df58049c61379553331b3bbc6957b1eea6c6092
+        name = "youtube-21.28.208.apkm";
+        url = "https://files.catbox.moe/a9dj4a.apkm";
+        hash = "sha256-8QU6TYfPqTYqEyHwebb7dHG0U5pgaCwMiNq+BOXbRCs=";
       };
 
       morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
     in
     stdenv.mkDerivation {
       pname = "youtube-morphe";
-      version = "21.28.204-patches-${morphe-patches.version}";
+      version = "21.28.208-patches-${morphe-patches.version}";
 
       dontUnpack = true;
 
@@ -52,6 +53,10 @@ let
         install -Dm644 "$TMPDIR/youtube-morphe/youtube-morphe.apk" "$out/youtube-morphe.apk"
         runHook postInstall
       '';
+
+      passthru = {
+        inherit youtubeApk morphePatches;
+      };
 
       meta = with lib; {
         description = "Patched YouTube APK built with Morphe patches";
