@@ -7,14 +7,19 @@
   jdk21_headless,
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
-  morphe-patches-gradle-plugin_1_3_3,
+  morphe-patches-gradle-plugin_1_3_4,
   morphe-library-m2,
-  morphe-patches-library-m2_1_5_2_dev_3,
+  morphe-patches-library-m2_1_6_2,
   apktool-src,
   multidexlib2-src,
-  morphe-patcher-src_1_8_0_dev_3,
 }:
 let
+  morphe-patcher-src = fetchFromGitHub {
+    owner = "MorpheApp";
+    repo = "morphe-patcher";
+    rev = "v1.11.0";
+    hash = "sha256-i6C1/T3NCqf9H2pmNrooM2sHj2gQOVIOw35FvfVRWvA=";
+  };
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
@@ -39,13 +44,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "hoodles-patches";
-  version = "1.41.0";
+  version = "1.42.0";
 
   src = fetchFromGitHub {
     owner = "hoo-dles";
     repo = "morphe-patches";
-    rev = "v${finalAttrs.version}";
-    hash = "sha256-okMyNpb5vgnzkaLTS4e9MQ7EKbIdpIqFpooLiFR6zjE=";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-w56Ezot/i1zrvdk9EAWpLzSFnTILRL/MmlYT1Z2JmCA=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -71,14 +76,14 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
-    MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_3}";
+    MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_4}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
-    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_5_2_dev_3}";
+    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_6_2}";
   };
 
   postUnpack = ''
     root="$PWD"
-    cp -a ${morphe-patcher-src_1_8_0_dev_3} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
     cp -a ${arsclib-src} "$root/ARSCLib"
     chmod -R u+w "$root/ARSCLib"
@@ -91,6 +96,19 @@ stdenv.mkDerivation (finalAttrs: {
     patch -d "$root/multidexlib2" -p3 < ${../brosssh-patches/multidexlib2-gradle-9.patch}
 
     patch -d "$sourceRoot" -p0 < ${./hoodles-patches-settings.patch}
+    patch -d "$sourceRoot" -p1 < ${./hoodles-gmscore-alertdialog.patch}
+
+    substituteInPlace "$sourceRoot/patches/build.gradle.kts" \
+      --replace-fail $'    maven {\n        name = "GitHubPackages"\n        url = uri("https://maven.pkg.github.com/MorpheApp/registry")\n        credentials {\n            username = providers.gradleProperty("gpr.user").orNull ?: System.getenv("GITHUB_ACTOR")\n            password = providers.gradleProperty("gpr.key").orNull ?: System.getenv("GITHUB_TOKEN")\n        }\n    }' \
+      $'    maven { url = uri("file://" + System.getenv("MORPHE_PLUGIN_M2")) }\n    maven { url = uri("file://" + System.getenv("MORPHE_LIBRARY_M2")) }\n    maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }'
+
+    substituteInPlace "$sourceRoot/buildSrc/build.gradle.kts" \
+      --replace-fail $'repositories {\n    mavenCentral()\n}' \
+      $'repositories {\n    mavenCentral()\n    google()\n}'
+
+    substituteInPlace "$sourceRoot/gradle/libs.versions.toml" \
+      --replace-fail 'morphe-patches-library = "1.6.0"' \
+                     'morphe-patches-library = "1.6.2"'
 
     cat >> "$sourceRoot/build.gradle.kts" << 'EOF'
 
@@ -134,6 +152,7 @@ stdenv.mkDerivation (finalAttrs: {
         repositories {
             maven { url = uri("file://" + System.getenv("MORPHE_PLUGIN_M2")) }
             maven { url = uri("file://" + System.getenv("MORPHE_LIBRARY_M2")) }
+            maven { url = uri("file://" + System.getenv("MORPHE_PATCHES_LIBRARY_M2")) }
             maven { url = uri("https://jitpack.io") }
             google()
             mavenCentral()
