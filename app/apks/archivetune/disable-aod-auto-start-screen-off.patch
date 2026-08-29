@@ -1,0 +1,23 @@
+diff --git a/app/src/main/kotlin/moe/rukamori/archivetune/playback/MusicService.kt b/app/src/main/kotlin/moe/rukamori/archivetune/playback/MusicService.kt
+--- a/app/src/main/kotlin/moe/rukamori/archivetune/playback/MusicService.kt
++++ b/app/src/main/kotlin/moe/rukamori/archivetune/playback/MusicService.kt
+@@ -1139,7 +1139,7 @@ class MusicService : MediaLibraryService(), LifecycleOwner {
+             override fun onReceive(ctx: Context?, intent: Intent?) {
+                 if (intent?.action != Intent.ACTION_SCREEN_OFF) return
+                 scope.launch {
+-                    val autoStartAod = dataStore.data.map { it[AodAutoStartScreenOffKey] ?: true }.first()
++                    val autoStartAod = dataStore.data.map { it[AodAutoStartScreenOffKey] ?: false }.first()
+                     if (!autoStartAod || !player.isPlaying) return@launch
+ 
+                     val pm = getSystemService(Context.POWER_SERVICE) as? PowerManager
+diff --git a/app/src/main/kotlin/moe/rukamori/archivetune/ui/screens/settings/AodCustomizedScreen.kt b/app/src/main/kotlin/moe/rukamori/archivetune/ui/screens/settings/AodCustomizedScreen.kt
+--- a/app/src/main/kotlin/moe/rukamori/archivetune/ui/screens/settings/AodCustomizedScreen.kt
++++ b/app/src/main/kotlin/moe/rukamori/archivetune/ui/screens/settings/AodCustomizedScreen.kt
+@@ -220,7 +220,7 @@ fun AodCustomizedScreen(navController: NavController) {
+     val (marqueeTitles, onMarqueeTitlesChange) = rememberPreference(AodMarqueeTitlesKey, defaultValue = false)
+     val (minimalLockedState, onMinimalLockedStateChange) = rememberPreference(AodMinimalLockedStateKey, defaultValue = false)
+     val (trueAmbientMode, onTrueAmbientModeChange) = rememberPreference(AodTrueAmbientModeKey, defaultValue = true)
+-    val (autoStartScreenOff, onAutoStartScreenOffChange) = rememberPreference(AodAutoStartScreenOffKey, defaultValue = true)
++    val (autoStartScreenOff, onAutoStartScreenOffChange) = rememberPreference(AodAutoStartScreenOffKey, defaultValue = false)
+     val (proximityBlackout, onProximityBlackoutChange) = rememberPreference(AodProximityBlackoutKey, defaultValue = false)
+     val (aodBrightness, onAodBrightnessChange) = rememberPreference(AodBrightnessKey, defaultValue = 0.15f)
