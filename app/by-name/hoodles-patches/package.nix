@@ -44,13 +44,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "hoodles-patches";
-  version = "1.42.0";
+  version = "1.43.0";
 
   src = fetchFromGitHub {
     owner = "hoo-dles";
     repo = "morphe-patches";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-w56Ezot/i1zrvdk9EAWpLzSFnTILRL/MmlYT1Z2JmCA=";
+    hash = "sha256-WgIXBATcDwl1Kkfuix4hVBD8apTzOvc3r7rESHChSXQ=";
   };
 
   gradleBuildTask = "generatePatchesList";
