@@ -38,13 +38,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "piko-patches";
-  version = "3.8.0";
+  version = "3.9.0";
 
   src = fetchFromGitHub {
     owner = "crimera";
     repo = "piko";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-lElIL1ik84wB4f/5LsrXSlEfNBPd9RnZhzfOxPs3EAQ=";
+    hash = "sha256-UvoA/A3XQDBhTI/EDWi16ufjI0qVYpBMi37+RVfPD34=";
   };
 
   sourceRoot = "source";
