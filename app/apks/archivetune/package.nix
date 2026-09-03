@@ -43,6 +43,7 @@ let
 
     patches = [
       ./remove-star-dialog.patch
+      ./disable-aod-auto-start-screen-off.patch
     ];
 
     gradleBuildTask = ":app:assembleFossMobileArm64Release";
