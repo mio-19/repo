@@ -1,10 +1,10 @@
 {
   inputs = {
-    nixpkgs.url = "https://nixos.org/channels/nixpkgs-unstable/nixexprs.tar.xz";
+    nixpkgs.url = "https://nixos.org/channels/nixpkgs-unstable/nixexprs.tar.zst";
     #nixpkgs.url = "https://nixos.org/channels/nixos-unstable-small/nixexprs.tar.xz";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
-    nixpkgs-python27.url = "https://nixos.org/channels/nixos-26.05/nixexprs.tar.xz";
+    nixpkgs-python27.url = "https://nixos.org/channels/nixos-26.05/nixexprs.tar.zst";
     android-nixpkgs = {
       #url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
