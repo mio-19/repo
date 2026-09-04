@@ -36,12 +36,11 @@ let
       };
 
       patches = [
+        ./microg-re-disable-updater.patch
       ];
 
       prePatch = ''
         export GRADLE_MICROG_VERSION_WITHOUT_GIT="1"
-        substituteInPlace play-services-core/microg-ui-tools/src/main/java/org/microg/tools/updater/UpdateChecker.java \
-          --replace-fail 'new Thread(() -> {' 'if(false) new Thread(() -> {'
       '';
 
       gradleBuildTask = ":play-services-core:assembleDefaultRelease";
