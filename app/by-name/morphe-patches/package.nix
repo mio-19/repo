@@ -45,13 +45,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches";
-  version = "1.40.0";
+  version = "1.41.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-iMpZpwXegI3htin+b1KWnLocL9DC0mbHfk7T+HVcpes=";
+    hash = "sha256-KxDC3COnkWWBZPZY9VP3UDiQ9M3ZodLcdtreFyPqhGQ=";
   };
 
   gradleBuildTask = "generatePatchesList";

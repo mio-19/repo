@@ -157,14 +157,14 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "v2rayng";
-      version = "2.3.5";
+      version = "2.3.6";
 
       src = fetchFromGitHub {
         owner = "2dust";
         repo = "v2rayNG";
         tag = finalAttrs.version;
         fetchSubmodules = true;
-        hash = "sha256-zZerHMoV72T2eX8GHTId/A8SkA6VoNVxHEzmXwd0cFg=";
+        hash = "sha256-KxbMBFjjfjE9/q8ArXFbK8dEIGNEk0bnmXuut+q2FRk=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/V2rayNG";
@@ -207,7 +207,7 @@ let
       '';
 
       postPatch = agp-resolution.patchSettingsGradle {
-        agpVersion = "9.1.0";
+        agpVersion = "9.3.2";
         extraPlugins = [
           {
             ids = [ "org.jetbrains.kotlin.android" ];
