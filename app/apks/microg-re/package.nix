@@ -26,18 +26,22 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "microg-re";
-      version = "6.1.4";
+      version = "7.0.0";
 
       src = fetchFromGitHub {
         owner = "MorpheApp";
         repo = "MicroG-RE";
         tag = finalAttrs.version;
-        hash = "sha256-2ChqNvTJP/rnguoqNhhadSBg31+OT+SHkWU05B4Urnw=";
+        hash = "sha256-cqDxAk6O3e0+jPxLAlKr2u8hu+9LpweIW5YB0I4j2IA=";
       };
 
       patches = [
         ./microg-re-disable-updater.patch
       ];
+
+      prePatch = ''
+        export GRADLE_MICROG_VERSION_WITHOUT_GIT="1"
+      '';
 
       gradleBuildTask = ":play-services-core:assembleDefaultRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
@@ -55,7 +59,6 @@ let
         jdk21_headless
 
         writableTmpDirAsHomeHook
-        git
       ];
 
       env = {
@@ -63,6 +66,7 @@ let
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+        GRADLE_MICROG_VERSION_WITHOUT_GIT = "1";
       };
 
       preConfigure = ''
@@ -72,6 +76,7 @@ let
       '';
 
       gradleFlags = [
+        "-PignoreGit=true"
         "-xlintVitalAnalyzeRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"

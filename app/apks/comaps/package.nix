@@ -21,7 +21,7 @@
   python3,
 }:
 let
-  version = "2026.08.07-3";
+  version = "2026.08.31-14";
   versionParts = builtins.match "([0-9]{4}\\.[0-9]{2}\\.[0-9]{2})-([0-9]+)" version;
   versionDate = builtins.elemAt versionParts 0;
   versionCount = builtins.elemAt versionParts 1;
@@ -49,7 +49,7 @@ let
         url = "https://codeberg.org/comaps/comaps.git";
         tag = "v${finalAttrs.version}";
         fetchSubmodules = true;
-        hash = "sha256-ft7VYIMdg8IOl4gfm7Zg5EQjli0YDGuepwP1X9w2Sos=";
+        hash = "sha256-mnLvDuXCi7guw0vU3TnqmvvgB1l7mN/AKwtF/79LGd4=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/android";
