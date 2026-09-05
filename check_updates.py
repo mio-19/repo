@@ -11,7 +11,7 @@ def is_stable_tag(tag, allow_prerelease=False):
     if allow_prerelease:
         return True
     tl = tag.lower()
-    if 'dev' in tl or 'beta' in tl or 'alpha' in tl or 'rc' in tl or 'internal' in tl:
+    if 'dev' in tl or 'beta' in tl or 'alpha' in tl or 'rc' in tl or 'internal' in tl or 'closed' in tl:
         return False
     if re.search(r'b\d+$', tl):
         return False
