@@ -26,13 +26,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "meshtastic";
-      version = "2.8.1";
+      version = "2.8.2-closed.1";
 
       src = fetchFromGitHub {
         owner = "meshtastic";
         repo = "Meshtastic-Android";
         rev = "v${finalAttrs.version}";
-        hash = "sha256-t0z69+JTse2KOxBiMGvBQVeh9j4fHlubZkFJoRYGBWY=";
+        hash = "sha256-9EBBMuYlxsfb6om55pXT8WYs9gczw//VX2oMbquEq+o=";
         fetchSubmodules = true;
       };
 
