@@ -29,7 +29,7 @@ let
 
       gradle = gradle_9_4_1;
 
-      # https://github.com/bitwarden/android/blob/v2026.8.0-bwa/gradle/libs.versions.toml#L32 bitwardenSdk = "3.0.0-8157-eb825d59"
+      # https://github.com/bitwarden/android/blob/v2026.8.1-bwa/gradle/libs.versions.toml#L32 bitwardenSdk = "3.0.0-8427-16db8e99"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
