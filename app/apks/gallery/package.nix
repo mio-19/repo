@@ -15,13 +15,13 @@
   mergeLock,
 }:
 let
-  version = "1.0.18";
+  version = "1.0.19";
 
   src = fetchFromGitHub {
     owner = "google-ai-edge";
     repo = "gallery";
     tag = version;
-    hash = "sha256-oEpmcyCZpSnMLNWsimhnTexDz2gXXrHJbD+r/5QQ8X8=";
+    hash = "sha256-NtuPOuzpLaQEF9m6aMHZjkGEchZuYjtGvsQp75JIJU4=";
   };
 
   androidSdk = androidSdkBuilder (s: [
@@ -42,7 +42,7 @@ let
     # https://github.com/google-ai-edge/gallery/blob/ff16cf71ca75dcf83072bd69546051d10c85039f/Android/src/app/src/main/java/com/google/ai/edge/gallery/ui/modelmanager/ModelManagerViewModel.kt#L86
     # https://github.com/google-ai-edge/gallery/tree/main/model_allowlists
     url = "https://raw.githubusercontent.com/google-ai-edge/gallery/refs/heads/main/model_allowlists/${allowlistVersion}.json";
-    hash = "sha256-EMNpTi4RSvr8GsjKjVBJbGeYogf8f753q5nfGoU0kPk=";
+    hash = "sha256-PH8MM9NcZEDyj/5FkPagzfJ9nDw9XshRf17AwO8Gn5w=";
   };
 
   patchedAllowlist = runCommand "gallery-model-allowlist.json" { nativeBuildInputs = [ jq ]; } ''
