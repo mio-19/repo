@@ -11,7 +11,7 @@
   morphe-patches-library-m2_1_6_2,
   apktool-src,
   multidexlib2-src,
-
+  morphe-patcher-src,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -27,13 +27,6 @@ let
   ]);
 
   gradle = gradle_9_3_1;
-
-  morphe-patcher-src = fetchFromGitHub {
-    owner = "MorpheApp";
-    repo = "morphe-patcher";
-    rev = "v1.10.0";
-    hash = "sha256-LG7dbu0g6qYJTattah5clmfVtHQ6w92Hh5DgXbBHIoA=";
-  };
 
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";

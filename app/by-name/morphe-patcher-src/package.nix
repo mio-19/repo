@@ -3,8 +3,8 @@ applyPatches {
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patcher";
-    rev = "v1.5.0";
-    hash = "sha256-qFNQZ6uQXwpJp5nqtDbZgO+f2UW0SUs+L1uL8A8Sp/M=";
+    rev = "v1.12.0";
+    hash = "sha256-GiNZyhAMTie9t+XUPgvw70SuggYI4mLVxXwa9apGNpA=";
   };
   postPatch = ''
     patch -d . -p0 < ${./morphe-patcher.patch}
