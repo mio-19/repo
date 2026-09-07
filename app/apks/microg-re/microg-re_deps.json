@@ -1944,6 +1944,19 @@
   "com/android/volley/volley/1.2.1/volley-1.2.1": {
    "aar": "sha256-2/BKI/+RtnF1ca/nIv5L1XdiV/WREdfCzfs6nV+IiO4="
   },
+  "com/atlassian/commonmark#commonmark-parent/0.12.1": {
+   "pom": "sha256-dIbnMCI/ya7Fiu5d9Bm4gkeJMyHIrc9sc4UaR3LMDQo="
+  },
+  "com/atlassian/commonmark#commonmark/0.12.1": {
+   "jar": "sha256-Prw6PuBva1sX9Eniigwq5vYKol3PaxC2nZ3OQu0AsCQ=",
+   "pom": "sha256-zA41Z5vYy3YzFOLOwxe9DKHbTmPiUXmsQ8LCre9C0rA="
+  },
+  "com/atlassian/pom#base-pom/5.0.13": {
+   "pom": "sha256-CN0hBF/fYQSL7zj/7FbiHuslxuLYRPwJ9rlW4JNzdUM="
+  },
+  "com/atlassian/pom#central-pom/5.0.13": {
+   "pom": "sha256-zihFbTZlB8oPkQIpQqBeOI/Zj4YqbY2zEFxcRJenTOU="
+  },
   "com/caverock#androidsvg/1.2.2-beta-1": {
    "jar": "sha256-Y7tkS8NCs04bm8V5/MYbOF5CVZZMQAKH944zw13I/h4=",
    "pom": "sha256-ZDPTOQSzFXm7rLk75HQdRh/L4J5Vj7F/ZHZ/F6gLyP8="
@@ -2017,22 +2030,22 @@
    "jar": "sha256-dmrSoHg/JoeWLIrXTO7MOKKLn3Ki0IXuQ4t4E+ko0Mc=",
    "pom": "sha256-GYidvfGyVLJgGl7mRbgUepdGRIgil2hMeYr+XWPXjf4="
   },
-  "com/google/code/gson#gson-parent/2.10.1": {
-   "pom": "sha256-QkjgiCQmxhUYI4XWCGw+8yYudplXGJ4pMGKAuFSCuDM="
-  },
   "com/google/code/gson#gson-parent/2.11.0": {
    "pom": "sha256-issfO3Km8CaRasBzW62aqwKT1Sftt7NlMn3vE6k2e3o="
+  },
+  "com/google/code/gson#gson-parent/2.14.0": {
+   "pom": "sha256-grD2aUxXWKuLsH4FYwII1Q9YnUteBP0KBG1Zzfe6PR0="
   },
   "com/google/code/gson#gson-parent/2.8.6": {
    "pom": "sha256-NzZGOFnsGSZyleiUlAroKo9oRBMDESL+Nc58/34wp3Q="
   },
-  "com/google/code/gson#gson/2.10.1": {
-   "jar": "sha256-QkHBSncnw0/uplB+yAExij1KkPBw5FJWgQefuU7kxZM=",
-   "pom": "sha256-0rEVY09cCF20ucn/wmWOieIx/b++IkISGhzZXU2Ujdc="
-  },
   "com/google/code/gson#gson/2.11.0": {
    "jar": "sha256-V5KNblpu3rKr03cKj5W6RNzkXzsjt6ncKzCcWBVSp4s=",
    "pom": "sha256-wOVHvqmYiI5uJcWIapDnYicryItSdTQ90sBd7Wyi42A="
+  },
+  "com/google/code/gson#gson/2.14.0": {
+   "jar": "sha256-LL0Rm/GWHCh4gxCWPcgLpl9Yze7B3ROci9sSQPqiw28=",
+   "pom": "sha256-H6ASLA43MxkmQoYcNr5Mb3maeVMnojvdKSJpG26bpIA="
   },
   "com/google/code/gson#gson/2.8.6": {
    "jar": "sha256-yPtIOQVNKAswM/gA0fWpfeLwKOuLoutFitKH5Tbz8l8=",
@@ -2074,6 +2087,10 @@
    "jar": "sha256-pW54K1tQgRrCBAc6NVoh2RWiEH/OE+xxEzGtA29mD8w=",
    "pom": "sha256-oVHfHi4LSGGNiwahgHSKKbOrs5sbI5b2och5pydIjG4="
   },
+  "com/google/errorprone#error_prone_annotations/2.48.0": {
+   "jar": "sha256-tJxclYMW7WegnGmd2pqnScr0NNUdhj3qWZ7zakm5yFU=",
+   "pom": "sha256-GJ4JrQSJwyXpDaqp1cj0BjMGAvo2Zgm8oHy82tA6udo="
+  },
   "com/google/errorprone#error_prone_parent/2.15.0": {
    "pom": "sha256-Edys0XqqxpqZQFJzut/apflmHWDRebikT1A5WLqlX4g="
   },
@@ -2094,6 +2111,9 @@
   },
   "com/google/errorprone#error_prone_parent/2.41.0": {
    "pom": "sha256-xTg4jXYKXByY3PBvbtPP5fEaZRgn21y9LtgojHlcrUI="
+  },
+  "com/google/errorprone#error_prone_parent/2.48.0": {
+   "pom": "sha256-sz+opFyfF5SlAIwLLYOoTrKLXQEXptFW8AP58JvnQQ8="
   },
   "com/google/flatbuffers#flatbuffers-java/1.12.0": {
    "jar": "sha256-P4wIi03QSphYch8uFiUIyU2w3Yb5YeMG7mPvLtqHG/c=",
@@ -3401,7 +3421,7 @@
   "org/slf4j/slf4j-api/maven-metadata": {
    "xml": {
     "groupId": "org.slf4j",
-    "lastUpdated": "20260512184116",
+    "lastUpdated": "20260904101317",
     "release": "2.1.0-alpha1"
    }
   },
