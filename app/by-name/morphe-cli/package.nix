@@ -94,6 +94,7 @@ stdenv.mkDerivation (finalAttrs: {
     # Copy dependency sources as writable sibling directories.
     cp -a ${morphe-patcher-src} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
+    patch -d "$root/morphe-patcher" -p0 < ${./morphe-patcher-version-name-suffix.patch}
 
     cp -a ${arsclib-src} "$root/ARSCLib"
     chmod -R u+w "$root/ARSCLib"
