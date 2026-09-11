@@ -1,8 +1,8 @@
 diff --git a/app/src/main/kotlin/moe/rukamori/archivetune/MainActivity.kt b/app/src/main/kotlin/moe/rukamori/archivetune/MainActivity.kt
-index 3751dfd..4bad6df 100644
+index f4556cb..06c9e6a 100644
 --- a/app/src/main/kotlin/moe/rukamori/archivetune/MainActivity.kt
 +++ b/app/src/main/kotlin/moe/rukamori/archivetune/MainActivity.kt
-@@ -252,7 +252,6 @@ import moe.rukamori.archivetune.ui.component.LocalBottomSheetPageState
+@@ -264,7 +264,6 @@ import moe.rukamori.archivetune.ui.component.LocalBottomSheetPageState
  import moe.rukamori.archivetune.ui.component.LocalMenuState
  import moe.rukamori.archivetune.ui.component.MarkdownText
  import moe.rukamori.archivetune.ui.component.NetworkStatusBanner
@@ -10,7 +10,7 @@ index 3751dfd..4bad6df 100644
  import moe.rukamori.archivetune.ui.component.TopSearch
  import moe.rukamori.archivetune.ui.component.TvNavigationRail
  import moe.rukamori.archivetune.ui.component.rememberBottomSheetState
-@@ -1374,76 +1373,6 @@ class MainActivity : ComponentActivity() {
+@@ -1486,76 +1485,6 @@ class MainActivity : ComponentActivity() {
                          }
                      }
  
