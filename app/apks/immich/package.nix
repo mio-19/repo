@@ -4,7 +4,7 @@
   buildDartApplication,
   runCommand,
   fetchFromGitHub,
-  flutter344,
+  flutter347,
   git,
   jdk21_headless,
   curl,
@@ -15,6 +15,10 @@
   gradle_8_14_3,
   zip,
   fetchurl,
+  stdenv,
+  writeScript,
+  sqlite,
+  openapi-generator-cli,
 }:
 let
   flutterApkHelpers = ../_shared/flutter-apk-helpers.sh;
@@ -59,9 +63,9 @@ let
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2Path}"
       ];
     in
-    buildDartApplication.override { dart = flutter344; } (finalAttrs: {
+    buildDartApplication.override { dart = flutter347; } (finalAttrs: {
       pname = "immich";
-      version = "3.1.0";
+      version = "3.2.0";
 
       src = applyPatches {
         src = fetchFromGitHub {
@@ -69,11 +73,17 @@ let
           repo = "immich";
           tag = "v${finalAttrs.version}";
           fetchSubmodules = true;
-          hash = "sha256-7wmPR/yps24UZU3N+Xi1QKsa7GMQq03Ju1c0KbP4u1U=";
+          hash = "sha256-rslbXrpFR8jLSuUGClVDWwo57E45MYBc2mHiOLCTrNE=";
         };
-        patches = [
-
-        ];
+        # v3.2.0 moved the OpenAPI Dart client to gitignored generated/openapi.
+        nativeBuildInputs = [ openapi-generator-cli ];
+        postPatch = ''
+          (
+            cd open-api
+            bash ./bin/generate-dart-sdk.sh
+          )
+          test -f mobile/generated/openapi/pubspec.yaml
+        '';
       };
 
       sourceRoot = "${finalAttrs.src.name}/mobile";
@@ -85,10 +95,41 @@ let
       pubspecLock = lib.importJSON ./pubspec.lock.json;
       gitHashes = lib.importJSON ./git-hashes.json;
 
+      # nixpkgs sqlite3 builder only switches to the 3.5.0+ hook path, but 3.4.0
+      # already moved description.dart under lib/src/hook/compile/.
+      customSourceBuilders = {
+        sqlite3 =
+          { version, src, ... }:
+          stdenv.mkDerivation (finalAttrs: {
+            pname = "sqlite3";
+            inherit version src;
+            inherit (src) passthru;
+
+            setupHook = writeScript "${finalAttrs.pname}-setup-hook" ''
+              sqliteFixupHook() {
+                runtimeDependencies+=('${lib.getLib sqlite}')
+              }
+
+              preFixupHooks+=(sqliteFixupHook)
+            '';
+
+            postPatch = ''
+              substituteInPlace lib/src/hook/compile/description.dart \
+                --replace-fail "return fromGitHub(LibraryType.sqlite3);" "return LookupSystem('sqlite3');"
+            '';
+
+            installPhase = ''
+              runHook preInstall
+              cp --recursive . "$out"
+              runHook postInstall
+            '';
+          });
+      };
+
       sdkSourceBuilders = {
         flutter = mkFlutterSdkSourceBuilder {
           inherit runCommand;
-          flutter = flutter344;
+          flutter = flutter347;
         };
       };
 
@@ -138,7 +179,11 @@ let
 
       postPatch = ''
         . ${flutterApkHelpers}
-        setup_writable_flutter_sdk ${flutter344}
+        setup_writable_flutter_sdk ${flutter347}
+
+        # nixpkgs flutter347 is 3.47.0; upstream pins 3.47.1 exactly.
+        substituteInPlace pubspec.yaml \
+          --replace-fail "flutter: 3.47.1" "flutter: 3.47.0"
 
         substituteInPlace android/app/build.gradle \
           --replace-fail "//f configurations.all {" "configurations.all {" \
@@ -157,20 +202,20 @@ let
             '')
             {
               "armeabi-v7a" = fetchurl {
-                url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.3.2/libsqlite3.arm.android.so";
-                sha256 = "1jbmma7vvnn2kigvvzlfp55wbi08rw03cwl6w93xcn6kxja9aw91";
+                url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.4.0/libsqlite3.arm.android.so";
+                sha256 = "14qvd76v5q1554yx5lsqp0fsphqb868i8wbiww1azvyxq7zqs6vc";
               };
               "arm64-v8a" = fetchurl {
-                url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.3.2/libsqlite3.arm64.android.so";
-                sha256 = "1n5sca3ps0avxfxjdcjyxrxpjrm7kixbvd8dw8j367g38mj1f79z";
+                url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.4.0/libsqlite3.arm64.android.so";
+                sha256 = "0yw8nam2gxk971d7wfnycf2jazsf6jbybr9shihzn6bi3npib5g9";
               };
               "x86_64" = fetchurl {
-                url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.3.2/libsqlite3.x64.android.so";
-                sha256 = "18d6idsw5plcp951nadh86klfv814mmpy6iv8v0pjdxz5kwck9h7";
+                url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.4.0/libsqlite3.x64.android.so";
+                sha256 = "1kglmay82mrzxa4x4ch4j2k62yacymjd7pxf38g4f7z1qmmd98p5";
               };
               "x86" = fetchurl {
-                url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.3.2/libsqlite3.ia32.android.so";
-                sha256 = "1sb0rmbxvs9x1fz458i1yxk30hy2c990dkxac4fdbv9430pzvspf";
+                url = "https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.4.0/libsqlite3.ia32.android.so";
+                sha256 = "0xrp5m3f0hsxjz2qaxvc5nlgkh34hrmla153mivb4vl9snd68wvd";
               };
             }
         )}
@@ -190,9 +235,14 @@ let
       '';
 
       preConfigure = ''
+        export PUB_CACHE="$PWD/.pub-cache"
+
+        # Flutter includeBuild caches under ~/.cache/flutter/nix-flutter-tools-gradle
+        # with absolute symlinks into the build tree; keep HOME inside $TMPDIR so
+        # mitm-update / successive builds cannot reuse stale dangling links.
+        export HOME="$(mktemp -d)"
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
-        export PUB_CACHE="$PWD/.pub-cache"
 
         echo "sdk.dir=${androidSdkRoot}" > android/local.properties
         echo "cmake.dir=${androidSdkRoot}/cmake/3.31.6" >> android/local.properties
@@ -237,9 +287,43 @@ let
           done
         fi
 
+        # Dart's HTTP client does not reliably honor SSL_CERT_FILE with the
+        # mitm-cache proxy; clear proxy env so codegen can use system CAs.
+        # Restore afterwards so Flutter/Gradle artifact fetches stay on mitm.
+        if [[ -n "''${MITM_CACHE_CA:-}" ]]; then
+          _immich_http_proxy="''${http_proxy-}"
+          _immich_https_proxy="''${https_proxy-}"
+          _immich_SSL_CERT_FILE="''${SSL_CERT_FILE-}"
+          _immich_NIX_SSL_CERT_FILE="''${NIX_SSL_CERT_FILE-}"
+          unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY all_proxy
+          unset SSL_CERT_FILE NIX_SSL_CERT_FILE
+        fi
+
+        # dartConfigHook leaves package_config.json read-only; later remaps need write.
+        chmod u+w .dart_tool/package_config.json
+
         packageRun easy_localization -e generate -S ../i18n
         dart --packages=.dart_tool/package_config.json bin/generate_keys.dart
         dart format lib/generated/codegen_loader.g.dart lib/generated/translations.g.dart
+
+        # Use packageRun (not `dart run`) so pub does not try to rewrite package_config
+        # or hit the network under the mitm proxy / nix sandbox.
+        # v3.2.0 no longer commits Drift/build_runner outputs; CI runs mise codegen.
+        packageRun drift_dev make-migrations
+        packageRun build_runner build --delete-conflicting-outputs
+        if [ -d pigeon ]; then
+          for pigeon_input in pigeon/*.dart; do
+            packageRun pigeon --input "$pigeon_input"
+          done
+          dart format lib/platform/ || true
+        fi
+
+        if [[ -n "''${MITM_CACHE_CA:-}" ]]; then
+          [[ -n "''${_immich_http_proxy}" ]] && export http_proxy="''${_immich_http_proxy}" HTTP_PROXY="''${_immich_http_proxy}"
+          [[ -n "''${_immich_https_proxy}" ]] && export https_proxy="''${_immich_https_proxy}" HTTPS_PROXY="''${_immich_https_proxy}"
+          [[ -n "''${_immich_SSL_CERT_FILE}" ]] && export SSL_CERT_FILE="''${_immich_SSL_CERT_FILE}"
+          [[ -n "''${_immich_NIX_SSL_CERT_FILE}" ]] && export NIX_SSL_CERT_FILE="''${_immich_NIX_SSL_CERT_FILE}"
+        fi
 
         mkdir -p .dart-patched
         declare -A patched_pkg_dirs
