@@ -1,17 +1,5 @@
-diff --git a/patches/src/main/kotlin/app/morphe/patches/music/misc/playservice/VersionCheckPatch.kt b/patches/src/main/kotlin/app/morphe/patches/music/misc/playservice/VersionCheckPatch.kt
---- a/patches/src/main/kotlin/app/morphe/patches/music/misc/playservice/VersionCheckPatch.kt
-+++ b/patches/src/main/kotlin/app/morphe/patches/music/misc/playservice/VersionCheckPatch.kt
-@@ -35 +35 @@ val versionCheckPatch = bytecodePatch {
--        val versionName = packageMetadata.versionName
-+        val versionName = packageMetadata.versionName.substringBefore("-patches-")
-diff --git a/patches/src/main/kotlin/app/morphe/patches/youtube/misc/playservice/VersionCheckPatch.kt b/patches/src/main/kotlin/app/morphe/patches/youtube/misc/playservice/VersionCheckPatch.kt
---- a/patches/src/main/kotlin/app/morphe/patches/youtube/misc/playservice/VersionCheckPatch.kt
-+++ b/patches/src/main/kotlin/app/morphe/patches/youtube/misc/playservice/VersionCheckPatch.kt
-@@ -77 +77 @@ val versionCheckPatch = bytecodePatch {
--        val versionName = packageMetadata.versionName
-+        val versionName = packageMetadata.versionName.substringBefore("-patches-")
 diff --git a/extensions/shared/library/src/main/java/app/morphe/extension/shared/patches/ExperimentalAppNoticePatch.java b/extensions/shared/library/src/main/java/app/morphe/extension/shared/patches/ExperimentalAppNoticePatch.java
-index 8c6dd97..4f30c33 100644
+index 8c6dd97..b068c12 100644
 --- a/extensions/shared/library/src/main/java/app/morphe/extension/shared/patches/ExperimentalAppNoticePatch.java
 +++ b/extensions/shared/library/src/main/java/app/morphe/extension/shared/patches/ExperimentalAppNoticePatch.java
 @@ -16,13 +16,22 @@ import app.morphe.extension.shared.ui.CustomDialog;
@@ -38,11 +26,48 @@ index 8c6dd97..4f30c33 100644
              return false;
          }
  
-@@ -43,6 +52,7 @@ public class ExperimentalAppNoticePatch {
+diff --git a/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/VersionCheckPatch.java b/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/VersionCheckPatch.java
+index 9f5ef0b..540130e 100644
+--- a/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/VersionCheckPatch.java
++++ b/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/VersionCheckPatch.java
+@@ -4,7 +4,13 @@ import app.morphe.extension.shared.Utils;
  
-             String appVersionName = Utils.getAppVersionName();
-             String recommendedAppVersion = Utils.getRecommendedAppVersion();
-+        String appVersionNameForComparison = appVersionWithoutPatchesSuffix(appVersionName);
+ public class VersionCheckPatch {
+     private static boolean isVersionOrGreater(String version) {
+-        return Utils.getAppVersionName().compareTo(version) >= 0;
++        String appVersion = Utils.getAppVersionName();
++        int suffixIndex = appVersion.indexOf("-patches-");
++        if (suffixIndex >= 0) {
++            appVersion = appVersion.substring(0, suffixIndex);
++        }
++
++        return appVersion.compareTo(version) >= 0;
+     }
  
-             Pair<Dialog, LinearLayout> dialogPair = CustomDialog.create(
-                     activity,
+     public static final boolean IS_20_22_OR_GREATER = isVersionOrGreater("20.22.00");
+diff --git a/patches/src/main/kotlin/app/morphe/patches/music/misc/playservice/VersionCheckPatch.kt b/patches/src/main/kotlin/app/morphe/patches/music/misc/playservice/VersionCheckPatch.kt
+index e1e96bd..7fd9934 100644
+--- a/patches/src/main/kotlin/app/morphe/patches/music/misc/playservice/VersionCheckPatch.kt
++++ b/patches/src/main/kotlin/app/morphe/patches/music/misc/playservice/VersionCheckPatch.kt
+@@ -26,7 +26,7 @@ var is_9_33_or_greater: Boolean by Delegates.notNull()
+ 
+ val versionCheckPatch = bytecodePatch {
+     execute {
+-        val versionName = packageMetadata.versionName
++        val versionName = packageMetadata.versionName.substringBefore("-patches-")
+         fun isEqualsOrGreaterThan(version: String): Boolean {
+             return versionName >= version
+         }
+diff --git a/patches/src/main/kotlin/app/morphe/patches/youtube/misc/playservice/VersionCheckPatch.kt b/patches/src/main/kotlin/app/morphe/patches/youtube/misc/playservice/VersionCheckPatch.kt
+index 1b1e6c6..e71784b 100644
+--- a/patches/src/main/kotlin/app/morphe/patches/youtube/misc/playservice/VersionCheckPatch.kt
++++ b/patches/src/main/kotlin/app/morphe/patches/youtube/misc/playservice/VersionCheckPatch.kt
+@@ -100,7 +100,7 @@ var is_21_36_or_greater : Boolean by Delegates.notNull()
+ 
+ val versionCheckPatch = bytecodePatch {
+     execute {
+-        val versionName = packageMetadata.versionName
++        val versionName = packageMetadata.versionName.substringBefore("-patches-")
+         fun isEqualsOrGreaterThan(version: String): Boolean {
+             return versionName >= version
+         }
