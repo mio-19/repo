@@ -1,0 +1,22 @@
+diff --git a/build-logic/settings.gradle.kts b/build-logic/settings.gradle.kts
+index d105a18b..1db59f14 100644
+--- a/build-logic/settings.gradle.kts
++++ b/build-logic/settings.gradle.kts
+@@ -32,6 +32,17 @@ dependencyResolutionManagement {
+         mavenCentral()
+         gradlePluginPortal()
+     }
++    components {
++        withModule("org.gradle.kotlin:gradle-kotlin-dsl-plugins") {
++            allVariants {
++                withDependencies {
++                    filter { it.group == "org.jetbrains.kotlin" }.forEach { dep ->
++                        dep.version { require("2.4.0") }
++                    }
++                }
++            }
++        }
++    }
+ }
+ 
+ apply(from = "../gradle/shared-with-buildSrc/mirrors.settings.gradle.kts")
