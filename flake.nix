@@ -5,11 +5,6 @@
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs-python27.url = "https://nixos.org/channels/nixos-26.05/nixexprs.tar.zst";
-    # Flake nixpkgs pin predates Flutter 3.47; Immich 3.2 needs flutter347.
-    nixpkgs-flutter347 = {
-      url = "github:NixOS/nixpkgs/d6524aaca2ff07876657ae2b323f24be4874944b";
-      flake = false;
-    };
     android-nixpkgs = {
       #url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
@@ -217,11 +212,6 @@
                     inherit system;
                     config.permittedInsecurePackages = [ "python-2.7.18.12" ];
                   }).python27;
-                flutter347 =
-                  (import inputs.nixpkgs-flutter347 {
-                    inherit system;
-                    config.allowUnfree = true;
-                  }).flutter347;
                 maven = selfPackages.maven_3_9_16;
                 gradle_7 = selfPackages.gradle_7_6_6;
                 gradle_7-unwrapped = gradle_7.unwrapped;
