@@ -146,11 +146,14 @@ in
     */
   ];
   source.dirs."packages/apps/Updater".patches = [
-    (fetchpatch {
-      name = "Implement support for out of band OTAs via file picker";
-      url = "https://github.com/GrapheneOS/platform_packages_apps_Updater/pull/127.patch";
-      hash = "sha256-32bWUQovFdG7xwv49QoqdXFgbMWg2X2Qg7d81mbduik=";
-    })
+    /*
+      # conflicts
+      (fetchpatch {
+        name = "Implement support for out of band OTAs via file picker";
+        url = "https://github.com/GrapheneOS/platform_packages_apps_Updater/pull/127.patch";
+        hash = "sha256-32bWUQovFdG7xwv49QoqdXFgbMWg2X2Qg7d81mbduik=";
+      })
+    */
   ];
   source.dirs."packages/services/Telecomm".patches = [
     (fetchpatch {

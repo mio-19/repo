@@ -38,7 +38,8 @@
       fixNdkPython27 =
         pkg:
         pkg.overrideAttrs (old: {
-          buildInputs = (old.buildInputs or [ ]) ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.python27 ];
+          buildInputs =
+            (old.buildInputs or [ ]) ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.python27 ];
           preFixup =
             (old.preFixup or "")
             + lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''
@@ -57,10 +58,14 @@
             in
             map (
               pkg:
-              if pkgs.stdenv.hostPlatform.isLinux && lib.isDerivation pkg && (pkg.pname or "") == "ndk-21-4-7075529" then
+              if
+                pkgs.stdenv.hostPlatform.isLinux && lib.isDerivation pkg && (pkg.pname or "") == "ndk-21-4-7075529"
+              then
                 fixNdkPython27 pkg
               else if
-                pkgs.stdenv.hostPlatform.isLinux && lib.isDerivation pkg && lib.elem (pkg.pname or "") sourceBuiltNdkPnames
+                pkgs.stdenv.hostPlatform.isLinux
+                && lib.isDerivation pkg
+                && lib.elem (pkg.pname or "") sourceBuiltNdkPnames
               then
                 sourceBuiltNdkHelper.mkSourceBuiltNdk pkg
               else
