@@ -211,7 +211,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-p9MNGB8mOzg6L9dhlfNzpdHMydGBs4dNvWX3H68p+1U=";
+        outputHash = "sha256-uef/UgfgUdQjHjheoSA6z8PoXdRANcI2Mg0TX6qAjbY=";
         dontConfigure = true;
         dontFixup = true;
 
@@ -223,8 +223,8 @@ let
           export GOPATH="$TMPDIR/go"
           export GOCACHE="$TMPDIR/go-build-cache"
           export GOMODCACHE="$TMPDIR/go-mod-cache"
-          # Allow downloading go1.26.6 toolchain into the module cache (nix go is 1.26.5;
-          # upstream go.mod / tailscale require >= 1.26.6).
+          # Prefer a matching toolchain when nixpkgs go is older than go.mod;
+          # with go >= 1.26.6 this typically does not download anything.
           export GOTOOLCHAIN=auto
           export GOPROXY=https://proxy.golang.org,direct
           export GOSUMDB=sum.golang.org
@@ -291,10 +291,7 @@ let
           mkdir -p "$GOBIN"
           export PATH="$GOBIN:$PATH"
 
-          # Upstream/tailscale need go >= 1.26.6; nixpkgs go_1_26 is 1.26.5.
-          # Use the toolchain downloaded into the module cache during the FOD fetch.
-          export GOROOT="$GOMODCACHE/golang.org/toolchain@v0.0.1-go1.26.6.linux-amd64"
-          export PATH="$GOROOT/bin:$PATH"
+          # Upstream/tailscale need go >= 1.26.6; nixpkgs go_1_26 is new enough now.
           export GOTOOLCHAIN=local
           export GOPROXY=off
           export GOSUMDB=off
@@ -317,17 +314,17 @@ let
 
             mkdir -p ../jniLibs ../build
 
-            export GOFLAGS="-mod=mod"
+            export GOFLAGS="-mod=mod -buildvcs=false -ldflags=-checklinkname=0"
             export GO111MODULE=on
             gomobile init
             gomobile bind \
               -target=android/arm64,android/amd64 \
               -javapkg=sh.haven.rclone.binding \
               -androidapi=26 \
-              -ldflags "-s -w" \
+              -ldflags "-s -w -checklinkname=0" \
               -v \
               -o ../build/rcbridge.aar \
-              . ./wgbridge ./tsbridge ./mailbridge
+              . ./wgbridge ./tsbridge ./mailbridge ./nbbridge
 
 
           cd ..
@@ -405,14 +402,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.87.79";
+      version = "5.87.80";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-utjj1gJAwRk/R7sTmRfRxPZ43oD9MKd1bU1hGApTGtE=";
+        hash = "sha256-+MBhfoCF8nzAJeckljTEu2mO0dMHCAcT5ro9e21PbAk=";
       };
 
       patches = [
@@ -486,6 +483,7 @@ let
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = aapt2;
         HAVEN_SKIP_PYTHON_REQUIREMENTS = "1";
         SKIP_QEMU_LOADERS = "1";
+        SKIP_UML = "1";
       };
 
       preConfigure = ''
@@ -541,6 +539,7 @@ let
         # host tooling wired up; skip for now so the APK still builds.
         "-PskipWaylandNatives=true"
         "-PskipFfmpegNatives=true"
+        "-PskipUml"
         "-PtargetAbi=arm64"
       ];
 

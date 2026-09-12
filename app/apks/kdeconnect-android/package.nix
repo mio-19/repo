@@ -8,7 +8,7 @@
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  gradle_9_5_0,
+  gradle_9_6_1,
 }:
 let
   appPackage =
@@ -22,17 +22,17 @@ let
         s."build-tools-37-0-0"
       ]);
 
-      gradle = gradle_9_5_0;
+      gradle = gradle_9_6_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "kdeconnect-android";
-      version = "1.35.13";
+      version = "1.35.16";
 
       src = fetchFromGitHub {
         owner = "KDE";
         repo = "kdeconnect-android";
-        rev = "v${finalAttrs.version}";
-        hash = "sha256-/b52HVBPRNgzfx/L9npO9w8iawmnbZJQ5AHuZsjG4W4=";
+        tag = "v${finalAttrs.version}";
+        hash = "sha256-b9Sw+rtPqbxfm7b4+EHNHQ+gOrjpBU6On/nqQgP0dPo=";
       };
 
       gradleBuildTask = "assembleRelease";
@@ -54,7 +54,7 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk25_headless;
+        JAVA_HOME = jdk25_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
@@ -68,7 +68,7 @@ let
 
       gradleFlags = [
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk25_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk25_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
