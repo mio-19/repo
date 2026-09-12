@@ -135,12 +135,6 @@ in
     })
   ];
   source.dirs."packages/apps/Dialer".patches = [
-    (fetchpatch {
-      # use combined .diff: the 34-commit .patch series does not apply with GNU patch
-      name = "add automatic call recording + rework call recording for better testing";
-      url = "https://github.com/GrapheneOS/platform_packages_apps_Dialer/pull/58.diff";
-      hash = "sha256-F2tOz11Cg/l06/upyW7sUIJMpnO0MmlVzKrFEWrL6JE=";
-    })
     /*
       # buggy
       # https://github.com/GrapheneOS/platform_packages_apps_Dialer/pull/48
