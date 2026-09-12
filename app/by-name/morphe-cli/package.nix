@@ -49,13 +49,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-cli";
-  version = "1.15.0";
+  version = "1.15.1";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-cli";
-    rev = "v${finalAttrs.version}";
-    hash = "sha256-s6lL+j0oa/cnCLvgjpOx1L/sjPMvLDAlmWqtApJqGlM=";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-Lv8mWD/WVXpuTsGAH3iSp4uRkQY1EQKkcMwExR7iu0Q=";
   };
 
   gradleBuildTask = "shadowJar";
@@ -94,6 +94,7 @@ stdenv.mkDerivation (finalAttrs: {
     # Copy dependency sources as writable sibling directories.
     cp -a ${morphe-patcher-src} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
+    patch -d "$root/morphe-patcher" -p0 < ${./morphe-patcher-version-name-suffix.patch}
 
     cp -a ${arsclib-src} "$root/ARSCLib"
     chmod -R u+w "$root/ARSCLib"

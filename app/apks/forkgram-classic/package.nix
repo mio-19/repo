@@ -26,21 +26,21 @@
 }:
 
 let
-  version = "12.10.2.0";
+  version = "12.10.3.0";
 
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-Z1DGZRt/Og/KsQssZEjPjFH6VhCum52K7hcZHdGIoBQ=";
+    hash = "sha256-DTdQHLWWc3V6eq1F+iq11LlMpba98uSEfTnIGB0WWpY=";
     fetchSubmodules = true;
   };
 
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
-    s.platforms-android-35
-    s.build-tools-35-0-0
+    s.platforms-android-36
+    s.build-tools-36-0-0
     s.ndk-27-2-12479018
   ]);
 
@@ -133,12 +133,12 @@ let
 in
 buildGradlePackage rec {
   pname = "forkgram-classic";
-  version = "12.10.2.0";
+  version = "12.10.3.0";
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-Z1DGZRt/Og/KsQssZEjPjFH6VhCum52K7hcZHdGIoBQ=";
+    hash = "sha256-DTdQHLWWc3V6eq1F+iq11LlMpba98uSEfTnIGB0WWpY=";
     fetchSubmodules = true;
   };
 
@@ -181,34 +181,31 @@ buildGradlePackage rec {
         patchShebangs TMessagesProj/jni/
 
         substituteInPlace TMessagesProj/jni/prepare.py \
-          --replace-quiet "git checkout -- tlottie_lib" "" \
-          --replace-quiet './tlottie_lib/build.sh' 'test -f tlottie_lib/arm64-v8a/libtlottie.a && test -f tlottie_lib/armeabi-v7a/libtlottie.a'
-
-        install -Dm644 ${tlottieArm64}/arm64-v8a/libtlottie.a \
-          TMessagesProj/jni/tlottie_lib/arm64-v8a/libtlottie.a
-        install -Dm644 ${tlottieArmv7}/armeabi-v7a/libtlottie.a \
-          TMessagesProj/jni/tlottie_lib/armeabi-v7a/libtlottie.a
-
-
-        substituteInPlace TMessagesProj/jni/prepare.py \
           --replace-fail "return 'rm -rf ' + folder" "return 'true'" \
           --replace-fail 'executable="/bin/bash"' 'executable="bash"' \
           --replace-quiet "git submodule init && git submodule update" "" \
           --replace-quiet "cd boringssl && git reset --hard HEAD && cd .." "" \
           --replace-quiet "git reset HEAD tde2e/ && git checkout -- tde2e/" "" \
           --replace-quiet "cd tde2e_source && git reset --hard HEAD && cd .." "" \
-          --replace-quiet "git checkout -- ffmpeg" ""
+          --replace-quiet "git checkout -- ffmpeg" "" \
+          --replace-quiet "git checkout -- prebuild" ""
 
-
-        echo "APP_ID=14577864" >> gradle.properties
-        echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
-        substituteInPlace gradle.properties \
-          --replace-fail "F_DROID=0" "F_DROID=1"
+        install -Dm644 ${tlottieArm64}/arm64-v8a/libtlottie.a \
+          TMessagesProj/jni/prebuild/arm64-v8a/libtlottie.a
+        install -Dm644 ${tlottieArmv7}/armeabi-v7a/libtlottie.a \
+          TMessagesProj/jni/prebuild/armeabi-v7a/libtlottie.a
+        substituteInPlace TMessagesProj/jni/prepare.py \
+          --replace-quiet './prebuild/build_tlottie.sh' 'test -f prebuild/arm64-v8a/libtlottie.a && test -f prebuild/armeabi-v7a/libtlottie.a'
 
         if [ "$(uname -s)" = "Darwin" ]; then
           substituteInPlace TMessagesProj/jni/tde2e/build-tdlib.sh \
             --replace-warn "linux-x86_64" "darwin-x86_64"
         fi
+
+        echo "APP_ID=14577864" >> gradle.properties
+        echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
+        substituteInPlace gradle.properties \
+          --replace-fail "F_DROID=0" "F_DROID=1"
 
         cat >> build.gradle << 'EOF'
     allprojects {
@@ -222,7 +219,7 @@ buildGradlePackage rec {
 
         echo "cmake.dir=${cmake}" >> local.properties
         echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/27.2.12479018" >> local.properties
-        echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2" >> gradle.properties
+        echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2" >> gradle.properties
 
         rm -f TMessagesProj/config/release.keystore
         keytool -genkey -v \

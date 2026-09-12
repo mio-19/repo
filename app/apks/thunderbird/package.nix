@@ -26,13 +26,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "thunderbird-android";
-      version = "22.0";
+      version = "23.0";
 
       src = fetchFromGitHub {
         owner = "thunderbird";
         repo = "thunderbird-android";
-        tag = "THUNDERBIRD_22_0";
-        hash = "sha256-2KX5JX6k1QyND/k+shHAY+JSnejXLMTPvZ6bFFU83Y4=";
+        tag = "THUNDERBIRD_23_0";
+        hash = "sha256-pvb4oUxKzhMXJSCdQgPk4MFHU/KRTh6R79S9wtE6X08=";
       };
 
       patches = [
@@ -92,6 +92,15 @@ let
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+        # gradle.fetchDeps init script is incompatible with configuration cache /
+        # isolated projects (allprojects + Project.task). Disable both for Nix builds.
+        substituteInPlace gradle.properties \
+          --replace-fail 'org.gradle.configuration-cache=true' 'org.gradle.configuration-cache=false' \
+          --replace-fail 'org.gradle.unsafe.isolated-projects=true' 'org.gradle.unsafe.isolated-projects=false'
+        if [ -f components/gradle.properties ]; then
+          substituteInPlace components/gradle.properties \
+            --replace-fail 'org.gradle.configuration-cache=true' 'org.gradle.configuration-cache=false'
+        fi
       '';
 
       gradleFlags = [

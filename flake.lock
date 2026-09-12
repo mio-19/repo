@@ -330,6 +330,23 @@
         "type": "github"
       }
     },
+    "nixpkgs-flutter347": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788881743,
+        "narHash": "sha256-2V9GZGvPfrNzxFozhI9dcqV+c3QdA8YZrvAAzqEB+dI=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "d6524aaca2ff07876657ae2b323f24be4874944b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "d6524aaca2ff07876657ae2b323f24be4874944b",
+        "type": "github"
+      }
+    },
     "nixpkgs-lib": {
       "locked": {
         "lastModified": 1788057806,
@@ -516,6 +533,7 @@
         "nix-kernelsu-builder": "nix-kernelsu-builder",
         "nixos-apple-silicon": "nixos-apple-silicon",
         "nixpkgs": "nixpkgs_2",
+        "nixpkgs-flutter347": "nixpkgs-flutter347",
         "nixpkgs-python27": "nixpkgs-python27",
         "nurpkgs": "nurpkgs",
         "openwrt-imagebuilder": "openwrt-imagebuilder",

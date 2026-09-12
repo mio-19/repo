@@ -1,7 +1,7 @@
 {
   agp-resolution,
   mk-apk-package,
-  gradle_9_6_1,
+  gradle_9_7_1,
   lib,
   stdenv,
   jdk21_headless,
@@ -26,19 +26,19 @@ let
     s.cmake-3-22-1
   ]);
 
-  # https://github.com/koiverse/ArchiveTune/blob/v14.0.0/gradle/wrapper/gradle-wrapper.properties
-  gradle = gradle_9_6_1;
+  # https://github.com/koiverse/ArchiveTune/blob/v15.0.0/gradle/wrapper/gradle-wrapper.properties
+  gradle = gradle_9_7_1;
 
   appPackage = stdenv.mkDerivation (finalAttrs: {
     pname = "archivetune";
-    version = "14.1.0";
+    version = "15.0.0";
 
     src = fetchFromGitHub {
       owner = "koiverse";
       repo = "ArchiveTune";
       tag = "v${finalAttrs.version}";
       fetchSubmodules = true;
-      hash = "sha256-l051TObCa9VeI66lPSMgpjhKBwj+1MtWsq90n20W+yA=";
+      hash = "sha256-rINZ30vYeVNMtjrf4jTCNcSNUP/4T224fkUOMVUnwk0=";
     };
 
     patches = [
@@ -99,7 +99,7 @@ let
     prePatch = (
       agp-resolution.patchSettingsGradle {
         file = "settings.gradle.kts";
-        agpVersion = "9.2.1";
+        agpVersion = "9.3.2";
         pluginIds = [
           "com.android.application"
           "com.android.library"

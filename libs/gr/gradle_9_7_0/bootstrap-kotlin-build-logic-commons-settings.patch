@@ -1,0 +1,22 @@
+diff --git a/build-logic-commons/settings.gradle.kts b/build-logic-commons/settings.gradle.kts
+index 79218da4..c70ce8c0 100644
+--- a/build-logic-commons/settings.gradle.kts
++++ b/build-logic-commons/settings.gradle.kts
+@@ -22,6 +22,17 @@ dependencyResolutionManagement {
+     repositories {
+         gradlePluginPortal()
+     }
++    components {
++        withModule("org.gradle.kotlin:gradle-kotlin-dsl-plugins") {
++            allVariants {
++                withDependencies {
++                    filter { it.group == "org.jetbrains.kotlin" }.forEach { dep ->
++                        dep.version { require("2.4.0") }
++                    }
++                }
++            }
++        }
++    }
+ }
+ 
+ plugins {
