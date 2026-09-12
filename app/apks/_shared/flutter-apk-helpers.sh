@@ -24,6 +24,12 @@ setup_pinned_gradlew() {
   # Expand gradle_bin/extra_args now; leave "$@" for the runtime wrapper.
   cat > android/gradlew <<EOF
 #!/bin/sh
+export GRADLE_OPTS="\${GRADLE_OPTS:-}"
+if [ -n "\$MITM_CACHE_KEYSTORE" ]; then
+  export GRADLE_OPTS="\$GRADLE_OPTS -Dhttp.proxyHost=\$MITM_CACHE_HOST -Dhttp.proxyPort=\$MITM_CACHE_PORT -Dhttps.proxyHost=\$MITM_CACHE_HOST -Dhttps.proxyPort=\$MITM_CACHE_PORT -Djavax.net.ssl.trustStore=\$MITM_CACHE_KEYSTORE -Djavax.net.ssl.trustStorePassword=\$MITM_CACHE_KS_PWD"
+fi
+# Darwin sandbox: avoid Java dual-stack ::ffff:127.0.0.1 for mitm loopback.
+case "\$(uname -s)" in Darwin) export GRADLE_OPTS="\$GRADLE_OPTS -Djava.net.preferIPv4Stack=true" ;; esac
 exec ${gradle_bin}${extra_args:+ $extra_args} "\$@"
 EOF
   chmod +x android/gradlew
@@ -39,7 +45,43 @@ append_mitm_gradle_opts() {
     GRADLE_OPTS="$GRADLE_OPTS -Djavax.net.ssl.trustStore=$MITM_CACHE_KEYSTORE"
     GRADLE_OPTS="$GRADLE_OPTS -Djavax.net.ssl.trustStorePassword=$MITM_CACHE_KS_PWD"
   fi
+  if [[ "$(uname -s)" = Darwin ]]; then
+    GRADLE_OPTS="${GRADLE_OPTS:-} -Djava.net.preferIPv4Stack=true"
+  fi
   export GRADLE_OPTS
+}
+
+# Rewrite google()/mavenCentral()/gradlePluginPortal() to mitmCache file repos.
+# Requires: MITM_CACHE_ROOT set to the mitmCache store path.
+rewrite_mitm_gradle_repo_shortcuts() {
+  local f="$1"
+  [ -f "$f" ] || return 0
+  if grep -q 'google()' "$f"; then
+    substituteInPlace "$f" \
+      --replace-fail 'google()' "maven { url = uri(\"${MITM_CACHE_ROOT}/https/dl.google.com/dl/android/maven2\") }"
+  fi
+  if grep -q 'mavenCentral()' "$f"; then
+    substituteInPlace "$f" \
+      --replace-fail 'mavenCentral()' "maven { url = uri(\"${MITM_CACHE_ROOT}/https/repo.maven.apache.org/maven2\") }"
+  fi
+  if grep -q 'gradlePluginPortal()' "$f"; then
+    substituteInPlace "$f" \
+      --replace-fail 'gradlePluginPortal()' "maven { url = uri(\"${MITM_CACHE_ROOT}/https/plugins.gradle.org/m2\") }"
+  fi
+  if grep -Fq 'https://storage.googleapis.com/download.flutter.io' "$f"; then
+    substituteInPlace "$f" \
+      --replace-fail 'https://storage.googleapis.com/download.flutter.io' \
+        "file://${MITM_CACHE_ROOT}/https/storage.googleapis.com/download.flutter.io"
+  fi
+}
+
+rewrite_mitm_gradle_repos_under() {
+  local root="$1"
+  [ -d "$root" ] || return 0
+  local f
+  while IFS= read -r -d '' f; do
+    rewrite_mitm_gradle_repo_shortcuts "$f"
+  done < <(find "$root" -type f \( -name '*.gradle' -o -name '*.gradle.kts' \) -print0)
 }
 
 clone_dart_package() {

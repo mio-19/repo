@@ -111,6 +111,33 @@ let
         . ${flutterApkHelpers}
         setup_writable_flutter_sdk ${flutter344}
         setup_pinned_gradlew ${gradle}/bin/gradle
+
+        # Offline: flutter_tools included build needs pluginManagement + file
+        # repos. UpdateScript keeps gradlePluginPortal() so new deps can record.
+        {
+          echo 'pluginManagement {'
+          echo '    repositories {'
+          if [[ -z "''${IN_GRADLE_UPDATE_DEPS:-}" && -d "${finalAttrs.mitmCache}" ]]; then
+            echo "        maven { url = uri(\"${finalAttrs.mitmCache}/https/plugins.gradle.org/m2\") }"
+            echo "        maven { url = uri(\"${finalAttrs.mitmCache}/https/dl.google.com/dl/android/maven2\") }"
+            echo "        maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }"
+          else
+            echo "        maven { url = uri(\"${finalAttrs.mitmCache}/https/plugins.gradle.org/m2\") }"
+            echo '        gradlePluginPortal()'
+          fi
+          echo '    }'
+          echo '}'
+          cat flutter-sdk/packages/flutter_tools/gradle/settings.gradle.kts
+        } > flutter-sdk/packages/flutter_tools/gradle/settings.gradle.kts.new
+        mv flutter-sdk/packages/flutter_tools/gradle/settings.gradle.kts.new \
+           flutter-sdk/packages/flutter_tools/gradle/settings.gradle.kts
+
+        if [[ -z "''${IN_GRADLE_UPDATE_DEPS:-}" && -d "${finalAttrs.mitmCache}" ]]; then
+          export MITM_CACHE_ROOT="${finalAttrs.mitmCache}"
+          rewrite_mitm_gradle_repo_shortcuts \
+            flutter-sdk/packages/flutter_tools/gradle/settings.gradle.kts
+          rewrite_mitm_gradle_repo_shortcuts android/settings.gradle
+        fi
       '';
 
       preConfigure = ''
@@ -169,6 +196,27 @@ let
         done
 
         ${pythonWithYaml}/bin/python3 ${../_shared/generate-flutter-plugins.py}
+
+        # Flutter plugins ship their own buildscript repos; rewrite them to
+        # mitmCache file paths (MITM proxy often misses nested plugin resolution).
+        if [[ -z "''${IN_GRADLE_UPDATE_DEPS:-}" && -d "${finalAttrs.mitmCache}" ]]; then
+          export MITM_CACHE_ROOT="${finalAttrs.mitmCache}"
+          # FlutterPlugin builds maven URLs as $FLUTTER_STORAGE_BASE_URL/download.flutter.io
+          export FLUTTER_STORAGE_BASE_URL="file://${finalAttrs.mitmCache}/https/storage.googleapis.com"
+
+          while IFS= read -r pkg_dir; do
+            [ -d "$pkg_dir/android" ] || continue
+            ensure_writable_dart_package "$pkg_dir" >/dev/null
+          done < <(${python3}/bin/python3 ${./list-android-pkg-dirs.py})
+
+          rewrite_mitm_gradle_repos_under android
+          rewrite_mitm_gradle_repos_under .dart-patched
+          rewrite_mitm_gradle_repos_under flutter-sdk/packages/flutter_tools/gradle
+
+          # rain_deps.json has lifecycle 2.7.0 / viewmodel-savedstate 2.6.1+2.7.0 but
+          # appcompat pulls 2.6.2; pin to locked versions for offline file repos.
+          cat ${./pin-lifecycle.gradle} >> android/build.gradle
+        fi
       '';
 
       buildPhase = ''

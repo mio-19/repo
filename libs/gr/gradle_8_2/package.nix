@@ -9,7 +9,7 @@
   stdenv,
   gradle-packages,
 }:
-if stdenv.isDarwin then
+if stdenv.hostPlatform.isDarwin then
   # darwin only: Failed to extract plugin metadata from '/nix/store/q15snqpsdvdj91hjy82c10lgvspw6zc1-gradle-maven-repo/org/jetbrains/kotlin/kotlin-reflect/2.0.21/kotlin-reflect-2.0.21.jar'
   (gradle-packages.mkGradle {
     version = "8.2";

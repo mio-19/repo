@@ -59,7 +59,7 @@ sbt_nixpkgs.overrideAttrs (
     io_hash = "sha256-dgvMYYJhgYp9YbJ3C3msoxN08yxNvL1wCDIeV9pIcKI=";
     zinc_hash = "sha256-SlmoL1y3qJm3ntM8rIAZQFuIEcBfqieo8dWd8x0+7/U=";
     # https://www.scala-sbt.org/1.x/docs/Command-Line-Reference.html
-    preBuild = lib.optionalString stdenv.isDarwin ''
+    preBuild = lib.optionalString stdenv.hostPlatform.isDarwin ''
       export SBT_OPTS="-Dsbt.global.base=$HOME/.sbt/1.0"
     '';
     #inherit (sbtSetup) JAVA_HOME;

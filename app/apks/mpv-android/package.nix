@@ -87,7 +87,7 @@ let
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
 
-      preBuild = lib.optionalString stdenv.isDarwin ''
+      preBuild = lib.optionalString stdenv.hostPlatform.isDarwin ''
         # AGP writes SDK metadata under ~/.android; /var/empty is read-only on Darwin sandboxes.
         export HOME="$TMPDIR/home"
         mkdir -p "$HOME"

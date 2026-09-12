@@ -213,7 +213,7 @@ let
 
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
       ''
-      + lib.optionalString stdenv.isDarwin ''
+      + lib.optionalString stdenv.hostPlatform.isDarwin ''
         export ANDROID_USER_HOME="$HOME/.android"
         export GRADLE_USER_HOME="$HOME/.gradle"
         mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"

@@ -8,7 +8,7 @@
   gradle-packages,
   stdenv,
 }:
-if stdenv.isDarwin then
+if stdenv.hostPlatform.isDarwin then
   # darwin only: The Develocity server (ge.gradle.org) rejected the request due to authentication being required.
   (gradle-packages.mkGradle {
     version = "8.8";

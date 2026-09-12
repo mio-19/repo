@@ -8,7 +8,7 @@
   stdenv,
   gradle-packages,
 }:
-if stdenv.isDarwin then
+if stdenv.hostPlatform.isDarwin then
   # darwin only: java.util.zip.ZipException: zip file is empty
   (gradle-packages.mkGradle {
     version = "8.13";

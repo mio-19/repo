@@ -61,7 +61,7 @@ let
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
         outputHash =
-          if stdenv.isDarwin then
+          if stdenv.hostPlatform.isDarwin then
             "sha256-rQXYYF73Az68cO9Cf6KEAzkOZ4SzRGsugzObm3a9iOE="
           else
             "sha256-4o9EGVYSmDXf2qpID+ZWUjDP6YSV6PzpE1URcfRzuj0=";

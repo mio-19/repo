@@ -7,7 +7,7 @@
   stdenv,
   gradle-packages,
 }:
-if stdenv.isDarwin then
+if stdenv.hostPlatform.isDarwin then
   # darwin only: Internal compiler error. See log for more details
   (gradle-packages.mkGradle {
     version = "8.12-rc-1";

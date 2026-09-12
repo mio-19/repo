@@ -1,4 +1,5 @@
 {
+  agp-resolution,
   mk-apk-package,
   lib,
   jdk21_headless,
@@ -68,15 +69,50 @@ let
       };
 
       # foss.patch: https://github.com/Mygod/VPNHotspot.git vs https://codeberg.org/zinga/VPNHotspot.git v2.19.1
-      postPatch = ''
-        ${lib.getExe git} apply "${./foss.patch}"
-        substituteInPlace mobile/build.gradle.kts \
-              --replace-fail '    compileSdk = 36' '    compileSdk = 36
-        ndkVersion = "27.3.13750724"'
+      postPatch =
+        agp-resolution.patchSettingsGradle {
+          agpVersion = "8.11.0";
+          extraPlugins = [
+            {
+              ids = [ "org.jetbrains.kotlin.android" ];
+              module = "org.jetbrains.kotlin:kotlin-gradle-plugin";
+              version = "2.2.0";
+            }
+            {
+              ids = [ "org.jetbrains.kotlin.plugin.compose" ];
+              module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin";
+              version = "2.2.0";
+            }
+            {
+              ids = [ "com.google.devtools.ksp" ];
+              module = "com.google.devtools.ksp:symbol-processing-gradle-plugin";
+              version = "2.2.0-2.0.2";
+            }
+            {
+              ids = [ "com.github.ben-manes.versions" ];
+              module = "com.github.ben-manes:gradle-versions-plugin";
+              version = "0.52.0";
+            }
+          ];
+        }
+        + ''
+          ${lib.getExe git} apply "${./foss.patch}"
+          substituteInPlace mobile/build.gradle.kts \
+                --replace-fail '    compileSdk = 36' '    compileSdk = 36
+          ndkVersion = "27.3.13750724"'
 
-        substituteInPlace mobile/build.gradle.kts \
-              --replace-fail 'vcsInfo.include = true' 'vcsInfo.include = false'
-      '';
+          substituteInPlace mobile/build.gradle.kts \
+                --replace-fail 'vcsInfo.include = true' 'vcsInfo.include = false'
+
+          # Offline builds: point Gradle repos at mitmCache paths. Keep network
+          # shortcuts during mitmCache.updateScript so new deps can be captured.
+          if [[ -z "''${IN_GRADLE_UPDATE_DEPS:-}" && -d "${finalAttrs.mitmCache}" ]]; then
+            substituteInPlace settings.gradle.kts \
+              --replace-fail "google()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/dl.google.com/dl/android/maven2\") }" \
+              --replace-fail "mavenCentral()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/repo.maven.apache.org/maven2\") }" \
+              --replace-fail "gradlePluginPortal()" "maven { url = uri(\"${finalAttrs.mitmCache}/https/plugins.gradle.org/m2\") }"
+          fi
+        '';
 
       preConfigure = ''
         export ANDROID_USER_HOME="$HOME/.android"

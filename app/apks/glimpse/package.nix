@@ -39,7 +39,7 @@ let
         # generateBp 1.32
         ./bp.gradle.lock
       ]
-      ++ lib.optionals stdenv.isDarwin [
+      ++ lib.optionals stdenv.hostPlatform.isDarwin [
         # com.android.tools.lint:lint-gradle:32.1.0 only needed on darwin for some reason
         ./lint.gradle.lock
       ]
@@ -75,7 +75,7 @@ let
 
     gradleBuildFlags = ":app:assembleRelease";
 
-    preBuild = lib.optionalString stdenv.isDarwin ''
+    preBuild = lib.optionalString stdenv.hostPlatform.isDarwin ''
       export ANDROID_USER_HOME="$HOME/.android"
       mkdir -p "$ANDROID_USER_HOME"
     '';

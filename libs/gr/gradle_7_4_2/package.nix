@@ -7,7 +7,7 @@
   stdenv,
   gradle-packages,
 }:
-if stdenv.isDarwin then
+if stdenv.hostPlatform.isDarwin then
   # facing nodejs related errors on darwin
   (gradle-packages.mkGradle {
     version = "7.4.2";

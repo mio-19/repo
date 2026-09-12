@@ -101,7 +101,7 @@ stdenv.mkDerivation (
     installCheckPhase = checkMavenProvides finalAttrs;
     meta = {
       # build failed on darwin
-      mavenProvides = lib.optionalAttrs stdenv.isLinux (exposeMavenProvides finalAttrs);
+      mavenProvides = lib.optionalAttrs stdenv.hostPlatform.isLinux (exposeMavenProvides finalAttrs);
       mavenProvidesInternal =
         let
           postfixes = [

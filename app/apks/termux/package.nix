@@ -37,21 +37,12 @@ let
           url = "https://github.com/termux/termux-app/pull/5025.patch";
           hash = "sha256-07jVCLJX96jZDoWcMlBLtjh2K9dLC1ciVOBzfC1kTpU=";
         })
-        (fetchpatch {
-          name = "Add graphics in terminal support: - Sixel and iTerm2 protocols";
-          url = "https://github.com/termux/termux-app/pull/2973.diff";
-          hash = "sha256-tHmbmj3Q6E1RR8eEvxaeBmWwpuTSQBL7TscndBy3zD4=";
-        })
-        (fetchpatch {
-          name = "feat: multi window support";
-          url = "https://github.com/termux/termux-app/pull/4961.diff";
-          hash = "sha256-N/Elb1VT54aLSgWxPbvEWoEUtkTsVoYKRSWZyt3L5/E=";
-        })
-        (fetchpatch {
-          name = "feat(view): Enable mouse cursor movement in shell readline";
-          url = "https://github.com/termux/termux-app/pull/4775.diff";
-          hash = "sha256-xaqizEKirWPYlNFwpF37o1OGDph21nBh+hsw/Loov1Q=";
-        })
+        # Rebased after sixel/iTerm2 graphics landed (https://github.com/termux/termux-app/pull/2973).
+        # Original: https://github.com/termux/termux-app/pull/4961
+        ./multi-window-support.patch
+        # Rebased for the same upstream refresh as multi-window above.
+        # Original: https://github.com/termux/termux-app/pull/4775
+        ./mouse-cursor-movement.patch
       ];
 
       bootstrapAarch64 = fetchurl {
