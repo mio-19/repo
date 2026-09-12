@@ -1,0 +1,237 @@
+diff --git a/app/src/main/java/com/termux/app/TermuxActivity.java b/app/src/main/java/com/termux/app/TermuxActivity.java
+index 4c94107..9fbd37d 100644
+--- a/app/src/main/java/com/termux/app/TermuxActivity.java
++++ b/app/src/main/java/com/termux/app/TermuxActivity.java
+@@ -314,6 +314,12 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
+     public void onResume() {
+         super.onResume();
+ 
++        // Use the existing mTerminalView variable to get the current terminal view
++        TerminalView terminalView = mTerminalView;
++        if (terminalView != null) {
++            terminalView.reloadPreferences();
++        }
++
+         Logger.logVerbose(LOG_TAG, "onResume");
+ 
+         if (mIsInvalidState) return;
+diff --git a/app/src/main/java/com/termux/app/fragments/settings/termux/TerminalViewPreferencesFragment.java b/app/src/main/java/com/termux/app/fragments/settings/termux/TerminalViewPreferencesFragment.java
+index ff033fd..58611c3 100644
+--- a/app/src/main/java/com/termux/app/fragments/settings/termux/TerminalViewPreferencesFragment.java
++++ b/app/src/main/java/com/termux/app/fragments/settings/termux/TerminalViewPreferencesFragment.java
+@@ -24,7 +24,6 @@ public class TerminalViewPreferencesFragment extends PreferenceFragmentCompat {
+ 
+         setPreferencesFromResource(R.xml.termux_terminal_view_preferences, rootKey);
+     }
+-
+ }
+ 
+ class TerminalViewPreferencesDataStore extends PreferenceDataStore {
+@@ -46,16 +45,16 @@ class TerminalViewPreferencesDataStore extends PreferenceDataStore {
+         return mInstance;
+     }
+ 
+-
+-
+     @Override
+     public void putBoolean(String key, boolean value) {
+-        if (mPreferences == null) return;
+-        if (key == null) return;
++        if (mPreferences == null || key == null) return;
+ 
+         switch (key) {
+             case "terminal_margin_adjustment":
+-                    mPreferences.setTerminalMarginAdjustment(value);
++                mPreferences.setTerminalMarginAdjustment(value);
++                break;
++            case "mouse_cursor_movement_enabled":
++                mPreferences.setMouseCursorMovementEnabled(value);
+                 break;
+             default:
+                 break;
+@@ -64,14 +63,15 @@ class TerminalViewPreferencesDataStore extends PreferenceDataStore {
+ 
+     @Override
+     public boolean getBoolean(String key, boolean defValue) {
+-        if (mPreferences == null) return false;
++        if (mPreferences == null) return defValue;
+ 
+         switch (key) {
+             case "terminal_margin_adjustment":
+                 return mPreferences.isTerminalMarginAdjustmentEnabled();
++            case "mouse_cursor_movement_enabled":
++                return mPreferences.isMouseCursorMovementEnabled();
+             default:
+-                return false;
++                return defValue;
+         }
+     }
+-
+ }
+diff --git a/app/src/main/res/xml/root_preferences.xml b/app/src/main/res/xml/root_preferences.xml
+index 0ec8b14..64ddd06 100644
+--- a/app/src/main/res/xml/root_preferences.xml
++++ b/app/src/main/res/xml/root_preferences.xml
+@@ -45,5 +45,4 @@
+         app:title="@string/donate_preference_title"
+         app:persistent="false"
+         app:isPreferenceVisible="false"/>
+-
+ </PreferenceScreen>
+diff --git a/app/src/main/res/xml/termux_preferences.xml b/app/src/main/res/xml/termux_preferences.xml
+index 90353c5..c831644 100644
+--- a/app/src/main/res/xml/termux_preferences.xml
++++ b/app/src/main/res/xml/termux_preferences.xml
+@@ -14,5 +14,4 @@
+         app:title="@string/termux_terminal_view_preferences_title"
+         app:summary="@string/termux_terminal_view_preferences_summary"
+         app:fragment="com.termux.app.fragments.settings.termux.TerminalViewPreferencesFragment"/>
+-
+ </PreferenceScreen>
+diff --git a/app/src/main/res/xml/termux_terminal_view_preferences.xml b/app/src/main/res/xml/termux_terminal_view_preferences.xml
+index 3f66863..7611114 100644
+--- a/app/src/main/res/xml/termux_terminal_view_preferences.xml
++++ b/app/src/main/res/xml/termux_terminal_view_preferences.xml
+@@ -10,6 +10,12 @@
+             app:summaryOn="@string/termux_terminal_view_terminal_margin_adjustment_on"
+             app:title="@string/termux_terminal_view_terminal_margin_adjustment_title" />
+ 
++        <SwitchPreferenceCompat
++            app:key="mouse_cursor_movement_enabled"
++            app:title="Move Cursor With Tap"
++            app:summaryOn="The cursor will move to the tapped location in the command line."
++            app:summaryOff="Standard terminal behavior (long-press to select text)."
++            app:defaultValue="false" />
+     </PreferenceCategory>
+ 
+ </PreferenceScreen>
+diff --git a/terminal-view/build.gradle b/terminal-view/build.gradle
+index 75dff01..6fc607b 100644
+--- a/terminal-view/build.gradle
++++ b/terminal-view/build.gradle
+@@ -8,6 +8,7 @@ android {
+     dependencies {
+         implementation "androidx.annotation:annotation:1.9.0"
+         api project(":terminal-emulator")
++        implementation "androidx.preference:preference:1.1.1"
+     }
+ 
+     defaultConfig {
+diff --git a/terminal-view/src/main/java/com/termux/view/TerminalView.java b/terminal-view/src/main/java/com/termux/view/TerminalView.java
+index c393a53..041912c 100644
+--- a/terminal-view/src/main/java/com/termux/view/TerminalView.java
++++ b/terminal-view/src/main/java/com/termux/view/TerminalView.java
+@@ -53,6 +53,8 @@ public final class TerminalView extends View {
+     /** Our terminal emulator whose session is {@link #mTermSession}. */
+     public TerminalEmulator mEmulator;
+ 
++    private boolean mIsMouseCursorMovementEnabled = false;
++
+     public TerminalRenderer mRenderer;
+ 
+     public TerminalViewClient mClient;
+@@ -298,6 +300,9 @@ public final class TerminalView extends View {
+         mEmulator = null;
+         mCombiningAccent = 0;
+ 
++        android.content.SharedPreferences prefs = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getContext());
++        mIsMouseCursorMovementEnabled = prefs.getBoolean("mouse_cursor_movement_enabled", false);
++
+         // The emulator's cached value will be read in `updateSize()` when emulator is set.
+         setTopRow(0, false);
+ 
+@@ -627,11 +632,11 @@ public final class TerminalView extends View {
+             updateFloatingToolbarVisibility(event);
+             mGestureRecognizer.onTouchEvent(event);
+             return true;
+-        } else if (event.isFromSource(InputDevice.SOURCE_MOUSE)) {
+-            if (event.isButtonPressed(MotionEvent.BUTTON_SECONDARY)) {
++        } else if (event.isFromSource(InputDevice.SOURCE_MOUSE) || event.isFromSource(InputDevice.SOURCE_TOUCHSCREEN)) {
++            if (event.isFromSource(InputDevice.SOURCE_MOUSE) && event.isButtonPressed(MotionEvent.BUTTON_SECONDARY)) {
+                 if (action == MotionEvent.ACTION_DOWN) showContextMenu();
+                 return true;
+-            } else if (event.isButtonPressed(MotionEvent.BUTTON_TERTIARY)) {
++            } else if (event.isFromSource(InputDevice.SOURCE_MOUSE) && event.isButtonPressed(MotionEvent.BUTTON_TERTIARY)) {
+                 ClipboardManager clipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                 ClipData clipData = clipboardManager.getPrimaryClip();
+                 if (clipData != null) {
+@@ -652,6 +657,47 @@ public final class TerminalView extends View {
+                         break;
+                 }
+             }
++            else { // Mouse tracking is OFF, handle for the shell
++                if (mIsMouseCursorMovementEnabled && event.getAction() == MotionEvent.ACTION_DOWN) {
++                    // Get target row and column from the click
++                    int[] targetCoords = getColumnAndRow(event, false);
++                    int targetColumn = targetCoords[0];
++                    int targetRow = targetCoords[1];
++                    // Boundary Check
++                    try {
++                        String clickedChar = mEmulator.getScreen().getSelectedText(targetColumn, targetRow, targetColumn + 1, targetRow).toString();
++                        if (clickedChar == null || clickedChar.trim().isEmpty()) {
++                            return true;
++                        }
++                    } catch (Exception e) {
++                        return true;
++                    }
++
++                    // Get cursor's current visual position
++                    int currentRow = mEmulator.getCursorRow();
++                    int currentColumn = mEmulator.getCursorCol();
++
++                    // Get the width of the terminal in characters
++                    int terminalWidth = mEmulator.mColumns;
++
++                    // Calculate the 1D index for both the click position and the cursor position.
++                    int targetIndex = (targetRow * terminalWidth) + targetColumn;
++                    int currentIndex = (currentRow * terminalWidth) + currentColumn;
++
++                    int diff = targetIndex - currentIndex;
++
++                    // Send Left or Right commands
++                    if (diff > 0) { // Need to move right
++                        for (int i = 0; i < diff; i++) {
++                            handleKeyCode(android.view.KeyEvent.KEYCODE_DPAD_RIGHT, 0);
++                        }
++                    } else if (diff < 0) { // Need to move left
++                        for (int i = 0; i < -diff; i++) {
++                            handleKeyCode(android.view.KeyEvent.KEYCODE_DPAD_LEFT, 0);
++                        }
++                    }
++                }
++            }
+         }
+ 
+         mGestureRecognizer.onTouchEvent(event);
+@@ -1532,4 +1578,9 @@ public final class TerminalView extends View {
+         }
+     }
+ 
++    public void reloadPreferences() {
++        android.content.SharedPreferences prefs = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getContext());
++        mIsMouseCursorMovementEnabled = prefs.getBoolean("mouse_cursor_movement_enabled", false);
++    }
++
+ }
+diff --git a/termux-shared/src/main/java/com/termux/shared/termux/settings/preferences/TermuxAppSharedPreferences.java b/termux-shared/src/main/java/com/termux/shared/termux/settings/preferences/TermuxAppSharedPreferences.java
+index cd3812f..c181476 100644
+--- a/termux-shared/src/main/java/com/termux/shared/termux/settings/preferences/TermuxAppSharedPreferences.java
++++ b/termux-shared/src/main/java/com/termux/shared/termux/settings/preferences/TermuxAppSharedPreferences.java
+@@ -258,4 +258,14 @@ public class TermuxAppSharedPreferences extends AppSharedPreferences {
+         SharedPreferenceUtils.setBoolean(mSharedPreferences, TERMUX_APP.KEY_CRASH_REPORT_NOTIFICATIONS_ENABLED, value, false);
+     }
+ 
++    // Method to READ the setting
++    public boolean isMouseCursorMovementEnabled() {
++        return SharedPreferenceUtils.getBoolean(mSharedPreferences, "mouse_cursor_movement_enabled", false);
++    }
++
++    // Method to SAVE the setting
++    public void setMouseCursorMovementEnabled(boolean value) {
++        SharedPreferenceUtils.setBoolean(mSharedPreferences, "mouse_cursor_movement_enabled", value, false);
++    }
++
+ }
+-- 
+2.55.0
+

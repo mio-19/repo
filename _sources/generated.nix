@@ -190,17 +190,17 @@
   };
   derpfest_launcher3 = {
     pname = "derpfest_launcher3";
-    version = "b7ff1591907a46380021dfd474124466a085fdb1";
+    version = "4ac0a7a518831fe131456cca7d243e7f86eaa7cf";
     src = fetchgit {
       url = "https://github.com/DerpFest-AOSP/android_packages_apps_DerpLauncher.git";
-      rev = "b7ff1591907a46380021dfd474124466a085fdb1";
+      rev = "4ac0a7a518831fe131456cca7d243e7f86eaa7cf";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-h5i8cPZNpXtKccQPpgyj4ZxO869Nke82Y4/Uup3PrJY=";
+      sha256 = "sha256-cL84fYW64suqm9bBDA/ekR+Xd4acpuUMNoE9DNFdn24=";
     };
-    date = "2026-06-18";
+    date = "2026-06-28";
   };
   evox_launcher3 = {
     pname = "evox_launcher3";
@@ -274,17 +274,17 @@
   };
   grapheneos_pdfviewer = {
     pname = "grapheneos_pdfviewer";
-    version = "d63b187f752864a73995f9d71061b3beb08b5793";
+    version = "5442c78a0757bb57690df789b6f902917bd8069d";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/PdfViewer.git";
-      rev = "d63b187f752864a73995f9d71061b3beb08b5793";
+      rev = "5442c78a0757bb57690df789b6f902917bd8069d";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-BiS7a8YS+dQ+A5xTYXmY+Z4PQX5ZftSD73P0ipzi/Xs=";
+      sha256 = "sha256-TUzffIbH2q5lGdJ2gWo8kiIbjVBg7LpYFX5gz+L3E3Q=";
     };
-    date = "2026-08-27";
+    date = "2026-09-07";
   };
   grapheneos_vanadium = {
     pname = "grapheneos_vanadium";
@@ -736,17 +736,17 @@
   };
   sm8550_tab_kernel_sm8550_modules = {
     pname = "sm8550_tab_kernel_sm8550_modules";
-    version = "4dc7560de3e554b5a1bff6d751c247dd3414acd1";
+    version = "3df150495b0618371010cb7d03460a858cb62e3f";
     src = fetchgit {
       url = "https://github.com/samsung-sm8550-tab/android_kernel_samsung_sm8550-modules.git";
-      rev = "4dc7560de3e554b5a1bff6d751c247dd3414acd1";
+      rev = "3df150495b0618371010cb7d03460a858cb62e3f";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-DCkn/hHTgQgUF9MFTup8g+hKmZE8Z08htJUa1ee9kbA=";
+      sha256 = "sha256-J402e4AtE7M6q/lXb7VbzQ5Y1NUL6ZyyyDzvkNoi/lc=";
     };
-    date = "2026-05-16";
+    date = "2026-09-05";
   };
   sm8550_tab_vendor_gts9wifi = {
     pname = "sm8550_tab_vendor_gts9wifi";
@@ -806,31 +806,31 @@
   };
   termux_app = {
     pname = "termux_app";
-    version = "3b66f8799635a4dba4a206563048ff0e6792c487";
+    version = "4584488513c099f2e98bcfcd00f006d213248729";
     src = fetchgit {
       url = "https://github.com/termux/termux-app.git";
-      rev = "3b66f8799635a4dba4a206563048ff0e6792c487";
+      rev = "4584488513c099f2e98bcfcd00f006d213248729";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-8+Eh7HEfRJSZriKKNcaas3Pqd6s172lZnhbvuaOniTg=";
+      sha256 = "sha256-tAzCX1vXjnSZ/OE/c7XqJe4kNhBOSPt1pK4dkPvph0M=";
     };
-    date = "2026-08-24";
+    date = "2026-09-12";
   };
   termux_x11 = {
     pname = "termux_x11";
-    version = "9df8b767645aa0d0a2f2576767449df55b41962f";
+    version = "53f8437326dbbe26b3756480aece7f604d2c1900";
     src = fetchgit {
       url = "https://github.com/termux/termux-x11.git";
-      rev = "9df8b767645aa0d0a2f2576767449df55b41962f";
+      rev = "53f8437326dbbe26b3756480aece7f604d2c1900";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-RbB8BE+zUrfK7/6rmcsLJbsB6ssPik7yI1k0bL2JP84=";
+      sha256 = "sha256-Ze9ZlUMV1nid8NFaHBnHzQMVEy31FRfxuvna++H4H38=";
     };
-    date = "2026-09-04";
+    date = "2026-09-11";
   };
   vendor_gapps15 = {
     pname = "vendor_gapps15";
