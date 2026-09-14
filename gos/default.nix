@@ -59,6 +59,45 @@ let
       --ks-pass android \
       --out prebuilt/${name}.apk
   '';
+  releaseToTimestamp =
+    release:
+    let
+      yearStr = builtins.substring 0 4 release;
+      monthStr = builtins.substring 4 2 release;
+      dayStr = builtins.substring 6 2 release;
+      year = lib.toIntBase10 yearStr;
+      month = lib.toIntBase10 monthStr;
+      day = lib.toIntBase10 dayStr;
+
+      daysInMonth = [
+        0
+        31
+        28
+        31
+        30
+        31
+        30
+        31
+        31
+        30
+        31
+        30
+        31
+      ];
+      isLeapYear = y: (lib.mod y 4 == 0 && lib.mod y 100 != 0) || (lib.mod y 400 == 0);
+      daysInMonthForYear = y: m: if m == 2 && isLeapYear y then 29 else builtins.elemAt daysInMonth m;
+
+      daysInYear = y: if isLeapYear y then 366 else 365;
+
+      yearsRange = lib.range 1970 (year - 1);
+      daysFromYears = lib.foldl (acc: y: acc + daysInYear y) 0 yearsRange;
+
+      monthsRange = if month == 1 then [ ] else lib.range 1 (month - 1);
+      daysFromMonths = lib.foldl (acc: m: acc + daysInMonthForYear year m) 0 monthsRange;
+
+      totalDays = daysFromYears + daysFromMonths + (day - 1);
+    in
+    totalDays * 86400;
 in
 {
   imports = [
@@ -73,7 +112,7 @@ in
     ./launcher.nix
     ./gos_userdebug.nix
   ];
-  buildDateTime = 1786711821; # builtins.currentTime # TODO: calculate from config.grapheneos.release instead
+  buildDateTime = releaseToTimestamp config.grapheneos.release;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   apps = {
