@@ -32,7 +32,7 @@ let
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-xI3zJbZDBW8gqsAUiOGL1EbSBBSjiQ9Sk5KOVNL0chc=";
+    hash = "sha256-+QXszgGBNKYxVHRjrxJ34IAL6d/Uc1X0Ch3mjvdKWeU=";
     fetchSubmodules = true;
   };
 
@@ -133,12 +133,12 @@ let
 in
 buildGradlePackage rec {
   pname = "forkgram-classic";
-  version = "12.10.5.0";
+  version = "12.10.6.0";
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-xI3zJbZDBW8gqsAUiOGL1EbSBBSjiQ9Sk5KOVNL0chc=";
+    hash = "sha256-+QXszgGBNKYxVHRjrxJ34IAL6d/Uc1X0Ch3mjvdKWeU=";
     fetchSubmodules = true;
   };
 

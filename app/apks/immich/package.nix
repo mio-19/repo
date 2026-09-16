@@ -65,7 +65,7 @@ let
     in
     buildDartApplication.override { dart = flutter347; } (finalAttrs: {
       pname = "immich";
-      version = "3.2.0";
+      version = "3.2.1";
 
       src = applyPatches {
         src = fetchFromGitHub {
@@ -73,7 +73,7 @@ let
           repo = "immich";
           tag = "v${finalAttrs.version}";
           fetchSubmodules = true;
-          hash = "sha256-rslbXrpFR8jLSuUGClVDWwo57E45MYBc2mHiOLCTrNE=";
+          hash = "sha256-uJB+7b+gCiRqq8nzMoWwyyTnEvCqG0mMCTgWkjApN60=";
         };
         # v3.2.0 moved the OpenAPI Dart client to gitignored generated/openapi.
         nativeBuildInputs = [ openapi-generator-cli ];
