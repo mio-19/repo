@@ -20,6 +20,8 @@ let
     s.platforms-android-33
     s.platforms-android-34
     s.platforms-android-35
+    s.platforms-android-37-0
+    s.build-tools-37-0-0
     s.platforms-android-36
     s.build-tools-34-0-0
     s.build-tools-35-0-0
@@ -38,13 +40,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches";
-  version = "1.42.0";
+  version = "1.43.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-+VIDpZ9j+h6icKm+S4GYpgL25nxOQV0Cc5lj4ePG1g4=";
+    hash = "sha256-WD/1c+CP0ZtMXi4vilZ9x8Way8hk58X+OJrETWSJapE=";
   };
 
   gradleBuildTask = "generatePatchesList";
