@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  gradle_9_5_1,
+  gradle_9_7_1,
   jdk21_headless,
   jdk17_headless,
   jdk25_headless,
@@ -22,17 +22,17 @@ let
         s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_5_1;
+      gradle = gradle_9_7_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "meshtastic";
-      version = "2.8.1";
+      version = "2.8.2-open.2";
 
       src = fetchFromGitHub {
         owner = "meshtastic";
         repo = "Meshtastic-Android";
         rev = "v${finalAttrs.version}";
-        hash = "sha256-t0z69+JTse2KOxBiMGvBQVeh9j4fHlubZkFJoRYGBWY=";
+        hash = "sha256-0LO+3lK8ehVl2MZ38G+oqaBNjIoSjfSmqpoOmXwEqKU=";
         fetchSubmodules = true;
       };
 
@@ -90,6 +90,15 @@ let
         VERSION_CODE = "29319661";
       };
 
+      postPatch = ''
+        # Gradle 9.6+ cannot disable the config-cache while isolated-projects is
+        # on. We pass --no-configuration-cache via gradleFlags (needed for the
+        # MITM fetch-deps run), so turn off isolated-projects here so the two
+        # flags can coexist.
+        substituteInPlace gradle.properties \
+          --replace-fail "org.gradle.isolated-projects=true" "org.gradle.isolated-projects=false"
+      '';
+
       preConfigure = ''
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
@@ -101,8 +110,8 @@ let
         cacheRoot="${finalAttrs.mitmCache}/https/central.sonatype.com/repository/maven-snapshots/org/meshtastic"
         repoRoot="offline-repository/org/meshtastic"
         for artifact in protobufs protobufs-android protobufs-jvm protobufs-iosarm64 protobufs-iossimulatorarm64; do
-          srcDir="$cacheRoot/$artifact/2.7.26.151-gef0ae57-SNAPSHOT"
-          dstDir="$repoRoot/$artifact/2.7.26.151-gef0ae57-SNAPSHOT"
+          srcDir="$cacheRoot/$artifact/2.8.0.35-g3b3df2a-SNAPSHOT"
+          dstDir="$repoRoot/$artifact/2.8.0.35-g3b3df2a-SNAPSHOT"
           if [ ! -d "$srcDir" ]; then
             continue
           fi
@@ -123,15 +132,15 @@ let
             cp "$(readlink -f "$srcDir/maven-metadata.xml")" "$metadata"
             chmod u+w "$metadata"
             substituteInPlace "$metadata" \
-              --replace-fail '<timestamp>gef0ae57</timestamp>' '<timestamp>20260819.194522</timestamp>' \
-              --replace-fail '<buildNumber>20260819.194522</buildNumber>' '<buildNumber>1</buildNumber>' \
+              --replace-fail '<timestamp>g3b3df2a</timestamp>' '<timestamp>20260910.135712</timestamp>' \
+              --replace-fail '<buildNumber>20260910.135712</buildNumber>' '<buildNumber>1</buildNumber>' \
               --replace-fail '<classifier>1</classifier>' "" \
-              --replace-fail '<updated>gef0ae57</updated>' '<updated>20260819194522</updated>'
+              --replace-fail '<updated>g3b3df2a</updated>' '<updated>20260910135712</updated>'
           fi
 
           for ext in module pom aar jar; do
-            timestamped="$dstDir/$artifact-2.7.26.151-gef0ae57-20260819.194522-1.$ext"
-            snapshot="$dstDir/$artifact-2.7.26.151-gef0ae57-SNAPSHOT.$ext"
+            timestamped="$dstDir/$artifact-2.8.0.35-g3b3df2a-20260910.135712-1.$ext"
+            snapshot="$dstDir/$artifact-2.8.0.35-g3b3df2a-SNAPSHOT.$ext"
             if [ -e "$timestamped" ] && [ ! -e "$snapshot" ]; then
               ln -s "$(basename "$timestamped")" "$snapshot"
             fi

@@ -26,7 +26,7 @@
 }:
 
 let
-  version = "12.10.5.0";
+  version = "12.10.6.0";
 
   src = fetchFromGitHub {
     owner = "forkgram";

@@ -23,13 +23,13 @@ let
 
   appPackage = gradle_9_5_1.stdenv.mkDerivation (finalAttrs: {
     pname = "nextcloud-android";
-    version = "34.1.1";
+    version = "35.0.0";
 
     src = fetchFromGitHub {
       owner = "nextcloud";
       repo = "android";
       tag = "stable-${finalAttrs.version}";
-      hash = "sha256-81gSIMUiXmJ578IIIV5zL7uo+xDoBTfuT0Sr02AaZIs=";
+      hash = "sha256-zWr+QEJgT4vzoVYfGd+hOkdMxR2I+TPbXMjm3VvfVz4=";
     };
 
     patches = [
@@ -37,10 +37,10 @@ let
     ];
 
     gradleBuildTask = ":app:assembleGenericRelease";
-    # Include assemble so mitm captures jars (metadata-only tasks can omit them).
-    gradleUpdateTask = ":app:assembleGenericRelease resolveAllDependencies --refresh-dependencies --no-build-cache --no-configuration-cache --no-daemon";
+    gradleUpdateTask = "resolveAllDependencies :app:assembleGenericRelease --refresh-dependencies --no-build-cache --no-configuration-cache --no-daemon";
 
     passthru = {
+      mitmCache = finalAttrs.mitmCache;
       prefab_jar = fetchurl {
         url = "https://maven.google.com/com/google/prefab/cli/2.1.0/cli-2.1.0-all.jar";
         hash = "sha256-4hnIzWv9n/cVA6V8avNLm6Bg8DUlzD5YMw3uUyRaXtY=";
@@ -79,10 +79,11 @@ let
       rm -f gradle/verification-metadata.xml
       substituteInPlace appscan/build.gradle.kts app/build.gradle.kts \
         --replace-warn "compileSdk = 37" "compileSdk = 36"
-      echo "gradle.taskGraph.whenReady { allTasks.forEach { if (it.name.contains(\"AarMetadata\")) it.enabled = false } }" >> build.gradle.kts
+      echo "gradle.taskGraph.whenReady { allTasks.forEach { if (it.name.contains(\"AarMetadata\") || it.name.contains(\"CMake\")) it.enabled = false } }" >> build.gradle.kts
     '';
 
     preConfigure = ''
+
       export PREFAB_JAR="${finalAttrs.passthru.prefab_jar}"
       export ANDROID_USER_HOME="$HOME/.android"
       export GRADLE_USER_HOME="$HOME/.gradle"
