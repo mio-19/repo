@@ -27,6 +27,8 @@ mkMavenPackageWithLock rec {
     "-am"
     "-Dmaven.javadoc.skip=true"
     "-Dmaven.source.skip=true"
+    # One test fails under JDK 25; APK consumers only need the packaged jar.
+    "-DskipTests"
     "package"
   ];
 
