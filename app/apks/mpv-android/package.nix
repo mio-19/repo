@@ -25,13 +25,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "mpv-android";
-      version = "2026-08-11";
+      version = "2026-09-17";
 
       src = fetchFromGitHub {
         owner = "mpv-android";
         repo = "mpv-android";
         tag = finalAttrs.version;
-        hash = "sha256-kZ68Y0Dm99RtpACz625AOHjv4TcBIYvQGYJ+LjR+fLw=";
+        hash = "sha256-wc8itOzKrLOl+qmRXA4G94DEeRY1g4PZgdlewm1wIVA=";
       };
 
       gradleBuildTask = ":app:assembleDefaultDebug";
@@ -63,8 +63,12 @@ let
         (fetchpatch {
           name = "YTDL support";
           url = "https://github.com/mpv-android/mpv-android/pull/58.diff";
-          excludes = [ "app/build.gradle" ];
-          hash = "sha256-mBFEpMrIUS4OQvYDaUU8tIEswrglNAk60+k4m7FWoUw=";
+          excludes = [
+            "app/build.gradle"
+            "buildscripts/buildall.sh"
+            "app/src/api29/AndroidManifest.xml"
+          ];
+          hash = "sha256-Y0P933Y4mPYtOmdXLqS+XOmzCTZtd3i2F4wshr/suds=";
         })
       ];
 

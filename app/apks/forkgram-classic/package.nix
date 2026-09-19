@@ -21,18 +21,20 @@
   stdenv,
   unzip,
   which,
+  cargo,
+  rustc,
   writableTmpDirAsHomeHook,
   gradle_8_14_4,
 }:
 
 let
-  version = "12.10.6.0";
+  version = "12.10.7.0";
 
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-+QXszgGBNKYxVHRjrxJ34IAL6d/Uc1X0Ch3mjvdKWeU=";
+    hash = "sha256-NmH1ZHmo27M4TecKx5G0fHAJbgvufVpohZydZ5gSBIc=";
     fetchSubmodules = true;
   };
 
@@ -40,7 +42,9 @@ let
     s.cmdline-tools-latest
     s.platform-tools
     s.platforms-android-36
+    s.platforms-android-35
     s.build-tools-36-0-0
+    s.build-tools-35-0-0
     s.ndk-27-2-12479018
   ]);
 
@@ -81,7 +85,7 @@ let
     pname = "forkgram-tlottie";
     inherit version src;
     cargoRoot = "TMessagesProj/jni/tlottie";
-    hash = "sha256-XPagRmugqmrCYKVFvvOfGZ7Ew3qcpQizENcztbKQ1Zs=";
+    hash = "sha256-R/l5zMRB/2/a4Yf6toPBBvJ1SvebWsGeumwW9U6b7So=";
   };
 
   mkTlottieArchive =
@@ -133,12 +137,12 @@ let
 in
 buildGradlePackage rec {
   pname = "forkgram-classic";
-  version = "12.10.6.0";
+  version = "12.10.7.0";
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-+QXszgGBNKYxVHRjrxJ34IAL6d/Uc1X0Ch3mjvdKWeU=";
+    hash = "sha256-NmH1ZHmo27M4TecKx5G0fHAJbgvufVpohZydZ5gSBIc=";
     fetchSubmodules = true;
   };
 
@@ -155,6 +159,8 @@ buildGradlePackage rec {
     cmake
     gperf
     go
+    cargo
+    rustc
     jdk21_headless
     meson
     ninja
@@ -177,65 +183,84 @@ buildGradlePackage rec {
 
   postPatch = ''
 
-        find . -name "build.gradle" -type f -exec sed -i 's/androidx.annotation:annotation:/androidx.annotation:annotation-jvm:/g' {} +
-        patchShebangs TMessagesProj/jni/
+            find . -name "build.gradle" -type f -print0 | while IFS= read -r -d '' file; do if grep -q "androidx.annotation:annotation:" "$file"; then substituteInPlace "$file" --replace-fail "androidx.annotation:annotation:" "androidx.annotation:annotation-jvm:"; fi; done
+            
+            cat << 'EOF' > TMessagesProj/jni/prebuild/build_tlottie.sh
+    #!/usr/bin/env bash
+    SCRIPT_DIR="$(cd "$(dirname "''${BASH_SOURCE[0]}")" && pwd)"
+    LIB_DIR="$SCRIPT_DIR/lib"
+    mkdir -p "$LIB_DIR/arm64-v8a" "$LIB_DIR/armeabi-v7a"
+    cp "$SCRIPT_DIR/safe_tlottie/arm64-v8a/libtlottie.a" "$LIB_DIR/arm64-v8a/"
+    cp "$SCRIPT_DIR/safe_tlottie/armeabi-v7a/libtlottie.a" "$LIB_DIR/armeabi-v7a/"
+    EOF
+            
+            patchShebangs TMessagesProj/jni/
 
-        substituteInPlace TMessagesProj/jni/prepare.py \
-          --replace-fail "return 'rm -rf ' + folder" "return 'true'" \
-          --replace-fail 'executable="/bin/bash"' 'executable="bash"' \
-          --replace-quiet "git submodule init && git submodule update" "" \
-          --replace-quiet "cd boringssl && git reset --hard HEAD && cd .." "" \
-          --replace-quiet "git reset HEAD tde2e/ && git checkout -- tde2e/" "" \
-          --replace-quiet "cd tde2e_source && git reset --hard HEAD && cd .." "" \
-          --replace-quiet "git checkout -- ffmpeg" "" \
-          --replace-quiet "git checkout -- prebuild" ""
+            substituteInPlace TMessagesProj/jni/prepare.py \
+              --replace-fail "return 'rm -rf ' + folder" "return 'true'" \
+              --replace-quiet "git submodule init && git submodule update" "" \
+              --replace-quiet "git checkout -- prebuild" "" \
+              --replace-quiet "cd boringssl && git reset --hard HEAD && cd .." "" \
+              --replace-quiet "git reset HEAD tde2e/ && git checkout -- tde2e/" "" \
+              --replace-quiet "cd tde2e_source && git reset --hard HEAD && cd .." "" \
+              --replace-quiet "git checkout -- ffmpeg" "" \
+              --replace-quiet "git checkout -- prebuild" ""
 
-        install -Dm644 ${tlottieArm64}/arm64-v8a/libtlottie.a \
-          TMessagesProj/jni/prebuild/arm64-v8a/libtlottie.a
-        install -Dm644 ${tlottieArmv7}/armeabi-v7a/libtlottie.a \
-          TMessagesProj/jni/prebuild/armeabi-v7a/libtlottie.a
-        substituteInPlace TMessagesProj/jni/prepare.py \
-          --replace-quiet './prebuild/build_tlottie.sh' 'test -f prebuild/arm64-v8a/libtlottie.a && test -f prebuild/armeabi-v7a/libtlottie.a'
 
-        if [ "$(uname -s)" = "Darwin" ]; then
-          substituteInPlace TMessagesProj/jni/tde2e/build-tdlib.sh \
-            --replace-warn "linux-x86_64" "darwin-x86_64"
-        fi
 
-        echo "APP_ID=14577864" >> gradle.properties
-        echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
-        substituteInPlace gradle.properties \
-          --replace-fail "F_DROID=0" "F_DROID=1"
+            install -Dm644 ${tlottieArm64}/arm64-v8a/libtlottie.a \
+              TMessagesProj/jni/prebuild/safe_tlottie/arm64-v8a/libtlottie.a
+            install -Dm644 ${tlottieArmv7}/armeabi-v7a/libtlottie.a \
+              TMessagesProj/jni/prebuild/safe_tlottie/armeabi-v7a/libtlottie.a
 
-        cat >> build.gradle << 'EOF'
-    allprojects {
-        afterEvaluate {
-            if (project.hasProperty("android")) {
-                android.ndkVersion = "27.2.12479018"
+
+            if [ "$(uname -s)" = "Darwin" ]; then
+              substituteInPlace TMessagesProj/jni/tde2e/build-tdlib.sh \
+                --replace-warn "linux-x86_64" "darwin-x86_64"
+            fi
+
+            substituteInPlace TMessagesProj/jni/td/CMakeLists.txt \
+              --replace-fail 'find_package(ZLIB)' 'set(ZLIB_FOUND 1)
+    set(ZLIB_LIBRARIES z)'
+
+            substituteInPlace TMessagesProj/jni/td/tdutils/CMakeLists.txt \
+              --replace-fail 'find_package(ZLIB)' 'set(ZLIB_FOUND 1)
+    set(ZLIB_LIBRARIES z)'
+
+            echo "APP_ID=14577864" >> gradle.properties
+            echo "APP_HASH=54d3ae230fd8f985ce9adccf08fbd9d6" >> gradle.properties
+            substituteInPlace gradle.properties \
+              --replace-fail "F_DROID=0" "F_DROID=1"
+
+            cat >> build.gradle << 'EOF'
+        allprojects {
+            afterEvaluate {
+                if (project.hasProperty("android")) {
+                    android.ndkVersion = "27.2.12479018"
+                }
             }
         }
-    }
     EOF
 
-        echo "cmake.dir=${cmake}" >> local.properties
-        echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/27.2.12479018" >> local.properties
-        echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2" >> gradle.properties
+            echo "cmake.dir=${cmake}" >> local.properties
+            echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/27.2.12479018" >> local.properties
+            echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2" >> gradle.properties
 
-        rm -f TMessagesProj/config/release.keystore
-        keytool -genkey -v \
-          -keystore TMessagesProj/config/release.keystore \
-          -alias androidkey -keyalg RSA -keysize 2048 -validity 10000 \
-          -storepass android -keypass android \
-          -dname "CN=Forkgram Classic Build"
+            rm -f TMessagesProj/config/release.keystore
+            keytool -genkey -v \
+              -keystore TMessagesProj/config/release.keystore \
+              -alias androidkey -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass android -keypass android \
+              -dname "CN=Forkgram Classic Build"
 
-        mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/crypto
-        mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/net
-        cat > TMessagesProj/jni/boringssl/vendor/modules.txt << 'EOF'
-        # golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
-        ## explicit; go 1.11
-        # golang.org/x/net v0.0.0-20210614182718-04defd469f4e
-        ## explicit; go 1.17
-        EOF
+            mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/crypto
+            mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/net
+            cat > TMessagesProj/jni/boringssl/vendor/modules.txt << 'EOF'
+            # golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
+            ## explicit; go 1.11
+            # golang.org/x/net v0.0.0-20210614182718-04defd469f4e
+            ## explicit; go 1.17
+    EOF
   '';
 
   dontUseCmakeConfigure = true;
