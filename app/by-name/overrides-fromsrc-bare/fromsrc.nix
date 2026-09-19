@@ -8,12 +8,22 @@
   aopalliance_1_0,
   asm_9_9,
   asm_analysis_9_9,
+  asm_util_9_9,
+  asm_6_2,
+  asm_analysis_6_2,
+  asm_util_6_2,
+  asm_commons_9_9,
+  asm_tree_9_9,
   auto_service_annotations_1_0_1,
   auto_parent_6,
   auto_value_annotations_1_6_2,
   auto_value_annotations_1_6_3,
-  asm_commons_9_9,
-  asm_tree_9_9,
+  bcprov_jdk18on_1_77,
+  bcprov_jdk18on_1_79,
+  bcutil_jdk18on_1_77,
+  bcutil_jdk18on_1_79,
+  bcpkix_jdk18on_1_77,
+  bcpkix_jdk18on_1_79,
   checker_qual_2_5_8,
   checker_qual_3_27_0,
   checker_qual_3_33_0,
@@ -53,6 +63,9 @@
   commons_codec_1_15,
   commons_codec_1_17_1,
   commons_codec_1_19_0,
+  commons_compress_1_14,
+  commons_compress_1_21,
+  commons_compress_1_27_1,
   commons_lang3_3_12_0,
   commons_lang3_3_16_0,
   commons_lang3_3_18_0,
@@ -72,6 +85,9 @@
   commons_parent_69,
   commons_parent_71,
   commons_parent_72,
+  dagger_2_28_3,
+  dagger_2_48,
+  dagger_2_59,
   error_prone_annotations_2_15_0,
   error_prone_annotations_2_18_0,
   error_prone_annotations_2_3_1,
@@ -104,6 +120,7 @@
   javax_inject_1,
   javawriter_2_5_0,
   jakarta_activation_api_1_2_1,
+  jakarta_inject_api_2_0_1,
   jakarta_xml_bind_api_2_3_2,
   javapoet_1_13_0,
   javapoet_1_10_0,
@@ -122,7 +139,11 @@
   juniversalchardet_1_0_3,
   kotlin_result_2_1_0,
   kotlin_retry_2_0_2,
+  kotlinx_coroutines_1_10_2,
   kotlinx_io_0_8_2,
+  okhttp_4_12_0,
+  okhttp_5_3_2,
+  okio_3_16_4,
   oss_parent_7,
   protobuf_bom_3_25_5,
   protobuf_parent_3_25_5,
@@ -921,4 +942,100 @@ in
   "org.codehaus.mojo:animal-sniffer-annotations:1.24" =
     mkMavenSourceJarOverride "animal-sniffer-annotations" "1.24"
       animal_sniffer_annotations_1_24;
+  "org.ow2.asm:asm-util:9.9" = {
+    "asm-util-9.9.jar" = _: "${asm_util_9_9}/asm-util-9.9.jar";
+    "asm-util-9.9.pom" = _: "${asm_util_9_9}/asm-util-9.9.pom";
+  };
+  "org.ow2.asm:asm-util:6.2" = {
+    "asm-util-6.2.jar" = _: "${asm_util_6_2}/asm-util-6.2.jar";
+    "asm-util-6.2.pom" = _: "${asm_util_6_2}/asm-util-6.2.pom";
+  };
+  "org.ow2.asm:asm-analysis:6.2" = {
+    "asm-analysis-6.2.jar" = _: "${asm_analysis_6_2}/asm-analysis-6.2.jar";
+    "asm-analysis-6.2.pom" = _: "${asm_analysis_6_2}/asm-analysis-6.2.pom";
+  };
+  "org.bouncycastle:bcprov-jdk18on:1.77" = {
+    "bcprov-jdk18on-1.77.jar" = _: "${bcprov_jdk18on_1_77}/bcprov-jdk18on-1.77.jar";
+    "bcprov-jdk18on-1.77.pom" = _: "${bcprov_jdk18on_1_77}/bcprov-jdk18on-1.77.pom";
+  };
+  "org.bouncycastle:bcprov-jdk18on:1.79" = {
+    "bcprov-jdk18on-1.79.jar" = _: "${bcprov_jdk18on_1_79}/bcprov-jdk18on-1.79.jar";
+    "bcprov-jdk18on-1.79.pom" = _: "${bcprov_jdk18on_1_79}/bcprov-jdk18on-1.79.pom";
+  };
+  "org.bouncycastle:bcutil-jdk18on:1.77" = {
+    "bcutil-jdk18on-1.77.jar" = _: "${bcutil_jdk18on_1_77}/bcutil-jdk18on-1.77.jar";
+    "bcutil-jdk18on-1.77.pom" = _: "${bcutil_jdk18on_1_77}/bcutil-jdk18on-1.77.pom";
+  };
+  "org.bouncycastle:bcutil-jdk18on:1.79" = {
+    "bcutil-jdk18on-1.79.jar" = _: "${bcutil_jdk18on_1_79}/bcutil-jdk18on-1.79.jar";
+    "bcutil-jdk18on-1.79.pom" = _: "${bcutil_jdk18on_1_79}/bcutil-jdk18on-1.79.pom";
+  };
+  "org.bouncycastle:bcpkix-jdk18on:1.77" = {
+    "bcpkix-jdk18on-1.77.jar" = _: "${bcpkix_jdk18on_1_77}/bcpkix-jdk18on-1.77.jar";
+    "bcpkix-jdk18on-1.77.pom" = _: "${bcpkix_jdk18on_1_77}/bcpkix-jdk18on-1.77.pom";
+  };
+  "org.bouncycastle:bcpkix-jdk18on:1.79" = {
+    "bcpkix-jdk18on-1.79.jar" = _: "${bcpkix_jdk18on_1_79}/bcpkix-jdk18on-1.79.jar";
+    "bcpkix-jdk18on-1.79.pom" = _: "${bcpkix_jdk18on_1_79}/bcpkix-jdk18on-1.79.pom";
+  };
+  "org.apache.commons:commons-compress:1.14" =
+    mkMavenSourceJarOverride "commons-compress" "1.14"
+      commons_compress_1_14;
+  "org.apache.commons:commons-compress:1.21" =
+    mkMavenSourceJarOverride "commons-compress" "1.21"
+      commons_compress_1_21;
+  "org.apache.commons:commons-compress:1.27.1" =
+    mkMavenSourceJarOverride "commons-compress" "1.27.1"
+      commons_compress_1_27_1;
+  "com.google.dagger:dagger:2.28.3" = mkMavenSourceJarOverride "dagger" "2.28.3" dagger_2_28_3;
+  "com.google.dagger:dagger:2.48" = mkMavenSourceJarOverride "dagger" "2.48" dagger_2_48;
+  "com.google.dagger:dagger:2.59" = mkMavenSourceJarOverride "dagger" "2.59" dagger_2_59;
+  "jakarta.inject:jakarta.inject-api:2.0.1" =
+    mkMavenSourceJarOverride "jakarta.inject-api" "2.0.1"
+      jakarta_inject_api_2_0_1;
+  "com.squareup.okio:okio-jvm:3.16.4" = {
+    "okio-jvm-3.16.4.jar" = _: "${okio_3_16_4}/okio-jvm-3.16.4.jar";
+    "okio-jvm-3.16.4.module" = _: "${okio_3_16_4}/okio-jvm-3.16.4.module";
+    "okio-jvm-3.16.4.pom" = _: "${okio_3_16_4}/okio-jvm-3.16.4.pom";
+  };
+  "com.squareup.okio:okio:3.16.4" = {
+    "okio-3.16.4.module" = _: "${okio_3_16_4}/okio-3.16.4.module";
+    "okio-3.16.4.pom" = _: "${okio_3_16_4}/okio-3.16.4.pom";
+  };
+  "com.squareup.okhttp3:okhttp:4.12.0" = {
+    "okhttp-4.12.0.jar" = _: "${okhttp_4_12_0}/okhttp-4.12.0.jar";
+    "okhttp-4.12.0.module" = _: "${okhttp_4_12_0}/okhttp-4.12.0.module";
+    "okhttp-4.12.0.pom" = _: "${okhttp_4_12_0}/okhttp-4.12.0.pom";
+  };
+  "com.squareup.okhttp3:okhttp-jvm:5.3.2" = {
+    "okhttp-jvm-5.3.2.jar" = _: "${okhttp_5_3_2}/okhttp-jvm-5.3.2.jar";
+    "okhttp-jvm-5.3.2.module" = _: "${okhttp_5_3_2}/okhttp-jvm-5.3.2.module";
+    "okhttp-jvm-5.3.2.pom" = _: "${okhttp_5_3_2}/okhttp-jvm-5.3.2.pom";
+  };
+  "com.squareup.okhttp3:okhttp:5.3.2" = {
+    "okhttp-5.3.2.module" = _: "${okhttp_5_3_2}/okhttp-5.3.2.module";
+    "okhttp-5.3.2.pom" = _: "${okhttp_5_3_2}/okhttp-5.3.2.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2" = {
+    "kotlinx-coroutines-core-jvm-1.10.2.jar" =
+      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-core-jvm-1.10.2.jar";
+    "kotlinx-coroutines-core-jvm-1.10.2.module" =
+      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-core-jvm-1.10.2.module";
+    "kotlinx-coroutines-core-jvm-1.10.2.pom" =
+      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-core-jvm-1.10.2.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2" = {
+    "kotlinx-coroutines-core-1.10.2.module" =
+      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-core-1.10.2.module";
+    "kotlinx-coroutines-core-1.10.2.pom" =
+      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-core-1.10.2.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2" = {
+    "kotlinx-coroutines-android-1.10.2.jar" =
+      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-android-1.10.2.jar";
+    "kotlinx-coroutines-android-1.10.2.module" =
+      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-android-1.10.2.module";
+    "kotlinx-coroutines-android-1.10.2.pom" =
+      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-android-1.10.2.pom";
+  };
 }
