@@ -183,7 +183,7 @@ buildGradlePackage rec {
 
   postPatch = ''
 
-            find . -name "build.gradle" -type f -print0 | while IFS= read -r -d '' file; do if grep -q "androidx.annotation:annotation:" "$file"; then substituteInPlace "$file" --replace-fail "androidx.annotation:annotation:" "androidx.annotation:annotation-jvm:"; fi; done
+            find . -name "build.gradle" -type f -print0 | while IFS= read -r -d "" file; do if grep -q "androidx.annotation:annotation:" "$file"; then substituteInPlace "$file" --replace-fail "androidx.annotation:annotation:" "androidx.annotation:annotation-jvm:"; fi; done
             
             cat << 'EOF' > TMessagesProj/jni/prebuild/build_tlottie.sh
     #!/usr/bin/env bash
