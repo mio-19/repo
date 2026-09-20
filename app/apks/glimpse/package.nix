@@ -48,7 +48,23 @@ let
       substituteInPlace gradle/libs.versions.toml \
         --replace-fail 'generateBp = "+"' 'generateBp = "1.32"'
     '';
-    overrides = overrides-fromsrc;
+    # On Darwin, skip fromsrc overrides that fail under the sandbox (Gradle
+    # fromsource zip TMPDIR, glide mitm port bind, zoomimage daemon sockets)
+    # and use locked Maven/Gradle binaries instead.
+    overrides =
+      if stdenv.hostPlatform.isDarwin then
+        removeAttrs overrides-fromsrc [
+          "gradle:gradle:9.4.0"
+          "com.github.bumptech.glide:disklrucache:5.0.5"
+          "com.github.bumptech.glide:gifdecoder:5.0.5"
+          "com.github.bumptech.glide:glide:5.0.5"
+          "io.github.panpf.zoomimage:zoomimage-core-android:1.0.2"
+          "io.github.panpf.zoomimage:zoomimage-core-glide:1.0.2"
+          "io.github.panpf.zoomimage:zoomimage-view:1.0.2"
+          "io.github.panpf.zoomimage:zoomimage-view-glide:1.0.2"
+        ]
+      else
+        overrides-fromsrc;
     buildJdk = jdk25_headless;
 
     nativeBuildInputs = [
@@ -75,9 +91,12 @@ let
 
     gradleBuildFlags = ":app:assembleRelease";
 
-    preBuild = lib.optionalString stdenv.hostPlatform.isDarwin ''
+    preConfigure = lib.optionalString stdenv.hostPlatform.isDarwin ''
       export ANDROID_USER_HOME="$HOME/.android"
-      mkdir -p "$ANDROID_USER_HOME"
+      export GRADLE_USER_HOME="$HOME/.gradle"
+      mkdir -p "$ANDROID_USER_HOME" "$GRADLE_USER_HOME"
+      echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+      gradleFlagsArray+=(--no-daemon --init-script "$gradleInitScript" --offline)
     '';
 
     installPhase = ''
