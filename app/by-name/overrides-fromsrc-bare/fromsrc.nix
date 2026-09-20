@@ -137,10 +137,13 @@
   jspecify_1_0_0,
   jsr305_3_0_2,
   juniversalchardet_1_0_3,
+  atomicfu_0_22_0,
+  atomicfu_0_28_0,
   kotlin_result_2_1_0,
   kotlin_retry_2_0_2,
   kotlinx_coroutines_1_10_2,
   kotlinx_io_0_8_2,
+  kotlinx_serialization_1_7_3,
   okhttp_4_12_0,
   okhttp_5_3_2,
   okio_3_16_4,
@@ -1037,5 +1040,51 @@ in
       _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-android-1.10.2.module";
     "kotlinx-coroutines-android-1.10.2.pom" =
       _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-android-1.10.2.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.3" = {
+    "kotlinx-serialization-core-jvm-1.7.3.jar" =
+      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-core-jvm-1.7.3.jar";
+    "kotlinx-serialization-core-jvm-1.7.3.module" =
+      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-core-jvm-1.7.3.module";
+    "kotlinx-serialization-core-jvm-1.7.3.pom" =
+      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-core-jvm-1.7.3.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3" = {
+    "kotlinx-serialization-core-1.7.3.module" =
+      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-core-1.7.3.module";
+    "kotlinx-serialization-core-1.7.3.pom" =
+      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-core-1.7.3.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.3" = {
+    "kotlinx-serialization-json-jvm-1.7.3.jar" =
+      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-json-jvm-1.7.3.jar";
+    "kotlinx-serialization-json-jvm-1.7.3.module" =
+      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-json-jvm-1.7.3.module";
+    "kotlinx-serialization-json-jvm-1.7.3.pom" =
+      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-json-jvm-1.7.3.pom";
+  };
+  "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3" = {
+    "kotlinx-serialization-json-1.7.3.module" =
+      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-json-1.7.3.module";
+    "kotlinx-serialization-json-1.7.3.pom" =
+      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-json-1.7.3.pom";
+  };
+  "org.jetbrains.kotlinx:atomicfu-jvm:0.22.0" = {
+    "atomicfu-jvm-0.22.0.jar" = _: "${atomicfu_0_22_0}/atomicfu-jvm-0.22.0.jar";
+    "atomicfu-jvm-0.22.0.module" = _: "${atomicfu_0_22_0}/atomicfu-jvm-0.22.0.module";
+    "atomicfu-jvm-0.22.0.pom" = _: "${atomicfu_0_22_0}/atomicfu-jvm-0.22.0.pom";
+  };
+  "org.jetbrains.kotlinx:atomicfu:0.22.0" = {
+    "atomicfu-0.22.0.module" = _: "${atomicfu_0_22_0}/atomicfu-0.22.0.module";
+    "atomicfu-0.22.0.pom" = _: "${atomicfu_0_22_0}/atomicfu-0.22.0.pom";
+  };
+  "org.jetbrains.kotlinx:atomicfu-jvm:0.28.0" = {
+    "atomicfu-jvm-0.28.0.jar" = _: "${atomicfu_0_28_0}/atomicfu-jvm-0.28.0.jar";
+    "atomicfu-jvm-0.28.0.module" = _: "${atomicfu_0_28_0}/atomicfu-jvm-0.28.0.module";
+    "atomicfu-jvm-0.28.0.pom" = _: "${atomicfu_0_28_0}/atomicfu-jvm-0.28.0.pom";
+  };
+  "org.jetbrains.kotlinx:atomicfu:0.28.0" = {
+    "atomicfu-0.28.0.module" = _: "${atomicfu_0_28_0}/atomicfu-0.28.0.module";
+    "atomicfu-0.28.0.pom" = _: "${atomicfu_0_28_0}/atomicfu-0.28.0.pom";
   };
 }
