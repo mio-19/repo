@@ -17,8 +17,8 @@ let
     s.platforms-android-34
   ]);
   androidJar = "${androidSdk}/share/android-sdk/platforms/android-34/android.jar";
-  # compileOnly runtime dep used by atomicfu APIs in sources (plugin transforms later).
-  compileOnlyRepo = buildMavenRepository {
+  # Build-time jars: atomicfu for compile, plus transformer toolchain (not shipped in outputs).
+  toolRepo = buildMavenRepository {
     pathMap = baseNameOf;
     dependencies = {
       "org/jetbrains/kotlinx/atomicfu-jvm/0.26.1/atomicfu-jvm-0.26.1.jar" = {
@@ -26,10 +26,62 @@ let
         url = "https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/atomicfu-jvm/0.26.1/atomicfu-jvm-0.26.1.jar";
         hash = "sha256-k3wib9L2KtQ4TtJxDq43dQ3pUD9yYSuMz6222P9j+/I=";
       };
+      "org/jetbrains/kotlinx/atomicfu-transformer/0.26.1/atomicfu-transformer-0.26.1.jar" = {
+        layout = "org/jetbrains/kotlinx/atomicfu-transformer/0.26.1/atomicfu-transformer-0.26.1.jar";
+        url = "https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/atomicfu-transformer/0.26.1/atomicfu-transformer-0.26.1.jar";
+        hash = "sha256-8Wgu0xb3jZRdtuZTXSpNenLpiMJtAJEuxK6yh9Puq0E=";
+      };
+      "org/ow2/asm/asm/9.7/asm-9.7.jar" = {
+        layout = "org/ow2/asm/asm/9.7/asm-9.7.jar";
+        url = "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.7/asm-9.7.jar";
+        hash = "sha256-rfRtXjSUC98Ujs3Sap7o7qlElqcgNP9xQQZrPupcTp0=";
+      };
+      "org/ow2/asm/asm-commons/9.7/asm-commons-9.7.jar" = {
+        layout = "org/ow2/asm/asm-commons/9.7/asm-commons-9.7.jar";
+        url = "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-commons/9.7/asm-commons-9.7.jar";
+        hash = "sha256-OJvCR5WOBJ/JoECNOYySxtNwwYA1EgOV1Muh2dkwS3o=";
+      };
+      "org/ow2/asm/asm-tree/9.7/asm-tree-9.7.jar" = {
+        layout = "org/ow2/asm/asm-tree/9.7/asm-tree-9.7.jar";
+        url = "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-tree/9.7/asm-tree-9.7.jar";
+        hash = "sha256-YvSzvENgRcGstcO6LY7FVuwzaQk9f10Gx0frBLVtUrE=";
+      };
+      "org/ow2/asm/asm-util/9.7/asm-util-9.7.jar" = {
+        layout = "org/ow2/asm/asm-util/9.7/asm-util-9.7.jar";
+        url = "https://repo.maven.apache.org/maven2/org/ow2/asm/asm-util/9.7/asm-util-9.7.jar";
+        hash = "sha256-N6ZBTTZkGXPxrxBJN8ldbZIbLdtNYSxmxanysT/BQhE=";
+      };
+      "org/slf4j/slf4j-api/1.8.0-alpha2/slf4j-api-1.8.0-alpha2.jar" = {
+        layout = "org/slf4j/slf4j-api/1.8.0-alpha2/slf4j-api-1.8.0-alpha2.jar";
+        url = "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.8.0-alpha2/slf4j-api-1.8.0-alpha2.jar";
+        hash = "sha256-CcMB+ICGrfcF/ROqvSDMshSNjqZN+jx+SCtckJBGx5I=";
+      };
+      "org/slf4j/slf4j-simple/1.8.0-alpha2/slf4j-simple-1.8.0-alpha2.jar" = {
+        layout = "org/slf4j/slf4j-simple/1.8.0-alpha2/slf4j-simple-1.8.0-alpha2.jar";
+        url = "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-simple/1.8.0-alpha2/slf4j-simple-1.8.0-alpha2.jar";
+        hash = "sha256-ObJOKXTUdzen28wQKUiyzOcb0wNUEKnRb5gRhQhgtcI=";
+      };
+      "org/mozilla/rhino/1.7.10/rhino-1.7.10.jar" = {
+        layout = "org/mozilla/rhino/1.7.10/rhino-1.7.10.jar";
+        url = "https://repo.maven.apache.org/maven2/org/mozilla/rhino/1.7.10/rhino-1.7.10.jar";
+        hash = "sha256-OOswAM9WuMdVnuVYhmp2juvL8lQXRSLWQEt/B491wtQ=";
+      };
     };
   };
-  atomicfuJvm = "${compileOnlyRepo}/atomicfu-jvm-0.26.1.jar";
+  atomicfuJvm = "${toolRepo}/atomicfu-jvm-0.26.1.jar";
   coreClasspath = "${annotations_23_0_0}/annotations-${annotations_23_0_0.version}.jar:${atomicfuJvm}:${animal_sniffer_annotations_1_23}/animal-sniffer-annotations-${animal_sniffer_annotations_1_23.version}.jar:${androidJar}";
+  atomicfuTransformerCp = lib.concatStringsSep ":" [
+    "${toolRepo}/atomicfu-transformer-0.26.1.jar"
+    "${toolRepo}/asm-9.7.jar"
+    "${toolRepo}/asm-commons-9.7.jar"
+    "${toolRepo}/asm-tree-9.7.jar"
+    "${toolRepo}/asm-util-9.7.jar"
+    "${toolRepo}/slf4j-api-1.8.0-alpha2.jar"
+    "${toolRepo}/slf4j-simple-1.8.0-alpha2.jar"
+    "${toolRepo}/rhino-1.7.10.jar"
+    "${kotlin}/lib/kotlin-stdlib.jar"
+    "${kotlin}/lib/kotlin-metadata-jvm.jar"
+  ];
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "kotlinx-coroutines";
@@ -104,6 +156,7 @@ stdenv.mkDerivation (finalAttrs: {
       echo '2.0'
       echo '-api-version'
       echo '2.0'
+      echo '-Xmetadata-version=2.0.0'
       echo '-jvm-target'
       echo '1.8'
       echo "-classpath"
@@ -124,6 +177,13 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p "$tmp/core-classes"
     ${kotlin}/bin/kotlinc @"$tmp/kotlinc.args"
+
+    # Replace atomicfu APIs with java.util.concurrent.atomic (as Maven Central does).
+    # Run before copying store resources so the transformer does not rewrite read-only files.
+    java -cp "${atomicfuTransformerCp}" \
+      kotlinx.atomicfu.transformer.AtomicFUTransformerKt \
+      "$tmp/core-classes"
+
     cp -r "$core/jvm/resources/." "$tmp/core-classes/"
     jar cf "$tmp/kotlinx-coroutines-core-jvm-${finalAttrs.version}.jar" -C "$tmp/core-classes" .
 
@@ -132,6 +192,7 @@ stdenv.mkDerivation (finalAttrs: {
     ${kotlin}/bin/kotlinc \
       -language-version 2.0 \
       -api-version 2.0 \
+      -Xmetadata-version=2.0.0 \
       -jvm-target 1.8 \
       -classpath "$tmp/kotlinx-coroutines-core-jvm-${finalAttrs.version}.jar:${coreClasspath}:$tmp/androidx-annotation-stub.jar" \
       -opt-in=kotlin.RequiresOptIn \

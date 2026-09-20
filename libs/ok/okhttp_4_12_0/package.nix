@@ -97,6 +97,7 @@ stdenv.mkDerivation (finalAttrs: {
     ${kotlin}/bin/kotlinc \
       -language-version 2.0 \
       -api-version 2.0 \
+      -Xmetadata-version=2.0.0 \
       -jvm-target 1.8 \
       -classpath "${okio_3_16_4}/okio-jvm-${okio_3_16_4.version}.jar:${animal_sniffer_annotations_1_23}/animal-sniffer-annotations-${animal_sniffer_annotations_1_23.version}.jar:${jsr305_3_0_2}/jsr305-${jsr305_3_0_2.version}.jar:${androidJar}:${sslCp}" \
       -module-name okhttp \

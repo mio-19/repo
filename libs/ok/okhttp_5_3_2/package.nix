@@ -133,6 +133,7 @@ stdenv.mkDerivation (finalAttrs: {
       -Xexpect-actual-classes \
       -language-version 2.0 \
       -api-version 2.0 \
+      -Xmetadata-version=2.0.0 \
       -jvm-target 1.8 \
       -classpath "${okioJar}:${animalJar}:${sslCp}" \
       -module-name okhttp \

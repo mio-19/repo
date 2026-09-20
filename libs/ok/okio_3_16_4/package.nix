@@ -62,6 +62,12 @@ stdenv.mkDerivation (finalAttrs: {
       echo '-Xfragments=common,zlib,systemFileSystem,nonJs,jvm'
       echo '-Xfragment-refines=zlib:common,systemFileSystem:common,nonJs:common,jvm:zlib,jvm:systemFileSystem,jvm:nonJs'
       echo '-Xexpect-actual-classes'
+      # Match Maven Central metadata so Kotlin <2.4 app compilers can read the jar.
+      echo '-language-version'
+      echo '2.0'
+      echo '-api-version'
+      echo '2.0'
+      echo '-Xmetadata-version=2.0.0'
       echo '-jvm-target'
       echo '1.8'
       echo '-opt-in=kotlin.contracts.ExperimentalContracts'
