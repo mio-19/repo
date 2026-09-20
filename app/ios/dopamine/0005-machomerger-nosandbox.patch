@@ -1,0 +1,11 @@
+--- a/BaseBin/MachOMerger/Makefile
++++ b/BaseBin/MachOMerger/Makefile
+@@ -27,7 +27,7 @@
+ 
+ .build/$(CONFIG)/%: Sources/% FORCE
+ 	@echo Building MachOMerger
+-	swift build $(SWIFT_BUILD_ARGS)
++	swift build $(SWIFT_BUILD_ARGS) --disable-sandbox
+ 	
+ build_clean:
+ 	rm -rf .build

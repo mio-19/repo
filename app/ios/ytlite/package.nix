@@ -36,8 +36,9 @@ let
     hash = "sha256-4xqKx2QCvwYzFb2i9BHXolHaghUjdq3WOu1QlqtO2/k=";
   };
 
-  # Provides <roothide.h> / jbroot() used by Utils/NSBundle+YTLite.*;
-  # stub path is selected when not building THEOS_PACKAGE_SCHEME=roothide.
+  # Provides <roothide.h> / jbroot() used by Utils/NSBundle+YTLite.*.
+  # Dopamine is rootless (not RootHide); stub jbroot() is correct for that —
+  # Theos rootless remaps install paths to /var/jb at package time.
   libroothide = fetchFromGitHub {
     owner = "roothide";
     repo = "libroothide";
@@ -109,7 +110,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     # fetchgit strips .git; Theos before-all requires these marker files.
     touch "$THEOS/vendor/include/.git" "$THEOS/vendor/lib/.git"
 
-    # Install RootHide headers (stub for rootful/rootless builds).
+    # Install RootHide headers (stub jbroot for non-roothide schemes).
     mkdir -p "$THEOS/include/roothide"
     cp ${libroothide}/roothide-theos.h "$THEOS/include/roothide.h"
     cp ${libroothide}/roothide.h "$THEOS/include/roothide/roothide.h"
@@ -127,9 +128,11 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     # Do not let Nix stdenv compiler wrappers interfere with Theos/xcrun.
     unset CC CXX NIX_CFLAGS_COMPILE NIX_LDFLAGS || true
 
+    # ROOTLESS=1 → THEOS_PACKAGE_SCHEME=rootless (Dopamine / rootless JB).
     make package \
       DEBUG=0 \
       FINALPACKAGE=1 \
+      ROOTLESS=1 \
       PACKAGE_VERSION=${finalAttrs.version}
 
     runHook postBuild
@@ -152,7 +155,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   '';
 
   meta = {
-    description = "YouTube Plus (YTLite) — iOS YouTube enhancer tweak (Theos .deb)";
+    description = "YouTube Plus (YTLite) — rootless Theos .deb for Dopamine";
     homepage = "https://github.com/dayanch96/YTLite";
     # No LICENSE in upstream repo; treat as unfree.
     license = lib.licenses.unfree;
