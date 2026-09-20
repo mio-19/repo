@@ -11,12 +11,17 @@
   ldid,
   openssl,
   writableTmpDirAsHomeHook,
+  # When true (default), include Lessica dyld/systemhook patches so
+  # DYLD_FRAMEWORK_PATH can override DSC frameworks (WebKitPlayground).
+  # ios_dopamine_upstream sets this to false for vanilla opa334 Dopamine.
+  withWebKitPlaygroundPatches ? true,
 }:
 
 # Builds opa334/Dopamine (jailbreak IPA / tipa).
 #
 # Needs host Xcode; __noChroot requires sandbox = relaxed (or false):
 #   nix build .#ios_dopamine
+#   nix build .#ios_dopamine_upstream   # withWebKitPlaygroundPatches = false
 let
   # Pin matches dayanch96/YTLite CI / Dopamine CI (iPhoneOS16.5.sdk).
   theosSrc = fetchgit {
@@ -134,6 +139,13 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     ./0004-libarchive-include.patch
     ./0005-machomerger-nosandbox.patch
     ./0006-machomerger-local-spm.patch
+  ]
+  ++ lib.optionals withWebKitPlaygroundPatches [
+    # Port of Lessica/Dopamine feat/dyld-framework-overrides for opa334 rootless —
+    # required by https://github.com/Lessica/WebKitPlayground (DYLD_FRAMEWORK_PATH over DSC).
+    ./0007-webkit-dyldhook-trampolines.patch
+    ./0008-webkit-framework-override.patch
+    ./0009-webkit-systemhook-dyld-framework-path.patch
   ];
 
   postPatch = ''
@@ -238,7 +250,11 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   '';
 
   meta = {
-    description = "Dopamine — semi-untethered iOS jailbreak (IPA)";
+    description =
+      if withWebKitPlaygroundPatches then
+        "Dopamine — semi-untethered iOS jailbreak (IPA), with WebKitPlayground dyld patches"
+      else
+        "Dopamine — semi-untethered iOS jailbreak (IPA), upstream/vanilla";
     homepage = "https://github.com/opa334/Dopamine";
     license = lib.licenses.mit;
     platforms = lib.platforms.darwin;
