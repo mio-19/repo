@@ -4,9 +4,13 @@
   jdk25_headless,
   kotlin,
   lib,
+  libsUtils,
   stdenv,
 }:
 
+let
+  inherit (libsUtils) checkMavenProvides exposeMavenProvides;
+in
 stdenv.mkDerivation (finalAttrs: {
   pname = "atomicfu";
   version = "0.22.0";
@@ -77,10 +81,26 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
+  doInstallCheck = true;
+  installCheckPhase = checkMavenProvides finalAttrs;
+
   meta = with lib; {
     description = "AtomicFU multiplatform atomic operations library for Kotlin";
     homepage = "https://github.com/Kotlin/kotlinx-atomicfu";
     license = licenses.asl20;
     platforms = platforms.unix;
+    sourceProvenance = with sourceTypes; [ fromSource ];
+    mavenProvides = exposeMavenProvides finalAttrs;
+    mavenProvidesInternal = {
+      "org.jetbrains.kotlinx:atomicfu-jvm:${finalAttrs.version}" = {
+        "atomicfu-jvm-${finalAttrs.version}.jar" = "$out/atomicfu-jvm-${finalAttrs.version}.jar";
+        "atomicfu-jvm-${finalAttrs.version}.module" = "$out/atomicfu-jvm-${finalAttrs.version}.module";
+        "atomicfu-jvm-${finalAttrs.version}.pom" = "$out/atomicfu-jvm-${finalAttrs.version}.pom";
+      };
+      "org.jetbrains.kotlinx:atomicfu:${finalAttrs.version}" = {
+        "atomicfu-${finalAttrs.version}.module" = "$out/atomicfu-${finalAttrs.version}.module";
+        "atomicfu-${finalAttrs.version}.pom" = "$out/atomicfu-${finalAttrs.version}.pom";
+      };
+    };
   };
 })

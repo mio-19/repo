@@ -4,9 +4,13 @@
   jdk25_headless,
   kotlin,
   lib,
+  libsUtils,
   stdenv,
 }:
 
+let
+  inherit (libsUtils) checkMavenProvides exposeMavenProvides;
+in
 stdenv.mkDerivation (finalAttrs: {
   pname = "okio";
   version = "3.16.4";
@@ -94,10 +98,26 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
+  doInstallCheck = true;
+  installCheckPhase = checkMavenProvides finalAttrs;
+
   meta = with lib; {
     description = "A modern I/O library for Android, Java, and Kotlin Multiplatform";
     homepage = "https://square.github.io/okio/";
     license = licenses.asl20;
     platforms = platforms.unix;
+    sourceProvenance = with sourceTypes; [ fromSource ];
+    mavenProvides = exposeMavenProvides finalAttrs;
+    mavenProvidesInternal = {
+      "com.squareup.okio:okio-jvm:${finalAttrs.version}" = {
+        "okio-jvm-${finalAttrs.version}.jar" = "$out/okio-jvm-${finalAttrs.version}.jar";
+        "okio-jvm-${finalAttrs.version}.module" = "$out/okio-jvm-${finalAttrs.version}.module";
+        "okio-jvm-${finalAttrs.version}.pom" = "$out/okio-jvm-${finalAttrs.version}.pom";
+      };
+      "com.squareup.okio:okio:${finalAttrs.version}" = {
+        "okio-${finalAttrs.version}.module" = "$out/okio-${finalAttrs.version}.module";
+        "okio-${finalAttrs.version}.pom" = "$out/okio-${finalAttrs.version}.pom";
+      };
+    };
   };
 })

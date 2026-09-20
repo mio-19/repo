@@ -8,10 +8,12 @@
   jdk25_headless,
   kotlin,
   lib,
+  libsUtils,
   stdenv,
 }:
 
 let
+  inherit (libsUtils) checkMavenProvides exposeMavenProvides;
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platforms-android-34
@@ -225,10 +227,39 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
+  doInstallCheck = true;
+  installCheckPhase = checkMavenProvides finalAttrs;
+
   meta = with lib; {
     description = "Library support for Kotlin coroutines";
     homepage = "https://github.com/Kotlin/kotlinx.coroutines";
     license = licenses.asl20;
     platforms = platforms.unix;
+    sourceProvenance = with sourceTypes; [ fromSource ];
+    mavenProvides = exposeMavenProvides finalAttrs;
+    mavenProvidesInternal = {
+      "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${finalAttrs.version}" = {
+        "kotlinx-coroutines-core-jvm-${finalAttrs.version}.jar" =
+          "$out/kotlinx-coroutines-core-jvm-${finalAttrs.version}.jar";
+        "kotlinx-coroutines-core-jvm-${finalAttrs.version}.module" =
+          "$out/kotlinx-coroutines-core-jvm-${finalAttrs.version}.module";
+        "kotlinx-coroutines-core-jvm-${finalAttrs.version}.pom" =
+          "$out/kotlinx-coroutines-core-jvm-${finalAttrs.version}.pom";
+      };
+      "org.jetbrains.kotlinx:kotlinx-coroutines-core:${finalAttrs.version}" = {
+        "kotlinx-coroutines-core-${finalAttrs.version}.module" =
+          "$out/kotlinx-coroutines-core-${finalAttrs.version}.module";
+        "kotlinx-coroutines-core-${finalAttrs.version}.pom" =
+          "$out/kotlinx-coroutines-core-${finalAttrs.version}.pom";
+      };
+      "org.jetbrains.kotlinx:kotlinx-coroutines-android:${finalAttrs.version}" = {
+        "kotlinx-coroutines-android-${finalAttrs.version}.jar" =
+          "$out/kotlinx-coroutines-android-${finalAttrs.version}.jar";
+        "kotlinx-coroutines-android-${finalAttrs.version}.module" =
+          "$out/kotlinx-coroutines-android-${finalAttrs.version}.module";
+        "kotlinx-coroutines-android-${finalAttrs.version}.pom" =
+          "$out/kotlinx-coroutines-android-${finalAttrs.version}.pom";
+      };
+    };
   };
 })

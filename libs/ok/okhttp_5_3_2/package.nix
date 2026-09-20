@@ -6,11 +6,13 @@
   jdk25_headless,
   kotlin,
   lib,
+  libsUtils,
   okio_3_16_4,
   stdenv,
 }:
 
 let
+  inherit (libsUtils) checkMavenProvides exposeMavenProvides;
   # Optional SSL provider adapters are compileOnly in upstream OkHttp.
   sslRepo = buildMavenRepository {
     pathMap = baseNameOf;
@@ -153,10 +155,26 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
+  doInstallCheck = true;
+  installCheckPhase = checkMavenProvides finalAttrs;
+
   meta = with lib; {
     description = "Square’s meticulous HTTP client for Java and Kotlin";
     homepage = "https://square.github.io/okhttp/";
     license = licenses.asl20;
     platforms = platforms.unix;
+    sourceProvenance = with sourceTypes; [ fromSource ];
+    mavenProvides = exposeMavenProvides finalAttrs;
+    mavenProvidesInternal = {
+      "com.squareup.okhttp3:okhttp-jvm:${finalAttrs.version}" = {
+        "okhttp-jvm-${finalAttrs.version}.jar" = "$out/okhttp-jvm-${finalAttrs.version}.jar";
+        "okhttp-jvm-${finalAttrs.version}.module" = "$out/okhttp-jvm-${finalAttrs.version}.module";
+        "okhttp-jvm-${finalAttrs.version}.pom" = "$out/okhttp-jvm-${finalAttrs.version}.pom";
+      };
+      "com.squareup.okhttp3:okhttp:${finalAttrs.version}" = {
+        "okhttp-${finalAttrs.version}.module" = "$out/okhttp-${finalAttrs.version}.module";
+        "okhttp-${finalAttrs.version}.pom" = "$out/okhttp-${finalAttrs.version}.pom";
+      };
+    };
   };
 })

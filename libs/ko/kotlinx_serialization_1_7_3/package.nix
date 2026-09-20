@@ -5,9 +5,13 @@
   jdk25_headless,
   kotlin,
   lib,
+  libsUtils,
   stdenv,
 }:
 
+let
+  inherit (libsUtils) checkMavenProvides exposeMavenProvides;
+in
 stdenv.mkDerivation (finalAttrs: {
   pname = "kotlinx-serialization";
   version = "1.7.3";
@@ -139,10 +143,45 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
+  doInstallCheck = true;
+  installCheckPhase = checkMavenProvides finalAttrs;
+
   meta = with lib; {
     description = "Kotlin multiplatform serialization runtime library";
     homepage = "https://github.com/Kotlin/kotlinx.serialization";
     license = licenses.asl20;
     platforms = platforms.unix;
+    sourceProvenance = with sourceTypes; [ fromSource ];
+    mavenProvides = exposeMavenProvides finalAttrs;
+    mavenProvidesInternal = {
+      "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:${finalAttrs.version}" = {
+        "kotlinx-serialization-core-jvm-${finalAttrs.version}.jar" =
+          "$out/kotlinx-serialization-core-jvm-${finalAttrs.version}.jar";
+        "kotlinx-serialization-core-jvm-${finalAttrs.version}.module" =
+          "$out/kotlinx-serialization-core-jvm-${finalAttrs.version}.module";
+        "kotlinx-serialization-core-jvm-${finalAttrs.version}.pom" =
+          "$out/kotlinx-serialization-core-jvm-${finalAttrs.version}.pom";
+      };
+      "org.jetbrains.kotlinx:kotlinx-serialization-core:${finalAttrs.version}" = {
+        "kotlinx-serialization-core-${finalAttrs.version}.module" =
+          "$out/kotlinx-serialization-core-${finalAttrs.version}.module";
+        "kotlinx-serialization-core-${finalAttrs.version}.pom" =
+          "$out/kotlinx-serialization-core-${finalAttrs.version}.pom";
+      };
+      "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:${finalAttrs.version}" = {
+        "kotlinx-serialization-json-jvm-${finalAttrs.version}.jar" =
+          "$out/kotlinx-serialization-json-jvm-${finalAttrs.version}.jar";
+        "kotlinx-serialization-json-jvm-${finalAttrs.version}.module" =
+          "$out/kotlinx-serialization-json-jvm-${finalAttrs.version}.module";
+        "kotlinx-serialization-json-jvm-${finalAttrs.version}.pom" =
+          "$out/kotlinx-serialization-json-jvm-${finalAttrs.version}.pom";
+      };
+      "org.jetbrains.kotlinx:kotlinx-serialization-json:${finalAttrs.version}" = {
+        "kotlinx-serialization-json-${finalAttrs.version}.module" =
+          "$out/kotlinx-serialization-json-${finalAttrs.version}.module";
+        "kotlinx-serialization-json-${finalAttrs.version}.pom" =
+          "$out/kotlinx-serialization-json-${finalAttrs.version}.pom";
+      };
+    };
   };
 })

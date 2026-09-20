@@ -137,16 +137,9 @@
   jspecify_1_0_0,
   jsr305_3_0_2,
   juniversalchardet_1_0_3,
-  atomicfu_0_22_0,
-  atomicfu_0_28_0,
   kotlin_result_2_1_0,
   kotlin_retry_2_0_2,
-  kotlinx_coroutines_1_10_2,
   kotlinx_io_0_8_2,
-  kotlinx_serialization_1_7_3,
-  okhttp_4_12_0,
-  okhttp_5_3_2,
-  okio_3_16_4,
   oss_parent_7,
   protobuf_bom_3_25_5,
   protobuf_parent_3_25_5,
@@ -996,95 +989,4 @@ in
   "jakarta.inject:jakarta.inject-api:2.0.1" =
     mkMavenSourceJarOverride "jakarta.inject-api" "2.0.1"
       jakarta_inject_api_2_0_1;
-  "com.squareup.okio:okio-jvm:3.16.4" = {
-    "okio-jvm-3.16.4.jar" = _: "${okio_3_16_4}/okio-jvm-3.16.4.jar";
-    "okio-jvm-3.16.4.module" = _: "${okio_3_16_4}/okio-jvm-3.16.4.module";
-    "okio-jvm-3.16.4.pom" = _: "${okio_3_16_4}/okio-jvm-3.16.4.pom";
-  };
-  "com.squareup.okio:okio:3.16.4" = {
-    "okio-3.16.4.module" = _: "${okio_3_16_4}/okio-3.16.4.module";
-    "okio-3.16.4.pom" = _: "${okio_3_16_4}/okio-3.16.4.pom";
-  };
-  "com.squareup.okhttp3:okhttp:4.12.0" = {
-    "okhttp-4.12.0.jar" = _: "${okhttp_4_12_0}/okhttp-4.12.0.jar";
-    "okhttp-4.12.0.module" = _: "${okhttp_4_12_0}/okhttp-4.12.0.module";
-    "okhttp-4.12.0.pom" = _: "${okhttp_4_12_0}/okhttp-4.12.0.pom";
-  };
-  "com.squareup.okhttp3:okhttp-jvm:5.3.2" = {
-    "okhttp-jvm-5.3.2.jar" = _: "${okhttp_5_3_2}/okhttp-jvm-5.3.2.jar";
-    "okhttp-jvm-5.3.2.module" = _: "${okhttp_5_3_2}/okhttp-jvm-5.3.2.module";
-    "okhttp-jvm-5.3.2.pom" = _: "${okhttp_5_3_2}/okhttp-jvm-5.3.2.pom";
-  };
-  "com.squareup.okhttp3:okhttp:5.3.2" = {
-    "okhttp-5.3.2.module" = _: "${okhttp_5_3_2}/okhttp-5.3.2.module";
-    "okhttp-5.3.2.pom" = _: "${okhttp_5_3_2}/okhttp-5.3.2.pom";
-  };
-  "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2" = {
-    "kotlinx-coroutines-core-jvm-1.10.2.jar" =
-      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-core-jvm-1.10.2.jar";
-    "kotlinx-coroutines-core-jvm-1.10.2.module" =
-      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-core-jvm-1.10.2.module";
-    "kotlinx-coroutines-core-jvm-1.10.2.pom" =
-      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-core-jvm-1.10.2.pom";
-  };
-  "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2" = {
-    "kotlinx-coroutines-core-1.10.2.module" =
-      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-core-1.10.2.module";
-    "kotlinx-coroutines-core-1.10.2.pom" =
-      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-core-1.10.2.pom";
-  };
-  "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2" = {
-    "kotlinx-coroutines-android-1.10.2.jar" =
-      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-android-1.10.2.jar";
-    "kotlinx-coroutines-android-1.10.2.module" =
-      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-android-1.10.2.module";
-    "kotlinx-coroutines-android-1.10.2.pom" =
-      _: "${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-android-1.10.2.pom";
-  };
-  "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.3" = {
-    "kotlinx-serialization-core-jvm-1.7.3.jar" =
-      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-core-jvm-1.7.3.jar";
-    "kotlinx-serialization-core-jvm-1.7.3.module" =
-      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-core-jvm-1.7.3.module";
-    "kotlinx-serialization-core-jvm-1.7.3.pom" =
-      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-core-jvm-1.7.3.pom";
-  };
-  "org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3" = {
-    "kotlinx-serialization-core-1.7.3.module" =
-      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-core-1.7.3.module";
-    "kotlinx-serialization-core-1.7.3.pom" =
-      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-core-1.7.3.pom";
-  };
-  "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.3" = {
-    "kotlinx-serialization-json-jvm-1.7.3.jar" =
-      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-json-jvm-1.7.3.jar";
-    "kotlinx-serialization-json-jvm-1.7.3.module" =
-      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-json-jvm-1.7.3.module";
-    "kotlinx-serialization-json-jvm-1.7.3.pom" =
-      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-json-jvm-1.7.3.pom";
-  };
-  "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3" = {
-    "kotlinx-serialization-json-1.7.3.module" =
-      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-json-1.7.3.module";
-    "kotlinx-serialization-json-1.7.3.pom" =
-      _: "${kotlinx_serialization_1_7_3}/kotlinx-serialization-json-1.7.3.pom";
-  };
-  "org.jetbrains.kotlinx:atomicfu-jvm:0.22.0" = {
-    "atomicfu-jvm-0.22.0.jar" = _: "${atomicfu_0_22_0}/atomicfu-jvm-0.22.0.jar";
-    "atomicfu-jvm-0.22.0.module" = _: "${atomicfu_0_22_0}/atomicfu-jvm-0.22.0.module";
-    "atomicfu-jvm-0.22.0.pom" = _: "${atomicfu_0_22_0}/atomicfu-jvm-0.22.0.pom";
-  };
-  "org.jetbrains.kotlinx:atomicfu:0.22.0" = {
-    "atomicfu-0.22.0.module" = _: "${atomicfu_0_22_0}/atomicfu-0.22.0.module";
-    "atomicfu-0.22.0.pom" = _: "${atomicfu_0_22_0}/atomicfu-0.22.0.pom";
-  };
-  "org.jetbrains.kotlinx:atomicfu-jvm:0.28.0" = {
-    "atomicfu-jvm-0.28.0.jar" = _: "${atomicfu_0_28_0}/atomicfu-jvm-0.28.0.jar";
-    "atomicfu-jvm-0.28.0.module" = _: "${atomicfu_0_28_0}/atomicfu-jvm-0.28.0.module";
-    "atomicfu-jvm-0.28.0.pom" = _: "${atomicfu_0_28_0}/atomicfu-jvm-0.28.0.pom";
-  };
-  "org.jetbrains.kotlinx:atomicfu:0.28.0" = {
-    "atomicfu-0.28.0.module" = _: "${atomicfu_0_28_0}/atomicfu-0.28.0.module";
-    "atomicfu-0.28.0.pom" = _: "${atomicfu_0_28_0}/atomicfu-0.28.0.pom";
-  };
 }

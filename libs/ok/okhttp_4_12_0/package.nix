@@ -8,11 +8,13 @@
   jsr305_3_0_2,
   kotlin,
   lib,
+  libsUtils,
   okio_3_16_4,
   stdenv,
 }:
 
 let
+  inherit (libsUtils) checkMavenProvides exposeMavenProvides;
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platforms-android-34
@@ -115,10 +117,22 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
+  doInstallCheck = true;
+  installCheckPhase = checkMavenProvides finalAttrs;
+
   meta = with lib; {
     description = "Square’s meticulous HTTP client for Java and Kotlin";
     homepage = "https://square.github.io/okhttp/";
     license = licenses.asl20;
     platforms = platforms.unix;
+    sourceProvenance = with sourceTypes; [ fromSource ];
+    mavenProvides = exposeMavenProvides finalAttrs;
+    mavenProvidesInternal = {
+      "com.squareup.okhttp3:okhttp:${finalAttrs.version}" = {
+        "okhttp-${finalAttrs.version}.jar" = "$out/okhttp-${finalAttrs.version}.jar";
+        "okhttp-${finalAttrs.version}.module" = "$out/okhttp-${finalAttrs.version}.module";
+        "okhttp-${finalAttrs.version}.pom" = "$out/okhttp-${finalAttrs.version}.pom";
+      };
+    };
   };
 })
