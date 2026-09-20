@@ -114,9 +114,7 @@ let
     "mpv-android" # Gradle fails to use mitmCache proxy on darwin
     "kdeconnect-android" # buildPhase fails mysteriously/killed on darwin
     "luanti" # Gradle fails to use mitmCache proxy on darwin
-    "lspatch" # ephemeral-port-reserve throws Operation not permitted on darwin
     "lumo" # Gradle plugin and FSEvents stream error on darwin
-    "lspatch-manager" # depends on lspatch
     "meshcore-open" # buildPhase fails mysteriously/killed on darwin
     "uplink" # pkgsCross Android NDK rust + Flutter APK
     "mpvex" # Gradle fails to resolve foojay-resolver plugin on darwin
