@@ -222,7 +222,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
         -configuration Release
         -sdk iphoneos
         -derivedDataPath "$PWD/DerivedData"
-        ARCHS=arm64\ arm64e
+        "ARCHS=arm64"
         ONLY_ACTIVE_ARCH=NO
         CODE_SIGN_IDENTITY=-
         CODE_SIGNING_REQUIRED=NO
