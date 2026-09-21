@@ -215,24 +215,37 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       mkdir -p WebKitBuild/Release-iphoneos/usr/local/include/wtf/Scripts
       cp -a Source/WTF/Scripts/. WebKitBuild/Release-iphoneos/usr/local/include/wtf/Scripts/
 
-      # Build using upstream build-webkit script exactly as Lessica does.
+      # Build only the frameworks needed for the device deb — skip WebInspectorUI /
+      # test targets which race on InspectorBackendCommands.js under Xcode 26.
+      export SDKROOT=iphoneos
+      export ARCHS="arm64 arm64e"
+      export ONLY_ACTIVE_ARCH=NO
+      export CODE_SIGN_IDENTITY="-"
+      export CODE_SIGNING_REQUIRED=NO
+      export CODE_SIGNING_ALLOWED=NO
+      export GCC_TREAT_WARNINGS_AS_ERRORS=NO
+
+      common=(
+        -workspace WebKit.xcworkspace
+        -configuration Release
+        -destination 'generic/platform=iOS'
+        IPHONEOS_DEPLOYMENT_TARGET=16.0
+        -derivedDataPath "$PWD/DerivedData"
+        SUPPORTS_TEXT_BASED_API=NO
+        OTHER_CFLAGS='$(inherited) -Wno-error -Wno-enum-constexpr-conversion -Wno-missing-template-arg-list-after-template-kw -isystem '"$OBJC_SHIM"
+        OTHER_CPLUSPLUSFLAGS='$(inherited) -Wno-error -Wno-enum-constexpr-conversion -Wno-missing-template-arg-list-after-template-kw -isystem '"$OBJC_SHIM"
+        SYMROOT="$PWD/WebKitBuild"
+        OBJROOT="$PWD/WebKitBuild"
+        SHARED_PRECOMPS_DIR="$PWD/WebKitBuild/PrecompiledHeaders"
+      )
+      
       # Disable interactive jsc build to prevent readline errors on iOS SDK
       sed -i.bak 's/#define HAVE_READLINE 1/#define HAVE_READLINE 0/g' Source/WTF/wtf/PlatformHave.h
 
-      perl Tools/Scripts/build-webkit --ios-device --release \
-        WK_USE_CCACHE=NO \
-        ARCHS='arm64 arm64e' \
-        ONLY_ACTIVE_ARCH=NO \
-        CODE_SIGN_IDENTITY=- \
-        CODE_SIGNING_REQUIRED=NO \
-        CODE_SIGNING_ALLOWED=NO \
-        GCC_TREAT_WARNINGS_AS_ERRORS=NO \
-        SUPPORTS_TEXT_BASED_API=NO \
-        OTHER_CFLAGS='$(inherited) -Wno-error -Wno-enum-constexpr-conversion -Wno-missing-template-arg-list-after-template-kw -isystem '"$OBJC_SHIM" \
-        OTHER_CPLUSPLUSFLAGS='$(inherited) -Wno-error -Wno-enum-constexpr-conversion -Wno-missing-template-arg-list-after-template-kw -isystem '"$OBJC_SHIM" \
-        SYMROOT="$PWD/WebKitBuild" \
-        OBJROOT="$PWD/WebKitBuild" \
-        SHARED_PRECOMPS_DIR="$PWD/WebKitBuild/PrecompiledHeaders"
+      for scheme in bmalloc WTF JavaScriptCore ANGLE WebCore WebKitLegacy WebKit; do
+        echo "=== xcodebuild -scheme $scheme ==="
+        xcodebuild -scheme "$scheme" "''${common[@]}"
+      done
     )
 
     PRODUCT="WebKit/WebKitBuild/Release-iphoneos"
