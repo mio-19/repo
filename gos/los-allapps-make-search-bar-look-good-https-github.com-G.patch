@@ -5,9 +5,8 @@ Subject: [PATCH] allapps: make search bar look good
  https://github.com/GrapheneOS/platform_packages_apps_Launcher3/pull/69
 
 ---
- res/values/dimens.xml                               |  4 ++--
- .../allapps/search/AppsSearchContainerLayout.java   | 13 ++++++++++++-
- 2 files changed, 14 insertions(+), 3 deletions(-)
+ res/values/dimens.xml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/res/values/dimens.xml b/res/values/dimens.xml
 index 4aaf95e..f4875c7 100644
@@ -24,30 +23,5 @@ index 4aaf95e..f4875c7 100644
      <!-- affects padding above apps lists when tabs and floating header rows are not visible -->
      <!-- (always affects padding above search results) -->
      <dimen name="all_apps_search_bar_bottom_padding">42dp</dimen>
-diff --git a/src/com/android/launcher3/allapps/search/AppsSearchContainerLayout.java b/src/com/android/launcher3/allapps/search/AppsSearchContainerLayout.java
-index 84855f0..d5b529d 100644
---- a/src/com/android/launcher3/allapps/search/AppsSearchContainerLayout.java
-+++ b/src/com/android/launcher3/allapps/search/AppsSearchContainerLayout.java
-@@ -205,7 +205,18 @@ public class AppsSearchContainerLayout extends ExtendedEditText
-         MarginLayoutParams mlp = (MarginLayoutParams) getLayoutParams();
-         if (mAppsView.getSearchUiDelegate().isSearchBarFloating()
-                 || mLauncher.getDeviceProfile().getDeviceProperties().isLargeScreen()) {
--            mlp.topMargin = insets.top;
-+            DeviceProfile dp = mLauncher.getDeviceProfile();
-+            if (dp.shouldShowAllAppsOnSheet()) {
-+                // Use bottom_sheet_handle_area_height instead which is what NexusLauncher's
-+                // UniversalSearchInputView does. This puts it closer to the bottom sheet handle, as it
-+                // makes it flush against the handle area.
-+                mlp.topMargin = getResources().getDimensionPixelSize(
-+                        R.dimen.bottom_sheet_handle_area_height);
-+            } else {
-+                // insets.top originates from SystemWindowManagerProxy.normalizeWindowInsets:
-+                // max(statusBars.top, android:dimen/status_bar_height_portrait, displayCutout.top)
-+                mlp.topMargin = insets.top;
-+            }
-         }
-         requestLayout();
-     }
- 
 -- 
 2.53.0
