@@ -89,6 +89,11 @@
         inherit (apkScope) callPackage newScope;
         directory = ./apks;
       };
+      iosScope = lib.makeScope pkgs.newScope (_: byName // helpers // libs);
+      ios = lib.filesystem.packagesFromDirectoryRecursive {
+        inherit (iosScope) callPackage newScope;
+        directory = ./ios;
+      };
       libBase = lib.makeScope pkgs.newScope (_: helpers // byName);
       libs = lib.makeScope libBase.newScope (
         self:
@@ -103,7 +108,7 @@
       byNameBase = lib.makeScope libBase.newScope (
         _:
         {
-          inherit apk;
+          inherit apk ios;
         }
         // libs
       );
@@ -128,7 +133,10 @@
         removeAttrs legacyPackages darwinExcludedPackageNames
       );
       legacyPackages = removeAttrs (
-        byName // libs // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk
+        byName
+        // libs
+        // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk
+        // lib.mapAttrs' (name: value: lib.nameValuePair ("ios_" + name) value) ios
       ) [ "packages" ];
     };
 }

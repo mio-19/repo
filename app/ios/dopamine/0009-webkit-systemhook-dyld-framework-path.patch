@@ -1,0 +1,32 @@
+--- a/BaseBin/systemhook/src/common/common.c
++++ b/BaseBin/systemhook/src/common/common.c
+@@ -177,6 +177,8 @@
+ 	}
+ 
+ 	const char *existingLibraryInserts = envbuf_getenv((const char **)envp, "DYLD_INSERT_LIBRARIES");
++	const char *jbFrameworkPath = JBROOT_PATH("/Library/Frameworks");
++	const char *jbLibraryPath = JBROOT_PATH("/usr/lib");
+ 	__block bool systemHookAlreadyInserted = false;
+ 	if (existingLibraryInserts) {
+ 		string_enumerate_components(existingLibraryInserts, ":", ^(const char *existingLibraryInsert, bool *stop) {
+@@ -314,12 +316,20 @@
+ 					strcat(newLibraryInsert, existingLibraryInserts);
+ 				}
+ 				envbuf_setenv(&envc, "DYLD_INSERT_LIBRARIES", newLibraryInsert);
++				envbuf_setenv(&envc, "DYLD_FRAMEWORK_PATH", jbFrameworkPath);
++				envbuf_setenv(&envc, "__XPC_DYLD_FRAMEWORK_PATH", jbFrameworkPath);
++				envbuf_setenv(&envc, "DYLD_LIBRARY_PATH", jbLibraryPath);
++				envbuf_setenv(&envc, "__XPC_DYLD_LIBRARY_PATH", jbLibraryPath);
+ 			}
+ 		}
+ 		else {
+ 			if (systemHookAlreadyInserted && existingLibraryInserts) {
+ 				if (!strcmp(existingLibraryInserts, HOOK_DYLIB_PATH)) {
+ 					envbuf_unsetenv(&envc, "DYLD_INSERT_LIBRARIES");
++					envbuf_unsetenv(&envc, "DYLD_FRAMEWORK_PATH");
++					envbuf_unsetenv(&envc, "__XPC_DYLD_FRAMEWORK_PATH");
++					envbuf_unsetenv(&envc, "DYLD_LIBRARY_PATH");
++					envbuf_unsetenv(&envc, "__XPC_DYLD_LIBRARY_PATH");
+ 				}
+ 				else {
+ 					char *newLibraryInsert = malloc(strlen(existingLibraryInserts)+1);

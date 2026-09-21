@@ -1,0 +1,63 @@
+--- a/Application/Makefile
++++ b/Application/Makefile
+@@ -1,4 +1,4 @@
+-.PHONY: all clean build_clean
++.PHONY: all clean build_clean compile-assets
+ 
+ all: Dopamine.ipa
+ 
+@@ -6,7 +6,8 @@
+ 	@echo Ad-Hoc signing Dopamine
+ 	xattr -rc build/Build/Products/Debug-iphoneos/Dopamine.app
+ 	ldid -SDopamine/Dopamine.entitlements build/Build/Products/Debug-iphoneos/Dopamine.app/Dopamine
+-	ldid -s build/Build/Products/Debug-iphoneos/Dopamine.app
++	# Bundle-wide ldid -s asserts on some ldid builds; codesign ad-hoc is enough.
++	codesign -f -s - --deep build/Build/Products/Debug-iphoneos/Dopamine.app || true
+ 	rm -rf Payload Dopamine.ipa
+ 	mkdir Payload
+ 	cp -r build/Build/Products/Debug-iphoneos/Dopamine.app Payload/Dopamine.app
+@@ -15,18 +16,40 @@
+ 	rm -rf Dopamine.tipa
+ 	cp Dopamine.ipa Dopamine.tipa
+ 
++# Use -target (not -scheme) so xcodebuild does not require a resolved iOS
++# destination. Xcode 26.3 on this host reports "iOS 26.2 is not installed" for
++# generic/platform=iOS; -sdk iphoneos still compiles. Also avoid SPM zstd.
++# Note: -derivedDataPath requires -scheme, so use SYMROOT instead.
++ZSTD_LIB = $(CURDIR)/../BaseBin/dopamine/external/lib/libzstd.a
++XCODE_FLAGS = -project Dopamine.xcodeproj -target Dopamine -configuration Debug \
++	-sdk iphoneos SYMROOT=$(CURDIR)/build/Build/Products OBJROOT=$(CURDIR)/build/Build/Intermediates.noindex \
++	CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
++	ENABLE_ON_DEMAND_RESOURCES=NO ENABLE_ONLY_ACTIVE_RESOURCES=YES BUILD_ACTIVE_RESOURCES_ONLY=YES \
++	OTHER_LDFLAGS="-force_load $(ZSTD_LIB)"
++
+ ifeq ($(NIGHTLY), 1)
+ build/Build/Products/Debug-iphoneos/Dopamine.app: FORCE
+-	xcodebuild -scheme Dopamine -derivedDataPath build -destination 'generic/platform=iOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO GCC_PREPROCESSOR_DEFINITIONS='NIGHTLY=1 COMMIT_HASH=\"$(COMMIT_HASH)\"'
++	xcodebuild $(XCODE_FLAGS) \
++		GCC_PREPROCESSOR_DEFINITIONS='NIGHTLY=1 COMMIT_HASH="$(COMMIT_HASH)"'
++	$(MAKE) compile-assets
+ else
+ build/Build/Products/Debug-iphoneos/Dopamine.app: FORCE
+-	xcodebuild -scheme Dopamine -derivedDataPath build -destination 'generic/platform=iOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
++	xcodebuild $(XCODE_FLAGS)
++	$(MAKE) compile-assets
+ endif
+ 
++# Prefer prebuilt Assets.car (actool under nixbld hits simulator runtime mismatch).
++compile-assets:
++	@if [[ -f prebuilt-Assets.car ]]; then \
++		cp -f prebuilt-Assets.car build/Build/Products/Debug-iphoneos/Dopamine.app/Assets.car; \
++	else \
++		echo "warning: no prebuilt Assets.car; app icons may be missing"; \
++	fi
++
+ clean:
+ 	rm -rf build Payload Dopamine.ipa Dopamine.tipa
+ 
+ build_clean:
+ 	rm -rf Payload build
+ 
+-FORCE: ;
+\ No newline at end of file
++FORCE: ;

@@ -1,0 +1,83 @@
+--- a/BaseBin/idownloadd/Makefile
++++ b/BaseBin/idownloadd/Makefile
+@@ -1,18 +1,36 @@
+-XCODE_PROJECT = src/idownloadd.xcodeproj
+-XCODE_SCHEME = idownloadd
+-CS_FLAGS = CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+-CONFIGURATION = Release
+-
++SDK = iphoneos
++TARGET = arm64-apple-ios15.0
++SDK_PATH = $(shell xcrun --sdk $(SDK) --show-sdk-path)
++CONFIG = release
++INCLUDE_PATH = $(CURDIR)/../.include
++LIB_PATH = $(CURDIR)/../.build
++BRIDGING_HEADER = $(CURDIR)/src/idownloadd/idownloadd-Bridging-Header.h
++SHIM_SRC = src/idownloadd/shim.c
++SHIM_OBJ = shim.o
+ OUTPUT_NAME = idownloadd
+ 
+-build:
+-	xcodebuild -archivePath ./.build -project $(XCODE_PROJECT) -scheme $(XCODE_SCHEME) -configuration $(CONFIGURATION) -destination generic/platform=iOS archive $(CS_FLAGS)
+-	@cp -f ./.build.xcarchive/Products/usr/local/bin/$(OUTPUT_NAME) .
+-	@rm -rf ./.build.xcarchive
+-	@ldid -Cadhoc -Sentitlements.plist $(OUTPUT_NAME)
++SWIFTC_ARGS = -sdk "$(SDK_PATH)" -target $(TARGET) -O -import-objc-header "$(BRIDGING_HEADER)" -I "$(INCLUDE_PATH)"
++SWIFT_BUILD_ARGS = --triple $(TARGET) --sdk "$(SDK_PATH)" -c $(CONFIG) \
++	-Xcc -I"$(INCLUDE_PATH)" \
++	-Xlinker -L"$(LIB_PATH)" -Xlinker -ljailbreak \
++	-Xlinker "$(CURDIR)/$(SHIM_OBJ)" \
++	$(addprefix -Xswiftc ,$(SWIFTC_ARGS)) \
++	--disable-sandbox
+ 
+-clean:
+-	xcodebuild -project $(XCODE_PROJECT) -scheme $(XCODE_SCHEME) -configuration $(CONFIGURATION) -destination generic/platform=iOS clean
+-	@rm -rf $(OUTPUT_NAME)
++.PHONY: build clean default
++default: build
+ 
+-default: build
+\ No newline at end of file
++$(SHIM_OBJ): $(SHIM_SRC) $(BRIDGING_HEADER)
++	xcrun -sdk $(SDK) clang -c -o $@ $(SHIM_SRC) \
++		-target $(TARGET) -isysroot "$(SDK_PATH)" \
++		-I"$(INCLUDE_PATH)" -I"$(CURDIR)/src/idownloadd"
++
++build: $(SHIM_OBJ)
++	CPATH="$(INCLUDE_PATH)" C_INCLUDE_PATH="$(INCLUDE_PATH)" \
++		swift build $(SWIFT_BUILD_ARGS)
++	cp -f "$$(CPATH="$(INCLUDE_PATH)" C_INCLUDE_PATH="$(INCLUDE_PATH)" \
++		swift build $(SWIFT_BUILD_ARGS) --show-bin-path)/$(OUTPUT_NAME)" $(OUTPUT_NAME)
++	ldid -Cadhoc -Sentitlements.plist $(OUTPUT_NAME)
++
++clean:
++	rm -rf .build $(SHIM_OBJ) $(OUTPUT_NAME)
+diff --git a/BaseBin/idownloadd/Package.swift b/BaseBin/idownloadd/Package.swift
+new file mode 100644
+--- /dev/null
++++ b/BaseBin/idownloadd/Package.swift
+@@ -0,0 +1,24 @@
++// swift-tools-version: 5.7
++import PackageDescription
++
++let package = Package(
++    name: "idownloadd",
++    platforms: [
++        .iOS(.v15),
++    ],
++    products: [
++        .executable(name: "idownloadd", targets: ["idownloadd"]),
++    ],
++    dependencies: [
++        .package(path: "iDownload"),
++    ],
++    targets: [
++        .executableTarget(
++            name: "idownloadd",
++            dependencies: ["iDownload"],
++            path: "src/idownloadd",
++            // SPM rejects mixed C/Swift in one target; shim.c is built by Make.
++            exclude: ["shim.c"]
++        ),
++    ]
++)
