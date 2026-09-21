@@ -11,12 +11,12 @@
  	xattr -rc build/Build/Products/Debug-iphoneos/Dopamine.app
  	ldid -SDopamine/Dopamine.entitlements build/Build/Products/Debug-iphoneos/Dopamine.app/Dopamine
 -	ldid -s build/Build/Products/Debug-iphoneos/Dopamine.app
-+	# Bundle-wide ldid -s asserts on some ldid builds; codesign ad-hoc is enough.
-+	codesign -f -s - --deep build/Build/Products/Debug-iphoneos/Dopamine.app || true
++	# codesign overwrites the executable, so we must pass entitlements to preserve them
++	codesign -f -s - --entitlements Dopamine/Dopamine.entitlements --deep build/Build/Products/Debug-iphoneos/Dopamine.app || true
  	rm -rf Payload Dopamine.ipa
  	mkdir Payload
  	cp -r build/Build/Products/Debug-iphoneos/Dopamine.app Payload/Dopamine.app
-@@ -15,18 +16,40 @@
+@@ -15,18 +16,41 @@
  	rm -rf Dopamine.tipa
  	cp Dopamine.ipa Dopamine.tipa
  
@@ -48,6 +48,7 @@
 +compile-assets:
 +	@if [[ -f prebuilt-Assets.car ]]; then \
 +		cp -f prebuilt-Assets.car build/Build/Products/Debug-iphoneos/Dopamine.app/Assets.car; \
++		plutil -insert CFBundleIcons -xml '<dict><key>CFBundlePrimaryIcon</key><dict><key>CFBundleIconFiles</key><array><string>AppIcon</string></array><key>CFBundleIconName</key><string>AppIcon</string></dict></dict>' build/Build/Products/Debug-iphoneos/Dopamine.app/Info.plist || true; \
 +	else \
 +		echo "warning: no prebuilt Assets.car; app icons may be missing"; \
 +	fi
