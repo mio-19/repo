@@ -218,18 +218,16 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       # Build only the frameworks needed for the device deb — skip WebInspectorUI /
       # test targets which race on InspectorBackendCommands.js under Xcode 26.
       export SDKROOT=iphoneos
-      export ARCHS="arm64 arm64e"
       export ONLY_ACTIVE_ARCH=NO
       export CODE_SIGN_IDENTITY="-"
       export CODE_SIGNING_REQUIRED=NO
       export CODE_SIGNING_ALLOWED=NO
       export GCC_TREAT_WARNINGS_AS_ERRORS=NO
+      export IPHONEOS_DEPLOYMENT_TARGET=16.0
 
       common=(
         -workspace WebKit.xcworkspace
         -configuration Release
-        -destination 'generic/platform=iOS'
-        IPHONEOS_DEPLOYMENT_TARGET=16.0
         -derivedDataPath "$PWD/DerivedData"
         SUPPORTS_TEXT_BASED_API=NO
         OTHER_CFLAGS='$(inherited) -Wno-error -Wno-enum-constexpr-conversion -Wno-missing-template-arg-list-after-template-kw -isystem '"$OBJC_SHIM"
