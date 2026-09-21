@@ -221,9 +221,11 @@ stdenvNoCC.mkDerivation (finalAttrs: {
         -workspace WebKit.xcworkspace
         -configuration Release
         -sdk iphoneos
+        -destination 'generic/platform=iOS'
         -derivedDataPath "$PWD/DerivedData"
-        "ARCHS=arm64"
+        "ARCHS=arm64 arm64e"
         ONLY_ACTIVE_ARCH=NO
+        IPHONEOS_DEPLOYMENT_TARGET=16.0
         CODE_SIGN_IDENTITY=-
         CODE_SIGNING_REQUIRED=NO
         CODE_SIGNING_ALLOWED=NO
