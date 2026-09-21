@@ -113,7 +113,6 @@ let
     "mpv-android" # Gradle fails to use mitmCache proxy on darwin
     "luanti" # Gradle fails to use mitmCache proxy on darwin
     "lumo" # Gradle plugin and FSEvents stream error on darwin
-    "meshcore-open" # buildPhase fails mysteriously/killed on darwin
     "uplink" # pkgsCross Android NDK rust + Flutter APK
     "mpvex" # Gradle fails to resolve foojay-resolver plugin on darwin
     "onlyoffice-documents" # misses Gradle plugin marker from deps.json on darwin

@@ -29,7 +29,7 @@ let
       version = "1.35.16";
 
       __darwinAllowLocalNetworking = true;
-      __noChroot = true;
+      __noChroot = stdenv.hostPlatform.isDarwin;
 
       src = fetchFromGitHub {
         owner = "KDE";

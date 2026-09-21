@@ -1,0 +1,103 @@
+diff --git a/Source/JavaScriptCore/assembler/FastJITPermissions.h b/Source/JavaScriptCore/assembler/FastJITPermissions.h
+index 1280eb5..7e7c120 100644
+--- a/Source/JavaScriptCore/assembler/FastJITPermissions.h
++++ b/Source/JavaScriptCore/assembler/FastJITPermissions.h
+@@ -139,6 +139,59 @@ static ALWAYS_INLINE void threadSelfRestrict()
+         RELEASE_ASSERT_NOT_REACHED();
+ }
+ 
++#elif PLATFORM(IOS) && !PLATFORM(IOS_FAMILY_SIMULATOR)
++#include <cstdint>
++
++static constexpr uintptr_t fastJITPermissionsSupportAddress = 0x0000000fffffc10cULL;
++static constexpr uintptr_t fastJITPermissionsRWAddress = 0x0000000fffffc110ULL;
++static constexpr uintptr_t fastJITPermissionsRXAddress = 0x0000000fffffc118ULL;
++
++static ALWAYS_INLINE bool fastJITPermissionsAddressFallbackIsSupported()
++{
++    return *reinterpret_cast<volatile const uint8_t*>(fastJITPermissionsSupportAddress);
++}
++
++static ALWAYS_INLINE void threadSelfRestrictRWXWithAddressFallback(uintptr_t permissionAddress)
++{
++    uintptr_t permissionValue = *reinterpret_cast<volatile const uintptr_t*>(permissionAddress);
++    asm volatile(
++        "msr S3_6_C15_C1_5, %x0\n"
++        "isb\n"
++        :
++        : "r"(permissionValue)
++        : "memory");
++
++    uintptr_t readBack = 0;
++    asm volatile(
++        "mrs %x0, S3_6_C15_C1_5\n"
++        : "=r"(readBack)
++        :
++        : "memory");
++    RELEASE_ASSERT(readBack == permissionValue);
++}
++
++template <MemoryRestriction restriction>
++static ALWAYS_INLINE bool threadSelfRestrictSupported()
++{
++    if constexpr ((restriction == MemoryRestriction::kRwxToRw)
++        || (restriction == MemoryRestriction::kRwxToRx)) {
++        return fastJITPermissionsAddressFallbackIsSupported();
++    }
++    return false;
++}
++
++template <MemoryRestriction restriction>
++static ALWAYS_INLINE void threadSelfRestrict()
++{
++    ASSERT(g_jscConfig.useFastJITPermissions);
++    if constexpr (restriction == MemoryRestriction::kRwxToRw)
++        threadSelfRestrictRWXWithAddressFallback(fastJITPermissionsRWAddress);
++    else if constexpr (restriction == MemoryRestriction::kRwxToRx)
++        threadSelfRestrictRWXWithAddressFallback(fastJITPermissionsRXAddress);
++    else
++        RELEASE_ASSERT_NOT_REACHED();
++}
++
+ #else
+ template <MemoryRestriction>
+ static ALWAYS_INLINE bool threadSelfRestrictSupported()
+diff --git a/Source/ThirdParty/libwebrtc/Configurations/DebugRelease.xcconfig b/Source/ThirdParty/libwebrtc/Configurations/DebugRelease.xcconfig
+index 61f9032..870e5ee 100644
+--- a/Source/ThirdParty/libwebrtc/Configurations/DebugRelease.xcconfig
++++ b/Source/ThirdParty/libwebrtc/Configurations/DebugRelease.xcconfig
+@@ -30,6 +30,7 @@ CODE_SIGN_IDENTITY_EMBEDDED_YES = -;
+ 
+ VALID_ARCHS[sdk=watch*] = $(ARCHS_STANDARD_32_64_BIT);
+ ONLY_ACTIVE_ARCH = YES;
++ONLY_ACTIVE_ARCH[sdk=iphoneos*] = NO;
+ 
+ GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
+ DEBUG_INFORMATION_FORMAT = dwarf;
+diff --git a/Source/WebCore/loader/FrameLoader.cpp b/Source/WebCore/loader/FrameLoader.cpp
+index 74f3bde..a6d94f1 100644
+--- a/Source/WebCore/loader/FrameLoader.cpp
++++ b/Source/WebCore/loader/FrameLoader.cpp
+@@ -3162,6 +3162,13 @@ int FrameLoader::numPendingOrLoadingRequests(bool recurse) const
+     return count;
+ }
+ 
++static String userAgentWithDebugTokenIfNeeded(const String& userAgent)
++{
++    if (userAgent.isEmpty() || userAgent.contains("WKDebugUA/1.0"_s))
++        return userAgent;
++    return makeString(userAgent, " WKDebugUA/1.0"_s);
++}
++
+ String FrameLoader::userAgent(const URL& url) const
+ {
+     String userAgent;
+@@ -3185,7 +3192,7 @@ String FrameLoader::userAgent(const URL& url) const
+     
+     verifyUserAgent(userAgent);
+ 
+-    return userAgent;
++    return userAgentWithDebugTokenIfNeeded(userAgent);
+ }
+ 
+ String FrameLoader::navigatorPlatform() const

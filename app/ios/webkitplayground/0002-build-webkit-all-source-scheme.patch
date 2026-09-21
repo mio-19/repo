@@ -1,0 +1,12 @@
+diff --git a/Tools/Scripts/build-webkit b/Tools/Scripts/build-webkit
+--- a/Tools/Scripts/build-webkit	2026-09-20 19:31:46
++++ b/Tools/Scripts/build-webkit	2026-09-20 19:57:06
+@@ -367,7 +367,7 @@
+ 
+     # Build, and abort if the build fails.
+     if ($useWorkspace) {
+-        my $scheme = $onlyWebKitProject ? "WebKitLegacy" : "All Modules";
++        my $scheme = $onlyWebKitProject ? "WebKitLegacy" : "All Source";
+         $result = buildXcodeScheme($scheme, $clean, @local_options, @ARGV);
+         if (exitStatus($result)) {
+             exit exitStatus($result);

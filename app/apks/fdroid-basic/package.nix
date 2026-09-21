@@ -8,6 +8,7 @@
   gradle_9_4_1,
   jdk25_headless,
   lib,
+  stdenv,
   mkSignScript,
   writableTmpDirAsHomeHook,
   overrides-fromsrc-updated,
@@ -31,7 +32,7 @@ buildGradlePackage rec {
   version = "2.0-rc1";
 
   __darwinAllowLocalNetworking = true;
-  __noChroot = true;
+  __noChroot = stdenv.hostPlatform.isDarwin;
 
   src = fetchgit {
     url = "https://gitlab.com/fdroid/fdroidclient.git";

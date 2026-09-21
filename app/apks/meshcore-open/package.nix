@@ -1,6 +1,7 @@
 {
   mk-apk-package,
   lib,
+  stdenv,
   buildDartApplication,
   runCommand,
   fetchFromGitHub,
@@ -64,6 +65,9 @@ let
     buildDartApplication.override { dart = flutter344; } (finalAttrs: {
       pname = "meshcore-open";
       version = "9.5.0+16";
+
+      __darwinAllowLocalNetworking = true;
+      __noChroot = stdenv.hostPlatform.isDarwin;
 
       src = fetchFromGitHub {
         owner = "zjs81";
