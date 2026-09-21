@@ -218,6 +218,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       # Build only the frameworks needed for the device deb — skip WebInspectorUI /
       # test targets which race on InspectorBackendCommands.js under Xcode 26.
       export SDKROOT=iphoneos
+      export ARCHS=arm64
       export ONLY_ACTIVE_ARCH=YES
       export CODE_SIGN_IDENTITY="-"
       export CODE_SIGNING_REQUIRED=NO
