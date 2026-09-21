@@ -101,6 +101,7 @@ let
 in
 {
   imports = [
+    ./artwork.nix
     ./source-built-toolchain.nix
     #./gos_noleakdns.nix # unsure
     ./gos-apple.nix
