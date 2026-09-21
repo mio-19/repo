@@ -37,7 +37,7 @@ let
 
     lockFile = ./gradle.lock;
     __darwinAllowLocalNetworking = true;
-    __noChroot = true;
+    __noChroot = stdenv.hostPlatform.isDarwin;
     overrides = if stdenv.hostPlatform.isDarwin then { } else overrides-fromsrc;
     buildJdk = jdk25_headless;
 

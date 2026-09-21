@@ -54,9 +54,9 @@ let
 
     gradleBuildTask = "buildRelease";
     gradleUpdateTask = finalAttrs.gradleBuildTask;
-    
+
     __darwinAllowLocalNetworking = true;
-    __noChroot = true;
+    __noChroot = stdenv.hostPlatform.isDarwin;
 
     mitmCache = gradle.fetchDeps {
       inherit (finalAttrs) pname;

@@ -83,6 +83,9 @@ let
       pname = "droidspaces-oss";
       inherit version;
 
+      __darwinAllowLocalNetworking = true;
+      __noChroot = stdenv.hostPlatform.isDarwin;
+
       src = applyPatches {
         src = srcBase;
         postPatch = ''
