@@ -1,0 +1,14 @@
+diff --git a/Source/ThirdParty/ANGLE/src/compiler/translator/TranslatorMetalDirect/Reference.h b/Source/ThirdParty/ANGLE/src/compiler/translator/TranslatorMetalDirect/Reference.h
+--- a/Source/ThirdParty/ANGLE/src/compiler/translator/TranslatorMetalDirect/Reference.h
++++ b/Source/ThirdParty/ANGLE/src/compiler/translator/TranslatorMetalDirect/Reference.h
+@@ -35,8 +35,8 @@
+     operator T &() { return *mPtr; }
+     operator T const &() const { return *mPtr; }
+ 
+-    operator T *() { return *mPtr; }
+-    operator T const *() const { return *mPtr; }
++    operator T *() { return mPtr; }
++    operator T const *() const { return mPtr; }
+ 
+   private:
+     T *mPtr;

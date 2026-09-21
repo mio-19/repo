@@ -1,0 +1,32 @@
+diff --git a/Source/WTF/wtf/spi/darwin/XPCSPI.h b/Source/WTF/wtf/spi/darwin/XPCSPI.h
+--- a/Source/WTF/wtf/spi/darwin/XPCSPI.h
++++ b/Source/WTF/wtf/spi/darwin/XPCSPI.h
+@@ -28,7 +28,7 @@
+ #include <dispatch/dispatch.h>
+ #include <os/object.h>
+ 
+-#if PLATFORM(MAC) || USE(APPLE_INTERNAL_SDK)
++#if PLATFORM(MAC) || USE(APPLE_INTERNAL_SDK) || __has_include(<xpc/xpc.h>)
+ #include <xpc/xpc.h>
+ #else
+ 
+@@ -251,4 +251,21 @@
+ void xpc_release(xpc_object_t);
+ #endif
+ 
+ WTF_EXTERN_C_END
++
++#if PLATFORM(IOS_FAMILY)
++// Public iOS SDKs mark xpc_connection_create_mach_service API_UNAVAILABLE(ios).
++// WebKit still uses it as SPI; resolve via dyld to avoid the hard availability error.
++#include <dlfcn.h>
++static inline xpc_connection_t webkit_xpc_connection_create_mach_service(const char* name, dispatch_queue_t queue, uint64_t flags)
++{
++    typedef xpc_connection_t (*Fn)(const char*, dispatch_queue_t, uint64_t);
++    static Fn fn = 0;
++    if (!fn)
++        fn = (Fn)dlsym(RTLD_DEFAULT, "xpc_connection_create_mach_service");
++    return fn ? fn(name, queue, flags) : 0;
++}
++#define xpc_connection_create_mach_service webkit_xpc_connection_create_mach_service
++#endif // PLATFORM(IOS_FAMILY)
