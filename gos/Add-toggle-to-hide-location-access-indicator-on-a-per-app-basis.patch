@@ -19,7 +19,7 @@ index 1e6f13b34a0fb..66862d21aca07 100644
  
    public interface GosPackageStateFlag {
      field public static final int CONTACT_SCOPES_ENABLED = 5; // 0x5
-+    field public static final int HIDE_LOCATION_INDICATOR = 34; // 0x22
++    field public static final int HIDE_LOCATION_INDICATOR = 60; // 0x3c
      field public static final int STORAGE_SCOPES_ENABLED = 0; // 0x0
    }
  
@@ -30,7 +30,7 @@ index 21abe5f9398d0..ab4a8ca27ad23 100644
 @@ -41,2 +41,3 @@ public interface GosPackageStateFlag {
      /** @hide */ int ALLOW_CLIPBOARD_READ = 32;
      /** @hide */ int SUPPRESS_CLIPBOARD_ACCESS_DENIAL_NOTIF = 33;
-+    /* SysApi */ int HIDE_LOCATION_INDICATOR = 34;
++    /* SysApi */ int HIDE_LOCATION_INDICATOR = 60;
  
      /** @hide */
      @IntDef(value = {
