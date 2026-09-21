@@ -29,17 +29,17 @@ let
 
       gradle = gradle_9_4_1;
 
-      # https://github.com/bitwarden/android/blob/v2026.8.1-bwpm/gradle/libs.versions.toml#L32 bitwardenSdk = "3.0.0-8427-16db8e99"
+      # https://github.com/bitwarden/android/blob/v2026.9.0-bwpm/gradle/libs.versions.toml#L32 bitwardenSdk = "3.0.0-8671-5d8ae614"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
-        rev = "16db8e99";
-        hash = "sha256-YkahXg1i2O1hTjYf50cYvM+YwFX59aFRzEoF7Qv85Dg=";
+        rev = "5d8ae614";
+        hash = "sha256-QLWE+O34DHtkoZYi2jfc9aoAnIrrVmYJye3crQnQ6S8=";
       };
 
       sdkSrcLock = fetchurl {
         url = "${sdkSrc.meta.homepage}/raw/${sdkSrc.rev}/Cargo.lock";
-        hash = "sha256-Kq8e4Jt/BARFo6J/SAgKyTzPlFqBgPpO+vI4XEjKFxU=";
+        hash = "sha256-NeK1e00PnBl41w+FGHtDRu0X24GevqYl/nXpgbIPNZ8=";
       };
 
       androidCrossConfig = {
@@ -90,7 +90,6 @@ let
             # this only fetches one file during nix evaluation
             lockFile = sdkSrcLock;
             outputHashes = {
-              "crypto-bigint-0.7.5" = "sha256-CkLTeaV/XCLybrudQJNgZOZzLGLNk3yb1zVhAIP2LFg=";
               "passkey-0.5.0" = "sha256-vOeb5y3NImP1YQxs70FRiJACtQK+IdtE0HeHHUJoK5o=";
             };
           };
@@ -131,7 +130,6 @@ let
           # this only fetches one file during nix evaluation
           lockFile = sdkSrcLock;
           outputHashes = {
-            "crypto-bigint-0.7.5" = "sha256-CkLTeaV/XCLybrudQJNgZOZzLGLNk3yb1zVhAIP2LFg=";
             "passkey-0.5.0" = "sha256-vOeb5y3NImP1YQxs70FRiJACtQK+IdtE0HeHHUJoK5o=";
           };
         };
@@ -152,7 +150,7 @@ let
           version = "3.0.0";
           src = sdkSrc;
           cargoRoot = ".";
-          hash = "sha256-KdDcJDK6mvENcmKhgcz7uWaVT077jUZ4xT4lg6cqWls=";
+          hash = "sha256-niuwOUVJAl1kdU6dt2bovpBS5WqXWRIPfKRAOaS53Bk=";
         };
         nativeBuildInputs = [
           rustPlatform.cargoSetupHook
@@ -185,14 +183,19 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-android";
-      version = "2026.8.1";
+      version = "2026.9.0";
 
-      postPatch = ''sed -i 's/androidGradlePlugin = "9.3.1"/androidGradlePlugin = "9.2.1"/g' gradle/libs.versions.toml || true; sed -i "s/9.3.1/9.2.1/g" buildscript-gradle.lockfile || true'';
+      postPatch = ''
+        substituteInPlace gradle/libs.versions.toml \
+          --replace-fail 'androidGradlePlugin = "9.3.2"' 'androidGradlePlugin = "9.2.1"'
+        substituteInPlace buildscript-gradle.lockfile \
+          --replace-fail '9.3.2' '9.2.1'
+      '';
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
         tag = "v${finalAttrs.version}-bwpm";
-        hash = "sha256-ubYguh+xqNxsOd+Ok17LzlELBs5VcgIGE8vr2HMkRRo=";
+        hash = "sha256-+/5A5ZJq+aCejtfFKvaylmCilagxSTNUu024FVIEDIQ=";
       };
 
       gradleBuildTask = ":app:assembleFdroidRelease";

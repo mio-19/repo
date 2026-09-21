@@ -19,7 +19,7 @@ index 1e6f13b34a0fb..66862d21aca07 100644
  
    public interface GosPackageStateFlag {
      field public static final int CONTACT_SCOPES_ENABLED = 5; // 0x5
-+    field public static final int HIDE_LOCATION_INDICATOR = 31; // 0x1f
++    field public static final int HIDE_LOCATION_INDICATOR = 60; // 0x3c
      field public static final int STORAGE_SCOPES_ENABLED = 0; // 0x0
    }
  
@@ -27,18 +27,16 @@ diff --git a/core/java/android/content/pm/GosPackageStateFlag.java b/core/java/a
 index 21abe5f9398d0..ab4a8ca27ad23 100644
 --- a/core/java/android/content/pm/GosPackageStateFlag.java
 +++ b/core/java/android/content/pm/GosPackageStateFlag.java
-@@ -38,6 +38,7 @@ public interface GosPackageStateFlag {
-     /** @hide */ int BLOCK_PLAY_INTEGRITY_API = 28;
-     /** @hide */ int USE_EXEC_SPAWNING_NON_DEFAULT = 29;
-     /** @hide */ int USE_EXEC_SPAWNING = 30;
-+    /* SysApi */ int HIDE_LOCATION_INDICATOR = 31;
+@@ -41,2 +41,3 @@ public interface GosPackageStateFlag {
+     /** @hide */ int ALLOW_CLIPBOARD_READ = 32;
+     /** @hide */ int SUPPRESS_CLIPBOARD_ACCESS_DENIAL_NOTIF = 33;
++    /* SysApi */ int HIDE_LOCATION_INDICATOR = 60;
  
      /** @hide */
      @IntDef(value = {
-@@ -70,6 +71,7 @@ public interface GosPackageStateFlag {
-             BLOCK_PLAY_INTEGRITY_API,
-             USE_EXEC_SPAWNING_NON_DEFAULT,
-             USE_EXEC_SPAWNING,
+@@ -74,2 +75,3 @@ public interface GosPackageStateFlag {
+             ALLOW_CLIPBOARD_READ,
+             SUPPRESS_CLIPBOARD_ACCESS_DENIAL_NOTIF,
 +            HIDE_LOCATION_INDICATOR,
      })
      @Retention(RetentionPolicy.SOURCE)

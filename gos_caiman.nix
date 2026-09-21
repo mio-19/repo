@@ -1,4 +1,4 @@
-args@{
+{
   config,
   pkgs-unfree,
   lib,
@@ -19,7 +19,7 @@ args@{
   config = {
     enableLindroid = false;
     enableDroidspaces = false;
-    device = "caiman";
+    device = lib.mkDefault "caiman";
     source.dirs."device/google/caimito-kernels/6.1" = lib.mkForce {
       src =
         let

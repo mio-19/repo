@@ -610,17 +610,17 @@
   };
   lineage_launcher3_wip = {
     pname = "lineage_launcher3_wip";
-    version = "ee25ab865b59ecda9c8fd6f901e80b48d7b789ea";
+    version = "f55cf58ce1a7cdd3a737002509337b1a31a98fc6";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_Launcher3.git";
-      rev = "ee25ab865b59ecda9c8fd6f901e80b48d7b789ea";
+      rev = "f55cf58ce1a7cdd3a737002509337b1a31a98fc6";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-a3BxHGx6iqFYt1Vqa6kllMremJCYAh+1a1m/gCJbvz0=";
+      sha256 = "sha256-vvUA82qtXJdMnGlbXV/QY4/MtN3nhPsd2pwSKfCSNEA=";
     };
-    date = "2026-09-15";
+    date = "2026-09-16";
   };
   lineage_prebuilts_bootmgr = {
     pname = "lineage_prebuilts_bootmgr";

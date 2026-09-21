@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  gradle_9_5_0,
+  gradle_9_6_1,
   jdk21_headless,
   stdenv,
   fetchFromGitHub,
@@ -39,19 +39,17 @@ let
         hash = "sha256-m+pMgGbvShwgayvlo2MC+JJvf9xgh69dILQX0M8QPqY=";
       };
 
-      gradle = gradle_9_5_0;
+      gradle = gradle_9_6_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "meditrak";
-      version = "0.17.11";
+      version = "0.17.12";
 
       src = fetchFromGitHub {
         owner = "AdamGuidarini";
         repo = "MediTrak";
-        # Upstream tagged this release "vo.17.7" (letter o, a typo) instead of
-        # "v0.17.7", so pin the literal tag rather than deriving it from version.
-        tag = "v0.17.11";
-        hash = "sha256-/qsdYaFtCAR+vwCawaueyjozxI+VFEcFIHiMawzvUI8=";
+        tag = "v${finalAttrs.version}";
+        hash = "sha256-/Qkyt5bSrenX/oFGugRDjuyVMmBAKGSAu+TvCgTxsd4=";
       };
 
       patches = [

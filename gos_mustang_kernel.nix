@@ -18,11 +18,11 @@ in
 let
   src = fetchgit {
     url = "https://gitlab.com/grapheneos/kernel_pixel_muzel.git";
-    tag = "2026091000";
+    tag = "2026091900";
     fetchSubmodules = true;
     deepClone = false;
     sparseCheckout = [ ];
-    hash = "sha256-+MeS0MJXWiUVm+AAHUxLA9BUh9JicfWDsRp4ysC8YJM=";
+    hash = "";
   };
 in
 callPackage ./gos_kernel_common.nix { } {
