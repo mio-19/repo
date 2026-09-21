@@ -48,6 +48,7 @@ in
           tangorpro = common ./gos_tangorpro.nix;
           cheetah = common ./gos_cheetah.nix;
           caiman = common ./gos_caiman.nix;
+          komodo = common ./gos_komodo.nix;
         };
       mkLos =
         { ccache }:
