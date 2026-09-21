@@ -224,8 +224,9 @@ stdenvNoCC.mkDerivation (finalAttrs: {
         -derivedDataPath "$PWD/DerivedData"
         ARCHS=arm64\ arm64e
         ONLY_ACTIVE_ARCH=NO
-        CODE_SIGN_IDENTITY=
+        CODE_SIGN_IDENTITY=-
         CODE_SIGNING_REQUIRED=NO
+        CODE_SIGNING_ALLOWED=NO
         GCC_TREAT_WARNINGS_AS_ERRORS=NO
         SUPPORTS_TEXT_BASED_API=NO
         OTHER_CFLAGS='$(inherited) -Wno-error -Wno-enum-constexpr-conversion -Wno-missing-template-arg-list-after-template-kw -isystem '"$OBJC_SHIM"
