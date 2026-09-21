@@ -90,7 +90,6 @@ let
     "tuxguitar-android" # buildPhase fails mysteriously/killed on darwin
     "amethyst" # misses AGP plugin marker from deps.json on darwin
     "droidspaces" # build fails mysteriously on darwin
-    "fdroid-basic" # build fails mysteriously on darwin
     "meditrak" # fails with FSEvents stream error on darwin
     "shelter" # Gradle fails to use mitmCache proxy on darwin
     "v2rayng" # misses AGP plugin marker from deps.json on darwin
@@ -112,7 +111,6 @@ let
     "thunderbird" # depends on gradle_9_5_1 which fails to compile on darwin
     "zotero-android" # depends on gradle_9_5_1 which fails to compile on darwin
     "mpv-android" # Gradle fails to use mitmCache proxy on darwin
-    "kdeconnect-android" # buildPhase fails mysteriously/killed on darwin
     "luanti" # Gradle fails to use mitmCache proxy on darwin
     "lumo" # Gradle plugin and FSEvents stream error on darwin
     "meshcore-open" # buildPhase fails mysteriously/killed on darwin

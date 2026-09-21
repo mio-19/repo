@@ -30,6 +30,9 @@ buildGradlePackage rec {
   pname = "fdroid-basic";
   version = "2.0-rc1";
 
+  __darwinAllowLocalNetworking = true;
+  __noChroot = true;
+
   src = fetchgit {
     url = "https://gitlab.com/fdroid/fdroidclient.git";
     tag = version;
