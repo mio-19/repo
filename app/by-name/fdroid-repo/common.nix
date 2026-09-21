@@ -90,7 +90,6 @@ let
     "tuxguitar-android" # buildPhase fails mysteriously/killed on darwin
     "amethyst" # misses AGP plugin marker from deps.json on darwin
     "droidspaces" # build fails mysteriously on darwin
-    "fdroid-basic" # build fails mysteriously on darwin
     "meditrak" # fails with FSEvents stream error on darwin
     "shelter" # Gradle fails to use mitmCache proxy on darwin
     "v2rayng" # misses AGP plugin marker from deps.json on darwin
@@ -112,11 +111,8 @@ let
     "thunderbird" # depends on gradle_9_5_1 which fails to compile on darwin
     "zotero-android" # depends on gradle_9_5_1 which fails to compile on darwin
     "mpv-android" # Gradle fails to use mitmCache proxy on darwin
-    "kdeconnect-android" # buildPhase fails mysteriously/killed on darwin
     "luanti" # Gradle fails to use mitmCache proxy on darwin
-    "lspatch" # ephemeral-port-reserve throws Operation not permitted on darwin
     "lumo" # Gradle plugin and FSEvents stream error on darwin
-    "lspatch-manager" # depends on lspatch
     "meshcore-open" # buildPhase fails mysteriously/killed on darwin
     "uplink" # pkgsCross Android NDK rust + Flutter APK
     "mpvex" # Gradle fails to resolve foojay-resolver plugin on darwin
@@ -125,7 +121,6 @@ let
     "weathermaster" # misses AGP plugin marker from deps.json on darwin
     "rain" # misses Gradle plugin marker from deps.json on darwin
     "nekobox-for-android" # misses Gradle plugin marker from deps.json on darwin
-    "grapheneos-camera" # Gradle Worker Daemon fails to start on darwin
     "gallery" # misses lint-gradle dependency on darwin
   ];
 

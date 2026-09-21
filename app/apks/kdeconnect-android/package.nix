@@ -28,6 +28,9 @@ let
       pname = "kdeconnect-android";
       version = "1.35.16";
 
+      __darwinAllowLocalNetworking = true;
+      __noChroot = true;
+
       src = fetchFromGitHub {
         owner = "KDE";
         repo = "kdeconnect-android";

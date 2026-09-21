@@ -5,6 +5,7 @@
   buildGradlePackage,
   sources,
   lib,
+  stdenv,
   jdk25_headless,
   jdk17_headless,
   gradle_9_6_1,
@@ -35,7 +36,9 @@ let
     inherit version src gradle;
 
     lockFile = ./gradle.lock;
-    overrides = overrides-fromsrc;
+    __darwinAllowLocalNetworking = true;
+    __noChroot = true;
+    overrides = if stdenv.hostPlatform.isDarwin then { } else overrides-fromsrc;
     buildJdk = jdk25_headless;
 
     patches = [

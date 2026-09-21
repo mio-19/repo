@@ -54,6 +54,9 @@ let
 
     gradleBuildTask = "buildRelease";
     gradleUpdateTask = finalAttrs.gradleBuildTask;
+    
+    __darwinAllowLocalNetworking = true;
+    __noChroot = true;
 
     mitmCache = gradle.fetchDeps {
       inherit (finalAttrs) pname;
