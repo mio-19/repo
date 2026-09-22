@@ -11,8 +11,8 @@
  	xattr -rc build/Build/Products/Debug-iphoneos/Dopamine.app
  	ldid -SDopamine/Dopamine.entitlements build/Build/Products/Debug-iphoneos/Dopamine.app/Dopamine
 -	ldid -s build/Build/Products/Debug-iphoneos/Dopamine.app
-+	# codesign overwrites the executable, so we must pass entitlements to preserve them
-+	codesign -f -s - --entitlements Dopamine/Dopamine.entitlements --deep build/Build/Products/Debug-iphoneos/Dopamine.app || true
++	# Bundle-wide ldid -s asserts on some ldid builds; explicitly sign frameworks instead
++	find build/Build/Products/Debug-iphoneos/Dopamine.app -name "*.dylib" -o -name "*.framework" -o -name "*.bundle" | xargs -I {} ldid -s {} || true
  	rm -rf Payload Dopamine.ipa
  	mkdir Payload
  	cp -r build/Build/Products/Debug-iphoneos/Dopamine.app Payload/Dopamine.app
