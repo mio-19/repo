@@ -243,7 +243,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       sed -i.bak 's/#define HAVE_READLINE 1/#define HAVE_READLINE 0/g' Source/WTF/wtf/PlatformHave.h
 
       # Fix Ruby 3.2+ compatibility where File.exists? was removed
-      find Source -name "*.rb" -type f -exec sed -i.bak 's/File\.exists?/File.exist?/g' {} +
+      grep -rlI 'File\.exists?' . | xargs sed -i.bak 's/File\.exists?/File.exist?/g' || true
 
       for scheme in bmalloc WTF JavaScriptCore ANGLE WebCore WebKitLegacy WebKit; do
         echo "=== xcodebuild -scheme $scheme ==="
