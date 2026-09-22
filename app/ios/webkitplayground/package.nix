@@ -231,6 +231,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
         -configuration Release
         -derivedDataPath "$PWD/DerivedData"
         SUPPORTS_TEXT_BASED_API=NO
+        CURRENT_ARCH=arm64
         OTHER_CFLAGS='$(inherited) -Wno-error -Wno-enum-constexpr-conversion -Wno-missing-template-arg-list-after-template-kw -isystem '"$OBJC_SHIM"
         OTHER_CPLUSPLUSFLAGS='$(inherited) -Wno-error -Wno-enum-constexpr-conversion -Wno-missing-template-arg-list-after-template-kw -isystem '"$OBJC_SHIM"
         SYMROOT="$PWD/WebKitBuild"
@@ -240,6 +241,9 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       
       # Disable interactive jsc build to prevent readline errors on iOS SDK
       sed -i.bak 's/#define HAVE_READLINE 1/#define HAVE_READLINE 0/g' Source/WTF/wtf/PlatformHave.h
+
+      # Fix Ruby 3.2+ compatibility where File.exists? was removed
+      find Source -name "*.rb" -type f -exec sed -i.bak 's/File\.exists?/File.exist?/g' {} +
 
       for scheme in bmalloc WTF JavaScriptCore ANGLE WebCore WebKitLegacy WebKit; do
         echo "=== xcodebuild -scheme $scheme ==="
