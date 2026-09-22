@@ -225,6 +225,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       export CODE_SIGNING_ALLOWED=NO
       export GCC_TREAT_WARNINGS_AS_ERRORS=NO
       export IPHONEOS_DEPLOYMENT_TARGET=16.0
+      unset MACOSX_DEPLOYMENT_TARGET
 
       common=(
         -workspace WebKit.xcworkspace
