@@ -10,16 +10,16 @@ let
   appPackage =
     let
       youtubeMusicApk = fetchurl {
-        name = "YouTube+Music_9.34.52_APKPure.apk";
-        url = "https://web.archive.org/web/20260917115204/https://data.winudf.com/APK/Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpY185MzQ1MjI0MF85YTUxZGE4NQ?_p=Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpYw%3D%3D&download_id=1879803226307042&filename=YouTube+Music_9.34.52_APKPure.apk&full_size=71251864&is_hot=true&k=7fc8d29e5d8c12ddaee25bdf007ea1a66aae774f&package_name=com.google.android.apps.youtube.music&source=web&token=1789645903-0419923880-0-6da92ec2ba80699af821dcacba212d23";
-        hash = "sha256-MdT0+XrOCKJNurQGNdSUsNzbIVnkkfMbkkwLF2IcOas=";
+        name = "YouTube+Music_9.35.54_APKPure.xapk";
+        url = "https://web.archive.org/web/20260923051729if_/https://data.winudf.com/XAPK/Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpY185MzU1NDI0MF84ZWYwNTlhOA?_p=Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpYw%3D%3D&download_id=1804704911999440&filename=YouTube+Music_9.35.54_APKPure.xapk&full_size=65525748&is_hot=true&k=08a8c3abfd71e5112b730ed52d1eeb726ab603d8&package_name=com.google.android.apps.youtube.music&source=web&token=1790140632-730c5492de-0-5980a603e0ce17ae9171891a0e9aecec";
+        hash = "sha256-hGu2FWXj1CJku66esVpYClju48ZrDHDokk5DX10wgF8=";
       };
 
       morphePatches = "${morphe-patches}/patches-${morphe-patches.version}.mpp";
     in
     stdenv.mkDerivation {
       pname = "youtube-music-morphe";
-      version = "9.34.52-patches-${morphe-patches.version}";
+      version = "9.35.54-patches-${morphe-patches.version}";
 
       dontUnpack = true;
 
