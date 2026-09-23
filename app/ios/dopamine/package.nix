@@ -181,8 +181,15 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     ln -s ../_spm/iDownload BaseBin/idownloadd/iDownload
     ln -s ../_spm/SwiftUtils BaseBin/idownloadd/SwiftUtils
 
-    # Prebuilt asset catalog (compiled on a host where actool can see the
-    # matching simulator runtime); avoids nixbld CoreSimulator /var/empty.
+    # Prebuilt asset catalog (Assets.car).
+    # Why we don't compile this during the build:
+    # `actool` relies on `CoreSimulatorService`, which is spawned out-of-process
+    # by launchd. launchd resolves the nixbld user's home directory by querying
+    # the macOS passwd database (which is hardcoded to /var/empty).
+    # It completely ignores the $HOME or SIMULATOR_DEVICE_SET_PATH environment
+    # variables in our shell. It crashes trying to write to /var/empty/Library.
+    # SIP prevents us from hooking getpwuid() via DYLD_INSERT_LIBRARIES.
+    # Therefore, we provide a precompiled Assets.car and inject CFBundleIcons via plutil.
     cp -f ${./Assets.car} Application/prebuilt-Assets.car
   '';
 
