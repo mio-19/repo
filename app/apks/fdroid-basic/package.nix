@@ -29,7 +29,7 @@ let
 in
 buildGradlePackage rec {
   pname = "fdroid-basic";
-  version = "2.0-rc1";
+  version = "2.0.0";
 
   __darwinAllowLocalNetworking = true;
   __noChroot = stdenv.hostPlatform.isDarwin;
@@ -37,7 +37,7 @@ buildGradlePackage rec {
   src = fetchgit {
     url = "https://gitlab.com/fdroid/fdroidclient.git";
     tag = version;
-    hash = "sha256-Ij4lFV2AwU02o++K1jt46yeXhwtFYKy0Z/qnHNeDOaE=";
+    hash = "sha256-tAhbhdiyR/J+9wc5HAu8WFJg888eZLAS7j3qoVLh8Gk=";
   };
 
   patches = [ ./version-name-update.patch ];
@@ -67,7 +67,8 @@ buildGradlePackage rec {
 
     substituteInPlace app/build.gradle.kts \
       --replace-fail '  lint {' $'  lint {\n    checkReleaseBuilds = false' \
-      --replace-fail 'versionNameSuffix = "-$gitHash"' 'versionNameSuffix = "-unknown"'
+      --replace-fail 'versionNameSuffix = "-$gitHash"' 'versionNameSuffix = "-unknown"' \
+      --replace-fail 'ProcessBuilder("git", "rev-parse", "--short=8", "HEAD")' 'ProcessBuilder("echo", "unknown")'
   '';
 
   preConfigure = ''
