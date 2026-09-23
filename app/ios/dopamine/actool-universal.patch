@@ -1,20 +1,32 @@
 --- a/src/compiler.rs
 +++ b/src/compiler.rs
-@@ -540,7 +540,7 @@
+@@ -531,6 +531,11 @@
+     src: PathBuf,
+ }
+ 
++/// Returns true if the image idiom matches the requested target or a fallback.
++fn idiom_matches(img_idiom: &str, target: &str) -> bool {
++    img_idiom == target || matches!(img_idiom, "universal" | "ios-marketing")
++}
++
+ /// Loose home-screen PNGs actool drops next to the CAR: the @2x primary icon
+ /// for each idiom present (`AppIcon60x60@2x.png`, `AppIcon76x76@2x~ipad.png`).
+ fn ios_loose_icons(icons: &[IconImage], name: &str) -> Vec<LooseIcon> {
+@@ -540,7 +545,7 @@
          };
          let Some(img) = icons
              .iter()
 -            .find(|i| i.idiom == idiom && i.point_w == primary && i.scale == 2)
-+            .find(|i| (i.idiom == idiom || i.idiom == "universal" || i.idiom == "ios-marketing") && i.point_w == primary && i.scale == 2)
++            .find(|i| idiom_matches(&i.idiom, idiom) && i.point_w == primary && i.scale == 2)
          else {
              continue;
          };
-@@ -564,7 +564,7 @@
+@@ -564,7 +569,7 @@
  /// or empty when the catalog has no home-screen icon for that idiom.
  fn ios_icon_files(icons: &[IconImage], name: &str, idiom: &str) -> Vec<String> {
      match ios_primary_size(idiom) {
 -        Some(primary) if icons.iter().any(|i| i.idiom == idiom && i.point_w == primary) => {
-+        Some(primary) if icons.iter().any(|i| (i.idiom == idiom || i.idiom == "universal" || i.idiom == "ios-marketing") && i.point_w == primary) => {
++        Some(primary) if icons.iter().any(|i| idiom_matches(&i.idiom, idiom) && i.point_w == primary) => {
              vec![format!("{name}{primary}x{primary}")]
          }
          _ => Vec::new(),
