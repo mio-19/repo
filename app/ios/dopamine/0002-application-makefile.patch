@@ -1,6 +1,6 @@
 --- a/Application/Makefile
 +++ b/Application/Makefile
-@@ -1,32 +1,57 @@
+@@ -1,32 +1,61 @@
 -.PHONY: all clean build_clean
 -
 -all: Dopamine.ipa
@@ -75,14 +75,18 @@
 +	$(MAKE) compile-assets
 +endif
 +
-+# Prefer prebuilt Assets.car (actool under nixbld hits CoreSimulator /var/empty).
++# Use Nixpkgs open-source actool reimplementation to compile assets and generate Info.plist entries,
++# completely bypassing Apple's actool which crashes on CoreSimulatorService under nixbld.
 +compile-assets:
-+	@if [[ -f prebuilt-Assets.car ]]; then \
-+		cp -f prebuilt-Assets.car build/Build/Products/Debug-iphoneos/Dopamine.app/Assets.car; \
-+		plutil -insert CFBundleIcons -xml '<dict><key>CFBundlePrimaryIcon</key><dict><key>CFBundleIconFiles</key><array><string>AppIcon</string></array><key>CFBundleIconName</key><string>AppIcon</string></dict></dict>' build/Build/Products/Debug-iphoneos/Dopamine.app/Info.plist || true; \
-+	else \
-+		echo "warning: no prebuilt Assets.car; app icons may be missing"; \
-+	fi
++	mkdir -p build/Build/Products/Debug-iphoneos/Dopamine.app
++	actool --compile build/Build/Products/Debug-iphoneos/Dopamine.app \
++		--platform iphoneos \
++		--minimum-deployment-target 15.0 \
++		--app-icon AppIcon \
++		--output-partial-info-plist build/Build/Products/Debug-iphoneos/actool_partial_info.plist \
++		Dopamine/Assets.xcassets
++	# Merge partial info.plist into the main one (Apple actool would do this via Xcode automatically)
++	plutil -insert CFBundleIcons -xml "$$(plutil -extract CFBundleIcons xml1 -o - build/Build/Products/Debug-iphoneos/actool_partial_info.plist)" build/Build/Products/Debug-iphoneos/Dopamine.app/Info.plist || true
 +
 +clean:
 +	rm -rf build Payload Dopamine.ipa Dopamine.tipa

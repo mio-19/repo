@@ -11,6 +11,7 @@
   ldid,
   openssl,
   writableTmpDirAsHomeHook,
+  actool,
   # When true (default), include Lessica dyld/systemhook patches so
   # DYLD_FRAMEWORK_PATH can override DSC frameworks (WebKitPlayground).
   # ios_dopamine_upstream sets this to false for vanilla opa334 Dopamine.
@@ -124,6 +125,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   __noChroot = true;
 
   nativeBuildInputs = [
+    actool
     gnumake
     perl
     dpkg
@@ -180,17 +182,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     # expose SwiftUtils beside it.
     ln -s ../_spm/iDownload BaseBin/idownloadd/iDownload
     ln -s ../_spm/SwiftUtils BaseBin/idownloadd/SwiftUtils
-
-    # Prebuilt asset catalog (Assets.car).
-    # Why we don't compile this during the build:
-    # `actool` relies on `CoreSimulatorService`, which is spawned out-of-process
-    # by launchd. launchd resolves the nixbld user's home directory by querying
-    # the macOS passwd database (which is hardcoded to /var/empty).
-    # It completely ignores the $HOME or SIMULATOR_DEVICE_SET_PATH environment
-    # variables in our shell. It crashes trying to write to /var/empty/Library.
-    # SIP prevents us from hooking getpwuid() via DYLD_INSERT_LIBRARIES.
-    # Therefore, we provide a precompiled Assets.car and inject CFBundleIcons via plutil.
-    cp -f ${./Assets.car} Application/prebuilt-Assets.car
   '';
 
   dontConfigure = true;
