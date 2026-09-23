@@ -1,0 +1,20 @@
+--- a/src/compiler.rs
++++ b/src/compiler.rs
+@@ -540,7 +540,7 @@
+         };
+         let Some(img) = icons
+             .iter()
+-            .find(|i| i.idiom == idiom && i.point_w == primary && i.scale == 2)
++            .find(|i| (i.idiom == idiom || i.idiom == "universal" || i.idiom == "ios-marketing") && i.point_w == primary && i.scale == 2)
+         else {
+             continue;
+         };
+@@ -564,7 +564,7 @@
+ /// or empty when the catalog has no home-screen icon for that idiom.
+ fn ios_icon_files(icons: &[IconImage], name: &str, idiom: &str) -> Vec<String> {
+     match ios_primary_size(idiom) {
+-        Some(primary) if icons.iter().any(|i| i.idiom == idiom && i.point_w == primary) => {
++        Some(primary) if icons.iter().any(|i| (i.idiom == idiom || i.idiom == "universal" || i.idiom == "ios-marketing") && i.point_w == primary) => {
+             vec![format!("{name}{primary}x{primary}")]
+         }
+         _ => Vec::new(),

@@ -10,6 +10,7 @@
   dpkg,
   ldid,
   openssl,
+  actool,
   writableTmpDirAsHomeHook,
   # When true (default), include Lessica dyld/systemhook patches so
   # DYLD_FRAMEWORK_PATH can override DSC frameworks (WebKitPlayground).
@@ -107,23 +108,28 @@ let
       platforms = lib.platforms.darwin;
     };
   };
+
+  patchedActool = actool.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [ ./actool-universal.patch ];
+  });
 in
-stdenvNoCC.mkDerivation (finalAttrs: {
+stdenvNoCC.mkDerivation {
   pname = "dopamine";
   version = "3.0.9";
 
   src = fetchFromGitHub {
     owner = "opa334";
     repo = "Dopamine";
-    tag = finalAttrs.version;
+    rev = "3.0.9";
     fetchSubmodules = true;
     hash = "sha256-D5+kCg6HlgHDwrZdsOVUBohHKZ468zeyqycJBb2CFVA=";
   };
 
-  # Host Xcode / codesign need out-of-sandbox access on Darwin.
+  # Needs host Xcode; __noChroot requires sandbox = relaxed (or false):
   __noChroot = true;
 
   nativeBuildInputs = [
+    patchedActool
     gnumake
     perl
     dpkg
@@ -180,17 +186,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     # expose SwiftUtils beside it.
     ln -s ../_spm/iDownload BaseBin/idownloadd/iDownload
     ln -s ../_spm/SwiftUtils BaseBin/idownloadd/SwiftUtils
-
-    # Prebuilt asset catalog (Assets.car).
-    # Why we don't compile this during the build:
-    # `actool` relies on `CoreSimulatorService`, which is spawned out-of-process
-    # by launchd. launchd resolves the nixbld user's home directory by querying
-    # the macOS passwd database (which is hardcoded to /var/empty).
-    # It completely ignores the $HOME or SIMULATOR_DEVICE_SET_PATH environment
-    # variables in our shell. It crashes trying to write to /var/empty/Library.
-    # SIP prevents us from hooking getpwuid() via DYLD_INSERT_LIBRARIES.
-    # Therefore, we provide a precompiled Assets.car and inject CFBundleIcons via plutil.
-    cp -f ${./Assets.car} Application/prebuilt-Assets.car
   '';
 
   dontConfigure = true;
@@ -266,4 +261,4 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     license = lib.licenses.mit;
     platforms = lib.platforms.darwin;
   };
-})
+}
