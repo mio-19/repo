@@ -1,3 +1,13 @@
+Patch actool to recognize "universal" and "ios-marketing" idioms when emitting fallback icons, correctly matching Apple's actool output.
+
+Apple's xcassets format allows using the "universal" idiom for icons, and Apple's official `actool` correctly processes these universal icons by emitting `CFBundleIconFiles` into the partial Info.plist and extracting the corresponding loose fallback PNGs (e.g. AppIcon60x60@2x.png) for older iOS compatibility. 
+
+However, viraptor/actool strictly expected the exact "iphone" or "ipad" string identifiers when scanning for primary home screen icons. Because it didn't find those exact string matches, it silently skipped emitting `CFBundleIconFiles` and the loose PNG files, resulting in output that diverged from Apple's official tool. 
+
+By fixing this matching logic to accept "universal" and "ios-marketing", actool now correctly emits the loose PNG files and the `CFBundleIconFiles` array, achieving 1:1 behavioral parity with Apple's `actool` for universal iOS icons.
+
+This patch has been written to match the idiomatic use of `matches!` found elsewhere in the codebase.
+
 --- a/src/compiler.rs
 +++ b/src/compiler.rs
 @@ -531,6 +531,11 @@
