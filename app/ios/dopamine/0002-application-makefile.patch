@@ -6,19 +6,17 @@
  
  all: Dopamine.ipa
  
-@@ -6,7 +6,10 @@
+@@ -6,7 +6,8 @@
  	@echo Ad-Hoc signing Dopamine
  	xattr -rc build/Build/Products/Debug-iphoneos/Dopamine.app
  	ldid -SDopamine/Dopamine.entitlements build/Build/Products/Debug-iphoneos/Dopamine.app/Dopamine
 -	ldid -s build/Build/Products/Debug-iphoneos/Dopamine.app
-+	# Ad-hoc sign main binary (no extension so find won't catch it)
-+	ldid -s build/Build/Products/Debug-iphoneos/Dopamine.app/Dopamine
 +	# Sign all embedded dylibs/frameworks (fix find -o precedence with parens)
 +	find build/Build/Products/Debug-iphoneos/Dopamine.app \( -name "*.dylib" -o -name "*.framework" -o -name "*.bundle" \) | xargs -I {} ldid -s {} || true
  	rm -rf Payload Dopamine.ipa
  	mkdir Payload
  	cp -r build/Build/Products/Debug-iphoneos/Dopamine.app Payload/Dopamine.app
-@@ -15,13 +18,40 @@
+@@ -15,13 +16,40 @@
  	rm -rf Dopamine.tipa
  	cp Dopamine.ipa Dopamine.tipa
  
@@ -61,7 +59,7 @@
  
  clean:
  	rm -rf build Payload Dopamine.ipa Dopamine.tipa
-@@ -29,4 +59,4 @@
+@@ -29,4 +57,4 @@
  build_clean:
  	rm -rf Payload build
  
