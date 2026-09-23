@@ -1,0 +1,42 @@
+Patch actool to recognize "universal" and "ios-marketing" idioms when emitting fallback icons, correctly matching Apple's actool output.
+
+Apple's xcassets format allows using the "universal" idiom for icons, and Apple's official `actool` correctly processes these universal icons by emitting `CFBundleIconFiles` into the partial Info.plist and extracting the corresponding loose fallback PNGs (e.g. AppIcon60x60@2x.png) for older iOS compatibility. 
+
+However, viraptor/actool strictly expected the exact "iphone" or "ipad" string identifiers when scanning for primary home screen icons. Because it didn't find those exact string matches, it silently skipped emitting `CFBundleIconFiles` and the loose PNG files, resulting in output that diverged from Apple's official tool. 
+
+By fixing this matching logic to accept "universal" and "ios-marketing", actool now correctly emits the loose PNG files and the `CFBundleIconFiles` array, achieving 1:1 behavioral parity with Apple's `actool` for universal iOS icons.
+
+This patch has been written to match the idiomatic use of `matches!` found elsewhere in the codebase.
+
+--- a/src/compiler.rs
++++ b/src/compiler.rs
+@@ -531,6 +531,11 @@
+     src: PathBuf,
+ }
+ 
++/// Returns true if the image idiom matches the requested target or a fallback.
++fn idiom_matches(img_idiom: &str, target: &str) -> bool {
++    img_idiom == target || matches!(img_idiom, "universal" | "ios-marketing")
++}
++
+ /// Loose home-screen PNGs actool drops next to the CAR: the @2x primary icon
+ /// for each idiom present (`AppIcon60x60@2x.png`, `AppIcon76x76@2x~ipad.png`).
+ fn ios_loose_icons(icons: &[IconImage], name: &str) -> Vec<LooseIcon> {
+@@ -540,7 +545,7 @@
+         };
+         let Some(img) = icons
+             .iter()
+-            .find(|i| i.idiom == idiom && i.point_w == primary && i.scale == 2)
++            .find(|i| idiom_matches(&i.idiom, idiom) && i.point_w == primary && i.scale == 2)
+         else {
+             continue;
+         };
+@@ -564,7 +569,7 @@
+ /// or empty when the catalog has no home-screen icon for that idiom.
+ fn ios_icon_files(icons: &[IconImage], name: &str, idiom: &str) -> Vec<String> {
+     match ios_primary_size(idiom) {
+-        Some(primary) if icons.iter().any(|i| i.idiom == idiom && i.point_w == primary) => {
++        Some(primary) if icons.iter().any(|i| idiom_matches(&i.idiom, idiom) && i.point_w == primary) => {
+             vec![format!("{name}{primary}x{primary}")]
+         }
+         _ => Vec::new(),

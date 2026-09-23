@@ -6,24 +6,13 @@
  
  all: Dopamine.ipa
  
-@@ -6,7 +6,8 @@
- 	@echo Ad-Hoc signing Dopamine
- 	xattr -rc build/Build/Products/Debug-iphoneos/Dopamine.app
- 	ldid -SDopamine/Dopamine.entitlements build/Build/Products/Debug-iphoneos/Dopamine.app/Dopamine
--	ldid -s build/Build/Products/Debug-iphoneos/Dopamine.app
-+	# Bundle-wide ldid -s asserts on some ldid builds; explicitly sign frameworks instead
-+	find build/Build/Products/Debug-iphoneos/Dopamine.app -name "*.dylib" -o -name "*.framework" -o -name "*.bundle" | xargs -I {} ldid -s {} || true
- 	rm -rf Payload Dopamine.ipa
- 	mkdir Payload
- 	cp -r build/Build/Products/Debug-iphoneos/Dopamine.app Payload/Dopamine.app
-@@ -15,18 +16,41 @@
+@@ -15,13 +15,40 @@
  	rm -rf Dopamine.tipa
  	cp Dopamine.ipa Dopamine.tipa
  
 +# Use -target (not -scheme) so xcodebuild does not require a resolved iOS
-+# destination. Xcode 26.3 on this host reports "iOS 26.2 is not installed" for
-+# generic/platform=iOS; -sdk iphoneos still compiles. Also avoid SPM zstd.
-+# Note: -derivedDataPath requires -scheme, so use SYMROOT instead.
++# destination. Xcode 26 without iOS SDK installed errors on generic/platform=iOS.
++# Also avoids SPM network fetch for zstd (we link BaseBin's static libzstd).
 +ZSTD_LIB = $(CURDIR)/../BaseBin/dopamine/external/lib/libzstd.a
 +XCODE_FLAGS = -project Dopamine.xcodeproj -target Dopamine -configuration Debug \
 +	-sdk iphoneos SYMROOT=$(CURDIR)/build/Build/Products OBJROOT=$(CURDIR)/build/Build/Intermediates.noindex \
@@ -43,19 +32,24 @@
 +	xcodebuild $(XCODE_FLAGS)
 +	$(MAKE) compile-assets
  endif
- 
-+# Prefer prebuilt Assets.car (actool under nixbld hits simulator runtime mismatch).
-+compile-assets:
-+	@if [[ -f prebuilt-Assets.car ]]; then \
-+		cp -f prebuilt-Assets.car build/Build/Products/Debug-iphoneos/Dopamine.app/Assets.car; \
-+		plutil -insert CFBundleIcons -xml '<dict><key>CFBundlePrimaryIcon</key><dict><key>CFBundleIconFiles</key><array><string>AppIcon</string></array><key>CFBundleIconName</key><string>AppIcon</string></dict></dict>' build/Build/Products/Debug-iphoneos/Dopamine.app/Info.plist || true; \
-+	else \
-+		echo "warning: no prebuilt Assets.car; app icons may be missing"; \
-+	fi
 +
++# Use Nixpkgs open-source actool reimplementation with our universal patch to compile assets,
++# generating both the .car and the loose PNGs required by TrollStore.
++compile-assets:
++	mkdir -p build/Build/Products/Debug-iphoneos/Dopamine.app
++	actool --compile build/Build/Products/Debug-iphoneos/Dopamine.app \
++		--platform iphoneos \
++		--minimum-deployment-target 15.0 \
++		--app-icon AppIcon \
++		--output-partial-info-plist build/Build/Products/Debug-iphoneos/actool_partial_info.plist \
++		Dopamine/Assets.xcassets
++	# Merge partial info.plist into the main one (Apple actool would do this via Xcode automatically)
++	plutil -insert CFBundleIcons -xml "$$(plutil -extract CFBundleIcons xml1 -o - build/Build/Products/Debug-iphoneos/actool_partial_info.plist)" build/Build/Products/Debug-iphoneos/Dopamine.app/Info.plist || true
++	plutil -insert CFBundleIcons~ipad -xml "$$(plutil -extract CFBundleIcons~ipad xml1 -o - build/Build/Products/Debug-iphoneos/actool_partial_info.plist)" build/Build/Products/Debug-iphoneos/Dopamine.app/Info.plist || true
+ 
  clean:
  	rm -rf build Payload Dopamine.ipa Dopamine.tipa
- 
+@@ -29,4 +56,4 @@
  build_clean:
  	rm -rf Payload build
  

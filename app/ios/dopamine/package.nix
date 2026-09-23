@@ -8,8 +8,9 @@
   gnumake,
   perl,
   dpkg,
-  ldid,
+  ldid-procursus,
   openssl,
+  actool,
   writableTmpDirAsHomeHook,
   # When true (default), include Lessica dyld/systemhook patches so
   # DYLD_FRAMEWORK_PATH can override DSC frameworks (WebKitPlayground).
@@ -107,27 +108,32 @@ let
       platforms = lib.platforms.darwin;
     };
   };
+
+  patchedActool = actool.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [ ./actool-universal.patch ];
+  });
 in
-stdenvNoCC.mkDerivation (finalAttrs: {
+stdenvNoCC.mkDerivation {
   pname = "dopamine";
   version = "3.0.9";
 
   src = fetchFromGitHub {
     owner = "opa334";
     repo = "Dopamine";
-    tag = finalAttrs.version;
+    rev = "3.0.9";
     fetchSubmodules = true;
     hash = "sha256-D5+kCg6HlgHDwrZdsOVUBohHKZ468zeyqycJBb2CFVA=";
   };
 
-  # Host Xcode / codesign need out-of-sandbox access on Darwin.
+  # Needs host Xcode; __noChroot requires sandbox = relaxed (or false):
   __noChroot = true;
 
   nativeBuildInputs = [
+    patchedActool
     gnumake
     perl
     dpkg
-    ldid
+    ldid-procursus
     trustcache
     writableTmpDirAsHomeHook
   ];
@@ -180,10 +186,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     # expose SwiftUtils beside it.
     ln -s ../_spm/iDownload BaseBin/idownloadd/iDownload
     ln -s ../_spm/SwiftUtils BaseBin/idownloadd/SwiftUtils
-
-    # Prebuilt asset catalog (compiled on a host where actool can see the
-    # matching simulator runtime); avoids nixbld CoreSimulator /var/empty.
-    cp -f ${./Assets.car} Application/prebuilt-Assets.car
   '';
 
   dontConfigure = true;
@@ -259,4 +261,4 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     license = lib.licenses.mit;
     platforms = lib.platforms.darwin;
   };
-})
+}

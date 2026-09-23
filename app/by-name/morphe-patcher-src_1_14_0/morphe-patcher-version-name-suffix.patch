@@ -1,0 +1,16 @@
+--- src/main/kotlin/app/morphe/patcher/resource/coder/ArsclibResourceCoder.kt
++++ src/main/kotlin/app/morphe/patcher/resource/coder/ArsclibResourceCoder.kt
+@@ -256,6 +256,13 @@ internal class ArsclibResourceCoder(
+ 
+         val newPackageName = Document(getFile("AndroidManifest.xml")).use { manifest ->
+             val manifestNode = manifest.getElementsByTagName("manifest").item(0) as Element
++            val versionNameSuffix = System.getenv("MORPHE_VERSION_NAME_SUFFIX")
++            if (!versionNameSuffix.isNullOrBlank()) {
++                val currentVersionName = manifestNode.getAttribute("android:versionName")
++                if (currentVersionName.isNotEmpty() && !currentVersionName.endsWith(versionNameSuffix)) {
++                    manifestNode.setAttribute("android:versionName", currentVersionName + versionNameSuffix)
++                }
++            }
+             manifestNode.getAttribute("package")
+         }
+         val originalPackageName = lazyPackageInfo.value.packageName
