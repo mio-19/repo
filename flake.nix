@@ -6,9 +6,9 @@
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs-python27.url = "https://nixos.org/channels/nixos-26.05/nixexprs.tar.zst";
     android-nixpkgs = {
-      #url = "github:tadfisher/android-nixpkgs/stable";
+      url = "github:tadfisher/android-nixpkgs/stable";
       # this thing cause rebuild with no real thing changed everyday. pin.
-      url = "github:tadfisher/android-nixpkgs/2026-08-18-stable";
+      #url = "github:tadfisher/android-nixpkgs/2026-08-18-stable";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };

@@ -119,7 +119,12 @@ in
     originalNdk:
     let
       # Propagate attributes that android-nixpkgs expects
-      inherit (originalNdk) version path xml;
+      inherit (originalNdk)
+        pname
+        version
+        path
+        xml
+        ;
       installSdk = originalNdk.installSdk or "";
       release =
         sourceBuiltNdkReleases.${version}
@@ -151,6 +156,7 @@ in
     '')
     // {
       inherit
+        pname
         version
         path
         xml
