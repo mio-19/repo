@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk17_headless,
-  gradle_9_4_1,
+  gradle_9_6_1,
   stdenv,
   fetchFromGitHub,
 
@@ -11,18 +11,18 @@
   git,
 }:
 let
-  rev = "4151a45f862550a91b7a8efe35a6b19841242d48";
+  rev = "7158a02";
 
   appPackage =
     let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
-        s.platforms-android-36
+        s.platforms-android-37-0
         s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_4_1;
+      gradle = gradle_9_6_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "mpvex";
@@ -32,7 +32,7 @@ let
         owner = "marlboro-advance";
         repo = "mpvEx";
         inherit rev;
-        hash = "sha256-mzrYeTOTkuxim9ClbKTUm4HDaJ4U9FKP1XioVqy/IwQ=";
+        hash = "sha256-52p7ULl0VMegtbflKNvwcLgvvqO1VrDBMBZa4sQbSmI=";
       };
 
       gradleBuildTask = ":app:assembleFdroidRelease";

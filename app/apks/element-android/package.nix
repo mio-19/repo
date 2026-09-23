@@ -17,6 +17,7 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-35
+        s.platforms-android-36
         s.build-tools-35-0-0
       ]);
 
@@ -24,13 +25,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "element-android";
-      version = "1.6.62";
+      version = "1.6.64";
 
       src = fetchFromGitHub {
         owner = "element-hq";
         repo = "element-android";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-QdTNXjTW9HapD/gq+kpOBEbixMThs1YdDmZjxLN7RMY=";
+        hash = "sha256-YYC/eiazRPWAbKKU2ySst/Uh2mHKujz2Tfdcd03F4JE=";
       };
 
       patches = [
@@ -83,8 +84,8 @@ let
         # Fix JVM heap settings: remove legacy -XX:MaxPermSize flag and increase
         # maximum heap to 8 GB (element-android is a large multi-module project).
         substituteInPlace gradle.properties \
-          --replace-fail "-Xmx4g" "-Xmx8g" \
-          --replace-fail "-XX:MaxPermSize=2048m " ""
+          --replace-fail "-Xmx4g" "-Xmx8g"
+          
 
         # The release tarball is not a tagged git checkout inside the Nix sandbox,
         # so upstream's gitTag()-based F-Droid suffix logic would append "-dev".

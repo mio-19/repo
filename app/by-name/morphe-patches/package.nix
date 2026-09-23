@@ -8,10 +8,10 @@
   writableTmpDirAsHomeHook,
   morphe-patches-gradle-plugin_1_3_4,
   morphe-library-m2,
-  morphe-patches-library-m2_1_6_2,
+  morphe-patches-library-m2_1_7_1_dev_1,
   apktool-src,
   multidexlib2-src,
-  morphe-patcher-src,
+  morphe-patcher-src_1_14_0,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -40,13 +40,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches";
-  version = "1.43.0";
+  version = "1.44.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-WD/1c+CP0ZtMXi4vilZ9x8Way8hk58X+OJrETWSJapE=";
+    hash = "sha256-bTczF/81oFOlwPMeSE/d6XuaFGZPb9TXkzf4fRsiqHg=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -73,12 +73,12 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_4}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
-    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_6_2}";
+    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_7_1_dev_1}";
   };
 
   postUnpack = ''
     root="$PWD"
-    cp -a ${morphe-patcher-src} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_1_14_0} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
     cp -a ${arsclib-src} "$root/ARSCLib"
     chmod -R u+w "$root/ARSCLib"
