@@ -12,6 +12,7 @@
   multidexlib2-src,
 
   morphe-library-m2_1_4_0,
+  morphe-patcher-src_1_14_0,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -24,13 +25,6 @@ let
   ]);
 
   gradle = gradle_9_5_1;
-
-  morphe-patcher-src = fetchFromGitHub {
-    owner = "MorpheApp";
-    repo = "morphe-patcher";
-    rev = "v1.11.0";
-    hash = "sha256-i6C1/T3NCqf9H2pmNrooM2sHj2gQOVIOw35FvfVRWvA=";
-  };
 
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
@@ -92,9 +86,8 @@ stdenv.mkDerivation (finalAttrs: {
     root="$PWD"
 
     # Copy dependency sources as writable sibling directories.
-    cp -a ${morphe-patcher-src} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_1_14_0} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
-    patch -d "$root/morphe-patcher" -p0 < ${./morphe-patcher-version-name-suffix.patch}
 
     cp -a ${arsclib-src} "$root/ARSCLib"
     chmod -R u+w "$root/ARSCLib"
