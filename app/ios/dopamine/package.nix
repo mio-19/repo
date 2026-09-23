@@ -8,7 +8,7 @@
   gnumake,
   perl,
   dpkg,
-  ldid,
+  ldid-procursus,
   openssl,
   actool,
   writableTmpDirAsHomeHook,
@@ -133,7 +133,7 @@ stdenvNoCC.mkDerivation {
     gnumake
     perl
     dpkg
-    ldid
+    ldid-procursus
     trustcache
     writableTmpDirAsHomeHook
   ];
