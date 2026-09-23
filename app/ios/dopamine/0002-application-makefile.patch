@@ -1,59 +1,27 @@
 --- a/Application/Makefile
 +++ b/Application/Makefile
-@@ -1,32 +1,61 @@
+@@ -1,4 +1,4 @@
 -.PHONY: all clean build_clean
--
--all: Dopamine.ipa
--
--Dopamine.ipa: build/Build/Products/Debug-iphoneos/Dopamine.app
--	@echo Ad-Hoc signing Dopamine
--	xattr -rc build/Build/Products/Debug-iphoneos/Dopamine.app
--	ldid -SDopamine/Dopamine.entitlements build/Build/Products/Debug-iphoneos/Dopamine.app/Dopamine
--	ldid -s build/Build/Products/Debug-iphoneos/Dopamine.app
--	rm -rf Payload Dopamine.ipa
--	mkdir Payload
--	cp -r build/Build/Products/Debug-iphoneos/Dopamine.app Payload/Dopamine.app
--	zip -Ar Dopamine.ipa Payload
--	rm -rf Payload
--	rm -rf Dopamine.tipa
--	cp Dopamine.ipa Dopamine.tipa
--
--ifeq ($(NIGHTLY), 1)
--build/Build/Products/Debug-iphoneos/Dopamine.app: FORCE
--	xcodebuild -scheme Dopamine -derivedDataPath build -destination 'generic/platform=iOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO GCC_PREPROCESSOR_DEFINITIONS='NIGHTLY=1 COMMIT_HASH=\"$(COMMIT_HASH)\"'
--else
--build/Build/Products/Debug-iphoneos/Dopamine.app: FORCE
--	xcodebuild -scheme Dopamine -derivedDataPath build -destination 'generic/platform=iOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
--endif
--
--clean:
--	rm -rf build Payload Dopamine.ipa Dopamine.tipa
--
--build_clean:
--	rm -rf Payload build
--
--FORCE: ;
-\ No newline at end of file
 +.PHONY: all clean build_clean compile-assets
-+
-+all: Dopamine.ipa
-+
-+Dopamine.ipa: build/Build/Products/Debug-iphoneos/Dopamine.app
-+	@echo Ad-Hoc signing Dopamine
-+	xattr -rc build/Build/Products/Debug-iphoneos/Dopamine.app
-+	ldid -SDopamine/Dopamine.entitlements build/Build/Products/Debug-iphoneos/Dopamine.app/Dopamine
+ 
+ all: Dopamine.ipa
+ 
+@@ -6,7 +6,10 @@
+ 	@echo Ad-Hoc signing Dopamine
+ 	xattr -rc build/Build/Products/Debug-iphoneos/Dopamine.app
+ 	ldid -SDopamine/Dopamine.entitlements build/Build/Products/Debug-iphoneos/Dopamine.app/Dopamine
+-	ldid -s build/Build/Products/Debug-iphoneos/Dopamine.app
 +	# Ad-hoc sign main binary (no extension so find won't catch it)
 +	ldid -s build/Build/Products/Debug-iphoneos/Dopamine.app/Dopamine
 +	# Sign all embedded dylibs/frameworks (fix find -o precedence with parens)
 +	find build/Build/Products/Debug-iphoneos/Dopamine.app \( -name "*.dylib" -o -name "*.framework" -o -name "*.bundle" \) | xargs -I {} ldid -s {} || true
-+	rm -rf Payload Dopamine.ipa
-+	mkdir Payload
-+	cp -r build/Build/Products/Debug-iphoneos/Dopamine.app Payload/Dopamine.app
-+	zip -Ar Dopamine.ipa Payload
-+	rm -rf Payload
-+	rm -rf Dopamine.tipa
-+	cp Dopamine.ipa Dopamine.tipa
-+
+ 	rm -rf Payload Dopamine.ipa
+ 	mkdir Payload
+ 	cp -r build/Build/Products/Debug-iphoneos/Dopamine.app Payload/Dopamine.app
+@@ -15,13 +18,35 @@
+ 	rm -rf Dopamine.tipa
+ 	cp Dopamine.ipa Dopamine.tipa
+ 
 +# Use -target (not -scheme) so xcodebuild does not require a resolved iOS
 +# destination. Xcode 26 without iOS SDK installed errors on generic/platform=iOS.
 +# Also avoids SPM network fetch for zstd (we link BaseBin's static libzstd).
@@ -64,34 +32,34 @@
 +	ENABLE_ON_DEMAND_RESOURCES=NO ENABLE_ONLY_ACTIVE_RESOURCES=YES BUILD_ACTIVE_RESOURCES_ONLY=YES \
 +	OTHER_LDFLAGS="-force_load $(ZSTD_LIB)"
 +
-+ifeq ($(NIGHTLY), 1)
-+build/Build/Products/Debug-iphoneos/Dopamine.app: FORCE
+ ifeq ($(NIGHTLY), 1)
+ build/Build/Products/Debug-iphoneos/Dopamine.app: FORCE
+-	xcodebuild -scheme Dopamine -derivedDataPath build -destination 'generic/platform=iOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO GCC_PREPROCESSOR_DEFINITIONS='NIGHTLY=1 COMMIT_HASH=\"$(COMMIT_HASH)\"'
 +	xcodebuild $(XCODE_FLAGS) \
 +		GCC_PREPROCESSOR_DEFINITIONS='NIGHTLY=1 COMMIT_HASH="$(COMMIT_HASH)"'
 +	$(MAKE) compile-assets
-+else
-+build/Build/Products/Debug-iphoneos/Dopamine.app: FORCE
+ else
+ build/Build/Products/Debug-iphoneos/Dopamine.app: FORCE
+-	xcodebuild -scheme Dopamine -derivedDataPath build -destination 'generic/platform=iOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
 +	xcodebuild $(XCODE_FLAGS)
 +	$(MAKE) compile-assets
-+endif
+ endif
 +
-+# Use Nixpkgs open-source actool reimplementation to compile assets and generate Info.plist entries,
-+# completely bypassing Apple's actool which crashes on CoreSimulatorService under nixbld.
++# Prefer prebuilt Assets.car (actool under nixbld hits CoreSimulator /var/empty).
 +compile-assets:
-+	mkdir -p build/Build/Products/Debug-iphoneos/Dopamine.app
-+	actool --compile build/Build/Products/Debug-iphoneos/Dopamine.app \
-+		--platform iphoneos \
-+		--minimum-deployment-target 15.0 \
-+		--app-icon AppIcon \
-+		--output-partial-info-plist build/Build/Products/Debug-iphoneos/actool_partial_info.plist \
-+		Dopamine/Assets.xcassets
-+	# Merge partial info.plist into the main one (Apple actool would do this via Xcode automatically)
-+	plutil -insert CFBundleIcons -xml "$$(plutil -extract CFBundleIcons xml1 -o - build/Build/Products/Debug-iphoneos/actool_partial_info.plist)" build/Build/Products/Debug-iphoneos/Dopamine.app/Info.plist || true
-+
-+clean:
-+	rm -rf build Payload Dopamine.ipa Dopamine.tipa
-+
-+build_clean:
-+	rm -rf Payload build
-+
++	@if [[ -f prebuilt-Assets.car ]]; then \
++		cp -f prebuilt-Assets.car build/Build/Products/Debug-iphoneos/Dopamine.app/Assets.car; \
++		plutil -insert CFBundleIcons -xml '<dict><key>CFBundlePrimaryIcon</key><dict><key>CFBundleIconFiles</key><array><string>AppIcon</string></array><key>CFBundleIconName</key><string>AppIcon</string></dict></dict>' build/Build/Products/Debug-iphoneos/Dopamine.app/Info.plist || true; \
++	else \
++		echo "warning: no prebuilt Assets.car; app icons may be missing"; \
++	fi
+ 
+ clean:
+ 	rm -rf build Payload Dopamine.ipa Dopamine.tipa
+@@ -29,4 +54,4 @@
+ build_clean:
+ 	rm -rf Payload build
+ 
+-FORCE: ;
+\ No newline at end of file
 +FORCE: ;
