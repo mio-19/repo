@@ -38,6 +38,7 @@ generate keys/updating keys:
 ```zsh
 nix build -L .#gos.husky.generateKeysScript -o generate-keys && ./generate-keys ./keys-husky
 nix build -L .#gos.komodo.generateKeysScript -o generate-keys && ./generate-keys ./keys-komodo
+nix build -L .#gos.caiman.generateKeysScript -o generate-keys && ./generate-keys ./keys-caiman
 nix build -L .#gos.tangorpro.generateKeysScript -o generate-keys && ./generate-keys ./keys-tangorpro
 ```
 
