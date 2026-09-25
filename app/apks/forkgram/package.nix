@@ -197,11 +197,14 @@ buildGradlePackage rec {
               --replace-fail "return 'rm -rf ' + folder" "return 'true'" \
               --replace-quiet "git submodule init && git submodule update" "" \
               --replace-quiet "git checkout -- prebuild" "" \
+              --replace-quiet "./prebuild/build_all.sh" "bash -x ./prebuild/build_all.sh" \
               --replace-quiet "cd boringssl && git reset --hard HEAD && cd .." "" \
               --replace-quiet "git reset HEAD tde2e/ && git checkout -- tde2e/" "" \
               --replace-quiet "cd tde2e_source && git reset --hard HEAD && cd .." "" \
               --replace-quiet "git checkout -- ffmpeg" "" \
               --replace-quiet "git checkout -- prebuild" ""
+
+            substituteInPlace TMessagesProj/jni/prebuild/build_wamr.sh --replace-fail "-DWAMR_BUILD_LIB_WASI_THREADS=0" "-DWAMR_BUILD_LIB_WASI_THREADS=0 -DWAMR_BUILD_SIMD=0"
 
             install -Dm644 ${tlottieArm64}/arm64-v8a/libtlottie.a \
               TMessagesProj/jni/prebuild/safe_tlottie/arm64-v8a/libtlottie.a
