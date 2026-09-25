@@ -49,7 +49,7 @@ let
         url = "https://codeberg.org/comaps/comaps.git";
         tag = "v${finalAttrs.version}";
         fetchSubmodules = true;
-        hash = "sha256-0000000000000000000000000000000000000000000=";
+        hash = "sha256-2x7RBo/XqO5CPn1azN2aRG9MBrXD5cd54y2+mPudUF8=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/android";
