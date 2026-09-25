@@ -4,7 +4,7 @@
   jdk21_headless,
   gradle_8_14_3,
   stdenv,
-  fetchgit,
+  fetchgit, fetchFromGitHub,
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -45,11 +45,12 @@ let
       pname = "comaps";
       inherit version;
 
-      src = fetchgit {
-        url = "https://codeberg.org/comaps/comaps.git";
+      src = fetchFromGitHub {
+        owner = "comaps";
+        repo = "comaps";
         tag = "v${finalAttrs.version}";
         fetchSubmodules = true;
-        hash = "sha256-2x7RBo/XqO5CPn1azN2aRG9MBrXD5cd54y2+mPudUF8=";
+        hash = "sha256-qq/UTR3GCo5oh9DT0rGbkbLVQy2Uzl8mIm+bCipsKV4=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/android";
