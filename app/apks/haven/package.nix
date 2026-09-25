@@ -87,7 +87,7 @@ let
         pname = "haven-rdp-transport-jni-libs";
         inherit (finalAttrs0) version src;
         cargoRoot = "rdp-kotlin/rust";
-        hash = "sha256-iUp8spuGWkxgl3AkPRKmY9hoSWD79jwOmDcdFALTmVQ=";
+        hash = "sha256-xFZrHiNJoFCgBTVqkd6YN2YsKdC81yaC7i/xvbJ+OIU=";
       };
 
       mkRdpTransportJniLib =
@@ -141,7 +141,7 @@ let
         pname = "haven-spice-transport-jni-libs";
         inherit (finalAttrs0) version src;
         cargoRoot = "spice-kotlin/rust";
-        hash = "sha256-JUJ9vDrCgsCtVEkLdV86qJqfOVKTWq3VbdCVZFojEeM=";
+        hash = "";
       };
 
       mkSpiceTransportJniLib =
@@ -409,7 +409,7 @@ let
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-xFZrHiNJoFCgBTVqkd6YN2YsKdC81yaC7i/xvbJ+OIU=";
+        hash = "";
       };
 
       patches = [

@@ -28,13 +28,13 @@
 }:
 
 let
-  version = "12.10.4.0";
+  version = "12.10.5.1";
 
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "TelegramAndroid";
     rev = version;
-    hash = "sha256-Xxw6StKhSKUDgTNu+EsHP8qtrJuc2ALLJcWiKKIE3oo=";
+    hash = "sha256-UreYRAXi+H0oTw3R0uqvORqW/S4gq8x4Qp0GxJxgB8U=";
     fetchSubmodules = true;
   };
 
@@ -85,7 +85,7 @@ let
     pname = "forkgram-tlottie";
     inherit version src;
     cargoRoot = "TMessagesProj/jni/tlottie";
-    hash = "sha256-R/l5zMRB/2/a4Yf6toPBBvJ1SvebWsGeumwW9U6b7So=";
+    hash = "sha256-ZICtOSL3BxNSrgHYir+GGb8vCEYCHZhZAjZMOIwQYE0=";
   };
 
   mkTlottieArchive =
