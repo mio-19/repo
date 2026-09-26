@@ -206,16 +206,21 @@ let
         cp ${libv2rayAar}/libv2ray.aar app/libs/libv2ray.aar
       '';
 
-      postPatch = agp-resolution.patchSettingsGradle {
-        agpVersion = "9.3.2";
-        extraPlugins = [
-          {
-            ids = [ "org.jetbrains.kotlin.android" ];
-            module = "org.jetbrains.kotlin:kotlin-gradle-plugin";
-            version = "2.4.0";
-          }
-        ];
-      };
+      postPatch =
+        agp-resolution.patchSettingsGradle {
+          agpVersion = "9.3.2";
+          extraPlugins = [
+            {
+              ids = [ "org.jetbrains.kotlin.android" ];
+              module = "org.jetbrains.kotlin:kotlin-gradle-plugin";
+              version = "2.4.0";
+            }
+          ];
+        }
+        + ''
+          substituteInPlace gradle/libs.versions.toml \
+            --replace-fail 'agp = "9.4.1"' 'agp = "9.3.2"'
+        '';
 
       gradleFlags =
         let
