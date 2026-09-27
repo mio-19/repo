@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  gradle_9_5_1,
+  gradle_9_6_1,
   jdk21_headless,
   jdk17_headless,
   jdk25_headless,
@@ -22,17 +22,17 @@ let
         s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_5_1;
+      gradle = gradle_9_6_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "meshtastic";
-      version = "2.8.1";
+      version = "2.8.2";
 
       src = fetchFromGitHub {
         owner = "meshtastic";
         repo = "Meshtastic-Android";
         rev = "v${finalAttrs.version}";
-        hash = "sha256-t0z69+JTse2KOxBiMGvBQVeh9j4fHlubZkFJoRYGBWY=";
+        hash = "sha256-kkPm+lkGKxvJw5XrEY+HpTquyT0sK6hhdp0SnjEXcT8=";
         fetchSubmodules = true;
       };
 

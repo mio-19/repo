@@ -87,7 +87,7 @@ let
         pname = "haven-rdp-transport-jni-libs";
         inherit (finalAttrs0) version src;
         cargoRoot = "rdp-kotlin/rust";
-        hash = "sha256-iUp8spuGWkxgl3AkPRKmY9hoSWD79jwOmDcdFALTmVQ=";
+        hash = "sha256-RtTrvAMjXbh1DMUQ8hnrtEvQqMwZPBIyImow0VxW1wg=";
       };
 
       mkRdpTransportJniLib =
@@ -402,14 +402,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.89.12";
+      version = "5.89.14";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-xFZrHiNJoFCgBTVqkd6YN2YsKdC81yaC7i/xvbJ+OIU=";
+        hash = "sha256-Dm1mvIJbmr9h7tMKcn3jE+dGATRnDmqyF2YkmvSin6g=";
       };
 
       patches = [
