@@ -33,7 +33,7 @@ let
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "TelegramAndroid";
-    rev = version;
+    tag = version;
     hash = "sha256-nEXn3VnmylusrshisRPihG2OTgQvbvjJytys5Y16XhI=";
     fetchSubmodules = true;
   };

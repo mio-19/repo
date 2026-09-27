@@ -31,7 +31,7 @@ let
       src = fetchFromGitHub {
         owner = "meshtastic";
         repo = "Meshtastic-Android";
-        rev = "v${finalAttrs.version}";
+        tag = "v${finalAttrs.version}";
         hash = "sha256-kkPm+lkGKxvJw5XrEY+HpTquyT0sK6hhdp0SnjEXcT8=";
         fetchSubmodules = true;
       };
