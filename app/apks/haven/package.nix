@@ -6,6 +6,7 @@
   symlinkJoin,
   runCommand,
   runtimeShell,
+  jdk17_headless,
   jdk21_headless,
   gradle_9_4_1,
   stdenv,
@@ -466,6 +467,7 @@ let
 
       nativeBuildInputs = [
         gradle
+        jdk17_headless
         jdk21_headless
         writableTmpDirAsHomeHook
         git
@@ -531,7 +533,7 @@ let
       gradleFlags = [
         "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
+        "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home},${jdk21_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${aapt2}"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2}"
         # Upstream builds these from source in Gradle (no longer ships jniLibs).

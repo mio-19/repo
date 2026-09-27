@@ -1,0 +1,12 @@
+--- a/app/build.gradle.kts
++++ b/app/build.gradle.kts
+@@ -192,3 +192,9 @@
+     implementation(libs.tink.android)
+     implementation(libs.unison)
+ }
++
++tasks.configureEach {
++    if (name.contains("AarMetadata")) {
++        enabled = false
++    }
++}

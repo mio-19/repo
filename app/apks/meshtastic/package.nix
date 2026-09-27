@@ -91,52 +91,74 @@ let
       };
 
       preConfigure = ''
-        export ANDROID_USER_HOME="$HOME/.android"
-        mkdir -p "$ANDROID_USER_HOME"
-        echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+                export ANDROID_USER_HOME="$HOME/.android"
+                mkdir -p "$ANDROID_USER_HOME"
+                echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
 
-        # gradle.fetchDeps writes invalid Maven snapshot metadata for this
-        # hyphenated snapshot version. Provide a normalized local repository
-        # before Gradle resolves the KMP published variants.
-        cacheRoot="${finalAttrs.mitmCache}/https/central.sonatype.com/repository/maven-snapshots/org/meshtastic"
-        repoRoot="offline-repository/org/meshtastic"
-        for artifact in protobufs protobufs-android protobufs-jvm protobufs-iosarm64 protobufs-iossimulatorarm64; do
-          srcDir="$cacheRoot/$artifact/2.7.26.151-gef0ae57-SNAPSHOT"
-          dstDir="$repoRoot/$artifact/2.7.26.151-gef0ae57-SNAPSHOT"
-          if [ ! -d "$srcDir" ]; then
-            continue
-          fi
+                # gradle.fetchDeps writes invalid Maven snapshot metadata for this
+                # hyphenated snapshot version. Provide a normalized local repository
+                # before Gradle resolves the KMP published variants.
+                cacheRoot="${finalAttrs.mitmCache}/https/central.sonatype.com/repository/maven-snapshots/org/meshtastic"
+                repoRoot="offline-repository/org/meshtastic"
+                
+                # Helper to patch metadata
+                patch_snapshot() {
+                  local artifact=$1
+                  local version=$2
+                  local timestamp=$3
+                  local buildnumber=$4
+                  
+                  local srcDir="$cacheRoot/$artifact/$version-SNAPSHOT"
+                  local dstDir="$repoRoot/$artifact/$version-SNAPSHOT"
+                  if [ ! -d "$srcDir" ]; then return; fi
+                  
+                  mkdir -p "$dstDir"
+                  for file in "$srcDir"/*; do
+                    target="$dstDir/$(basename "$file")"
+                    if [ ! -e "$target" ]; then
+                      ln -s "$(readlink -f "$file")" "$target"
+                    fi
+                  done
 
-          mkdir -p "$dstDir"
-          for file in "$srcDir"/*; do
-            target="$dstDir/$(basename "$file")"
-            if [ ! -e "$target" ]; then
-              ln -s "$(readlink -f "$file")" "$target"
-            fi
-          done
+                  metadata="$dstDir/maven-metadata.xml"
+                  if [ -e "$srcDir/maven-metadata.xml" ]; then
+                    if [ -e "$metadata" ]; then mv "$metadata" "$metadata.orig"; fi
+                    # Just create a valid maven-metadata.xml for offline resolution
+                    cat > "$metadata" <<EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <metadata modelVersion="1.1.0">
+          <groupId>org.meshtastic</groupId>
+          <artifactId>$artifact</artifactId>
+          <version>$version-SNAPSHOT</version>
+          <versioning>
+            <snapshot>
+              <timestamp>$timestamp</timestamp>
+              <buildNumber>$buildnumber</buildNumber>
+            </snapshot>
+            <lastUpdated>20260925152242</lastUpdated>
+          </versioning>
+        </metadata>
+        EOF
+                  fi
 
-          metadata="$dstDir/maven-metadata.xml"
-          if [ -e "$srcDir/maven-metadata.xml" ]; then
-            if [ -e "$metadata" ]; then
-              mv "$metadata" "$metadata.orig"
-            fi
-            cp "$(readlink -f "$srcDir/maven-metadata.xml")" "$metadata"
-            chmod u+w "$metadata"
-            substituteInPlace "$metadata" \
-              --replace-fail '<timestamp>gef0ae57</timestamp>' '<timestamp>20260819.194522</timestamp>' \
-              --replace-fail '<buildNumber>20260819.194522</buildNumber>' '<buildNumber>1</buildNumber>' \
-              --replace-fail '<classifier>1</classifier>' "" \
-              --replace-fail '<updated>gef0ae57</updated>' '<updated>20260819194522</updated>'
-          fi
+                  for ext in module pom pom.asc aar jar jar.asc; do
+                    timestamped="$dstDir/$artifact-$version-$timestamp-$buildnumber.$ext"
+                    snapshot="$dstDir/$artifact-$version-SNAPSHOT.$ext"
+                    # Some files might have different timestamp formats depending on if they are published, but if the timestamped file exists in the cache:
+                    if [ -e "$timestamped" ] && [ ! -e "$snapshot" ]; then
+                      ln -s "$(basename "$timestamped")" "$snapshot"
+                    fi
+                  done
+                }
 
-          for ext in module pom aar jar; do
-            timestamped="$dstDir/$artifact-2.7.26.151-gef0ae57-20260819.194522-1.$ext"
-            snapshot="$dstDir/$artifact-2.7.26.151-gef0ae57-SNAPSHOT.$ext"
-            if [ -e "$timestamped" ] && [ ! -e "$snapshot" ]; then
-              ln -s "$(basename "$timestamped")" "$snapshot"
-            fi
-          done
-        done
+                for artifact in protobufs protobufs-android protobufs-jvm protobufs-iosarm64 protobufs-iossimulatorarm64; do
+                  patch_snapshot "$artifact" "2.8.0.117-gad0bf31" "20260925.152242" "1"
+                done
+                
+                patch_snapshot "takpacket-sdk" "0.9.2" "20260918.000251" "6"
+                for artifact in takpacket-sdk-android takpacket-sdk-jvm takpacket-sdk-iosarm64 takpacket-sdk-iossimulatorarm64; do
+                  patch_snapshot "$artifact" "0.9.2" "20260918.000251" "6"
+                done
       '';
 
       gradleFlags = [

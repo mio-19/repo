@@ -18,7 +18,7 @@ let
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
-    s.platforms-android-37-1
+    s.platforms-android-37-0
     # needed for AGP 9.x
     s.build-tools-36-0-0
     s.build-tools-37-0-0
@@ -43,6 +43,7 @@ let
 
     patches = [
       ./remove-star-dialog.patch
+      ./disable-aarmetadata-check.patch
     ];
 
     gradleBuildTask = ":app:assembleFossMobileArm64Release";
@@ -95,21 +96,22 @@ let
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     };
 
-    prePatch = (
-      agp-resolution.patchSettingsGradle {
+    prePatch =
+      (agp-resolution.patchSettingsGradle {
         file = "settings.gradle.kts";
         agpVersion = "9.3.2";
         pluginIds = [
           "com.android.application"
           "com.android.library"
         ];
-      }
-    );
+      })
+      + ''
+        substituteInPlace gradle/libs.versions.toml \
+          --replace-fail "agp = \"9.4.0\"" "agp = \"9.3.2\""
+      '';
 
-    preConfigure = ''
-      export ANDROID_USER_HOME="$HOME/.android"
-      mkdir -p "$ANDROID_USER_HOME"
-      echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+    postPatch = ''
+      echo "android.suppressUnsupportedCompileSdk=37.2" >> gradle.properties
 
       substituteInPlace app/src/main/kotlin/moe/rukamori/archivetune/MainActivity.kt \
         --replace-fail "preferences[AodAutoStartScreenOffKey] ?: true" "preferences[AodAutoStartScreenOffKey] ?: false"
@@ -117,19 +119,26 @@ let
       substituteInPlace app/src/main/kotlin/moe/rukamori/archivetune/ui/screens/settings/AodCustomizedScreen.kt \
         --replace-fail "rememberPreference(AodAutoStartScreenOffKey, defaultValue = true)" "rememberPreference(AodAutoStartScreenOffKey, defaultValue = false)"
 
-      # Inject mitmCache into settings.gradle.kts pluginManagement to fix Gradle 9 offline plugin resolution
-      # Only do this if finalAttrs.mitmCache actually evaluates to a path
-      substituteInPlace settings.gradle.kts \
-        --replace-fail "gradlePluginPortal()" "gradlePluginPortal(); maven { setUrl(uri(\"${finalAttrs.mitmCache}\")) }"
-
       substituteInPlace app/build.gradle.kts \
-        --replace-fail "compileSdkMinor = 2" "compileSdkMinor = 1" \
+        --replace-fail "compileSdkMinor = 2" "compileSdkMinor = 0" \
         --replace-fail "ndkVersion = \"30.0.16248370\"" "ndkVersion = \"30.0.15729638\"" \
         --replace-warn "buildConfigField(\"boolean\", \"UPDATER_AVAILABLE\", \"true\")" "buildConfigField(\"boolean\", \"UPDATER_AVAILABLE\", \"false\")"
     '';
 
+    preConfigure = ''
+      export ANDROID_USER_HOME="$HOME/.android"
+      mkdir -p "$ANDROID_USER_HOME"
+      echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+
+      # Inject mitmCache into settings.gradle.kts pluginManagement to fix Gradle 9 offline plugin resolution
+      # Only do this if finalAttrs.mitmCache actually evaluates to a path
+      substituteInPlace settings.gradle.kts \
+        --replace-fail "gradlePluginPortal()" "gradlePluginPortal(); maven { setUrl(uri(\"${finalAttrs.mitmCache}\")) }"
+    '';
+
     gradleFlags = [
       "--no-configuration-cache"
+      "-Pandroid.suppressUnsupportedCompileSdk=37.2"
       "-xlintVitalFossMobileArm64Release"
       "-Dorg.gradle.java.home=${jdk21_headless.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
