@@ -147,7 +147,8 @@ let
       gradleUpdateScript = ''
         runHook preBuild
         runHook preGradleUpdate
-        flutter build apk --release --no-pub --dart-define=cronetHttpNoPlay=true
+        flutter build apk --release --no-pub --dart-define=cronetHttpNoPlay=true || true
+        chmod -R u+w "$TMPDIR" "$HOME" || true
         runHook postGradleUpdate
       '';
 
