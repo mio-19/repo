@@ -40,13 +40,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "joplin";
-      version = "3.7.10";
+      version = "3.7.11";
 
       src = fetchFromGitHub {
         owner = "laurent22";
         repo = "joplin";
         tag = "android-v${finalAttrs.version}";
-        hash = "sha256-cMJgmW5NLk1IcSiqePC4Qb0d0shaLMHdq24y1nCOS3I=";
+        hash = "sha256-H7A2T1iu6XPdFK7QfslXdw9lIz7Pkcrt5YNaQ9TxYgY=";
       };
 
       sourceRoot = "${finalAttrs.src.name}";
@@ -64,7 +64,7 @@ let
           patches
           missingHashes
           ;
-        hash = "sha256-W5hXh1i1rTe4OkhTvHPpDQgPSvRqTZ/GsJnHXE2D/2Y=";
+        hash = "sha256-mbscTXEG5QQ1YreK4noq6vy3okKi11QgOyTzyNmZcYM=";
       };
 
       gradleBuildTask = ":app:assembleRelease -x :app:lintVitalAnalyzeRelease -x :app:lintVitalReportRelease -x :app:lintVitalRelease";

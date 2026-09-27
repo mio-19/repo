@@ -11,7 +11,7 @@
   git,
 }:
 let
-  rev = "7158a02";
+  rev = "06cfc07";
 
   appPackage =
     let
@@ -32,7 +32,7 @@ let
         owner = "marlboro-advance";
         repo = "mpvEx";
         inherit rev;
-        hash = "sha256-52p7ULl0VMegtbflKNvwcLgvvqO1VrDBMBZa4sQbSmI=";
+        hash = "sha256-PHGMkoJ4jJT2BNCAe9t4760xI7RaZ8lEmD8Uc1441QE=";
       };
 
       gradleBuildTask = ":app:assembleFdroidRelease";

@@ -2,9 +2,6 @@
  "!comment": "This is a nixpkgs Gradle dependency lockfile. For more details, refer to the Gradle section in the nixpkgs manual.",
  "!version": 1,
  "https:/": {
-  "api.github": {
-   "com/rate_limit": "sha256-DSrDpatUGeI1s+J4voJwGgBUWQaiWoSAhonj4osnaa4="
-  },
   "dl.google.com/dl/android/maven2/androidx/annotation#annotation-jvm/1.10.0": {
    "jar": "sha256-3dBy3btVMXjiBVF853ey8Fqp5BKYLZ7LTu3HTxIS9pc=",
    "module": "sha256-Qq/KN0GUJz5AZ7k3z8RHvTyMT9RB9B1E+VQFDf1hBt0=",
@@ -217,11 +214,6 @@
    "jar": "sha256-1Ze+Jd6L5YZ95f+tBwN9ticlf9lbyz5aFa7RcJAbIEw=",
    "module": "sha256-hWVjWk6Lan8dajNycUz9mbaYsq8b5lftwAe0QSK5+NA=",
    "pom": "sha256-/TRFGL9KrzJnNI9dRP0YDSs09gCXVwoQX5A1hTfOYOQ="
-  },
-  "jitpack.io/com/github/REAndroid#arsclib/a28c6fb2a7": {
-   "jar": "sha256-iSz0P+CdTQOeOcuQx5Cj9rIREdGHsuauJycBlxExaLQ=",
-   "module": "sha256-m/5zyNqaZ81BuO/+DQJZbal0IE8IYqESBP/uF5oHbTA=",
-   "pom": "sha256-9RdCcYxS6cXpJShnESGz5M5s2yxaZiwLPzgQYbbM0LQ="
   },
   "plugins.gradle.org/m2/com/google/code/gson#gson-parent/2.11.0": {
    "pom": "sha256-issfO3Km8CaRasBzW62aqwKT1Sftt7NlMn3vE6k2e3o="
@@ -504,10 +496,10 @@
   "plugins.gradle.org/m2/org/jetbrains/kotlin/plugin/serialization#org.jetbrains.kotlin.plugin.serialization.gradle.plugin/2.4.20": {
    "pom": "sha256-v/3nm2psAixq1bDHe6K5muXE+f4cvP52HfxgpZooSPA="
   },
-  "plugins.gradle.org/m2/org/jetbrains/kotlinx#binary-compatibility-validator/0.18.1": {
-   "jar": "sha256-fVjMGl1syEbRRGQLOlSaszP/m42Rzw9hWAUBHL/4cv0=",
-   "module": "sha256-GS2W5xNW+FArx/9JPdczQGppToXvkgYCkPiZQzqrtNc=",
-   "pom": "sha256-d1nDsyorqmryrOfP3M5fXp//LtXwTGpUzeVXTVMXEXo="
+  "plugins.gradle.org/m2/org/jetbrains/kotlinx#binary-compatibility-validator/0.18.2": {
+   "jar": "sha256-wzW4G4vwtmA3UgyCwb1wsTvJthe98yBV2ZcQDJape8o=",
+   "module": "sha256-Fr3NOoUbRiIMUgb0sexmNFT8XUX7zqZvTVDxSPa05dk=",
+   "pom": "sha256-Y00t3gDshIiSm/MEgbWkAssjUmiPY5EU/wkzcfl7nM0="
   },
   "plugins.gradle.org/m2/org/jetbrains/kotlinx#kotlinx-coroutines-bom/1.8.0": {
    "pom": "sha256-Ejnp2+E5fNWXE0KVayURvDrOe2QYQuQ3KgiNz6i5rVU="
@@ -517,8 +509,8 @@
    "module": "sha256-/2oi2kAECTh1HbCuIRd+dlF9vxJqdnlvVCZye/dsEig=",
    "pom": "sha256-pWM6vVNGfOuRYi2B8umCCAh3FF4LduG3V4hxVDSIXQs="
   },
-  "plugins.gradle.org/m2/org/jetbrains/kotlinx/binary-compatibility-validator#org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin/0.18.1": {
-   "pom": "sha256-ZwlTtlebfr6EOZ1U92G6SaId1llsF4ZpCLAY/HLFBHE="
+  "plugins.gradle.org/m2/org/jetbrains/kotlinx/binary-compatibility-validator#org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin/0.18.2": {
+   "pom": "sha256-PRymPj1vTz9D1ivuidBO7ZrL9yr4f/g08s+emiq+QEg="
   },
   "plugins.gradle.org/m2/org/junit#junit-bom/5.12.2": {
    "module": "sha256-3nCsXZGlJlbYiQptI7ngTZm5mxoEAlMN7K1xvzGyc14=",
