@@ -100,6 +100,11 @@ in
       packages.grapheneos-husky-kernel = pkgs.callPackage ./gos_kernel_shusky.nix { };
       packages.grapheneos-mustang-kernel = pkgs.callPackage ./gos_mustang_kernel.nix { };
       packages.grapheneos-tangorpro-kernel = pkgs.callPackage ./gos_tangorpro_kernel.nix { };
+      packages.grapheneos-caiman-kernel = pkgs.callPackage ./gos_caimito_kernel.nix {
+        enableKSU = false;
+        enableLindroid = false;
+        enableDroidspaces = false;
+      };
       # followings are for debugging:
       packages.grapheneos-husky-key-script = self.gosNoCcache.husky.generateKeysScript;
       packages.grapheneos-husky-factory-img = self.gosNoCcache.husky.factoryImg;

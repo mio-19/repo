@@ -6,7 +6,7 @@
   stdenv,
   stdenvNoCC,
   fetchFromGitHub,
-  go_1_25,
+  go,
   gitMinimal,
 
   writableTmpDirAsHomeHook,
@@ -55,7 +55,7 @@ let
         };
 
         nativeBuildInputs = [
-          go_1_25
+          go
           gitMinimal
         ];
         outputHashMode = "recursive";
@@ -427,7 +427,7 @@ let
       nativeBuildInputs = [
         gradle
         jdk21_headless
-        go_1_25
+        go
 
         writableTmpDirAsHomeHook
       ];
@@ -459,7 +459,7 @@ let
         export GOPROXY=off
         export GOSUMDB=off
         export GOFLAGS=-mod=mod
-        export PATH="$GOPATH/bin:${go_1_25}/bin:$PATH"
+        export PATH="$GOPATH/bin:${go}/bin:$PATH"
         export CGO_ENABLED=1
         export GO386=softfloat
 
