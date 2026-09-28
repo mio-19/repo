@@ -121,7 +121,7 @@ mk-apk-package {
   mainApk = "pipepipe.apk";
   signScriptName = "sign-pipepipe";
   fdroid = {
-    appId = "Bili.Copied";
+    appId = "InfinityLoop1309.NewPipeEnhanced";
     metadataYml = ''
       Categories:
         - Multimedia
