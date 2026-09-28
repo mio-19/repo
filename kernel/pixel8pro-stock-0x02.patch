@@ -105,7 +105,7 @@ index 000000000..a5e99ede9
 +static int ea_set_matrix(struct drm_crtc *crtc, unsigned int bl_lvl)
 +{
 +	struct exynos_drm_crtc *exynos_crtc = to_exynos_crtc(crtc);
-+	struct exynos_matrix matrix;
++	struct exynos_matrix matrix = {0};
 +	struct drm_property *prop_linear_matrix_override;
 +	struct drm_property_blob *pblob = NULL;
 +	struct exynos_drm_crtc_state fake_crtc_state;
@@ -653,15 +653,23 @@ index aa7567409..194267bb8 100644
  	drm_property_blob_put(exynos_crtc_state->gamma_matrix);
  	drm_property_blob_put(exynos_crtc_state->histogram_roi);
  	drm_property_blob_put(exynos_crtc_state->histogram_weights);
-@@ -447,6 +511,9 @@ exynos_drm_crtc_duplicate_state(struct drm_crtc *crtc)
+@@ -447,9 +511,17 @@ exynos_drm_crtc_duplicate_state(struct drm_crtc *crtc)
  	if (copy->linear_matrix)
  		drm_property_blob_get(copy->linear_matrix);
  
 +	if (copy->linear_matrix_override)
 +		drm_property_blob_get(copy->linear_matrix_override);
++	if (copy->dqe_state.linear_matrix == &state->linear_matrix_cache)
++		copy->dqe_state.linear_matrix = &copy->linear_matrix_cache;
 +
  	if (copy->gamma_matrix)
  		drm_property_blob_get(copy->gamma_matrix);
+ 
++	/* Force update_lut on every commit to ensure linear_matrix_override is applied (caiman optimization workaround) */
++	copy->base.color_mgmt_changed = true;
++
+ 	if (copy->histogram_roi)
+ 		drm_property_blob_get(copy->histogram_roi);
  
 @@ -690,6 +757,25 @@ static int exynos_drm_crtc_set_property(struct drm_crtc *crtc,
  		ret = exynos_drm_replace_property_blob_from_id(state->crtc->dev,

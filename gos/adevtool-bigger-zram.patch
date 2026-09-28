@@ -1,37 +1,8 @@
-From d16a7ae05e3af5af385456ce0fb8f8cff78a89bc Mon Sep 17 00:00:00 2001
-From: a <a@b>
-Date: Sat, 12 Sep 2026 23:23:01 +1000
-Subject: [PATCH] adevtool: bigger zram
-
----
- config/device/common/sysprop-inclusion.yml                 | 6 ++++++
- vendor-skels/google_devices/akita/sysprop/product.prop     | 4 ++--
- vendor-skels/google_devices/blazer/sysprop/product.prop    | 4 ++--
- vendor-skels/google_devices/bluejay/sysprop/product.prop   | 2 +-
- vendor-skels/google_devices/caiman/sysprop/product.prop    | 4 ++--
- vendor-skels/google_devices/cheetah/sysprop/product.prop   | 2 +-
- vendor-skels/google_devices/comet/sysprop/product.prop     | 4 ++--
- vendor-skels/google_devices/felix/sysprop/product.prop     | 2 +-
- vendor-skels/google_devices/frankel/sysprop/product.prop   | 4 ++--
- vendor-skels/google_devices/husky/sysprop/product.prop     | 4 ++--
- vendor-skels/google_devices/komodo/sysprop/product.prop    | 4 ++--
- vendor-skels/google_devices/lynx/sysprop/product.prop      | 2 +-
- vendor-skels/google_devices/mustang/sysprop/product.prop   | 4 ++--
- vendor-skels/google_devices/oriole/sysprop/product.prop    | 2 +-
- vendor-skels/google_devices/panther/sysprop/product.prop   | 2 +-
- vendor-skels/google_devices/rango/sysprop/product.prop     | 4 ++--
- vendor-skels/google_devices/raven/sysprop/product.prop     | 2 +-
- vendor-skels/google_devices/shiba/sysprop/product.prop     | 4 ++--
- vendor-skels/google_devices/tangorpro/sysprop/product.prop | 2 +-
- vendor-skels/google_devices/tegu/sysprop/product.prop      | 4 ++--
- vendor-skels/google_devices/tokay/sysprop/product.prop     | 4 ++--
- 21 files changed, 38 insertions(+), 32 deletions(-)
-
 diff --git a/config/device/common/sysprop-inclusion.yml b/config/device/common/sysprop-inclusion.yml
-index b01fc41..1da9a68 100644
+index 9666bee3..0ce9bb00 100644
 --- a/config/device/common/sysprop-inclusion.yml
 +++ b/config/device/common/sysprop-inclusion.yml
-@@ -140,9 +140,15 @@ sysprop_inclusions:
+@@ -145,9 +145,15 @@ sysprop_inclusions:
    - mmd.zram.comp_algorithm = lz77eh
    - mmd.zram.enabled = true
    - mmd.zram.size = 3221225472
@@ -48,10 +19,10 @@ index b01fc41..1da9a68 100644
    - mmd.zram.writeback.huge_idle.enabled = false
    - mmd.zram.writeback.idle.enabled = true
 diff --git a/vendor-skels/google_devices/akita/sysprop/product.prop b/vendor-skels/google_devices/akita/sysprop/product.prop
-index 6a541db..1193acf 100644
+index b2270298..70479662 100644
 --- a/vendor-skels/google_devices/akita/sysprop/product.prop
 +++ b/vendor-skels/google_devices/akita/sysprop/product.prop
-@@ -40,8 +40,8 @@ mm.zram.maintenance.first_delay_seconds=86400
+@@ -43,8 +43,8 @@ mm.zram.maintenance.first_delay_seconds=86400
  mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
  mmd.zram.enabled=true
@@ -63,25 +34,25 @@ index 6a541db..1193acf 100644
  mmd.zram.writeback.huge_idle.enabled=false
  mmd.zram.writeback.idle.enabled=true
 diff --git a/vendor-skels/google_devices/blazer/sysprop/product.prop b/vendor-skels/google_devices/blazer/sysprop/product.prop
-index 6f35881..83a316f 100644
+index bc063f59..994faa9d 100644
 --- a/vendor-skels/google_devices/blazer/sysprop/product.prop
 +++ b/vendor-skels/google_devices/blazer/sysprop/product.prop
-@@ -47,8 +47,8 @@ mm.zram.maintenance.first_delay_seconds=86400
+@@ -49,8 +49,8 @@ mm.zram.maintenance.first_delay_seconds=86400
  mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
  mmd.zram.enabled=true
 -mmd.zram.size=50%
--mmd.zram.writeback.device_size=1073741824
+-mmd.zram.writeback.device_size=2147483648
 +mmd.zram.size=100%
 +mmd.zram.writeback.device_size=4294967296
  mmd.zram.writeback.enabled=true
  mmd.zram.writeback.huge_idle.enabled=false
  mmd.zram.writeback.idle.enabled=true
 diff --git a/vendor-skels/google_devices/bluejay/sysprop/product.prop b/vendor-skels/google_devices/bluejay/sysprop/product.prop
-index 9dc705b..5b010a2 100644
+index a7971f0e..91ff3ce9 100644
 --- a/vendor-skels/google_devices/bluejay/sysprop/product.prop
 +++ b/vendor-skels/google_devices/bluejay/sysprop/product.prop
-@@ -26,7 +26,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
+@@ -27,7 +27,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
  mmd.zram.enabled=true
  mmd.zram.size=3221225472
@@ -91,10 +62,10 @@ index 9dc705b..5b010a2 100644
  mmd.zram.writeback.huge_idle.enabled=false
  mmd.zram.writeback.idle.enabled=true
 diff --git a/vendor-skels/google_devices/caiman/sysprop/product.prop b/vendor-skels/google_devices/caiman/sysprop/product.prop
-index 9321d18..a7d6e9c 100644
+index a22c8393..1e21cff3 100644
 --- a/vendor-skels/google_devices/caiman/sysprop/product.prop
 +++ b/vendor-skels/google_devices/caiman/sysprop/product.prop
-@@ -45,8 +45,8 @@ mm.zram.maintenance.first_delay_seconds=86400
+@@ -47,8 +47,8 @@ mm.zram.maintenance.first_delay_seconds=86400
  mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
  mmd.zram.enabled=true
@@ -106,10 +77,10 @@ index 9321d18..a7d6e9c 100644
  mmd.zram.writeback.huge_idle.enabled=false
  mmd.zram.writeback.idle.enabled=true
 diff --git a/vendor-skels/google_devices/cheetah/sysprop/product.prop b/vendor-skels/google_devices/cheetah/sysprop/product.prop
-index 665e94f..3fe24af 100644
+index 51c05c66..e5d89f42 100644
 --- a/vendor-skels/google_devices/cheetah/sysprop/product.prop
 +++ b/vendor-skels/google_devices/cheetah/sysprop/product.prop
-@@ -37,7 +37,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
+@@ -38,7 +38,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
  mmd.zram.enabled=true
  mmd.zram.size=50%
@@ -119,10 +90,10 @@ index 665e94f..3fe24af 100644
  mmd.zram.writeback.huge_idle.enabled=false
  mmd.zram.writeback.idle.enabled=true
 diff --git a/vendor-skels/google_devices/comet/sysprop/product.prop b/vendor-skels/google_devices/comet/sysprop/product.prop
-index be7e3cd..dbae99d 100644
+index 3694f7d0..c696104f 100644
 --- a/vendor-skels/google_devices/comet/sysprop/product.prop
 +++ b/vendor-skels/google_devices/comet/sysprop/product.prop
-@@ -46,8 +46,8 @@ mm.zram.maintenance.first_delay_seconds=86400
+@@ -48,8 +48,8 @@ mm.zram.maintenance.first_delay_seconds=86400
  mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
  mmd.zram.enabled=true
@@ -134,108 +105,9 @@ index be7e3cd..dbae99d 100644
  mmd.zram.writeback.huge_idle.enabled=false
  mmd.zram.writeback.idle.enabled=true
 diff --git a/vendor-skels/google_devices/felix/sysprop/product.prop b/vendor-skels/google_devices/felix/sysprop/product.prop
-index e651239..0861b77 100644
+index 5adf4395..4fc4ac47 100644
 --- a/vendor-skels/google_devices/felix/sysprop/product.prop
 +++ b/vendor-skels/google_devices/felix/sysprop/product.prop
-@@ -36,7 +36,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
- mmd.zram.comp_algorithm=lz77eh
- mmd.zram.enabled=true
- mmd.zram.size=50%
--mmd.zram.writeback.device_size=1073741824
-+mmd.zram.writeback.device_size=4294967296
- mmd.zram.writeback.enabled=true
- mmd.zram.writeback.huge_idle.enabled=false
- mmd.zram.writeback.idle.enabled=true
-diff --git a/vendor-skels/google_devices/frankel/sysprop/product.prop b/vendor-skels/google_devices/frankel/sysprop/product.prop
-index eda96a7..497d68c 100644
---- a/vendor-skels/google_devices/frankel/sysprop/product.prop
-+++ b/vendor-skels/google_devices/frankel/sysprop/product.prop
-@@ -47,8 +47,8 @@ mm.zram.maintenance.first_delay_seconds=86400
- mm.zram.maintenance.periodic_delay_seconds=86400
- mmd.zram.comp_algorithm=lz77eh
- mmd.zram.enabled=true
--mmd.zram.size=50%
--mmd.zram.writeback.device_size=1073741824
-+mmd.zram.size=100%
-+mmd.zram.writeback.device_size=4294967296
- mmd.zram.writeback.enabled=true
- mmd.zram.writeback.huge_idle.enabled=false
- mmd.zram.writeback.idle.enabled=true
-diff --git a/vendor-skels/google_devices/husky/sysprop/product.prop b/vendor-skels/google_devices/husky/sysprop/product.prop
-index b7e6e97..c3c0a4f 100644
---- a/vendor-skels/google_devices/husky/sysprop/product.prop
-+++ b/vendor-skels/google_devices/husky/sysprop/product.prop
-@@ -41,8 +41,8 @@ mm.zram.maintenance.first_delay_seconds=86400
- mm.zram.maintenance.periodic_delay_seconds=86400
- mmd.zram.comp_algorithm=lz77eh
- mmd.zram.enabled=true
--mmd.zram.size=50%
--mmd.zram.writeback.device_size=1073741824
-+mmd.zram.size=100%
-+mmd.zram.writeback.device_size=4294967296
- mmd.zram.writeback.enabled=true
- mmd.zram.writeback.huge_idle.enabled=false
- mmd.zram.writeback.idle.enabled=true
-diff --git a/vendor-skels/google_devices/komodo/sysprop/product.prop b/vendor-skels/google_devices/komodo/sysprop/product.prop
-index c63466b..2664e25 100644
---- a/vendor-skels/google_devices/komodo/sysprop/product.prop
-+++ b/vendor-skels/google_devices/komodo/sysprop/product.prop
-@@ -45,8 +45,8 @@ mm.zram.maintenance.first_delay_seconds=86400
- mm.zram.maintenance.periodic_delay_seconds=86400
- mmd.zram.comp_algorithm=lz77eh
- mmd.zram.enabled=true
--mmd.zram.size=50%
--mmd.zram.writeback.device_size=1073741824
-+mmd.zram.size=100%
-+mmd.zram.writeback.device_size=4294967296
- mmd.zram.writeback.enabled=true
- mmd.zram.writeback.huge_idle.enabled=false
- mmd.zram.writeback.idle.enabled=true
-diff --git a/vendor-skels/google_devices/lynx/sysprop/product.prop b/vendor-skels/google_devices/lynx/sysprop/product.prop
-index d42445c..832bd91 100644
---- a/vendor-skels/google_devices/lynx/sysprop/product.prop
-+++ b/vendor-skels/google_devices/lynx/sysprop/product.prop
-@@ -33,7 +33,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
- mmd.zram.comp_algorithm=lz77eh
- mmd.zram.enabled=true
- mmd.zram.size=50%
--mmd.zram.writeback.device_size=1073741824
-+mmd.zram.writeback.device_size=4294967296
- mmd.zram.writeback.enabled=true
- mmd.zram.writeback.huge_idle.enabled=false
- mmd.zram.writeback.idle.enabled=true
-diff --git a/vendor-skels/google_devices/mustang/sysprop/product.prop b/vendor-skels/google_devices/mustang/sysprop/product.prop
-index 52c49ce..f9ea5f7 100644
---- a/vendor-skels/google_devices/mustang/sysprop/product.prop
-+++ b/vendor-skels/google_devices/mustang/sysprop/product.prop
-@@ -47,8 +47,8 @@ mm.zram.maintenance.first_delay_seconds=86400
- mm.zram.maintenance.periodic_delay_seconds=86400
- mmd.zram.comp_algorithm=lz77eh
- mmd.zram.enabled=true
--mmd.zram.size=50%
--mmd.zram.writeback.device_size=1073741824
-+mmd.zram.size=100%
-+mmd.zram.writeback.device_size=4294967296
- mmd.zram.writeback.enabled=true
- mmd.zram.writeback.huge_idle.enabled=false
- mmd.zram.writeback.idle.enabled=true
-diff --git a/vendor-skels/google_devices/oriole/sysprop/product.prop b/vendor-skels/google_devices/oriole/sysprop/product.prop
-index 193936d..5665c26 100644
---- a/vendor-skels/google_devices/oriole/sysprop/product.prop
-+++ b/vendor-skels/google_devices/oriole/sysprop/product.prop
-@@ -26,7 +26,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
- mmd.zram.comp_algorithm=lz77eh
- mmd.zram.enabled=true
- mmd.zram.size=3221225472
--mmd.zram.writeback.device_size=1073741824
-+mmd.zram.writeback.device_size=4294967296
- mmd.zram.writeback.enabled=true
- mmd.zram.writeback.huge_idle.enabled=false
- mmd.zram.writeback.idle.enabled=true
-diff --git a/vendor-skels/google_devices/panther/sysprop/product.prop b/vendor-skels/google_devices/panther/sysprop/product.prop
-index b485094..45d423c 100644
---- a/vendor-skels/google_devices/panther/sysprop/product.prop
-+++ b/vendor-skels/google_devices/panther/sysprop/product.prop
 @@ -37,7 +37,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
  mmd.zram.enabled=true
@@ -245,66 +117,25 @@ index b485094..45d423c 100644
  mmd.zram.writeback.enabled=true
  mmd.zram.writeback.huge_idle.enabled=false
  mmd.zram.writeback.idle.enabled=true
-diff --git a/vendor-skels/google_devices/rango/sysprop/product.prop b/vendor-skels/google_devices/rango/sysprop/product.prop
-index 279cf3b..70d9125 100644
---- a/vendor-skels/google_devices/rango/sysprop/product.prop
-+++ b/vendor-skels/google_devices/rango/sysprop/product.prop
-@@ -47,8 +47,8 @@ mm.zram.maintenance.first_delay_seconds=86400
+diff --git a/vendor-skels/google_devices/frankel/sysprop/product.prop b/vendor-skels/google_devices/frankel/sysprop/product.prop
+index d8b6ac66..d8cfaa28 100644
+--- a/vendor-skels/google_devices/frankel/sysprop/product.prop
++++ b/vendor-skels/google_devices/frankel/sysprop/product.prop
+@@ -49,8 +49,8 @@ mm.zram.maintenance.first_delay_seconds=86400
  mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
  mmd.zram.enabled=true
 -mmd.zram.size=50%
--mmd.zram.writeback.device_size=1073741824
+-mmd.zram.writeback.device_size=2147483648
 +mmd.zram.size=100%
 +mmd.zram.writeback.device_size=4294967296
  mmd.zram.writeback.enabled=true
  mmd.zram.writeback.huge_idle.enabled=false
  mmd.zram.writeback.idle.enabled=true
-diff --git a/vendor-skels/google_devices/raven/sysprop/product.prop b/vendor-skels/google_devices/raven/sysprop/product.prop
-index ce6987f..f245a6b 100644
---- a/vendor-skels/google_devices/raven/sysprop/product.prop
-+++ b/vendor-skels/google_devices/raven/sysprop/product.prop
-@@ -26,7 +26,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
- mmd.zram.comp_algorithm=lz77eh
- mmd.zram.enabled=true
- mmd.zram.size=3221225472
--mmd.zram.writeback.device_size=1073741824
-+mmd.zram.writeback.device_size=4294967296
- mmd.zram.writeback.enabled=true
- mmd.zram.writeback.huge_idle.enabled=false
- mmd.zram.writeback.idle.enabled=true
-diff --git a/vendor-skels/google_devices/shiba/sysprop/product.prop b/vendor-skels/google_devices/shiba/sysprop/product.prop
-index 8e777f7..076f0a7 100644
---- a/vendor-skels/google_devices/shiba/sysprop/product.prop
-+++ b/vendor-skels/google_devices/shiba/sysprop/product.prop
-@@ -41,8 +41,8 @@ mm.zram.maintenance.first_delay_seconds=86400
- mm.zram.maintenance.periodic_delay_seconds=86400
- mmd.zram.comp_algorithm=lz77eh
- mmd.zram.enabled=true
--mmd.zram.size=50%
--mmd.zram.writeback.device_size=1073741824
-+mmd.zram.size=100%
-+mmd.zram.writeback.device_size=4294967296
- mmd.zram.writeback.enabled=true
- mmd.zram.writeback.huge_idle.enabled=false
- mmd.zram.writeback.idle.enabled=true
-diff --git a/vendor-skels/google_devices/tangorpro/sysprop/product.prop b/vendor-skels/google_devices/tangorpro/sysprop/product.prop
-index 48d9457..53cd3dd 100644
---- a/vendor-skels/google_devices/tangorpro/sysprop/product.prop
-+++ b/vendor-skels/google_devices/tangorpro/sysprop/product.prop
-@@ -33,7 +33,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
- mmd.zram.comp_algorithm=lz77eh
- mmd.zram.enabled=true
- mmd.zram.size=50%
--mmd.zram.writeback.device_size=1073741824
-+mmd.zram.writeback.device_size=4294967296
- mmd.zram.writeback.enabled=true
- mmd.zram.writeback.huge_idle.enabled=false
- mmd.zram.writeback.idle.enabled=true
-diff --git a/vendor-skels/google_devices/tegu/sysprop/product.prop b/vendor-skels/google_devices/tegu/sysprop/product.prop
-index a7f917d..e488032 100644
---- a/vendor-skels/google_devices/tegu/sysprop/product.prop
-+++ b/vendor-skels/google_devices/tegu/sysprop/product.prop
+diff --git a/vendor-skels/google_devices/husky/sysprop/product.prop b/vendor-skels/google_devices/husky/sysprop/product.prop
+index 3613e7b0..f58cd382 100644
+--- a/vendor-skels/google_devices/husky/sysprop/product.prop
++++ b/vendor-skels/google_devices/husky/sysprop/product.prop
 @@ -44,8 +44,8 @@ mm.zram.maintenance.first_delay_seconds=86400
  mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
@@ -316,11 +147,11 @@ index a7f917d..e488032 100644
  mmd.zram.writeback.enabled=true
  mmd.zram.writeback.huge_idle.enabled=false
  mmd.zram.writeback.idle.enabled=true
-diff --git a/vendor-skels/google_devices/tokay/sysprop/product.prop b/vendor-skels/google_devices/tokay/sysprop/product.prop
-index bd0f704..ff95c9d 100644
---- a/vendor-skels/google_devices/tokay/sysprop/product.prop
-+++ b/vendor-skels/google_devices/tokay/sysprop/product.prop
-@@ -45,8 +45,8 @@ mm.zram.maintenance.first_delay_seconds=86400
+diff --git a/vendor-skels/google_devices/komodo/sysprop/product.prop b/vendor-skels/google_devices/komodo/sysprop/product.prop
+index 54c64ca0..2a9b1d1d 100644
+--- a/vendor-skels/google_devices/komodo/sysprop/product.prop
++++ b/vendor-skels/google_devices/komodo/sysprop/product.prop
+@@ -47,8 +47,8 @@ mm.zram.maintenance.first_delay_seconds=86400
  mm.zram.maintenance.periodic_delay_seconds=86400
  mmd.zram.comp_algorithm=lz77eh
  mmd.zram.enabled=true
@@ -331,6 +162,143 @@ index bd0f704..ff95c9d 100644
  mmd.zram.writeback.enabled=true
  mmd.zram.writeback.huge_idle.enabled=false
  mmd.zram.writeback.idle.enabled=true
--- 
-2.55.0
-
+diff --git a/vendor-skels/google_devices/lynx/sysprop/product.prop b/vendor-skels/google_devices/lynx/sysprop/product.prop
+index 089314e2..336c6083 100644
+--- a/vendor-skels/google_devices/lynx/sysprop/product.prop
++++ b/vendor-skels/google_devices/lynx/sysprop/product.prop
+@@ -34,7 +34,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
+ mmd.zram.comp_algorithm=lz77eh
+ mmd.zram.enabled=true
+ mmd.zram.size=50%
+-mmd.zram.writeback.device_size=1073741824
++mmd.zram.writeback.device_size=4294967296
+ mmd.zram.writeback.enabled=true
+ mmd.zram.writeback.huge_idle.enabled=false
+ mmd.zram.writeback.idle.enabled=true
+diff --git a/vendor-skels/google_devices/mustang/sysprop/product.prop b/vendor-skels/google_devices/mustang/sysprop/product.prop
+index 80c8fbb4..845e06b8 100644
+--- a/vendor-skels/google_devices/mustang/sysprop/product.prop
++++ b/vendor-skels/google_devices/mustang/sysprop/product.prop
+@@ -49,8 +49,8 @@ mm.zram.maintenance.first_delay_seconds=86400
+ mm.zram.maintenance.periodic_delay_seconds=86400
+ mmd.zram.comp_algorithm=lz77eh
+ mmd.zram.enabled=true
+-mmd.zram.size=50%
+-mmd.zram.writeback.device_size=2147483648
++mmd.zram.size=100%
++mmd.zram.writeback.device_size=4294967296
+ mmd.zram.writeback.enabled=true
+ mmd.zram.writeback.huge_idle.enabled=false
+ mmd.zram.writeback.idle.enabled=true
+diff --git a/vendor-skels/google_devices/oriole/sysprop/product.prop b/vendor-skels/google_devices/oriole/sysprop/product.prop
+index 460236fe..578bb4e9 100644
+--- a/vendor-skels/google_devices/oriole/sysprop/product.prop
++++ b/vendor-skels/google_devices/oriole/sysprop/product.prop
+@@ -27,7 +27,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
+ mmd.zram.comp_algorithm=lz77eh
+ mmd.zram.enabled=true
+ mmd.zram.size=3221225472
+-mmd.zram.writeback.device_size=1073741824
++mmd.zram.writeback.device_size=4294967296
+ mmd.zram.writeback.enabled=true
+ mmd.zram.writeback.huge_idle.enabled=false
+ mmd.zram.writeback.idle.enabled=true
+diff --git a/vendor-skels/google_devices/panther/sysprop/product.prop b/vendor-skels/google_devices/panther/sysprop/product.prop
+index 9d8891d6..a05bf2bb 100644
+--- a/vendor-skels/google_devices/panther/sysprop/product.prop
++++ b/vendor-skels/google_devices/panther/sysprop/product.prop
+@@ -38,7 +38,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
+ mmd.zram.comp_algorithm=lz77eh
+ mmd.zram.enabled=true
+ mmd.zram.size=50%
+-mmd.zram.writeback.device_size=1073741824
++mmd.zram.writeback.device_size=4294967296
+ mmd.zram.writeback.enabled=true
+ mmd.zram.writeback.huge_idle.enabled=false
+ mmd.zram.writeback.idle.enabled=true
+diff --git a/vendor-skels/google_devices/rango/sysprop/product.prop b/vendor-skels/google_devices/rango/sysprop/product.prop
+index ab1c2a57..65e77527 100644
+--- a/vendor-skels/google_devices/rango/sysprop/product.prop
++++ b/vendor-skels/google_devices/rango/sysprop/product.prop
+@@ -49,8 +49,8 @@ mm.zram.maintenance.first_delay_seconds=86400
+ mm.zram.maintenance.periodic_delay_seconds=86400
+ mmd.zram.comp_algorithm=lz77eh
+ mmd.zram.enabled=true
+-mmd.zram.size=50%
+-mmd.zram.writeback.device_size=2147483648
++mmd.zram.size=100%
++mmd.zram.writeback.device_size=4294967296
+ mmd.zram.writeback.enabled=true
+ mmd.zram.writeback.huge_idle.enabled=false
+ mmd.zram.writeback.idle.enabled=true
+diff --git a/vendor-skels/google_devices/raven/sysprop/product.prop b/vendor-skels/google_devices/raven/sysprop/product.prop
+index ad0905b4..9d9b6a34 100644
+--- a/vendor-skels/google_devices/raven/sysprop/product.prop
++++ b/vendor-skels/google_devices/raven/sysprop/product.prop
+@@ -27,7 +27,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
+ mmd.zram.comp_algorithm=lz77eh
+ mmd.zram.enabled=true
+ mmd.zram.size=3221225472
+-mmd.zram.writeback.device_size=1073741824
++mmd.zram.writeback.device_size=4294967296
+ mmd.zram.writeback.enabled=true
+ mmd.zram.writeback.huge_idle.enabled=false
+ mmd.zram.writeback.idle.enabled=true
+diff --git a/vendor-skels/google_devices/shiba/sysprop/product.prop b/vendor-skels/google_devices/shiba/sysprop/product.prop
+index dcb40630..8a4e97d5 100644
+--- a/vendor-skels/google_devices/shiba/sysprop/product.prop
++++ b/vendor-skels/google_devices/shiba/sysprop/product.prop
+@@ -44,8 +44,8 @@ mm.zram.maintenance.first_delay_seconds=86400
+ mm.zram.maintenance.periodic_delay_seconds=86400
+ mmd.zram.comp_algorithm=lz77eh
+ mmd.zram.enabled=true
+-mmd.zram.size=50%
+-mmd.zram.writeback.device_size=1073741824
++mmd.zram.size=100%
++mmd.zram.writeback.device_size=4294967296
+ mmd.zram.writeback.enabled=true
+ mmd.zram.writeback.huge_idle.enabled=false
+ mmd.zram.writeback.idle.enabled=true
+diff --git a/vendor-skels/google_devices/tangorpro/sysprop/product.prop b/vendor-skels/google_devices/tangorpro/sysprop/product.prop
+index e1d7537d..e16c736d 100644
+--- a/vendor-skels/google_devices/tangorpro/sysprop/product.prop
++++ b/vendor-skels/google_devices/tangorpro/sysprop/product.prop
+@@ -34,7 +34,7 @@ mm.zram.maintenance.periodic_delay_seconds=86400
+ mmd.zram.comp_algorithm=lz77eh
+ mmd.zram.enabled=true
+ mmd.zram.size=50%
+-mmd.zram.writeback.device_size=1073741824
++mmd.zram.writeback.device_size=4294967296
+ mmd.zram.writeback.enabled=true
+ mmd.zram.writeback.huge_idle.enabled=false
+ mmd.zram.writeback.idle.enabled=true
+diff --git a/vendor-skels/google_devices/tegu/sysprop/product.prop b/vendor-skels/google_devices/tegu/sysprop/product.prop
+index 9dc53d42..4faab4a9 100644
+--- a/vendor-skels/google_devices/tegu/sysprop/product.prop
++++ b/vendor-skels/google_devices/tegu/sysprop/product.prop
+@@ -46,8 +46,8 @@ mm.zram.maintenance.first_delay_seconds=86400
+ mm.zram.maintenance.periodic_delay_seconds=86400
+ mmd.zram.comp_algorithm=lz77eh
+ mmd.zram.enabled=true
+-mmd.zram.size=50%
+-mmd.zram.writeback.device_size=1073741824
++mmd.zram.size=100%
++mmd.zram.writeback.device_size=4294967296
+ mmd.zram.writeback.enabled=true
+ mmd.zram.writeback.huge_idle.enabled=false
+ mmd.zram.writeback.idle.enabled=true
+diff --git a/vendor-skels/google_devices/tokay/sysprop/product.prop b/vendor-skels/google_devices/tokay/sysprop/product.prop
+index 851d8e4f..5191f677 100644
+--- a/vendor-skels/google_devices/tokay/sysprop/product.prop
++++ b/vendor-skels/google_devices/tokay/sysprop/product.prop
+@@ -47,8 +47,8 @@ mm.zram.maintenance.first_delay_seconds=86400
+ mm.zram.maintenance.periodic_delay_seconds=86400
+ mmd.zram.comp_algorithm=lz77eh
+ mmd.zram.enabled=true
+-mmd.zram.size=50%
+-mmd.zram.writeback.device_size=1073741824
++mmd.zram.size=100%
++mmd.zram.writeback.device_size=4294967296
+ mmd.zram.writeback.enabled=true
+ mmd.zram.writeback.huge_idle.enabled=false
+ mmd.zram.writeback.idle.enabled=true
