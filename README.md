@@ -29,6 +29,7 @@ nix build -L --max-jobs 4 .#gosNoCcache.tangorpro.releaseScript -o release && ./
 
 nom build -L --max-jobs 4 .#gos.tangorpro.releaseScript -o release-tangorpro --keep-going
 nom build -L --max-jobs 4 .#gos.komodo.releaseScript -o release-komodo --keep-going
+nom build -L --max-jobs 4 .#gos.caiman.releaseScript -o release-caiman --keep-going
 ```
 
 It is recommended to have OEM unlocking to be on in developer options when flashing new versions to avoid bricked devices.
