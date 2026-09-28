@@ -135,7 +135,9 @@
       legacyPackages = removeAttrs (
         byName
         // libs
-        // lib.mapAttrs' (name: value: lib.nameValuePair ("apk_" + name) value) apk
+        // lib.mapAttrs'
+          (name: value: lib.nameValuePair ("apk_" + name) value)
+          (lib.filterAttrs (_: lib.isDerivation) apk)
         // lib.mapAttrs' (name: value: lib.nameValuePair ("ios_" + name) value) ios
       ) [ "packages" ];
     };
