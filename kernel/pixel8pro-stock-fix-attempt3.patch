@@ -27,7 +27,7 @@ index a5e99ede9..79a34b3e8 100644
  {
 -	struct exynos_drm_crtc *exynos_crtc = to_exynos_crtc(crtc);
 +	struct exynos_drm_crtc *exynos_crtc;
- 	struct exynos_matrix matrix = {0};
+ 	struct exynos_matrix matrix;
  	struct drm_property *prop_linear_matrix_override;
  	struct drm_property_blob *pblob = NULL;
 @@ -39,14 +40,22 @@ static int ea_set_matrix(struct drm_crtc *crtc, unsigned int bl_lvl)
