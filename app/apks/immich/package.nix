@@ -67,23 +67,28 @@ let
     in
     buildDartApplication.override { dart = flutter347; } (finalAttrs: {
       pname = "immich";
-      version = "3.2.2";
+      version = "3.2.4";
 
-      src = fetchFromGitHub {
+      baseSrc = fetchFromGitHub {
         owner = "immich-app";
         repo = "immich";
         tag = "v${finalAttrs.version}";
         fetchSubmodules = true;
-        hash = "sha256-uYWnrR+f9DgOv43nP552koukiwrD/9v83LkaAn2AKME=";
+        hash = "sha256-0tYJAWj2CrF7g0Hr7aG1nxgXp538VL6GPRBHFVPxqxY=";
       };
 
-      postUnpack = ''
-        (
-          cd "''${sourceRoot%/*}/open-api"
-          bash ./bin/generate-dart-sdk.sh
-        )
-        test -f "''${sourceRoot%/*}/mobile/generated/openapi/pubspec.yaml"
-      '';
+      src = applyPatches {
+        src = finalAttrs.baseSrc;
+        # v3.2.0 moved the OpenAPI Dart client to gitignored generated/openapi.
+        nativeBuildInputs = [ openapi-generator-cli ];
+        postPatch = ''
+          (
+            cd open-api
+            bash ./bin/generate-dart-sdk.sh
+          )
+          test -f mobile/generated/openapi/pubspec.yaml
+        '';
+      };
 
       sourceRoot = "${finalAttrs.src.name}/mobile";
       packageRoot = "mobile";
@@ -132,9 +137,14 @@ let
         };
       };
 
+      passthru.srcPkg = stdenv.mkDerivation {
+        pname = "immich-src";
+        inherit (finalAttrs) version;
+        src = finalAttrs.baseSrc;
+      };
       passthru.updateScript = writeShellScriptBin "update-immich" ''
         set -euo pipefail
-        ${lib.getExe nix-update} --flake --src-only apk_immich
+        ${lib.getExe nix-update} --flake --src-only apk_immich.passthru.srcPkg
         system="$(nix eval --impure --raw --expr builtins.currentSystem)"
         "$(nix build ".#legacyPackages.$system.apk_immich.mitmCache.updateScript" --no-link --print-out-paths)"
       '';
