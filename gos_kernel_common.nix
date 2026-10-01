@@ -36,7 +36,7 @@
   src ? fetchgit {
     url = "https://gitlab.com/grapheneos/kernel_pixel.git";
     tag = "2026092500";
-    hash = "sha256-d1LwplAKndq0ONfN1oxGa+1umx8qHFMHPmWEcpI9LHY=";
+    hash = "";
     fetchSubmodules = true;
     deepClone = false;
     # NO # HASH UNSTABLE # leaveDotGit = true; # seems like something wants .git # needed with and after 20260307 # fatal: not a git repository (or any parent up to mount point /) in the log
