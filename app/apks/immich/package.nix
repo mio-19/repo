@@ -69,24 +69,21 @@ let
       pname = "immich";
       version = "3.2.2";
 
-      src = applyPatches {
-        src = fetchFromGitHub {
-          owner = "immich-app";
-          repo = "immich";
-          tag = "v${finalAttrs.version}";
-          fetchSubmodules = true;
-          hash = "sha256-uYWnrR+f9DgOv43nP552koukiwrD/9v83LkaAn2AKME=";
-        };
-        # v3.2.0 moved the OpenAPI Dart client to gitignored generated/openapi.
-        nativeBuildInputs = [ openapi-generator-cli ];
-        postPatch = ''
-          (
-            cd open-api
-            bash ./bin/generate-dart-sdk.sh
-          )
-          test -f mobile/generated/openapi/pubspec.yaml
-        '';
+      src = fetchFromGitHub {
+        owner = "immich-app";
+        repo = "immich";
+        tag = "v${finalAttrs.version}";
+        fetchSubmodules = true;
+        hash = "sha256-uYWnrR+f9DgOv43nP552koukiwrD/9v83LkaAn2AKME=";
       };
+
+      postUnpack = ''
+        (
+          cd "''${sourceRoot%/*}/open-api"
+          bash ./bin/generate-dart-sdk.sh
+        )
+        test -f "''${sourceRoot%/*}/mobile/generated/openapi/pubspec.yaml"
+      '';
 
       sourceRoot = "${finalAttrs.src.name}/mobile";
       packageRoot = "mobile";
@@ -165,6 +162,7 @@ let
       dontDartInstall = true;
 
       nativeBuildInputs = [
+        openapi-generator-cli
         curl
         gradle
         git
