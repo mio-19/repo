@@ -113,7 +113,7 @@ in
     ./launcher.nix
     ./gos_userdebug.nix
   ];
-  buildDateTime = releaseToTimestamp config.grapheneos.release;
+  buildDateTime = 100 + releaseToTimestamp config.grapheneos.release;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   apps = {

@@ -77,6 +77,6 @@ in
     privileged = true;
     partition = "system";
   };
-  
+
   stateVersion = "3";
 }
