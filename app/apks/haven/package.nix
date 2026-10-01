@@ -12,9 +12,8 @@
   stdenv,
   stdenvNoCC,
   fetchFromGitHub,
-  writeShellScript,
-  _experimental-update-script-combinators,
-  nix-update-script,
+  writeShellScriptBin,
+  nix-update,
   rustPlatform,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -403,7 +402,7 @@ let
     in
     {
       pname = "haven";
-      version = "5.89.14";
+      version = "5.89.16";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
@@ -440,30 +439,12 @@ let
         useBwrap = false;
       };
 
-      passthru.updateScript =
-        (_experimental-update-script-combinators.sequence [
-          (nix-update-script {
-            attrPath = "apk_haven";
-            extraArgs = [
-              "--flake"
-              "--src-only"
-              "--version-regex=^v?([0-9]+\\.[0-9]+\\.[0-9]+(-rc[0-9]+)?)$"
-            ];
-          })
-          {
-            command = [
-              "${writeShellScript "update-apk-haven-gradle-deps" ''
-                set -euo pipefail
-                system="$(nix eval --impure --raw --expr builtins.currentSystem)"
-                "$(nix build ".#legacyPackages.$system.apk_haven.mitmCache.updateScript" --no-link --print-out-paths)"
-              ''}"
-            ];
-            supportedFeatures = [ ];
-          }
-        ])
-        // {
-          attrPath = "apk_haven";
-        };
+      passthru.updateScript = writeShellScriptBin "update-haven" ''
+        set -euo pipefail
+        ${lib.getExe nix-update} --flake --src-only --version-regex='^v?([0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?)$' apk_haven
+        system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+        "$(nix build ".#legacyPackages.$system.apk_haven.mitmCache.updateScript" --no-link --print-out-paths)"
+      '';
 
       nativeBuildInputs = [
         gradle

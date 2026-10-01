@@ -47,34 +47,13 @@ jobs:
       - name: Update package versions and Gradle locks
         run: |
           set -euo pipefail
-          run_update_script() {
-            local attr="$1"
-            local expr runner
-            expr="$(cat <<EOF
-          let
-            flake = builtins.getFlake (toString ./.);
-            pkgs = import flake.inputs.nixpkgs { system = "x86_64-linux"; };
-            script = flake.legacyPackages.x86_64-linux.${attr}.passthru.updateScript;
-            command = script.command or script;
-            args = if builtins.isList command then command else [ command ];
-          in
-            pkgs.writeShellScript "run-${attr}-update" ''
-              set -euo pipefail
-              exec \${pkgs.lib.escapeShellArgs (map toString args)}
-            ''
-          EOF
-          )"
-            runner="$(nix build --impure --no-link --print-out-paths --expr "$expr")"
-            "$runner"
-          }
-
-          for attr in apk_haven apk_luanti apk_zotero-android; do
-            run_update_script "$attr"
+          for attr in apk_haven apk_luanti apk_zotero-android apk_archivetune apk_immich; do
+            nix run .#${attr}.passthru.updateScript
           done
-          nix run nixpkgs#nixfmt -- app/apks/haven/package.nix app/apks/luanti/package.nix app/apks/zotero-android/package.nix
+          nix run nixpkgs#nixfmt -- app/apks/haven/package.nix app/apks/luanti/package.nix app/apks/zotero-android/package.nix app/apks/archivetune/package.nix app/apks/immich/package.nix
 
       - name: Build updated packages
-        run: nix build .#apk_haven .#apk_luanti .#apk_zotero-android --no-link --keep-going
+        run: nix build .#apk_haven .#apk_luanti .#apk_zotero-android .#apk_archivetune .#apk_immich --no-link --keep-going
 
       - name: Create pull request
         env:
@@ -89,6 +68,10 @@ jobs:
             app/apks/luanti/luanti_deps.json
             app/apks/zotero-android/package.nix
             app/apks/zotero-android/zotero_android_deps.json
+            app/apks/archivetune/package.nix
+            app/apks/archivetune/archivetune_deps.json
+            app/apks/immich/package.nix
+            app/apks/immich/immich_deps.json
           )
 
           if git diff --quiet -- "${paths[@]}"; then
@@ -107,11 +90,11 @@ jobs:
           if gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
             gh pr edit "$BRANCH" \
               --title "update android packages" \
-              --body "Automated source and Gradle dependency refresh for Haven, Luanti, and Zotero."
+              --body "Automated source and Gradle dependency refresh for Haven, Luanti, Zotero, Archivetune, and Immich."
           else
             gh pr create \
               --base "${{ github.event.repository.default_branch }}" \
               --head "$BRANCH" \
               --title "update android packages" \
-              --body "Automated source and Gradle dependency refresh for Haven, Luanti, and Zotero."
+              --body "Automated source and Gradle dependency refresh for Haven, Luanti, Zotero, Archivetune, and Immich."
           fi

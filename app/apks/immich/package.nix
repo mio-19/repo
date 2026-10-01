@@ -17,6 +17,8 @@
   fetchurl,
   stdenv,
   writeScript,
+  writeShellScriptBin,
+  nix-update,
   sqlite,
   openapi-generator-cli,
 }:
@@ -132,6 +134,13 @@ let
           flutter = flutter347;
         };
       };
+
+      passthru.updateScript = writeShellScriptBin "update-immich" ''
+        set -euo pipefail
+        ${lib.getExe nix-update} --flake --src-only apk_immich
+        system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+        "$(nix build ".#legacyPackages.$system.apk_immich.mitmCache.updateScript" --no-link --print-out-paths)"
+      '';
 
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
