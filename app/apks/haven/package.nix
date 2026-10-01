@@ -8,7 +8,7 @@
   runtimeShell,
   jdk17_headless,
   jdk21_headless,
-  gradle_9_4_1,
+  gradle_9_6_1,
   stdenv,
   stdenvNoCC,
   fetchFromGitHub,
@@ -41,7 +41,7 @@ let
       androidNdkRoot = "${androidSdkRoot}/ndk/29.0.14206865";
       aapt2 = "${androidSdkRoot}/build-tools/37.0.0/aapt2";
 
-      gradle = gradle_9_4_1;
+      gradle = gradle_9_6_1;
 
       xMobileSrc = fetchFromGitHub {
         owner = "golang";
