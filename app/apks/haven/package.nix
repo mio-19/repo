@@ -8,13 +8,12 @@
   runtimeShell,
   jdk17_headless,
   jdk21_headless,
-  gradle_9_4_1,
+  gradle_9_6_1,
   stdenv,
   stdenvNoCC,
   fetchFromGitHub,
-  writeShellScript,
-  _experimental-update-script-combinators,
-  nix-update-script,
+  writeShellScriptBin,
+  nix-update,
   rustPlatform,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -42,7 +41,7 @@ let
       androidNdkRoot = "${androidSdkRoot}/ndk/29.0.14206865";
       aapt2 = "${androidSdkRoot}/build-tools/37.0.0/aapt2";
 
-      gradle = gradle_9_4_1;
+      gradle = gradle_9_6_1;
 
       xMobileSrc = fetchFromGitHub {
         owner = "golang";
@@ -403,14 +402,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.89.14";
+      version = "5.89.16";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-Dm1mvIJbmr9h7tMKcn3jE+dGATRnDmqyF2YkmvSin6g=";
+        hash = "sha256-jVLNc1VnhPWZr3lN8cEsAlf5fmVj6njyPmoteAxB+iA=";
       };
 
       patches = [
@@ -440,30 +439,12 @@ let
         useBwrap = false;
       };
 
-      passthru.updateScript =
-        (_experimental-update-script-combinators.sequence [
-          (nix-update-script {
-            attrPath = "apk_haven";
-            extraArgs = [
-              "--flake"
-              "--src-only"
-              "--version-regex=^v?([0-9]+\\.[0-9]+\\.[0-9]+(-rc[0-9]+)?)$"
-            ];
-          })
-          {
-            command = [
-              "${writeShellScript "update-apk-haven-gradle-deps" ''
-                set -euo pipefail
-                system="$(nix eval --impure --raw --expr builtins.currentSystem)"
-                "$(nix build ".#legacyPackages.$system.apk_haven.mitmCache.updateScript" --no-link --print-out-paths)"
-              ''}"
-            ];
-            supportedFeatures = [ ];
-          }
-        ])
-        // {
-          attrPath = "apk_haven";
-        };
+      passthru.updateScript = writeShellScriptBin "update-haven" ''
+        set -euo pipefail
+        ${lib.getExe nix-update} --flake --src-only --version-regex='^v?([0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?)$' apk_haven
+        system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+        "$(nix build ".#legacyPackages.$system.apk_haven.mitmCache.updateScript" --no-link --print-out-paths)"
+      '';
 
       nativeBuildInputs = [
         gradle

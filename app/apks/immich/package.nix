@@ -17,6 +17,8 @@
   fetchurl,
   stdenv,
   writeScript,
+  writeShellScriptBin,
+  nix-update,
   sqlite,
   openapi-generator-cli,
 }:
@@ -65,16 +67,18 @@ let
     in
     buildDartApplication.override { dart = flutter347; } (finalAttrs: {
       pname = "immich";
-      version = "3.2.2";
+      version = "3.2.4";
+
+      baseSrc = fetchFromGitHub {
+        owner = "immich-app";
+        repo = "immich";
+        tag = "v${finalAttrs.version}";
+        fetchSubmodules = true;
+        hash = "sha256-0tYJAWj2CrF7g0Hr7aG1nxgXp538VL6GPRBHFVPxqxY=";
+      };
 
       src = applyPatches {
-        src = fetchFromGitHub {
-          owner = "immich-app";
-          repo = "immich";
-          tag = "v${finalAttrs.version}";
-          fetchSubmodules = true;
-          hash = "sha256-uYWnrR+f9DgOv43nP552koukiwrD/9v83LkaAn2AKME=";
-        };
+        src = finalAttrs.baseSrc;
         # v3.2.0 moved the OpenAPI Dart client to gitignored generated/openapi.
         nativeBuildInputs = [ openapi-generator-cli ];
         postPatch = ''
@@ -133,6 +137,18 @@ let
         };
       };
 
+      passthru.srcPkg = stdenv.mkDerivation {
+        pname = "immich-src";
+        inherit (finalAttrs) version;
+        src = finalAttrs.baseSrc;
+      };
+      passthru.updateScript = writeShellScriptBin "update-immich" ''
+        set -euo pipefail
+        ${lib.getExe nix-update} --flake --src-only apk_immich.passthru.srcPkg
+        system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+        "$(nix build ".#legacyPackages.$system.apk_immich.mitmCache.updateScript" --no-link --print-out-paths)"
+      '';
+
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         attrPath = "apk_immich";
@@ -156,6 +172,7 @@ let
       dontDartInstall = true;
 
       nativeBuildInputs = [
+        openapi-generator-cli
         curl
         gradle
         git

@@ -10,9 +10,8 @@
   unzip,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
-  writeShellScript,
-  _experimental-update-script-combinators,
-  nix-update-script,
+  writeShellScriptBin,
+  nix-update,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -65,19 +64,12 @@ let
       useBwrap = false;
     };
 
-    passthru.updateScript = _experimental-update-script-combinators.sequence [
-      (nix-update-script { })
-      {
-        command = [
-          "${writeShellScript "update-apk-archivetune-gradle-deps" ''
-            set -euo pipefail
-            system="$(nix eval --impure --raw --expr builtins.currentSystem)"
-            "$(nix build ".#legacyPackages.$system.apk_archivetune.mitmCache.updateScript" --no-link --print-out-paths)"
-          ''}"
-        ];
-        supportedFeatures = [ ];
-      }
-    ];
+    passthru.updateScript = writeShellScriptBin "update-archivetune" ''
+      set -euo pipefail
+      ${lib.getExe nix-update} --flake --src-only apk_archivetune
+      system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+      "$(nix build ".#legacyPackages.$system.apk_archivetune.mitmCache.updateScript" --no-link --print-out-paths)"
+    '';
 
     nativeBuildInputs = [
       androidSdk
