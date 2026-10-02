@@ -274,17 +274,17 @@
   };
   grapheneos_pdfviewer = {
     pname = "grapheneos_pdfviewer";
-    version = "7cca0fa166017b394f1135f2aecc68381da7d166";
+    version = "bbe049314d8c29b7554587bf39efde67cc9f0e03";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/PdfViewer.git";
-      rev = "7cca0fa166017b394f1135f2aecc68381da7d166";
+      rev = "bbe049314d8c29b7554587bf39efde67cc9f0e03";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-jO1tR0fOdsZz4MieVliaR1+iJCEQXsjhU+UZCGTa0UI=";
+      sha256 = "sha256-9cEQIXVu7y6oZSdLEF/aJBVQuamRAUJ46f1DeLHhGWg=";
     };
-    date = "2026-09-18";
+    date = "2026-09-21";
   };
   grapheneos_vanadium = {
     pname = "grapheneos_vanadium";
@@ -344,17 +344,17 @@
   };
   lineage_deskclock = {
     pname = "lineage_deskclock";
-    version = "f8d2258e6a673c1b576f009eec98781a5956ffdb";
+    version = "616807bba7008e460a714bc4e122b842c12dd0e1";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_DeskClock.git";
-      rev = "f8d2258e6a673c1b576f009eec98781a5956ffdb";
+      rev = "616807bba7008e460a714bc4e122b842c12dd0e1";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-Zld0YQtod8OnGA8+4Cw1db33F+zCORlAsYC+4vkWa8I=";
+      sha256 = "sha256-rDFsOnDo5lKRgE45fzKW3LWEmIrKxUKDg6x0+cXklQ8=";
     };
-    date = "2026-09-17";
+    date = "2026-10-01";
   };
   lineage_device_mainline_common = {
     pname = "lineage_device_mainline_common";
@@ -428,17 +428,17 @@
   };
   lineage_exactcalculator = {
     pname = "lineage_exactcalculator";
-    version = "af4a9397439223d0f572823d66c7985619da3e45";
+    version = "153847a298160cbf10c50bdbcdfbc956ae9400c9";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_ExactCalculator.git";
-      rev = "af4a9397439223d0f572823d66c7985619da3e45";
+      rev = "153847a298160cbf10c50bdbcdfbc956ae9400c9";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-8bBMsfspH0CxhdKaU+lijehwBUaPK0Zh+u5+bkh6BZA=";
+      sha256 = "sha256-I5tbepwof6QL1OizRQBiyjoODIm0T891lbZkDi9ywfg=";
     };
-    date = "2026-06-08";
+    date = "2026-10-01";
   };
   lineage_external_drm_hwcomposer_upstream = {
     pname = "lineage_external_drm_hwcomposer_upstream";
@@ -610,17 +610,17 @@
   };
   lineage_launcher3_wip = {
     pname = "lineage_launcher3_wip";
-    version = "f55cf58ce1a7cdd3a737002509337b1a31a98fc6";
+    version = "de684e4e1947035211863c646df4cd08fbeb96ac";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_Launcher3.git";
-      rev = "f55cf58ce1a7cdd3a737002509337b1a31a98fc6";
+      rev = "de684e4e1947035211863c646df4cd08fbeb96ac";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-vvUA82qtXJdMnGlbXV/QY4/MtN3nhPsd2pwSKfCSNEA=";
+      sha256 = "sha256-Nkxi86GUqo1wys4xXqVax5b4o+e5Tt/om5XTVEbd8xA=";
     };
-    date = "2026-09-16";
+    date = "2026-09-30";
   };
   lineage_prebuilts_bootmgr = {
     pname = "lineage_prebuilts_bootmgr";
@@ -806,31 +806,31 @@
   };
   termux_app = {
     pname = "termux_app";
-    version = "084d709fbf23ea83b5cb85fd3d795c775be06676";
+    version = "8629e632fcb95da272221be327db653fb24befe9";
     src = fetchgit {
       url = "https://github.com/termux/termux-app.git";
-      rev = "084d709fbf23ea83b5cb85fd3d795c775be06676";
+      rev = "8629e632fcb95da272221be327db653fb24befe9";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-rUhBlT0tpw6GzXPzPiTZKBMWOpUKpvVyfvpvzldoGzY=";
+      sha256 = "sha256-XhuzluXUBuqyFScTR5SMzBIUFSXbsEzmWJHkEC2M+cw=";
     };
-    date = "2026-09-16";
+    date = "2026-09-26";
   };
   termux_x11 = {
     pname = "termux_x11";
-    version = "bd1cfadd74f98b548662a48b6e1d564aa434c86e";
+    version = "0e1ebb4c180f4e8e7a14a80f7cd0db8301791b6d";
     src = fetchgit {
       url = "https://github.com/termux/termux-x11.git";
-      rev = "bd1cfadd74f98b548662a48b6e1d564aa434c86e";
+      rev = "0e1ebb4c180f4e8e7a14a80f7cd0db8301791b6d";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-AZfuI9VIzbrBIJCWS6cSPVtUF08HU0UDjJC/MpPKDHw=";
+      sha256 = "sha256-4eWfk6JDpCKa8O6BCfU7C0snPHvg96KL/PpBIA8Ay4c=";
     };
-    date = "2026-09-18";
+    date = "2026-10-01";
   };
   vendor_gapps15 = {
     pname = "vendor_gapps15";

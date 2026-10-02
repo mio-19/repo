@@ -206,15 +206,21 @@ let
       ++ lib.optional (lib.versionAtLeast featureVersion "15") "--with-harfbuzz=system"
       ++ lib.optional (lib.versionAtLeast featureVersion "11") "--disable-javac-server"
       ++ lib.optional headless "--enable-headless-only";
+
+      myStdenv = buildPackages.gcc13Stdenv;
     in
     wrapOpenJdk (
-      stdenv.mkDerivation (finalAttrs: {
+      myStdenv.mkDerivation (finalAttrs: {
         pname = "openjdk" + lib.optionalString headless "-headless";
         inherit version;
 
         src = fetchFromGitHub {
           owner = "openjdk";
           inherit repo tag hash;
+        };
+
+        env = {
+          NIX_CFLAGS_COMPILE = "-Wno-error=nonnull -Wno-error=format-overflow -Wno-error=stringop-truncation -Wno-error=stringop-overflow";
         };
 
         patches =

@@ -44,6 +44,8 @@ let
 
           enableParallelBuilding = true;
 
+          NIX_CFLAGS_COMPILE = "-Wno-error=unused-but-set-variable";
+
           buildPhase = ''
             runHook preBuild
             make droidspaces CC="$CC"
