@@ -152,6 +152,12 @@
   slf4j_api_2_0_17,
   xz_java_1_6,
   xz_java_1_9,
+  jackson_core_2_15_3,
+  jackson_databind_2_15_3,
+  jackson_annotations_2_15_3,
+  commonmark_0_13_0,
+  commonmark_0_21_0,
+
   zxing_core_3_5_3,
   zxing_core_3_5_4,
   zoomimage_1_0_2,
@@ -993,5 +999,58 @@ in
   "org.jsoup:jsoup:1.16.1" = {
     "jsoup-1.16.1.jar" = _: "${jsoup_1_16_1}/jsoup-1.16.1.jar";
     "jsoup-1.16.1.pom" = _: "${jsoup_1_16_1}/jsoup-1.16.1.pom";
+  };
+
+  "com.fasterxml.jackson.core:jackson-core:2.15.3" = {
+    "jackson-core-2.15.3.jar" = _: "${jackson_core_2_15_3}/jackson-core-2.15.3.jar";
+    "jackson-core-2.15.3.pom" = _: "${jackson_core_2_15_3}/jackson-core-2.15.3.pom";
+  };
+  "com.fasterxml.jackson.core:jackson-databind:2.15.3" = {
+    "jackson-databind-2.15.3.jar" = _: "${jackson_databind_2_15_3}/jackson-databind-2.15.3.jar";
+    "jackson-databind-2.15.3.pom" = _: "${jackson_databind_2_15_3}/jackson-databind-2.15.3.pom";
+  };
+  "com.fasterxml.jackson.core:jackson-annotations:2.15.3" = {
+    "jackson-annotations-2.15.3.jar" =
+      _: "${jackson_annotations_2_15_3}/jackson-annotations-2.15.3.jar";
+    "jackson-annotations-2.15.3.pom" =
+      _: "${jackson_annotations_2_15_3}/jackson-annotations-2.15.3.pom";
+  };
+
+  "org.commonmark:commonmark:0.13.0" = {
+    "commonmark-0.13.0.jar" = _: "${commonmark_0_13_0}/commonmark-0.13.0.jar";
+    "commonmark-0.13.0.pom" = _: "${commonmark_0_13_0}/commonmark-0.13.0.pom";
+  };
+  "org.commonmark:commonmark-ext-gfm-tables:0.13.0" = {
+    "commonmark-ext-gfm-tables-0.13.0.jar" =
+      _: "${commonmark_0_13_0}/commonmark-ext-gfm-tables-0.13.0.jar";
+    "commonmark-ext-gfm-tables-0.13.0.pom" =
+      _: "${commonmark_0_13_0}/commonmark-ext-gfm-tables-0.13.0.pom";
+  };
+  "org.commonmark:commonmark-ext-gfm-strikethrough:0.13.0" = {
+    "commonmark-ext-gfm-strikethrough-0.13.0.jar" =
+      _: "${commonmark_0_13_0}/commonmark-ext-gfm-strikethrough-0.13.0.jar";
+    "commonmark-ext-gfm-strikethrough-0.13.0.pom" =
+      _: "${commonmark_0_13_0}/commonmark-ext-gfm-strikethrough-0.13.0.pom";
+  };
+
+  "org.commonmark:commonmark:0.21.0" = {
+    "commonmark-0.21.0.jar" = _: "${commonmark_0_21_0}/commonmark-0.21.0.jar";
+    "commonmark-0.21.0.pom" = _: "${commonmark_0_21_0}/commonmark-0.21.0.pom";
+  };
+  "org.commonmark:commonmark-ext-gfm-tables:0.21.0" = {
+    "commonmark-ext-gfm-tables-0.21.0.jar" =
+      _: "${commonmark_0_21_0}/commonmark-ext-gfm-tables-0.21.0.jar";
+    "commonmark-ext-gfm-tables-0.21.0.pom" =
+      _: "${commonmark_0_21_0}/commonmark-ext-gfm-tables-0.21.0.pom";
+  };
+  "org.commonmark:commonmark-ext-gfm-strikethrough:0.21.0" = {
+    "commonmark-ext-gfm-strikethrough-0.21.0.jar" =
+      _: "${commonmark_0_21_0}/commonmark-ext-gfm-strikethrough-0.21.0.jar";
+    "commonmark-ext-gfm-strikethrough-0.21.0.pom" =
+      _: "${commonmark_0_21_0}/commonmark-ext-gfm-strikethrough-0.21.0.pom";
+  };
+  "org.commonmark:commonmark-ext-autolink:0.21.0" = {
+    "commonmark-ext-autolink-0.21.0.jar" = _: "${commonmark_0_21_0}/commonmark-ext-autolink-0.21.0.jar";
+    "commonmark-ext-autolink-0.21.0.pom" = _: "${commonmark_0_21_0}/commonmark-ext-autolink-0.21.0.pom";
   };
 }
