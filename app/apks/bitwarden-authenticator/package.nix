@@ -183,7 +183,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-authenticator";
-      version = "2026.9.0";
+      version = "2026.9.1";
 
       postPatch = ''
         substituteInPlace gradle/libs.versions.toml \

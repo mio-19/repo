@@ -28,13 +28,13 @@
 }:
 
 let
-  version = "12.10.6.0";
+  version = "12.10.7.0";
 
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "TelegramAndroid";
     tag = version;
-    hash = "sha256-nEXn3VnmylusrshisRPihG2OTgQvbvjJytys5Y16XhI=";
+    hash = "sha256-NcIsELur2AzfzQWh+CusUV7nOsfc5a+mTOIrW5WPnr0=";
     fetchSubmodules = true;
   };
 
