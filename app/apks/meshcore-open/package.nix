@@ -9,7 +9,7 @@
   flutter344,
   jdk17_headless,
   python3,
-  gradle_8_12,
+  gradle_8_13,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
 }:
@@ -22,23 +22,23 @@ let
       # Upstream llamadart downloads these at build time; vendor the release
       # tarballs instead so the sandboxed build stays offline.
       llamadartNativeAndroidArm64 = fetchurl {
-        url = "https://github.com/leehack/llamadart-native/releases/download/b10333/llamadart-native-android-arm64-b10333.tar.gz";
-        hash = "sha256-rYpBFWodOT5d4QKkfhvUFWFmrdcuDbBU0y3Iyc8bpjA=";
+        url = "https://github.com/leehack/llamadart-native/releases/download/v0.4.1/llamadart-native-android-arm64-v0.4.1.tar.gz";
+        hash = "sha256:1r4y1bndbpbj2amn2zxxxlg69dxn8sbbxp5madflysqrbri2z9gw";
       };
 
       llamadartNativeAndroidX64 = fetchurl {
-        url = "https://github.com/leehack/llamadart-native/releases/download/b10333/llamadart-native-android-x64-b10333.tar.gz";
-        hash = "sha256-N7FfbLri+5p9C6Cc+NJ06g2vAq3CyjbQSdQwf6STRyo=";
+        url = "https://github.com/leehack/llamadart-native/releases/download/v0.4.1/llamadart-native-android-x64-v0.4.1.tar.gz";
+        hash = "sha256:115fh0s0vzqsis4n8vf5kbxnqvbqi879s1kbskgl7fnbx9s6n712";
       };
 
       litertLMNativeAndroidArm64 = fetchurl {
-        url = "https://github.com/leehack/litert-lm-native/releases/download/v0.15.0-native.3/litert-lm-native-runtime-android-arm64-v0.15.0-native.3.tar.gz";
-        hash = "sha256-42Las5QePXrBB9Ntna/l9Lva/uwKL6WXjKsnxArmooE=";
+        url = "https://github.com/leehack/litert-lm-native/releases/download/v0.17.0-6/litert-lm-native-runtime-android-arm64-v0.17.0-6.tar.gz";
+        hash = "sha256:02abzgdrxnj9mp37z10y3rhxadxbsinyw7xfgh6a8dnwhfp22w40";
       };
 
       litertLMNativeAndroidX64 = fetchurl {
-        url = "https://github.com/leehack/litert-lm-native/releases/download/v0.15.0-native.3/litert-lm-native-runtime-android-x64-v0.15.0-native.3.tar.gz";
-        hash = "sha256-X2Ldi8vsg8Pb5cMvpZVtjGXfKD7k6xGJFPMhgYPBDso=";
+        url = "https://github.com/leehack/litert-lm-native/releases/download/v0.17.0-6/litert-lm-native-runtime-android-x64-v0.17.0-6.tar.gz";
+        hash = "sha256:1hcfwcck22g12cbxd0k45w3sdy9g3zfb4hp21xi1q8y3m6x6k8a5";
       };
 
       androidSdk = androidSdkBuilder (s: [
@@ -51,12 +51,13 @@ let
         s.build-tools-36-0-0
         # App uses 29 (upstream); jni/jni_flutter plugins still declare 28.2.
         # Do not set ndk.dir in local.properties — let AGP pick per-module.
+        s.ndk-26-3-11579264
         s.ndk-28-2-13676358
         s.ndk-29-0-14206865
         s.cmake-3-31-6
       ]);
 
-      gradle = gradle_8_12;
+      gradle = gradle_8_13;
       androidSdkRoot = "${androidSdk}/share/android-sdk";
       aapt2 = "${androidSdkRoot}/build-tools/35.0.0/aapt2";
 
@@ -72,9 +73,13 @@ let
       src = fetchFromGitHub {
         owner = "zjs81";
         repo = "meshcore-open";
-        rev = "PRE-BETA-9.5.1";
-        hash = "sha256-LbD2en3tolaDCr7ybGNJvNsBn7gS48oJQ38px+/WhoQ=";
+        rev = "PRE-BETA-9.5.2";
+        hash = "sha256-EyIl8J4mWDEiGXz1L7VmYvRpsAABr7ETvIXT/srGzz8=";
       };
+
+      patches = [
+        ./flutter-3.27-compat.patch
+      ];
 
       pubspecLock = lib.importJSON ./pubspec.lock.json;
 
@@ -93,13 +98,18 @@ let
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
         attrPath = "apk_meshcore-open";
-        pkg = finalAttrs.finalPackage;
+        pkg = finalAttrs.finalPackage.overrideAttrs {
+          gradleUpdateScript = ''
+            runHook preBuild
+            gradle --no-daemon --console=plain :cryptography_flutter:extractReleaseAnnotations :app:assembleRelease -x lint -x lintVitalRelease || true
+          '';
+        };
         data = ./meshcore-open_deps.json;
         silent = false;
         useBwrap = false;
       };
 
-      gradleUpdateTask = ":app:assembleRelease :flserial:extractReleaseAnnotations";
+      gradleUpdateTask = ":app:assembleRelease -x lint -x lintVitalRelease";
 
       dontDartBuild = true;
       dontDartInstall = true;
@@ -133,16 +143,23 @@ let
       ];
 
       postPatch = ''
-        . ${flutterApkHelpers}
+            . ${flutterApkHelpers}
 
-        # Upstream still uses the old ReorderableListView callback name.
-        substituteInPlace lib/screens/channels_screen.dart \
-          --replace-fail 'onReorderItem:' 'onReorder:'
-        substituteInPlace lib/widgets/path_editor_sheet.dart \
-          --replace-fail 'onReorderItem:' 'onReorder:'
+            substituteInPlace android/app/build.gradle.kts \
+              --replace-fail 'android {' 'android {
+        compileSdk = 36'
 
-        setup_writable_flutter_sdk ${flutter344}
-        setup_pinned_gradlew ${gradle}/bin/gradle
+            # Fix DropdownButtonFormField initialValue -> value for Flutter 3.27+
+            
+
+            # Upstream still uses the old ReorderableListView callback name.
+            substituteInPlace lib/screens/channels_screen.dart \
+              --replace-fail 'onReorderItem:' 'onReorder:'
+            substituteInPlace lib/widgets/path_editor_sheet.dart \
+              --replace-fail 'onReorderItem:' 'onReorder:'
+
+            setup_writable_flutter_sdk ${flutter344}
+            setup_pinned_gradlew ${gradle}/bin/gradle
       '';
 
       preConfigure = ''

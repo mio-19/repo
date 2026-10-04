@@ -1,10 +1,10 @@
 --- a/extensions/all/microg/src/main/java/hoodles/morphe/extension/microg/MicroGSupport.java
 +++ b/extensions/all/microg/src/main/java/hoodles/morphe/extension/microg/MicroGSupport.java
-@@ -35,7 +35,7 @@
+@@ -36,7 +36,7 @@
  
  import app.morphe.extension.shared.Logger;
  import app.morphe.extension.shared.Utils;
--import app.morphe.extension.shared.ui.CustomDialog;
+-import hoodles.morphe.extension.shared.ui.CustomDialog;
 +import android.app.AlertDialog;
  import hoodles.morphe.extension.shared.requests.Requester;
  import hoodles.morphe.extension.shared.requests.Route;

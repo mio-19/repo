@@ -1,0 +1,191 @@
+diff -ruN meshcore_src/android/app/build.gradle.kts meshcore_src_patched/android/app/build.gradle.kts
+--- meshcore_src/android/app/build.gradle.kts	1970-01-01 10:00:01.000000000 +1000
++++ meshcore_src_patched/android/app/build.gradle.kts	2026-10-04 20:36:26.619376740 +1100
+@@ -14,6 +14,7 @@
+ }
+ 
+ android {
++    compileSdk = 36
+     namespace = "com.meshcore.meshcore_open"
+     compileSdk = flutter.compileSdkVersion
+     ndkVersion = "29.0.14206865"
+diff -ruN meshcore_src/lib/screens/app_settings_screen.dart meshcore_src_patched/lib/screens/app_settings_screen.dart
+--- meshcore_src/lib/screens/app_settings_screen.dart	1970-01-01 10:00:01.000000000 +1000
++++ meshcore_src_patched/lib/screens/app_settings_screen.dart	2026-10-04 20:36:26.690376075 +1100
+@@ -930,7 +930,7 @@
+         ),
+         const SizedBox(height: 8),
+         DropdownButtonFormField<String>(
+-          initialValue: selection,
++          value: selection,
+           isExpanded: true,
+           decoration: const InputDecoration(
+             border: UnderlineInputBorder(),
+@@ -1611,7 +1611,7 @@
+         Padding(
+           padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+           child: DropdownButtonFormField<String>(
+-            initialValue: settings.translationSelectedModelId,
++            value: settings.translationSelectedModelId,
+             isExpanded: true,
+             decoration: InputDecoration(
+               labelText: context.l10n.translation_downloadedModelLabel,
+@@ -1638,7 +1638,7 @@
+         Padding(
+           padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+           child: DropdownButtonFormField<String>(
+-            initialValue: null,
++            value: null,
+             isExpanded: true,
+             decoration: InputDecoration(
+               labelText: context.l10n.translation_presetModelLabel,
+@@ -1812,7 +1812,7 @@
+       children: [
+         const SizedBox(height: 8),
+         DropdownButtonFormField<String>(
+-          initialValue: settingsService.settings.selectedCyr2latProfileId,
++          value: settingsService.settings.selectedCyr2latProfileId,
+           isExpanded: true,
+           decoration: InputDecoration(
+             labelText: context.l10n.channels_cyr2latSettingsSubheading,
+diff -ruN meshcore_src/lib/screens/channels_screen.dart meshcore_src_patched/lib/screens/channels_screen.dart
+--- meshcore_src/lib/screens/channels_screen.dart	1970-01-01 10:00:01.000000000 +1000
++++ meshcore_src_patched/lib/screens/channels_screen.dart	2026-10-04 20:36:26.693376047 +1100
+@@ -1165,7 +1165,7 @@
+                           vertical: 8,
+                         ),
+                         child: DropdownButtonFormField<Community>(
+-                          initialValue: selectedCommunity,
++                          value: selectedCommunity,
+                           items: _communities
+                               .map(
+                                 (c) => DropdownMenuItem(
+@@ -1636,7 +1636,7 @@
+                       Padding(
+                         padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                         child: DropdownButtonFormField<String>(
+-                          initialValue: selectedCyr2LatProfileId,
++                          value: selectedCyr2LatProfileId,
+                           decoration: InputDecoration(
+                             labelText: sheetContext
+                                 .l10n
+diff -ruN meshcore_src/lib/screens/chat_screen.dart meshcore_src_patched/lib/screens/chat_screen.dart
+--- meshcore_src/lib/screens/chat_screen.dart	1970-01-01 10:00:01.000000000 +1000
++++ meshcore_src_patched/lib/screens/chat_screen.dart	2026-10-04 20:36:26.696376019 +1100
+@@ -968,7 +968,7 @@
+                   Padding(
+                     padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                     child: DropdownButtonFormField<String>(
+-                      initialValue: selectedCyr2LatProfileId,
++                      value: selectedCyr2LatProfileId,
+                       decoration: InputDecoration(
+                         labelText:
+                             context.l10n.channels_cyr2latSettingsSubheading,
+diff -ruN meshcore_src/lib/screens/repeater_hub_screen.dart meshcore_src_patched/lib/screens/repeater_hub_screen.dart
+--- meshcore_src/lib/screens/repeater_hub_screen.dart	1970-01-01 10:00:01.000000000 +1000
++++ meshcore_src_patched/lib/screens/repeater_hub_screen.dart	2026-10-04 20:36:26.694376038 +1100
+@@ -141,7 +141,7 @@
+                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                 padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
+                 child: DropdownButtonFormField<String>(
+-                  initialValue: chemistry,
++                  value: chemistry,
+                   isExpanded: true,
+                   decoration: InputDecoration(
+                     prefixIcon: const Icon(Icons.battery_full, size: 18),
+diff -ruN meshcore_src/lib/screens/repeater_settings_screen.dart meshcore_src_patched/lib/screens/repeater_settings_screen.dart
+--- meshcore_src/lib/screens/repeater_settings_screen.dart	1970-01-01 10:00:01.000000000 +1000
++++ meshcore_src_patched/lib/screens/repeater_settings_screen.dart	2026-10-04 20:36:26.692376057 +1100
+@@ -1431,7 +1431,7 @@
+               ),
+               const SizedBox(height: 12),
+               DropdownButtonFormField<int>(
+-                initialValue: _bandwidth,
++                value: _bandwidth,
+                 decoration: InputDecoration(labelText: l10n.repeater_bandwidth),
+                 items: _bandwidthOptions.map((bw) {
+                   return DropdownMenuItem(
+@@ -1452,7 +1452,7 @@
+               ),
+               const SizedBox(height: 12),
+               DropdownButtonFormField<int>(
+-                initialValue: _spreadingFactor,
++                value: _spreadingFactor,
+                 decoration: InputDecoration(
+                   labelText: l10n.repeater_spreadingFactor,
+                 ),
+@@ -1472,7 +1472,7 @@
+               ),
+               const SizedBox(height: 12),
+               DropdownButtonFormField<int>(
+-                initialValue: _codingRate,
++                value: _codingRate,
+                 decoration: InputDecoration(
+                   labelText: l10n.repeater_codingRate,
+                 ),
+diff -ruN meshcore_src/lib/screens/settings_screen.dart meshcore_src_patched/lib/screens/settings_screen.dart
+--- meshcore_src/lib/screens/settings_screen.dart	1970-01-01 10:00:01.000000000 +1000
++++ meshcore_src_patched/lib/screens/settings_screen.dart	2026-10-04 20:36:26.691376066 +1100
+@@ -861,7 +861,7 @@
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: [
+               DropdownButtonFormField<int>(
+-                initialValue: selectedMode,
++                value: selectedMode,
+                 decoration: InputDecoration(
+                   labelText: l10n.repeater_pathHashMode,
+                   border: const OutlineInputBorder(),
+@@ -1426,7 +1426,7 @@
+               ),
+               const SizedBox(height: 16),
+               DropdownButtonFormField<int>(
+-                initialValue: telemetryMode,
++                value: telemetryMode,
+                 isExpanded: true,
+                 decoration: InputDecoration(
+                   labelText: l10n.settings_telemetryBaseMode,
+@@ -1441,7 +1441,7 @@
+               ),
+               const SizedBox(height: 16),
+               DropdownButtonFormField<int>(
+-                initialValue: telemetryLocMode,
++                value: telemetryLocMode,
+                 isExpanded: true,
+                 decoration: InputDecoration(
+                   labelText: l10n.settings_telemetryLocationMode,
+@@ -1456,7 +1456,7 @@
+               ),
+               const SizedBox(height: 16),
+               DropdownButtonFormField<int>(
+-                initialValue: telemetryEnvMode,
++                value: telemetryEnvMode,
+                 isExpanded: true,
+                 decoration: InputDecoration(
+                   labelText: l10n.settings_telemetryEnvironmentMode,
+@@ -2077,7 +2077,7 @@
+             ),
+             const SizedBox(height: 16),
+             DropdownButtonFormField<LoRaBandwidth>(
+-              initialValue: _bandwidth,
++              value: _bandwidth,
+               decoration: InputDecoration(
+                 labelText: l10n.settings_bandwidth,
+                 border: const OutlineInputBorder(),
+@@ -2099,7 +2099,7 @@
+             ),
+             const SizedBox(height: 16),
+             DropdownButtonFormField<LoRaSpreadingFactor>(
+-              initialValue: _spreadingFactor,
++              value: _spreadingFactor,
+               decoration: InputDecoration(
+                 labelText: l10n.settings_spreadingFactor,
+                 border: const OutlineInputBorder(),
+@@ -2123,7 +2123,7 @@
+             ),
+             const SizedBox(height: 16),
+             DropdownButtonFormField<LoRaCodingRate>(
+-              initialValue: _codingRate,
++              value: _codingRate,
+               decoration: InputDecoration(
+                 labelText: l10n.settings_codingRate,
+                 border: const OutlineInputBorder(),

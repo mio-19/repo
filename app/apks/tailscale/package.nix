@@ -5,9 +5,9 @@
   stdenvNoCC,
   fetchFromGitHub,
   androidSdkBuilder,
-  gradle_8,
-  go_1_26,
-  jdk17_headless,
+  gradle_9_6_1,
+  go_1_27,
+  jdk21_headless,
   writableTmpDirAsHomeHook,
   gnumake,
   zip,
@@ -17,21 +17,21 @@
 let
   appPackage =
     let
-      version = "1.102.4-t3caf7d9e7-g8fbef364a";
+      version = "1.104.0-t2b65a876f-g8840aee60";
       tailscaleVersion = lib.head (lib.splitString "-" version);
 
       src = fetchFromGitHub {
         owner = "tailscale";
         repo = "tailscale-android";
         tag = version;
-        hash = "sha256-X7vq0xLPObawybDJeRwNepaqbMUpABlB7Xy6eJ/0Y8A=";
+        hash = "sha256-yhxn3I5x3DIH/hRLkaDollCKUYBloiOxM+UPsWiL91E=";
       };
 
       tailscaleSrc = fetchFromGitHub {
         owner = "tailscale";
         repo = "tailscale";
         tag = "v${tailscaleVersion}";
-        hash = "sha256-PCCkzNvV9AK1AM5UhM97roSctctvFfwUw5QhKB64n00=";
+        hash = "sha256-dz1HQJA1665UBME8eBISt95f1CAl+RJ4GkE713iZCDU=";
       };
 
       xMobileSrc = fetchFromGitHub {
@@ -47,14 +47,14 @@ let
         inherit version src;
 
         nativeBuildInputs = [
-          go_1_26
+          go_1_27
           writableTmpDirAsHomeHook
         ];
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
         # Update hash to trigger rebuild with internet access
-        outputHash = "sha256-Kam+2e/QzjSSd8s5mZxAj6k4ahScaRFj4Jc4CYonHLU=";
+        outputHash = "sha256-Z6tZGF6j8AH1P7DaoiXZZTgkI5lmc9Fh/c/GSfFHWeg=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -74,11 +74,11 @@ let
           cd source
 
           # Aggressively patch go.mod files to use the available go version
-          find . -name "go.mod" -execdir go mod edit -go=1.26.3 -toolchain=none {} \;
+          find . -name "go.mod" -execdir go mod edit -go=1.27.1 -toolchain=none {} \;
 
           cp -R ${tailscaleSrc} tailscale-module
           chmod -R u+w tailscale-module
-          go mod edit -go=1.26.3 -toolchain=none tailscale-module/go.mod
+          go mod edit -go=1.27.1 -toolchain=none tailscale-module/go.mod
           go mod edit -replace=tailscale.com=./tailscale-module
 
           cp -R ${xMobileSrc} x-mobile
@@ -104,12 +104,13 @@ let
         s.platform-tools
         s.platforms-android-36
         s.platforms-android-34
+        s.build-tools-36-0-0
         s.build-tools-35-0-0
         s.build-tools-34-0-0
         s.ndk-27-3-13750724
       ]);
 
-      gradle = gradle_8;
+      gradle = gradle_9_6_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "tailscale";
@@ -118,14 +119,6 @@ let
       passthru = {
         inherit goModCache;
       };
-
-      patches = [
-        (fetchpatch {
-          name = "Fix/restart vpn state bug";
-          url = "https://github.com/tailscale/tailscale-android/pull/730.diff";
-          hash = "sha256-1thWUOONa0HZLXAK4Z0tJ2AmbLJrNATJn6Y7UmN6Yvg=";
-        })
-      ];
 
       gradleBuildTask = "assembleRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
@@ -140,21 +133,21 @@ let
 
       nativeBuildInputs = [
         gradle
-        go_1_26
+        go_1_27
         gnumake
-        jdk17_headless
+        jdk21_headless
         writableTmpDirAsHomeHook
         zip
         unzip
       ];
 
       env = {
-        JAVA_HOME = jdk17_headless.passthru.home;
+        JAVA_HOME = jdk21_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
         NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
       };
 
       preBuild = ''
@@ -172,16 +165,16 @@ let
         export GOTOOLCHAIN=local
 
         # Aggressively patch go.mod files to use the available go version
-        find . -name "go.mod" -execdir go mod edit -go=1.26.3 -toolchain=none {} \;
+        find . -name "go.mod" -execdir go mod edit -go=1.27.1 -toolchain=none {} \;
 
         find "$GOMODCACHE" -name go.mod -print | while read -r gomod; do
           chmod u+w "$(dirname "$gomod")" "$gomod"
-          go mod edit -go=1.26.3 -toolchain=none "$gomod"
+          go mod edit -go=1.27.1 -toolchain=none "$gomod"
         done
 
         cp -R ${tailscaleSrc} tailscale-module
         chmod -R u+w tailscale-module
-        go mod edit -go=1.26.3 -toolchain=none tailscale-module/go.mod
+        go mod edit -go=1.27.1 -toolchain=none tailscale-module/go.mod
         go mod edit -replace=tailscale.com=./tailscale-module
 
         cp -R ${xMobileSrc} x-mobile
@@ -189,7 +182,7 @@ let
         patch -d x-mobile -p1 < ${./gomobile-avoid-empty-go-mod.patch}
         go mod edit -replace=golang.org/x/mobile=./x-mobile
 
-        export TOOLCHAINDIR="${go_1_26}/share/go"
+        export TOOLCHAINDIR="${go_1_27}/share/go"
         export TOOLCHAIN_DIR="$TOOLCHAINDIR"
         export PATH="$TOOLCHAINDIR/bin:$PATH"
 
@@ -224,9 +217,8 @@ let
         sdk.dir=${androidSdk}/share/android-sdk
         EOF
 
-        substituteInPlace android/build.gradle \
-          --replace-fail 'ndkVersion "23.1.7779620"' 'ndkVersion "27.3.13750724"'
-        substituteInPlace android/build.gradle \
+        substituteInPlace android/build.gradle.kts \
+          --replace-fail 'ndkVersion = "23.1.7779620"' 'ndkVersion = "27.3.13750724"'
 
         substituteInPlace Makefile \
           --replace-fail 'ndk;23.1.7779620' 'ndk;27.3.13750724'
