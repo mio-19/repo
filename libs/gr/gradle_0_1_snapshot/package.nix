@@ -234,7 +234,7 @@ stdenv.mkDerivation {
     test -d "$dist_dir"
 
     mkdir -p "$out/libexec"
-    cp -a "$dist_dir" "$out/libexec/gradle"
+    mv "$dist_dir" "$out/libexec/gradle"
     patchShebangs "$out/libexec/gradle/bin"
 
     mkdir -p "$out/bin"
