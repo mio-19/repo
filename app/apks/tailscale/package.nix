@@ -105,7 +105,6 @@ let
         s.platforms-android-36
         s.platforms-android-34
         s.build-tools-36-0-0
-        s.build-tools-35-0-0
         s.build-tools-34-0-0
         s.ndk-27-3-13750724
       ]);
@@ -225,8 +224,8 @@ let
 
         echo "org.gradle.jvmargs=-Xmx4096m" >> android/gradle.properties
         cat >> android/gradle.properties <<EOF
-        android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2
-        org.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2
+        android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2
+        org.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2
         EOF
 
         make env
@@ -239,8 +238,8 @@ let
         "android"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
 
       installPhase = ''
