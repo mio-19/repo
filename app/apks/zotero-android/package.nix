@@ -145,6 +145,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Zotero Android beta build from source (unsigned)";
         homepage = "https://github.com/zotero/zotero-android";
         license = licenses.agpl3Only;

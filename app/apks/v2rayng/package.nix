@@ -245,6 +245,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "v2rayNG Android client built from source";
         homepage = "https://github.com/2dust/v2rayNG";
         license = licenses.gpl3Only;

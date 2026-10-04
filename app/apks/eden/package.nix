@@ -114,6 +114,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Eden Nintendo Switch emulator for Android";
         homepage = "https://git.eden-emu.dev/eden-emu/eden";
         license = licenses.gpl3Only;

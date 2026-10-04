@@ -122,6 +122,7 @@ buildGradlePackage rec {
   '';
 
   meta = with lib; {
+    sourceProvenance = with sourceTypes; [ fromSource ];
     description = "ZoomImage Android artifacts built from source";
     homepage = "https://github.com/panpf/zoomimage";
     license = licenses.asl20;

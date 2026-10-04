@@ -253,6 +253,7 @@ stdenv.mkDerivation (
       defaultOut = "koreader-signed.apk";
     };
     meta = with lib; {
+      sourceProvenance = with sourceTypes; [ fromSource ];
       description = "KOReader for Android";
       homepage = "https://github.com/koreader/koreader";
       license = licenses.agpl3Only;

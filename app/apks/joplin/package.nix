@@ -223,6 +223,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Joplin note-taking app for Android built from source";
         homepage = "https://github.com/laurent22/joplin";
         license = licenses.agpl3Only;

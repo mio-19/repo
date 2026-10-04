@@ -126,6 +126,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Element Android (F-Droid flavor, unsigned)";
         homepage = "https://github.com/element-hq/element-android";
         license = licenses.asl20;

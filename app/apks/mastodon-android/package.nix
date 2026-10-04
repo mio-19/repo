@@ -89,6 +89,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Official Mastodon Android app (GitHub release flavor, unsigned)";
         homepage = "https://github.com/mastodon/mastodon-android";
         license = licenses.gpl3Only;

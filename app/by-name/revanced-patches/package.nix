@@ -99,6 +99,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   meta = with lib; {
+    sourceProvenance = with sourceTypes; [ fromSource ];
     description = "ReVanced patches built from source";
     homepage = "https://github.com/ReVanced/revanced-patches";
     license = licenses.gpl3Only;

@@ -106,6 +106,7 @@ let
     '';
 
     meta = with lib; {
+      sourceProvenance = with sourceTypes; [ fromSource ];
       description = "LineageOS Glimpse photo gallery app (unsigned APK)";
       homepage = "https://github.com/LineageOS/android_packages_apps_Glimpse";
       license = licenses.asl20;

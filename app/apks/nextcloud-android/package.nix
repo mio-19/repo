@@ -152,6 +152,7 @@ let
     '';
 
     meta = with lib; {
+      sourceProvenance = with sourceTypes; [ fromSource ];
       description = "Nextcloud Android app built from source";
       homepage = "https://github.com/nextcloud/android";
       license = licenses.agpl3Plus;

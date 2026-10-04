@@ -1,0 +1,49 @@
+diff -u -r gb_src/app/build.gradle gb_patched/gb_src/app/build.gradle
+--- gb_src/app/build.gradle	2026-10-04 20:52:39.174755214 +1100
++++ gb_patched/gb_src/app/build.gradle	2026-10-04 20:52:40.671750069 +1100
+@@ -125,11 +125,7 @@
+     }
+ 
+     namespace = 'nodomain.freeyourgadget.gadgetbridge'
+-    compileSdk {
+-        version = release(37) {
+-            it.minorApiLevel = 0
+-        }
+-    }
++    compileSdk 37
+ 
+     defaultConfig {
+         applicationId "nodomain.freeyourgadget.gadgetbridge"
+diff -u -r gb_src/settings.gradle.kts gb_patched/gb_src/settings.gradle.kts
+--- gb_src/settings.gradle.kts	2026-10-04 20:52:40.648750148 +1100
++++ gb_patched/gb_src/settings.gradle.kts	2026-10-04 20:52:40.673750062 +1100
+@@ -2,11 +2,6 @@
+     repositories {
+         mavenLocal()
+         google {
+-            content {
+-                includeGroupByRegex("com\\.android.*")
+-                includeGroupByRegex("com\\.google.*")
+-                includeGroupByRegex("androidx\\..*")
+-            }
+         }
+         gradlePluginPortal()
+         mavenCentral()
+@@ -16,17 +11,9 @@
+     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+     repositories {
+         google {
+-            content {
+-                includeGroupByRegex("com\\.android.*")
+-                includeGroupByRegex("com\\.google.*")
+-                includeGroupByRegex("androidx\\..*")
+-            }
+         }
+         mavenCentral()
+         maven("https://jitpack.io") {
+-            content {
+-                includeGroupByRegex("com\\.github\\..*")
+-            }
+         }
+     }
+ }

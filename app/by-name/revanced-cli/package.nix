@@ -80,6 +80,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   meta = with lib; {
+    sourceProvenance = with sourceTypes; [ fromSource ];
     description = "ReVanced CLI built from source";
     homepage = "https://github.com/ReVanced/revanced-cli";
     license = licenses.gpl3Only;

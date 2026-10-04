@@ -154,6 +154,7 @@ let
     '';
 
     meta = with lib; {
+      sourceProvenance = with sourceTypes; [ fromSource ];
       description = "ArchiveTune YouTube Music client for Android";
       homepage = "https://github.com/koiverse/ArchiveTune";
       license = licenses.gpl3Only;

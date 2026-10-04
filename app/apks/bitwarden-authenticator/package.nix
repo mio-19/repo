@@ -452,6 +452,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Bitwarden Authenticator for Android (unsigned)";
         homepage = "https://github.com/bitwarden/android";
         license = licenses.gpl3Only;

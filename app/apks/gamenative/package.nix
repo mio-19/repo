@@ -44,6 +44,7 @@ let
 
       patches = [
         ./disable-release-lint.patch
+        ./gamenative.patch
         ./fix-dependency-resolution.patch
       ];
 
@@ -84,7 +85,7 @@ let
 
         cp -r ${javasteamSrc} JavaSteam
         chmod -R +w JavaSteam
-        sed -i '1iincludeBuild("JavaSteam")' settings.gradle.kts
+        echo "includeBuild(\"JavaSteam\")" | cat - settings.gradle.kts > temp && mv temp settings.gradle.kts
       '';
 
       gradleFlags = [
@@ -103,6 +104,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Android launcher for running Windows games";
         homepage = "https://github.com/utkarshdalal/GameNative";
         license = licenses.gpl3Only;

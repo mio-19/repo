@@ -253,6 +253,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Uplink pastebin GUI Android client built from source";
         homepage = "https://github.com/mio-19/nurpkgs/tree/main/by-name/up/uplink";
         license = licenses.mit;

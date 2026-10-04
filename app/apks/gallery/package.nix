@@ -208,6 +208,7 @@ let
     '';
 
     meta = with lib; {
+      sourceProvenance = with sourceTypes; [ fromSource ];
       description = "Google AI Edge Gallery app built from source";
       homepage = "https://github.com/google-ai-edge/gallery";
       license = licenses.asl20;

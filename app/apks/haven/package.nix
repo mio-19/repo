@@ -534,6 +534,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Haven – SSH/Mosh terminal and Reticulum network client for Android";
         homepage = "https://github.com/GlassHaven/Haven";
         license = licenses.gpl3Only;

@@ -256,6 +256,7 @@ stdenv.mkDerivation {
   passthru.jdk = jdk8_headless;
 
   meta = with lib; {
+    sourceProvenance = with sourceTypes; [ fromSource ];
     description = "Gradle 0.1 snapshot bootstrapped from source with Ant";
     homepage = "https://github.com/gradle/gradle";
     license = licenses.asl20;

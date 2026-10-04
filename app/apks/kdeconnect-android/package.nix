@@ -88,6 +88,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "KDE Connect app for Android";
         homepage = "https://github.com/KDE/kdeconnect-android";
         license = licenses.gpl3Only;

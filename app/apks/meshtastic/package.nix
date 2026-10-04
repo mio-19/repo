@@ -192,6 +192,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Meshtastic Android app (F-Droid flavor, unsigned)";
         homepage = "https://github.com/meshtastic/Meshtastic-Android";
         license = licenses.gpl3Only;

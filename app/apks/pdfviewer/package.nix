@@ -136,6 +136,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "GrapheneOS PDF Viewer app (unsigned APK)";
         homepage = "https://github.com/GrapheneOS/PdfViewer";
         license = licenses.asl20;

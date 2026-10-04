@@ -203,6 +203,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   meta = with lib; {
+    sourceProvenance = with sourceTypes; [ fromSource ];
     description = "hoo-dles Patches built from source";
     homepage = "https://github.com/hoo-dles/morphe-patches";
     license = licenses.gpl3Only;

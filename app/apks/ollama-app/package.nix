@@ -175,6 +175,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Modern Android client for Ollama built from source";
         homepage = "https://github.com/JHubi1/ollama-app";
         license = licenses.gpl3Plus;

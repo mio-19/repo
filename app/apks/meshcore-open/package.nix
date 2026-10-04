@@ -248,6 +248,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "MeshCore Open Android client built from source";
         homepage = "https://github.com/zjs81/meshcore-open";
         license = licenses.mit;

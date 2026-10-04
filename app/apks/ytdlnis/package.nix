@@ -96,6 +96,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "YTDLnis downloader app for Android built from source";
         homepage = "https://github.com/deniscerri/ytdlnis";
         license = licenses.gpl3Only;

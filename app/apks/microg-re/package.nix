@@ -96,6 +96,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "MicroG RE app built from source (unsigned)";
         homepage = "https://github.com/MorpheApp/MicroG-RE";
         license = licenses.asl20;

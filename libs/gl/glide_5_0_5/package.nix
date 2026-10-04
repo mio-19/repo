@@ -124,6 +124,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   meta = with lib; {
+    sourceProvenance = with sourceTypes; [ fromSource ];
     description = "Glide 5 AAR artifacts built from source";
     homepage = "https://github.com/bumptech/glide";
     license = licenses.bsd3;

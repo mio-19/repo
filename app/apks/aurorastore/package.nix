@@ -151,6 +151,7 @@ let
     '';
 
     meta = with lib; {
+      sourceProvenance = with sourceTypes; [ fromSource ];
       description = "Aurora Store app built from source";
       homepage = "https://gitlab.com/AuroraOSS/AuroraStore";
       license = licenses.gpl3Plus;

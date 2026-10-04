@@ -184,6 +184,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "CoMaps offline maps app (F-Droid flavor, source-built)";
         homepage = "https://codeberg.org/comaps/comaps";
         license = licenses.asl20;

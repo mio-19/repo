@@ -258,6 +258,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Tailscale Android client built from source";
         homepage = "https://github.com/tailscale/tailscale-android";
         license = licenses.bsd3;
