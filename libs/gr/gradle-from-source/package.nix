@@ -198,7 +198,7 @@ let
         cd dist-unpack/gradle-*
 
         mkdir -vp $gradleLibexec
-        cp -av lib/ $gradleLibexec
+        mv lib/ $gradleLibexec
         [ -f $gradleLibexec/lib/gradle-launcher-*.jar ] || { echo "No Gradle launcher jar found!" >&2; exit 1; }
 
         echo ${lib.escapeShellArg "org.gradle.java.installations.paths=${toolchainPaths}"} > $gradleLibexec/gradle.properties
