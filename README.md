@@ -242,3 +242,7 @@ todo
    "org/versions/all": "sha256-hW92v8avCy/6usgQ3dc/6Zo59J/8GhhrLrWwevV/o5Q="
   }
 ```
+
+## Posts
+
++ <https://xdaforums.com/t/a-grapheneos-fork-with-pwm-mod-3840hz-or-4800hz-and-other-mod.4803782/>
