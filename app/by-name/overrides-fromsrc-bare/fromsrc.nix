@@ -165,6 +165,7 @@
 
   runCommand,
   zip,
+  jsoup_1_16_1,
 }:
 let
   mkGradleZip =
@@ -989,4 +990,8 @@ in
   "jakarta.inject:jakarta.inject-api:2.0.1" =
     mkMavenSourceJarOverride "jakarta.inject-api" "2.0.1"
       jakarta_inject_api_2_0_1;
+  "org.jsoup:jsoup:1.16.1" = {
+    "jsoup-1.16.1.jar" = _: "${jsoup_1_16_1}/jsoup-1.16.1.jar";
+    "jsoup-1.16.1.pom" = _: "${jsoup_1_16_1}/jsoup-1.16.1.pom";
+  };
 }
