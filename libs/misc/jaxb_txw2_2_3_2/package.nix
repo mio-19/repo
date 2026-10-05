@@ -23,8 +23,8 @@ maven_3_9_14.buildMavenPackage {
 
   installPhase = ''
     mkdir -p $out
-    mv txw/compiler/target/txw2-${version}.jar $out/txw2-${version}.jar || true
-    mv txw/compiler/pom.xml $out/txw2-${version}.pom || true
+    mv txw/runtime/target/txw2-${version}.jar $out/txw2-${version}.jar || true
+    mv txw/runtime/pom.xml $out/txw2-${version}.pom || true
   '';
 
   meta = with lib; {
