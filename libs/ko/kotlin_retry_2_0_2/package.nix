@@ -80,7 +80,7 @@ stdenv.mkDerivation (finalAttrs: {
       -d "$tmp/kotlin-retry-jvm-${finalAttrs.version}.jar" \
       @retry-sources.txt
 
-    retry_result_cp="${finalAttrs.coroutinesCoreJvm}:${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.jar:$tmp/kotlin-retry-jvm-${finalAttrs.version}.jar"
+    retry_result_cp="${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-core-jvm-1.10.2.jar:${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.jar:$tmp/kotlin-retry-jvm-${finalAttrs.version}.jar"
     find "${finalAttrs.src}/kotlin-retry-result/src/commonMain/kotlin" -name '*.kt' | sort > retry-result-sources.txt
     ${kotlin}/bin/kotlinc \
       -Xmulti-platform \
