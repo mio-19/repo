@@ -19,7 +19,7 @@ maven_3_9_14.buildMavenPackage {
 
   mvnHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true";
-  
+
   installPhase = ''
     mkdir -p $out
     mv code/fastinfoset/target/FastInfoset-${version}.jar $out/FastInfoset-${version}.jar || true

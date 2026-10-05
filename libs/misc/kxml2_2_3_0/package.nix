@@ -1,7 +1,6 @@
 {
   lib,
   fetchgit,
-  jdk25_headless,
   maven_3_9_14,
 }:
 let

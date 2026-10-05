@@ -19,7 +19,7 @@ maven_3_9_14.buildMavenPackage {
 
   mvnHash = "sha256-5MxoS+G5xGzMxHniAlq/5VqPk4fl1KCQKCZctUW1BcI=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true -pl javaparser-core -am";
-  
+
   installPhase = ''
     mkdir -p $out
     mv javaparser-core/target/javaparser-core-${version}.jar $out/javaparser-core-${version}.jar || true

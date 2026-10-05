@@ -19,7 +19,7 @@ maven_3_9_14.buildMavenPackage {
 
   mvnHash = "sha256-uK78RhbK3F+zkuHbGvOSZFgkeyXqe2cgtd3gOblml5I=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true";
-  
+
   installPhase = ''
     mkdir -p $out
     mv jimfs/target/jimfs-${version}.jar $out/jimfs-${version}.jar || true

@@ -24,13 +24,13 @@ maven_3_9_14.buildMavenPackage {
     mkdir -p $out
     mv commonmark/target/commonmark-${version}.jar $out/commonmark-${version}.jar
     mv commonmark/pom.xml $out/commonmark-${version}.pom
-    
+
     mv commonmark-ext-gfm-tables/target/commonmark-ext-gfm-tables-${version}.jar $out/commonmark-ext-gfm-tables-${version}.jar
     mv commonmark-ext-gfm-tables/pom.xml $out/commonmark-ext-gfm-tables-${version}.pom
 
     mv commonmark-ext-gfm-strikethrough/target/commonmark-ext-gfm-strikethrough-${version}.jar $out/commonmark-ext-gfm-strikethrough-${version}.jar
     mv commonmark-ext-gfm-strikethrough/pom.xml $out/commonmark-ext-gfm-strikethrough-${version}.pom
-    
+
     mv commonmark-ext-autolink/target/commonmark-ext-autolink-${version}.jar $out/commonmark-ext-autolink-${version}.jar
     mv commonmark-ext-autolink/pom.xml $out/commonmark-ext-autolink-${version}.pom
   '';

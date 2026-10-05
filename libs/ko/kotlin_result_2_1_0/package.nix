@@ -52,7 +52,7 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    export JAVA_HOME=${jdk25_headless}
+    export JAVA_HOME=${jdk25_headless.passthru.home}
     tmp="$(mktemp -d)"
 
     find kotlin-result/src/commonMain/kotlin -name '*.kt' | sort > common-sources.txt

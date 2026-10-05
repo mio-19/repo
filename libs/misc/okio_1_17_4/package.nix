@@ -19,7 +19,7 @@ maven_3_9_14.buildMavenPackage {
 
   mvnHash = "sha256-iofH62RrGOJ5i6GXEPWgfPZZZ/6ZrqCQzn49jR4kuDg=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true -pl okio -am";
-  
+
   installPhase = ''
     mkdir -p $out
     mv okio/target/okio-${version}.jar $out/okio-${version}.jar || true

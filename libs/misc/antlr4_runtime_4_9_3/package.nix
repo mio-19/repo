@@ -19,7 +19,7 @@ maven_3_9_14.buildMavenPackage {
 
   mvnHash = "sha256-UJ0tiesM2ODMACp834N4ZqeCiLjRR/2AX0/nGwChIVY=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true -pl runtime/Java -am";
-  
+
   installPhase = ''
     mkdir -p $out
     mv runtime/Java/target/antlr4-runtime-${version}.jar $out/antlr4-runtime-${version}.jar || true

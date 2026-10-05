@@ -19,12 +19,12 @@ maven_3_9_14.buildMavenPackage {
 
   mvnHash = "sha256-aZhwl+Cms8XdK1t7Qse4BLXAx6vsfLRuM2tlmibTi9I=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true -pl java/libphonenumber -am";
-  
+
   installPhase = ''
     mkdir -p $out
     mv java/libphonenumber/target/libphonenumber-${version}.jar $out/libphonenumber-${version}.jar || true
     mv java/libphonenumber/pom.xml $out/libphonenumber-${version}.pom || true
-    
+
   '';
 
   meta = with lib; {

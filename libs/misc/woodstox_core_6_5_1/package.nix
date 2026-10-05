@@ -19,7 +19,7 @@ maven_3_9_14.buildMavenPackage {
 
   mvnHash = "sha256-GxBzEjr5i2b+YghPyMR46h42HhpkI0sFKkE7XYYUbB4=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true";
-  
+
   installPhase = ''
     mkdir -p $out
     mv target/woodstox-core-${version}.jar $out/woodstox-core-${version}.jar || true

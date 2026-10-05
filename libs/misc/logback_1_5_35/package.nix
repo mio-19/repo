@@ -19,7 +19,7 @@ maven_3_9_14.buildMavenPackage {
 
   mvnHash = "sha256-PMfNwxMBlavXRxTFZTL6iubABl1lZJRjZSVtUFYVvIY=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true";
-  
+
   installPhase = ''
     mkdir -p $out
     mv logback-core/target/logback-core-${version}.jar $out/logback-core-${version}.jar || true

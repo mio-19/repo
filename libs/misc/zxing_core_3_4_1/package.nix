@@ -19,7 +19,7 @@ maven_3_9_14.buildMavenPackage {
 
   mvnHash = "sha256-XQqMbHckCJEJE+1cRn1RAqIEdiRRv9i2/vjXazYvs94=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true -pl core -am";
-  
+
   installPhase = ''
     mkdir -p $out
     mv core/target/core-${version}.jar $out/core-${version}.jar || true

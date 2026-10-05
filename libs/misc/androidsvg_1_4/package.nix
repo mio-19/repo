@@ -19,7 +19,7 @@ maven_3_9_14.buildMavenPackage {
 
   mvnHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true";
-  
+
   installPhase = ''
     mkdir -p $out
     mv androidsvg/target/androidsvg-${version}.jar $out/androidsvg-${version}.jar || true
