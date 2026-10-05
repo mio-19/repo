@@ -8,7 +8,7 @@
   writableTmpDirAsHomeHook,
   morphe-patches-gradle-plugin_1_3_4,
   morphe-library-m2,
-  morphe-patches-library-m2_1_7_1_dev_1,
+  morphe-patches-library-m2_1_8_0_dev_1,
   apktool-src,
   multidexlib2-src,
   morphe-patcher-src_1_14_0,
@@ -40,13 +40,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches";
-  version = "1.44.0";
+  version = "1.45.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-bTczF/81oFOlwPMeSE/d6XuaFGZPb9TXkzf4fRsiqHg=";
+    hash = "sha256-8ho7sxlXzP21Jlf7oDWyQ4XdqP0DBN5hFun5uwafOPg=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -73,7 +73,7 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_4}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
-    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_7_1_dev_1}";
+    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_8_0_dev_1}";
   };
 
   postUnpack = ''

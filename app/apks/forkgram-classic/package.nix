@@ -28,13 +28,13 @@
 }:
 
 let
-  version = "12.10.8.0";
+  version = "12.10.10.0";
 
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-0WCaUZaD1z31q//WdGAG8ZXYkjJc2EwTE23P5eE85hg=";
+    hash = "sha256-9RcZUhL3nLhTDQJsWm0go6OaxOjYlOMp1+8ObO8j0Fo=";
     fetchSubmodules = true;
   };
 
@@ -85,7 +85,7 @@ let
     pname = "forkgram-tlottie";
     inherit version src;
     cargoRoot = "TMessagesProj/jni/tlottie";
-    hash = "sha256-R/l5zMRB/2/a4Yf6toPBBvJ1SvebWsGeumwW9U6b7So=";
+    hash = "sha256-ZICtOSL3BxNSrgHYir+GGb8vCEYCHZhZAjZMOIwQYE0=";
   };
 
   mkTlottieArchive =
@@ -134,15 +134,21 @@ let
     crossPkgs = armv7AndroidPkgs;
     rustTarget = "armv7-linux-androideabi";
   };
+  simde = fetchFromGitHub {
+    owner = "simd-everywhere";
+    repo = "simde";
+    tag = "v0.8.2";
+    hash = "sha256-igjDHCpKXy6EbA9Mf6peL4OTVRPYTV0Y2jbgYQuWMT4=";
+  };
 in
 buildGradlePackage rec {
   pname = "forkgram-classic";
-  version = "12.10.8.0";
+  version = "12.10.10.0";
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-0WCaUZaD1z31q//WdGAG8ZXYkjJc2EwTE23P5eE85hg=";
+    hash = "sha256-9RcZUhL3nLhTDQJsWm0go6OaxOjYlOMp1+8ObO8j0Fo=";
     fetchSubmodules = true;
   };
 
@@ -206,7 +212,11 @@ buildGradlePackage rec {
               --replace-quiet "git checkout -- ffmpeg" "" \
               --replace-quiet "git checkout -- prebuild" ""
 
-
+            if [ -f TMessagesProj/jni/third_party/wamr/core/iwasm/libraries/simde/simde.cmake ]; then
+              substituteInPlace TMessagesProj/jni/third_party/wamr/core/iwasm/libraries/simde/simde.cmake \
+                --replace-fail "FetchContent_MakeAvailable(simde)" "" \
+                --replace-fail "\"\''${simde_SOURCE_DIR}\"" "${simde}"
+            fi
 
             install -Dm644 ${tlottieArm64}/arm64-v8a/libtlottie.a \
               TMessagesProj/jni/prebuild/safe_tlottie/arm64-v8a/libtlottie.a

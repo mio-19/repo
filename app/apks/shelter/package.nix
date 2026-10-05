@@ -10,8 +10,8 @@
   androidSdkBuilder,
 }:
 let
-  rev = "672560f551772b5cd829b2947bae830d78f20edf";
-  version = "unstable-2026-06-12";
+  rev = "0afac87";
+  version = "unstable-2026-10-02";
 
   appPackage =
     let
@@ -33,7 +33,7 @@ let
         url = "https://gitea.angry.im/PeterCxy/Shelter.git";
         inherit rev;
         fetchSubmodules = true;
-        hash = "sha256-muPaehd+wJEw+NrhmNmUc4xJxVfkcwXWbA629+fhZBs=";
+        hash = "sha256-hPWBstMGRg/wIt+7Kta8PpZtOx+mvF3B4tKz6gFDayo=";
       };
 
       gradleBuildTask = ":app:assembleRelease";
