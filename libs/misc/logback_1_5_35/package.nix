@@ -1,7 +1,7 @@
 {
   lib,
   fetchgit,
-  jdk11_headless,
+  jdk17_headless,
   maven_3_9_14,
 }:
 let
@@ -15,9 +15,9 @@ in
 maven_3_9_14.buildMavenPackage {
   pname = "logback";
   inherit version src;
-  mvnJdk = jdk11_headless;
+  mvnJdk = jdk17_headless;
 
-  mvnHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  mvnHash = "sha256-PMfNwxMBlavXRxTFZTL6iubABl1lZJRjZSVtUFYVvIY=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true";
   
   installPhase = ''

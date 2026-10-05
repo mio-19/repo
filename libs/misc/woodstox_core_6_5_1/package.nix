@@ -17,7 +17,7 @@ maven_3_9_14.buildMavenPackage {
   inherit version src;
   mvnJdk = jdk11_headless;
 
-  mvnHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  mvnHash = "sha256-GxBzEjr5i2b+YghPyMR46h42HhpkI0sFKkE7XYYUbB4=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true";
   
   installPhase = ''
