@@ -5,30 +5,30 @@
   maven_3_9_14,
 }:
 let
-  version = "2.3.35";
+  version = "1.4";
   src = fetchgit {
-    url = "https://github.com/apache/freemarker.git";
-    rev = "v2.3.35";
-    hash = "sha256-VRT+oVZDaBdqFDFS0zjK4htmuGwo+nCXLNsPSYMG0l0=";
+    url = "https://github.com/BigBadaboom/androidsvg.git";
+    rev = "1.4";
+    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   };
 in
 maven_3_9_14.buildMavenPackage {
-  pname = "freemarker";
+  pname = "androidsvg";
   inherit version src;
   mvnJdk = jdk11_headless;
 
   mvnHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true";
-
+  
   installPhase = ''
     mkdir -p $out
-    mv freemarker/target/freemarker-${version}.jar $out/freemarker-${version}.jar
-    mv freemarker/pom.xml $out/freemarker-${version}.pom
+    mv androidsvg/target/androidsvg-${version}.jar $out/androidsvg-${version}.jar || true
+    mv androidsvg/pom.xml $out/androidsvg-${version}.pom || true
   '';
 
   meta = with lib; {
-    description = "freemarker_2_3_35 built from source";
-    license = licenses.mit;
+    description = "androidsvg_1_4 built from source";
+    license = licenses.asl20;
     sourceProvenance = with sourceTypes; [ fromSource ];
   };
 }

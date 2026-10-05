@@ -5,28 +5,30 @@
   maven_3_9_14,
 }:
 let
-  version = "2.2";
+  version = "3.25.5";
   src = fetchgit {
-    url = "https://bitbucket.org/snakeyaml/snakeyaml.git";
-    rev = "snakeyaml-2.2";
-    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    url = "https://github.com/protocolbuffers/protobuf.git";
+    rev = "v3.25.5";
+    hash = "sha256-DFLlk4T8ODo3lmvrANlkIsrmDXZHmqMPTYxDWaz56qA=";
   };
 in
 maven_3_9_14.buildMavenPackage {
-  pname = "snakeyaml";
+  pname = "protobuf-java";
   inherit version src;
 
   mvnHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true";
 
+  sourceRoot = "${src.name}/java";
+
   installPhase = ''
     mkdir -p $out
-    mv target/snakeyaml-${version}.jar $out/snakeyaml-${version}.jar
-    mv pom.xml $out/snakeyaml-${version}.pom
+    mv core/target/protobuf-java-${version}.jar $out/protobuf-java-${version}.jar
+    mv core/pom.xml $out/protobuf-java-${version}.pom
   '';
 
   meta = with lib; {
-    description = "snakeyaml_2_2 built from source";
+    description = "protobuf_java_3_25_5 built from source";
     license = licenses.mit;
     sourceProvenance = with sourceTypes; [ fromSource ];
   };

@@ -9,7 +9,7 @@ let
   src = fetchgit {
     url = "https://github.com/reactive-streams/reactive-streams-jvm.git";
     rev = "v1.0.4";
-    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    hash = "sha256-03WPFxkk8SoaP75mpaalIlTemDRTy5n0Pvfe3JLrg2g=";
   };
 in
 maven_3_9_14.buildMavenPackage {

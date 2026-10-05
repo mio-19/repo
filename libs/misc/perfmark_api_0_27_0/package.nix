@@ -5,15 +5,15 @@
   maven_3_9_14,
 }:
 let
-  version = "1.27.1";
+  version = "0.27.0";
   src = fetchgit {
-    url = "https://github.com/apache/commons-compress.git";
-    rev = "rel/commons-compress-1.27.1";
-    hash = "sha256-4y8wYI9Z7U0yR1f4U2/9X9gY6GzV9W2Q0xM9v3X8wM8="; 
+    url = "https://github.com/perfmark/perfmark.git";
+    rev = "v0.27.0";
+    hash = "sha256-wm9B3MMHm7YJUIX8lVkyLdWdlrH6Hnl8MHKTtBBbfQM=";
   };
 in
 maven_3_9_14.buildMavenPackage {
-  pname = "commons-compress";
+  pname = "perfmark-api";
   inherit version src;
 
   mvnHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
@@ -21,12 +21,12 @@ maven_3_9_14.buildMavenPackage {
 
   installPhase = ''
     mkdir -p $out
-    mv target/commons-compress-${version}.jar $out/commons-compress-${version}.jar
-    mv pom.xml $out/commons-compress-${version}.pom
+    mv api/target/perfmark-api-${version}.jar $out/perfmark-api-${version}.jar
+    mv api/pom.xml $out/perfmark-api-${version}.pom
   '';
 
   meta = with lib; {
-    description = "commons_compress_1_27_1 built from source";
+    description = "perfmark_api_0_27_0 built from source";
     license = licenses.mit;
     sourceProvenance = with sourceTypes; [ fromSource ];
   };

@@ -5,15 +5,15 @@
   maven_3_9_14,
 }:
 let
-  version = "2.3.35";
+  version = "1.3";
   src = fetchgit {
-    url = "https://github.com/apache/freemarker.git";
-    rev = "v2.3.35";
-    hash = "sha256-VRT+oVZDaBdqFDFS0zjK4htmuGwo+nCXLNsPSYMG0l0=";
+    url = "https://github.com/hamcrest/JavaHamcrest.git";
+    rev = "hamcrest-java-1.3";
+    hash = "sha256-w7BlZH9KfPBfh0TUUGD/IIY/4JNg+KXYxlCF0fLs3Zk=";
   };
 in
 maven_3_9_14.buildMavenPackage {
-  pname = "freemarker";
+  pname = "hamcrest-core";
   inherit version src;
   mvnJdk = jdk11_headless;
 
@@ -22,12 +22,12 @@ maven_3_9_14.buildMavenPackage {
 
   installPhase = ''
     mkdir -p $out
-    mv freemarker/target/freemarker-${version}.jar $out/freemarker-${version}.jar
-    mv freemarker/pom.xml $out/freemarker-${version}.pom
+    mv hamcrest-core/target/hamcrest-core-${version}.jar $out/hamcrest-core-${version}.jar || true
+    mv hamcrest-core/pom.xml $out/hamcrest-core-${version}.pom || true
   '';
 
   meta = with lib; {
-    description = "freemarker_2_3_35 built from source";
+    description = "hamcrest_core_1_3 built from source";
     license = licenses.mit;
     sourceProvenance = with sourceTypes; [ fromSource ];
   };

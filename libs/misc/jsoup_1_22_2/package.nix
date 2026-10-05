@@ -9,7 +9,7 @@ let
   src = fetchgit {
     url = "https://github.com/jhy/jsoup.git";
     rev = "jsoup-1.22.2";
-    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    hash = "sha256-Kb+KoGNghAJgEiTX2S+YUYjJTooJvTuZE9wUyWYNbqE=";
   };
 in
 maven_3_9_14.buildMavenPackage {
@@ -18,6 +18,7 @@ maven_3_9_14.buildMavenPackage {
 
   mvnHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true";
+  preBuild = "export SOURCE_DATE_EPOCH=315532802";
 
   installPhase = ''
     mkdir -p $out

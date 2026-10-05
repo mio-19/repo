@@ -1,33 +1,32 @@
 {
   lib,
   fetchgit,
+  jdk25_headless,
   maven_3_9_14,
 }:
 let
-  version = "1.5";
+  version = "2.3.0";
   src = fetchgit {
-    url = "https://github.com/apache/commons-fileupload.git";
-    rev = "commons-fileupload-1.5";
-    hash = "sha256-tMxmgcjALb3yEN4Dawuvpn3o0u4/tOTsEvIM3NZ/Dxg=";
+    url = "https://github.com/stefanhaustein/kxml2.git";
+    rev = "v2.3.0";
+    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   };
 in
 maven_3_9_14.buildMavenPackage {
-  pname = "commons-fileupload";
+  pname = "kxml2";
   inherit version src;
-  
+
   mvnHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-  
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true";
-  
+
   installPhase = ''
     mkdir -p $out
-    mv target/commons-fileupload-1.5.jar $out/commons-fileupload-1.5.jar
-    mv pom.xml $out/commons-fileupload-1.5.pom
-
+    mv target/kxml2-${version}.jar $out/kxml2-${version}.jar
+    mv pom.xml $out/kxml2-${version}.pom
   '';
 
   meta = with lib; {
-    description = "commons_fileupload_1_5 built from source";
+    description = "kxml2_2_3_0 built from source";
     license = licenses.mit;
     sourceProvenance = with sourceTypes; [ fromSource ];
   };

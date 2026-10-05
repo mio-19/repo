@@ -152,6 +152,8 @@
   slf4j_api_2_0_17,
   xz_java_1_6,
   xz_java_1_9,
+  javaparser_core_3_25_4,
+  libphonenumber_8_12_34,
   jackson_core_2_15_3,
   jackson_databind_2_15_3,
   jackson_annotations_2_15_3,
@@ -1052,5 +1054,10 @@ in
   "org.commonmark:commonmark-ext-autolink:0.21.0" = {
     "commonmark-ext-autolink-0.21.0.jar" = _: "${commonmark_0_21_0}/commonmark-ext-autolink-0.21.0.jar";
     "commonmark-ext-autolink-0.21.0.pom" = _: "${commonmark_0_21_0}/commonmark-ext-autolink-0.21.0.pom";
+  };
+
+  "com.github.javaparser:javaparser-core:3.25.4" = {
+    "javaparser-core-3.25.4.jar" = _: "${javaparser_core_3_25_4}/javaparser-core-3.25.4.jar";
+    "javaparser-core-3.25.4.pom" = _: "${javaparser_core_3_25_4}/javaparser-core-3.25.4.pom";
   };
 }

@@ -1,6 +1,7 @@
 {
   lib,
   fetchgit,
+  jdk11_headless,
   maven_3_9_14,
 }:
 let
@@ -14,16 +15,22 @@ in
 maven_3_9_14.buildMavenPackage {
   pname = "commons-math3";
   inherit version src;
-  
+  mvnJdk = jdk11_headless;
+
   mvnHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-  
+
+  postPatch = ''
+    substituteInPlace pom.xml \
+      --replace-fail "<maven.compiler.source>1.5</maven.compiler.source>" "<maven.compiler.source>8</maven.compiler.source>" \
+      --replace-fail "<maven.compiler.target>1.5</maven.compiler.target>" "<maven.compiler.target>8</maven.compiler.target>"
+  '';
+
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true";
-  
+
   installPhase = ''
     mkdir -p $out
-    mv target/commons-math3-3.6.1.jar $out/commons-math3-3.6.1.jar
-    mv pom.xml $out/commons-math3-3.6.1.pom
-
+    mv target/commons-math3-${version}.jar $out/commons-math3-${version}.jar
+    mv pom.xml $out/commons-math3-${version}.pom
   '';
 
   meta = with lib; {
