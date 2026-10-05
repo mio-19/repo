@@ -154,9 +154,7 @@
   xz_java_1_9,
   javaparser_core_3_25_4,
 
-  javax_annotation_api_1_3_2,
   jaxb_txw2_2_3_2,
-  antlr4_runtime_4_9_3,
   jimfs_1_1,
   zxing_core_3_4_1,
   logback_1_5_35,
@@ -1070,19 +1068,9 @@ in
     "javaparser-core-3.25.4.pom" = _: "${javaparser_core_3_25_4}/javaparser-core-3.25.4.pom";
   };
 
-  "javax.annotation:javax.annotation-api:1.3.2" = {
-    "javax.annotation-api-1.3.2.jar" =
-      _: "${javax_annotation_api_1_3_2}/javax.annotation-api-1.3.2.jar";
-    "javax.annotation-api-1.3.2.pom" =
-      _: "${javax_annotation_api_1_3_2}/javax.annotation-api-1.3.2.pom";
-  };
   "org.glassfish.jaxb:txw2:2.3.2" = {
     "txw2-2.3.2.jar" = _: "${jaxb_txw2_2_3_2}/txw2-2.3.2.jar";
     "txw2-2.3.2.pom" = _: "${jaxb_txw2_2_3_2}/txw2-2.3.2.pom";
-  };
-  "org.antlr:antlr4-runtime:4.9.3" = {
-    "antlr4-runtime-4.9.3.jar" = _: "${antlr4_runtime_4_9_3}/antlr4-runtime-4.9.3.jar";
-    "antlr4-runtime-4.9.3.pom" = _: "${antlr4_runtime_4_9_3}/antlr4-runtime-4.9.3.pom";
   };
   "com.googlecode.libphonenumber:libphonenumber:8.12.34" = {
     "libphonenumber-8.12.34.jar" = _: "${libphonenumber_8_12_34}/libphonenumber-8.12.34.jar";

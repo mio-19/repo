@@ -49,4 +49,7 @@
     "auto-value-annotations-1.6.2.jar" =
       self."com.google.auto.value:auto-value-annotations:1.6.3"."auto-value-annotations-1.6.3.jar";
   };
+  "com.google.zxing:core:3.5.4" = {
+    "core-3.5.4.jar" = self."com.google.zxing:core:3.4.1"."core-3.4.1.jar";
+  };
 }
