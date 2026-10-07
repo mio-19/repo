@@ -187,9 +187,9 @@ let
 
       postPatch = ''
         substituteInPlace gradle/libs.versions.toml \
-          --replace-fail 'androidGradlePlugin = "9.3.2"' 'androidGradlePlugin = "9.2.1"'
+          --replace-fail 'androidGradlePlugin = "9.4.0"' 'androidGradlePlugin = "9.2.1"'
         substituteInPlace buildscript-gradle.lockfile \
-          --replace-fail '9.3.2' '9.2.1'
+          --replace-fail '9.4.0' '9.2.1'
       '';
       src = fetchFromGitHub {
         owner = "bitwarden";
