@@ -29,7 +29,7 @@ let
 in
 buildGradlePackage rec {
   pname = "fdroid-basic";
-  version = "2.0.1";
+  version = "2.0.2";
 
   __darwinAllowLocalNetworking = true;
   __noChroot = stdenv.hostPlatform.isDarwin;
@@ -37,7 +37,7 @@ buildGradlePackage rec {
   src = fetchgit {
     url = "https://gitlab.com/fdroid/fdroidclient.git";
     tag = version;
-    hash = "sha256-aQne1Y3HkuJR2dmWlKabmrCzdxb3Z10L9jQvhywI6L4=";
+    hash = "sha256-JIV/EPsxGY0Qp/QAcGjsiymdDMfbBjPWFa5A9QqysDc=";
   };
 
   patches = [ ./version-name-update.patch ];
