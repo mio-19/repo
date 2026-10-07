@@ -26,3 +26,15 @@ for entry in "${urls[@]}"; do
   nix hash to-sri --type sha256 "$hash"
 done
 ```
+
+## bulk_nix_update.sh
+
+This script was used to sequentially run `nix-update` for several packages.
+
+```bash
+#!/usr/bin/env bash
+nix run nixpkgs#nix-update -- --flake --version 2026.9.1 apk_bitwarden-android
+nix run nixpkgs#nix-update -- --flake --version 5.89.18 apk_haven
+nix run nixpkgs#nix-update -- --flake --version 35.0.1 apk_nextcloud-android
+nix run nixpkgs#nix-update -- --flake --version 1.18.1 morphe-cli
+```

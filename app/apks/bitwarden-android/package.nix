@@ -183,7 +183,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-android";
-      version = "2026.9.0";
+      version = "2026.9.1";
 
       postPatch = ''
         substituteInPlace gradle/libs.versions.toml \
@@ -195,7 +195,7 @@ let
         owner = "bitwarden";
         repo = "android";
         tag = "v${finalAttrs.version}-bwpm";
-        hash = "sha256-+/5A5ZJq+aCejtfFKvaylmCilagxSTNUu024FVIEDIQ=";
+        hash = "sha256-007F0x2x3R8rrw0WSD3q6fqqKqkIBq8NsOcF+7XDS/Y=";
       };
 
       gradleBuildTask = ":app:assembleFdroidRelease";
