@@ -30,6 +30,7 @@ let
     s.platforms-android-35
     s.platforms-android-37-0
     s.build-tools-35-0-0
+    s.build-tools-36-0-0
     s.build-tools-37-0-0
   ]);
 
