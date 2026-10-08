@@ -15,13 +15,13 @@
   mergeLock,
 }:
 let
-  version = "1.0.19";
+  version = "1.0.20";
 
   src = fetchFromGitHub {
     owner = "google-ai-edge";
     repo = "gallery";
     tag = version;
-    hash = "sha256-NtuPOuzpLaQEF9m6aMHZjkGEchZuYjtGvsQp75JIJU4=";
+    hash = "sha256-3Nq1/KhQcJzbG2UffHqlQU4+ijl3G2tH4+gAEgzKbTQ=";
   };
 
   androidSdk = androidSdkBuilder (s: [
@@ -30,6 +30,7 @@ let
     s.platforms-android-35
     s.platforms-android-37-0
     s.build-tools-35-0-0
+    s.build-tools-36-0-0
     s.build-tools-37-0-0
   ]);
 
@@ -42,7 +43,7 @@ let
     # https://github.com/google-ai-edge/gallery/blob/ff16cf71ca75dcf83072bd69546051d10c85039f/Android/src/app/src/main/java/com/google/ai/edge/gallery/ui/modelmanager/ModelManagerViewModel.kt#L86
     # https://github.com/google-ai-edge/gallery/tree/main/model_allowlists
     url = "https://raw.githubusercontent.com/google-ai-edge/gallery/refs/heads/main/model_allowlists/${allowlistVersion}.json";
-    hash = "sha256-PH8MM9NcZEDyj/5FkPagzfJ9nDw9XshRf17AwO8Gn5w=";
+    hash = "sha256-v8Vc1Lcw2qyAn8fGufrYCaDJaBF0qG6m+qoDo6HWiIk=";
   };
 
   patchedAllowlist = runCommand "gallery-model-allowlist.json" { nativeBuildInputs = [ jq ]; } ''

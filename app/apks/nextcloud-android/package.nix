@@ -9,6 +9,7 @@
   fetchurl,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  nix-update-script,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -23,13 +24,13 @@ let
 
   appPackage = gradle_9_5_1.stdenv.mkDerivation (finalAttrs: {
     pname = "nextcloud-android";
-    version = "35.0.0";
+    version = "35.0.1";
 
     src = fetchFromGitHub {
       owner = "nextcloud";
       repo = "android";
       tag = "stable-${finalAttrs.version}";
-      hash = "sha256-zWr+QEJgT4vzoVYfGd+hOkdMxR2I+TPbXMjm3VvfVz4=";
+      hash = "sha256-EDS8JfksRFBSDmbni3lL8sKx0Yepe7OxFgtg8AqmHbU=";
     };
 
     patches = [
@@ -151,6 +152,7 @@ let
       runHook postInstall
     '';
 
+    passthru.updateScript = nix-update-script { };
     meta = with lib; {
       description = "Nextcloud Android app built from source";
       homepage = "https://github.com/nextcloud/android";

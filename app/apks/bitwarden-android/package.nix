@@ -29,17 +29,17 @@ let
 
       gradle = gradle_9_4_1;
 
-      # https://github.com/bitwarden/android/blob/v2026.9.0-bwpm/gradle/libs.versions.toml#L32 bitwardenSdk = "3.0.0-8671-5d8ae614"
+      # https://github.com/bitwarden/android/blob/v2026.9.1-bwpm/gradle/libs.versions.toml#L32 bitwardenSdk = "3.0.0-8826-20e5595c"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
-        rev = "5d8ae614";
-        hash = "sha256-QLWE+O34DHtkoZYi2jfc9aoAnIrrVmYJye3crQnQ6S8=";
+        rev = "20e5595c";
+        hash = "sha256-iSxgzcWBppRKoV6zCP6z5oNgVkrDaaqWcTr/iEzfdU0=";
       };
 
       sdkSrcLock = fetchurl {
         url = "${sdkSrc.meta.homepage}/raw/${sdkSrc.rev}/Cargo.lock";
-        hash = "sha256-NeK1e00PnBl41w+FGHtDRu0X24GevqYl/nXpgbIPNZ8=";
+        hash = "sha256-a8xFrBKtTiKcfwPX1UtgGAuafS/SxOwDT1ODUlfFwpE=";
       };
 
       androidCrossConfig = {
@@ -150,7 +150,7 @@ let
           version = "3.0.0";
           src = sdkSrc;
           cargoRoot = ".";
-          hash = "sha256-niuwOUVJAl1kdU6dt2bovpBS5WqXWRIPfKRAOaS53Bk=";
+          hash = "sha256-4mEvxfot0+DfkQ6dwc8FCU7fPCjUxwr6hdMPWhL/NpY=";
         };
         nativeBuildInputs = [
           rustPlatform.cargoSetupHook
@@ -183,19 +183,19 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-android";
-      version = "2026.9.0";
+      version = "2026.9.1";
 
       postPatch = ''
         substituteInPlace gradle/libs.versions.toml \
-          --replace-fail 'androidGradlePlugin = "9.3.2"' 'androidGradlePlugin = "9.2.1"'
+          --replace-fail 'androidGradlePlugin = "9.4.0"' 'androidGradlePlugin = "9.2.1"'
         substituteInPlace buildscript-gradle.lockfile \
-          --replace-fail '9.3.2' '9.2.1'
+          --replace-fail '9.4.0' '9.2.1'
       '';
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
         tag = "v${finalAttrs.version}-bwpm";
-        hash = "sha256-+/5A5ZJq+aCejtfFKvaylmCilagxSTNUu024FVIEDIQ=";
+        hash = "sha256-007F0x2x3R8rrw0WSD3q6fqqKqkIBq8NsOcF+7XDS/Y=";
       };
 
       gradleBuildTask = ":app:assembleFdroidRelease";

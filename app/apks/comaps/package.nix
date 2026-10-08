@@ -20,9 +20,10 @@
   boost,
   qt6,
   python3,
+  nix-update-script,
 }:
 let
-  version = "2026.09.23-2-car";
+  version = "2026.10.05-19";
   versionParts = builtins.match "([0-9]{4}\\.[0-9]{2}\\.[0-9]{2})-([0-9]+).*" version;
   versionDate = builtins.elemAt versionParts 0;
   versionCount = builtins.elemAt versionParts 1;
@@ -51,7 +52,7 @@ let
         repo = "comaps";
         tag = "v${finalAttrs.version}";
         fetchSubmodules = true;
-        hash = "sha256-qq/UTR3GCo5oh9DT0rGbkbLVQy2Uzl8mIm+bCipsKV4=";
+        hash = "sha256-EN23jI+o1AFuCDig2+ZTx96PvshruyuwKZguqWHcG8Q=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/android";
@@ -183,6 +184,7 @@ let
         runHook postInstall
       '';
 
+      passthru.updateScript = nix-update-script { };
       meta = with lib; {
         description = "CoMaps offline maps app (F-Droid flavor, source-built)";
         homepage = "https://codeberg.org/comaps/comaps";

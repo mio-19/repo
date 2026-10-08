@@ -18,7 +18,7 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   git,
-  go_1_26,
+  go_1_27,
   python313,
   unzip,
 }:
@@ -207,11 +207,11 @@ let
         pname = "haven-rclone-go-mod-cache";
         inherit (finalAttrs0) version src;
 
-        nativeBuildInputs = [ go_1_26 ];
+        nativeBuildInputs = [ go_1_27 ];
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-uCFNYZmSYfnQs6HA+ZohAOrbCqZsJJwD264gAlhBsws=";
+        outputHash = "sha256-tqFsnGLoLc60qiMEMqzVwRJwjjgPlepfydQHa6scwoo=";
         dontConfigure = true;
         dontFixup = true;
 
@@ -261,7 +261,7 @@ let
         inherit (finalAttrs0) version src;
 
         nativeBuildInputs = [
-          go_1_26
+          go_1_27
           jdk21_headless
           unzip
         ];
@@ -291,7 +291,7 @@ let
           mkdir -p "$GOBIN"
           export PATH="$GOBIN:$PATH"
 
-          # Upstream/tailscale need go >= 1.26.6; nixpkgs go_1_26 is new enough now.
+          # Upstream/tailscale need go >= 1.26.6; nixpkgs go_1_27 is new enough now.
           export GOTOOLCHAIN=local
           export GOPROXY=off
           export GOSUMDB=off
@@ -402,14 +402,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.89.17";
+      version = "5.89.20";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-B9xswXugILy3vo4yIkJlHhgriUYQayZ3FdS4vEk6WRg=";
+        hash = "sha256-ovaRzIQJUcMOwJlJt1iGR+fRPZ9CAXbcNtB1JnCRlFE=";
       };
 
       patches = [
@@ -453,7 +453,7 @@ let
         writableTmpDirAsHomeHook
         git
         python313
-        go_1_26
+        go_1_27
         unzip
         wayvncShimToolchain
       ];
