@@ -44,14 +44,16 @@ src.git = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git"
 fetch.git = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git"
 
 [axp_kernel_patches]
-src.git = "ssh://git@git.disroot.org/AXP.OS/kernel_patches.git"
+# ssh://git@git.disroot.org/AXP.OS/kernel_patches.git
+src.git = "https://gitlab.com/mio-mirror/git.disroot.org/AXP.OS/kernel_patches.git"
 src.branch = "main"
-fetch.git = "ssh://git@git.disroot.org/AXP.OS/kernel_patches.git"
+fetch.git = "https://gitlab.com/mio-mirror/git.disroot.org/AXP.OS/kernel_patches.git"
 
 [axp_build]
-src.git = "ssh://git@git.disroot.org/AXP.OS/build.git"
+# ssh://git@git.disroot.org/AXP.OS/build.git
+src.git = "https://gitlab.com/mio-mirror/git.disroot.org/AXP.OS/build.git"
 src.branch = "axp"
-fetch.git = "ssh://git@git.disroot.org/AXP.OS/build.git"
+fetch.git = "https://gitlab.com/mio-mirror/git.disroot.org/AXP.OS/build.git"
 
 [lineage_exactcalculator]
 src.git = "https://github.com/LineageOS/android_packages_apps_ExactCalculator.git"
