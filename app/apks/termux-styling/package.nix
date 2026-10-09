@@ -121,6 +121,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Termux plugin providing terminal color schemes and fonts";
         homepage = "https://github.com/termux/termux-styling";
         license = licenses.gpl3Only;

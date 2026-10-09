@@ -92,6 +92,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "mpvExtended Android player built from source";
         homepage = "https://github.com/marlboro-advance/mpvEx";
         license = licenses.gpl2Plus;

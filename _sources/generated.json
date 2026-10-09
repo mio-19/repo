@@ -15,7 +15,7 @@
             "sha256": "sha256-Gy6/zJfpjjvgvfQ9WuJDZ9SEEfZt2wuxQ81Qg8OFQWY=",
             "sparseCheckout": [],
             "type": "git",
-            "url": "https://git.disroot.org/AXP.OS/build.git"
+            "url": "https://gitlab.com/mio-mirror/git.disroot.org/AXP.OS/build.git"
         },
         "version": "adef6303e5cfce57f95822fdfe1db9d2fd5c87e1"
     },
@@ -35,7 +35,7 @@
             "sha256": "sha256-JKkPk0OQYqfr+D6vZWZVPus3dSZfRxuQSbuQZTuiuDM=",
             "sparseCheckout": [],
             "type": "git",
-            "url": "https://git.disroot.org/AXP.OS/kernel_patches.git"
+            "url": "https://gitlab.com/mio-mirror/git.disroot.org/AXP.OS/kernel_patches.git"
         },
         "version": "a20109ae4aab35215e4acf38f08cb93aeab64aa4"
     },
@@ -381,7 +381,7 @@
     },
     "grapheneos_pdfviewer": {
         "cargoLock": null,
-        "date": "2026-09-18",
+        "date": "2026-09-21",
         "extract": null,
         "name": "grapheneos_pdfviewer",
         "passthru": null,
@@ -391,17 +391,17 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "7cca0fa166017b394f1135f2aecc68381da7d166",
-            "sha256": "sha256-jO1tR0fOdsZz4MieVliaR1+iJCEQXsjhU+UZCGTa0UI=",
+            "rev": "bbe049314d8c29b7554587bf39efde67cc9f0e03",
+            "sha256": "sha256-9cEQIXVu7y6oZSdLEF/aJBVQuamRAUJ46f1DeLHhGWg=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/GrapheneOS/PdfViewer.git"
         },
-        "version": "7cca0fa166017b394f1135f2aecc68381da7d166"
+        "version": "bbe049314d8c29b7554587bf39efde67cc9f0e03"
     },
     "grapheneos_vanadium": {
         "cargoLock": null,
-        "date": "2026-06-17",
+        "date": "2026-10-08",
         "extract": null,
         "name": "grapheneos_vanadium",
         "passthru": null,
@@ -411,13 +411,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "670dd99e7ba5b79be895d4144209ea0bea0ec773",
-            "sha256": "sha256-sJ99VbcWOBc2PQND0QDwY47IrfZCBY7fOeUqeNvuMl0=",
+            "rev": "b77b262d469d04bb8eaceffc78fe5b7eed15a96c",
+            "sha256": "sha256-yFtzNsmTOA8QmS7B+81/XRa3x7a+Mff0WoWPDZvfoV0=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://gitlab.com/grapheneos/platform_external_vanadium.git"
         },
-        "version": "670dd99e7ba5b79be895d4144209ea0bea0ec773"
+        "version": "b77b262d469d04bb8eaceffc78fe5b7eed15a96c"
     },
     "gta4xlwifi-evobka-kernel": {
         "cargoLock": null,
@@ -481,7 +481,7 @@
     },
     "lineage_deskclock": {
         "cargoLock": null,
-        "date": "2026-09-17",
+        "date": "2026-10-07",
         "extract": null,
         "name": "lineage_deskclock",
         "passthru": null,
@@ -491,13 +491,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "f8d2258e6a673c1b576f009eec98781a5956ffdb",
-            "sha256": "sha256-Zld0YQtod8OnGA8+4Cw1db33F+zCORlAsYC+4vkWa8I=",
+            "rev": "5e49fdf15c5fae64cc6c23f6ab4a66d62b0a7a73",
+            "sha256": "sha256-EMgOqSN0Vw2l8+1ZVUyQ5UbXXF8MXV3tvrYQfWBhHZ8=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/LineageOS/android_packages_apps_DeskClock.git"
         },
-        "version": "f8d2258e6a673c1b576f009eec98781a5956ffdb"
+        "version": "5e49fdf15c5fae64cc6c23f6ab4a66d62b0a7a73"
     },
     "lineage_device_mainline_common": {
         "cargoLock": null,
@@ -601,7 +601,7 @@
     },
     "lineage_exactcalculator": {
         "cargoLock": null,
-        "date": "2026-06-08",
+        "date": "2026-10-07",
         "extract": null,
         "name": "lineage_exactcalculator",
         "passthru": null,
@@ -611,13 +611,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "af4a9397439223d0f572823d66c7985619da3e45",
-            "sha256": "sha256-8bBMsfspH0CxhdKaU+lijehwBUaPK0Zh+u5+bkh6BZA=",
+            "rev": "108f08bd85aadab42c231a7df94770370aea9d08",
+            "sha256": "sha256-g1p+9FsvkM/WEdvxkW5VmX7TAW9qBqXdujlR7Q2OEV8=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/LineageOS/android_packages_apps_ExactCalculator.git"
         },
-        "version": "af4a9397439223d0f572823d66c7985619da3e45"
+        "version": "108f08bd85aadab42c231a7df94770370aea9d08"
     },
     "lineage_external_drm_hwcomposer_upstream": {
         "cargoLock": null,
@@ -741,7 +741,7 @@
     },
     "lineage_glimpse": {
         "cargoLock": null,
-        "date": "2026-09-16",
+        "date": "2026-10-07",
         "extract": null,
         "name": "lineage_glimpse",
         "passthru": null,
@@ -751,13 +751,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "c7b5e8cfbb4e941473f3179322ec8513d83b4ca9",
-            "sha256": "sha256-AmZrxaxQQ+vofRnggrROSoUikk2tD7WyUDbNMWH4sck=",
+            "rev": "8caac09fe1fe0cadb2fa828ac5755c8fb9481eb5",
+            "sha256": "sha256-k9uEmvNEdOYty/luFplEHAiA92cwzIcpt0NdiuU/dTE=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/LineageOS/android_packages_apps_Glimpse.git"
         },
-        "version": "c7b5e8cfbb4e941473f3179322ec8513d83b4ca9"
+        "version": "8caac09fe1fe0cadb2fa828ac5755c8fb9481eb5"
     },
     "lineage_hardware_mainline_common": {
         "cargoLock": null,
@@ -821,7 +821,7 @@
     },
     "lineage_latinime": {
         "cargoLock": null,
-        "date": "2026-09-15",
+        "date": "2026-10-07",
         "extract": null,
         "name": "lineage_latinime",
         "passthru": null,
@@ -831,17 +831,17 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "017c5587d7f8728bf7d67143e990d160efe4a08f",
-            "sha256": "sha256-bxMM9Q/uxUzr4/Zs/z2FK0YUWpoN1C2l/Gph/7MIrnA=",
+            "rev": "c2b5fb6c63987de906151ac5a28e76493cd21d54",
+            "sha256": "sha256-cR70l5B7A7bL0gYW5/aRuGWG+E2ncAgFRCISrjpnBb0=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git"
         },
-        "version": "017c5587d7f8728bf7d67143e990d160efe4a08f"
+        "version": "c2b5fb6c63987de906151ac5a28e76493cd21d54"
     },
     "lineage_launcher3": {
         "cargoLock": null,
-        "date": "2026-09-15",
+        "date": "2026-10-07",
         "extract": null,
         "name": "lineage_launcher3",
         "passthru": null,
@@ -851,33 +851,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "ee25ab865b59ecda9c8fd6f901e80b48d7b789ea",
-            "sha256": "sha256-a3BxHGx6iqFYt1Vqa6kllMremJCYAh+1a1m/gCJbvz0=",
+            "rev": "ecfc230d813c0e2b6ea3fda1200e3e53a2f0dd60",
+            "sha256": "sha256-kxz4J8QjstfZ73j/5RwEdUBHQvafDK5FL+XsFQzMDVk=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/LineageOS/android_packages_apps_Launcher3.git"
         },
-        "version": "ee25ab865b59ecda9c8fd6f901e80b48d7b789ea"
-    },
-    "lineage_launcher3_wip": {
-        "cargoLock": null,
-        "date": "2026-09-16",
-        "extract": null,
-        "name": "lineage_launcher3_wip",
-        "passthru": null,
-        "pinned": false,
-        "src": {
-            "deepClone": false,
-            "fetchSubmodules": false,
-            "leaveDotGit": false,
-            "name": null,
-            "rev": "f55cf58ce1a7cdd3a737002509337b1a31a98fc6",
-            "sha256": "sha256-vvUA82qtXJdMnGlbXV/QY4/MtN3nhPsd2pwSKfCSNEA=",
-            "sparseCheckout": [],
-            "type": "git",
-            "url": "https://github.com/LineageOS/android_packages_apps_Launcher3.git"
-        },
-        "version": "f55cf58ce1a7cdd3a737002509337b1a31a98fc6"
+        "version": "ecfc230d813c0e2b6ea3fda1200e3e53a2f0dd60"
     },
     "lineage_prebuilts_bootmgr": {
         "cargoLock": null,
@@ -901,7 +881,7 @@
     },
     "lineage_recorder": {
         "cargoLock": null,
-        "date": "2026-09-16",
+        "date": "2026-10-07",
         "extract": null,
         "name": "lineage_recorder",
         "passthru": null,
@@ -911,13 +891,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "4650818fbc158d996263b4a21b378af4deb9970a",
-            "sha256": "sha256-Mq9sT5WFVv7vSQ1d44PCSVuBaxXSAq+9J/IsxGncrUU=",
+            "rev": "624957ca18496e7b63df3d5e4e040f8c99ca72b7",
+            "sha256": "sha256-9PUzfqUk5oN28cWsYULJFDPEl/D9tGrhqXtxBy1OIY0=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/LineageOS/android_packages_apps_Recorder.git"
         },
-        "version": "4650818fbc158d996263b4a21b378af4deb9970a"
+        "version": "624957ca18496e7b63df3d5e4e040f8c99ca72b7"
     },
     "morphe_apktool": {
         "cargoLock": null,
@@ -1141,7 +1121,7 @@
     },
     "termux_app": {
         "cargoLock": null,
-        "date": "2026-09-16",
+        "date": "2026-09-26",
         "extract": null,
         "name": "termux_app",
         "passthru": null,
@@ -1151,17 +1131,17 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "084d709fbf23ea83b5cb85fd3d795c775be06676",
-            "sha256": "sha256-rUhBlT0tpw6GzXPzPiTZKBMWOpUKpvVyfvpvzldoGzY=",
+            "rev": "8629e632fcb95da272221be327db653fb24befe9",
+            "sha256": "sha256-XhuzluXUBuqyFScTR5SMzBIUFSXbsEzmWJHkEC2M+cw=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/termux/termux-app.git"
         },
-        "version": "084d709fbf23ea83b5cb85fd3d795c775be06676"
+        "version": "8629e632fcb95da272221be327db653fb24befe9"
     },
     "termux_x11": {
         "cargoLock": null,
-        "date": "2026-09-18",
+        "date": "2026-10-06",
         "extract": null,
         "name": "termux_x11",
         "passthru": null,
@@ -1171,13 +1151,13 @@
             "fetchSubmodules": true,
             "leaveDotGit": false,
             "name": null,
-            "rev": "bd1cfadd74f98b548662a48b6e1d564aa434c86e",
-            "sha256": "sha256-AZfuI9VIzbrBIJCWS6cSPVtUF08HU0UDjJC/MpPKDHw=",
+            "rev": "fa3a8b430e2896a19f44c99a9cb056254615ae06",
+            "sha256": "sha256-qkcAwmQVhc2SiK56nmIVjbaynlt3t6GY/nCEl073ddo=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/termux/termux-x11.git"
         },
-        "version": "bd1cfadd74f98b548662a48b6e1d564aa434c86e"
+        "version": "fa3a8b430e2896a19f44c99a9cb056254615ae06"
     },
     "vendor_gapps15": {
         "cargoLock": null,
@@ -1188,7 +1168,7 @@
         "pinned": false,
         "src": {
             "name": null,
-            "sha256": "sha256-bo6Bzc6AZO7l+OzPnBVGrHS9rPg3UEbP6hYO7+rAuSw=",
+            "sha256": "sha256-ARpBJHLpd4yvfkq0bz77JDjJo7TbIOPU6GqGc3C6isg=",
             "type": "url",
             "url": "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/e14b22768c60978d0e1267dab5bcf62dfcc73d16/vendor_gapps-e14b22768c60978d0e1267dab5bcf62dfcc73d16.tar.gz"
         },

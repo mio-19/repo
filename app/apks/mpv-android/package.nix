@@ -113,6 +113,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "mpv for Android built from source";
         homepage = "https://github.com/mpv-android/mpv-android";
         license = licenses.gpl3Plus;

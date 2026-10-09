@@ -455,6 +455,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Bitwarden Android password manager (F-Droid flavor, unsigned)";
         homepage = "https://github.com/bitwarden/android";
         license = licenses.gpl3Only;

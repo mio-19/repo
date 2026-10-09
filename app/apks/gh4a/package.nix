@@ -111,6 +111,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "GitHub for Android app built from source";
         homepage = "https://github.com/slapperwan/gh4a";
         license = licenses.asl20;

@@ -130,6 +130,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Luanti Android client built from source";
         homepage = "https://github.com/luanti-org/luanti";
         license = licenses.lgpl21Plus;

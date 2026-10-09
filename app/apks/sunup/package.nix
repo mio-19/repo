@@ -91,6 +91,7 @@ let
     '';
 
     meta = with lib; {
+      sourceProvenance = with sourceTypes; [ fromSource ];
       description = "UnifiedPush distributor using a local push gateway";
       homepage = "https://codeberg.org/Sunup/android";
       license = licenses.gpl3Plus;

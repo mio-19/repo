@@ -205,6 +205,7 @@ let
     '';
 
     meta = with lib; {
+      sourceProvenance = with sourceTypes; [ fromSource ];
       description = "NPatch CLI tool built from source (v1.0.5, manager excluded)";
       homepage = "https://github.com/7723mod/NPatch";
       license = licenses.gpl3Only;

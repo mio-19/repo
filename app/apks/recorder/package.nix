@@ -80,6 +80,7 @@ let
     '';
 
     meta = with lib; {
+      sourceProvenance = with sourceTypes; [ fromSource ];
       description = "LineageOS Recorder app";
       homepage = "https://github.com/LineageOS/android_packages_apps_Recorder";
       license = licenses.asl20;

@@ -96,6 +96,7 @@ let
     '';
 
     meta = with lib; {
+      sourceProvenance = with sourceTypes; [ fromSource ];
       description = "GrapheneOS App Store app (unsigned APK)";
       homepage = "https://github.com/GrapheneOS/AppStore";
       license = licenses.asl20;

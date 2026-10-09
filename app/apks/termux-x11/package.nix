@@ -117,6 +117,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Termux X11 server add-on app built from source";
         homepage = "https://github.com/termux/termux-x11";
         license = licenses.gpl3Only;

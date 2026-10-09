@@ -234,7 +234,7 @@ stdenv.mkDerivation {
     test -d "$dist_dir"
 
     mkdir -p "$out/libexec"
-    cp -a "$dist_dir" "$out/libexec/gradle"
+    mv "$dist_dir" "$out/libexec/gradle"
     patchShebangs "$out/libexec/gradle/bin"
 
     mkdir -p "$out/bin"
@@ -256,6 +256,7 @@ stdenv.mkDerivation {
   passthru.jdk = jdk8_headless;
 
   meta = with lib; {
+    sourceProvenance = with sourceTypes; [ fromSource ];
     description = "Gradle 0.1 snapshot bootstrapped from source with Ant";
     homepage = "https://github.com/gradle/gradle";
     license = licenses.asl20;

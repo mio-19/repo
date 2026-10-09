@@ -131,6 +131,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Amethyst Android Minecraft launcher";
         homepage = "https://github.com/AngelAuraMC/Amethyst-Android";
         license = licenses.gpl3Only;

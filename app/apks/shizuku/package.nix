@@ -239,6 +239,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Shizuku manager app built from source (unsigned APK)";
         homepage = "https://github.com/rikkaapps/shizuku";
         license = licenses.asl20;

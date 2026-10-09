@@ -142,6 +142,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Termux terminal emulator for Android built from source";
         homepage = "https://github.com/termux/termux-app";
         license = licenses.gpl3Only;

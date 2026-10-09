@@ -49,7 +49,7 @@ let
       npmDeps = fetchNpmDeps {
         pname = "npm-deps-${pname}";
         inherit version src;
-        hash = "sha256-3zJ5R3aHqkKMyZYGUpZwAX1CiU01AKordU4bE92H7nk=";
+        hash = "sha256-vW3dUP5tqE46tJ1ZsIzIedcNRflds56hZEDdmHP4g8o=";
       };
 
       patches = [
@@ -136,6 +136,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "GrapheneOS PDF Viewer app (unsigned APK)";
         homepage = "https://github.com/GrapheneOS/PdfViewer";
         license = licenses.asl20;

@@ -491,6 +491,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Immich mobile app built from source";
         homepage = "https://github.com/immich-app/immich";
         license = licenses.agpl3Only;

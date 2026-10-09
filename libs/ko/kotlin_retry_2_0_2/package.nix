@@ -4,6 +4,7 @@
   jdk25_headless,
   kotlin,
   kotlin_result_2_1_0,
+  kotlinx_coroutines_1_10_2,
   lib,
   stdenv,
 }:
@@ -17,11 +18,6 @@ stdenv.mkDerivation (finalAttrs: {
     repo = "kotlin-retry";
     tag = finalAttrs.version;
     hash = "sha256-FFxOXiOs0MZKYhnR74xsnz5NFR5ktTFFhlxtUrrIjlY=";
-  };
-
-  coroutinesCoreJvm = fetchurl {
-    url = "https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core-jvm/1.10.2/kotlinx-coroutines-core-jvm-1.10.2.jar";
-    hash = "sha256-XKF1s43zMf1kFVs1zYyuElH6nuNpcJs21C4KKIzM4/0=";
   };
 
   kotlinRetryModule = fetchurl {
@@ -68,12 +64,12 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    export JAVA_HOME=${jdk25_headless}
+    export JAVA_HOME=${jdk25_headless.passthru.home}
     tmp="$(mktemp -d)"
 
     cd "$tmp"
 
-    retry_cp="${finalAttrs.coroutinesCoreJvm}"
+    retry_cp="${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-core-jvm-1.10.2.jar"
     find "${finalAttrs.src}/kotlin-retry/src/commonMain/kotlin" -name '*.kt' | sort > retry-sources.txt
     ${kotlin}/bin/kotlinc \
       -Xmulti-platform \
@@ -84,7 +80,7 @@ stdenv.mkDerivation (finalAttrs: {
       -d "$tmp/kotlin-retry-jvm-${finalAttrs.version}.jar" \
       @retry-sources.txt
 
-    retry_result_cp="${finalAttrs.coroutinesCoreJvm}:${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.jar:$tmp/kotlin-retry-jvm-${finalAttrs.version}.jar"
+    retry_result_cp="${kotlinx_coroutines_1_10_2}/kotlinx-coroutines-core-jvm-1.10.2.jar:${kotlin_result_2_1_0}/kotlin-result-jvm-2.1.0.jar:$tmp/kotlin-retry-jvm-${finalAttrs.version}.jar"
     find "${finalAttrs.src}/kotlin-retry-result/src/commonMain/kotlin" -name '*.kt' | sort > retry-result-sources.txt
     ${kotlin}/bin/kotlinc \
       -Xmulti-platform \

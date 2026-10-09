@@ -233,6 +233,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Rain weather app for Android built from source";
         homepage = "https://github.com/darkmoonight/Rain";
         license = licenses.mit;

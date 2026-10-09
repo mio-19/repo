@@ -165,6 +165,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   meta = with lib; {
+    sourceProvenance = with sourceTypes; [ fromSource ];
     description = "Morphe Patches built from source";
     homepage = "https://github.com/MorpheApp/morphe-patches";
     license = licenses.gpl3Only;

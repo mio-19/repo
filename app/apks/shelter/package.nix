@@ -100,6 +100,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Shelter work-profile manager app built from source";
         homepage = "https://gitea.angry.im/PeterCxy/Shelter";
         license = licenses.gpl3Only;

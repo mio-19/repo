@@ -109,6 +109,7 @@ buildGradlePackage rec {
   };
 
   meta = with lib; {
+    sourceProvenance = with sourceTypes; [ fromSource ];
     description = "F-Droid Basic app built from source (unsigned)";
     homepage = "https://gitlab.com/fdroid/fdroidclient";
     license = licenses.gpl3Plus;

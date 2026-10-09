@@ -117,6 +117,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Breezy Weather app built from source (standard flavor)";
         homepage = "https://github.com/breezy-weather/breezy-weather";
         license = licenses.lgpl3Only;

@@ -176,6 +176,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   meta = with lib; {
+    sourceProvenance = with sourceTypes; [ fromSource ];
     description = "Console / terminal patching tool for Android apps (built from source)";
     homepage = "https://github.com/MorpheApp/morphe-cli";
     license = licenses.gpl3Only;

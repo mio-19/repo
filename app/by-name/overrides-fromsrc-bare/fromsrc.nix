@@ -152,6 +152,21 @@
   slf4j_api_2_0_17,
   xz_java_1_6,
   xz_java_1_9,
+  javaparser_core_3_25_4,
+
+  jaxb_txw2_2_3_2,
+  jimfs_1_1,
+  zxing_core_3_4_1,
+  logback_1_5_35,
+  woodstox_core_6_5_1,
+
+  libphonenumber_8_12_34,
+  jackson_core_2_15_3,
+  jackson_databind_2_15_3,
+  jackson_annotations_2_15_3,
+  commonmark_0_13_0,
+  commonmark_0_21_0,
+
   zxing_core_3_5_3,
   zxing_core_3_5_4,
   zoomimage_1_0_2,
@@ -165,6 +180,7 @@
 
   runCommand,
   zip,
+  jsoup_1_16_1,
 }:
 let
   mkGradleZip =
@@ -989,4 +1005,95 @@ in
   "jakarta.inject:jakarta.inject-api:2.0.1" =
     mkMavenSourceJarOverride "jakarta.inject-api" "2.0.1"
       jakarta_inject_api_2_0_1;
+  "org.jsoup:jsoup:1.16.1" = {
+    "jsoup-1.16.1.jar" = _: "${jsoup_1_16_1}/jsoup-1.16.1.jar";
+    "jsoup-1.16.1.pom" = _: "${jsoup_1_16_1}/jsoup-1.16.1.pom";
+  };
+
+  "com.fasterxml.jackson.core:jackson-core:2.15.3" = {
+    "jackson-core-2.15.3.jar" = _: "${jackson_core_2_15_3}/jackson-core-2.15.3.jar";
+    "jackson-core-2.15.3.pom" = _: "${jackson_core_2_15_3}/jackson-core-2.15.3.pom";
+  };
+  "com.fasterxml.jackson.core:jackson-databind:2.15.3" = {
+    "jackson-databind-2.15.3.jar" = _: "${jackson_databind_2_15_3}/jackson-databind-2.15.3.jar";
+    "jackson-databind-2.15.3.pom" = _: "${jackson_databind_2_15_3}/jackson-databind-2.15.3.pom";
+  };
+  "com.fasterxml.jackson.core:jackson-annotations:2.15.3" = {
+    "jackson-annotations-2.15.3.jar" =
+      _: "${jackson_annotations_2_15_3}/jackson-annotations-2.15.3.jar";
+    "jackson-annotations-2.15.3.pom" =
+      _: "${jackson_annotations_2_15_3}/jackson-annotations-2.15.3.pom";
+  };
+
+  "org.commonmark:commonmark:0.13.0" = {
+    "commonmark-0.13.0.jar" = _: "${commonmark_0_13_0}/commonmark-0.13.0.jar";
+    "commonmark-0.13.0.pom" = _: "${commonmark_0_13_0}/commonmark-0.13.0.pom";
+  };
+  "org.commonmark:commonmark-ext-gfm-tables:0.13.0" = {
+    "commonmark-ext-gfm-tables-0.13.0.jar" =
+      _: "${commonmark_0_13_0}/commonmark-ext-gfm-tables-0.13.0.jar";
+    "commonmark-ext-gfm-tables-0.13.0.pom" =
+      _: "${commonmark_0_13_0}/commonmark-ext-gfm-tables-0.13.0.pom";
+  };
+  "org.commonmark:commonmark-ext-gfm-strikethrough:0.13.0" = {
+    "commonmark-ext-gfm-strikethrough-0.13.0.jar" =
+      _: "${commonmark_0_13_0}/commonmark-ext-gfm-strikethrough-0.13.0.jar";
+    "commonmark-ext-gfm-strikethrough-0.13.0.pom" =
+      _: "${commonmark_0_13_0}/commonmark-ext-gfm-strikethrough-0.13.0.pom";
+  };
+
+  "org.commonmark:commonmark:0.21.0" = {
+    "commonmark-0.21.0.jar" = _: "${commonmark_0_21_0}/commonmark-0.21.0.jar";
+    "commonmark-0.21.0.pom" = _: "${commonmark_0_21_0}/commonmark-0.21.0.pom";
+  };
+  "org.commonmark:commonmark-ext-gfm-tables:0.21.0" = {
+    "commonmark-ext-gfm-tables-0.21.0.jar" =
+      _: "${commonmark_0_21_0}/commonmark-ext-gfm-tables-0.21.0.jar";
+    "commonmark-ext-gfm-tables-0.21.0.pom" =
+      _: "${commonmark_0_21_0}/commonmark-ext-gfm-tables-0.21.0.pom";
+  };
+  "org.commonmark:commonmark-ext-gfm-strikethrough:0.21.0" = {
+    "commonmark-ext-gfm-strikethrough-0.21.0.jar" =
+      _: "${commonmark_0_21_0}/commonmark-ext-gfm-strikethrough-0.21.0.jar";
+    "commonmark-ext-gfm-strikethrough-0.21.0.pom" =
+      _: "${commonmark_0_21_0}/commonmark-ext-gfm-strikethrough-0.21.0.pom";
+  };
+  "org.commonmark:commonmark-ext-autolink:0.21.0" = {
+    "commonmark-ext-autolink-0.21.0.jar" = _: "${commonmark_0_21_0}/commonmark-ext-autolink-0.21.0.jar";
+    "commonmark-ext-autolink-0.21.0.pom" = _: "${commonmark_0_21_0}/commonmark-ext-autolink-0.21.0.pom";
+  };
+
+  "com.github.javaparser:javaparser-core:3.25.4" = {
+    "javaparser-core-3.25.4.jar" = _: "${javaparser_core_3_25_4}/javaparser-core-3.25.4.jar";
+    "javaparser-core-3.25.4.pom" = _: "${javaparser_core_3_25_4}/javaparser-core-3.25.4.pom";
+  };
+
+  "org.glassfish.jaxb:txw2:2.3.2" = {
+    "txw2-2.3.2.jar" = _: "${jaxb_txw2_2_3_2}/txw2-2.3.2.jar";
+    "txw2-2.3.2.pom" = _: "${jaxb_txw2_2_3_2}/txw2-2.3.2.pom";
+  };
+  "com.googlecode.libphonenumber:libphonenumber:8.12.34" = {
+    "libphonenumber-8.12.34.jar" = _: "${libphonenumber_8_12_34}/libphonenumber-8.12.34.jar";
+    "libphonenumber-8.12.34.pom" = _: "${libphonenumber_8_12_34}/libphonenumber-8.12.34.pom";
+  };
+  "com.google.jimfs:jimfs:1.1" = {
+    "jimfs-1.1.jar" = _: "${jimfs_1_1}/jimfs-1.1.jar";
+    "jimfs-1.1.pom" = _: "${jimfs_1_1}/jimfs-1.1.pom";
+  };
+  "com.google.zxing:core:3.4.1" = {
+    "core-3.4.1.jar" = _: "${zxing_core_3_4_1}/core-3.4.1.jar";
+    "core-3.4.1.pom" = _: "${zxing_core_3_4_1}/core-3.4.1.pom";
+  };
+  "ch.qos.logback:logback-core:1.5.35" = {
+    "logback-core-1.5.35.jar" = _: "${logback_1_5_35}/logback-core-1.5.35.jar";
+    "logback-core-1.5.35.pom" = _: "${logback_1_5_35}/logback-core-1.5.35.pom";
+  };
+  "ch.qos.logback:logback-classic:1.5.35" = {
+    "logback-classic-1.5.35.jar" = _: "${logback_1_5_35}/logback-classic-1.5.35.jar";
+    "logback-classic-1.5.35.pom" = _: "${logback_1_5_35}/logback-classic-1.5.35.pom";
+  };
+  "com.fasterxml.woodstox:woodstox-core:6.5.1" = {
+    "woodstox-core-6.5.1.jar" = _: "${woodstox_core_6_5_1}/woodstox-core-6.5.1.jar";
+    "woodstox-core-6.5.1.pom" = _: "${woodstox_core_6_5_1}/woodstox-core-6.5.1.pom";
+  };
 }

@@ -110,6 +110,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Proton Lumo Android app (production noGms flavor)";
         homepage = "https://lumo.proton.me/";
         license = licenses.gpl3Only;

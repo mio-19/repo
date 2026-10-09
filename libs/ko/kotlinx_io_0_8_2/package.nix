@@ -62,7 +62,7 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    export JAVA_HOME=${jdk25_headless}
+    export JAVA_HOME=${jdk25_headless.passthru.home}
     tmp="$(mktemp -d)"
 
     cd "$tmp"

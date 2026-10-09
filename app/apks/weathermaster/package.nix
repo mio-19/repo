@@ -116,6 +116,7 @@ let
     '';
 
     meta = with lib; {
+      sourceProvenance = with sourceTypes; [ fromSource ];
       description = "WeatherMaster weather app for Android built from source";
       homepage = "https://github.com/PranshulGG/WeatherMaster";
       license = licenses.gpl3Only;

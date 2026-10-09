@@ -549,6 +549,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "NekoBox for Android (fdroid flavor, unsigned)";
         homepage = "https://github.com/MatsuriDayo/NekoBoxForAndroid";
         license = licenses.gpl3Only;

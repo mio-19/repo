@@ -134,6 +134,7 @@ let
     '';
 
     meta = with lib; {
+      sourceProvenance = with sourceTypes; [ fromSource ];
       description = "LSPatch CLI and manager app built from source";
       homepage = "https://github.com/JingMatrix/LSPatch";
       license = licenses.gpl3Only;

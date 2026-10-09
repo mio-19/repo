@@ -102,6 +102,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "FUTO Keyboard - privacy-focused Android keyboard with offline voice input and swipe typing";
         homepage = "https://keyboard.futo.org/";
         license = licenses.asl20;

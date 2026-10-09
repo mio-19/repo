@@ -10,7 +10,7 @@
     pname = "axp_build";
     version = "adef6303e5cfce57f95822fdfe1db9d2fd5c87e1";
     src = fetchgit {
-      url = "https://git.disroot.org/AXP.OS/build.git";
+      url = "https://gitlab.com/mio-mirror/git.disroot.org/AXP.OS/build.git";
       rev = "adef6303e5cfce57f95822fdfe1db9d2fd5c87e1";
       fetchSubmodules = false;
       deepClone = false;
@@ -24,7 +24,7 @@
     pname = "axp_kernel_patches";
     version = "a20109ae4aab35215e4acf38f08cb93aeab64aa4";
     src = fetchgit {
-      url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
+      url = "https://gitlab.com/mio-mirror/git.disroot.org/AXP.OS/kernel_patches.git";
       rev = "a20109ae4aab35215e4acf38f08cb93aeab64aa4";
       fetchSubmodules = false;
       deepClone = false;
@@ -274,31 +274,31 @@
   };
   grapheneos_pdfviewer = {
     pname = "grapheneos_pdfviewer";
-    version = "7cca0fa166017b394f1135f2aecc68381da7d166";
+    version = "bbe049314d8c29b7554587bf39efde67cc9f0e03";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/PdfViewer.git";
-      rev = "7cca0fa166017b394f1135f2aecc68381da7d166";
+      rev = "bbe049314d8c29b7554587bf39efde67cc9f0e03";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-jO1tR0fOdsZz4MieVliaR1+iJCEQXsjhU+UZCGTa0UI=";
+      sha256 = "sha256-9cEQIXVu7y6oZSdLEF/aJBVQuamRAUJ46f1DeLHhGWg=";
     };
-    date = "2026-09-18";
+    date = "2026-09-21";
   };
   grapheneos_vanadium = {
     pname = "grapheneos_vanadium";
-    version = "670dd99e7ba5b79be895d4144209ea0bea0ec773";
+    version = "b77b262d469d04bb8eaceffc78fe5b7eed15a96c";
     src = fetchgit {
       url = "https://gitlab.com/grapheneos/platform_external_vanadium.git";
-      rev = "670dd99e7ba5b79be895d4144209ea0bea0ec773";
+      rev = "b77b262d469d04bb8eaceffc78fe5b7eed15a96c";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-sJ99VbcWOBc2PQND0QDwY47IrfZCBY7fOeUqeNvuMl0=";
+      sha256 = "sha256-yFtzNsmTOA8QmS7B+81/XRa3x7a+Mff0WoWPDZvfoV0=";
     };
-    date = "2026-06-17";
+    date = "2026-10-08";
   };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
@@ -344,17 +344,17 @@
   };
   lineage_deskclock = {
     pname = "lineage_deskclock";
-    version = "f8d2258e6a673c1b576f009eec98781a5956ffdb";
+    version = "5e49fdf15c5fae64cc6c23f6ab4a66d62b0a7a73";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_DeskClock.git";
-      rev = "f8d2258e6a673c1b576f009eec98781a5956ffdb";
+      rev = "5e49fdf15c5fae64cc6c23f6ab4a66d62b0a7a73";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-Zld0YQtod8OnGA8+4Cw1db33F+zCORlAsYC+4vkWa8I=";
+      sha256 = "sha256-EMgOqSN0Vw2l8+1ZVUyQ5UbXXF8MXV3tvrYQfWBhHZ8=";
     };
-    date = "2026-09-17";
+    date = "2026-10-07";
   };
   lineage_device_mainline_common = {
     pname = "lineage_device_mainline_common";
@@ -428,17 +428,17 @@
   };
   lineage_exactcalculator = {
     pname = "lineage_exactcalculator";
-    version = "af4a9397439223d0f572823d66c7985619da3e45";
+    version = "108f08bd85aadab42c231a7df94770370aea9d08";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_ExactCalculator.git";
-      rev = "af4a9397439223d0f572823d66c7985619da3e45";
+      rev = "108f08bd85aadab42c231a7df94770370aea9d08";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-8bBMsfspH0CxhdKaU+lijehwBUaPK0Zh+u5+bkh6BZA=";
+      sha256 = "sha256-g1p+9FsvkM/WEdvxkW5VmX7TAW9qBqXdujlR7Q2OEV8=";
     };
-    date = "2026-06-08";
+    date = "2026-10-07";
   };
   lineage_external_drm_hwcomposer_upstream = {
     pname = "lineage_external_drm_hwcomposer_upstream";
@@ -526,17 +526,17 @@
   };
   lineage_glimpse = {
     pname = "lineage_glimpse";
-    version = "c7b5e8cfbb4e941473f3179322ec8513d83b4ca9";
+    version = "8caac09fe1fe0cadb2fa828ac5755c8fb9481eb5";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_Glimpse.git";
-      rev = "c7b5e8cfbb4e941473f3179322ec8513d83b4ca9";
+      rev = "8caac09fe1fe0cadb2fa828ac5755c8fb9481eb5";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-AmZrxaxQQ+vofRnggrROSoUikk2tD7WyUDbNMWH4sck=";
+      sha256 = "sha256-k9uEmvNEdOYty/luFplEHAiA92cwzIcpt0NdiuU/dTE=";
     };
-    date = "2026-09-16";
+    date = "2026-10-07";
   };
   lineage_hardware_mainline_common = {
     pname = "lineage_hardware_mainline_common";
@@ -582,45 +582,31 @@
   };
   lineage_latinime = {
     pname = "lineage_latinime";
-    version = "017c5587d7f8728bf7d67143e990d160efe4a08f";
+    version = "c2b5fb6c63987de906151ac5a28e76493cd21d54";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git";
-      rev = "017c5587d7f8728bf7d67143e990d160efe4a08f";
+      rev = "c2b5fb6c63987de906151ac5a28e76493cd21d54";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-bxMM9Q/uxUzr4/Zs/z2FK0YUWpoN1C2l/Gph/7MIrnA=";
+      sha256 = "sha256-cR70l5B7A7bL0gYW5/aRuGWG+E2ncAgFRCISrjpnBb0=";
     };
-    date = "2026-09-15";
+    date = "2026-10-07";
   };
   lineage_launcher3 = {
     pname = "lineage_launcher3";
-    version = "ee25ab865b59ecda9c8fd6f901e80b48d7b789ea";
+    version = "ecfc230d813c0e2b6ea3fda1200e3e53a2f0dd60";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_Launcher3.git";
-      rev = "ee25ab865b59ecda9c8fd6f901e80b48d7b789ea";
+      rev = "ecfc230d813c0e2b6ea3fda1200e3e53a2f0dd60";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-a3BxHGx6iqFYt1Vqa6kllMremJCYAh+1a1m/gCJbvz0=";
+      sha256 = "sha256-kxz4J8QjstfZ73j/5RwEdUBHQvafDK5FL+XsFQzMDVk=";
     };
-    date = "2026-09-15";
-  };
-  lineage_launcher3_wip = {
-    pname = "lineage_launcher3_wip";
-    version = "f55cf58ce1a7cdd3a737002509337b1a31a98fc6";
-    src = fetchgit {
-      url = "https://github.com/LineageOS/android_packages_apps_Launcher3.git";
-      rev = "f55cf58ce1a7cdd3a737002509337b1a31a98fc6";
-      fetchSubmodules = false;
-      deepClone = false;
-      leaveDotGit = false;
-      sparseCheckout = [ ];
-      sha256 = "sha256-vvUA82qtXJdMnGlbXV/QY4/MtN3nhPsd2pwSKfCSNEA=";
-    };
-    date = "2026-09-16";
+    date = "2026-10-07";
   };
   lineage_prebuilts_bootmgr = {
     pname = "lineage_prebuilts_bootmgr";
@@ -638,17 +624,17 @@
   };
   lineage_recorder = {
     pname = "lineage_recorder";
-    version = "4650818fbc158d996263b4a21b378af4deb9970a";
+    version = "624957ca18496e7b63df3d5e4e040f8c99ca72b7";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_Recorder.git";
-      rev = "4650818fbc158d996263b4a21b378af4deb9970a";
+      rev = "624957ca18496e7b63df3d5e4e040f8c99ca72b7";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-Mq9sT5WFVv7vSQ1d44PCSVuBaxXSAq+9J/IsxGncrUU=";
+      sha256 = "sha256-9PUzfqUk5oN28cWsYULJFDPEl/D9tGrhqXtxBy1OIY0=";
     };
-    date = "2026-09-16";
+    date = "2026-10-07";
   };
   morphe_apktool = {
     pname = "morphe_apktool";
@@ -806,38 +792,38 @@
   };
   termux_app = {
     pname = "termux_app";
-    version = "084d709fbf23ea83b5cb85fd3d795c775be06676";
+    version = "8629e632fcb95da272221be327db653fb24befe9";
     src = fetchgit {
       url = "https://github.com/termux/termux-app.git";
-      rev = "084d709fbf23ea83b5cb85fd3d795c775be06676";
+      rev = "8629e632fcb95da272221be327db653fb24befe9";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-rUhBlT0tpw6GzXPzPiTZKBMWOpUKpvVyfvpvzldoGzY=";
+      sha256 = "sha256-XhuzluXUBuqyFScTR5SMzBIUFSXbsEzmWJHkEC2M+cw=";
     };
-    date = "2026-09-16";
+    date = "2026-09-26";
   };
   termux_x11 = {
     pname = "termux_x11";
-    version = "bd1cfadd74f98b548662a48b6e1d564aa434c86e";
+    version = "fa3a8b430e2896a19f44c99a9cb056254615ae06";
     src = fetchgit {
       url = "https://github.com/termux/termux-x11.git";
-      rev = "bd1cfadd74f98b548662a48b6e1d564aa434c86e";
+      rev = "fa3a8b430e2896a19f44c99a9cb056254615ae06";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-AZfuI9VIzbrBIJCWS6cSPVtUF08HU0UDjJC/MpPKDHw=";
+      sha256 = "sha256-qkcAwmQVhc2SiK56nmIVjbaynlt3t6GY/nCEl073ddo=";
     };
-    date = "2026-09-18";
+    date = "2026-10-06";
   };
   vendor_gapps15 = {
     pname = "vendor_gapps15";
     version = "e14b22768c60978d0e1267dab5bcf62dfcc73d16";
     src = fetchurl {
       url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/e14b22768c60978d0e1267dab5bcf62dfcc73d16/vendor_gapps-e14b22768c60978d0e1267dab5bcf62dfcc73d16.tar.gz";
-      sha256 = "sha256-bo6Bzc6AZO7l+OzPnBVGrHS9rPg3UEbP6hYO7+rAuSw=";
+      sha256 = "sha256-ARpBJHLpd4yvfkq0bz77JDjJo7TbIOPU6GqGc3C6isg=";
     };
     date = "2026-09-13";
   };

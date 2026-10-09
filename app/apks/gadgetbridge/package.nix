@@ -47,6 +47,7 @@ let
       };
 
       patches = [
+        ./gadgetbridge.patch
         ./deterministic-release-build.patch
         ./fix-fossil-hr-build.patch
       ];
@@ -83,8 +84,8 @@ let
       };
 
       postPatch = ''
-        sed -i '/compileSdk {/{N;N;N;N;s/.*/    compileSdk 37/}' app/build.gradle
-        sed -i '/content {/,/}/d' settings.gradle.kts
+
+
         rm -f external/jerryscript/tools/babel/package.json
       '';
 
@@ -117,6 +118,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "Gadgetbridge wearable companion for Android";
         homepage = "https://codeberg.org/Freeyourgadget/Gadgetbridge";
         license = licenses.agpl3Only;

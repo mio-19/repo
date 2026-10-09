@@ -130,6 +130,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "ONLYOFFICE Documents for Android (unsigned APK)";
         homepage = "https://github.com/ONLYOFFICE/documents-app-android";
         license = licenses.agpl3Only;

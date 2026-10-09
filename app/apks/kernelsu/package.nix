@@ -193,6 +193,7 @@ let
       '';
 
       meta = with lib; {
+        sourceProvenance = with sourceTypes; [ fromSource ];
         description = "KernelSU Manager app built from source";
         homepage = "https://github.com/tiann/KernelSU";
         license = licenses.gpl3Plus;
