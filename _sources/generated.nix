@@ -10,7 +10,7 @@
     pname = "axp_build";
     version = "adef6303e5cfce57f95822fdfe1db9d2fd5c87e1";
     src = fetchgit {
-      url = "https://git.disroot.org/AXP.OS/build.git";
+      url = "https://gitlab.com/mio-mirror/git.disroot.org/AXP.OS/build.git";
       rev = "adef6303e5cfce57f95822fdfe1db9d2fd5c87e1";
       fetchSubmodules = false;
       deepClone = false;
@@ -24,7 +24,7 @@
     pname = "axp_kernel_patches";
     version = "a20109ae4aab35215e4acf38f08cb93aeab64aa4";
     src = fetchgit {
-      url = "https://git.disroot.org/AXP.OS/kernel_patches.git";
+      url = "https://gitlab.com/mio-mirror/git.disroot.org/AXP.OS/kernel_patches.git";
       rev = "a20109ae4aab35215e4acf38f08cb93aeab64aa4";
       fetchSubmodules = false;
       deepClone = false;
@@ -608,20 +608,6 @@
     };
     date = "2026-09-15";
   };
-  lineage_launcher3_wip = {
-    pname = "lineage_launcher3_wip";
-    version = "de684e4e1947035211863c646df4cd08fbeb96ac";
-    src = fetchgit {
-      url = "https://github.com/LineageOS/android_packages_apps_Launcher3.git";
-      rev = "de684e4e1947035211863c646df4cd08fbeb96ac";
-      fetchSubmodules = false;
-      deepClone = false;
-      leaveDotGit = false;
-      sparseCheckout = [ ];
-      sha256 = "sha256-Nkxi86GUqo1wys4xXqVax5b4o+e5Tt/om5XTVEbd8xA=";
-    };
-    date = "2026-09-30";
-  };
   lineage_prebuilts_bootmgr = {
     pname = "lineage_prebuilts_bootmgr";
     version = "811ba971e891b1f3e7412dfcaac633af5517892f";
@@ -837,7 +823,7 @@
     version = "e14b22768c60978d0e1267dab5bcf62dfcc73d16";
     src = fetchurl {
       url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/e14b22768c60978d0e1267dab5bcf62dfcc73d16/vendor_gapps-e14b22768c60978d0e1267dab5bcf62dfcc73d16.tar.gz";
-      sha256 = "sha256-bo6Bzc6AZO7l+OzPnBVGrHS9rPg3UEbP6hYO7+rAuSw=";
+      sha256 = "sha256-ARpBJHLpd4yvfkq0bz77JDjJo7TbIOPU6GqGc3C6isg=";
     };
     date = "2026-09-13";
   };

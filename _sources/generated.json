@@ -15,7 +15,7 @@
             "sha256": "sha256-Gy6/zJfpjjvgvfQ9WuJDZ9SEEfZt2wuxQ81Qg8OFQWY=",
             "sparseCheckout": [],
             "type": "git",
-            "url": "https://git.disroot.org/AXP.OS/build.git"
+            "url": "https://gitlab.com/mio-mirror/git.disroot.org/AXP.OS/build.git"
         },
         "version": "adef6303e5cfce57f95822fdfe1db9d2fd5c87e1"
     },
@@ -35,7 +35,7 @@
             "sha256": "sha256-JKkPk0OQYqfr+D6vZWZVPus3dSZfRxuQSbuQZTuiuDM=",
             "sparseCheckout": [],
             "type": "git",
-            "url": "https://git.disroot.org/AXP.OS/kernel_patches.git"
+            "url": "https://gitlab.com/mio-mirror/git.disroot.org/AXP.OS/kernel_patches.git"
         },
         "version": "a20109ae4aab35215e4acf38f08cb93aeab64aa4"
     },
@@ -859,26 +859,6 @@
         },
         "version": "ee25ab865b59ecda9c8fd6f901e80b48d7b789ea"
     },
-    "lineage_launcher3_wip": {
-        "cargoLock": null,
-        "date": "2026-09-30",
-        "extract": null,
-        "name": "lineage_launcher3_wip",
-        "passthru": null,
-        "pinned": false,
-        "src": {
-            "deepClone": false,
-            "fetchSubmodules": false,
-            "leaveDotGit": false,
-            "name": null,
-            "rev": "de684e4e1947035211863c646df4cd08fbeb96ac",
-            "sha256": "sha256-Nkxi86GUqo1wys4xXqVax5b4o+e5Tt/om5XTVEbd8xA=",
-            "sparseCheckout": [],
-            "type": "git",
-            "url": "https://github.com/LineageOS/android_packages_apps_Launcher3.git"
-        },
-        "version": "de684e4e1947035211863c646df4cd08fbeb96ac"
-    },
     "lineage_prebuilts_bootmgr": {
         "cargoLock": null,
         "date": "2026-02-18",
@@ -1188,7 +1168,7 @@
         "pinned": false,
         "src": {
             "name": null,
-            "sha256": "sha256-bo6Bzc6AZO7l+OzPnBVGrHS9rPg3UEbP6hYO7+rAuSw=",
+            "sha256": "sha256-ARpBJHLpd4yvfkq0bz77JDjJo7TbIOPU6GqGc3C6isg=",
             "type": "url",
             "url": "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/e14b22768c60978d0e1267dab5bcf62dfcc73d16/vendor_gapps-e14b22768c60978d0e1267dab5bcf62dfcc73d16.tar.gz"
         },
