@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   path,
-  gradle_9_4_1,
+  gradle_9_5_1,
   jdk25_headless,
   stdenv,
   fetchFromGitHub,
@@ -27,7 +27,7 @@ let
         s.build-tools-37-0-0
       ]);
 
-      gradle = gradle_9_4_1;
+      gradle = gradle_9_5_1;
 
       # https://github.com/bitwarden/android/blob/v2026.9.0-bwa/gradle/libs.versions.toml#L32 bitwardenSdk = "3.0.0-8671-5d8ae614"
       sdkSrc = fetchFromGitHub {
@@ -185,12 +185,6 @@ let
       pname = "bitwarden-authenticator";
       version = "2026.9.1";
 
-      postPatch = ''
-        substituteInPlace gradle/libs.versions.toml \
-          --replace-fail 'androidGradlePlugin = "9.3.2"' 'androidGradlePlugin = "9.2.1"'
-        substituteInPlace buildscript-gradle.lockfile \
-          --replace-fail '9.3.2' '9.2.1'
-      '';
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";

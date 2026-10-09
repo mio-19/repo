@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   path,
-  gradle_9_4_1,
+  gradle_9_5_1,
   jdk25_headless,
   stdenv,
   fetchFromGitHub,
@@ -27,7 +27,7 @@ let
         s.build-tools-37-0-0
       ]);
 
-      gradle = gradle_9_4_1;
+      gradle = gradle_9_5_1;
 
       # https://github.com/bitwarden/android/blob/v2026.9.1-bwpm/gradle/libs.versions.toml#L32 bitwardenSdk = "3.0.0-8826-20e5595c"
       sdkSrc = fetchFromGitHub {
@@ -260,7 +260,7 @@ let
         val nixBootstrap by configurations.creating
         dependencies {
             nixBootstrap("org.jetbrains.kotlin:kotlin-stdlib:2.2.10")
-            nixBootstrap("org.jetbrains.kotlin:kotlin-stdlib:2.3.21")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-stdlib:2.4.21")
             nixBootstrap("org.jetbrains.kotlin:kotlin-reflect:2.2.10")
             nixBootstrap("org.jetbrains:annotations:23.0.0")
             nixBootstrap("commons-codec:commons-codec:1.17.1")
@@ -281,13 +281,13 @@ let
             nixBootstrap("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2")
             nixBootstrap("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0")
             nixBootstrap("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0@jar")
-            nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-compat:2.3.21")
-            nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-impl:2.3.21")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-compat:2.4.21")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-impl:2.4.21")
             nixBootstrap("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
-            nixBootstrap("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.21")
-            nixBootstrap("org.jetbrains.kotlin.android:org.jetbrains.kotlin.android.gradle.plugin:2.3.21")
-            nixBootstrap("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:2.3.21")
-            nixBootstrap("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:2.3.21")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.21")
+            nixBootstrap("org.jetbrains.kotlin.android:org.jetbrains.kotlin.android.gradle.plugin:2.4.21")
+            nixBootstrap("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:2.4.21")
+            nixBootstrap("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:2.4.21")
         }
         tasks.register("resolveNixBootstrapDeps") {
             doLast {
@@ -348,10 +348,10 @@ let
                     isTransitive = false
                 }.resolve()
                 buildscript.configurations.getByName("classpath").apply {
-                    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-stdlib:2.3.21")
-                    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-reflect:2.3.21")
-                    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-stdlib:2.3.20")
-                    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-reflect:2.3.20")
+                    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-stdlib:2.4.21")
+                    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-reflect:2.4.21")
+                    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-stdlib:2.4.21")
+                    resolutionStrategy.force("org.jetbrains.kotlin:kotlin-reflect:2.4.21")
                     resolutionStrategy.force("org.jetbrains.kotlin:kotlin-stdlib:2.3.0")
                     resolutionStrategy.force("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
                     resolutionStrategy.deactivateDependencyLocking()
@@ -375,9 +375,9 @@ let
                 substituteInPlace build.gradle \
                   --replace-fail "id 'com.android.application' version '8.9.0' apply false" "id 'com.android.application' version '9.2.1' apply false" \
                   --replace-fail "id 'com.android.library' version '8.9.0' apply false" "id 'com.android.library' version '9.2.1' apply false" \
-                  --replace-fail "id 'org.jetbrains.kotlin.android' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.android' version '2.3.21' apply false" \
-                  --replace-fail "id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.serialization' version '2.3.21' apply false" \
-                  --replace-fail "id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.compose' version '2.3.21' apply false"
+                  --replace-fail "id 'org.jetbrains.kotlin.android' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.android' version '2.4.21' apply false" \
+                  --replace-fail "id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.serialization' version '2.4.21' apply false" \
+                  --replace-fail "id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.compose' version '2.4.21' apply false"
                 substituteInPlace app/build.gradle \
                   --replace-fail "id 'kotlinx-serialization'" "id 'org.jetbrains.kotlin.plugin.serialization'"
                 substituteInPlace sdk/build.gradle \
@@ -399,7 +399,7 @@ let
                                   useModule(\"com.android.tools.build:gradle:9.2.1\")
                               }
                               if (requested.id.id == \"org.jetbrains.kotlin.android\" || requested.id.id == \"org.jetbrains.kotlin.plugin.serialization\" || requested.id.id == \"org.jetbrains.kotlin.plugin.compose\") {
-                                  useModule(\"org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.21\")
+                                  useModule(\"org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.21\")
                               }
                           }
                       }"
