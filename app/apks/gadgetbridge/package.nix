@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk21_headless,
-  gradle_9_5_1,
+  gradle_9_7_1,
   stdenv,
   fetchgit,
 
@@ -31,19 +31,19 @@ let
         s.build-tools-36-1-0
       ]);
 
-      gradle = gradle_9_5_1;
+      gradle = gradle_9_7_1;
 
       pythonWithCrc32c = python3.withPackages (ps: [ ps.crc32c ]);
     in
     buildGradlePackage rec {
       pname = "gadgetbridge";
-      version = "0.94.0";
+      version = "0.95.1";
 
       src = fetchgit {
         url = "https://codeberg.org/Freeyourgadget/Gadgetbridge.git";
         rev = version;
         fetchSubmodules = true;
-        hash = "sha256-B2QN8+DRFKBxMyAtiYIHu/wvtQWpCO1NfsHf3tXsGc8=";
+        hash = "sha256-Vg6EdLez+LikHtSQxokcmAHxsQiN+O/k0rzGXLOptnY=";
       };
 
       patches = [
@@ -56,11 +56,7 @@ let
       gradleUpdateTask = ":app:assembleMainlineRelease";
 
       lockFile = ./gradle.lock;
-      overrides = overrides-fromsrc // {
-        "com.google.protobuf:protoc:4.36.1" = {
-          "protoc-4.36.1-linux-x86_64.exe" = _: "${protobuf}/bin/protoc";
-        };
-      };
+      overrides = overrides-fromsrc;
       inherit gradle;
 
       nativeBuildInputs = [
@@ -84,8 +80,8 @@ let
       };
 
       postPatch = ''
-
-
+        substituteInPlace GBProtobufGenerator/build.gradle.kts \
+          --replace-fail 'artifact = libs.protoc.get().toString()' 'path = "${protobuf}/bin/protoc"'
         rm -f external/jerryscript/tools/babel/package.json
       '';
 
