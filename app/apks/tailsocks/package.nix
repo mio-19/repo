@@ -4,7 +4,6 @@
   mk-apk-package,
   overrides-fromsrc,
   buildGradlePackage,
-  sources,
   lib,
   jdk25_headless,
   fetchFromGitHub,
@@ -35,17 +34,27 @@ let
 
   gradle = gradle_9_2_1;
 
-  tailscaleVersion = "1.104.0";
-  # git rev-parse v1.104.0^{}
-  tailscaleCommit = "c8125a977e8714ac9f0d1a1fb43c714490d38bd3";
-  # git rev-parse v4.8.0
-  appCommit = "0c3ee3d5ac2fa58a9d13052f816b69dedcd1d7fa";
+  version = "4.10.1";
+  src = fetchFromGitHub {
+    owner = "bropines";
+    repo = "tailsocks";
+    tag = "v${version}";
+    hash = "sha256-LgDXMJHs6sQUjxnmG5vItY7UjLZ4RbUt3r30SFxFc5Q=";
+  };
+
+  tailscaleVersion = "1.104.1";
+  # git rev-parse v1.104.1^{}
+  tailscaleCommit = "9a522a9786c97eb7910c01ccb7bd66557b04c910";
+  # git rev-parse v4.10.1^{}
+  appCommit = "0e6294209b5f05aebf0fcd721c5b65382d6cc6a3";
+  # TZ=UTC git log -1 --format=%cd --date=format-local:%Y-%m-%d_%H%M%S v4.10.1^{}
+  appCommitTime = "2026-10-12_172446";
 
   tailscaleSrc = fetchFromGitHub {
     owner = "tailscale";
     repo = "tailscale";
     tag = "v${tailscaleVersion}";
-    hash = "sha256-dz1HQJA1665UBME8eBISt95f1CAl+RJ4GkE713iZCDU=";
+    hash = "sha256-f80GVxstQrr8ENP1bseoIpLflQ+QYEisDF8PHzTs7Lg=";
   };
 
   hevSocks5Tunnel = fetchFromGitHub {
@@ -71,7 +80,7 @@ let
 
   goModCache = stdenvNoCC.mkDerivation {
     pname = "tailsocks-go-mod-cache";
-    inherit (sources.tailsocks) version src;
+    inherit version src;
 
     nativeBuildInputs = [
       go_1_27
@@ -154,7 +163,7 @@ let
 
   appctrArtifacts = stdenv.mkDerivation {
     pname = "tailsocks-appctr";
-    inherit (sources.tailsocks) version src;
+    inherit version src;
 
     nativeBuildInputs = [
       go_1_27
@@ -214,7 +223,7 @@ let
       ts_commit="${tailscaleCommit}"
       app_commit="${appCommit}"
       version_ldflags="-X tailscale.com/version.shortStamp=${tailscaleVersion} -X tailscale.com/version.longStamp=${tailscaleVersion}-t''${ts_commit:0:9}-g''${app_commit:0:9} -X tailscale.com/version.gitCommitStamp=$ts_commit -X tailscale.com/version.extraGitCommitStamp=$app_commit"
-      tags="ts_omit_systray,ts_omit_kube,ts_omit_aws,ts_omit_bird,ts_omit_qrcodes,ts_omit_desktop_sessions,ts_omit_dbus,ts_omit_networkmanager,ts_omit_resolved,ts_omit_sdnotify,ts_omit_tpm,ts_omit_logtail,ts_omit_synology,ts_omit_syspolicy,ts_omit_ssh,ts_omit_iptables,ts_omit_tap,ts_omit_linuxdnsfight,ts_omit_captiveportal,ts_omit_appconnectors,ts_omit_completion,ts_omit_completion_scripts,ts_omit_oauthkey,ts_omit_syslog,ts_omit_clientupdate,ts_omit_portlist,ts_omit_capture,ts_omit_debugportmapper,ts_omit_wakeonlan,ts_omit_relayserver,ts_omit_serviceclientprefs,ts_omit_androidbin,ts_omit_androiddns,ts_omit_connreject"
+      tags="ts_omit_systray,ts_omit_kube,ts_omit_aws,ts_omit_bird,ts_omit_qrcodes,ts_omit_desktop_sessions,ts_omit_dbus,ts_omit_networkmanager,ts_omit_resolved,ts_omit_sdnotify,ts_omit_tpm,ts_omit_logtail,ts_omit_synology,ts_omit_syspolicy,ts_omit_ssh,ts_omit_iptables,ts_omit_tap,ts_omit_linuxdnsfight,ts_omit_captiveportal,ts_omit_completion,ts_omit_completion_scripts,ts_omit_oauthkey,ts_omit_syslog,ts_omit_clientupdate,ts_omit_portlist,ts_omit_capture,ts_omit_debugportmapper,ts_omit_wakeonlan,ts_omit_serviceclientprefs,ts_omit_androidbin,ts_omit_androiddns,ts_omit_connreject"
 
       abi_goarch() { case $1 in armeabi-v7a) echo arm;; arm64-v8a) echo arm64;; x86) echo 386;; x86_64) echo amd64;; esac; }
       abi_clang() { case $1 in armeabi-v7a) echo armv7a-linux-androideabi21;; arm64-v8a) echo aarch64-linux-android21;; x86) echo i686-linux-android21;; x86_64) echo x86_64-linux-android21;; esac; }
@@ -229,18 +238,16 @@ let
         export CC="${androidNdkRoot}/toolchains/llvm/prebuilt/linux-x86_64/bin/$(abi_clang "$abi")-clang"
         export CGO_ENABLED=1
         if [ "$goarch" = arm ]; then export GOARM=7; else unset GOARM; fi
-        for part in "tailscaled:libtailscale" "tailscale:libtailscale_cli"; do
-          echo "-> Compiling ''${part%%:*} [$abi]"
-          (
-            cd appctr/tailscale_src
-            GOOS=android GOARCH=$goarch go build -v \
-              -buildmode=pie \
-              -trimpath \
-              -tags "$tags" \
-              -ldflags="-s -w -buildid= -checklinkname=0 $version_ldflags" \
-              -o "tmp/''${part##*:}_$suffix.so" "./cmd/''${part%%:*}"
-          )
-        done
+        echo "-> Compiling tailscaled with the CLI [$abi]"
+        (
+          cd appctr/tailscale_src
+          GOOS=android GOARCH=$goarch go build -v \
+            -buildmode=pie \
+            -trimpath \
+            -tags "$tags,ts_include_cli" \
+            -ldflags="-s -w -buildid= -checklinkname=0 $version_ldflags" \
+            -o "tmp/libtailscale_$suffix.so" "./cmd/tailscaled"
+        )
       done
 
       unset CC GOARM
@@ -285,7 +292,9 @@ let
         cd appctr
         gomobile init
         gomobile bind \
-          -ldflags="-s -w -buildid= -checklinkname=0 -X appctr.coreVersion=v${tailscaleVersion}-${appCommit}-2026-10-09_145319 $version_ldflags" \
+          -ldflags="-s -w -buildid= -checklinkname=0 -X appctr.coreVersion=v${tailscaleVersion}-${
+            builtins.substring 0 7 appCommit
+          }-${appCommitTime} $version_ldflags" \
           -trimpath \
           -target="$gomobile_targets" \
           -androidapi 21 \
@@ -305,7 +314,6 @@ let
       for abi in armeabi-v7a arm64-v8a x86 x86_64; do
         suffix=$(abi_suffix "$abi")
         install -Dm755 "appctr/tailscale_src/tmp/libtailscale_$suffix.so" "$out/jniLibs/$abi/libtailscale.so"
-        install -Dm755 "appctr/tailscale_src/tmp/libtailscale_cli_$suffix.so" "$out/jniLibs/$abi/libtailscale_cli.so"
       done
       runHook postInstall
     '';
@@ -313,7 +321,7 @@ let
 
   appPackage = buildGradlePackage rec {
     pname = "tailsocks";
-    inherit (sources.tailsocks) src version;
+    inherit src version;
     inherit gradle;
 
     lockFile = ./gradle.lock;
@@ -382,7 +390,9 @@ let
       cp -a ${appctrArtifacts}/jniLibs/. app/src/main/jniLibs/
 
       substituteInPlace app/build.gradle.kts \
-        --replace-fail 'commandLine("git", "rev-parse", "--short=6", "HEAD")' 'commandLine("echo", "0c3ee3")'
+        --replace-fail 'commandLine("git", "rev-parse", "--short=6", "HEAD")' 'commandLine("echo", "${
+          builtins.substring 0 6 appCommit
+        }")'
       # AGP 8.13.2 defaults to build-tools 35, which is not in this SDK.
       substituteInPlace app/build.gradle.kts \
         --replace-fail '    compileSdk = 37' '    compileSdk = 37; buildToolsVersion = "36.0.0"'

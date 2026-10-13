@@ -790,17 +790,6 @@
     };
     date = "2025-02-23";
   };
-  tailsocks = {
-    pname = "tailsocks";
-    version = "v4.8.0";
-    src = fetchFromGitHub {
-      owner = "bropines";
-      repo = "tailsocks";
-      rev = "v4.8.0";
-      fetchSubmodules = false;
-      sha256 = "sha256-TcMnfTLMhYFetLDU2SVL0B9AvT9JFfmZSOhDLkWODgA=";
-    };
-  };
   termux_app = {
     pname = "termux_app";
     version = "8629e632fcb95da272221be327db653fb24befe9";

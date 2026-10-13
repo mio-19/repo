@@ -1,6 +1,7 @@
 {
   mk-apk-package,
   lib,
+  jdk21_headless,
   jdk25_headless,
   gradle-packages,
   stdenv,
@@ -9,7 +10,7 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   fetchpatch,
-  gradle_9_6_1,
+  gradle_9_7_1,
 }:
 let
   appPackage =
@@ -17,22 +18,22 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
-        s.platforms-android-36
+        s.platforms-android-37-0
         # AGP 9.x: do not include build-tools-35-0-0 (corrupts APKs).
         s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_6_1;
+      gradle = gradle_9_7_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "thunderbird-android";
-      version = "23.1";
+      version = "24.0";
 
       src = fetchFromGitHub {
         owner = "thunderbird";
         repo = "thunderbird-android";
-        tag = "THUNDERBIRD_23_1";
-        hash = "sha256-BjK/BZmvEzmfQWX48eFMwl5BGcVLq11dUdAjHH4g4DE=";
+        tag = "THUNDERBIRD_24_0";
+        hash = "sha256-tSq40mkum5jDfCnUHEjjTWe1s9goVRdzo4260vTYMfs=";
       };
 
       patches = [
@@ -68,6 +69,7 @@ let
       #    from the repo root.
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
+        attrPath = "apk_thunderbird";
         pkg = finalAttrs.finalPackage;
         data = ./thunderbird_deps.json;
         silent = false;
@@ -76,6 +78,7 @@ let
 
       nativeBuildInputs = [
         gradle
+        jdk21_headless
         jdk25_headless
 
         writableTmpDirAsHomeHook
@@ -106,7 +109,7 @@ let
       gradleFlags = [
         "-xlintVitalFossRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk25_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless},${jdk25_headless}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];

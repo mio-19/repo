@@ -8,7 +8,7 @@
   runtimeShell,
   jdk17_headless,
   jdk21_headless,
-  gradle_9_6_1,
+  gradle_9_7_1,
   stdenv,
   stdenvNoCC,
   fetchFromGitHub,
@@ -41,7 +41,7 @@ let
       androidNdkRoot = "${androidSdkRoot}/ndk/29.0.14206865";
       aapt2 = "${androidSdkRoot}/build-tools/37.0.0/aapt2";
 
-      gradle = gradle_9_6_1;
+      gradle = gradle_9_7_1;
 
       xMobileSrc = fetchFromGitHub {
         owner = "golang";
@@ -402,14 +402,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.89.23";
+      version = "5.89.28";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-lRdmKIAKbtj9LhInDT25jeLbz9hGnSTXS298G3fjwdg=";
+        hash = "sha256-Qvs1Z30G2zt+2bd3yZuDH2vyA/ZvOnaT4+FEOyLxPEc=";
       };
 
       patches = [
