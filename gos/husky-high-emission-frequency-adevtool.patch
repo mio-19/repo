@@ -1,4 +1,7 @@
---- a/config/mk/google_devices/device/husky/conf/Android.bp
+diff --git a/config/mk/google_devices/device/husky/conf/Android.bp b/config/mk/google_devices/device/husky/conf/Android.bp
+new file mode 100644
+index 0000000..dcae5c8
+--- /dev/null
 +++ b/config/mk/google_devices/device/husky/conf/Android.bp
 @@ -0,0 +1,6 @@
 +prebuilt_etc {
@@ -7,7 +10,10 @@
 +    sub_dir: "init",
 +    vendor: true,
 +}
---- a/config/mk/google_devices/device/husky/conf/init.husky.pwm.rc
+diff --git a/config/mk/google_devices/device/husky/conf/init.husky.pwm.rc b/config/mk/google_devices/device/husky/conf/init.husky.pwm.rc
+new file mode 100644
+index 0000000..c52c9d6
+--- /dev/null
 +++ b/config/mk/google_devices/device/husky/conf/init.husky.pwm.rc
 @@ -0,0 +1,23 @@
 +on property:persist.sys.husky_high_emission_frequency_mode=zero
@@ -33,11 +39,13 @@
 +
 +on property:persist.sys.husky_high_emission_frequency_mode=seven
 +    write /sys/module/panel_google_hk3/parameters/freq_cmd 0x07,0x43,0x43,0x03
+diff --git a/config/mk/google_devices/device/husky/device.mk b/config/mk/google_devices/device/husky/device.mk
+index c935303..9ee9701 100644
 --- a/config/mk/google_devices/device/husky/device.mk
 +++ b/config/mk/google_devices/device/husky/device.mk
-@@ -11,3 +11,5 @@
+@@ -4,3 +4,5 @@ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_HUSKY_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_HUSKY_DIR)/kernel-headers
  
- PRODUCT_VENDOR_PROPERTIES += \
-     persist.vendor.boot.zram.size=100p
+ include vendor/adevtool/config/mk/google_devices/platform/zuma/device.mk
 +
 +PRODUCT_PACKAGES += init.husky.pwm.rc
