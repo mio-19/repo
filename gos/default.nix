@@ -114,7 +114,7 @@ in
     ./gos_userdebug.nix
     # possibly unsafe# ./bigger_zram.nix
   ];
-  buildDateTime = 100 + releaseToTimestamp config.grapheneos.release;
+  buildDateTime = releaseToTimestamp config.grapheneos.release;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   apps = {
