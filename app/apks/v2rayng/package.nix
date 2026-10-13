@@ -3,9 +3,9 @@
   mk-apk-package,
   lib,
   stdenvNoCC,
-  gradle_9_5_0,
+  gradle_9_7_1,
   jdk25_headless,
-  go_1_26,
+  go_1_27,
   stdenv,
   fetchFromGitHub,
 
@@ -24,14 +24,15 @@ let
         s.ndk-28-2-13676358
       ]);
 
-      gradle = gradle_9_5_0;
+      gradle = gradle_9_7_1;
 
-      xrayLiteVersion = "26.6.14";
+      # git ls-tree 2.3.11 AndroidLibXrayLite
+      xrayLiteVersion = "1f3e2c5df1c248ed42630cee2bf747643d303ecc";
       androidLibXrayLiteSrc = fetchFromGitHub {
         owner = "2dust";
         repo = "AndroidLibXrayLite";
-        tag = "v${xrayLiteVersion}";
-        hash = "sha256-l6Y2Q+yZSqywEHPKaOHZZcLOQyau9t7p8zjll341sw0=";
+        rev = xrayLiteVersion;
+        hash = "sha256-GgPGT3iMwvF44eqtuhvoWV05jlvEi++LZnGBGmYacLc=";
       };
 
       androidLibXrayLiteGoModCache = stdenvNoCC.mkDerivation {
@@ -39,11 +40,11 @@ let
         version = xrayLiteVersion;
         src = androidLibXrayLiteSrc;
 
-        nativeBuildInputs = [ go_1_26 ];
+        nativeBuildInputs = [ go_1_27 ];
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-sUkCAMTYjBkbhqgaXcvZx/2ZkWRhdtidX+qx6Rhmnf8=";
+        outputHash = "sha256-Ok84JVX7soKpJ5KF72BjZII7xHDRbBwL/fiO8ZOPnOc=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -53,6 +54,7 @@ let
 
           export HOME="$TMPDIR/home"
           mkdir -p "$HOME"
+          export GOTOOLCHAIN=local
           export GOPATH="$TMPDIR/go"
           export GOCACHE="$TMPDIR/go-build-cache"
           export GOMODCACHE="$TMPDIR/go-mod-cache"
@@ -62,6 +64,13 @@ let
           cp -R "$src" source
           chmod -R u+w source
           cd source
+          go mod download
+
+          # Also download golang.org/x/mobile's own transitive deps (needed to build
+          # gomobile/gobind offline: x/tools, x/mod, x/image, x/exp/shiny).
+          xMobileDir="$(find "$GOMODCACHE" -type d -path '*/golang.org/x/mobile@*' -print -quit)"
+          test -n "$xMobileDir"
+          cd "$xMobileDir"
           go mod download
 
           runHook postBuild
@@ -81,7 +90,7 @@ let
         src = androidLibXrayLiteSrc;
 
         nativeBuildInputs = [
-          go_1_26
+          go_1_27
           jdk25_headless
           writableTmpDirAsHomeHook
         ];
@@ -103,6 +112,7 @@ let
           export GOMODCACHE="$PWD/.gomodcache"
           cp -R ${androidLibXrayLiteGoModCache} "$GOMODCACHE"
           chmod -R u+w "$GOMODCACHE"
+          export GOTOOLCHAIN=local
           export GOPROXY=off
           export GOSUMDB=off
           export GOFLAGS="-mod=mod"
@@ -157,14 +167,14 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "v2rayng";
-      version = "2.3.10";
+      version = "2.3.11";
 
       src = fetchFromGitHub {
         owner = "2dust";
         repo = "v2rayNG";
         tag = finalAttrs.version;
         fetchSubmodules = true;
-        hash = "sha256-uwcpmrSBog0yuYxI30pbYGuFSxIF94KUgQsjiTv2o4I=";
+        hash = "sha256-/jC0VcluVQk91RwGKhvbXndU2wTv4C3x2+7jveW4X0k=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/V2rayNG";
@@ -206,21 +216,16 @@ let
         cp ${libv2rayAar}/libv2ray.aar app/libs/libv2ray.aar
       '';
 
-      postPatch =
-        agp-resolution.patchSettingsGradle {
-          agpVersion = "9.3.2";
-          extraPlugins = [
-            {
-              ids = [ "org.jetbrains.kotlin.android" ];
-              module = "org.jetbrains.kotlin:kotlin-gradle-plugin";
-              version = "2.4.0";
-            }
-          ];
-        }
-        + ''
-          substituteInPlace gradle/libs.versions.toml \
-            --replace-fail 'agp = "9.4.1"' 'agp = "9.3.2"'
-        '';
+      postPatch = agp-resolution.patchSettingsGradle {
+        agpVersion = "9.4.1";
+        extraPlugins = [
+          {
+            ids = [ "org.jetbrains.kotlin.android" ];
+            module = "org.jetbrains.kotlin:kotlin-gradle-plugin";
+            version = "2.4.21";
+          }
+        ];
+      };
 
       gradleFlags =
         let

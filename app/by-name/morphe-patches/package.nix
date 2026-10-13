@@ -2,13 +2,13 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  gradle_9_3_1,
+  gradle_9_7_1,
   jdk21_headless,
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
   morphe-patches-gradle-plugin_1_3_4,
   morphe-library-m2,
-  morphe-patches-library-m2_1_8_0_dev_2,
+  morphe-patches-library-m2_1_9_0_dev_4,
   apktool-src,
   multidexlib2-src,
   morphe-patcher-src_1_14_0,
@@ -28,7 +28,7 @@ let
     s.build-tools-36-0-0
   ]);
 
-  gradle = gradle_9_3_1;
+  gradle = gradle_9_7_1;
 
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
@@ -40,13 +40,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches";
-  version = "1.46.0";
+  version = "1.47.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-rWj+nYNg4tXk66UMSkuwgsz+1OKz04lJimXRuibhvAQ=";
+    hash = "sha256-smQCT40AgXh59Ot4r9CHeVo6c85c9iCH6sJ95AFEn2I=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -54,6 +54,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   mitmCache = gradle.fetchDeps {
     pname = "morphe-patches";
+    attrPath = "morphe-patches";
     pkg = finalAttrs.finalPackage;
     data = ./morphe-patches_deps.json;
     silent = false;
@@ -73,7 +74,7 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_4}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
-    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_8_0_dev_2}";
+    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_9_0_dev_4}";
   };
 
   postUnpack = ''
