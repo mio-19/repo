@@ -1,0 +1,96 @@
+diff -u -r a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/asteroidos/AsteroidOSConstants.java b/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/asteroidos/AsteroidOSConstants.java
+--- a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/asteroidos/AsteroidOSConstants.java	2026-10-13 21:33:42.353667354 +1100
++++ b/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/asteroidos/AsteroidOSConstants.java	2026-10-13 21:37:06.175313389 +1100
+@@ -134,4 +134,13 @@
+      * Notification feedback characteristic
+      */
+     public static final UUID NOTIFICATION_FEEDBACK_CHAR = UUID.fromString("00009002-0000-0000-0000-00A57E401D05");
++
++    /**
++     * Find phone service
++     */
++    public static final UUID FINDPHONE_SERVICE_UUID     = UUID.fromString("0000A071-0000-0000-0000-00A57E401D05");
++    /**
++     * Find phone ring characteristic. One byte: 1 starts ringing the phone, 0 stops.
++     */
++    public static final UUID FINDPHONE_RING_CHAR        = UUID.fromString("0000A001-0000-0000-0000-00A57E401D05");
+ }
+diff -u -r a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java b/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java
+--- a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java	2026-10-13 21:33:45.914678641 +1100
++++ b/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java	2026-10-13 21:37:20.210357875 +1100
+@@ -33,6 +33,7 @@
+ import java.util.UUID;
+ 
+ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
++import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
+ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
+ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventScreenshot;
+ import nodomain.freeyourgadget.gadgetbridge.devices.asteroidos.AsteroidOSConstants;
+@@ -69,6 +70,7 @@
+         addSupportedService(AsteroidOSConstants.NOTIFICATION_SERVICE_UUID);
+         addSupportedService(AsteroidOSConstants.MEDIA_SERVICE_UUID);
+         addSupportedService(AsteroidOSConstants.SCREENSHOT_SERVICE_UUID);
++        addSupportedService(AsteroidOSConstants.FINDPHONE_SERVICE_UUID);
+ 
+         IntentListener mListener = intent -> {
+             String action = intent.getAction();
+@@ -103,6 +105,10 @@
+             handleScreenshotData(characteristic, value);
+             return true;
+         }
++        if (characteristicUUID.equals(AsteroidOSConstants.FINDPHONE_RING_CHAR)) {
++            handleFindPhone(value);
++            return true;
++        }
+ 
+         LOG.info("Characteristic changed UUID: {}", characteristicUUID);
+         LOG.info("Characteristic changed value: {}", Arrays.toString(value));
+@@ -118,6 +124,8 @@
+ 
+         builder.notify(AsteroidOSConstants.MEDIA_COMMANDS_CHAR, true);
+         builder.notify(AsteroidOSConstants.SCREENSHOT_CONTENT_CHAR, true);
++        builder.notify(AsteroidOSConstants.FINDPHONE_RING_CHAR, true);
++        builder.read(AsteroidOSConstants.FINDPHONE_RING_CHAR);
+         builder.setDeviceState(GBDevice.State.INITIALIZED);
+ 
+         batteryInfoProfile.requestBatteryInfo(builder);
+@@ -289,10 +297,39 @@
+         }
+         UUID characteristicUUID = characteristic.getUuid();
+ 
++        if (characteristicUUID.equals(AsteroidOSConstants.FINDPHONE_RING_CHAR)) {
++            if (status == BluetoothGatt.GATT_SUCCESS) {
++                handleFindPhone(value);
++            }
++            return true;
++        }
++
+         LOG.info("Unhandled characteristic read: {}", characteristicUUID);
+         return false;
+     }
+ 
++    /**
++     * Ring or silence the phone when the watch writes the find-phone characteristic.
++     * @param value one byte, 1 to start and 0 to stop
++     */
++    private void handleFindPhone(byte[] value) {
++        if (value == null || value.length < 1) {
++            return;
++        }
++        final GBDeviceEventFindPhone findPhoneEvent = new GBDeviceEventFindPhone();
++        switch (value[0] & 0xff) {
++            case 1:
++                findPhoneEvent.event = GBDeviceEventFindPhone.Event.START;
++                break;
++            case 0:
++                findPhoneEvent.event = GBDeviceEventFindPhone.Event.STOP;
++                break;
++            default:
++                LOG.warn("Unknown find phone value: {}", value[0] & 0xff);
++                return;
++        }
++        evaluateGBDeviceEvent(findPhoneEvent);
++    }
+ 
+     /**
+      * Handles a media command sent from the AsteroidOS device
