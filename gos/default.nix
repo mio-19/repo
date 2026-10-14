@@ -145,8 +145,11 @@ in
 
     #./Disable-FLAG_SECURE.patch
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
-    # from https://github.com/GrapheneOS/platform_frameworks_base/pull/313.patch
-    ./Add-a-toggle-to-allow-screenshots-through-FLAG-SECURE.patch
+    (fetchpatch {
+      name = "Add a toggle to allow screenshots through FLAG SECURE";
+      url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/461.diff";
+      hash = "sha256-MDB0VsHoXigMx8cUeIzXZXbs8+qyF8RpgaL4y3bB0qI=";
+    })
 
     # https://github.com/GrapheneOS/platform_frameworks_base/pull/305
     ./Add-toggle-to-hide-location-access-indicator-on-a-per-app-basis.patch
