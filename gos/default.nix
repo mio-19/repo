@@ -163,7 +163,7 @@ in
     (fetchpatch {
       name = "Add a toggle to disable FLAG SECURE";
       url = "https://github.com/GrapheneOS/platform_packages_apps_Settings/pull/411.patch";
-      hash = "sha256-hcztYEyhfDlfkx04lKmsEOKr2puoM6GUb3bhRIgiCaM=";
+      hash = "sha256-OEpGclbko1yJR1Mh3YbQrB6KdX4i3BUMsg74/F+hEQg=";
     })
   ];
   source.dirs."packages/modules/Permission".patches = [
