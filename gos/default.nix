@@ -161,9 +161,9 @@ in
   source.dirs."packages/apps/Settings".patches = [
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
     (fetchpatch {
-      name = "Add a toggle to disable FLAG SECURE";
-      url = "https://github.com/GrapheneOS/platform_packages_apps_Settings/pull/411.patch";
-      hash = "sha256-OEpGclbko1yJR1Mh3YbQrB6KdX4i3BUMsg74/F+hEQg=";
+      name = "Add a toggle to allow screenshots through FLAG_SECURE";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_Settings/pull/411.diff";
+      hash = "sha256-Pp4UEZ34PbMIHVz6ou/DUxkLAqXESkoB7ZEDbhWX7RI=";
     })
   ];
   source.dirs."packages/modules/Permission".patches = [
