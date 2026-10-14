@@ -127,7 +127,7 @@ diff -u -r a/app/src/main/java/org/asteroidos/sync/utils/AsteroidUUIDS.java b/ap
      public static final UUID NOTIFICATION_UPDATE_CHAR   = UUID.fromString("00009001-0000-0000-0000-00A57E401D05");
      public static final UUID NOTIFICATION_FEEDBACK_CHAR = UUID.fromString("00009002-0000-0000-0000-00A57E401D05");
 +
-+    // Find Phone Service
-+    public static final UUID FINDPHONE_SERVICE_UUID     = UUID.fromString("0000A071-0000-0000-0000-00A57E401D05");
-+    public static final UUID FINDPHONE_RING_CHAR        = UUID.fromString("0000A001-0000-0000-0000-00A57E401D05");
++    // Find Phone Service (High Hex range to avoid future upstream collision)
++    public static final UUID FINDPHONE_SERVICE_UUID     = UUID.fromString("0000F071-0000-0000-0000-00A57E401D05");
++    public static final UUID FINDPHONE_RING_CHAR        = UUID.fromString("0000F001-0000-0000-0000-00A57E401D05");
  }
