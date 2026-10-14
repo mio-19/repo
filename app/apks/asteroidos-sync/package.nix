@@ -46,7 +46,10 @@ let
         hash = "sha256-ShYHGD52oEmWNlCgc1BUMyZPruVTMWoGkikG2bByZow=";
       };
 
-      patches = [ ./easyweather-from-source.patch ];
+      patches = [
+        ./easyweather-from-source.patch
+        ./asteroidos-find-phone.patch
+      ];
 
       postPatch = ''
         cp -a ${easyWeatherSrc}/library/src/main/java/github app/src/main/java/
