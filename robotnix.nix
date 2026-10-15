@@ -85,6 +85,7 @@ in
           gts9wifi = common ./gts9wifi.nix;
           gts7lwifi = common ./gts7lwifi.nix;
           gts7l = common ./gts7l.nix;
+          hibreak_pro = common ./hibreak_pro.nix;
         };
       pkgs = pkgsPatched;
     in
