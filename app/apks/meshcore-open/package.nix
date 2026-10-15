@@ -65,7 +65,7 @@ let
     in
     buildDartApplication.override { dart = flutter344; } (finalAttrs: {
       pname = "meshcore-open";
-      version = "9.5.0+16";
+      version = "9.5.0+19";
 
       __darwinAllowLocalNetworking = true;
       __noChroot = stdenv.hostPlatform.isDarwin;
@@ -73,13 +73,11 @@ let
       src = fetchFromGitHub {
         owner = "zjs81";
         repo = "meshcore-open";
-        rev = "PRE-BETA-9.5.2";
-        hash = "sha256-EyIl8J4mWDEiGXz1L7VmYvRpsAABr7ETvIXT/srGzz8=";
+        tag = "BETA-99.0.0";
+        hash = "sha256-fBzPJAHsQV7gnMAmIf8XMC52GefavCWignkBnu1rSDI=";
       };
 
-      patches = [
-        ./flutter-3.27-compat.patch
-      ];
+      patches = [ ];
 
       pubspecLock = lib.importJSON ./pubspec.lock.json;
 
@@ -101,7 +99,7 @@ let
         pkg = finalAttrs.finalPackage.overrideAttrs {
           gradleUpdateScript = ''
             runHook preBuild
-            gradle --no-daemon --console=plain :cryptography_flutter:extractReleaseAnnotations :app:assembleRelease -x lint -x lintVitalRelease || true
+            gradle --no-daemon --console=plain :cryptography_flutter:extractReleaseAnnotations :cryptography_flutter:generateReleaseLintModel :app:assembleRelease || true
           '';
         };
         data = ./meshcore-open_deps.json;

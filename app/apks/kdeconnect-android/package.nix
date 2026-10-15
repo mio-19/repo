@@ -9,6 +9,7 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   gradle_9_6_1,
+  nix-update-script,
 }:
 let
   appPackage =
@@ -26,7 +27,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "kdeconnect-android";
-      version = "1.35.17";
+      version = "1.36.0";
 
       __darwinAllowLocalNetworking = true;
       __noChroot = stdenv.hostPlatform.isDarwin;
@@ -35,7 +36,7 @@ let
         owner = "KDE";
         repo = "kdeconnect-android";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-NKRw4Et0+WZgfMU02MMS+msQmQXBm5OoJlH/pQfCDwM=";
+        hash = "sha256-qLnfQzjzS7fPqEGN81x45yldUOCdkSFa9h1pIxhKI4A=";
       };
 
       gradleBuildTask = "assembleRelease";
@@ -86,6 +87,10 @@ let
         install -Dm644 "$apk_path" "$out/kdeconnect-android.apk"
         runHook postInstall
       '';
+
+      passthru = {
+        updateScript = nix-update-script { };
+      };
 
       meta = with lib; {
         sourceProvenance = with sourceTypes; [ fromSource ];

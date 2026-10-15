@@ -6,11 +6,11 @@
   jdk21_headless,
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
-  morphe-patches-gradle-plugin_1_3_3,
-  morphe-patches-library-m2_1_5_0,
+  morphe-patches-gradle-plugin_1_3_4,
+  morphe-patches-library-m2_1_6_0,
   apktool-src,
   multidexlib2-src,
-  morphe-patcher-src_1_7_0,
+  morphe-patcher-src_1_14_0,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -38,13 +38,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "piko-patches";
-  version = "3.9.0";
+  version = "3.10.0";
 
   src = fetchFromGitHub {
     owner = "crimera";
     repo = "piko";
-    rev = "v${finalAttrs.version}";
-    hash = "sha256-UvoA/A3XQDBhTI/EDWi16ufjI0qVYpBMi37+RVfPD34=";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-aDDbfutpDdFV2+jqJldjSL1flUyCGrV0vZ5SQRfnx0Q=";
   };
 
   sourceRoot = "source";
@@ -54,19 +54,22 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
-    MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_3}";
-    MORPHE_LIBRARY_M2 = "${morphe-patches-library-m2_1_5_0}";
+    MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_4}";
+    MORPHE_LIBRARY_M2 = "${morphe-patches-library-m2_1_6_0}";
   };
 
   postUnpack = ''
     root="$PWD"
-    cp -a ${morphe-patcher-src_1_7_0} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_1_14_0} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
     cp -a ${apktool-src} "$root/Apktool"
     chmod -R u+w "$root/Apktool"
 
     cp -a ${multidexlib2-src} "$root/multidexlib2"
     chmod -R u+w "$root/multidexlib2"
+
+    substituteInPlace "$sourceRoot/gradle/libs.versions.toml" \
+      --replace-fail 'morphe-patcher = "1.14.1"' 'morphe-patcher = "1.14.0"'
 
     patch -d "$sourceRoot" -p0 < ${./settings.gradle.kts.patch}
 

@@ -1,8 +1,7 @@
-diff --git a/TMessagesProj/build.gradle b/TMessagesProj/build.gradle
-index acb206e6..2759011e 100644
---- a/TMessagesProj/build.gradle
-+++ b/TMessagesProj/build.gradle
-@@ -42,12 +42,9 @@ dependencies {
+diff -ruN a/TMessagesProj/build.gradle b/TMessagesProj/build.gradle
+--- a/TMessagesProj/build.gradle	2026-10-15 21:36:03.235672125 +1100
++++ b/TMessagesProj/build.gradle	2026-10-15 21:36:29.399713785 +1100
+@@ -73,12 +73,9 @@
      implementation 'com.stripe:stripe-android:2.0.2'
      implementation 'com.google.code.gson:gson:2.11.0'
      implementation 'com.google.guava:guava:31.1-android'
@@ -15,18 +14,7 @@ index acb206e6..2759011e 100644
  
      implementation "io.noties.markwon:core:4.6.2"
      implementation "io.noties.markwon:ext-strikethrough:4.6.2"
-@@ -76,9 +73,8 @@ def isWindows = String.valueOf(DefaultNativePlatform.currentOperatingSystem.toFa
- android {
-     compileSdkVersion 36
-     buildToolsVersion '36.0.0'
--    ndkVersion "27.2.12479018"
-+    ndkVersion "27.2.12479018"
- 
--    sourceSets.main.jniLibs.srcDirs = ['./jni/']
- 
-     externalNativeBuild {
-         cmake {
-@@ -93,14 +89,14 @@ android {
+@@ -136,14 +133,14 @@
      }
  
      compileOptions {
@@ -44,19 +32,10 @@ index acb206e6..2759011e 100644
      }
  
      defaultConfig.versionCode = Integer.parseInt(Utils['getVersionCode']())
-diff --git a/TMessagesProj_App/build.gradle b/TMessagesProj_App/build.gradle
-index 8046dd35..c2a1bdbf 100644
---- a/TMessagesProj_App/build.gradle
-+++ b/TMessagesProj_App/build.gradle
-@@ -33,7 +33,6 @@ android {
- 
-     defaultConfig.applicationId = "org.forkclient.messenger"
- 
--    sourceSets.main.jniLibs.srcDirs = ['../TMessagesProj/jni/']
- 
-     lintOptions {
-         disable 'MissingTranslation'
-@@ -42,8 +41,8 @@ android {
+diff -ruN a/TMessagesProj_App/build.gradle b/TMessagesProj_App/build.gradle
+--- a/TMessagesProj_App/build.gradle	2026-10-15 21:36:03.238672130 +1100
++++ b/TMessagesProj_App/build.gradle	2026-10-15 21:36:29.399713785 +1100
+@@ -61,8 +61,8 @@
      }
  
      compileOptions {
@@ -67,7 +46,7 @@ index 8046dd35..c2a1bdbf 100644
  
          coreLibraryDesugaringEnabled true
      }
-@@ -58,17 +57,17 @@ android {
+@@ -89,17 +89,17 @@
      signingConfigs {
          if (fdroid) {
              debug {
@@ -92,13 +71,4 @@ index 8046dd35..c2a1bdbf 100644
 +                keyPassword "android"
              }
          } else {
-             debug {
-@@ -276,7 +275,7 @@ android {
-         minSdkVersion 21
-         targetSdkVersion 36
-         versionName Utils['getVersionName']()
--        ndkVersion "27.2.12479018"
-+        ndkVersion "27.2.12479018"
- 
-         multiDexEnabled true
- 
+             def releaseKeystore = readBuildProp('RELEASE_KEYSTORE_FILE', null)

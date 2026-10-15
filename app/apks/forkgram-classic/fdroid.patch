@@ -1,7 +1,7 @@
-diff --git a/TMessagesProj/build.gradle b/TMessagesProj/build.gradle
---- a/TMessagesProj/build.gradle
-+++ b/TMessagesProj/build.gradle
-@@ -60,12 +60,8 @@
+diff -ruN a/TMessagesProj/build.gradle b/TMessagesProj/build.gradle
+--- a/TMessagesProj/build.gradle	2026-10-15 22:30:41.341462685 +1100
++++ b/TMessagesProj/build.gradle	2026-10-15 22:31:03.773514221 +1100
+@@ -73,12 +73,8 @@
      implementation 'com.stripe:stripe-android:2.0.2'
      implementation 'com.google.code.gson:gson:2.11.0'
      implementation 'com.google.guava:guava:31.1-android'
@@ -14,16 +14,7 @@ diff --git a/TMessagesProj/build.gradle b/TMessagesProj/build.gradle
  
      implementation "io.noties.markwon:core:4.6.2"
      implementation "io.noties.markwon:ext-strikethrough:4.6.2"
-@@ -99,8 +95,6 @@
-     buildToolsVersion '36.0.0'
-     ndkVersion "27.2.12479018"
- 
--    sourceSets.main.jniLibs.srcDirs = ['./jni/']
--
-     externalNativeBuild {
-         cmake {
-             path 'jni/CMakeLists.txt'
-@@ -118,14 +112,14 @@
+@@ -136,14 +132,14 @@
      }
  
      compileOptions {
@@ -41,19 +32,10 @@ diff --git a/TMessagesProj/build.gradle b/TMessagesProj/build.gradle
      }
  
      defaultConfig.versionCode = Integer.parseInt(Utils['getVersionCode']())
-diff --git a/TMessagesProj_App/build.gradle b/TMessagesProj_App/build.gradle
---- a/TMessagesProj_App/build.gradle
-+++ b/TMessagesProj_App/build.gradle
-@@ -52,8 +52,6 @@
- 
-     defaultConfig.applicationId = "org.forkgram.classic"
- 
--    sourceSets.main.jniLibs.srcDirs = ['../TMessagesProj/jni/']
--
-     lintOptions {
-         disable 'MissingTranslation'
-         disable 'ExtraTranslation'
-@@ -61,8 +59,8 @@
+diff -ruN a/TMessagesProj_App/build.gradle b/TMessagesProj_App/build.gradle
+--- a/TMessagesProj_App/build.gradle	2026-10-15 22:30:41.343462689 +1100
++++ b/TMessagesProj_App/build.gradle	2026-10-15 22:31:12.888535163 +1100
+@@ -61,8 +61,8 @@
      }
  
      compileOptions {
@@ -64,8 +46,8 @@ diff --git a/TMessagesProj_App/build.gradle b/TMessagesProj_App/build.gradle
  
          coreLibraryDesugaringEnabled true
      }
-@@ -75,7 +73,21 @@
-     }
+@@ -87,7 +87,21 @@
+ 
  
      signingConfigs {
 -        if (!fdroid) {
@@ -87,7 +69,7 @@ diff --git a/TMessagesProj_App/build.gradle b/TMessagesProj_App/build.gradle
              debug {
                  storeFile file("../TMessagesProj/config/release.keystore")
                  storePassword RELEASE_STORE_PASSWORD
-@@ -90,9 +102,6 @@
+@@ -102,9 +116,6 @@
                  keyPassword RELEASE_KEY_PASSWORD
              }
          }
@@ -96,8 +78,8 @@ diff --git a/TMessagesProj_App/build.gradle b/TMessagesProj_App/build.gradle
 -        // unsigned, which is what the F-Droid build server expects.
      }
  
-     buildTypes {
-@@ -131,7 +140,7 @@
+ 
+@@ -144,7 +155,7 @@
          release {
              debuggable false
              jniDebuggable false
@@ -105,4 +87,4 @@ diff --git a/TMessagesProj_App/build.gradle b/TMessagesProj_App/build.gradle
 +            signingConfig signingConfigs.release
              applicationIdSuffix appSuffix
              minifyEnabled true
-             shrinkResources false
+             shrinkResources true
