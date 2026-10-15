@@ -25,16 +25,17 @@
   rustc,
   writableTmpDirAsHomeHook,
   gradle_8_14_4,
+  nix-update-script,
 }:
 
 let
-  version = "12.10.7.0";
+  version = "13.0.2.0";
 
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "TelegramAndroid";
     tag = version;
-    hash = "sha256-NcIsELur2AzfzQWh+CusUV7nOsfc5a+mTOIrW5WPnr0=";
+    hash = "sha256-7U5nU8qHny+S+wZxTfnlOzabUdpKzbQ97zh1+eZ6T9o=";
     fetchSubmodules = true;
   };
 
@@ -85,7 +86,7 @@ let
     pname = "forkgram-tlottie";
     inherit version src;
     cargoRoot = "TMessagesProj/jni/tlottie";
-    hash = "sha256-ZICtOSL3BxNSrgHYir+GGb8vCEYCHZhZAjZMOIwQYE0=";
+    hash = "sha256-R/l5zMRB/2/a4Yf6toPBBvJ1SvebWsGeumwW9U6b7So=";
   };
 
   mkTlottieArchive =
@@ -130,6 +131,64 @@ let
   };
 
   tlottieArmv7 = mkTlottieArchive {
+    abi = "armeabi-v7a";
+    crossPkgs = armv7AndroidPkgs;
+    rustTarget = "armv7-linux-androideabi";
+  };
+
+  walletCargoDeps = rustPlatform.fetchCargoVendor {
+    pname = "forkgram-wallet";
+    inherit version src;
+    cargoRoot = "TMessagesProj/jni/gram-wallet";
+    hash = "sha256-awT4+c2Woe2SrnXPKS9uhvDuyYlhxp6CZMdHpXBIAog=";
+  };
+
+  llvmObjcopy = "${androidSdk}/share/android-sdk/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-objcopy";
+
+  mkWalletArchive =
+    {
+      abi,
+      crossPkgs,
+      rustTarget,
+    }:
+    crossPkgs.rustPlatform.buildRustPackage {
+      pname = "forkgram-wallet-${abi}";
+      inherit version src;
+
+      sourceRoot = "${src.name}/TMessagesProj/jni/gram-wallet";
+      cargoDeps = walletCargoDeps;
+      CARGO_BUILD_TARGET = rustTarget;
+      doCheck = false;
+
+      buildPhase = ''
+        runHook preBuild
+        cargo rustc \
+          --release \
+          --target ${rustTarget} \
+          --lib \
+          --crate-type staticlib
+        runHook postBuild
+      '';
+
+      installPhase = ''
+        runHook preInstall
+        install -Dm644 target/${rustTarget}/release/libgram_wallet.a \
+          "$out/${abi}/libwallet_engine.a"
+        "${llvmObjcopy}" \
+          --redefine-sym rust_eh_personality=wallet_engine_rust_eh_personality \
+          --redefine-sym DW.ref.rust_eh_personality=DW.ref.wallet_engine_rust_eh_personality \
+          "$out/${abi}/libwallet_engine.a"
+        runHook postInstall
+      '';
+    };
+
+  walletArm64 = mkWalletArchive {
+    abi = "arm64-v8a";
+    crossPkgs = aarch64AndroidPkgs;
+    rustTarget = "aarch64-linux-android";
+  };
+
+  walletArmv7 = mkWalletArchive {
     abi = "armeabi-v7a";
     crossPkgs = armv7AndroidPkgs;
     rustTarget = "armv7-linux-androideabi";
@@ -190,6 +249,19 @@ buildGradlePackage rec {
     cp "$SCRIPT_DIR/safe_tlottie/arm64-v8a/libtlottie.a" "$LIB_DIR/arm64-v8a/"
     cp "$SCRIPT_DIR/safe_tlottie/armeabi-v7a/libtlottie.a" "$LIB_DIR/armeabi-v7a/"
     EOF
+
+            cp -r TMessagesProj/jni/prebuild/include/wallet-engine TMessagesProj/jni/prebuild/saved_wallet_include
+
+            cat << 'EOF' > TMessagesProj/jni/prebuild/build_wallet_engine.sh
+    #!/usr/bin/env bash
+    SCRIPT_DIR="$(cd "$(dirname "''${BASH_SOURCE[0]}")" && pwd)"
+    LIB_DIR="$SCRIPT_DIR/lib"
+    INCLUDE_DIR="$SCRIPT_DIR/include"
+    mkdir -p "$LIB_DIR/arm64-v8a" "$LIB_DIR/armeabi-v7a" "$INCLUDE_DIR"
+    cp -r "$SCRIPT_DIR/saved_wallet_include" "$INCLUDE_DIR/wallet-engine"
+    cp "$SCRIPT_DIR/wallet_engine/arm64-v8a/libwallet_engine.a" "$LIB_DIR/arm64-v8a/"
+    cp "$SCRIPT_DIR/wallet_engine/armeabi-v7a/libwallet_engine.a" "$LIB_DIR/armeabi-v7a/"
+    EOF
             
             patchShebangs TMessagesProj/jni/
 
@@ -206,10 +278,19 @@ buildGradlePackage rec {
 
             substituteInPlace TMessagesProj/jni/prebuild/build_wamr.sh --replace-fail "-DWAMR_BUILD_LIB_WASI_THREADS=0" "-DWAMR_BUILD_LIB_WASI_THREADS=0 -DWAMR_BUILD_SIMD=0"
 
+            substituteInPlace TMessagesProj/jni/prebuild/build_prisma.sh \
+              --replace-fail 'actual_commit="$(git -C "$PRISMA_SRC" rev-parse HEAD)"' 'actual_commit="$EXPECTED_COMMIT"' \
+              --replace-fail 'actual_boost_commit="$(git -C "$BOOST_REGEX_SRC" rev-parse HEAD)"' 'actual_boost_commit="$EXPECTED_BOOST_COMMIT"'
+
             install -Dm644 ${tlottieArm64}/arm64-v8a/libtlottie.a \
               TMessagesProj/jni/prebuild/safe_tlottie/arm64-v8a/libtlottie.a
             install -Dm644 ${tlottieArmv7}/armeabi-v7a/libtlottie.a \
               TMessagesProj/jni/prebuild/safe_tlottie/armeabi-v7a/libtlottie.a
+
+            install -Dm644 ${walletArm64}/arm64-v8a/libwallet_engine.a \
+              TMessagesProj/jni/prebuild/wallet_engine/arm64-v8a/libwallet_engine.a
+            install -Dm644 ${walletArmv7}/armeabi-v7a/libwallet_engine.a \
+              TMessagesProj/jni/prebuild/wallet_engine/armeabi-v7a/libwallet_engine.a
 
 
             substituteInPlace TMessagesProj/jni/CMakeLists.txt \
@@ -307,10 +388,13 @@ buildGradlePackage rec {
     runHook postInstall
   '';
 
-  passthru.signScript = mkSignScript {
-    name = "sign-forkgram";
-    apkPath = "${placeholder "out"}/forkgram.apk";
-    defaultOut = "forkgram-signed.apk";
+  passthru = {
+    signScript = mkSignScript {
+      name = "sign-forkgram";
+      apkPath = "${placeholder "out"}/forkgram.apk";
+      defaultOut = "forkgram-signed.apk";
+    };
+    updateScript = nix-update-script { };
   };
   meta = with lib; {
     description = "Telegram Android client fork (ForkGram)";

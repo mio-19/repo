@@ -15,6 +15,7 @@
   mkSignScript,
   meson,
   ninja,
+  nix-update-script,
   perl,
   pkg-config,
   python3,
@@ -28,13 +29,13 @@
 }:
 
 let
-  version = "12.10.10.0";
+  version = "13.0.2.0";
 
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-9RcZUhL3nLhTDQJsWm0go6OaxOjYlOMp1+8ObO8j0Fo=";
+    hash = "sha256-Gyxz8jcc8lKtqxdC20wun6RNbtfRw5tgkjUXOLrZhvE=";
     fetchSubmodules = true;
   };
 
@@ -85,7 +86,7 @@ let
     pname = "forkgram-tlottie";
     inherit version src;
     cargoRoot = "TMessagesProj/jni/tlottie";
-    hash = "sha256-ZICtOSL3BxNSrgHYir+GGb8vCEYCHZhZAjZMOIwQYE0=";
+    hash = "sha256-R/l5zMRB/2/a4Yf6toPBBvJ1SvebWsGeumwW9U6b7So=";
   };
 
   mkTlottieArchive =
@@ -134,23 +135,68 @@ let
     crossPkgs = armv7AndroidPkgs;
     rustTarget = "armv7-linux-androideabi";
   };
-  simde = fetchFromGitHub {
-    owner = "simd-everywhere";
-    repo = "simde";
-    tag = "v0.8.2";
-    hash = "sha256-igjDHCpKXy6EbA9Mf6peL4OTVRPYTV0Y2jbgYQuWMT4=";
+
+  walletCargoDeps = rustPlatform.fetchCargoVendor {
+    pname = "forkgram-wallet";
+    inherit version src;
+    cargoRoot = "TMessagesProj/jni/gram-wallet";
+    hash = "sha256-awT4+c2Woe2SrnXPKS9uhvDuyYlhxp6CZMdHpXBIAog=";
+  };
+
+  llvmObjcopy = "${androidSdk}/share/android-sdk/ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-objcopy";
+
+  mkWalletArchive =
+    {
+      abi,
+      crossPkgs,
+      rustTarget,
+    }:
+    crossPkgs.rustPlatform.buildRustPackage {
+      pname = "forkgram-wallet-${abi}";
+      inherit version src;
+
+      sourceRoot = "${src.name}/TMessagesProj/jni/gram-wallet";
+      cargoDeps = walletCargoDeps;
+      CARGO_BUILD_TARGET = rustTarget;
+      doCheck = false;
+
+      buildPhase = ''
+        runHook preBuild
+        cargo rustc \
+          --release \
+          --target ${rustTarget} \
+          --lib \
+          --crate-type staticlib
+        runHook postBuild
+      '';
+
+      installPhase = ''
+        runHook preInstall
+        install -Dm644 target/${rustTarget}/release/libgram_wallet.a \
+          "$out/${abi}/libwallet_engine.a"
+        "${llvmObjcopy}" \
+          --redefine-sym rust_eh_personality=wallet_engine_rust_eh_personality \
+          --redefine-sym DW.ref.rust_eh_personality=DW.ref.wallet_engine_rust_eh_personality \
+          "$out/${abi}/libwallet_engine.a"
+        runHook postInstall
+      '';
+    };
+
+  walletArm64 = mkWalletArchive {
+    abi = "arm64-v8a";
+    crossPkgs = aarch64AndroidPkgs;
+    rustTarget = "aarch64-linux-android";
+  };
+
+  walletArmv7 = mkWalletArchive {
+    abi = "armeabi-v7a";
+    crossPkgs = armv7AndroidPkgs;
+    rustTarget = "armv7-linux-androideabi";
   };
 in
 buildGradlePackage rec {
   pname = "forkgram-classic";
-  version = "12.10.10.0";
-  src = fetchFromGitHub {
-    owner = "forkgram";
-    repo = "forkgram-classic";
-    tag = version;
-    hash = "sha256-9RcZUhL3nLhTDQJsWm0go6OaxOjYlOMp1+8ObO8j0Fo=";
-    fetchSubmodules = true;
-  };
+  inherit version src;
 
   gradle = gradle_8_14_4;
 
@@ -163,6 +209,7 @@ buildGradlePackage rec {
   nativeBuildInputs = [
     androidSdk
     cmake
+    git
     gperf
     go
     cargo
@@ -183,7 +230,6 @@ buildGradlePackage rec {
 
   patches = [
     ./0001-Killergram.patch
-    ./native-build.patch
     ./fdroid.patch
   ];
 
@@ -199,6 +245,19 @@ buildGradlePackage rec {
     cp "$SCRIPT_DIR/safe_tlottie/arm64-v8a/libtlottie.a" "$LIB_DIR/arm64-v8a/"
     cp "$SCRIPT_DIR/safe_tlottie/armeabi-v7a/libtlottie.a" "$LIB_DIR/armeabi-v7a/"
     EOF
+
+            cp -r TMessagesProj/jni/prebuild/include/wallet-engine TMessagesProj/jni/prebuild/saved_wallet_include
+
+            cat << 'EOF' > TMessagesProj/jni/prebuild/build_wallet_engine.sh
+    #!/usr/bin/env bash
+    SCRIPT_DIR="$(cd "$(dirname "''${BASH_SOURCE[0]}")" && pwd)"
+    LIB_DIR="$SCRIPT_DIR/lib"
+    INCLUDE_DIR="$SCRIPT_DIR/include"
+    mkdir -p "$LIB_DIR/arm64-v8a" "$LIB_DIR/armeabi-v7a" "$INCLUDE_DIR"
+    cp -r "$SCRIPT_DIR/saved_wallet_include" "$INCLUDE_DIR/wallet-engine"
+    cp "$SCRIPT_DIR/wallet_engine/arm64-v8a/libwallet_engine.a" "$LIB_DIR/arm64-v8a/"
+    cp "$SCRIPT_DIR/wallet_engine/armeabi-v7a/libwallet_engine.a" "$LIB_DIR/armeabi-v7a/"
+    EOF
             
             patchShebangs TMessagesProj/jni/
 
@@ -206,28 +265,37 @@ buildGradlePackage rec {
               --replace-fail "return 'rm -rf ' + folder" "return 'true'" \
               --replace-quiet "git submodule init && git submodule update" "" \
               --replace-quiet "git checkout -- prebuild" "" \
+              --replace-quiet "./prebuild/build_all.sh" "bash -x ./prebuild/build_all.sh" \
               --replace-quiet "cd boringssl && git reset --hard HEAD && cd .." "" \
               --replace-quiet "git reset HEAD tde2e/ && git checkout -- tde2e/" "" \
               --replace-quiet "cd tde2e_source && git reset --hard HEAD && cd .." "" \
               --replace-quiet "git checkout -- ffmpeg" "" \
               --replace-quiet "git checkout -- prebuild" ""
 
-            if [ -f TMessagesProj/jni/third_party/wamr/core/iwasm/libraries/simde/simde.cmake ]; then
-              substituteInPlace TMessagesProj/jni/third_party/wamr/core/iwasm/libraries/simde/simde.cmake \
-                --replace-fail "FetchContent_MakeAvailable(simde)" "" \
-                --replace-fail "\"\''${simde_SOURCE_DIR}\"" "${simde}"
-            fi
+            substituteInPlace TMessagesProj/jni/prebuild/build_wamr.sh --replace-fail "-DWAMR_BUILD_LIB_WASI_THREADS=0" "-DWAMR_BUILD_LIB_WASI_THREADS=0 -DWAMR_BUILD_SIMD=0"
+
+            substituteInPlace TMessagesProj/jni/prebuild/build_prisma.sh \
+              --replace-fail 'actual_commit="$(git -C "$PRISMA_SRC" rev-parse HEAD)"' 'actual_commit="$EXPECTED_COMMIT"' \
+              --replace-fail 'actual_boost_commit="$(git -C "$BOOST_REGEX_SRC" rev-parse HEAD)"' 'actual_boost_commit="$EXPECTED_BOOST_COMMIT"'
 
             install -Dm644 ${tlottieArm64}/arm64-v8a/libtlottie.a \
               TMessagesProj/jni/prebuild/safe_tlottie/arm64-v8a/libtlottie.a
             install -Dm644 ${tlottieArmv7}/armeabi-v7a/libtlottie.a \
               TMessagesProj/jni/prebuild/safe_tlottie/armeabi-v7a/libtlottie.a
 
+            install -Dm644 ${walletArm64}/arm64-v8a/libwallet_engine.a \
+              TMessagesProj/jni/prebuild/wallet_engine/arm64-v8a/libwallet_engine.a
+            install -Dm644 ${walletArmv7}/armeabi-v7a/libwallet_engine.a \
+              TMessagesProj/jni/prebuild/wallet_engine/armeabi-v7a/libwallet_engine.a
 
-            if [ "$(uname -s)" = "Darwin" ]; then
-              substituteInPlace TMessagesProj/jni/tde2e/build-tdlib.sh \
-                --replace-warn "linux-x86_64" "darwin-x86_64"
-            fi
+            substituteInPlace TMessagesProj/jni/CMakeLists.txt \
+              --replace-fail 'set(CMAKE_C_FLAGS "''${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections -fvisibility=hidden -flto=full")' 'set(CMAKE_C_FLAGS "''${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections -fvisibility=hidden")' \
+              --replace-fail 'set(CMAKE_CXX_FLAGS "''${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections -fvisibility=hidden -fvisibility-inlines-hidden -flto=full")' 'set(CMAKE_CXX_FLAGS "''${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections -fvisibility=hidden -fvisibility-inlines-hidden")' \
+              --replace-fail 'set(CMAKE_SHARED_LINKER_FLAGS "''${CMAKE_SHARED_LINKER_FLAGS} -flto=full -Wl,--gc-sections -Wl,--icf=safe -Wl,-Bsymbolic")' 'set(CMAKE_SHARED_LINKER_FLAGS "''${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections -Wl,-Bsymbolic")' \
+              --replace-fail 'include(AndroidNdkModules)
+    android_ndk_import_module_cpufeatures()' 'add_library(cpufeatures STATIC "''${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c")
+    target_include_directories(cpufeatures PUBLIC "''${ANDROID_NDK}/sources/android/cpufeatures")
+    set_target_properties(cpufeatures PROPERTIES POSITION_INDEPENDENT_CODE ON)'
 
             substituteInPlace TMessagesProj/jni/td/CMakeLists.txt \
               --replace-fail 'find_package(ZLIB)' 'set(ZLIB_FOUND 1)
@@ -242,16 +310,6 @@ buildGradlePackage rec {
             substituteInPlace gradle.properties \
               --replace-fail "F_DROID=0" "F_DROID=1"
 
-            cat >> build.gradle << 'EOF'
-        allprojects {
-            afterEvaluate {
-                if (project.hasProperty("android")) {
-                    android.ndkVersion = "27.2.12479018"
-                }
-            }
-        }
-    EOF
-
             echo "cmake.dir=${cmake}" >> local.properties
             echo "ndk.dir=${androidSdk}/share/android-sdk/ndk/27.2.12479018" >> local.properties
             echo "android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2" >> gradle.properties
@@ -262,6 +320,22 @@ buildGradlePackage rec {
               -alias androidkey -keyalg RSA -keysize 2048 -validity 10000 \
               -storepass android -keypass android \
               -dname "CN=Forkgram Classic Build"
+
+            for f in TMessagesProj/jni/build_boringssl.sh \
+                     TMessagesProj/jni/tde2e/build-tdlib.sh; do
+              if [ ! -f "$f" ]; then continue; fi
+              if grep -q "ANDROID_API=16" "$f" 2>/dev/null; then
+                substituteInPlace "$f" --replace-fail "ANDROID_API=16" "ANDROID_API=21"
+              fi
+              if grep -q "android-16" "$f" 2>/dev/null; then
+                substituteInPlace "$f" --replace-fail "android-16" "android-21"
+              fi
+              substituteInPlace "$f" \
+                --replace-quiet "\''${TOOLS_PREFIX}ar" "\''${LLVM_BIN}/llvm-ar" \
+                --replace-quiet "\''${TOOLS_PREFIX}ld" "\''${LLVM_BIN}/ld.lld" \
+                --replace-quiet "\''${TOOLS_PREFIX}strip" "\''${LLVM_BIN}/llvm-strip" \
+                --replace-quiet "\''${TOOLS_PREFIX}nm" "\''${LLVM_BIN}/llvm-nm"
+            done
 
             mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/crypto
             mkdir -p TMessagesProj/jni/boringssl/vendor/golang.org/x/net
@@ -296,19 +370,21 @@ buildGradlePackage rec {
 
   gradleBuildFlagsArray = [ ":TMessagesProj_App:assembleAfatFd_v8aRelease" ];
 
-  gradleFlags = [ "-Pandroid.ndkVersion=27.2.12479018" ];
-
   installPhase = ''
     runHook preInstall
     install -Dm644 TMessagesProj_App/build/outputs/apk/afatFd_v8a/release/*.apk "$out/forkgram-classic.apk"
     runHook postInstall
   '';
 
-  passthru.signScript = mkSignScript {
-    name = "sign-forkgram-classic";
-    apkPath = "${placeholder "out"}/forkgram-classic.apk";
-    defaultOut = "forkgram-classic-signed.apk";
+  passthru = {
+    signScript = mkSignScript {
+      name = "sign-forkgram-classic";
+      apkPath = "${placeholder "out"}/forkgram-classic.apk";
+      defaultOut = "forkgram-classic-signed.apk";
+    };
+    updateScript = nix-update-script { };
   };
+
   meta = with lib; {
     description = "Telegram Android client fork (Forkgram Classic)";
     homepage = "https://github.com/forkgram/forkgram-classic";

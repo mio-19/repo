@@ -8,6 +8,7 @@
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  nix-update-script,
 }:
 let
   appPackage =
@@ -33,13 +34,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "gamenative";
-      version = "1.2.1";
+      version = "1.3.0";
 
       src = fetchFromGitHub {
         owner = "utkarshdalal";
         repo = "GameNative";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-VTBY1+iq0pSLSeaxXQS6HVIORKgW+TltON5+Zfl78o8=";
+        hash = "sha256-E+ZaCG5h6S8YlKUyNRwluUrNJwSy0V6VnHbpvhhAgfM=";
       };
 
       patches = [
@@ -102,6 +103,10 @@ let
         install -Dm644 "$apk_path" "$out/gamenative.apk"
         runHook postInstall
       '';
+
+      passthru = {
+        updateScript = nix-update-script { };
+      };
 
       meta = with lib; {
         sourceProvenance = with sourceTypes; [ fromSource ];
