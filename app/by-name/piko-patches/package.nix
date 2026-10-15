@@ -10,7 +10,7 @@
   morphe-patches-library-m2_1_6_0,
   apktool-src,
   multidexlib2-src,
-  morphe-patcher-src_1_14_0,
+  morphe-patcher-src_1_14_1,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -60,16 +60,13 @@ stdenv.mkDerivation (finalAttrs: {
 
   postUnpack = ''
     root="$PWD"
-    cp -a ${morphe-patcher-src_1_14_0} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_1_14_1} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
     cp -a ${apktool-src} "$root/Apktool"
     chmod -R u+w "$root/Apktool"
 
     cp -a ${multidexlib2-src} "$root/multidexlib2"
     chmod -R u+w "$root/multidexlib2"
-
-    substituteInPlace "$sourceRoot/gradle/libs.versions.toml" \
-      --replace-fail 'morphe-patcher = "1.14.1"' 'morphe-patcher = "1.14.0"'
 
     patch -d "$sourceRoot" -p0 < ${./settings.gradle.kts.patch}
 
