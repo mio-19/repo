@@ -1,0 +1,53 @@
+diff -uNr -p --strip-trailing-cr a/src/app/seamlessupdate/client/SecurityPreviewSettings.java b/src/app/seamlessupdate/client/SecurityPreviewSettings.java
+--- a/src/app/seamlessupdate/client/SecurityPreviewSettings.java	2026-10-15 11:52:43.242737648 +1100
++++ b/src/app/seamlessupdate/client/SecurityPreviewSettings.java	2026-10-15 11:52:59.563711511 +1100
+@@ -64,18 +64,13 @@ public class SecurityPreviewSettings ext
+ 
+     public static class SettingsFragment extends Fragment {
+         private static final String TAG = "SecPreviewSettingsFrag";
+-        // set the preference to default to true, but not persisted immediately
+-        private static final boolean DEFAULT_SECURITY_PREVIEW_WHEN_UNSET = true;
++        // set the preference to default to false, but not persisted immediately
++        private static final boolean DEFAULT_SECURITY_PREVIEW_WHEN_UNSET = false;
+ 
+         private boolean isUsingPreviewChannel;
+ 
+         private static boolean shouldUseSecurityPreviewChannel(final Context context) {
+-            int val = Settings.getPreferences(context).getInt(KEY_USE_SECURITY_PREVIEW_CHANNEL, -1);
+-            return switch (val) {
+-                case 0 -> false;
+-                case 1 -> true;
+-                default -> DEFAULT_SECURITY_PREVIEW_WHEN_UNSET;
+-            };
++            return false;
+         }
+ 
+         @NonNull
+diff -uNr -p --strip-trailing-cr a/src/app/seamlessupdate/client/Settings.java b/src/app/seamlessupdate/client/Settings.java
+--- a/src/app/seamlessupdate/client/Settings.java	2026-10-15 11:52:43.248737638 +1100
++++ b/src/app/seamlessupdate/client/Settings.java	2026-10-15 11:53:21.751675980 +1100
+@@ -51,15 +51,7 @@ public class Settings extends Collapsing
+     }
+ 
+     static boolean shouldUseSecurityPreviewChannel(final Context context) {
+-        int val = getPreferences(context).getInt(KEY_USE_SECURITY_PREVIEW_CHANNEL, -1);
+-        switch (val) {
+-            case 0:
+-                return false;
+-            case 1:
+-                return true;
+-            default:
+-                return false;
+-        }
++        return false;
+     }
+ 
+     static int getNetworkType(final Context context) {
+@@ -187,6 +179,7 @@ public class Settings extends Collapsing
+                     requirePreference(KEY_USE_SECURITY_PREVIEW_CHANNEL);
+             final boolean newChecked = shouldUseSecurityPreviewChannel(requireContext());
+             useSecurityPreviewChannel.setChecked(newChecked);
++            useSecurityPreviewChannel.setEnabled(false);
+             return useSecurityPreviewChannel;
+         }
+ 

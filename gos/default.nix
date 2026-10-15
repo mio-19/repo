@@ -191,6 +191,7 @@ in
     */
   ];
   source.dirs."packages/apps/Updater".patches = [
+    ./updater-disable-security-preview.patch
     /*
       # conflicts
       (fetchpatch {
@@ -199,6 +200,9 @@ in
         hash = "sha256-32bWUQovFdG7xwv49QoqdXFgbMWg2X2Qg7d81mbduik=";
       })
     */
+  ];
+  source.dirs."packages/apps/SetupWizard2".patches = [
+    ./setupwizard-skip-embargo-and-countdown.patch
   ];
   source.dirs."packages/services/Telecomm".patches = [
     (fetchpatch {
