@@ -70,59 +70,62 @@ index 88ec0e9..22aa5f7 100644
          public String getTitle() {
              if (mIsGroup) {
                  return mGroupConversationName;
-diff --git a/src/com/android/messaging/receiver/CopyVerificationCodeReceiver.kt b/src/com/android/messaging/receiver/CopyVerificationCodeReceiver.kt
+diff --git a/src/com/android/messaging/receiver/CopyVerificationCodeReceiver.java b/src/com/android/messaging/receiver/CopyVerificationCodeReceiver.java
 new file mode 100644
-index 0000000..d04ba89
+index 0000000..f917a38
 --- /dev/null
-+++ b/src/com/android/messaging/receiver/CopyVerificationCodeReceiver.kt
-@@ -0,0 +1,49 @@
-+package com.android.messaging.receiver
++++ b/src/com/android/messaging/receiver/CopyVerificationCodeReceiver.java
+@@ -0,0 +1,52 @@
++package com.android.messaging.receiver;
 +
-+import android.content.BroadcastReceiver
-+import android.content.ClipData
-+import android.content.ClipDescription
-+import android.content.ClipboardManager
-+import android.content.Context
-+import android.content.Intent
-+import android.os.Build
-+import android.os.PersistableBundle
-+import android.widget.Toast
-+import com.android.messaging.R
-+import com.android.messaging.datamodel.action.MarkAsReadAction
-+import com.android.messaging.ui.UIIntents
++import android.content.BroadcastReceiver;
++import android.content.ClipData;
++import android.content.ClipDescription;
++import android.content.ClipboardManager;
++import android.content.Context;
++import android.content.Intent;
++import android.os.Build;
++import android.os.PersistableBundle;
++import android.widget.Toast;
 +
-+class CopyVerificationCodeReceiver : BroadcastReceiver() {
-+    override fun onReceive(context: Context, intent: Intent) {
-+        if (intent.action == ACTION_COPY_VERIFICATION_CODE) {
-+            val code = intent.getStringExtra(EXTRA_VERIFICATION_CODE) ?: return
-+            val conversationId = intent.getStringExtra(UIIntents.UI_INTENT_EXTRA_CONVERSATION_ID)
++import com.android.messaging.R;
++import com.android.messaging.datamodel.action.MarkAsReadAction;
++import com.android.messaging.ui.UIIntents;
 +
-+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
++public class CopyVerificationCodeReceiver extends BroadcastReceiver {
++    public static final String ACTION_COPY_VERIFICATION_CODE = "com.android.messaging.receiver.COPY_VERIFICATION_CODE";
++    public static final String EXTRA_VERIFICATION_CODE = "verification_code";
++
++    @Override
++    public void onReceive(final Context context, final Intent intent) {
++        if (ACTION_COPY_VERIFICATION_CODE.equals(intent.getAction())) {
++            final String code = intent.getStringExtra(EXTRA_VERIFICATION_CODE);
++            if (code == null) {
++                return;
++            }
++            final String conversationId = intent.getStringExtra(UIIntents.UI_INTENT_EXTRA_CONVERSATION_ID);
++
++            final ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 +            if (clipboard != null) {
-+                val clip = ClipData.newPlainText(context.getString(R.string.verification_code_label), code)
++                final ClipData clip = ClipData.newPlainText(context.getString(R.string.verification_code_label), code);
 +                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-+                    clip.description.extras = PersistableBundle().apply {
-+                        putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
-+                    }
++                    final PersistableBundle bundle = new PersistableBundle();
++                    bundle.putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true);
++                    clip.getDescription().setExtras(bundle);
 +                }
-+                clipboard.setPrimaryClip(clip)
++                clipboard.setPrimaryClip(clip);
 +            }
 +
 +            Toast.makeText(
 +                context,
 +                context.getString(R.string.verification_code_copied_toast, code),
-+                Toast.LENGTH_SHORT,
-+            ).show()
++                Toast.LENGTH_SHORT
++            ).show();
 +
-+            if (!conversationId.isNullOrEmpty()) {
-+                MarkAsReadAction.markAsRead(conversationId, true)
++            if (conversationId != null && !conversationId.isEmpty()) {
++                MarkAsReadAction.markAsRead(conversationId, true);
 +            }
 +        }
-+    }
-+
-+    companion object {
-+        const val ACTION_COPY_VERIFICATION_CODE = "com.android.messaging.receiver.COPY_VERIFICATION_CODE"
-+        const val EXTRA_VERIFICATION_CODE = "verification_code"
 +    }
 +}
 diff --git a/src/com/android/messaging/ui/UIIntents.java b/src/com/android/messaging/ui/UIIntents.java
@@ -343,138 +346,216 @@ index fbd326b..af4d028 100644
  
 diff --git a/src/com/android/messaging/util/VerificationCodeUtil.kt b/src/com/android/messaging/util/VerificationCodeUtil.kt
 new file mode 100644
-index 0000000..44badf2
+index 0000000..0537e34
 --- /dev/null
 +++ b/src/com/android/messaging/util/VerificationCodeUtil.kt
-@@ -0,0 +1,131 @@
+@@ -0,0 +1,209 @@
 +package com.android.messaging.util
 +
-+import java.util.regex.Pattern
++/**
++ * Verification code / OTP extractor.
++ *
++ * Adapted from jd1378/otphelper:
++ * https://github.com/jd1378/otphelper/blob/main/app/src/main/java/io/github/jd1378/otphelper/utils/CodeExtractor.kt
++ *
++ * Licensed under the GNU General Public License v3.0 (GPL-3.0-or-later).
++ * https://github.com/jd1378/otphelper/blob/main/LICENSE
++ */
++
++// java's \b only treats ascii as word chars, so it never matches next to
++// cyrillic/hebrew/persian letters. these are its unicode-aware equivalent.
++private const val WORD_START = "(?<![\\p{L}\\p{N}_])"
++private const val WORD_END = "(?![\\p{L}\\p{N}_])"
++
++object CodeExtractorDefaults {
++    val sensitivePhrases = listOf(
++        "code",
++        "One[-\\s]Time[-\\s]Password",
++        "کد",
++        "رمز",
++        "شناسه\\s+تا[یي][یي]د", // "confirmation id" in persian
++        "\\bOTP\\W",
++        "\\b2FA\\W",
++        "Einmalkennwort",
++        "contraseña",
++        "c[oó]digo",
++        "clave",
++        "\\bel siguiente PIN\\W", // spanish
++        "验证码",
++        "校验码",
++        "識別碼",
++        "認證",
++        "驗證",
++        "код",
++        "סיסמ",
++        "${WORD_START}הקود$WORD_END",
++        "${WORD_START}קود$WORD_END",
++        "\\bKodu\\W", // "code" in turkish
++        "\\bKodunuz\\W", // "your code" in turkish
++        "\\b[sş]ifre:\\W", // "password" in turkish
++        "\\b[sş]ifreniz(?=\\W)", // "your password" in turkish
++        "\\bKodi\\W",
++        "\\bKods\\W",
++        "\\b(?:m|sms)?TAN\\W",
++        "\\bcodice\\W", // "code" in italian
++        "コード", // "code" in japanese
++        "パスワード", // "password" in japanese
++        "認証番号", // "authentication number" in japanese
++        "ワンタイム", // "one time" in japanese
++        "\\bvahvistuskoodi", // "confirmation code" in finnish
++        "\\bkertakäyttökoodisi\\W", // "your single-use code" in finnish
++        "\\bkod\\W", // PL
++        "\\bautoryzacji\\W", // PL
++        "Parol\\s+dlya\\s+podtverzhdeniya", // russian
++        "${WORD_START}пароль$WORD_END", // russian
++        "인증번호", // "authentication number" in korean
++        "\\bverification\\b",
++        "\\bverify\\b",
++        "\\bpasscode\\b",
++        "\\bpin\\b",
++    )
++
++    val skipPhrases = listOf(
++        "مقدار",
++        "مبلغ",
++        "amount",
++        "برای",
++        "-ارز",
++        // avoids detecting space separated code as bunch of words:
++        "[a-zA-Z0-9] [a-zA-Z0-9] [a-zA-Z0-9] [a-zA-Z0-9] ?",
++    )
++
++    val currencyIndicators = listOf(
++        "USD",
++        "EUR",
++        "GBP",
++        "[$€£]",
++    )
++
++    val ignoredPhrases = listOf(
++        "تخفیف",
++        "تخفیفات",
++        "تخفیفها",
++        "takhfif",
++        "off",
++        "اشتباه وارد شده",
++        "RatingCode",
++        "vscode",
++        "versionCode",
++        "unicode",
++        "discount code",
++        "fancode",
++        "encode",
++        "decode",
++        "barcode",
++        "codex",
++    )
++
++    val cleanupPhrases = listOf(
++        "[a-zA-Z0-9][a-zA-Z0-9-]{0,61}\\.[a-zA-Z]{2,}(?:[.a-zA-Z]{0,3}(?=\\s+)|)", // simpleDomainRegex
++        "['\"]",
++        "Endziffer-\\d+",
++        "Ending \\d+",
++        "<#>",
++        "share OTP",
++    )
++}
++
++class CodeExtractor(
++    private val sensitivePhrases: List<String> = CodeExtractorDefaults.sensitivePhrases,
++    private val ignoredPhrases: List<String> = CodeExtractorDefaults.ignoredPhrases,
++    private val cleanupPhrases: List<String> = CodeExtractorDefaults.cleanupPhrases,
++) {
++    val generalCodeMatcher: Regex =
++        """(${sensitivePhrases.joinToString("|")})(?:\s*(?!${
++            CodeExtractorDefaults.skipPhrases.joinToString("|")
++        })(?:[^\s:：܃︓﹕.'"\d\u0660-\u0669\u06F0-\u06F9]|[\d\u0660-\u0669\u06F0-\u06F9,\s]+(?:${
++            CodeExtractorDefaults.currencyIndicators.joinToString("|")
++        })|[\d\u0660-\u0669\u06F0-\u06F9][^\d\u0660-\u0669\u06F0-\u06F9]))*\s*[:：܃︓﹕]?\s*(["'「]?)${
++            ""
++        }([\d\u0660-\u0669\u06F0-\u06F9a-zA-Z\-]{4,}|\d{3,4}\s+\d{3,4}|(?: [\d\u0660-\u0669\u06F0-\u06F9a-zA-Z]){4,}|)\1?(?:[^\d\u0660-\u0669\u06F0-\u06F9a-zA-Z]|${'$'})"""
++            .toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
++
++    val specialCodeMatcher =
++        """((?:[\d\u0660-\u0669\u06F0-\u06F9]-?){4,}(?=\s)|[\d\u0660-\u0669\u06F0-\u06F9 ]{4,}(?=\s)|[\d\u0660-\u0669\u06F0-\u06F9]{4,})[^:]*(${
++            sensitivePhrases.joinToString("|")
++        })"""
++            .toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
++
++    val ignoredPhrasesRegex =
++        """$WORD_START(${ignoredPhrases.joinToString("|")})$WORD_END"""
++            .toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
++
++    val cleanupPhrasesRegex =
++        """(${cleanupPhrases.joinToString("|")})"""
++            .toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
++
++    fun getCode(str: String, doCleanup: Boolean = true): String? {
++        if (sensitivePhrases.isEmpty()) return null
++        val cleanStr = if (doCleanup) cleanup(str) else str
++        val results = generalCodeMatcher.findAll(cleanStr).filter { it.groups[3]?.value != null }
++        if (results.count() > 0) {
++            var foundCode =
++                results
++                    .find { it.groups[3]!!.value.isNotEmpty() }
++                    ?.groups
++                    ?.get(3)
++                    ?.value
++                    ?.replace(" ", "")
++                    ?.replace("-", "")
++
++            if (foundCode.isNullOrEmpty()) {
++                foundCode =
++                    specialCodeMatcher
++                        .find(cleanStr)
++                        ?.groups
++                        ?.get(1)
++                        ?.value
++                        ?.replace(" ", "")
++                        ?.replace("-", "")
++            }
++
++            if (!foundCode.isNullOrEmpty()) {
++                return toEnglishNumbers(foundCode)
++            }
++        }
++        return null
++    }
++
++    private fun toEnglishNumbers(number: String?): String? {
++        if (number.isNullOrEmpty()) return null
++        val chars = CharArray(number.length)
++        for (i in number.indices) {
++            var ch = number[i]
++            if (ch.code in 0x0660..0x0669) {
++                ch -= (0x0660 - '0'.code)
++            } else if (ch.code in 0x06f0..0x06F9) {
++                ch -= (0x06f0 - '0'.code)
++            }
++            chars[i] = ch
++        }
++        return String(chars)
++    }
++
++    fun shouldIgnore(str: String): Boolean {
++        if (ignoredPhrases.isEmpty()) return false
++        return ignoredPhrasesRegex.containsMatchIn(str)
++    }
++
++    fun cleanup(str: String): String {
++        if (cleanupPhrases.isEmpty()) return str
++        return str.replace(cleanupPhrasesRegex, "")
++    }
++}
 +
 +object VerificationCodeUtil {
++    private val defaultExtractor = CodeExtractor()
 +
-+    // Common verification/OTP trigger keywords across multiple languages
-+    private val TRIGGER_KEYWORD_PATTERN = Pattern.compile(
-+        "(?i)\\b(?:" +
-+            // English
-+            "code|otp|pin|passcode|password|verification|verify|verifying|auth|authenticate|authentication|security|secret|confirm|confirmation|login|access" +
-+            // Spanish & Portuguese
-+            "|c[oó]digo|c[oó]digos|verificaci[oó]n|verificar|autentica[cç][aã]o|confirma[cç][aã]o|seguran[cç]a|seguridad|clave" +
-+            // French
-+            "|v[eé]rification|v[eé]rifier|authentification|confirmation|s[eé]curit[eé]" +
-+            // German
-+            "|sicherheitscode|best[aä]tigungscode|verifizierung|best[aä]tigen" +
-+            // Italian
-+            "|codice|verifica|autenticazione|conferma|sicurezza" +
-+            // Russian
-+            "|код|пароль|верификац|подтвержд" +
-+            // Chinese / Japanese
-+            "|验证码|驗證碼|动态码|動態碼|认证码|認證碼|校验码|認証コード|確認コード" +
-+            ")\\b",
-+        Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE,
-+    )
-+
-+    // Direct match pattern: keyword followed by optional words/separators and then code
-+    // Example: "code is 123456", "OTP: 9876", "código: 54321", "verification code: G-123456"
-+    private val DIRECT_CODE_PATTERN = Pattern.compile(
-+        "(?i)(?:code|otp|pin|passcode|password|c[oó]digo|codice|clave|код|验证码|驗證碼|認証コード|確認コード)" +
-+            "[^0-9a-zA-Z]{0,15}?" +
-+            "(?:is|ist|est|es|para|de|for|=|:|-|#)?\\s*" +
-+            "([A-Za-z0-9]{1,3}[- ]?\\d{4,8}|\\b\\d{4,8}\\b)",
-+        Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE,
-+    )
-+
-+    // Prefix patterns like G-123456 (Google)
-+    private val PREFIX_CODE_PATTERN = Pattern.compile(
-+        "(?i)\\b([A-Za-z]-?\\d{4,8})\\b",
-+    )
-+
-+    // Hyphenated/spaced digits like 123-456 or 123 456
-+    private val HYPHENATED_CODE_PATTERN = Pattern.compile(
-+        "\\b(\\d{3,4})[- ](\\d{3,4})\\b",
-+    )
-+
-+    // Standalone 4 to 8 digit numbers
-+    private val STANDALONE_DIGITS_PATTERN = Pattern.compile(
-+        "\\b\\d{4,8}\\b",
-+    )
-+
-+    /**
-+     * Extracts a verification code / OTP from the given message text if present.
-+     * Returns null if no verification code is detected or if text does not look like a verification message.
-+     */
 +    @JvmStatic
 +    fun extractVerificationCode(text: CharSequence?): String? {
 +        if (text.isNullOrBlank()) return null
 +        val message = text.toString()
-+
-+        // 1. Must contain at least one verification trigger keyword
-+        if (!TRIGGER_KEYWORD_PATTERN.matcher(message).find()) {
-+            return null
-+        }
-+
-+        // 2. Try direct pattern after keyword (highest confidence)
-+        val directMatcher = DIRECT_CODE_PATTERN.matcher(message)
-+        if (directMatcher.find()) {
-+            val candidate = directMatcher.group(1)?.trim()
-+            if (!candidate.isNullOrEmpty()) {
-+                val clean = normalizeCode(candidate)
-+                if (isValidCode(clean)) return clean
-+            }
-+        }
-+
-+        // 3. Try prefix pattern (e.g. G-123456)
-+        val prefixMatcher = PREFIX_CODE_PATTERN.matcher(message)
-+        while (prefixMatcher.find()) {
-+            val candidate = prefixMatcher.group(1)?.trim()
-+            if (!candidate.isNullOrEmpty()) {
-+                val clean = normalizeCode(candidate)
-+                if (isValidCode(clean)) return clean
-+            }
-+        }
-+
-+        // 4. Try hyphenated pattern (e.g. 123-456)
-+        val hyphenMatcher = HYPHENATED_CODE_PATTERN.matcher(message)
-+        while (hyphenMatcher.find()) {
-+            val p1 = hyphenMatcher.group(1)
-+            val p2 = hyphenMatcher.group(2)
-+            if (p1 != null && p2 != null) {
-+                val combined = p1 + p2
-+                if (isValidCode(combined)) return combined
-+            }
-+        }
-+
-+        // 5. Try standalone digits (filter out obvious years like 1990..2040 if others exist)
-+        val standaloneMatcher = STANDALONE_DIGITS_PATTERN.matcher(message)
-+        var fallbackCandidate: String? = null
-+        while (standaloneMatcher.find()) {
-+            val candidate = standaloneMatcher.group()
-+            if (isValidCode(candidate)) {
-+                val num = candidate.toIntOrNull()
-+                if (candidate.length == 4 && num != null && num in 1990..2040) {
-+                    if (fallbackCandidate == null) fallbackCandidate = candidate
-+                } else {
-+                    return candidate
-+                }
-+            }
-+        }
-+
-+        return fallbackCandidate
-+    }
-+
-+    private fun normalizeCode(code: String): String {
-+        // If code is like "G-123456" or "g-123456", strip the letter prefix if digits follow
-+        if (code.length >= 5 && code[1] == '-' && code[0].isLetter()) {
-+            return code.substring(2)
-+        }
-+        // If code has space or hyphen e.g. "123-456" -> "123456"
-+        return code.replace("-", "").replace(" ", "")
-+    }
-+
-+    private fun isValidCode(code: String): Boolean {
-+        // Valid code is 4 to 8 alphanumeric/digit characters, predominantly digits
-+        if (code.length !in 4..8) return false
-+        val digitCount = code.count { it.isDigit() }
-+        return digitCount >= 4
++        if (defaultExtractor.shouldIgnore(message)) return null
++        return defaultExtractor.getCode(message)
 +    }
 +}
