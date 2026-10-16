@@ -10,6 +10,7 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   fetchpatch,
+  nix-update-script,
 }:
 let
   bumpAGP = false;
@@ -145,6 +146,12 @@ let
 
         runHook postInstall
       '';
+
+      passthru = {
+        updateScript = nix-update-script {
+          extraArgs = [ "--version=branch" ];
+        };
+      };
 
       meta = with lib; {
         description = "Nix-on-Droid terminal emulator app";
