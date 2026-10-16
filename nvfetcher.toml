@@ -293,6 +293,12 @@ src.git = "https://github.com/GrapheneOS/PdfViewer.git"
 src.branch = "main"
 fetch.git = "https://github.com/GrapheneOS/PdfViewer.git"
 
+[grapheneos_messaging]
+src.git = "https://github.com/GrapheneOS/Messaging.git"
+src.branch = "main"
+fetch.git = "https://github.com/GrapheneOS/Messaging.git"
+git.fetchSubmodules = true
+
 [morphe_apktool]
 src.git = "https://github.com/MorpheApp/Apktool.git"
 src.branch = "2.11.2"

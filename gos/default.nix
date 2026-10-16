@@ -255,11 +255,13 @@ in
   source.dirs."external/Camera".postPatch = replace_app "app-release" "apk_grapheneos-camera";
   source.dirs."external/AppStore".postPatch = replace_app "app-release" "apk_appstore";
   source.dirs."external/PdfViewer".postPatch = replace_app "app-release" "apk_pdfviewer";
+  source.dirs."external/Messaging".postPatch = replace_app "app-release" "apk_messaging";
   signing.extraApks = {
     "InfoApp.apk" = "grapheneos_info";
     "Camera.apk" = "grapheneos_camera";
     "AppStore.apk" = "grapheneos_appstore";
     "PdfViewerGOS.apk" = "grapheneos_pdfviewer";
+    "Messaging.apk" = "grapheneos_messaging";
   };
   /*
     # unsure

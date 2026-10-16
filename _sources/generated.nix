@@ -272,6 +272,20 @@
     };
     date = "2026-09-14";
   };
+  grapheneos_messaging = {
+    pname = "grapheneos_messaging";
+    version = "08a6af65ae9ac705422f276fa08010151b1bc9f0";
+    src = fetchgit {
+      url = "https://github.com/GrapheneOS/Messaging.git";
+      rev = "08a6af65ae9ac705422f276fa08010151b1bc9f0";
+      fetchSubmodules = true;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-7E3ijqza0LRm37QY/y2GciBoUxkJG+5IXdq5Kj4bPZE=";
+    };
+    date = "2026-10-15";
+  };
   grapheneos_pdfviewer = {
     pname = "grapheneos_pdfviewer";
     version = "bbe049314d8c29b7554587bf39efde67cc9f0e03";
@@ -823,7 +837,7 @@
     version = "e14b22768c60978d0e1267dab5bcf62dfcc73d16";
     src = fetchurl {
       url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/e14b22768c60978d0e1267dab5bcf62dfcc73d16/vendor_gapps-e14b22768c60978d0e1267dab5bcf62dfcc73d16.tar.gz";
-      sha256 = "sha256-ARpBJHLpd4yvfkq0bz77JDjJo7TbIOPU6GqGc3C6isg=";
+      sha256 = "sha256-bo6Bzc6AZO7l+OzPnBVGrHS9rPg3UEbP6hYO7+rAuSw=";
     };
     date = "2026-09-13";
   };

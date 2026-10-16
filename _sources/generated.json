@@ -379,6 +379,26 @@
         },
         "version": "c38bb003c915fa26a5f523c27acb429e96cfef64"
     },
+    "grapheneos_messaging": {
+        "cargoLock": null,
+        "date": "2026-10-15",
+        "extract": null,
+        "name": "grapheneos_messaging",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": true,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "08a6af65ae9ac705422f276fa08010151b1bc9f0",
+            "sha256": "sha256-7E3ijqza0LRm37QY/y2GciBoUxkJG+5IXdq5Kj4bPZE=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/GrapheneOS/Messaging.git"
+        },
+        "version": "08a6af65ae9ac705422f276fa08010151b1bc9f0"
+    },
     "grapheneos_pdfviewer": {
         "cargoLock": null,
         "date": "2026-09-21",
@@ -1168,7 +1188,7 @@
         "pinned": false,
         "src": {
             "name": null,
-            "sha256": "sha256-ARpBJHLpd4yvfkq0bz77JDjJo7TbIOPU6GqGc3C6isg=",
+            "sha256": "sha256-bo6Bzc6AZO7l+OzPnBVGrHS9rPg3UEbP6hYO7+rAuSw=",
             "type": "url",
             "url": "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/e14b22768c60978d0e1267dab5bcf62dfcc73d16/vendor_gapps-e14b22768c60978d0e1267dab5bcf62dfcc73d16.tar.gz"
         },
