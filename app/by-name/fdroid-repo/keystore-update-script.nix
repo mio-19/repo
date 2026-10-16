@@ -29,7 +29,6 @@ let
         echo "  --alias    Alias to ensure exists (repeatable, disables auto-discovery)"
         echo ""
         echo "Auto alias mapping:"
-        echo "  com.termux.nix -> releasekey"
         echo "  com.termux, com.termux.styling, org.gnu.emacs -> com.termux"
         echo "  otherwise -> appId/package name"
         exit 1
@@ -38,7 +37,6 @@ let
       keyalias_for_pkg() {
         local pkg="$1"
         case "$pkg" in
-          com.termux.nix) echo "releasekey" ;;
           com.termux|com.termux.styling|com.termux.x11|org.gnu.emacs) echo "com.termux" ;;
           *) echo "$pkg" ;;
         esac
