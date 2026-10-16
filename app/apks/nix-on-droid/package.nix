@@ -73,6 +73,7 @@ let
           url = "https://github.com/termux/termux-app/pull/4961.diff";
           hash = "sha256-y0OWR6RUe/04yr99sUxWXysdp95Zxh+DQbI1quOymiI=";
         })
+        ./replace-bootstrap-url.patch
       ]
       ++ lib.optionals bumpAGP [
         ./0001-nix-on-droid-adjust-gradle-agp-deps.patch # based on https://github.com/salmon-21/termux-app/commit/53f75a8da3b823c18a8244b298da50e87382984d

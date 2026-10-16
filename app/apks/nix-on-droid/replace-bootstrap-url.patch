@@ -1,0 +1,11 @@
+--- a/app/src/main/java/com/termux/app/TermuxInstaller.java
++++ b/app/src/main/java/com/termux/app/TermuxInstaller.java
+@@ -64,7 +64,7 @@
+ final class TermuxInstaller {
+ 
+     private static final String LOG_TAG = "TermuxInstaller";
+-    static String defaultBootstrapURL = "https://nix-on-droid.unboiled.info/bootstrap-release-24.05";
++    static String defaultBootstrapURL = "https://github.com/mio-19/nix-on-droid-bootstrap/raw/refs/heads/main";
+ 
+     /** Performs bootstrap setup if necessary. */
+     static void setupBootstrapIfNeeded(final Activity activity, final Runnable whenDone) {
