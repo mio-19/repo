@@ -106,7 +106,6 @@ let
     "lumo" # Gradle plugin and FSEvents stream error on darwin
     "uplink" # pkgsCross Android NDK rust + Flutter APK
     "mpvex" # Gradle fails to resolve foojay-resolver plugin on darwin
-    "onlyoffice-documents" # misses Gradle plugin marker from deps.json on darwin
     "immich" # misses Gradle plugin marker from deps.json on darwin
     "weathermaster" # misses AGP plugin marker from deps.json on darwin
     "rain" # misses Gradle plugin marker from deps.json on darwin
