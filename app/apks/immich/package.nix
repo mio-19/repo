@@ -50,8 +50,10 @@ let
             nativeBuildInputs = [ zip ];
           }
           ''
-            cd ${gradle}/libexec/gradle
-            zip -qr $out .
+            (
+              cd ${gradle}/libexec/gradle
+              zip -b "$TMPDIR" -qr "$out" .
+            )
           '';
 
       pythonWithYaml = python3.withPackages (ps: [ ps.pyyaml ]);
