@@ -94,7 +94,6 @@ let
     "lumo" # Gradle plugin and FSEvents stream error on darwin
     "uplink" # pkgsCross Android NDK rust + Flutter APK
     "immich" # misses Gradle plugin marker from deps.json on darwin
-    "rain" # misses Gradle plugin marker from deps.json on darwin
   ];
 
   # Apps with OSS-looking licenses that still should not be published in fdroid-repo-oss
