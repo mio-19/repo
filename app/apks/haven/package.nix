@@ -211,7 +211,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-9tPE3BWvni49EHvcNGaQYbC965VgN1U/GMYGIDeH/1E=";
+        outputHash = "sha256-AOLxabfq/gdEmYJDv2GTrHbaH9tNguelbKCmYuaaQu4=";
         dontConfigure = true;
         dontFixup = true;
 
@@ -324,7 +324,7 @@ let
               -ldflags "-s -w -checklinkname=0" \
               -v \
               -o ../build/rcbridge.aar \
-              . ./wgbridge ./tsbridge ./mailbridge ./nbbridge
+              . ./wgbridge ./tsbridge ./mailbridge ./nbbridge ./ocbridge
 
 
           cd ..
@@ -402,14 +402,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.89.36";
+      version = "5.89.39";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-BlxZQ6JoyaNllEeQZvHSMHsUdabrNt3IVkBlD0oboZ4=";
+        hash = "sha256-SvlqGwWgTBA5KTQ1XakwQ6U2epoygdWzeW0LhepOXvg=";
       };
 
       patches = [

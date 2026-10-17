@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   path,
-  gradle_9_5_1,
+  gradle_9_7_1,
   jdk25_headless,
   stdenv,
   fetchFromGitHub,
@@ -27,19 +27,19 @@ let
         s.build-tools-37-0-0
       ]);
 
-      gradle = gradle_9_5_1;
+      gradle = gradle_9_7_1;
 
-      # https://github.com/bitwarden/android/blob/v2026.9.0-bwa/gradle/libs.versions.toml#L32 bitwardenSdk = "3.0.0-8671-5d8ae614"
+      # https://github.com/bitwarden/android/blob/v2026.10.0-bwa/gradle/libs.versions.toml#L32 bitwardenSdk = "4.0.0-9160-171b937c"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
-        rev = "5d8ae614";
-        hash = "sha256-QLWE+O34DHtkoZYi2jfc9aoAnIrrVmYJye3crQnQ6S8=";
+        rev = "171b937c";
+        hash = "sha256-qCPVVMhTLa1d/X0BfG2TLTXRQ9QrPSZgujc5j0eWEgs=";
       };
 
       sdkSrcLock = fetchurl {
         url = "${sdkSrc.meta.homepage}/raw/${sdkSrc.rev}/Cargo.lock";
-        hash = "sha256-NeK1e00PnBl41w+FGHtDRu0X24GevqYl/nXpgbIPNZ8=";
+        hash = "sha256-fN2/HDVipjbef+kvdr4v1bLp0eJg3mp7X2DiXhIfaTM=";
       };
 
       androidCrossConfig = {
@@ -150,7 +150,7 @@ let
           version = "3.0.0";
           src = sdkSrc;
           cargoRoot = ".";
-          hash = "sha256-niuwOUVJAl1kdU6dt2bovpBS5WqXWRIPfKRAOaS53Bk=";
+          hash = "sha256-/XqkYh/Dw/z7BXa4D/+lVdKtyroSeriIjDvGM6yahuE=";
         };
         nativeBuildInputs = [
           rustPlatform.cargoSetupHook
@@ -183,13 +183,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-authenticator";
-      version = "2026.9.1";
+      version = "2026.10.0";
 
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
         tag = "v${finalAttrs.version}-bwa";
-        hash = "sha256-+/5A5ZJq+aCejtfFKvaylmCilagxSTNUu024FVIEDIQ=";
+        hash = "sha256-DymOx905mTqxlF1R7YuoBdFKiI006ovRIVF8nsaW9vs=";
       };
 
       gradleBuildTask = ":authenticator:assembleRelease";
@@ -249,7 +249,7 @@ let
         val nixBootstrap by configurations.creating
         dependencies {
             nixBootstrap("org.jetbrains.kotlin:kotlin-stdlib:2.2.10")
-            nixBootstrap("org.jetbrains.kotlin:kotlin-stdlib:2.3.21")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-stdlib:2.4.21")
             nixBootstrap("org.jetbrains.kotlin:kotlin-reflect:2.2.10")
             nixBootstrap("org.jetbrains:annotations:23.0.0")
             nixBootstrap("commons-codec:commons-codec:1.17.1")
@@ -270,13 +270,13 @@ let
             nixBootstrap("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2")
             nixBootstrap("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0")
             nixBootstrap("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0@jar")
-            nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-compat:2.3.21")
-            nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-impl:2.3.21")
-            nixBootstrap("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.21")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-compat:2.4.21")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-build-tools-impl:2.4.21")
+            nixBootstrap("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.21")
             nixBootstrap("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
-            nixBootstrap("org.jetbrains.kotlin.android:org.jetbrains.kotlin.android.gradle.plugin:2.3.21")
-            nixBootstrap("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:2.3.21")
-            nixBootstrap("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:2.3.21")
+            nixBootstrap("org.jetbrains.kotlin.android:org.jetbrains.kotlin.android.gradle.plugin:2.4.21")
+            nixBootstrap("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:2.4.21")
+            nixBootstrap("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:2.4.21")
         }
         tasks.register("resolveNixBootstrapDeps") {
             doLast {
@@ -356,9 +356,9 @@ let
                 substituteInPlace build.gradle \
                   --replace-fail "id 'com.android.application' version '8.9.0' apply false" "id 'com.android.application' version '9.2.1' apply false" \
                   --replace-fail "id 'com.android.library' version '8.9.0' apply false" "id 'com.android.library' version '9.2.1' apply false" \
-                  --replace-fail "id 'org.jetbrains.kotlin.android' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.android' version '2.3.21' apply false" \
-                  --replace-fail "id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.serialization' version '2.3.21' apply false" \
-                  --replace-fail "id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.compose' version '2.3.21' apply false"
+                  --replace-fail "id 'org.jetbrains.kotlin.android' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.android' version '2.4.21' apply false" \
+                  --replace-fail "id 'org.jetbrains.kotlin.plugin.serialization' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.serialization' version '2.4.21' apply false" \
+                  --replace-fail "id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0' apply false" "id 'org.jetbrains.kotlin.plugin.compose' version '2.4.21' apply false"
                 substituteInPlace app/build.gradle \
                   --replace-fail "id 'kotlinx-serialization'" "id 'org.jetbrains.kotlin.plugin.serialization'"
                 substituteInPlace "$repoRoot/authenticator/build.gradle.kts" \
@@ -390,7 +390,7 @@ let
                                   useModule(\"com.android.tools.build:gradle:9.2.1\")
                               }
                               if (requested.id.id == \"org.jetbrains.kotlin.android\" || requested.id.id == \"org.jetbrains.kotlin.plugin.serialization\" || requested.id.id == \"org.jetbrains.kotlin.plugin.compose\") {
-                                  useModule(\"org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.21\")
+                                  useModule(\"org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.21\")
                               }
                           }
                       }"
