@@ -60,7 +60,6 @@ let
     # need to update golang hash for darwin:
 
     # need to update npm lock for darwin:
-    "pdfviewer"
 
     # cannot build on darwin due to nixpkgs didn't package android toolchain for darwin aarch64
     "kernelsu"
@@ -97,7 +96,6 @@ let
     "komi-store" # depends on gradle_9_5_1 which fails to compile on darwin
     "meshtastic" # depends on gradle_9_5_1 which fails to compile on darwin
     "nextcloud-android" # depends on gradle_9_5_1 which fails to compile on darwin
-    "pdfviewer" # depends on gradle_9_5_1 which fails to compile on darwin
     "termux-x11" # depends on gradle_9_5_1 which fails to compile on darwin
     "thunderbird" # depends on gradle_9_5_1 which fails to compile on darwin
     "zotero-android" # depends on gradle_9_5_1 which fails to compile on darwin
