@@ -20,7 +20,6 @@ let
     };
 
   linuxOnlyApkNames = [
-    "komi-store"
     "tailscale"
     "termux"
     "termux-styling"
@@ -92,7 +91,6 @@ let
     "forkgram" # buildPhase fails mysteriously/killed on darwin
     "forkgram-classic" # buildPhase fails mysteriously/killed on darwin
     "breezy-weather" # misses Gradle plugin marker from deps.json on darwin
-    "komi-store" # depends on gradle_9_5_1 which fails to compile on darwin
     "lumo" # Gradle plugin and FSEvents stream error on darwin
     "uplink" # pkgsCross Android NDK rust + Flutter APK
     "immich" # misses Gradle plugin marker from deps.json on darwin
