@@ -51,6 +51,7 @@ let
         ./deterministic-release-build.patch
         ./fix-fossil-hr-build.patch
         ./asteroidos-find-phone.patch
+        ./asteroidos-app-bridge.patch
       ];
 
       gradleBuildFlags = [ ":app:assembleMainlineRelease" ];

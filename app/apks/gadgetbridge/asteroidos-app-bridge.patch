@@ -1,0 +1,173 @@
+diff -u -r a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/asteroidos/AsteroidOSConstants.java b/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/asteroidos/AsteroidOSConstants.java
+--- a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/asteroidos/AsteroidOSConstants.java	2026-10-17 19:45:00.000000000 +1100
++++ b/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/asteroidos/AsteroidOSConstants.java	2026-10-17 19:45:10.000000000 +1100
+@@ -143,4 +143,16 @@
+      * Find phone ring characteristic. One byte: 1 starts ringing the phone, 0 stops.
+      */
+     public static final UUID FINDPHONE_RING_CHAR        = UUID.fromString("0000F001-0000-0000-0000-00A57E401D05");
++
++    /**
++     * App Bridge service (Generic communication channel for AsteroidOS apps)
++     */
++    public static final UUID APP_BRIDGE_SERVICE_UUID     = UUID.fromString("0000A071-0000-0000-0000-00A57E401D05");
++    /**
++     * App Bridge TX characteristic (Watch -> Phone notifications)
++     */
++    public static final UUID APP_BRIDGE_TX_CHAR          = UUID.fromString("0000A001-0000-0000-0000-00A57E401D05");
++    /**
++     * App Bridge RX characteristic (Phone -> Watch writes)
++     */
++    public static final UUID APP_BRIDGE_RX_CHAR          = UUID.fromString("0000A002-0000-0000-0000-00A57E401D05");
+ }
+diff -u -r a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java b/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java
+--- a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java	2026-10-17 19:45:00.000000000 +1100
++++ b/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java	2026-10-17 19:45:10.000000000 +1100
+@@ -28,8 +28,11 @@
+ import java.io.ByteArrayOutputStream;
+ import java.io.IOException;
++import java.nio.charset.StandardCharsets;
+ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.UUID;
++import org.json.JSONObject;
+ 
+ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
+ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
+@@ -71,6 +74,7 @@
+         addSupportedService(AsteroidOSConstants.MEDIA_SERVICE_UUID);
+         addSupportedService(AsteroidOSConstants.SCREENSHOT_SERVICE_UUID);
+         addSupportedService(AsteroidOSConstants.FINDPHONE_SERVICE_UUID);
++        addSupportedService(AsteroidOSConstants.APP_BRIDGE_SERVICE_UUID);
+ 
+         IntentListener mListener = intent -> {
+             String action = intent.getAction();
+@@ -78,6 +82,21 @@
+             if (action == null) {
+                 return;
+             }
++            if ("nodomain.freeyourgadget.gadgetbridge.ACTION_SEND_TO_WATCH".equals(action)) {
++                String targetApp = intent.getStringExtra("extra_app_id");
++                String appAction = intent.getStringExtra("extra_action");
++                byte[] payload = intent.getByteArrayExtra("extra_payload_bytes");
++                if (payload == null && intent.hasExtra("extra_payload_string")) {
++                    String str = intent.getStringExtra("extra_payload_string");
++                    if (str != null) {
++                        payload = str.getBytes(StandardCharsets.UTF_8);
++                    }
++                }
++                if (targetApp != null && appAction != null && payload != null) {
++                    sendAppBridgeMessage(targetApp, appAction, payload);
++                }
++                return;
++            }
+             switch (action) {
+                 case AsteroidOSConstants.INTENT_WEATHER_UPDATE:
+                     handleWeatherUpdate();
+@@ -109,6 +128,10 @@
+             handleFindPhone(value);
+             return true;
+         }
++        if (characteristicUUID.equals(AsteroidOSConstants.APP_BRIDGE_TX_CHAR)) {
++            handleAppBridgeData(value);
++            return true;
++        }
+ 
+         LOG.info("Characteristic changed UUID: {}", characteristicUUID);
+         LOG.info("Characteristic changed value: {}", Arrays.toString(value));
+@@ -125,6 +148,7 @@
+         builder.notify(AsteroidOSConstants.SCREENSHOT_CONTENT_CHAR, true);
+         builder.notify(AsteroidOSConstants.FINDPHONE_RING_CHAR, true);
+         builder.read(AsteroidOSConstants.FINDPHONE_RING_CHAR);
++        builder.notify(AsteroidOSConstants.APP_BRIDGE_TX_CHAR, true);
+         builder.setDeviceState(GBDevice.State.INITIALIZED);
+ 
+         batteryInfoProfile.requestBatteryInfo(builder);
+@@ -328,6 +352,88 @@
+         evaluateGBDeviceEvent(findPhoneEvent);
+     }
+ 
++    /**
++     * Process generic incoming App Bridge notification from AsteroidOS.
++     * Format: [0xA0][appIdLen:1B][appId][actionLen:1B][action][payload]
++     */
++    private void handleAppBridgeData(byte[] value) {
++        if (value == null || value.length < 3) {
++            return;
++        }
++        if ((value[0] & 0xFF) != 0xA0) {
++            LOG.warn("AppBridge: invalid magic byte 0x{}", Integer.toHexString(value[0] & 0xFF));
++            return;
++        }
++        try {
++            int offset = 1;
++            int appIdLen = value[offset++] & 0xFF;
++            if (value.length < offset + appIdLen + 1) return;
++            String appId = new String(value, offset, appIdLen, StandardCharsets.UTF_8);
++            offset += appIdLen;
++
++            int actionLen = value[offset++] & 0xFF;
++            if (value.length < offset + actionLen) return;
++            String action = new String(value, offset, actionLen, StandardCharsets.UTF_8);
++            offset += actionLen;
++
++            int payloadLen = value.length - offset;
++            byte[] payload = new byte[payloadLen];
++            System.arraycopy(value, offset, payload, 0, payloadLen);
++            String payloadStr = new String(payload, StandardCharsets.UTF_8);
++
++            LOG.info("AppBridge message received: app={}, action={}, bytes={}", appId, action, payloadLen);
++
++            // Broadcast to all Android applications
++            android.content.Intent broadcast = new android.content.Intent("nodomain.freeyourgadget.gadgetbridge.ACTION_RECEIVE_FROM_WATCH");
++            broadcast.putExtra("extra_app_id", appId);
++            broadcast.putExtra("extra_action", action);
++            broadcast.putExtra("extra_payload_bytes", payload);
++            broadcast.putExtra("extra_payload_string", payloadStr);
++            getContext().sendBroadcast(broadcast);
++
++            // Native telemetry integration: SpO2 & Heart Rate
++            if ("org.asteroidos.spo2".equals(appId) && "measurement".equals(action)) {
++                try {
++                    JSONObject json = new JSONObject(payloadStr);
++                    int spo2 = json.optInt("spo2", 0);
++                    int bpm = json.optInt("bpm", 0);
++                    LOG.info("Native AsteroidOS SpO2 recorded: SpO2={}% BPM={}", spo2, bpm);
++                } catch (Exception ex) {
++                    LOG.warn("Failed to parse SpO2 payload as JSON", ex);
++                }
++            }
++        } catch (Exception e) {
++            LOG.error("Failed to parse AppBridge data", e);
++        }
++    }
++
++    private void sendAppBridgeMessage(String appId, String action, byte[] payload) {
++        try {
++            byte[] appIdBytes = appId.getBytes(StandardCharsets.UTF_8);
++            byte[] actionBytes = action.getBytes(StandardCharsets.UTF_8);
++            if (appIdBytes.length > 255 || actionBytes.length > 255) {
++                LOG.warn("AppBridge: appId or action length exceeds 255 bytes");
++                return;
++            }
++            byte[] packet = new byte[3 + appIdBytes.length + actionBytes.length + payload.length];
++            int idx = 0;
++            packet[idx++] = (byte) 0xA0;
++            packet[idx++] = (byte) appIdBytes.length;
++            System.arraycopy(appIdBytes, 0, packet, idx, appIdBytes.length);
++            idx += appIdBytes.length;
++            packet[idx++] = (byte) actionBytes.length;
++            System.arraycopy(actionBytes, 0, packet, idx, actionBytes.length);
++            idx += actionBytes.length;
++            System.arraycopy(payload, 0, packet, idx, payload.length);
++
++            TransactionBuilder builder = performInitialized("sendAppBridgeMessage");
++            builder.write(getCharacteristic(AsteroidOSConstants.APP_BRIDGE_RX_CHAR), packet);
++            builder.queue(getQueue());
++            LOG.info("Queued AppBridge message to watch: app={}, action={}", appId, action);
++        } catch (Exception e) {
++            LOG.error("Error sending AppBridge message", e);
++        }
++    }
++
+     /**
+      * Handles a media command sent from the AsteroidOS device
