@@ -8,6 +8,7 @@
   gradle_9_6_1,
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
+  fetchpatch,
 }:
 let
   inherit (sources.grapheneos_messaging)
@@ -35,6 +36,11 @@ let
 
     patches = [
       ./copy-verification-code.patch
+      (fetchpatch {
+        name = "Receive PDF attachments from MMS";
+        url = "https://github.com/GrapheneOS/Messaging/pull/428.patch";
+        hash = "sha256-ONWemmNcb7/8iab7B694eioAS9nJTLArVDI4Uigzb/4=";
+      })
     ];
 
     postPatch = ''

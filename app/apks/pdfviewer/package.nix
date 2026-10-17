@@ -59,7 +59,12 @@ let
           hash = "sha256-H+/oEIdQQjhI/avzBqOlwgWLi+4vnjWXYB82Y8lZKpo=";
         })
         /*
-          TODO: fix merge conflicts
+          TODO: conflicts with PR #579 (find in document) which relies on single-page DOM
+          (fetchpatch {
+            name = "Add continuous scrolling for multi-page documents";
+            url = "https://github.com/GrapheneOS/PdfViewer/pull/699.diff";
+            hash = "sha256-p2CtLX6Nh1WqJ1dxGGp/Ug/MgRHwM4o4Oj1GIO9EYa0=";
+          })
           (fetchpatch {
             name = "Add page persistence";
             url = "https://github.com/GrapheneOS/PdfViewer/pull/598.diff";
