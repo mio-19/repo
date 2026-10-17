@@ -90,7 +90,6 @@ let
     "meditrak" # fails with FSEvents stream error on darwin
     "forkgram" # buildPhase fails mysteriously/killed on darwin
     "forkgram-classic" # buildPhase fails mysteriously/killed on darwin
-    "breezy-weather" # misses Gradle plugin marker from deps.json on darwin
     "lumo" # Gradle plugin and FSEvents stream error on darwin
     "uplink" # pkgsCross Android NDK rust + Flutter APK
   ];
