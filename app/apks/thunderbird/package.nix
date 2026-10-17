@@ -85,7 +85,7 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk25_headless;
+        JAVA_HOME = jdk25_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
@@ -109,7 +109,7 @@ let
       gradleFlags = [
         "-xlintVitalFossRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21_headless},${jdk25_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home},${jdk25_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];
