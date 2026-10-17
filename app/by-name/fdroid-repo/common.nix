@@ -93,7 +93,6 @@ let
     "forkgram" # buildPhase fails mysteriously/killed on darwin
     "forkgram-classic" # buildPhase fails mysteriously/killed on darwin
     "element-android" # misses Gradle plugin marker from deps.json on darwin
-    "archivetune" # misses Gradle plugin marker from deps.json on darwin
     "breezy-weather" # misses Gradle plugin marker from deps.json on darwin
     "futo-keyboard" # misses AGP plugin marker from deps.json on darwin
     "aurorastore" # depends on gradle_9_5_1 which fails to compile on darwin
