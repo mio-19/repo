@@ -10,7 +10,7 @@ args@{
   ];
   advancedPowerMenu = false;
   #allowAdbWirelessWithoutWifi = true;
-  enableLindroid = false;
+  enableLindroid = true;
   enableDroidspaces = false;
   device = "tangorpro";
   source.dirs."device/google/tangorpro-kernels/6.1" = lib.mkForce {
