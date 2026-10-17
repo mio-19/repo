@@ -88,7 +88,6 @@ let
     "vpnhotspot" # too complicated to build on darwin due to mitm-cache/gradle proxy, ksp, daemon socket and memory issues
     "eden" # buildPhase fails mysteriously/killed on darwin
     "tuxguitar-android" # buildPhase fails mysteriously/killed on darwin
-    "amethyst" # misses AGP plugin marker from deps.json on darwin
     "droidspaces" # build fails mysteriously on darwin
     "meditrak" # fails with FSEvents stream error on darwin
     "forkgram" # buildPhase fails mysteriously/killed on darwin
