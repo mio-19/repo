@@ -43,7 +43,7 @@ let
     # https://github.com/google-ai-edge/gallery/blob/ff16cf71ca75dcf83072bd69546051d10c85039f/Android/src/app/src/main/java/com/google/ai/edge/gallery/ui/modelmanager/ModelManagerViewModel.kt#L86
     # https://github.com/google-ai-edge/gallery/tree/main/model_allowlists
     url = "https://raw.githubusercontent.com/google-ai-edge/gallery/refs/heads/main/model_allowlists/${allowlistVersion}.json";
-    hash = "sha256-v8Vc1Lcw2qyAn8fGufrYCaDJaBF0qG6m+qoDo6HWiIk=";
+    hash = "sha256-VFL0wd4ASF9tgi+pmWER7TPOuDPCVx2lK27R5cm+Qzk=";
   };
 
   patchedAllowlist = runCommand "gallery-model-allowlist.json" { nativeBuildInputs = [ jq ]; } ''
@@ -156,7 +156,7 @@ let
     dontUseGradleConfigure = true;
 
     env = {
-      JAVA_HOME = jdk21_headless;
+      JAVA_HOME = jdk21_headless.passthru.home;
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2";
@@ -188,9 +188,9 @@ let
     '';
 
     gradleFlags = [
-      "-Dorg.gradle.java.home=${jdk21_headless.home}"
+      "-Dorg.gradle.java.home=${jdk21_headless.passthru.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
-      "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
+      "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
       "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
       "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
     ];

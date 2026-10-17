@@ -106,7 +106,6 @@ let
     "thunderbird" # depends on gradle_9_5_1 which fails to compile on darwin
     "zotero-android" # depends on gradle_9_5_1 which fails to compile on darwin
     "mpv-android" # Gradle fails to use mitmCache proxy on darwin
-    "luanti" # Gradle fails to use mitmCache proxy on darwin
     "lumo" # Gradle plugin and FSEvents stream error on darwin
     "uplink" # pkgsCross Android NDK rust + Flutter APK
     "mpvex" # Gradle fails to resolve foojay-resolver plugin on darwin
