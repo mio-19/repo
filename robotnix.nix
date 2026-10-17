@@ -36,7 +36,13 @@ in
               _module.args.pkgs-unfree = pkgsPatched;
               _module.args.robotnix = robotnix;
               _module.args.self = self;
-              imports = [ f ];
+              imports = [
+                f
+                (import ./gos/avb-custom-key.nix {
+                  inherit (nixpkgs) lib;
+                  inherit robotnix;
+                })
+              ];
               ccache.enable = ccache;
             };
         in
@@ -79,6 +85,7 @@ in
           gts9wifi = common ./gts9wifi.nix;
           gts7lwifi = common ./gts7lwifi.nix;
           gts7l = common ./gts7l.nix;
+          hibreak_pro = common ./hibreak_pro.nix;
         };
       pkgs = pkgsPatched;
     in

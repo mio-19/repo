@@ -188,13 +188,7 @@ use update-nix-fetchgit and nvfetcher
 
 ## lock
 
-see <https://github.com/nix-community/robotnix/blob/a2c5626074199e6b990fdeb8107f43b73d0be17d/docs/src/installation.md?plain=1#L50>
-
-```zsh
-    $ fastboot erase avb_custom_key
-    $ fastboot flash avb_custom_key ./avb_pkmd.bin
-    $ fastboot reboot bootloader
-```
+The signed factory zip includes `avb_pkmd.bin` from the key `generateKeysScript` already writes (`$KEYSDIR/husky/avb_pkmd.bin` for husky). `flash-all.sh` and `flash-all.bat` flash it to `avb_custom_key`.
 
 ## LLM
 

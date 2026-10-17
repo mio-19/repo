@@ -1,9 +1,19 @@
 {
+  android_annotations_4_1_1_4,
+  annotations_13_0,
+  annotations_23_0_0,
+  apiguardian_api_1_1_2,
+  asm_9_8,
+  fastinfoset_1_2_16,
+  gson_2_11_0,
+  httpcore_4_4_16,
+  okio_1_17_4,
+  perfmark_api_0_27_0,
+  reactive_streams_1_0_4,
   apache_21,
   apache_32,
   apache_33,
   apache_31,
-  annotations_23_0_0,
   antlr_2_7_7,
   aopalliance_1_0,
   asm_9_9,
@@ -282,6 +292,10 @@ in
     "protobuf-bom-3.25.5.pom" = _: "${protobuf_bom_3_25_5}/protobuf-bom-3.25.5.pom";
   };
 
+  "com.google.code.gson:gson:2.11.0" = {
+    "gson-2.11.0.jar" = _: "${gson_2_11_0}/gson-2.11.0.jar";
+    "gson-2.11.0.pom" = _: "${gson_2_11_0}/gson-2.11.0.pom";
+  };
   "com.google.code.gson:gson:2.10.1" = {
     "gson-2.10.1.jar" = _: "${gson_2_10_1}/gson-2.10.1.jar";
     "gson-2.10.1.pom" = _: "${gson_2_10_1}/gson-2.10.1.pom";
@@ -317,6 +331,9 @@ in
   "com.google.code.gson:gson:2.13.2" = {
     "gson-2.13.2.jar" = _: "${gson_2_13_2}/gson-2.13.2.jar";
     "gson-2.13.2.pom" = _: "${gson_2_13_2}/gson-2.13.2.pom";
+  };
+  "com.google.code.gson:gson-parent:2.11.0" = {
+    "gson-parent-2.11.0.pom" = _: "${gson_2_11_0}/gson-parent-2.11.0.pom";
   };
   "com.google.code.gson:gson-parent:2.10.1" = {
     "gson-parent-2.10.1.pom" = _: "${gson_2_10_1}/gson-parent-2.10.1.pom";
@@ -360,10 +377,12 @@ in
     "glide-5.0.5.module" = _: "${glide_5_0_5}/glide-5.0.5.module";
     "glide-5.0.5.pom" = _: "${glide_5_0_5}/glide-5.0.5.pom";
   };
+  "org.jetbrains:annotations:13.0" = mkMavenSourceJarOverride "annotations" "13.0" annotations_13_0;
   "org.jetbrains:annotations:23.0.0" = {
     "annotations-23.0.0.jar" = _: "${annotations_23_0_0}/annotations-23.0.0.jar";
     "annotations-23.0.0.pom" = _: "${annotations_23_0_0}/annotations-23.0.0.pom";
   };
+  "org.ow2.asm:asm:9.8" = mkMavenSourceJarOverride "asm" "9.8" asm_9_8;
   "org.ow2.asm:asm:9.9" = {
     "asm-9.9.jar" = _: "${asm_9_9}/asm-9.9.jar";
     "asm-9.9.pom" = _: "${asm_9_9}/asm-9.9.pom";
@@ -1096,4 +1115,24 @@ in
     "woodstox-core-6.5.1.jar" = _: "${woodstox_core_6_5_1}/woodstox-core-6.5.1.jar";
     "woodstox-core-6.5.1.pom" = _: "${woodstox_core_6_5_1}/woodstox-core-6.5.1.pom";
   };
+
+  "com.google.android:annotations:4.1.1.4" =
+    mkMavenSourceJarOverride "annotations" "4.1.1.4"
+      android_annotations_4_1_1_4;
+  "com.squareup.okio:okio:1.17.4" = mkMavenSourceJarOverride "okio" "1.17.4" okio_1_17_4;
+  "com.sun.xml.fastinfoset:FastInfoset:1.2.16" =
+    mkMavenSourceJarOverride "FastInfoset" "1.2.16"
+      fastinfoset_1_2_16;
+  "io.perfmark:perfmark-api:0.27.0" =
+    mkMavenSourceJarOverride "perfmark-api" "0.27.0"
+      perfmark_api_0_27_0;
+  "org.apache.httpcomponents:httpcore:4.4.16" =
+    mkMavenSourceJarOverride "httpcore" "4.4.16"
+      httpcore_4_4_16;
+  "org.apiguardian:apiguardian-api:1.1.2" =
+    mkMavenSourceJarOverride "apiguardian-api" "1.1.2"
+      apiguardian_api_1_1_2;
+  "org.reactivestreams:reactive-streams:1.0.4" =
+    mkMavenSourceJarOverride "reactive-streams" "1.0.4"
+      reactive_streams_1_0_4;
 }

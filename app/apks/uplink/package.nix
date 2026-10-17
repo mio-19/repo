@@ -9,6 +9,7 @@
   stdenv,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  gradle_9_7_1,
   inputs,
   path,
 }:
@@ -16,9 +17,9 @@ let
   flutterApkHelpers = ../_shared/flutter-apk-helpers.sh;
   mkFlutterSdkSourceBuilder = import ../_shared/mk-flutter-sdk-source-builder.nix;
   runBuildTool = ./run-build-tool.sh;
-  # Binary Gradle from nixpkgs. Overlay Gradle is source-built and would
-  # rebuild the whole bootstrap chain when nixpkgs-patched changes.
-  gradle = (import inputs.nixpkgs { inherit (stdenv.hostPlatform) system; }).gradle_9;
+  # uplink_deps.json has kotlin-dsl 6.7.3. nixpkgs gradle_9 is 9.8.0 and
+  # requests 6.7.6, which is not in the cache. 9.7.1 embeds 6.7.3.
+  gradle = gradle_9_7_1;
 
   appPackage =
     let

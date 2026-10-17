@@ -58,8 +58,8 @@ index ab4a8ca27..ce681217c 100644
      /** @hide */ int SUPPRESS_PLAY_INTEGRITY_API_NOTIF = 27;
      /** @hide */ int BLOCK_PLAY_INTEGRITY_API = 28;
      /* SysApi */ int HIDE_LOCATION_INDICATOR = 29;
-+    /** @hide */ int HIDE_CARRIER_INFO_NON_DEFAULT = 30;
-+    /** @hide */ int HIDE_CARRIER_INFO = 31;
++    /** @hide */ int HIDE_CARRIER_INFO_NON_DEFAULT = 58;
++    /** @hide */ int HIDE_CARRIER_INFO = 59;
  
      /** @hide */
      @IntDef(value = {

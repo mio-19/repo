@@ -26,7 +26,6 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
-        s.build-tools-35-0-0
         s.build-tools-36-1-0
       ]);
 
@@ -36,7 +35,7 @@ let
       pname = "ytdlnis";
       inherit version src;
 
-      gradleBuildTask = ":app:assembleRelease";
+      gradleBuildTask = ":app:assembleFossRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
 
       mitmCache = gradle.fetchDeps {
@@ -65,6 +64,7 @@ let
 
       postPatch = ''
         substituteInPlace app/build.gradle \
+          --replace-fail 'compileSdk = 36' 'compileSdk = 36; buildToolsVersion = "36.1.0"' \
           --replace-fail '            signingConfig signingConfigs.debug' '            signingConfig null'
       '';
 
@@ -76,6 +76,8 @@ let
       '';
 
       gradleFlags = [
+        "--stacktrace"
+        "-Dorg.gradle.jvmargs=-Xmx4096m"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"

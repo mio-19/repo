@@ -49,7 +49,7 @@ let
       npmDeps = fetchNpmDeps {
         pname = "npm-deps-${pname}";
         inherit version src;
-        hash = "sha256-vW3dUP5tqE46tJ1ZsIzIedcNRflds56hZEDdmHP4g8o=";
+        hash = "sha256-KIyKY77CgANhEhUIdWFy39XBB6MYBJ9LnR8PTCs5ymU=";
       };
 
       patches = [
@@ -59,7 +59,12 @@ let
           hash = "sha256-H+/oEIdQQjhI/avzBqOlwgWLi+4vnjWXYB82Y8lZKpo=";
         })
         /*
-          TODO: fix merge conflicts
+          TODO: conflicts with PR #579 (find in document) which relies on single-page DOM
+          (fetchpatch {
+            name = "Add continuous scrolling for multi-page documents";
+            url = "https://github.com/GrapheneOS/PdfViewer/pull/699.diff";
+            hash = "sha256-p2CtLX6Nh1WqJ1dxGGp/Ug/MgRHwM4o4Oj1GIO9EYa0=";
+          })
           (fetchpatch {
             name = "Add page persistence";
             url = "https://github.com/GrapheneOS/PdfViewer/pull/598.diff";

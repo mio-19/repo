@@ -13,13 +13,13 @@ let
     dontUnpack = true;
     installPhase = ''
       mkdir -p $out
-      cp $src/prebuilt/arm64/TrichromeChrome.apk $out/TrichromeChrome.apk
+      cp $src/prebuilt/arm64/VanadiumBrowser.apk $out/VanadiumBrowser.apk
     '';
   };
 in
 mk-apk-package {
   inherit appPackage;
-  mainApk = "TrichromeChrome.apk";
+  mainApk = "VanadiumBrowser.apk";
   signScriptName = "sign-vanadium";
   fdroid = {
     appId = "app.vanadium.browser";

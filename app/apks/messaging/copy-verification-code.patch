@@ -1,0 +1,561 @@
+diff --git a/AndroidManifest.xml b/AndroidManifest.xml
+index 81d97de..5228110 100644
+--- a/AndroidManifest.xml
++++ b/AndroidManifest.xml
+@@ -344,6 +344,10 @@
+         <receiver android:name=".receiver.ConversationReadReceiver"
+             android:exported="false" />
+ 
++        <!-- Broadcast receiver that will be notified to copy verification codes -->
++        <receiver android:name=".receiver.CopyVerificationCodeReceiver"
++            android:exported="false" />
++
+         <!-- Broadcast receiver that will be notified for ActionService alarms. -->
+         <receiver
+             android:name=".datamodel.action.ActionServiceImpl$PendingActionReceiver"
+diff --git a/res/values/strings.xml b/res/values/strings.xml
+index fddc89c..88d0824 100644
+--- a/res/values/strings.xml
++++ b/res/values/strings.xml
+@@ -906,4 +906,9 @@
+ 
+     <string name="mark_as_read">Mark as read</string>
+     <string name="mark_as_unread">Mark as unread</string>
++
++    <string name="notification_copy_code_action">Copy %1$s</string>
++    <string name="verification_code_copied_toast">Copied %1$s</string>
++    <string name="verification_code_label">Verification code</string>
++    <string name="message_context_menu_copy_code">Copy verification code</string>
+ </resources>
+diff --git a/src/com/android/messaging/datamodel/BugleNotifications.java b/src/com/android/messaging/datamodel/BugleNotifications.java
+index ed22053..db8ca63 100644
+--- a/src/com/android/messaging/datamodel/BugleNotifications.java
++++ b/src/com/android/messaging/datamodel/BugleNotifications.java
+@@ -541,6 +541,19 @@ public class BugleNotifications {
+             setUpShortcuts(context, conversation, notifBuilder, latestPerson);
+         }
+ 
++        final CharSequence latestMessageText = conversation.getLatestMessageText();
++        final String verificationCode = com.android.messaging.util.VerificationCodeUtil.extractVerificationCode(latestMessageText);
++        if (verificationCode != null) {
++            final PendingIntent copyCodePendingIntent =
++                    UIIntents.get().getPendingIntentForCopyingVerificationCode(
++                            context, conversationId, verificationCode);
++            final NotificationCompat.Action copyCodeAction =
++                    new NotificationCompat.Action.Builder(0,
++                            context.getString(R.string.notification_copy_code_action, verificationCode),
++                            copyCodePendingIntent).build();
++            notifBuilder.addAction(copyCodeAction);
++        }
++
+         final PendingIntent markAsReadPendingIntent =
+                 UIIntents.get().getPendingIntentForMarkingAsRead(context, conversationId);
+         final NotificationCompat.Action markAsReadActionBuilder =
+diff --git a/src/com/android/messaging/datamodel/MessageNotificationState.java b/src/com/android/messaging/datamodel/MessageNotificationState.java
+index 88ec0e9..22aa5f7 100644
+--- a/src/com/android/messaging/datamodel/MessageNotificationState.java
++++ b/src/com/android/messaging/datamodel/MessageNotificationState.java
+@@ -310,6 +310,14 @@ public class MessageNotificationState {
+             return null;
+         }
+ 
++        public CharSequence getLatestMessageText() {
++            final MessageLineInfo messageLineInfo = getLatestMessageLineInfo();
++            if (messageLineInfo == null) {
++                return null;
++            }
++            return messageLineInfo.mText;
++        }
++
+         public String getTitle() {
+             if (mIsGroup) {
+                 return mGroupConversationName;
+diff --git a/src/com/android/messaging/receiver/CopyVerificationCodeReceiver.java b/src/com/android/messaging/receiver/CopyVerificationCodeReceiver.java
+new file mode 100644
+index 0000000..f917a38
+--- /dev/null
++++ b/src/com/android/messaging/receiver/CopyVerificationCodeReceiver.java
+@@ -0,0 +1,52 @@
++package com.android.messaging.receiver;
++
++import android.content.BroadcastReceiver;
++import android.content.ClipData;
++import android.content.ClipDescription;
++import android.content.ClipboardManager;
++import android.content.Context;
++import android.content.Intent;
++import android.os.Build;
++import android.os.PersistableBundle;
++import android.widget.Toast;
++
++import com.android.messaging.R;
++import com.android.messaging.datamodel.action.MarkAsReadAction;
++import com.android.messaging.ui.UIIntents;
++
++public class CopyVerificationCodeReceiver extends BroadcastReceiver {
++    public static final String ACTION_COPY_VERIFICATION_CODE = "com.android.messaging.receiver.COPY_VERIFICATION_CODE";
++    public static final String EXTRA_VERIFICATION_CODE = "verification_code";
++
++    @Override
++    public void onReceive(final Context context, final Intent intent) {
++        if (ACTION_COPY_VERIFICATION_CODE.equals(intent.getAction())) {
++            final String code = intent.getStringExtra(EXTRA_VERIFICATION_CODE);
++            if (code == null) {
++                return;
++            }
++            final String conversationId = intent.getStringExtra(UIIntents.UI_INTENT_EXTRA_CONVERSATION_ID);
++
++            final ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
++            if (clipboard != null) {
++                final ClipData clip = ClipData.newPlainText(context.getString(R.string.verification_code_label), code);
++                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
++                    final PersistableBundle bundle = new PersistableBundle();
++                    bundle.putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true);
++                    clip.getDescription().setExtras(bundle);
++                }
++                clipboard.setPrimaryClip(clip);
++            }
++
++            Toast.makeText(
++                context,
++                context.getString(R.string.verification_code_copied_toast, code),
++                Toast.LENGTH_SHORT
++            ).show();
++
++            if (conversationId != null && !conversationId.isEmpty()) {
++                MarkAsReadAction.markAsRead(conversationId, true);
++            }
++        }
++    }
++}
+diff --git a/src/com/android/messaging/ui/UIIntents.java b/src/com/android/messaging/ui/UIIntents.java
+index adf2af8..e4c9b2e 100644
+--- a/src/com/android/messaging/ui/UIIntents.java
++++ b/src/com/android/messaging/ui/UIIntents.java
+@@ -236,4 +236,9 @@ public abstract class UIIntents {
+     public abstract PendingIntent getPendingIntentForMarkingAsRead(
+             final Context context, final String conversationId);
+ 
++    /**
++     * Get a PendingIntent for copying a verification code from a notification.
++     */
++    public abstract PendingIntent getPendingIntentForCopyingVerificationCode(
++            final Context context, final String conversationId, final String verificationCode);
+ }
+diff --git a/src/com/android/messaging/ui/UIIntentsImpl.java b/src/com/android/messaging/ui/UIIntentsImpl.java
+index 8f6cf32..fba13d5 100644
+--- a/src/com/android/messaging/ui/UIIntentsImpl.java
++++ b/src/com/android/messaging/ui/UIIntentsImpl.java
+@@ -391,4 +391,16 @@ public class UIIntentsImpl extends UIIntents {
+         intent.setIdentifier(conversationId);
+         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+     }
++
++    @Override
++    public PendingIntent getPendingIntentForCopyingVerificationCode(
++            Context context, String conversationId, String verificationCode) {
++        final Intent intent = new Intent(context, com.android.messaging.receiver.CopyVerificationCodeReceiver.class);
++        intent.setAction(com.android.messaging.receiver.CopyVerificationCodeReceiver.ACTION_COPY_VERIFICATION_CODE);
++        intent.putExtra(UI_INTENT_EXTRA_CONVERSATION_ID, conversationId);
++        intent.putExtra(com.android.messaging.receiver.CopyVerificationCodeReceiver.EXTRA_VERIFICATION_CODE, verificationCode);
++        intent.setIdentifier(conversationId + ":" + verificationCode);
++        return PendingIntent.getBroadcast(context, 0, intent,
++                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
++    }
+ }
+diff --git a/src/com/android/messaging/ui/conversation/messages/delegate/ConversationMessageSelectionDelegate.kt b/src/com/android/messaging/ui/conversation/messages/delegate/ConversationMessageSelectionDelegate.kt
+index 8b3fa1f..64e958b 100644
+--- a/src/com/android/messaging/ui/conversation/messages/delegate/ConversationMessageSelectionDelegate.kt
++++ b/src/com/android/messaging/ui/conversation/messages/delegate/ConversationMessageSelectionDelegate.kt
+@@ -222,6 +222,7 @@ internal class ConversationMessageSelectionDelegateImpl @Inject constructor(
+     ) {
+         when (action) {
+             ConversationMessageAction.Copy -> copyMessageText(message = message)
++            ConversationMessageAction.CopyVerificationCode -> copyVerificationCode(message = message)
+             ConversationMessageAction.Delete -> {
+                 requestDeleteMessagesWhenActionRequirementsSatisfied(
+                     messageIds = persistentSetOf(message.messageId),
+@@ -251,6 +252,20 @@ internal class ConversationMessageSelectionDelegateImpl @Inject constructor(
+         clearMessageSelection()
+     }
+ 
++    private fun copyVerificationCode(message: ConversationMessageUiModel) {
++        val text = message.text?.takeIf(String::isNotBlank) ?: return
++        val code = com.android.messaging.util.VerificationCodeUtil.extractVerificationCode(text) ?: return
++
++        clipboardManager.setPrimaryClip(
++            ClipData.newPlainText(
++                null,
++                code,
++            ),
++        )
++
++        clearMessageSelection()
++    }
++
+     private fun downloadMessage(message: ConversationMessageUiModel) {
+         clearMessageSelection()
+         downloadMessageWhenActionRequirementsSatisfied(messageId = message.messageId)
+diff --git a/src/com/android/messaging/ui/conversation/messages/ui/message/ConversationMessageBubble.kt b/src/com/android/messaging/ui/conversation/messages/ui/message/ConversationMessageBubble.kt
+index 5a4917a..d118d40 100644
+--- a/src/com/android/messaging/ui/conversation/messages/ui/message/ConversationMessageBubble.kt
++++ b/src/com/android/messaging/ui/conversation/messages/ui/message/ConversationMessageBubble.kt
+@@ -4,17 +4,30 @@ import androidx.compose.foundation.layout.Arrangement
+ import androidx.compose.foundation.layout.Column
+ import androidx.compose.foundation.layout.padding
+ import androidx.compose.foundation.layout.widthIn
++import android.content.ClipData
++import android.content.ClipDescription
++import android.content.ClipboardManager
++import android.os.PersistableBundle
++import android.widget.Toast
++import androidx.compose.foundation.layout.size
++import androidx.compose.material.icons.Icons
++import androidx.compose.material.icons.filled.ContentCopy
++import androidx.compose.material3.AssistChip
++import androidx.compose.material3.Icon
+ import androidx.compose.material3.MaterialTheme
+ import androidx.compose.material3.Surface
+ import androidx.compose.material3.Text
+ import androidx.compose.runtime.Composable
+ import androidx.compose.runtime.CompositionLocalProvider
++import androidx.compose.runtime.remember
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.graphics.Color
++import androidx.compose.ui.platform.LocalContext
+ import androidx.compose.ui.text.style.TextOverflow
+ import androidx.compose.ui.tooling.preview.PreviewLightDark
+ import androidx.compose.ui.unit.Dp
+ import androidx.compose.ui.unit.dp
++import com.android.messaging.R
+ import com.android.messaging.data.conversation.model.MessageId
+ import com.android.messaging.ui.conversation.messages.model.message.ConversationMessageContent
+ import com.android.messaging.ui.conversation.messages.model.message.ConversationMessageUiModel
+@@ -31,6 +44,7 @@ import com.android.messaging.ui.conversation.preview.previewMmsDownloadUiModel
+ import com.android.messaging.ui.conversation.preview.previewOutgoingMessage
+ import com.android.messaging.ui.conversation.preview.previewVCardPart
+ import com.android.messaging.ui.conversation.preview.previewVideoPart
++import com.android.messaging.util.VerificationCodeUtil
+ import kotlinx.collections.immutable.persistentListOf
+ 
+ private val MESSAGE_BUBBLE_TEXT_HORIZONTAL_PADDING = 16.dp
+@@ -244,9 +258,60 @@ private fun ConversationMessageBody(
+             onExternalUriClick = onExternalUriClick,
+             onMessageLongClick = onMessageLongClick,
+         )
++
++        if (isIncoming) {
++            val verificationCode = remember(bodyText) {
++                VerificationCodeUtil.extractVerificationCode(bodyText)
++            }
++            if (verificationCode != null) {
++                CopyVerificationCodeChip(
++                    code = verificationCode,
++                    modifier = Modifier.padding(top = 4.dp),
++                )
++            }
++        }
+     }
+ }
+ 
++@Composable
++private fun CopyVerificationCodeChip(
++    code: String,
++    modifier: Modifier = Modifier,
++) {
++    val context = LocalContext.current
++    AssistChip(
++        onClick = {
++            val clipboard = context.getSystemService(ClipboardManager::class.java)
++            if (clipboard != null) {
++                val clip = ClipData.newPlainText(
++                    context.getString(R.string.verification_code_label),
++                    code
++                )
++                clip.description.extras = PersistableBundle().apply {
++                    putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
++                }
++                clipboard.setPrimaryClip(clip)
++                Toast.makeText(
++                    context,
++                    context.getString(R.string.verification_code_copied_toast, code),
++                    Toast.LENGTH_SHORT
++                ).show()
++            }
++        },
++        label = {
++            Text(context.getString(R.string.notification_copy_code_action, code))
++        },
++        leadingIcon = {
++            Icon(
++                imageVector = Icons.Default.ContentCopy,
++                contentDescription = null,
++                modifier = Modifier.size(16.dp),
++            )
++        },
++        modifier = modifier,
++    )
++}
++
+ @Composable
+ internal fun ConversationMessageSubject(
+     subjectText: String?,
+diff --git a/src/com/android/messaging/ui/conversation/screen/ConversationSelectionTopAppBar.kt b/src/com/android/messaging/ui/conversation/screen/ConversationSelectionTopAppBar.kt
+index 96d4f7c..2a9db1b 100644
+--- a/src/com/android/messaging/ui/conversation/screen/ConversationSelectionTopAppBar.kt
++++ b/src/com/android/messaging/ui/conversation/screen/ConversationSelectionTopAppBar.kt
+@@ -47,6 +47,7 @@ import kotlinx.collections.immutable.toPersistentList
+ private val messageSelectionActions = persistentListOf(
+     ConversationMessageAction.Download,
+     ConversationMessageAction.Resend,
++    ConversationMessageAction.CopyVerificationCode,
+     ConversationMessageAction.Copy,
+     ConversationMessageAction.Delete,
+ )
+@@ -259,7 +260,8 @@ private fun selectionActionIcon(
+     action: ConversationMessageAction,
+ ): ImageVector {
+     return when (action) {
+-        ConversationMessageAction.Copy -> Icons.Rounded.ContentCopy
++        ConversationMessageAction.Copy,
++        ConversationMessageAction.CopyVerificationCode -> Icons.Rounded.ContentCopy
+         ConversationMessageAction.Delete -> Icons.Rounded.Delete
+         ConversationMessageAction.Details -> Icons.Rounded.Info
+         ConversationMessageAction.Download -> Icons.Rounded.FileDownload
+diff --git a/src/com/android/messaging/ui/conversation/screen/model/ConversationMessageSelectionUiState.kt b/src/com/android/messaging/ui/conversation/screen/model/ConversationMessageSelectionUiState.kt
+index fbd326b..af4d028 100644
+--- a/src/com/android/messaging/ui/conversation/screen/model/ConversationMessageSelectionUiState.kt
++++ b/src/com/android/messaging/ui/conversation/screen/model/ConversationMessageSelectionUiState.kt
+@@ -34,6 +34,7 @@ internal enum class ConversationMessageAction(
+     @param:StringRes val labelRes: Int,
+ ) {
+     Copy(labelRes = R.string.message_context_menu_copy_text),
++    CopyVerificationCode(labelRes = R.string.message_context_menu_copy_code),
+     Delete(labelRes = R.string.action_delete_message),
+     Details(labelRes = R.string.message_context_menu_view_details),
+     Download(labelRes = R.string.action_download),
+@@ -56,6 +57,9 @@ internal fun ConversationMessageUiModel.availableMessageActions():
+     }
+ 
+     if (canCopyMessageToClipboard) {
++        if (com.android.messaging.util.VerificationCodeUtil.extractVerificationCode(text) != null) {
++            actions += ConversationMessageAction.CopyVerificationCode
++        }
+         actions += ConversationMessageAction.Copy
+     }
+ 
+diff --git a/src/com/android/messaging/util/VerificationCodeUtil.kt b/src/com/android/messaging/util/VerificationCodeUtil.kt
+new file mode 100644
+index 0000000..0537e34
+--- /dev/null
++++ b/src/com/android/messaging/util/VerificationCodeUtil.kt
+@@ -0,0 +1,209 @@
++package com.android.messaging.util
++
++/**
++ * Verification code / OTP extractor.
++ *
++ * Adapted from jd1378/otphelper:
++ * https://github.com/jd1378/otphelper/blob/main/app/src/main/java/io/github/jd1378/otphelper/utils/CodeExtractor.kt
++ *
++ * Licensed under the GNU General Public License v3.0 (GPL-3.0-or-later).
++ * https://github.com/jd1378/otphelper/blob/main/LICENSE
++ */
++
++// java's \b only treats ascii as word chars, so it never matches next to
++// cyrillic/hebrew/persian letters. these are its unicode-aware equivalent.
++private const val WORD_START = "(?<![\\p{L}\\p{N}_])"
++private const val WORD_END = "(?![\\p{L}\\p{N}_])"
++
++object CodeExtractorDefaults {
++    val sensitivePhrases = listOf(
++        "code",
++        "One[-\\s]Time[-\\s]Password",
++        "کد",
++        "رمز",
++        "شناسه\\s+تا[یي][یي]د", // "confirmation id" in persian
++        "\\bOTP\\W",
++        "\\b2FA\\W",
++        "Einmalkennwort",
++        "contraseña",
++        "c[oó]digo",
++        "clave",
++        "\\bel siguiente PIN\\W", // spanish
++        "验证码",
++        "校验码",
++        "識別碼",
++        "認證",
++        "驗證",
++        "код",
++        "סיסמ",
++        "${WORD_START}הקود$WORD_END",
++        "${WORD_START}קود$WORD_END",
++        "\\bKodu\\W", // "code" in turkish
++        "\\bKodunuz\\W", // "your code" in turkish
++        "\\b[sş]ifre:\\W", // "password" in turkish
++        "\\b[sş]ifreniz(?=\\W)", // "your password" in turkish
++        "\\bKodi\\W",
++        "\\bKods\\W",
++        "\\b(?:m|sms)?TAN\\W",
++        "\\bcodice\\W", // "code" in italian
++        "コード", // "code" in japanese
++        "パスワード", // "password" in japanese
++        "認証番号", // "authentication number" in japanese
++        "ワンタイム", // "one time" in japanese
++        "\\bvahvistuskoodi", // "confirmation code" in finnish
++        "\\bkertakäyttökoodisi\\W", // "your single-use code" in finnish
++        "\\bkod\\W", // PL
++        "\\bautoryzacji\\W", // PL
++        "Parol\\s+dlya\\s+podtverzhdeniya", // russian
++        "${WORD_START}пароль$WORD_END", // russian
++        "인증번호", // "authentication number" in korean
++        "\\bverification\\b",
++        "\\bverify\\b",
++        "\\bpasscode\\b",
++        "\\bpin\\b",
++    )
++
++    val skipPhrases = listOf(
++        "مقدار",
++        "مبلغ",
++        "amount",
++        "برای",
++        "-ارز",
++        // avoids detecting space separated code as bunch of words:
++        "[a-zA-Z0-9] [a-zA-Z0-9] [a-zA-Z0-9] [a-zA-Z0-9] ?",
++    )
++
++    val currencyIndicators = listOf(
++        "USD",
++        "EUR",
++        "GBP",
++        "[$€£]",
++    )
++
++    val ignoredPhrases = listOf(
++        "تخفیف",
++        "تخفیفات",
++        "تخفیفها",
++        "takhfif",
++        "off",
++        "اشتباه وارد شده",
++        "RatingCode",
++        "vscode",
++        "versionCode",
++        "unicode",
++        "discount code",
++        "fancode",
++        "encode",
++        "decode",
++        "barcode",
++        "codex",
++    )
++
++    val cleanupPhrases = listOf(
++        "[a-zA-Z0-9][a-zA-Z0-9-]{0,61}\\.[a-zA-Z]{2,}(?:[.a-zA-Z]{0,3}(?=\\s+)|)", // simpleDomainRegex
++        "['\"]",
++        "Endziffer-\\d+",
++        "Ending \\d+",
++        "<#>",
++        "share OTP",
++    )
++}
++
++class CodeExtractor(
++    private val sensitivePhrases: List<String> = CodeExtractorDefaults.sensitivePhrases,
++    private val ignoredPhrases: List<String> = CodeExtractorDefaults.ignoredPhrases,
++    private val cleanupPhrases: List<String> = CodeExtractorDefaults.cleanupPhrases,
++) {
++    val generalCodeMatcher: Regex =
++        """(${sensitivePhrases.joinToString("|")})(?:\s*(?!${
++            CodeExtractorDefaults.skipPhrases.joinToString("|")
++        })(?:[^\s:：܃︓﹕.'"\d\u0660-\u0669\u06F0-\u06F9]|[\d\u0660-\u0669\u06F0-\u06F9,\s]+(?:${
++            CodeExtractorDefaults.currencyIndicators.joinToString("|")
++        })|[\d\u0660-\u0669\u06F0-\u06F9][^\d\u0660-\u0669\u06F0-\u06F9]))*\s*[:：܃︓﹕]?\s*(["'「]?)${
++            ""
++        }([\d\u0660-\u0669\u06F0-\u06F9a-zA-Z\-]{4,}|\d{3,4}\s+\d{3,4}|(?: [\d\u0660-\u0669\u06F0-\u06F9a-zA-Z]){4,}|)\1?(?:[^\d\u0660-\u0669\u06F0-\u06F9a-zA-Z]|${'$'})"""
++            .toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
++
++    val specialCodeMatcher =
++        """((?:[\d\u0660-\u0669\u06F0-\u06F9]-?){4,}(?=\s)|[\d\u0660-\u0669\u06F0-\u06F9 ]{4,}(?=\s)|[\d\u0660-\u0669\u06F0-\u06F9]{4,})[^:]*(${
++            sensitivePhrases.joinToString("|")
++        })"""
++            .toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
++
++    val ignoredPhrasesRegex =
++        """$WORD_START(${ignoredPhrases.joinToString("|")})$WORD_END"""
++            .toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
++
++    val cleanupPhrasesRegex =
++        """(${cleanupPhrases.joinToString("|")})"""
++            .toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
++
++    fun getCode(str: String, doCleanup: Boolean = true): String? {
++        if (sensitivePhrases.isEmpty()) return null
++        val cleanStr = if (doCleanup) cleanup(str) else str
++        val results = generalCodeMatcher.findAll(cleanStr).filter { it.groups[3]?.value != null }
++        if (results.count() > 0) {
++            var foundCode =
++                results
++                    .find { it.groups[3]!!.value.isNotEmpty() }
++                    ?.groups
++                    ?.get(3)
++                    ?.value
++                    ?.replace(" ", "")
++                    ?.replace("-", "")
++
++            if (foundCode.isNullOrEmpty()) {
++                foundCode =
++                    specialCodeMatcher
++                        .find(cleanStr)
++                        ?.groups
++                        ?.get(1)
++                        ?.value
++                        ?.replace(" ", "")
++                        ?.replace("-", "")
++            }
++
++            if (!foundCode.isNullOrEmpty()) {
++                return toEnglishNumbers(foundCode)
++            }
++        }
++        return null
++    }
++
++    private fun toEnglishNumbers(number: String?): String? {
++        if (number.isNullOrEmpty()) return null
++        val chars = CharArray(number.length)
++        for (i in number.indices) {
++            var ch = number[i]
++            if (ch.code in 0x0660..0x0669) {
++                ch -= (0x0660 - '0'.code)
++            } else if (ch.code in 0x06f0..0x06F9) {
++                ch -= (0x06f0 - '0'.code)
++            }
++            chars[i] = ch
++        }
++        return String(chars)
++    }
++
++    fun shouldIgnore(str: String): Boolean {
++        if (ignoredPhrases.isEmpty()) return false
++        return ignoredPhrasesRegex.containsMatchIn(str)
++    }
++
++    fun cleanup(str: String): String {
++        if (cleanupPhrases.isEmpty()) return str
++        return str.replace(cleanupPhrasesRegex, "")
++    }
++}
++
++object VerificationCodeUtil {
++    private val defaultExtractor = CodeExtractor()
++
++    @JvmStatic
++    fun extractVerificationCode(text: CharSequence?): String? {
++        if (text.isNullOrBlank()) return null
++        val message = text.toString()
++        if (defaultExtractor.shouldIgnore(message)) return null
++        return defaultExtractor.getCode(message)
++    }
++}

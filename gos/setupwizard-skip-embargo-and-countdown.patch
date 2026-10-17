@@ -1,0 +1,38 @@
+diff -uNr -p --strip-trailing-cr a/java/app/grapheneos/setupwizard/action/SetupWizard.kt b/java/app/grapheneos/setupwizard/action/SetupWizard.kt
+--- a/java/app/grapheneos/setupwizard/action/SetupWizard.kt	2026-10-15 11:51:53.894816674 +1100
++++ b/java/app/grapheneos/setupwizard/action/SetupWizard.kt	2026-10-15 11:52:06.393796658 +1100
+@@ -33,7 +33,6 @@ object SetupWizard {
+         DateTimeActivity::class.java,
+         LocationActivity::class.java,
+         SecurityActivity::class.java,
+-        UpdaterSecurityPreviewActivity::class.java,
+         MigrationActivity::class.java,
+         GesturesActivity::class.java,
+         FinishActivity::class.java
+diff -uNr -p --strip-trailing-cr a/java/app/grapheneos/setupwizard/Constants.kt b/java/app/grapheneos/setupwizard/Constants.kt
+--- a/java/app/grapheneos/setupwizard/Constants.kt	2026-10-15 11:51:53.880816696 +1100
++++ b/java/app/grapheneos/setupwizard/Constants.kt	2026-10-15 11:52:12.157787428 +1100
+@@ -4,6 +4,6 @@ import android.content.Context
+ 
+ const val APPLY_SIM_LANGUAGE_ON_ENTRY = true
+ const val USE_LEGACY_WIFI_SETUP = false
+-const val OEM_UNLOCKED_ACK_TIMER = 10 // seconds
++const val OEM_UNLOCKED_ACK_TIMER = 0 // seconds
+ 
+ lateinit var appContext: Context
+diff -uNr -p --strip-trailing-cr a/java/app/grapheneos/setupwizard/view/activity/UpdaterSecurityPreviewActivity.kt b/java/app/grapheneos/setupwizard/view/activity/UpdaterSecurityPreviewActivity.kt
+--- a/java/app/grapheneos/setupwizard/view/activity/UpdaterSecurityPreviewActivity.kt	2026-10-15 11:51:53.898816668 +1100
++++ b/java/app/grapheneos/setupwizard/view/activity/UpdaterSecurityPreviewActivity.kt	2026-10-15 11:52:24.600767501 +1100
+@@ -15,11 +15,7 @@ class UpdaterSecurityPreviewActivity : P
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+-        if (!UpdaterSecurityPreviewActions.isAvailable(this)) {
+-            Log.d(TAG, "onCreate: skipping: missing updater")
+-            finish()
+-            SetupWizard.next(this)
+-        }
++        finish()
+     }
+ 
+     override fun launchActual() {

@@ -114,7 +114,7 @@ in
     ./gos_userdebug.nix
     # possibly unsafe# ./bigger_zram.nix
   ];
-  buildDateTime = 100 + releaseToTimestamp config.grapheneos.release;
+  buildDateTime = releaseToTimestamp config.grapheneos.release;
   flavor = "grapheneos";
   grapheneos.channel = "alpha";
   apps = {
@@ -145,8 +145,11 @@ in
 
     #./Disable-FLAG_SECURE.patch
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
-    # from https://github.com/GrapheneOS/platform_frameworks_base/pull/313.patch
-    ./Add-a-toggle-to-allow-screenshots-through-FLAG-SECURE.patch
+    (fetchpatch {
+      name = "Add a toggle to allow screenshots through FLAG SECURE";
+      url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/461.diff";
+      hash = "sha256-MDB0VsHoXigMx8cUeIzXZXbs8+qyF8RpgaL4y3bB0qI=";
+    })
 
     # https://github.com/GrapheneOS/platform_frameworks_base/pull/305
     ./Add-toggle-to-hide-location-access-indicator-on-a-per-app-basis.patch
@@ -161,9 +164,9 @@ in
   source.dirs."packages/apps/Settings".patches = [
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
     (fetchpatch {
-      name = "Add a toggle to disable FLAG SECURE";
-      url = "https://github.com/GrapheneOS/platform_packages_apps_Settings/pull/411.patch";
-      hash = "sha256-hcztYEyhfDlfkx04lKmsEOKr2puoM6GUb3bhRIgiCaM=";
+      name = "Add a toggle to allow screenshots through FLAG_SECURE";
+      url = "https://github.com/GrapheneOS/platform_packages_apps_Settings/pull/411.diff";
+      hash = "sha256-Pp4UEZ34PbMIHVz6ou/DUxkLAqXESkoB7ZEDbhWX7RI=";
     })
   ];
   source.dirs."packages/modules/Permission".patches = [
@@ -188,6 +191,7 @@ in
     */
   ];
   source.dirs."packages/apps/Updater".patches = [
+    ./updater-disable-security-preview.patch
     /*
       # conflicts
       (fetchpatch {
@@ -196,6 +200,9 @@ in
         hash = "sha256-32bWUQovFdG7xwv49QoqdXFgbMWg2X2Qg7d81mbduik=";
       })
     */
+  ];
+  source.dirs."packages/apps/SetupWizard2".patches = [
+    ./setupwizard-skip-embargo-and-countdown.patch
   ];
   source.dirs."packages/services/Telecomm".patches = [
     (fetchpatch {
@@ -248,11 +255,13 @@ in
   source.dirs."external/Camera".postPatch = replace_app "app-release" "apk_grapheneos-camera";
   source.dirs."external/AppStore".postPatch = replace_app "app-release" "apk_appstore";
   source.dirs."external/PdfViewer".postPatch = replace_app "app-release" "apk_pdfviewer";
+  source.dirs."external/Messaging".postPatch = replace_app "app-release" "apk_messaging";
   signing.extraApks = {
     "InfoApp.apk" = "grapheneos_info";
     "Camera.apk" = "grapheneos_camera";
     "AppStore.apk" = "grapheneos_appstore";
     "PdfViewerGOS.apk" = "grapheneos_pdfviewer";
+    "Messaging.apk" = "grapheneos_messaging";
   };
   /*
     # unsure

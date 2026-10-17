@@ -1,0 +1,259 @@
+From ef05c7b4313026b64e15560f6b8abaf311955243 Mon Sep 17 00:00:00 2001
+From: xpncvr <166451092+xpncvr@users.noreply.github.com>
+Date: Sat, 17 Oct 2026 10:19:42 +1100
+Subject: [PATCH] Add scanning QR/barcodes from a picked image
+
+---
+ .../java/app/grapheneos/camera/CamConfig.kt   | 13 ++++-
+ .../grapheneos/camera/analyzer/QRAnalyzer.kt  | 28 +++++++++++
+ .../camera/ui/activities/MainActivity.kt      | 50 +++++++++++++++++++
+ .../ui/activities/VideoCaptureActivity.kt     |  2 -
+ app/src/main/res/drawable/scan_from_image.xml | 12 +++++
+ app/src/main/res/layout/activity_main.xml     | 12 +++++
+ app/src/main/res/values/strings.xml           |  3 ++
+ 7 files changed, 117 insertions(+), 3 deletions(-)
+ create mode 100644 app/src/main/res/drawable/scan_from_image.xml
+
+diff --git a/app/src/main/java/app/grapheneos/camera/CamConfig.kt b/app/src/main/java/app/grapheneos/camera/CamConfig.kt
+index 7251ed7..41b57c2 100644
+--- a/app/src/main/java/app/grapheneos/camera/CamConfig.kt
++++ b/app/src/main/java/app/grapheneos/camera/CamConfig.kt
+@@ -2074,7 +2074,13 @@ class CamConfig(private val mActivity: MainActivity) {
+ 
+         if (isQRMode) {
+             mActivity.qrOverlay.visibility = View.VISIBLE
+-            mActivity.thirdOption.visibility = View.INVISIBLE
++
++            mActivity.thirdOption.visibility = View.VISIBLE
++            mActivity.whiteOptionCircle.visibility = View.INVISIBLE
++            mActivity.imagePreview.visibility = View.INVISIBLE
++            mActivity.thirdCircle.visibility = View.INVISIBLE
++            mActivity.playPreview.visibility = View.INVISIBLE
++            mActivity.qrImageImport.visibility = View.VISIBLE
+ 
+             if (scanAllCodes) {
+                 mActivity.setFlipCameraIcon(
+@@ -2098,6 +2104,11 @@ class CamConfig(private val mActivity: MainActivity) {
+         } else {
+             mActivity.qrOverlay.visibility = View.INVISIBLE
+             mActivity.thirdOption.visibility = View.VISIBLE
++            mActivity.qrImageImport.visibility = View.GONE
++            mActivity.whiteOptionCircle.visibility = View.VISIBLE
++            mActivity.imagePreview.visibility = View.VISIBLE
++            mActivity.thirdCircle.visibility = View.VISIBLE
++
+             mActivity.setFlipCameraIcon(R.drawable.flip_camera, R.string.flip_camera)
+             mActivity.cancelButtonView.visibility = View.VISIBLE
+ 
+diff --git a/app/src/main/java/app/grapheneos/camera/analyzer/QRAnalyzer.kt b/app/src/main/java/app/grapheneos/camera/analyzer/QRAnalyzer.kt
+index 06820cf..dacd63a 100644
+--- a/app/src/main/java/app/grapheneos/camera/analyzer/QRAnalyzer.kt
++++ b/app/src/main/java/app/grapheneos/camera/analyzer/QRAnalyzer.kt
+@@ -1,5 +1,6 @@
+ package app.grapheneos.camera.analyzer
+ 
++import android.graphics.Bitmap
+ import android.util.Log
+ import androidx.camera.core.ImageAnalysis.Analyzer
+ import androidx.camera.core.ImageProxy
+@@ -9,6 +10,7 @@ import com.google.zxing.BinaryBitmap
+ import com.google.zxing.DecodeHintType
+ import com.google.zxing.MultiFormatReader
+ import com.google.zxing.PlanarYUVLuminanceSource
++import com.google.zxing.RGBLuminanceSource
+ import com.google.zxing.ReaderException
+ import com.google.zxing.common.HybridBinarizer
+ import java.util.EnumMap
+@@ -17,6 +19,32 @@ import kotlin.math.roundToInt
+ class QRAnalyzer(private val mActivity: MainActivity) : Analyzer {
+     companion object {
+         private const val TAG = "QRCodeImageAnalyzer"
++
++        fun scanStillImage(bitmap: Bitmap, possibleFormats: List<BarcodeFormat>): String? {
++            val width = bitmap.width
++            val height = bitmap.height
++            val pixels = IntArray(width * height)
++            bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
++
++            val hints: MutableMap<DecodeHintType, Any> = EnumMap(DecodeHintType::class.java)
++            hints[DecodeHintType.POSSIBLE_FORMATS] = possibleFormats
++            hints[DecodeHintType.TRY_HARDER] = true
++
++            val reader = MultiFormatReader().apply { setHints(hints) }
++
++            val source = RGBLuminanceSource(width, height, pixels)
++            decodeOrNull(reader, BinaryBitmap(HybridBinarizer(source)))?.let { return it }
++            return decodeOrNull(reader, BinaryBitmap(HybridBinarizer(source.invert())))
++        }
++
++        private fun decodeOrNull(reader: MultiFormatReader, binaryBitmap: BinaryBitmap): String? {
++            reader.reset()
++            return try {
++                reader.decodeWithState(binaryBitmap).text
++            } catch (e: ReaderException) {
++                null
++            }
++        }
+     }
+ 
+     private var frameCounter = 0
+diff --git a/app/src/main/java/app/grapheneos/camera/ui/activities/MainActivity.kt b/app/src/main/java/app/grapheneos/camera/ui/activities/MainActivity.kt
+index 5391846..be22fb5 100644
+--- a/app/src/main/java/app/grapheneos/camera/ui/activities/MainActivity.kt
++++ b/app/src/main/java/app/grapheneos/camera/ui/activities/MainActivity.kt
+@@ -49,6 +49,7 @@ import android.widget.ProgressBar
+ import android.widget.RelativeLayout
+ import android.widget.TextView
+ import androidx.activity.enableEdgeToEdge
++import androidx.activity.result.PickVisualMediaRequest
+ import androidx.activity.result.contract.ActivityResultContracts
+ import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
+ import androidx.annotation.DrawableRes
+@@ -75,6 +76,7 @@ import app.grapheneos.camera.CameraMode
+ import app.grapheneos.camera.ITEM_TYPE_IMAGE
+ import app.grapheneos.camera.ITEM_TYPE_VIDEO
+ import app.grapheneos.camera.R
++import app.grapheneos.camera.analyzer.QRAnalyzer
+ import app.grapheneos.camera.capturer.ImageCapturer
+ import app.grapheneos.camera.capturer.VideoCapturer
+ import app.grapheneos.camera.capturer.getVideoThumbnail
+@@ -183,6 +185,9 @@ open class MainActivity : AppCompatActivity(),
+     lateinit var thirdOption: View
+     lateinit var imagePreview: ShapeableImageView
+     lateinit var previewLoader: ProgressBar
++    lateinit var whiteOptionCircle: ImageView
++    lateinit var playPreview: ImageView
++    lateinit var qrImageImport: ImageButton
+     private var isZooming = false
+ 
+     lateinit var zoomBar: ZoomBar
+@@ -342,6 +347,42 @@ open class MainActivity : AppCompatActivity(),
+         Log.i(TAG, "Selected location: ${data?.encodedPath!!}")
+     }
+ 
++    private val qrImagePickerLauncher = registerForActivityResult(
++        ActivityResultContracts.PickVisualMedia()
++    ) { uri: Uri? ->
++        if (uri != null) {
++            scanQRFromImage(uri)
++        }
++    }
++
++    private fun scanQRFromImage(uri: Uri) {
++        val bitmap = try {
++            val source = ImageDecoder.createSource(contentResolver, uri)
++            ImageDecoder.decodeBitmap(source) { decoder, _, _ ->
++                decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
++            }
++        } catch (e: Exception) {
++            Log.w(TAG, "Unable to decode picked image for QR scan", e)
++            showMessage(R.string.could_not_read_image)
++            return
++        }
++
++        val possibleFormats = if (camConfig.scanAllCodes) {
++            BarcodeFormat.values().asList()
++        } else {
++            camConfig.allowedFormats
++        }
++
++        val result = QRAnalyzer.scanStillImage(bitmap, possibleFormats)
++        bitmap.recycle()
++
++        if (result != null) {
++            onScanResultSuccess(result)
++        } else {
++            showMessage(R.string.no_code_found_in_image)
++        }
++    }
++
+     private fun showAudioPermissionDeniedDialog(onDisableAudio: () -> Unit = {}) {
+         val builder = MaterialAlertDialogBuilder(this)
+             .setTitle(R.string.audio_permission_dialog_title)
+@@ -781,6 +822,15 @@ open class MainActivity : AppCompatActivity(),
+         thirdOption = binding.thirdOption
+         previewLoader = binding.previewLoading
+         imagePreview = binding.imagePreview
++        whiteOptionCircle = binding.whiteOptionCircle
++        playPreview = binding.playPreview
++        qrImageImport = binding.qrImageImport
++        qrImageImport.setOnClickListener {
++            resetAutoSleep()
++            qrImagePickerLauncher.launch(
++                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
++            )
++        }
+         previewView = binding.preview
+         previewView.scaleType = PreviewView.ScaleType.FIT_START
+         previewContainer = binding.previewContainer
+diff --git a/app/src/main/java/app/grapheneos/camera/ui/activities/VideoCaptureActivity.kt b/app/src/main/java/app/grapheneos/camera/ui/activities/VideoCaptureActivity.kt
+index baf2ce6..75e4e5e 100644
+--- a/app/src/main/java/app/grapheneos/camera/ui/activities/VideoCaptureActivity.kt
++++ b/app/src/main/java/app/grapheneos/camera/ui/activities/VideoCaptureActivity.kt
+@@ -10,8 +10,6 @@ import app.grapheneos.camera.R
+ 
+ class VideoCaptureActivity : CaptureActivity() {
+ 
+-    private lateinit var whiteOptionCircle: ImageView
+-    private lateinit var playPreview: ImageView
+ 
+     private var savedUri: Uri? = null
+ 
+diff --git a/app/src/main/res/drawable/scan_from_image.xml b/app/src/main/res/drawable/scan_from_image.xml
+new file mode 100644
+index 0000000..268dbb9
+--- /dev/null
++++ b/app/src/main/res/drawable/scan_from_image.xml
+@@ -0,0 +1,12 @@
++<vector
++    android:height="24dp"
++    android:width="24dp"
++    android:viewportHeight="24"
++    android:viewportWidth="24"
++    xmlns:android="http://schemas.android.com/apk/res/android">
++
++    <path
++        android:fillColor="@android:color/white"
++        android:pathData="M21,19V5c0,-1.1 -0.9,-2 -2,-2H5c-1.1,0 -2,0.9 -2,2v14c0,1.1 0.9,2 2,2h14c1.1,0 2,-0.9 2,-2zM8.5,13.5l2.5,3.01L14.5,12l4.5,6H5l3.5,-4.5z"/>
++
++</vector>
+diff --git a/app/src/main/res/layout/activity_main.xml b/app/src/main/res/layout/activity_main.xml
+index a14a515..819cdd4 100644
+--- a/app/src/main/res/layout/activity_main.xml
++++ b/app/src/main/res/layout/activity_main.xml
+@@ -381,6 +381,18 @@
+                     android:layout_gravity="center"
+                     android:contentDescription="@string/play_preview"/>
+ 
++                <ImageButton
++                    android:id="@+id/qr_image_import"
++                    android:layout_width="64dp"
++                    android:layout_height="64dp"
++                    android:layout_gravity="center"
++                    android:padding="16dp"
++                    android:scaleType="fitCenter"
++                    android:src="@drawable/scan_from_image"
++                    android:background="@drawable/option_circle"
++                    android:visibility="gone"
++                    android:contentDescription="@string/scan_from_image"/>
++
+             </FrameLayout>
+ 
+         </LinearLayout>
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+index 8df97c2..dc6f46b 100644
+--- a/app/src/main/res/values/strings.xml
++++ b/app/src/main/res/values/strings.xml
+@@ -81,6 +81,9 @@
+     <string name="edit_with">Edit with</string>
+     <string name="rec_without_audio">Start recording without audio</string>
+     <string name="qr_scan">QR Code</string>
++    <string name="scan_from_image">Scan code from an image</string>
++    <string name="no_code_found_in_image">No code found in the selected image.</string>
++    <string name="could_not_read_image">Could not read the selected image.</string>
+     <string name="data_matrix">Data Matrix</string>
+     <string name="aztec_code">Aztec Code</string>
+     <string name="more_options">More Options</string>
+-- 
+2.55.0
+
