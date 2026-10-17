@@ -17,7 +17,7 @@
   };
 
   config = {
-    enableLindroid = true;
+    enableLindroid = lib.mkDefault true;
     enableDroidspaces = false;
     device = lib.mkDefault "caiman";
     source.dirs."device/google/caimito-kernels/6.1" = lib.mkForce {
