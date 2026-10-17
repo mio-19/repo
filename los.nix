@@ -193,7 +193,8 @@ in
       src = sources.vendor_lindroid.src;
       # https://t.me/linux_on_droid/18552
       postPatch = ''
-        sed -i 's|android.hardware.graphics.common-V5|android.hardware.graphics.common-V${config.graphics_ver}|' interfaces/composer/Android.bp
+        substituteInPlace interfaces/composer/Android.bp \
+          --replace-fail 'android.hardware.graphics.common-V5' "android.hardware.graphics.common-V''${config.graphics_ver}"
       '';
       patches = with pkgs; [
         (fetchpatch {
@@ -205,7 +206,24 @@ in
       ];
     };
     source.dirs."external/lxc".src = lib.mkIf config.lindroid sources.external_lxc.src;
-    source.dirs."libhybris".src = lib.mkIf config.lindroid sources.libhybris.src;
+    source.dirs."libhybris" = lib.mkIf config.lindroid {
+      src = sources.libhybris.src;
+      patches = with pkgs; [
+        (fetchpatch {
+          # https://github.com/yaap/libhybris/commit/984c2a2f7c1629624743de28a63d628e7dd4f18b
+          name = "compat-hwc2-drop-warning.patch";
+          url = "https://github.com/yaap/libhybris/commit/984c2a2f7c1629624743de28a63d628e7dd4f18b.patch";
+          hash = "sha256-0OASdAdHRv8IOeDDU8KrM3pkAhCT9WPfMCrNRzdpWSQ=";
+        })
+        (fetchpatch {
+          # Fix for missing android.hardware.configstore@1.0 / configstore-utils on Android 15+
+          # Used by yaap seventeen / sixteen manifest: https://github.com/yaap/libhybris/commit/d766015efa11c2efd481e58d0ddbce9f4c58edbe
+          name = "compat-hwc2-remove-configstore.patch";
+          url = "https://github.com/yaap/libhybris/commit/d766015efa11c2efd481e58d0ddbce9f4c58edbe.patch";
+          hash = "sha256-clx2MjjAQoe1f168EXZMT+3QyupStS/6hwOUxC+u8Po=";
+        })
+      ];
+    };
     source.dirs."kernel/${config.kernel-name}" =
       let
         kernelsu = ksu-variants."${config.ksu-variant}".src;
