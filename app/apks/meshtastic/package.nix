@@ -67,12 +67,14 @@ let
         pkg = finalAttrs.finalPackage;
         data = ./meshtastic_deps.json;
         silent = false;
-        useBwrap = true;
+        useBwrap = false;
       };
 
       nativeBuildInputs = [
         gradle
         jdk17_headless
+        jdk21_headless
+        jdk25_headless
 
         writableTmpDirAsHomeHook
         git
