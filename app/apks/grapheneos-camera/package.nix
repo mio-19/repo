@@ -54,6 +54,8 @@ let
         hash = "sha256-X7grvxGsBO09+eVDt9MjfyKK/6pKaSS6ysTLzsvRxcw=";
       })
 
+      # Scan QR code from gallery image (rebased for current Camera tree)
+      # https://github.com/GrapheneOS/Camera/pull/664
       ./scan-from-image.patch
     ];
 

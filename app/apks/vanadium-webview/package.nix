@@ -13,13 +13,13 @@ let
     dontUnpack = true;
     installPhase = ''
       mkdir -p $out
-      cp $src/prebuilt/arm64/TrichromeWebView.apk $out/TrichromeWebView.apk
+      cp $src/prebuilt/arm64/VanadiumWebView.apk $out/VanadiumWebView.apk
     '';
   };
 in
 mk-apk-package {
   inherit appPackage;
-  mainApk = "TrichromeWebView.apk";
+  mainApk = "VanadiumWebView.apk";
   signScriptName = "sign-vanadium-webview";
   fdroid = {
     appId = "app.vanadium.webview";
