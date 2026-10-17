@@ -91,17 +91,12 @@ let
     "amethyst" # misses AGP plugin marker from deps.json on darwin
     "droidspaces" # build fails mysteriously on darwin
     "meditrak" # fails with FSEvents stream error on darwin
-    "shelter" # Gradle fails to use mitmCache proxy on darwin
-    "v2rayng" # misses AGP plugin marker from deps.json on darwin
     "forkgram" # buildPhase fails mysteriously/killed on darwin
     "forkgram-classic" # buildPhase fails mysteriously/killed on darwin
     "element-android" # misses Gradle plugin marker from deps.json on darwin
     "archivetune" # misses Gradle plugin marker from deps.json on darwin
-    "gh4a" # misses AGP plugin marker from deps.json on darwin
     "breezy-weather" # misses Gradle plugin marker from deps.json on darwin
     "futo-keyboard" # misses AGP plugin marker from deps.json on darwin
-    "mastodon-android" # Gradle fails to use mitmCache proxy on darwin
-    "microg-re" # Gradle fails to use mitmCache proxy on darwin
     "aurorastore" # depends on gradle_9_5_1 which fails to compile on darwin
     "komi-store" # depends on gradle_9_5_1 which fails to compile on darwin
     "meshtastic" # depends on gradle_9_5_1 which fails to compile on darwin

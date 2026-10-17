@@ -3,6 +3,7 @@
   fetchgit,
   jdk11_headless,
   maven_3_9_14,
+  stdenv,
 }:
 let
   version = "1.1";
@@ -17,7 +18,11 @@ maven_3_9_14.buildMavenPackage {
   inherit version src;
   mvnJdk = jdk11_headless;
 
-  mvnHash = "sha256-uK78RhbK3F+zkuHbGvOSZFgkeyXqe2cgtd3gOblml5I=";
+  mvnHash =
+    if stdenv.hostPlatform.isDarwin then
+      "sha256-F8/oVUwJNjGLgcaV7FeDBafKPgPLi15ZyiEMhz9fk24="
+    else
+      "sha256-uK78RhbK3F+zkuHbGvOSZFgkeyXqe2cgtd3gOblml5I=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true";
 
   installPhase = ''
