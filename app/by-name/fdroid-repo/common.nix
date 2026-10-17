@@ -107,7 +107,6 @@ let
     "immich" # misses Gradle plugin marker from deps.json on darwin
     "weathermaster" # misses AGP plugin marker from deps.json on darwin
     "rain" # misses Gradle plugin marker from deps.json on darwin
-    "gallery" # misses lint-gradle dependency on darwin
   ];
 
   # Apps with OSS-looking licenses that still should not be published in fdroid-repo-oss
