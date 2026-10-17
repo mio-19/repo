@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Antigravity <antigravity@google.com>
+Date: Fri, 17 Oct 2026 08:45:00 +1100
+Subject: [PATCH] Show debug install method regardless of debuggable build type
+
+---
+ .../java/io/mkg20001/nixosimage/install/DebugInstallMethod.kt   | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/app/src/main/java/io/mkg20001/nixosimage/install/DebugInstallMethod.kt b/app/src/main/java/io/mkg20001/nixosimage/install/DebugInstallMethod.kt
+index 21c67ab..218dc5a 100644
+--- a/app/src/main/java/io/mkg20001/nixosimage/install/DebugInstallMethod.kt
++++ b/app/src/main/java/io/mkg20001/nixosimage/install/DebugInstallMethod.kt
+@@ -22,7 +22,7 @@ object DebugInstallMethod: ImageInstallMethod {
+     override val display = R.string.method_debug
+ 
+     override fun isAvailable(): Boolean {
+-        return Build.TYPE != null && (Build.TYPE.equals("userdebug") || Build.TYPE.equals("eng"))
++        return true
+     }
+ 
+     // mostly verbatim from packages/modules/Virtualization/ android/TerminalApp/java/com/android/virtualization/terminal/ImageArchive.kt
+-- 
+2.47.0

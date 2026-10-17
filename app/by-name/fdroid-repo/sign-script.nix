@@ -44,10 +44,6 @@ let
       keyalias_for_pkg() {
         local pkg="$1"
         case "$pkg" in
-          com.termux.nix)
-            # Keep nix-on-droid on the historical alias.
-            echo "releasekey"
-            ;;
           com.termux|com.termux.styling|com.termux.x11|org.gnu.emacs)
             # Keep termux family on one shared alias.
             echo "com.termux"

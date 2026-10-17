@@ -33,9 +33,6 @@ let
     keyalias_for_pkg() {
       local pkg="$1"
       case "$pkg" in
-        com.termux.nix)
-          echo "releasekey"
-          ;;
         com.termux|com.termux.styling|com.termux.x11|org.gnu.emacs)
           echo "com.termux"
           ;;
@@ -77,7 +74,6 @@ let
   # Expected alias groups — used in the Nix-level assertion comment and
   # also baked into the shell verification section.
   # com.termux, com.termux.styling, org.gnu.emacs → alias "com.termux"
-  # com.termux.nix                                 → alias "releasekey"
   # org.fdroid.basic                               → alias "org.fdroid.basic"
 
 in
@@ -233,16 +229,6 @@ pkgs.stdenvNoCC.mkDerivation {
 
     echo "  PASS: com.termux family all share the same signing key."
 
-    # nix-on-droid: must use alias "releasekey", so different from com.termux alias
-    fp_nod="$(get_sha256_fingerprint "signed_apks/com.termux.nix_signed.apk")"
-    echo "  com.termux.nix     fingerprint: $fp_nod"
-
-    if [[ "$fp_nod" == "$fp_termux" ]]; then
-      echo "FAIL: com.termux.nix shares the same key as com.termux! It should use 'releasekey'." >&2
-      exit 1
-    fi
-    echo "  PASS: com.termux.nix uses a distinct 'releasekey' alias."
-
     # Unrelated app: must have its own distinct key
     fp_fdroid="$(get_sha256_fingerprint "signed_apks/org.fdroid.basic_signed.apk")"
     echo "  org.fdroid.basic   fingerprint: $fp_fdroid"
@@ -281,9 +267,6 @@ pkgs.stdenvNoCC.mkDerivation {
 
     Termux family (com.termux, com.termux.styling, org.gnu.emacs)
       → all signed with alias 'com.termux' (shared key)
-
-    Nix-on-Droid (com.termux.nix)
-      → signed with alias 'releasekey' (separate key)
 
     Unrelated app (org.fdroid.basic)
       → signed with alias 'org.fdroid.basic' (per-app key)
