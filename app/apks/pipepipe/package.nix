@@ -32,7 +32,7 @@ let
         src = fetchFromGitHub {
           owner = "InfinityLoop1308";
           repo = "PipePipe";
-          tag = "v\${finalAttrs.version}";
+          tag = "v${finalAttrs.version}";
           hash = "sha256-MgX5D2d8M+xTFflOxSMpk13WXp1FOAFI7lsW8JbFwgI=";
         };
         clientSrc = fetchFromGitHub {
