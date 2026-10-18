@@ -57,7 +57,7 @@ let
       pkg = finalAttrs.finalPackage;
       data = ./nextcloud-android_deps.json;
       silent = false;
-      useBwrap = true;
+      useBwrap = false;
     };
 
     mitmCache = finalAttrs.mitmCacheOrig.overrideAttrs (old: {
@@ -75,6 +75,10 @@ let
       writableTmpDirAsHomeHook
       finalAttrs.mitmCache
     ];
+
+    env = {
+      JAVA_HOME = jdk25_headless.passthru.home;
+    };
 
     postPatch = ''
       rm -f gradle/verification-metadata.xml
@@ -133,7 +137,7 @@ let
 
     gradleFlags = [
       "-Dorg.gradle.java.installations.auto-download=false"
-      "-Dorg.gradle.java.installations.paths=${jdk25_headless}"
+      "-Dorg.gradle.java.installations.paths=${jdk25_headless.passthru.home}"
       "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
     ];

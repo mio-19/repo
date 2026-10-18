@@ -62,7 +62,7 @@ let
         outputHashAlgo = "sha256";
         outputHash =
           if stdenv.hostPlatform.isDarwin then
-            "sha256-rQXYYF73Az68cO9Cf6KEAzkOZ4SzRGsugzObm3a9iOE="
+            "sha256-QLC5T608hbX3hoQiHGq5TpPKlfTtJJLUVCedW83cm5Q="
           else
             "sha256-4o9EGVYSmDXf2qpID+ZWUjDP6YSV6PzpE1URcfRzuj0=";
         dontConfigure = true;
@@ -433,7 +433,7 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk21_headless;
+        JAVA_HOME = jdk21_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.3.13750724";
@@ -532,7 +532,7 @@ let
 
       gradleFlags = [
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.1/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.1/aapt2"
       ];

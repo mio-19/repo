@@ -173,6 +173,9 @@ let
 
       gradleBuildFlags = [ ":distributions-full:binDistributionZip" ];
 
+      __darwinAllowLocalNetworking = true;
+      __noChroot = stdenv.hostPlatform.isDarwin;
+
       gradleLibexec = "${placeholder "out"}/libexec/gradle";
 
       postPatch = ''
@@ -269,15 +272,18 @@ let
       passthru.jdk = java;
       passthru.lockFile = lockFile;
 
-      # https://github.com/gradle/gradle/blob/v9.4.1/platforms/core-runtime/base-services/src/main/java/org/gradle/internal/jvm/JpmsConfiguration.java#L64 - GROOVY_JPMS_ARGS_9 & configurationCacheJpmsArgs
-      preBuild = lib.optionalString avoidSingleUseDaemon ''
-        if [ ! -f gradle.properties ]; then
-          echo "gradle-unwrapped-${version} error: gradle.properties not found" >&2
-          exit 1
-        fi
-        export JAVA_OPTS="--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-opens=java.base/java.nio.charset=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.xml/javax.xml.namespace=ALL-UNNAMED $(grep '^org\.gradle\.jvmargs=' gradle.properties | cut -d'=' -f2-)"
-        echo "Adding JVM argument to avoid single-use Gradle daemon: $JAVA_OPTS"
-      '';
+      preBuild =
+        lib.optionalString stdenv.hostPlatform.isDarwin ''
+          export GRADLE_OPTS="''${GRADLE_OPTS:-} -Djava.net.preferIPv4Stack=true"
+        ''
+        + lib.optionalString avoidSingleUseDaemon ''
+          if [ ! -f gradle.properties ]; then
+            echo "gradle-unwrapped-${version} error: gradle.properties not found" >&2
+            exit 1
+          fi
+          export JAVA_OPTS="--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-opens=java.base/java.nio.charset=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.xml/javax.xml.namespace=ALL-UNNAMED $(grep '^org\.gradle\.jvmargs=' gradle.properties | cut -d'=' -f2-)"
+          echo "Adding JVM argument to avoid single-use Gradle daemon: $JAVA_OPTS"
+        '';
       meta = {
         platforms = [
           "aarch64-darwin"

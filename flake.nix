@@ -17,7 +17,7 @@
       #url = "git+https://github.com/nix-community/robotnix.git?shallow=1";
       #url = "git+https://github.com/nix-community/robotnix.git?shallow=1&ref=grapheneos_2026-05-07";
       #url = "github:nix-community/robotnix/grapheneos_2026-04-04";
-      url = "github:mio-19/robotnix/gos17";
+      url = "github:mio-19/robotnix/main";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.androidPkgs.follows = "android-nixpkgs";
       inputs.nixpkgs-nixfmt-old.follows = "nixpkgs";
@@ -53,8 +53,8 @@
       flake = false;
     };
     openwrt-imagebuilder = {
-      #url = "github:astro/nix-openwrt-imagebuilder";
-      url = "github:mio-19/nix-openwrt-imagebuilder";
+      url = "github:astro/nix-openwrt-imagebuilder";
+      #url = "github:mio-19/nix-openwrt-imagebuilder";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
       inputs.systems.follows = "flake-utils/systems";

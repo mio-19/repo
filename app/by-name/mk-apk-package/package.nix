@@ -1,5 +1,6 @@
 {
   lib,
+  stdenv,
   mkSignScript,
 }:
 {
@@ -95,5 +96,6 @@ appPackage.overrideAttrs (
     preBuild = disableLintHook + darwinGradleMitmHook + (old.preBuild or "");
     preGradleUpdate = disableLintHook + darwinGradleMitmHook + (old.preGradleUpdate or "");
     __darwinAllowLocalNetworking = true;
+    __noChroot = stdenv.hostPlatform.isDarwin;
   }
 )

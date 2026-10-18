@@ -3,6 +3,7 @@
   fetchgit,
   jdk11_headless,
   maven_3_9_14,
+  stdenv,
 }:
 let
   version = "1.1";

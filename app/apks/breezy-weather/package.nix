@@ -63,7 +63,7 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk21_headless;
+        JAVA_HOME = jdk21_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
@@ -93,7 +93,7 @@ let
         echo "breezy.metie.key=$(echo ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6STFOaUo5LmV5SnBjM01pT2lKdFpYUXRhbmQwSWl3aWMzVmlJam94TENKcFlYUWlPakUxTWpnNE1USTJNRFVzSW1WNGNDSTZOemd6TmpBeE1qWXdOWDAuTVpTQkRrU1JHMnVXZ1hfVVZLX1BhMk9mdzFMeGpVczF6Sks3TnkwM3NCUQo= | base64 -d)" >> local.properties
       '';
 
-      preConfigure = lib.optionalString stdenv.hostPlatform.isDarwin ''
+      preConfigure = ''
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
         echo "sdk.dir=${androidSdk}/share/android-sdk" >> local.properties
@@ -103,7 +103,7 @@ let
         # Select upstream's official Breezy branding resources instead of res_fork.
         "-Pbreezy"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
       ];

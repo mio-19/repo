@@ -8,6 +8,7 @@
   go_1_27,
   stdenv,
   fetchFromGitHub,
+  cacert,
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -40,7 +41,10 @@ let
         version = xrayLiteVersion;
         src = androidLibXrayLiteSrc;
 
-        nativeBuildInputs = [ go_1_27 ];
+        nativeBuildInputs = [
+          go_1_27
+          cacert
+        ];
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
@@ -52,6 +56,7 @@ let
         buildPhase = ''
           runHook preBuild
 
+          export SSL_CERT_FILE="${cacert}/etc/ssl/certs/ca-bundle.crt"
           export HOME="$TMPDIR/home"
           mkdir -p "$HOME"
           export GOTOOLCHAIN=local
