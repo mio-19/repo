@@ -1,0 +1,691 @@
+diff --git a/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/FlipVideoPatch.java b/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/FlipVideoPatch.java
+new file mode 100644
+index 0000000..053f0fd
+--- /dev/null
++++ b/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/FlipVideoPatch.java
+@@ -0,0 +1,22 @@
++/*
++ * Copyright 2026 Morphe.
++ *
++ * See the included NOTICE file for GPLv3 Section 7 terms that apply to this code.
++ */
++
++package app.morphe.extension.youtube.patches;
++
++import android.view.View;
++
++import app.morphe.extension.youtube.videoplayer.FlipVideoButton;
++
++@SuppressWarnings("unused")
++public class FlipVideoPatch {
++
++    /**
++     * Injection point. {@code YouTubePlayerViewNotForReflection.onLayout}.
++     */
++    public static void onPlayerViewLayout(View playerView) {
++        FlipVideoButton.onPlayerViewLayout(playerView);
++    }
++}
+diff --git a/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/FullscreenVideoScalePatch.java b/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/FullscreenVideoScalePatch.java
+index 8941312..6a33fcb 100644
+--- a/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/FullscreenVideoScalePatch.java
++++ b/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/FullscreenVideoScalePatch.java
+@@ -33,6 +33,7 @@ import app.morphe.extension.youtube.patches.VideoFormat.FormatInterface;
+ import app.morphe.extension.youtube.settings.Settings;
+ import app.morphe.extension.youtube.shared.PlayerType;
+ import app.morphe.extension.youtube.shared.ShortsPlayerState;
++import app.morphe.extension.youtube.videoplayer.FlipVideoButton;
+ import kotlin.Unit;
+ 
+ /**
+@@ -231,11 +232,12 @@ public class FullscreenVideoScalePatch {
+ 
+         VideoScaleMode mode = Settings.FULLSCREEN_VIDEO_SCALE.get();
+         final float pinch = Math.max(1f, DisableFullscreenGesturesPatch.getPinchScale());
++        final float flipSign = FlipVideoButton.isFlipped() ? -1f : 1f;
+         if (mode == VideoScaleMode.ZOOM) {
+             final float scale = Math.max(displayW / contentW, displayH / contentH) * pinch;
+             view.setPivotX(contentLeft + contentW / 2f);
+             view.setPivotY(contentTop + contentH / 2f);
+-            view.setScaleX(scale);
++            view.setScaleX(flipSign * scale);
+             view.setScaleY(scale);
+             final float contentCenterX = loc[0] + contentLeft + contentW / 2f;
+             final float contentCenterY = loc[1] + contentTop + contentH / 2f;
+@@ -246,10 +248,10 @@ public class FullscreenVideoScalePatch {
+ 
+         final float scaleX = (displayW / contentW) * pinch;
+         final float scaleY = (displayH / contentH) * pinch;
+-        if (pinch > 1.01f) {
++        if (pinch > 1.01f || FlipVideoButton.isFlipped()) {
+             view.setPivotX(contentLeft + contentW / 2f);
+             view.setPivotY(contentTop + contentH / 2f);
+-            view.setScaleX(scaleX);
++            view.setScaleX(flipSign * scaleX);
+             view.setScaleY(scaleY);
+             final float contentCenterX = loc[0] + contentLeft + contentW / 2f;
+             final float contentCenterY = loc[1] + contentTop + contentH / 2f;
+@@ -379,7 +381,7 @@ public class FullscreenVideoScalePatch {
+         }
+         view.setPivotX(view.getWidth() / 2f);
+         view.setPivotY(view.getHeight() / 2f);
+-        view.setScaleX(1);
++        view.setScaleX(FlipVideoButton.isFlipped() ? -1f : 1);
+         view.setScaleY(1);
+         view.setTranslationX(0);
+         view.setTranslationY(0);
+@@ -461,7 +463,7 @@ public class FullscreenVideoScalePatch {
+      * @see <a href="https://github.com/MorpheApp/morphe-patches/issues/2652">#2652</a>
+      */
+     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+-    private static boolean shouldScale() {
++    public static boolean shouldScale() {
+         return PlayerType.getCurrent() == PlayerType.WATCH_WHILE_FULLSCREEN;
+     }
+ 
+diff --git a/extensions/youtube/src/main/java/app/morphe/extension/youtube/settings/Settings.java b/extensions/youtube/src/main/java/app/morphe/extension/youtube/settings/Settings.java
+index 6f307b9..d39f16b 100644
+--- a/extensions/youtube/src/main/java/app/morphe/extension/youtube/settings/Settings.java
++++ b/extensions/youtube/src/main/java/app/morphe/extension/youtube/settings/Settings.java
+@@ -286,6 +286,9 @@ public class Settings extends SharedYouTubeSettings {
+     public static final BooleanSetting SANITIZE_VIDEO_SUBTITLE = new BooleanSetting("morphe_sanitize_video_subtitle", FALSE);
+ 
+     // Overlay buttons
++    public static final BooleanSetting FLIP_VIDEO_BUTTON = new BooleanSetting("morphe_flip_video_button", TRUE, true);
++    public static final BooleanSetting FLIP_VIDEO_BUTTON_FULLSCREEN_ONLY = new BooleanSetting("morphe_flip_video_button_fullscreen_only", FALSE, parent(FLIP_VIDEO_BUTTON));
++    public static final BooleanSetting FLIP_VIDEO_REMEMBER = new BooleanSetting("morphe_flip_video_remember", FALSE, parent(FLIP_VIDEO_BUTTON));
+     public static final BooleanSetting FULLSCREEN_VIDEO_SCALE_BUTTON = new BooleanSetting("morphe_fullscreen_video_scale_button", FALSE, true);
+     public static final BooleanSetting FULLSCREEN_VIDEO_SCALE_BUTTON_FULLSCREEN_ONLY = new BooleanSetting("morphe_fullscreen_video_scale_button_fullscreen_only", FALSE, parent(FULLSCREEN_VIDEO_SCALE_BUTTON));
+     public static final BooleanSetting COPY_VIDEO_LINK_BUTTON = new BooleanSetting("morphe_copy_video_link_button", FALSE, true);
+diff --git a/extensions/youtube/src/main/java/app/morphe/extension/youtube/videoplayer/FlipVideoButton.java b/extensions/youtube/src/main/java/app/morphe/extension/youtube/videoplayer/FlipVideoButton.java
+new file mode 100644
+index 0000000..0ed8859
+--- /dev/null
++++ b/extensions/youtube/src/main/java/app/morphe/extension/youtube/videoplayer/FlipVideoButton.java
+@@ -0,0 +1,257 @@
++/*
++ * Copyright 2026 Morphe.
++ *
++ * See the included NOTICE file for GPLv3 Section 7 terms that apply to this code.
++ */
++
++package app.morphe.extension.youtube.videoplayer;
++
++import static app.morphe.extension.shared.StringRef.str;
++
++import android.app.Activity;
++import android.view.View;
++import android.view.ViewGroup;
++import android.view.Window;
++import android.widget.ImageView;
++
++import androidx.annotation.Nullable;
++
++import java.lang.ref.WeakReference;
++
++import app.morphe.extension.shared.Logger;
++import app.morphe.extension.shared.Utils;
++import app.morphe.extension.youtube.patches.FullscreenVideoScalePatch;
++import app.morphe.extension.youtube.patches.LegacyPlayerControlsPatch;
++import app.morphe.extension.youtube.settings.Settings;
++import app.morphe.extension.youtube.shared.PlayerType;
++import kotlin.Unit;
++
++@SuppressWarnings("unused")
++public class FlipVideoButton {
++
++    @Nullable
++    private static LegacyPlayerControlButton legacy;
++
++    private static WeakReference<ImageView> overlayButtonRef = new WeakReference<>(null);
++    private static WeakReference<View> playerViewRef = new WeakReference<>(null);
++
++    private static volatile boolean isFlipped = false;
++
++    static {
++        PlayerType.getOnChange().addObserver((PlayerType type) -> {
++            if (isFlipped) {
++                applyFlip();
++            }
++            return Unit.INSTANCE;
++        });
++    }
++
++    public static boolean isFlipped() {
++        return isFlipped;
++    }
++
++    public static void setFlipped(boolean flipped) {
++        if (isFlipped == flipped) return;
++        isFlipped = flipped;
++        updateButtonIcon();
++        applyFlip();
++    }
++
++    /**
++     * Injection point.
++     */
++    public static void initializeButton(View controlsView) {
++        try {
++            if (LegacyPlayerControlsPatch.RESTORE_OLD_PLAYER_BUTTONS
++                    || !Settings.FLIP_VIDEO_BUTTON.get()) {
++                return;
++            }
++
++            ImageView added = PlayerOverlayButton.addButton(
++                    controlsView,
++                    getIconName(),
++                    FlipVideoButton::isOverlayButtonEnabled,
++                    view -> toggleFlip(),
++                    null
++            );
++            overlayButtonRef = new WeakReference<>(added);
++        } catch (Exception ex) {
++            Logger.printException(() -> "FlipVideoButton.initializeButton failure", ex);
++        }
++    }
++
++    /**
++     * Injection point.
++     */
++    public static void initializeLegacyButton(View controlsView) {
++        try {
++            if (!LegacyPlayerControlsPatch.RESTORE_OLD_PLAYER_BUTTONS) {
++                return;
++            }
++
++            legacy = new LegacyPlayerControlButton(
++                    controlsView,
++                    "morphe_flip_video_button",
++                    null,
++                    getIconBaseName(),
++                    () -> isOverlayButtonEnabled()
++                            ? LegacyPlayerControlButton.ButtonVisibility.ENABLED
++                            : LegacyPlayerControlButton.ButtonVisibility.DISABLED,
++                    view -> toggleFlip(),
++                    null
++            );
++        } catch (Exception ex) {
++            Logger.printException(() -> "FlipVideoButton.initializeLegacyButton failure", ex);
++        }
++    }
++
++    /**
++     * Injection point.
++     * Reset flip when a new video starts if remembering flip state is not enabled.
++     */
++    public static void resetFlipButton() {
++        if (!isFlipped || Settings.FLIP_VIDEO_REMEMBER.get()) {
++            return;
++        }
++
++        Utils.runOnMainThread(() -> {
++            try {
++                isFlipped = false;
++                updateButtonIcon();
++                applyFlip();
++            } catch (Exception ex) {
++                Logger.printException(() -> "resetFlipButton failure", ex);
++            }
++        });
++    }
++
++    public static void onPlayerViewLayout(View playerView) {
++        if (playerView == null) {
++            return;
++        }
++        playerViewRef = new WeakReference<>(playerView);
++        if (isFlipped) {
++            applyFlip();
++        }
++    }
++
++    private static boolean isOverlayButtonEnabled() {
++        if (!Settings.FLIP_VIDEO_BUTTON.get()) {
++            return false;
++        }
++        if (!Settings.FLIP_VIDEO_BUTTON_FULLSCREEN_ONLY.get()) {
++            return true;
++        }
++        PlayerType type = PlayerType.getCurrent();
++        return type == PlayerType.WATCH_WHILE_FULLSCREEN
++                || type == PlayerType.WATCH_WHILE_SLIDING_MAXIMIZED_FULLSCREEN;
++    }
++
++    private static void toggleFlip() {
++        try {
++            isFlipped = !isFlipped;
++            updateButtonIcon();
++            applyFlip();
++            Utils.showToastShort(str(isFlipped
++                    ? "morphe_flip_video_toast_on"
++                    : "morphe_flip_video_toast_off"));
++        } catch (Exception ex) {
++            Logger.printException(() -> "toggleFlip failure", ex);
++        }
++    }
++
++    public static void applyFlip() {
++        Utils.runOnMainThread(() -> {
++            try {
++                if (FullscreenVideoScalePatch.shouldScale()
++                        && Settings.FULLSCREEN_VIDEO_SCALE.get() != FullscreenVideoScalePatch.VideoScaleMode.DEFAULT) {
++                    FullscreenVideoScalePatch.applyScale();
++                    return;
++                }
++
++                View view = resolvePlayerView();
++                if (view == null) {
++                    return;
++                }
++
++                final int w = view.getWidth();
++                final int h = view.getHeight();
++                if (w > 0 && h > 0) {
++                    view.setPivotX(w / 2f);
++                    view.setPivotY(h / 2f);
++                }
++                view.setScaleX(isFlipped ? -1.0f : 1.0f);
++            } catch (Exception ex) {
++                Logger.printException(() -> "applyFlip failure", ex);
++            }
++        });
++    }
++
++    private static void updateButtonIcon() {
++        Utils.verifyOnMainThread();
++
++        final int icon = PlayerIcons.id(getIconBaseName());
++
++        ImageView overlayButton = overlayButtonRef.get();
++        if (overlayButton != null) {
++            overlayButton.setImageResource(icon);
++        }
++
++        if (legacy != null) {
++            legacy.setIcon(icon);
++        }
++    }
++
++    private static String getIconName() {
++        return PlayerIcons.name(getIconBaseName());
++    }
++
++    private static String getIconBaseName() {
++        return isFlipped
++                ? "morphe_flip_video_button_on"
++                : "morphe_flip_video_button_off";
++    }
++
++    @Nullable
++    private static View resolvePlayerView() {
++        View cached = playerViewRef.get();
++        if (cached != null && cached.isAttachedToWindow() && cached.getWidth() > 0) {
++            return cached;
++        }
++
++        Activity activity = Utils.getActivity();
++        if (activity != null) {
++            Window window = activity.getWindow();
++            if (window != null) {
++                View found = findPlayerView(window.getDecorView(), 0);
++                if (found != null) {
++                    playerViewRef = new WeakReference<>(found);
++                    return found;
++                }
++            }
++        }
++        return cached;
++    }
++
++    @Nullable
++    private static View findPlayerView(View view, int depth) {
++        if (depth > 18 || view == null) {
++            return null;
++        }
++        String name = view.getClass().getName();
++        if (name.endsWith("YouTubePlayerViewNotForReflection")
++                || name.endsWith("player.ui.PlayerView")) {
++            return view;
++        }
++        if (!(view instanceof ViewGroup group)) {
++            return null;
++        }
++        for (int i = 0, n = group.getChildCount(); i < n; i++) {
++            View found = findPlayerView(group.getChildAt(i), depth + 1);
++            if (found != null) {
++                return found;
++            }
++        }
++        return null;
++    }
++}
+diff --git a/patches/src/main/kotlin/app/morphe/patches/youtube/layout/player/buttons/FlipVideoButtonPatch.kt b/patches/src/main/kotlin/app/morphe/patches/youtube/layout/player/buttons/FlipVideoButtonPatch.kt
+new file mode 100644
+index 0000000..8ddaab3
+--- /dev/null
++++ b/patches/src/main/kotlin/app/morphe/patches/youtube/layout/player/buttons/FlipVideoButtonPatch.kt
+@@ -0,0 +1,87 @@
++/*
++ * Copyright 2026 Morphe.
++ *
++ * See the included NOTICE file for GPLv3 Section 7 terms that apply to this code.
++ */
++
++package app.morphe.patches.youtube.layout.player.buttons
++
++import app.morphe.patcher.patch.bytecodePatch
++import app.morphe.patcher.patch.resourcePatch
++import app.morphe.patches.shared.misc.settings.preference.SwitchPreference
++import app.morphe.patches.shared.misc.settings.preference.noTitleUnsortedPreferenceCategory
++import app.morphe.patches.youtube.layout.buttons.overlay.addPlayerOverlayPreferences
++import app.morphe.patches.youtube.layout.buttons.overlay.playerOverlayButtonsSettingsPatch
++import app.morphe.patches.youtube.layout.player.fullscreen.YouTubePlayerViewOnLayoutFingerprint
++import app.morphe.patches.youtube.layout.player.icons.copyPlayerButtonIcons
++import app.morphe.patches.youtube.misc.extension.sharedExtensionPatch
++import app.morphe.patches.youtube.misc.playercontrols.addLegacyBottomControl
++import app.morphe.patches.youtube.misc.playercontrols.initializeLegacyBottomControl
++import app.morphe.patches.youtube.misc.playercontrols.legacyPlayerControlsPatch
++import app.morphe.patches.youtube.misc.settings.settingsPatch
++import app.morphe.patches.youtube.shared.Constants.COMPATIBILITY_YOUTUBE
++import app.morphe.patches.youtube.shared.hookVideoStarted
++import app.morphe.patches.youtube.shared.startVideoInformerPatch
++import app.morphe.util.addInstructionsAtControlFlowLabel
++
++private const val EXTENSION_BUTTON =
++    "Lapp/morphe/extension/youtube/videoplayer/FlipVideoButton;"
++private const val EXTENSION_PATCH =
++    "Lapp/morphe/extension/youtube/patches/FlipVideoPatch;"
++
++private val flipVideoButtonResourcePatch = resourcePatch {
++    dependsOn(
++        settingsPatch,
++        legacyPlayerControlsPatch
++    )
++
++    execute {
++        copyPlayerButtonIcons(
++            "flipvideobutton",
++            "morphe_flip_video_button_off",
++            "morphe_flip_video_button_on"
++        )
++
++        addLegacyBottomControl("flipvideobutton")
++    }
++}
++
++@Suppress("unused")
++val flipVideoButtonPatch = bytecodePatch(
++    name = "Flip video",
++    description = "Adds an option to show a player button that flips the video horizontally.",
++) {
++    dependsOn(
++        sharedExtensionPatch,
++        settingsPatch,
++        startVideoInformerPatch,
++        playerOverlayButtonsSettingsPatch,
++        playerOverlayButtonsHookPatch,
++        legacyPlayerControlsPatch,
++        flipVideoButtonResourcePatch
++    )
++
++    compatibleWith(COMPATIBILITY_YOUTUBE)
++
++    execute {
++        addPlayerOverlayPreferences(
++            noTitleUnsortedPreferenceCategory(
++                SwitchPreference("morphe_flip_video_button", summary = true),
++                SwitchPreference("morphe_flip_video_button_fullscreen_only", summary = true),
++                SwitchPreference("morphe_flip_video_remember", summary = true)
++            )
++        )
++
++        addPlayerBottomButton(EXTENSION_BUTTON)
++        initializeLegacyBottomControl(EXTENSION_BUTTON)
++
++        hookVideoStarted("$EXTENSION_BUTTON->resetFlipButton()V")
++
++        YouTubePlayerViewOnLayoutFingerprint.let {
++            it.method.addInstructionsAtControlFlowLabel(
++                it.instructionMatches.first().index,
++                "invoke-static { p0 }, $EXTENSION_PATCH->onPlayerViewLayout(Landroid/view/View;)V"
++            )
++        }
++    }
++}
+diff --git a/patches/src/main/resources/addresources/values/youtube/strings.xml b/patches/src/main/resources/addresources/values/youtube/strings.xml
+index d64eb6c..fb31c6b 100644
+--- a/patches/src/main/resources/addresources/values/youtube/strings.xml
++++ b/patches/src/main/resources/addresources/values/youtube/strings.xml
+@@ -1076,6 +1076,16 @@ Settings → Playback (or Autoplay) → Autoplay next video"</string>
+     <!-- layout.player.buttons.muteVideoButtonPatch -->
+     <string name="morphe_mute_video_button_title">Show Mute button</string>
+ 
++    <!-- layout.player.buttons.flipVideoButtonPatch -->
++    <string name="morphe_flip_video_button_title">Show Flip video button</string>
++    <string name="morphe_flip_video_button_summary">Show a button in the player overlay to flip the video horizontally</string>
++    <string name="morphe_flip_video_button_fullscreen_only_title">Show only in fullscreen</string>
++    <string name="morphe_flip_video_button_fullscreen_only_summary">Hide the flip video button in the portrait player</string>
++    <string name="morphe_flip_video_remember_title">Remember flip state</string>
++    <string name="morphe_flip_video_remember_summary">Keep video flipped when switching videos</string>
++    <string name="morphe_flip_video_toast_on">Video flipped horizontally</string>
++    <string name="morphe_flip_video_toast_off">Video restored to normal</string>
++
+     <!-- layout.player.overlay.customPlayerOverlayOpacityPatch -->
+     <string name="morphe_player_overlay_opacity_title">Player overlay opacity</string>
+     <string name="morphe_player_overlay_opacity_summary">Adjust the transparency level (0 is transparent, 100 is opaque)</string>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off.xml
+new file mode 100644
+index 0000000..265fcda
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off.xml
+@@ -0,0 +1,41 @@
++<?xml version="1.0" encoding="utf-8"?>
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="960"
++            android:viewportHeight="960">
++            <group
++                android:name="icon_group"
++                android:pivotX="480"
++                android:pivotY="480">
++                <path
++                    android:fillColor="@android:color/white"
++                    android:fillType="evenOdd"
++                    android:pathData="M460,180h40v80h-40Z M460,300h40v80h-40Z M460,420h40v80h-40Z M460,540h40v80h-40Z M460,660h40v80h-40Z M420,240L420,720L160,720Z M540,240L800,720L540,720Z M580,680L720,680L580,360Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_bold.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_bold.xml
+new file mode 100644
+index 0000000..e5d40b5
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_bold.xml
+@@ -0,0 +1,41 @@
++<?xml version="1.0" encoding="utf-8"?>
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="960"
++            android:viewportHeight="960">
++            <group
++                android:name="icon_group"
++                android:pivotX="480"
++                android:pivotY="480">
++                <path
++                    android:fillColor="@android:color/white"
++                    android:fillType="evenOdd"
++                    android:pathData="M455,180h50v80h-50Z M455,300h50v80h-50Z M455,420h50v80h-50Z M455,540h50v80h-50Z M455,660h50v80h-50Z M420,230L420,730L150,730Z M540,230L810,730L540,730Z M600,670L710,670L600,410Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on.xml
+new file mode 100644
+index 0000000..eeffa32
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on.xml
+@@ -0,0 +1,41 @@
++<?xml version="1.0" encoding="utf-8"?>
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="960"
++            android:viewportHeight="960">
++            <group
++                android:name="icon_group"
++                android:pivotX="480"
++                android:pivotY="480">
++                <path
++                    android:fillColor="@android:color/white"
++                    android:fillType="evenOdd"
++                    android:pathData="M460,180h40v80h-40Z M460,300h40v80h-40Z M460,420h40v80h-40Z M460,540h40v80h-40Z M460,660h40v80h-40Z M540,240L800,720L540,720Z M420,240L420,720L160,720Z M380,680L240,680L380,360Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_bold.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_bold.xml
+new file mode 100644
+index 0000000..034ef5a
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_bold.xml
+@@ -0,0 +1,41 @@
++<?xml version="1.0" encoding="utf-8"?>
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="960"
++            android:viewportHeight="960">
++            <group
++                android:name="icon_group"
++                android:pivotX="480"
++                android:pivotY="480">
++                <path
++                    android:fillColor="@android:color/white"
++                    android:fillType="evenOdd"
++                    android:pathData="M455,180h50v80h-50Z M455,300h50v80h-50Z M455,420h50v80h-50Z M455,540h50v80h-50Z M455,660h50v80h-50Z M540,230L810,730L540,730Z M420,230L420,730L150,730Z M360,670L250,670L360,410Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/host/layout/youtube_controls_bottom_ui_container.xml b/patches/src/main/resources/flipvideobutton/host/layout/youtube_controls_bottom_ui_container.xml
+new file mode 100644
+index 0000000..0b26427
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/host/layout/youtube_controls_bottom_ui_container.xml
+@@ -0,0 +1,21 @@
++<?xml version="1.0" encoding="utf-8"?>
++<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:yt="http://schemas.android.com/apk/res-auto"
++    android:id="@+id/youtube_controls_bottom_ui_container"
++    android:layout_width="match_parent"
++    android:layout_height="wrap_content"
++    android:layoutDirection="ltr">
++
++    <com.google.android.libraries.youtube.common.ui.TouchImageView
++        android:id="@+id/morphe_flip_video_button"
++        style="@style/YouTubePlayerButton"
++        android:layout_width="48.0dip"
++        android:layout_height="60.0dip"
++        android:paddingTop="6.0dp"
++        android:paddingBottom="0dp"
++        android:scaleType="center"
++        android:src="@drawable/morphe_flip_video_button_off_bold"
++        yt:layout_constraintBottom_toTopOf="@+id/quick_actions_container"
++        yt:layout_constraintRight_toLeftOf="@+id/fullscreen_button" />
++
++</android.support.constraint.ConstraintLayout>

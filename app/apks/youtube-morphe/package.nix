@@ -40,6 +40,7 @@ let
           --enable="Hide ads" \
           --enable="Clone app" \
           --enable="Disable Play Store updates" \
+          --enable="Flip video" \
           --unsigned \
           --temporary-files-path "$workdir/tmp" \
           --out "$workdir/youtube-morphe.apk" \

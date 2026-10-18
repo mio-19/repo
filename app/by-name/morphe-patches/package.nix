@@ -93,6 +93,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     patch -d "$sourceRoot" -p0 < ${./morphe-patches-settings.patch}
     patch -d "$sourceRoot" -p1 < ${./morphe-patches-version-name-suffix-compatible.patch}
+    patch -d "$sourceRoot" -p1 < ${./morphe-patches-flip-video.patch}
 
     cat >> "$sourceRoot/build.gradle.kts" << 'EOF'
 
