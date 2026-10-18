@@ -276,6 +276,7 @@ let
         lib.optionalString stdenv.hostPlatform.isDarwin ''
           export GRADLE_OPTS="''${GRADLE_OPTS:-} -Djava.net.preferIPv4Stack=true"
         ''
+        # https://github.com/gradle/gradle/blob/v9.4.1/platforms/core-runtime/base-services/src/main/java/org/gradle/internal/jvm/JpmsConfiguration.java#L64 - GROOVY_JPMS_ARGS_9 & configurationCacheJpmsArgs
         + lib.optionalString avoidSingleUseDaemon ''
           if [ ! -f gradle.properties ]; then
             echo "gradle-unwrapped-${version} error: gradle.properties not found" >&2
