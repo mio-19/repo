@@ -80,7 +80,7 @@ index ed648c4..3b5ec6b 100644
          builder.setDeviceState(GBDevice.State.INITIALIZED);
  
          batteryInfoProfile.requestBatteryInfo(builder);
-@@ -331,6 +349,138 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -331,6 +349,152 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
          evaluateGBDeviceEvent(findPhoneEvent);
      }
  
@@ -171,6 +171,21 @@ index ed648c4..3b5ec6b 100644
 +            broadcast.putExtra("extra_payload_bytes", payload);
 +            broadcast.putExtra("extra_payload_string", payloadStr);
 +            getContext().sendBroadcast(broadcast);
++
++            // Remote camera companion app launch trigger
++            if ("org.asteroidos.camera".equals(appId)) {
++                if ("launch".equals(action) || "open".equals(action)) {
++                    try {
++                        Intent launch = getContext().getPackageManager().getLaunchIntentForPackage("app.grapheneos.camera");
++                        if (launch != null) {
++                            launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
++                            getContext().startActivity(launch);
++                        }
++                    } catch (Exception ex) {
++                        LOG.warn("Failed to launch GrapheneOS Camera", ex);
++                    }
++                }
++            }
 +
 +            // Native telemetry integration: SpO2 & Heart Rate
 +            if ("org.asteroidos.spo2".equals(appId) && "measurement".equals(action)) {
