@@ -49,9 +49,11 @@ let
       patches = [
         ./easyweather-from-source.patch
         ./asteroidos-find-phone.patch
+        ./asteroidos-app-bridge.patch
       ];
 
       postPatch = ''
+        install -Dm644 ${./AppBridgeService.java} app/src/main/java/org/asteroidos/sync/connectivity/AppBridgeService.java
         cp -a ${easyWeatherSrc}/library/src/main/java/github app/src/main/java/
         chmod -R u+w app/src/main/java/github
         substituteInPlace app/src/main/java/github/vatsal/easyweather/retrofit/api/ApiClient.java \

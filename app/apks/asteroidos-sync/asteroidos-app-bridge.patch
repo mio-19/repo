@@ -1,0 +1,74 @@
+--- a/app/src/main/java/org/asteroidos/sync/asteroid/AsteroidBleManager.java
++++ b/app/src/main/java/org/asteroidos/sync/asteroid/AsteroidBleManager.java
+@@ -116,6 +116,9 @@
+ 
+             for (IConnectivityService service : mSynchronizationService.getServices().values()) {
+                 BluetoothGattService bluetoothGattService = gatt.getService(service.getServiceUUID());
++                if (bluetoothGattService == null) {
++                    continue;
++                }
+                 List<UUID> sendUuids = new ArrayList<>();
+                 service.getCharacteristicUUIDs().forEach((uuid, direction) -> {
+                     if (direction == IConnectivityService.Direction.TO_WATCH)
+@@ -125,14 +128,17 @@
+ 
+                 for (UUID uuid : sendUuids) {
+                     BluetoothGattCharacteristic characteristic = bluetoothGattService.getCharacteristic(uuid);
+-                    sendingCharacteristics.put(uuid, characteristic);
+-                    bluetoothGattService.addCharacteristic(characteristic);
++                    if (characteristic != null) {
++                        sendingCharacteristics.put(uuid, characteristic);
++                    }
+                 }
+                 recvCallbacks.forEach((characteristic, callback) -> {
+                     BluetoothGattCharacteristic characteristic1 = bluetoothGattService.getCharacteristic(characteristic);
+-                    removeNotificationCallback(characteristic1);
+-                    setNotificationCallback(characteristic1).with((device, data) -> callback.call(data.getValue()));
+-                    enableNotifications(characteristic1).enqueue();
++                    if (characteristic1 != null) {
++                        removeNotificationCallback(characteristic1);
++                        setNotificationCallback(characteristic1).with((device, data) -> callback.call(data.getValue()));
++                        enableNotifications(characteristic1).enqueue();
++                    }
+                 });
+             }
+ 
+@@ -142,7 +148,7 @@
+         @Override
+         protected final void initialize() {
+             beginAtomicRequestQueue()
+-                    .add(requestMtu(256) // Remember, GATT needs 3 bytes extra. This will allow packet size of 244 bytes.
++                    .add(requestMtu(512) // Remember, GATT needs 3 bytes extra. This will allow packet size of 244 bytes.
+                             .with((device, mtu) -> log(Log.INFO, "MTU set to " + mtu))
+                             .fail((device, status) -> log(Log.WARN, "Requested MTU not supported: " + status)))
+                     .done(device -> log(Log.INFO, "Target initialized"))
+--- a/app/src/main/java/org/asteroidos/sync/services/SynchronizationService.java
++++ b/app/src/main/java/org/asteroidos/sync/services/SynchronizationService.java
+@@ -52,6 +52,7 @@
+ import org.asteroidos.sync.connectivity.ScreenshotService;
+ import org.asteroidos.sync.connectivity.SilentModeService;
+ import org.asteroidos.sync.connectivity.FindPhoneService;
++import org.asteroidos.sync.connectivity.AppBridgeService;
+ import org.asteroidos.sync.connectivity.TimeService;
+ import org.asteroidos.sync.connectivity.WeatherService;
+ 
+@@ -287,6 +288,7 @@
+             registerBleService(new ScreenshotService(getApplicationContext(), this));
+             registerBleService(new TimeService(getApplicationContext(), this));
+             registerBleService(new FindPhoneService(getApplicationContext(), this));
++            registerBleService(new AppBridgeService(getApplicationContext(), this));
+         }
+ 
+         handleConnect();
+--- a/app/src/main/java/org/asteroidos/sync/utils/AsteroidUUIDS.java
++++ b/app/src/main/java/org/asteroidos/sync/utils/AsteroidUUIDS.java
+@@ -62,4 +62,9 @@
+     // Find Phone Service (High Hex range to avoid future upstream collision)
+     public static final UUID FINDPHONE_SERVICE_UUID     = UUID.fromString("0000F071-0000-0000-0000-00A57E401D05");
+     public static final UUID FINDPHONE_RING_CHAR        = UUID.fromString("0000F001-0000-0000-0000-00A57E401D05");
++
++    // App Bridge Service (Generic two-way communication channel for AsteroidOS apps)
++    public static final UUID APP_BRIDGE_SERVICE_UUID     = UUID.fromString("0000A071-0000-0000-0000-00A57E401D05");
++    public static final UUID APP_BRIDGE_TX_CHAR          = UUID.fromString("0000A001-0000-0000-0000-00A57E401D05");
++    public static final UUID APP_BRIDGE_RX_CHAR          = UUID.fromString("0000A002-0000-0000-0000-00A57E401D05");
+ }
