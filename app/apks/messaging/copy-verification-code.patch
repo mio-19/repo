@@ -14,7 +14,7 @@ index 81d97de..5228110 100644
          <receiver
              android:name=".datamodel.action.ActionServiceImpl$PendingActionReceiver"
 diff --git a/res/values/strings.xml b/res/values/strings.xml
-index fddc89c..88d0824 100644
+index fddc89c..6061aab 100644
 --- a/res/values/strings.xml
 +++ b/res/values/strings.xml
 @@ -906,4 +906,8 @@
@@ -268,10 +268,10 @@ index 5a4917a..d118d40 100644
      subjectText: String?,
 diff --git a/src/com/android/messaging/util/VerificationCodeUtil.kt b/src/com/android/messaging/util/VerificationCodeUtil.kt
 new file mode 100644
-index 0000000..0537e34
+index 0000000..1efa591
 --- /dev/null
 +++ b/src/com/android/messaging/util/VerificationCodeUtil.kt
-@@ -0,0 +1,209 @@
+@@ -0,0 +1,235 @@
 +package com.android.messaging.util
 +
 +/**
@@ -395,7 +395,7 @@ index 0000000..0537e34
 +            CodeExtractorDefaults.currencyIndicators.joinToString("|")
 +        })|[\d\u0660-\u0669\u06F0-\u06F9][^\d\u0660-\u0669\u06F0-\u06F9]))*\s*[:：܃︓﹕]?\s*(["'「]?)${
 +            ""
-+        }([\d\u0660-\u0669\u06F0-\u06F9a-zA-Z\-]{4,}|\d{3,4}\s+\d{3,4}|(?: [\d\u0660-\u0669\u06F0-\u06F9a-zA-Z]){4,}|)\1?(?:[^\d\u0660-\u0669\u06F0-\u06F9a-zA-Z]|${'$'})"""
++        }(\d{3,4}\s+\d{3,4}|[\d\u0660-\u0669\u06F0-\u06F9a-zA-Z\-]{4,}|(?: [\d\u0660-\u0669\u06F0-\u06F9a-zA-Z]){4,}|)\1?(?:[^\d\u0660-\u0669\u06F0-\u06F9a-zA-Z]|${'$'})"""
 +            .toRegex(setOf(RegexOption.IGNORE_CASE, RegexOption.MULTILINE))
 +
 +    val specialCodeMatcher =
@@ -419,14 +419,12 @@ index 0000000..0537e34
 +        if (results.count() > 0) {
 +            var foundCode =
 +                results
-+                    .find { it.groups[3]!!.value.isNotEmpty() }
-+                    ?.groups
-+                    ?.get(3)
-+                    ?.value
-+                    ?.replace(" ", "")
-+                    ?.replace("-", "")
++                    .mapNotNull { match -> extractCodeFromMatch(cleanStr, match) }
++                    // OTPs are 4-8 characters. Longer numeric runs are usually phone
++                    // numbers, account numbers, or tracking IDs.
++                    .firstOrNull { it.length in 4..8 }
 +
-+            if (foundCode.isNullOrEmpty()) {
++            if (foundCode == null) {
 +                foundCode =
 +                    specialCodeMatcher
 +                        .find(cleanStr)
@@ -435,13 +433,41 @@ index 0000000..0537e34
 +                        ?.value
 +                        ?.replace(" ", "")
 +                        ?.replace("-", "")
++                        ?.takeIf { it.length in 4..8 }
 +            }
 +
-+            if (!foundCode.isNullOrEmpty()) {
++            if (foundCode != null) {
 +                return toEnglishNumbers(foundCode)
 +            }
 +        }
 +        return null
++    }
++
++    private fun extractCodeFromMatch(text: String, match: MatchResult): String? {
++        val group = match.groups[3] ?: return null
++        if (group.value.isEmpty()) return null
++
++        var start = group.range.first
++        val end = group.range.last + 1
++
++        // The regex's prefix handling can eat a short alphanumeric prefix
++        // (e.g. "ABC" in "ABC123"), leaving only the tail. Put it back when
++        // the prefix is a single contiguous token of at most 3 letters.
++        if (start in 1 until text.length && text[start].isLetterOrDigit()) {
++            var prefixStart = start
++            while (prefixStart > 0 && text[prefixStart - 1].isLetter()) {
++                prefixStart--
++            }
++            val prefixLength = start - prefixStart
++            if (prefixLength in 1..3 &&
++                end - prefixStart in 4..8 &&
++                (prefixStart == 0 || !text[prefixStart - 1].isLetterOrDigit())
++            ) {
++                start = prefixStart
++            }
++        }
++
++        return text.substring(start, end).replace(" ", "").replace("-", "")
 +    }
 +
 +    private fun toEnglishNumbers(number: String?): String? {
