@@ -24,7 +24,7 @@ diff --git a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devi
 index ed648c4..3b5ec6b 100644
 --- a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java
 +++ b/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java
-@@ -32,6 +32,13 @@ import java.util.GregorianCalendar;
+@@ -32,6 +32,15 @@ import java.util.GregorianCalendar;
  import java.util.Objects;
  import java.util.UUID;
  
@@ -32,6 +32,8 @@ index ed648c4..3b5ec6b 100644
 +import android.content.Context;
 +import android.content.Intent;
 +import android.content.IntentFilter;
++import android.content.pm.ResolveInfo;
++import java.util.List;
 +import androidx.core.content.ContextCompat;
 +import org.json.JSONObject;
 +
@@ -81,7 +83,7 @@ index ed648c4..3b5ec6b 100644
          builder.setDeviceState(GBDevice.State.INITIALIZED);
  
          batteryInfoProfile.requestBatteryInfo(builder);
-@@ -331,6 +350,167 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -331,6 +350,179 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
          evaluateGBDeviceEvent(findPhoneEvent);
      }
  
@@ -178,8 +180,20 @@ index ed648c4..3b5ec6b 100644
 +            broadcast.putExtra("extra_payload_string", payloadStr);
 +            getContext().sendBroadcast(broadcast);
 +
-+            // Native Gadgetbridge Camera Remote event fallback
-+            if ("org.asteroidos.camera".equals(appId)) {
++            // Check if an external companion app (such as GrapheneOS Camera) handles this watch app
++            boolean hasExternalHandler = false;
++            try {
++                List<ResolveInfo> receivers = getContext().getPackageManager().queryBroadcastReceivers(broadcast, 0);
++                for (ResolveInfo ri : receivers) {
++                    if (ri.activityInfo != null && !getContext().getPackageName().equals(ri.activityInfo.packageName)) {
++                        hasExternalHandler = true;
++                        break;
++                    }
++                }
++            } catch (Exception ignored) {}
++
++            // Native Gadgetbridge Camera Remote event fallback when no external companion camera app is available
++            if ("org.asteroidos.camera".equals(appId) && !hasExternalHandler) {
 +                if ("capture".equals(action) || "shutter".equals(action)) {
 +                    evaluateGBDeviceEvent(new nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemote(
 +                        nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemote.Event.TAKE_PICTURE
