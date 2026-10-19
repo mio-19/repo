@@ -17,7 +17,7 @@ diff --git a/res/values/strings.xml b/res/values/strings.xml
 index fddc89c..88d0824 100644
 --- a/res/values/strings.xml
 +++ b/res/values/strings.xml
-@@ -906,4 +906,9 @@
+@@ -906,4 +906,8 @@
  
      <string name="mark_as_read">Mark as read</string>
      <string name="mark_as_unread">Mark as unread</string>
@@ -25,7 +25,6 @@ index fddc89c..88d0824 100644
 +    <string name="notification_copy_code_action">Copy %1$s</string>
 +    <string name="verification_code_copied_toast">Copied %1$s</string>
 +    <string name="verification_code_label">Verification code</string>
-+    <string name="message_context_menu_copy_code">Copy verification code</string>
  </resources>
 diff --git a/src/com/android/messaging/datamodel/BugleNotifications.java b/src/com/android/messaging/datamodel/BugleNotifications.java
 index ed22053..db8ca63 100644
@@ -163,39 +162,6 @@ index 8f6cf32..fba13d5 100644
 +                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 +    }
  }
-diff --git a/src/com/android/messaging/ui/conversation/messages/delegate/ConversationMessageSelectionDelegate.kt b/src/com/android/messaging/ui/conversation/messages/delegate/ConversationMessageSelectionDelegate.kt
-index 8b3fa1f..64e958b 100644
---- a/src/com/android/messaging/ui/conversation/messages/delegate/ConversationMessageSelectionDelegate.kt
-+++ b/src/com/android/messaging/ui/conversation/messages/delegate/ConversationMessageSelectionDelegate.kt
-@@ -222,6 +222,7 @@ internal class ConversationMessageSelectionDelegateImpl @Inject constructor(
-     ) {
-         when (action) {
-             ConversationMessageAction.Copy -> copyMessageText(message = message)
-+            ConversationMessageAction.CopyVerificationCode -> copyVerificationCode(message = message)
-             ConversationMessageAction.Delete -> {
-                 requestDeleteMessagesWhenActionRequirementsSatisfied(
-                     messageIds = persistentSetOf(message.messageId),
-@@ -251,6 +252,20 @@ internal class ConversationMessageSelectionDelegateImpl @Inject constructor(
-         clearMessageSelection()
-     }
- 
-+    private fun copyVerificationCode(message: ConversationMessageUiModel) {
-+        val text = message.text?.takeIf(String::isNotBlank) ?: return
-+        val code = com.android.messaging.util.VerificationCodeUtil.extractVerificationCode(text) ?: return
-+
-+        clipboardManager.setPrimaryClip(
-+            ClipData.newPlainText(
-+                null,
-+                code,
-+            ),
-+        )
-+
-+        clearMessageSelection()
-+    }
-+
-     private fun downloadMessage(message: ConversationMessageUiModel) {
-         clearMessageSelection()
-         downloadMessageWhenActionRequirementsSatisfied(messageId = message.messageId)
 diff --git a/src/com/android/messaging/ui/conversation/messages/ui/message/ConversationMessageBubble.kt b/src/com/android/messaging/ui/conversation/messages/ui/message/ConversationMessageBubble.kt
 index 5a4917a..d118d40 100644
 --- a/src/com/android/messaging/ui/conversation/messages/ui/message/ConversationMessageBubble.kt
@@ -300,50 +266,6 @@ index 5a4917a..d118d40 100644
  @Composable
  internal fun ConversationMessageSubject(
      subjectText: String?,
-diff --git a/src/com/android/messaging/ui/conversation/screen/ConversationSelectionTopAppBar.kt b/src/com/android/messaging/ui/conversation/screen/ConversationSelectionTopAppBar.kt
-index 96d4f7c..2a9db1b 100644
---- a/src/com/android/messaging/ui/conversation/screen/ConversationSelectionTopAppBar.kt
-+++ b/src/com/android/messaging/ui/conversation/screen/ConversationSelectionTopAppBar.kt
-@@ -47,6 +47,7 @@ import kotlinx.collections.immutable.toPersistentList
- private val messageSelectionActions = persistentListOf(
-     ConversationMessageAction.Download,
-     ConversationMessageAction.Resend,
-+    ConversationMessageAction.CopyVerificationCode,
-     ConversationMessageAction.Copy,
-     ConversationMessageAction.Delete,
- )
-@@ -259,7 +260,8 @@ private fun selectionActionIcon(
-     action: ConversationMessageAction,
- ): ImageVector {
-     return when (action) {
--        ConversationMessageAction.Copy -> Icons.Rounded.ContentCopy
-+        ConversationMessageAction.Copy,
-+        ConversationMessageAction.CopyVerificationCode -> Icons.Rounded.ContentCopy
-         ConversationMessageAction.Delete -> Icons.Rounded.Delete
-         ConversationMessageAction.Details -> Icons.Rounded.Info
-         ConversationMessageAction.Download -> Icons.Rounded.FileDownload
-diff --git a/src/com/android/messaging/ui/conversation/screen/model/ConversationMessageSelectionUiState.kt b/src/com/android/messaging/ui/conversation/screen/model/ConversationMessageSelectionUiState.kt
-index fbd326b..af4d028 100644
---- a/src/com/android/messaging/ui/conversation/screen/model/ConversationMessageSelectionUiState.kt
-+++ b/src/com/android/messaging/ui/conversation/screen/model/ConversationMessageSelectionUiState.kt
-@@ -34,6 +34,7 @@ internal enum class ConversationMessageAction(
-     @param:StringRes val labelRes: Int,
- ) {
-     Copy(labelRes = R.string.message_context_menu_copy_text),
-+    CopyVerificationCode(labelRes = R.string.message_context_menu_copy_code),
-     Delete(labelRes = R.string.action_delete_message),
-     Details(labelRes = R.string.message_context_menu_view_details),
-     Download(labelRes = R.string.action_download),
-@@ -56,6 +57,9 @@ internal fun ConversationMessageUiModel.availableMessageActions():
-     }
- 
-     if (canCopyMessageToClipboard) {
-+        if (com.android.messaging.util.VerificationCodeUtil.extractVerificationCode(text) != null) {
-+            actions += ConversationMessageAction.CopyVerificationCode
-+        }
-         actions += ConversationMessageAction.Copy
-     }
- 
 diff --git a/src/com/android/messaging/util/VerificationCodeUtil.kt b/src/com/android/messaging/util/VerificationCodeUtil.kt
 new file mode 100644
 index 0000000..0537e34
