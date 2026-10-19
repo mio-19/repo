@@ -35,7 +35,7 @@ let
     inherit version src;
 
     patches = [
-      ./copy-verification-code.patch
+      # TODO # ./copy-verification-code.patch
       (fetchpatch {
         name = "Receive PDF attachments from MMS";
         url = "https://github.com/GrapheneOS/Messaging/pull/428.patch";
