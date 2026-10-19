@@ -284,7 +284,7 @@
               with selfPackages;
               [
                 gradle2nix
-                mvn2nix
+                #mvn2nix
 
                 gradle_9_4_1
 
