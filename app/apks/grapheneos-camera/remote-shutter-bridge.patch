@@ -176,21 +176,28 @@ index be22fb5..b45a641 100644
 +    private fun captureAndPushPreviewFrame() {
 +        try {
 +            val server = previewStreamServer ?: return
++            if (!server.hasClients) return
 +            val bitmap = previewView.bitmap ?: return
-+            val targetSize = 320
-+            val scaled = if (bitmap.width > targetSize || bitmap.height > targetSize) {
-+                val scale = targetSize.toFloat() / maxOf(bitmap.width, bitmap.height)
-+                val sw = (bitmap.width * scale).toInt()
-+                val sh = (bitmap.height * scale).toInt()
-+                Bitmap.createScaledBitmap(bitmap, sw, sh, true)
-+            } else {
-+                bitmap
-+            }
++            try {
++                val targetSize = 320
++                val scaled = if (bitmap.width > targetSize || bitmap.height > targetSize) {
++                    val scale = targetSize.toFloat() / maxOf(bitmap.width, bitmap.height)
++                    val sw = (bitmap.width * scale).toInt()
++                    val sh = (bitmap.height * scale).toInt()
++                    Bitmap.createScaledBitmap(bitmap, sw, sh, true)
++                } else {
++                    bitmap
++                }
 +
-+            server.updateFrame(scaled, 65)
-+
-+            if (scaled !== bitmap) {
-+                scaled.recycle()
++                try {
++                    server.updateFrame(scaled, 65)
++                } finally {
++                    if (scaled !== bitmap) {
++                        scaled.recycle()
++                    }
++                }
++            } finally {
++                bitmap.recycle()
 +            }
 +        } catch (e: Exception) {
 +            Log.w(TAG, "Error pushing preview frame", e)
@@ -214,6 +221,22 @@ index be22fb5..b45a641 100644
 +                }
 +                "torch", "toggle_torch" -> {
 +                    camConfig.toggleTorchState()
++                }
++                "mode_photo" -> {
++                    try {
++                        val tab = binding.cameraModeTabs.getTabAt(CameraMode.CAMERA.ordinal)
++                        tab?.select()
++                    } catch (e: Exception) {
++                        Log.w(TAG, "Failed to switch to photo mode", e)
++                    }
++                }
++                "mode_video" -> {
++                    try {
++                        val tab = binding.cameraModeTabs.getTabAt(CameraMode.VIDEO.ordinal)
++                        tab?.select()
++                    } catch (e: Exception) {
++                        Log.w(TAG, "Failed to switch to video mode", e)
++                    }
 +                }
 +                "start_stream" -> {
 +                    startPreviewStreaming()

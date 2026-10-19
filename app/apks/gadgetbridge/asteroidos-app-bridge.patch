@@ -72,15 +72,16 @@ index ed648c4..3b5ec6b 100644
  
          LOG.info("Characteristic changed UUID: {}", characteristicUUID);
          LOG.info("Characteristic changed value: {}", Arrays.toString(value));
-@@ -126,6 +143,7 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -126,6 +143,8 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
          builder.notify(AsteroidOSConstants.SCREENSHOT_CONTENT_CHAR, true);
          builder.notify(AsteroidOSConstants.FINDPHONE_RING_CHAR, true);
          builder.read(AsteroidOSConstants.FINDPHONE_RING_CHAR);
++        builder.requestMtu(512);
 +        builder.notify(AsteroidOSConstants.APP_BRIDGE_TX_CHAR, true);
          builder.setDeviceState(GBDevice.State.INITIALIZED);
  
          batteryInfoProfile.requestBatteryInfo(builder);
-@@ -331,6 +349,152 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -331,6 +350,158 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
          evaluateGBDeviceEvent(findPhoneEvent);
      }
  
@@ -150,6 +151,11 @@ index ed648c4..3b5ec6b 100644
 +            int appIdLen = value[offset++] & 0xFF;
 +            if (value.length < offset + appIdLen + 1) return;
 +            String appId = new String(value, offset, appIdLen, StandardCharsets.UTF_8);
++            if ("cam".equals(appId) || "camera".equals(appId)) {
++                appId = "org.asteroidos.camera";
++            } else if ("spo2".equals(appId)) {
++                appId = "org.asteroidos.spo2";
++            }
 +            offset += appIdLen;
 +
 +            int actionLen = value[offset++] & 0xFF;
@@ -205,7 +211,13 @@ index ed648c4..3b5ec6b 100644
 +
 +    private void sendAppBridgeMessage(String appId, String action, byte[] payload) {
 +        try {
-+            byte[] appIdBytes = appId.getBytes(StandardCharsets.UTF_8);
++            String wireAppId = appId;
++            if ("org.asteroidos.camera".equals(appId)) {
++                wireAppId = "cam";
++            } else if ("org.asteroidos.spo2".equals(appId)) {
++                wireAppId = "spo2";
++            }
++            byte[] appIdBytes = wireAppId.getBytes(StandardCharsets.UTF_8);
 +            byte[] actionBytes = action.getBytes(StandardCharsets.UTF_8);
 +            if (appIdBytes.length > 255 || actionBytes.length > 255) {
 +                LOG.warn("AppBridge: appId or action length exceeds 255 bytes");
@@ -230,6 +242,7 @@ index ed648c4..3b5ec6b 100644
 +            LOG.error("Error sending AppBridge message", e);
 +        }
 +    }
++
 +
      /**
       * Handles a media command sent from the AsteroidOS device

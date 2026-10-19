@@ -166,8 +166,8 @@ class PreviewStreamServer(private val port: Int = 8089) {
             }
 
             // Keep connection alive until client disconnects
-            while (isRunning && !socket.isClosed) {
-                Thread.sleep(1000)
+            while (isRunning && !socket.isClosed && clientStreams.contains(out)) {
+                Thread.sleep(500)
             }
         } catch (e: Exception) {
             // Client disconnected
