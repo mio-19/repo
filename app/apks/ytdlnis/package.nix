@@ -11,13 +11,13 @@
   fetchpatch,
 }:
 let
-  version = "1.9.0";
+  version = "1.9.1";
 
   src = fetchFromGitHub {
     owner = "deniscerri";
     repo = "ytdlnis";
     tag = "v${version}";
-    hash = "sha256-C/NL6kmHCZRO6JEkVHUFUFAlRC9GQH/DHHHMo8wg7Tc=";
+    hash = "sha256-M1e4jAnXMtxNHjttCZymmuq9r1MK9PX/mw3jKjJEo94=";
   };
 
   appPackage =

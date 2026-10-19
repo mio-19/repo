@@ -27,13 +27,13 @@ let
 
       gradle = gradle_9_7_1;
 
-      # git ls-tree 2.3.11 AndroidLibXrayLite
-      xrayLiteVersion = "1f3e2c5df1c248ed42630cee2bf747643d303ecc";
+      # git ls-tree 2.3.12 AndroidLibXrayLite
+      xrayLiteVersion = "1be1e621be15702da7b7faf16ef83f2493c5aa01";
       androidLibXrayLiteSrc = fetchFromGitHub {
         owner = "2dust";
         repo = "AndroidLibXrayLite";
         rev = xrayLiteVersion;
-        hash = "sha256-GgPGT3iMwvF44eqtuhvoWV05jlvEi++LZnGBGmYacLc=";
+        hash = "sha256-cRK8nk7CpDCuTgDY2O/IgowJBL+VpPZHADpWfCAK8Cg=";
       };
 
       androidLibXrayLiteGoModCache = stdenvNoCC.mkDerivation {
@@ -48,7 +48,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-Ok84JVX7soKpJ5KF72BjZII7xHDRbBwL/fiO8ZOPnOc=";
+        outputHash = "sha256-o2VQePureR35Zu8u6VGQMOSyVibH3XuWrkxnnqpdbx0=";
 
         dontConfigure = true;
         dontFixup = true;
@@ -172,14 +172,14 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "v2rayng";
-      version = "2.3.11";
+      version = "2.3.12";
 
       src = fetchFromGitHub {
         owner = "2dust";
         repo = "v2rayNG";
         tag = finalAttrs.version;
         fetchSubmodules = true;
-        hash = "sha256-/jC0VcluVQk91RwGKhvbXndU2wTv4C3x2+7jveW4X0k=";
+        hash = "sha256-cTs1gakvfAWfsXJ9sPOKX8tQftoVUbW1J/GcI91j9+A=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/V2rayNG";
