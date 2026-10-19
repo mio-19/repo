@@ -224,16 +224,14 @@ index be22fb5..b45a641 100644
 +                }
 +                "mode_photo" -> {
 +                    try {
-+                        val tab = binding.cameraModeTabs.getTabAt(CameraMode.CAMERA.ordinal)
-+                        tab?.select()
++                        tabLayout.getTabForMode(CameraMode.CAMERA)?.let { tabLayout.goToTab(it) }
 +                    } catch (e: Exception) {
 +                        Log.w(TAG, "Failed to switch to photo mode", e)
 +                    }
 +                }
 +                "mode_video" -> {
 +                    try {
-+                        val tab = binding.cameraModeTabs.getTabAt(CameraMode.VIDEO.ordinal)
-+                        tab?.select()
++                        tabLayout.getTabForMode(CameraMode.VIDEO)?.let { tabLayout.goToTab(it) }
 +                    } catch (e: Exception) {
 +                        Log.w(TAG, "Failed to switch to video mode", e)
 +                    }

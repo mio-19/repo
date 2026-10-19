@@ -179,23 +179,32 @@ class PreviewStreamServer(private val port: Int = 8089) {
     }
 
     fun getLocalIpAddresses(): List<String> {
-        val ips = mutableListOf<String>()
+        val localIps = mutableListOf<String>()
+        val cellularIps = mutableListOf<String>()
         try {
             val interfaces = NetworkInterface.getNetworkInterfaces()
             while (interfaces.hasMoreElements()) {
                 val iface = interfaces.nextElement()
                 if (iface.isLoopback || !iface.isUp) continue
+                val name = iface.name.lowercase()
+                val isCellular = name.startsWith("rmnet") || name.startsWith("ccmni") || name.startsWith("pdp")
                 val addresses = iface.inetAddresses
                 while (addresses.hasMoreElements()) {
                     val addr = addresses.nextElement()
                     if (addr is Inet4Address && !addr.isLoopbackAddress) {
-                        addr.hostAddress?.let { ips.add(it) }
+                        addr.hostAddress?.let { ip ->
+                            if (isCellular) {
+                                cellularIps.add(ip)
+                            } else {
+                                localIps.add(ip)
+                            }
+                        }
                     }
                 }
             }
         } catch (e: Exception) {
             Log.w(TAG, "Error enumerating interfaces", e)
         }
-        return ips
+        return localIps + cellularIps
     }
 }
