@@ -29,6 +29,8 @@ class PreviewStreamServer(private val port: Int = 8089) {
     val hasClients: Boolean
         get() = clientStreams.isNotEmpty()
 
+    var onControlAction: ((action: String) -> Boolean)? = null
+
     fun start() {
         if (isRunning) return
         isRunning = true
@@ -140,6 +142,21 @@ class PreviewStreamServer(private val port: Int = 8089) {
                         "Content-Type: application/json\r\n" +
                         "Content-Length: ${json.length}\r\n" +
                         "Connection: close\r\n\r\n$json"
+                out.write(resp.toByteArray())
+                out.flush()
+                socket.close()
+                return
+            }
+
+            if (requestLine.startsWith("GET /control") || requestLine.startsWith("POST /control")) {
+                val action = requestLine.substringAfter("action=", "").substringBefore(" ").substringBefore("&")
+                val handled = if (action.isNotEmpty()) onControlAction?.invoke(action) ?: false else false
+                val respJson = if (handled) "{\"ok\":true,\"action\":\"$action\"}" else "{\"ok\":false}"
+                val status = if (handled) "200 OK" else "400 Bad Request"
+                val resp = "HTTP/1.1 $status\r\n" +
+                        "Content-Type: application/json\r\n" +
+                        "Content-Length: ${respJson.length}\r\n" +
+                        "Connection: close\r\n\r\n$respJson"
                 out.write(resp.toByteArray())
                 out.flush()
                 socket.close()

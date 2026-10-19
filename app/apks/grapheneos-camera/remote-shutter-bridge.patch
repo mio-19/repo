@@ -18,6 +18,21 @@ index 3e970ee..e69ba49 100644
  
      <queries>
          <intent>
+@@ -212,6 +209,14 @@
+             android:excludeFromRecents="true"
+             tools:ignore="DiscouragedApi" />
+ 
++        <receiver
++            android:name=".receiver.RemoteCameraReceiver"
++            android:exported="true">
++            <intent-filter>
++                <action android:name="nodomain.freeyourgadget.gadgetbridge.ACTION_RECEIVE_FROM_WATCH"/>
++            </intent-filter>
++        </receiver>
++
+     </application>
+ 
+ </manifest>
 diff --git a/app/src/main/java/app/grapheneos/camera/capturer/ImageCapturer.kt b/app/src/main/java/app/grapheneos/camera/capturer/ImageCapturer.kt
 index d20fee5..438cef0 100644
 --- a/app/src/main/java/app/grapheneos/camera/capturer/ImageCapturer.kt
@@ -94,11 +109,15 @@ index be22fb5..b45a641 100644
  
          // Leaving a mode switch waiting on an animation that will never finish would strand the
          // strip on a mode the camera never entered.
-@@ -819,6 +826,7 @@ open class MainActivity : AppCompatActivity(),
+@@ -819,6 +826,11 @@ open class MainActivity : AppCompatActivity(),
          mainOverlay = binding.mainOverlay
          imageCapturer = ImageCapturer(this)
          videoCapturer = VideoCapturer(this)
 +        registerRemoteCameraReceiver()
++        intent?.getStringExtra("extra_remote_action")?.let { action ->
++            intent.removeExtra("extra_remote_action")
++            handleRemoteCameraAction(action, null)
++        }
          thirdOption = binding.thirdOption
          previewLoader = binding.previewLoading
          imagePreview = binding.imagePreview
@@ -112,10 +131,18 @@ index be22fb5..b45a641 100644
          private const val autoCenterFocusDuration = 2000L
          private val hexArray = "0123456789ABCDEF".toCharArray()
  
-@@ -1593,6 +1604,136 @@ open class MainActivity : AppCompatActivity(),
+@@ -1593,6 +1604,171 @@ open class MainActivity : AppCompatActivity(),
          private const val FRAME_COPY_RETRIES = 3
      }
  
++    override fun onNewIntent(intent: Intent?) {
++        super.onNewIntent(intent)
++        intent?.getStringExtra("extra_remote_action")?.let { action ->
++            intent.removeExtra("extra_remote_action")
++            handleRemoteCameraAction(action, null)
++        }
++    }
++
 +    private var remoteCameraReceiver: BroadcastReceiver? = null
 +
 +    private fun registerRemoteCameraReceiver() {
@@ -151,7 +178,13 @@ index be22fb5..b45a641 100644
 +
 +    private fun startPreviewStreaming() {
 +        if (previewStreamServer == null) {
-+            previewStreamServer = PreviewStreamServer(8089).apply { start() }
++            previewStreamServer = PreviewStreamServer(8089).apply {
++                onControlAction = { action ->
++                    runOnUiThread { handleRemoteCameraAction(action, null) }
++                    true
++                }
++                start()
++            }
 +        }
 +        if (previewTicker == null) {
 +            previewTicker = object : Runnable {

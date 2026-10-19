@@ -65,6 +65,7 @@ let
     postPatch = ''
       rm -f gradle/verification-metadata.xml
       install -Dm644 ${./PreviewStreamServer.kt} app/src/main/java/app/grapheneos/camera/stream/PreviewStreamServer.kt
+      install -Dm644 ${./RemoteCameraReceiver.kt} app/src/main/java/app/grapheneos/camera/receiver/RemoteCameraReceiver.kt
     '';
 
     nativeBuildInputs = [
