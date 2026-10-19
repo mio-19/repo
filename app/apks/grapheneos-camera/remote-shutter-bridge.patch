@@ -1,3 +1,23 @@
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+index 3e970ee..e69ba49 100644
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml
+@@ -13,12 +13,9 @@
+     <uses-permission android:name="android.permission.VIBRATE"/>
+     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+ 
+-    <!--
+-      androidx.media3:media3-common declares this for ExoPlayer's network playback. We only pull
+-      media3 in transitively through camera-video, which uses media3-muxer to write MP4s locally,
+-      so nothing we ship reads it and the app has no INTERNET permission to pair it with.
+-    -->
+-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove"/>
++    <uses-permission android:name="android.permission.INTERNET"/>
++    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
++    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+ 
+     <queries>
+         <intent>
 diff --git a/app/src/main/java/app/grapheneos/camera/capturer/ImageCapturer.kt b/app/src/main/java/app/grapheneos/camera/capturer/ImageCapturer.kt
 index d20fee5..438cef0 100644
 --- a/app/src/main/java/app/grapheneos/camera/capturer/ImageCapturer.kt
@@ -31,7 +51,7 @@ index c4f6347..01da325 100644
              camConfig.mPlayer.playVRStopSound()
  
 diff --git a/app/src/main/java/app/grapheneos/camera/ui/activities/MainActivity.kt b/app/src/main/java/app/grapheneos/camera/ui/activities/MainActivity.kt
-index be22fb5..eb4a1e9 100644
+index be22fb5..b45a641 100644
 --- a/app/src/main/java/app/grapheneos/camera/ui/activities/MainActivity.kt
 +++ b/app/src/main/java/app/grapheneos/camera/ui/activities/MainActivity.kt
 @@ -3,11 +3,13 @@ package app.grapheneos.camera.ui.activities
@@ -48,23 +68,33 @@ index be22fb5..eb4a1e9 100644
  import android.content.pm.PackageManager
  import android.content.res.Configuration
  import android.graphics.Bitmap
-@@ -774,6 +776,7 @@ open class MainActivity : AppCompatActivity(),
+@@ -81,6 +83,7 @@ import app.grapheneos.camera.capturer.ImageCapturer
+ import app.grapheneos.camera.capturer.VideoCapturer
+ import app.grapheneos.camera.capturer.getVideoThumbnail
+ import app.grapheneos.camera.shareCapturedItem
++import app.grapheneos.camera.stream.PreviewStreamServer
+ import app.grapheneos.camera.databinding.ActivityMainBinding
+ import app.grapheneos.camera.databinding.ScanResultDialogBinding
+ import app.grapheneos.camera.ktx.SystemSettingsObserver
+@@ -774,6 +777,8 @@ open class MainActivity : AppCompatActivity(),
                  }
              }
          }
++        startPreviewStreaming()
 +        sendWatchCameraStatus("ready")
      }
  
      val requiresVideoModeOnly: Boolean
-@@ -783,6 +786,7 @@ open class MainActivity : AppCompatActivity(),
+@@ -783,6 +788,8 @@ open class MainActivity : AppCompatActivity(),
  
      override fun onPause() {
          super.onPause()
++        stopPreviewStreaming()
 +        sendWatchCameraStatus("paused")
  
          // Leaving a mode switch waiting on an animation that will never finish would strand the
          // strip on a mode the camera never entered.
-@@ -819,6 +823,7 @@ open class MainActivity : AppCompatActivity(),
+@@ -819,6 +826,7 @@ open class MainActivity : AppCompatActivity(),
          mainOverlay = binding.mainOverlay
          imageCapturer = ImageCapturer(this)
          videoCapturer = VideoCapturer(this)
@@ -72,7 +102,7 @@ index be22fb5..eb4a1e9 100644
          thirdOption = binding.thirdOption
          previewLoader = binding.previewLoading
          imagePreview = binding.imagePreview
-@@ -1578,6 +1583,9 @@ open class MainActivity : AppCompatActivity(),
+@@ -1578,6 +1586,9 @@ open class MainActivity : AppCompatActivity(),
  
      companion object {
          private const val TAG = "GOCam"
@@ -82,7 +112,7 @@ index be22fb5..eb4a1e9 100644
          private const val autoCenterFocusDuration = 2000L
          private val hexArray = "0123456789ABCDEF".toCharArray()
  
-@@ -1593,6 +1601,73 @@ open class MainActivity : AppCompatActivity(),
+@@ -1593,6 +1604,136 @@ open class MainActivity : AppCompatActivity(),
          private const val FRAME_COPY_RETRIES = 3
      }
  
@@ -115,6 +145,58 @@ index be22fb5..eb4a1e9 100644
 +        }
 +    }
 +
++    private var previewStreamServer: PreviewStreamServer? = null
++    private var previewTicker: Runnable? = null
++    private val previewHandler = Handler(Looper.getMainLooper())
++
++    private fun startPreviewStreaming() {
++        if (previewStreamServer == null) {
++            previewStreamServer = PreviewStreamServer(8089).apply { start() }
++        }
++        if (previewTicker == null) {
++            previewTicker = object : Runnable {
++                override fun run() {
++                    if (!isDestroyed && !isFinishing) {
++                        captureAndPushPreviewFrame()
++                        previewHandler.postDelayed(this, 66L) // ~15 FPS
++                    }
++                }
++            }
++            previewHandler.post(previewTicker!!)
++        }
++    }
++
++    private fun stopPreviewStreaming() {
++        previewTicker?.let { previewHandler.removeCallbacks(it) }
++        previewTicker = null
++        previewStreamServer?.stop()
++        previewStreamServer = null
++    }
++
++    private fun captureAndPushPreviewFrame() {
++        try {
++            val server = previewStreamServer ?: return
++            val bitmap = previewView.bitmap ?: return
++            val targetSize = 320
++            val scaled = if (bitmap.width > targetSize || bitmap.height > targetSize) {
++                val scale = targetSize.toFloat() / maxOf(bitmap.width, bitmap.height)
++                val sw = (bitmap.width * scale).toInt()
++                val sh = (bitmap.height * scale).toInt()
++                Bitmap.createScaledBitmap(bitmap, sw, sh, true)
++            } else {
++                bitmap
++            }
++
++            server.updateFrame(scaled, 65)
++
++            if (scaled !== bitmap) {
++                scaled.recycle()
++            }
++        } catch (e: Exception) {
++            Log.w(TAG, "Error pushing preview frame", e)
++        }
++    }
++
 +    private fun handleRemoteCameraAction(action: String, payload: String?) {
 +        runOnUiThread {
 +            when (action) {
@@ -133,6 +215,14 @@ index be22fb5..eb4a1e9 100644
 +                "torch", "toggle_torch" -> {
 +                    camConfig.toggleTorchState()
 +                }
++                "start_stream" -> {
++                    startPreviewStreaming()
++                    sendWatchCameraStatus("stream_ready")
++                }
++                "stop_stream" -> {
++                    stopPreviewStreaming()
++                    sendWatchCameraStatus("stream_stopped")
++                }
 +                "status_query", "ping" -> {
 +                    sendWatchCameraStatus("ready")
 +                }
@@ -142,10 +232,13 @@ index be22fb5..eb4a1e9 100644
 +
 +    fun sendWatchCameraStatus(status: String) {
 +        try {
++            val ips = previewStreamServer?.getLocalIpAddresses() ?: emptyList()
++            val ipsJson = ips.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }
++            val payload = "{\"status\":\"$status\",\"port\":8089,\"ips\":$ipsJson}"
 +            val intent = Intent(ACTION_SEND_TO_WATCH).apply {
 +                putExtra("extra_app_id", WATCH_APP_CAMERA)
 +                putExtra("extra_action", status)
-+                putExtra("extra_payload_string", "{\"status\":\"$status\"}")
++                putExtra("extra_payload_string", payload)
 +            }
 +            sendBroadcast(intent)
 +        } catch (e: Exception) {
@@ -156,10 +249,11 @@ index be22fb5..eb4a1e9 100644
      override fun onDown(e: MotionEvent): Boolean {
          return false
      }
-@@ -1957,6 +2032,7 @@ open class MainActivity : AppCompatActivity(),
+@@ -1957,6 +2098,8 @@ open class MainActivity : AppCompatActivity(),
  
      override fun onDestroy() {
          super.onDestroy()
++        stopPreviewStreaming()
 +        unregisterRemoteCameraReceiver()
          SensorOrientationChangeNotifier.clearInstance()
          thumbnailLoaderExecutor.shutdownNow()
