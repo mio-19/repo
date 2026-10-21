@@ -35,6 +35,22 @@ let
     inherit version src;
 
     patches = [
+      # WebDAV sync patch (text messages + attachments, additive merge).
+      #
+      # Limitations:
+      #  - Additive only: message/conversation deletions are not propagated, and attachments
+      #    added to an already-synced message later are not merged into it.
+      #  - Imported messages are local to this app (no SMS/MMS provider URI), so they are
+      #    not visible to other SMS apps and cannot be exported through the system provider.
+      #  - Downloaded attachments are stored in the app cache and may be evicted by Android.
+      #  - The JSON payload and attachments are stored unencrypted on the WebDAV server.
+      #  - HTTPS only. Periodic sync uses one-shot setAndAllowWhileIdle alarms that are
+      #    rescheduled after each run, so it may still be delayed by Doze/battery optimizations.
+      #  - Drafts and incomplete MMS notifications are not synced, and attachments over 200 MiB
+      #    are skipped. The password falls back to base64 storage if Android Keystore is broken.
+      #  - The whole history is serialized into a single JSON document in memory, so very large
+      #    histories are slow and memory-heavy to sync.
+      ./webdav-sync.patch
       # TODO # ./copy-verification-code.patch
       /*
         (fetchpatch {
@@ -110,7 +126,7 @@ let
 
     meta = with lib; {
       sourceProvenance = with sourceTypes; [ fromSource ];
-      description = "GrapheneOS Messaging app with copy verification code support";
+      description = "GrapheneOS Messaging app with WebDAV sync support";
       homepage = "https://github.com/GrapheneOS/Messaging";
       license = licenses.asl20;
       platforms = platforms.linux;

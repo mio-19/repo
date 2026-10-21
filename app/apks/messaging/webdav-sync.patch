@@ -1,0 +1,2266 @@
+diff --git a/AndroidManifest.xml b/AndroidManifest.xml
+index 81d97de2..635dc55d 100644
+--- a/AndroidManifest.xml
++++ b/AndroidManifest.xml
+@@ -360,6 +360,20 @@
+             </intent-filter>
+         </receiver>
+ 
++        <!-- WebDAV sync: periodic alarm and schedule restoration after boot/update -->
++        <receiver
++            android:name=".data.webdavsync.WebDavSyncReceiver"
++            android:exported="false" />
++
++        <receiver
++            android:name=".data.webdavsync.WebDavSyncBootReceiver"
++            android:exported="true">
++            <intent-filter>
++                <action android:name="android.intent.action.BOOT_COMPLETED" />
++                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
++            </intent-filter>
++        </receiver>
++
+         <!-- Widget that displays the conversation list -->
+         <receiver android:name=".widget.BugleWidgetProvider"
+                 android:exported="false"
+diff --git a/res/values/strings.xml b/res/values/strings.xml
+index fddc89c9..2daade4f 100644
+--- a/res/values/strings.xml
++++ b/res/values/strings.xml
+@@ -806,6 +806,48 @@
+     <!-- The title for advanced settings activity  -->
+     <string name="advanced_settings_activity_title">Advanced settings</string>
+ 
++    <!-- WebDAV sync settings -->
++    <!-- The title for the WebDAV sync settings screen -->
++    <string name="webdav_sync_title">WebDAV sync</string>
++    <!-- Summary for the WebDAV sync settings entry -->
++    <string name="webdav_sync_summary">Merge messages and attachments with a WebDAV server</string>
++    <!-- Explanation shown at the top of the WebDAV sync screen -->
++    <string name="webdav_sync_intro">Messages and attachments are merged with the JSON file below. Use an HTTPS WebDAV file URL. Attachments are stored next to it in a .media folder.</string>
++    <!-- Label for the WebDAV file URL field -->
++    <string name="webdav_sync_url_label">WebDAV file URL</string>
++    <!-- Placeholder for the WebDAV file URL field -->
++    <string name="webdav_sync_url_hint">https://example.com/dav/messaging-sync.json</string>
++    <!-- Label for the WebDAV username field -->
++    <string name="webdav_sync_username_label">Username (optional)</string>
++    <!-- Label for the WebDAV password field -->
++    <string name="webdav_sync_password_label">Password (optional)</string>
++    <!-- Title for the periodic WebDAV sync switch -->
++    <string name="webdav_sync_periodic_title">Periodic sync</string>
++    <!-- Summary for the periodic WebDAV sync switch -->
++    <string name="webdav_sync_periodic_summary">Sync in the background roughly every 6 hours</string>
++    <!-- Button that saves the WebDAV sync settings -->
++    <string name="webdav_sync_save">Save</string>
++    <!-- Button that starts a WebDAV sync immediately -->
++    <string name="webdav_sync_now">Sync now</string>
++    <!-- Heading above the WebDAV sync status -->
++    <string name="webdav_sync_status_label">Status</string>
++    <!-- Last sync time shown on the WebDAV sync screen -->
++    <string name="webdav_sync_last_sync">Last sync: %1$s</string>
++    <!-- Shown when WebDAV sync has never completed -->
++    <string name="webdav_sync_never">Never synced</string>
++    <!-- Confirmation shown after saving WebDAV sync settings -->
++    <string name="webdav_sync_saved">Settings saved</string>
++    <!-- Error shown when the WebDAV URL is empty -->
++    <string name="webdav_sync_url_required">Enter a WebDAV file URL first</string>
++    <!-- Error shown when the WebDAV URL is malformed -->
++    <string name="webdav_sync_invalid_url">Enter a valid HTTPS WebDAV file URL</string>
++    <!-- Error shown when the WebDAV URL is not HTTPS -->
++    <string name="webdav_sync_https_required">The WebDAV URL must use HTTPS</string>
++    <!-- Result shown after a successful WebDAV sync -->
++    <string name="webdav_sync_success">Synced: %1$d imported, %2$d uploaded, %3$d media downloaded, %4$d media uploaded, %5$d skipped</string>
++    <!-- Error shown when a WebDAV sync fails -->
++    <string name="webdav_sync_failure">Sync failed: %1$s</string>
++
+     <!-- The title for the YouTube link previews setting -->
+     <string name="youtube_link_previews_pref_title">YouTube link previews</string>
+ 
+diff --git a/src/com/android/messaging/data/webdavsync/WebDavClient.kt b/src/com/android/messaging/data/webdavsync/WebDavClient.kt
+new file mode 100644
+index 00000000..884f31f4
+--- /dev/null
++++ b/src/com/android/messaging/data/webdavsync/WebDavClient.kt
+@@ -0,0 +1,184 @@
++package com.android.messaging.data.webdavsync
++
++import android.util.Base64
++import java.io.File
++import java.io.IOException
++import java.io.InputStream
++import java.net.HttpURLConnection
++import java.net.URI
++import java.net.URL
++
++internal class WebDavClient(
++    private val username: String,
++    private val password: String,
++) {
++    private val ensuredCollections = HashSet<String>()
++
++    fun downloadText(fileUrl: String): String? {
++        val connection = openConnection(fileUrl, METHOD_GET)
++        try {
++            val responseCode = connection.responseCode
++            if (responseCode == HTTP_NOT_FOUND) {
++                return null
++            }
++            if (responseCode !in HTTP_SUCCESS_RANGE) {
++                throw IOException("HTTP $responseCode while downloading sync file")
++            }
++            return connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
++        } finally {
++            connection.disconnect()
++        }
++    }
++
++    fun uploadText(fileUrl: String, body: String) {
++        val bytes = body.toByteArray(Charsets.UTF_8)
++        val connection = openConnection(fileUrl, METHOD_PUT)
++        try {
++            connection.doOutput = true
++            connection.setFixedLengthStreamingMode(bytes.size)
++            connection.setRequestProperty("Content-Type", JSON_CONTENT_TYPE)
++            connection.outputStream.use { it.write(bytes) }
++            val responseCode = connection.responseCode
++            if (responseCode !in HTTP_SUCCESS_RANGE) {
++                throw IOException("HTTP $responseCode while uploading sync file")
++            }
++        } finally {
++            connection.disconnect()
++        }
++    }
++
++    fun uploadFile(
++        url: String,
++        contentType: String,
++        openStream: () -> InputStream?,
++    ) {
++        val connection = openConnection(url, METHOD_PUT)
++        try {
++            connection.doOutput = true
++            connection.setChunkedStreamingMode(CHUNK_SIZE_BYTES)
++            connection.setRequestProperty("Content-Type", contentType)
++            val input = openStream() ?: throw IOException("Cannot open local attachment")
++            input.use { source ->
++                connection.outputStream.use { target ->
++                    source.copyTo(target, CHUNK_SIZE_BYTES)
++                }
++            }
++            val responseCode = connection.responseCode
++            if (responseCode !in HTTP_SUCCESS_RANGE) {
++                throw IOException("HTTP $responseCode while uploading attachment")
++            }
++        } finally {
++            connection.disconnect()
++        }
++    }
++
++    fun downloadToFile(url: String, destination: File): Boolean {
++        val connection = openConnection(url, METHOD_GET)
++        try {
++            val responseCode = connection.responseCode
++            if (responseCode == HTTP_NOT_FOUND) {
++                return false
++            }
++            if (responseCode !in HTTP_SUCCESS_RANGE) {
++                throw IOException("HTTP $responseCode while downloading attachment")
++            }
++            connection.inputStream.use { input ->
++                destination.outputStream().use { output ->
++                    input.copyTo(output, CHUNK_SIZE_BYTES)
++                }
++            }
++            return true
++        } finally {
++            connection.disconnect()
++        }
++    }
++
++    fun exists(url: String): Boolean {
++        val connection = openConnection(url, METHOD_HEAD)
++        return try {
++            connection.responseCode in HTTP_SUCCESS_RANGE
++        } catch (exception: IOException) {
++            // Servers that do not implement HEAD land here; the following PUT reports errors.
++            false
++        } finally {
++            connection.disconnect()
++        }
++    }
++
++    fun ensureParentCollections(fileUrl: String) {
++        val uri = URI(fileUrl)
++        val segments = uri.path
++            ?.trim('/')
++            ?.split('/')
++            ?.filter(String::isNotEmpty)
++            .orEmpty()
++        if (segments.size <= 1) {
++            return
++        }
++
++        val parentSegments = segments.dropLast(1)
++        var path = ""
++        for (segment in parentSegments) {
++            path += "/$segment"
++            val collectionUrl = URI(
++                uri.scheme,
++                uri.authority,
++                path,
++                null,
++                null,
++            ).toString() + "/"
++            if (ensuredCollections.add(collectionUrl)) {
++                createCollection(collectionUrl)
++            }
++        }
++    }
++
++    fun mediaUrl(fileUrl: String, remoteName: String): String {
++        val sanitized = WebDavSyncPayloadCodec.sanitizeRemoteName(remoteName)
++            ?: throw IllegalArgumentException("Invalid attachment name")
++        return fileUrl.trimEnd('/') + MEDIA_DIRECTORY_SUFFIX + sanitized
++    }
++
++    private fun createCollection(url: String) {
++        val connection = openConnection(url, METHOD_MKCOL)
++        try {
++            connection.responseCode
++        } catch (exception: IOException) {
++            // Best effort: WebDAV servers commonly answer 405 for an existing collection.
++        } finally {
++            connection.disconnect()
++        }
++    }
++
++    private fun openConnection(url: String, method: String): HttpURLConnection {
++        val connection = URL(url).openConnection() as HttpURLConnection
++        connection.requestMethod = method
++        connection.connectTimeout = CONNECT_TIMEOUT_MILLIS
++        connection.readTimeout = READ_TIMEOUT_MILLIS
++        connection.instanceFollowRedirects = true
++        connection.setRequestProperty("User-Agent", USER_AGENT)
++        if (username.isNotBlank()) {
++            val credentials = "$username:$password".toByteArray(Charsets.UTF_8)
++            connection.setRequestProperty(
++                "Authorization",
++                "Basic " + Base64.encodeToString(credentials, Base64.NO_WRAP),
++            )
++        }
++        return connection
++    }
++
++    private companion object {
++        const val METHOD_GET = "GET"
++        const val METHOD_HEAD = "HEAD"
++        const val METHOD_PUT = "PUT"
++        const val METHOD_MKCOL = "MKCOL"
++        const val HTTP_NOT_FOUND = 404
++        val HTTP_SUCCESS_RANGE = 200..299
++        const val CONNECT_TIMEOUT_MILLIS = 30_000
++        const val READ_TIMEOUT_MILLIS = 90_000
++        const val CHUNK_SIZE_BYTES = 64 * 1024
++        const val JSON_CONTENT_TYPE = "application/json; charset=utf-8"
++        const val MEDIA_DIRECTORY_SUFFIX = ".media/"
++        const val USER_AGENT = "GrapheneOS-Messaging-WebDAV-Sync/1"
++    }
++}
+diff --git a/src/com/android/messaging/data/webdavsync/WebDavCredentialCipher.kt b/src/com/android/messaging/data/webdavsync/WebDavCredentialCipher.kt
+new file mode 100644
+index 00000000..04c42c87
+--- /dev/null
++++ b/src/com/android/messaging/data/webdavsync/WebDavCredentialCipher.kt
+@@ -0,0 +1,118 @@
++package com.android.messaging.data.webdavsync
++
++import android.security.keystore.KeyGenParameterSpec
++import android.security.keystore.KeyProperties
++import android.util.Base64
++import java.security.KeyStore
++import javax.crypto.Cipher
++import javax.crypto.KeyGenerator
++import javax.crypto.SecretKey
++import javax.crypto.spec.GCMParameterSpec
++import javax.inject.Inject
++
++/**
++ * Encrypts the WebDAV password with a key that never leaves the Android Keystore.
++ *
++ * If the Keystore is unavailable the value is stored base64-encoded instead. That fallback keeps
++ * sync usable on devices with a broken Keystore, but it is not confidential.
++ */
++internal class WebDavCredentialCipher @Inject constructor() {
++
++    fun encrypt(value: String): String {
++        if (value.isEmpty()) {
++            return ""
++        }
++        return try {
++            val cipher = Cipher.getInstance(TRANSFORMATION)
++            cipher.init(Cipher.ENCRYPT_MODE, getOrCreateKey())
++            val initializationVector = cipher.iv
++            val encrypted = cipher.doFinal(value.toByteArray(Charsets.UTF_8))
++            val payload = ByteArray(1 + initializationVector.size + encrypted.size)
++            payload[0] = initializationVector.size.toByte()
++            initializationVector.copyInto(payload, destinationOffset = 1)
++            encrypted.copyInto(payload, destinationOffset = 1 + initializationVector.size)
++            PREFIX_ENCRYPTED + Base64.encodeToString(payload, Base64.NO_WRAP)
++        } catch (exception: Exception) {
++            PREFIX_PLAIN + Base64.encodeToString(
++                value.toByteArray(Charsets.UTF_8),
++                Base64.NO_WRAP,
++            )
++        }
++    }
++
++    fun decrypt(value: String): String {
++        if (value.isEmpty()) {
++            return ""
++        }
++        return when {
++            value.startsWith(PREFIX_ENCRYPTED) -> {
++                try {
++                    val payload = Base64.decode(value.removePrefix(PREFIX_ENCRYPTED), Base64.NO_WRAP)
++                    val initializationVectorSize = payload[0].toInt() and 0xff
++                    val initializationVector = payload.copyOfRange(
++                        1,
++                        1 + initializationVectorSize,
++                    )
++                    val encrypted = payload.copyOfRange(
++                        1 + initializationVectorSize,
++                        payload.size,
++                    )
++                    val cipher = Cipher.getInstance(TRANSFORMATION)
++                    cipher.init(
++                        Cipher.DECRYPT_MODE,
++                        getOrCreateKey(),
++                        GCMParameterSpec(GCM_TAG_BITS, initializationVector),
++                    )
++                    String(cipher.doFinal(encrypted), Charsets.UTF_8)
++                } catch (exception: Exception) {
++                    ""
++                }
++            }
++
++            value.startsWith(PREFIX_PLAIN) -> {
++                try {
++                    String(
++                        Base64.decode(value.removePrefix(PREFIX_PLAIN), Base64.NO_WRAP),
++                        Charsets.UTF_8,
++                    )
++                } catch (exception: Exception) {
++                    ""
++                }
++            }
++
++            // Tolerate values written by early builds, which were stored as plain text.
++            else -> value
++        }
++    }
++
++    private fun getOrCreateKey(): SecretKey {
++        val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
++        (keyStore.getKey(KEY_ALIAS, null) as? SecretKey)?.let { return it }
++
++        val generator = KeyGenerator.getInstance(
++            KeyProperties.KEY_ALGORITHM_AES,
++            ANDROID_KEYSTORE,
++        )
++        generator.init(
++            KeyGenParameterSpec.Builder(
++                KEY_ALIAS,
++                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
++            )
++                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
++                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
++                .setKeySize(KEY_SIZE_BITS)
++                .build(),
++        )
++        return generator.generateKey()
++    }
++
++    private companion object {
++        const val ANDROID_KEYSTORE = "AndroidKeyStore"
++        const val KEY_ALIAS = "messaging_webdav_sync_password"
++        const val TRANSFORMATION = "AES/GCM/NoPadding"
++        const val KEY_SIZE_BITS = 256
++        const val GCM_TAG_BITS = 128
++        const val PREFIX_ENCRYPTED = "enc:"
++        const val PREFIX_PLAIN = "plain:"
++    }
++}
+diff --git a/src/com/android/messaging/data/webdavsync/WebDavSyncBootReceiver.kt b/src/com/android/messaging/data/webdavsync/WebDavSyncBootReceiver.kt
+new file mode 100644
+index 00000000..4f978bf5
+--- /dev/null
++++ b/src/com/android/messaging/data/webdavsync/WebDavSyncBootReceiver.kt
+@@ -0,0 +1,23 @@
++package com.android.messaging.data.webdavsync
++
++import android.content.BroadcastReceiver
++import android.content.Context
++import android.content.Intent
++import com.android.messaging.di.webdavsync.WebDavSyncEntryPoint
++import dagger.hilt.android.EntryPointAccessors
++
++internal class WebDavSyncBootReceiver : BroadcastReceiver() {
++
++    override fun onReceive(context: Context, intent: Intent) {
++        if (intent.action != Intent.ACTION_BOOT_COMPLETED &&
++            intent.action != Intent.ACTION_MY_PACKAGE_REPLACED
++        ) {
++            return
++        }
++
++        EntryPointAccessors.fromApplication(
++            context.applicationContext,
++            WebDavSyncEntryPoint::class.java,
++        ).webDavSyncScheduler().rescheduleIfEnabled()
++    }
++}
+diff --git a/src/com/android/messaging/data/webdavsync/WebDavSyncModels.kt b/src/com/android/messaging/data/webdavsync/WebDavSyncModels.kt
+new file mode 100644
+index 00000000..436cb060
+--- /dev/null
++++ b/src/com/android/messaging/data/webdavsync/WebDavSyncModels.kt
+@@ -0,0 +1,104 @@
++package com.android.messaging.data.webdavsync
++
++import android.net.Uri
++import java.security.MessageDigest
++
++internal data class WebDavSyncSettings(
++    val fileUrl: String = "",
++    val username: String = "",
++    val password: String = "",
++    val periodicSyncEnabled: Boolean = false,
++) {
++    val isConfigured: Boolean
++        get() = fileUrl.isNotBlank()
++}
++
++internal sealed interface WebDavSyncResult {
++    data class Success(
++        val importedMessages: Int,
++        val uploadedMessages: Int,
++        val downloadedMedia: Int,
++        val uploadedMedia: Int,
++        val skippedMessages: Int,
++    ) : WebDavSyncResult
++
++    data class Failure(
++        val reason: String,
++    ) : WebDavSyncResult
++}
++
++internal data class SyncMedia(
++    val remoteName: String,
++    val contentType: String,
++    val width: Int,
++    val height: Int,
++    val size: Long,
++)
++
++internal data class SyncMessage(
++    val key: String,
++    val participants: List<String>,
++    val outgoing: Boolean,
++    val sender: String?,
++    val sentTimestamp: Long,
++    val receivedTimestamp: Long,
++    val subject: String?,
++    val text: String,
++    val seen: Boolean,
++    val read: Boolean,
++    val media: List<SyncMedia>,
++)
++
++internal data class LocalMedia(
++    val contentUri: Uri,
++    val contentType: String,
++    val width: Int,
++    val height: Int,
++    val size: Long,
++)
++
++internal data class SyncSnapshot(
++    val messages: List<SyncMessage>,
++    val mediaByRemoteName: Map<String, LocalMedia>,
++)
++
++internal data class MediaHash(
++    val remoteName: String,
++    val media: LocalMedia,
++)
++
++internal object SyncMessageKeys {
++    fun compute(
++        participants: List<String>,
++        outgoing: Boolean,
++        sender: String?,
++        sentTimestamp: Long,
++        text: String,
++    ): String {
++        val canonical = buildString {
++            append(participants.sorted().joinToString(SEPARATOR))
++            append(SEPARATOR)
++            append(if (outgoing) "out" else "in")
++            append(SEPARATOR)
++            append(sender.orEmpty())
++            append(SEPARATOR)
++            append(sentTimestamp)
++            append(SEPARATOR)
++            append(text)
++        }
++        return toHex(
++            MessageDigest.getInstance("SHA-256")
++                .digest(canonical.toByteArray(Charsets.UTF_8)),
++        )
++    }
++
++    fun toHex(bytes: ByteArray): String = buildString(bytes.size * 2) {
++        for (byte in bytes) {
++            append(HEX[(byte.toInt() shr 4) and 0x0f])
++            append(HEX[byte.toInt() and 0x0f])
++        }
++    }
++
++    private const val SEPARATOR = "\u0000"
++    private const val HEX = "0123456789abcdef"
++}
+diff --git a/src/com/android/messaging/data/webdavsync/WebDavSyncPayloadCodec.kt b/src/com/android/messaging/data/webdavsync/WebDavSyncPayloadCodec.kt
+new file mode 100644
+index 00000000..229b4f4a
+--- /dev/null
++++ b/src/com/android/messaging/data/webdavsync/WebDavSyncPayloadCodec.kt
+@@ -0,0 +1,151 @@
++package com.android.messaging.data.webdavsync
++
++import org.json.JSONArray
++import org.json.JSONObject
++
++internal object WebDavSyncPayloadCodec {
++    private const val FORMAT = "grapheneos-messaging-webdav"
++    private const val VERSION = 1
++    private val REMOTE_NAME = Regex("[A-Za-z0-9._-]{1,160}")
++
++    fun encode(messages: Collection<SyncMessage>): String {
++        val root = JSONObject()
++        root.put("format", FORMAT)
++        root.put("version", VERSION)
++        root.put("exportedAt", System.currentTimeMillis())
++
++        val encodedMessages = JSONArray()
++        messages
++            .sortedWith(compareBy({ it.sentTimestamp }, { it.key }))
++            .forEach { message ->
++                encodedMessages.put(
++                    JSONObject().apply {
++                        put("id", message.key)
++                        put(
++                            "conversation",
++                            JSONArray().apply {
++                                message.participants.forEach { participant ->
++                                    put(participant)
++                                }
++                            },
++                        )
++                        put("direction", if (message.outgoing) "out" else "in")
++                        put("sender", message.sender ?: JSONObject.NULL)
++                        put("timestamp", message.sentTimestamp)
++                        put("receivedTimestamp", message.receivedTimestamp)
++                        put("subject", message.subject ?: JSONObject.NULL)
++                        put("text", message.text)
++                        put("seen", message.seen)
++                        put("read", message.read)
++                        put(
++                            "media",
++                            JSONArray().apply {
++                                message.media.forEach { media ->
++                                    put(
++                                        JSONObject().apply {
++                                            put("remoteName", media.remoteName)
++                                            put("contentType", media.contentType)
++                                            put("width", media.width)
++                                            put("height", media.height)
++                                            put("size", media.size)
++                                        },
++                                    )
++                                }
++                            },
++                        )
++                    },
++                )
++            }
++        root.put("messages", encodedMessages)
++        return root.toString()
++    }
++
++    fun decode(json: String): List<SyncMessage> {
++        if (json.isBlank()) {
++            return emptyList()
++        }
++        val root = JSONObject(json)
++        if (root.optString("format") != FORMAT) {
++            throw IllegalArgumentException("Unrecognized WebDAV sync file")
++        }
++        val version = root.optInt("version", 0)
++        if (version > VERSION) {
++            throw IllegalArgumentException("Unsupported WebDAV sync file version $version")
++        }
++        val encodedMessages = root.optJSONArray("messages") ?: return emptyList()
++        val result = ArrayList<SyncMessage>(encodedMessages.length())
++        for (index in 0 until encodedMessages.length()) {
++            val encoded = encodedMessages.optJSONObject(index) ?: continue
++            val participants = encoded.optJSONArray("conversation")
++                ?.let { array ->
++                    (0 until array.length()).mapNotNull { participantIndex ->
++                        array.optString(participantIndex).takeIf(String::isNotBlank)
++                    }
++                }
++                .orEmpty()
++                .distinct()
++            if (participants.isEmpty()) {
++                continue
++            }
++
++            val outgoing = encoded.optString("direction") == "out"
++            val sender = encoded.optStringOrNull("sender")
++            val sentTimestamp = encoded.optLong("timestamp", 0L)
++            val receivedTimestamp = encoded.optLong("receivedTimestamp", sentTimestamp)
++            val text = encoded.optString("text", "")
++            val media = encoded.optJSONArray("media")
++                ?.let { array ->
++                    (0 until array.length()).mapNotNull { mediaIndex ->
++                        val encodedMedia = array.optJSONObject(mediaIndex) ?: return@mapNotNull null
++                        val remoteName = sanitizeRemoteName(encodedMedia.optString("remoteName"))
++                            ?: return@mapNotNull null
++                        SyncMedia(
++                            remoteName = remoteName,
++                            contentType = encodedMedia.optString(
++                                "contentType",
++                                DEFAULT_CONTENT_TYPE,
++                            ),
++                            width = encodedMedia.optInt("width", UNSPECIFIED_SIZE),
++                            height = encodedMedia.optInt("height", UNSPECIFIED_SIZE),
++                            size = encodedMedia.optLong("size", -1L),
++                        )
++                    }
++                }
++                .orEmpty()
++
++            result.add(
++                SyncMessage(
++                    key = SyncMessageKeys.compute(
++                        participants = participants,
++                        outgoing = outgoing,
++                        sender = sender,
++                        sentTimestamp = sentTimestamp,
++                        text = text,
++                    ),
++                    participants = participants,
++                    outgoing = outgoing,
++                    sender = sender,
++                    sentTimestamp = sentTimestamp,
++                    receivedTimestamp = receivedTimestamp,
++                    subject = encoded.optStringOrNull("subject"),
++                    text = text,
++                    seen = encoded.optBoolean("seen", true),
++                    read = encoded.optBoolean("read", true),
++                    media = media,
++                ),
++            )
++        }
++        return result
++    }
++
++    fun sanitizeRemoteName(name: String): String? {
++        return name.takeIf { REMOTE_NAME.matches(it) }
++    }
++
++    private fun JSONObject.optStringOrNull(key: String): String? {
++        return if (isNull(key)) null else optString(key).takeIf(String::isNotBlank)
++    }
++
++    private const val DEFAULT_CONTENT_TYPE = "application/octet-stream"
++    private const val UNSPECIFIED_SIZE = -1
++}
+diff --git a/src/com/android/messaging/data/webdavsync/WebDavSyncPreferences.kt b/src/com/android/messaging/data/webdavsync/WebDavSyncPreferences.kt
+new file mode 100644
+index 00000000..fd16de1a
+--- /dev/null
++++ b/src/com/android/messaging/data/webdavsync/WebDavSyncPreferences.kt
+@@ -0,0 +1,63 @@
++package com.android.messaging.data.webdavsync
++
++import android.content.Context
++import com.android.messaging.util.BuglePrefs
++import dagger.hilt.android.qualifiers.ApplicationContext
++import javax.inject.Inject
++
++internal class WebDavSyncPreferences @Inject constructor(
++    @param:ApplicationContext context: Context,
++    private val cipher: WebDavCredentialCipher,
++) {
++    private val preferences = context.getSharedPreferences(
++        BuglePrefs.SHARED_PREFERENCES_NAME,
++        Context.MODE_PRIVATE,
++    )
++
++    fun load(): WebDavSyncSettings {
++        return WebDavSyncSettings(
++            fileUrl = preferences.getString(KEY_FILE_URL, "").orEmpty(),
++            username = preferences.getString(KEY_USERNAME, "").orEmpty(),
++            password = cipher.decrypt(preferences.getString(KEY_PASSWORD, "").orEmpty()),
++            periodicSyncEnabled = preferences.getBoolean(KEY_PERIODIC_SYNC, false),
++        )
++    }
++
++    fun save(settings: WebDavSyncSettings) {
++        preferences.edit()
++            .putString(KEY_FILE_URL, settings.fileUrl)
++            .putString(KEY_USERNAME, settings.username)
++            .putString(KEY_PASSWORD, cipher.encrypt(settings.password))
++            .putBoolean(KEY_PERIODIC_SYNC, settings.periodicSyncEnabled)
++            .apply()
++    }
++
++    fun lastSyncTime(): Long {
++        return preferences.getLong(KEY_LAST_SYNC_TIME, 0L)
++    }
++
++    fun isPeriodicSyncEnabled(): Boolean {
++        return preferences.getBoolean(KEY_PERIODIC_SYNC, false) &&
++            !preferences.getString(KEY_FILE_URL, "").isNullOrBlank()
++    }
++
++    fun lastStatus(): String {
++        return preferences.getString(KEY_LAST_STATUS, "").orEmpty()
++    }
++
++    fun saveLastSync(time: Long, status: String) {
++        preferences.edit()
++            .putLong(KEY_LAST_SYNC_TIME, time)
++            .putString(KEY_LAST_STATUS, status)
++            .apply()
++    }
++
++    private companion object {
++        const val KEY_FILE_URL = "webdav_sync_file_url"
++        const val KEY_USERNAME = "webdav_sync_username"
++        const val KEY_PASSWORD = "webdav_sync_password"
++        const val KEY_PERIODIC_SYNC = "webdav_sync_periodic"
++        const val KEY_LAST_SYNC_TIME = "webdav_sync_last_sync_time"
++        const val KEY_LAST_STATUS = "webdav_sync_last_status"
++    }
++}
+diff --git a/src/com/android/messaging/data/webdavsync/WebDavSyncReceiver.kt b/src/com/android/messaging/data/webdavsync/WebDavSyncReceiver.kt
+new file mode 100644
+index 00000000..c8fe7823
+--- /dev/null
++++ b/src/com/android/messaging/data/webdavsync/WebDavSyncReceiver.kt
+@@ -0,0 +1,49 @@
++package com.android.messaging.data.webdavsync
++
++import android.content.BroadcastReceiver
++import android.content.Context
++import android.content.Intent
++import android.os.PowerManager
++import com.android.messaging.di.webdavsync.WebDavSyncEntryPoint
++import dagger.hilt.android.EntryPointAccessors
++import kotlinx.coroutines.launch
++
++internal class WebDavSyncReceiver : BroadcastReceiver() {
++
++    override fun onReceive(context: Context, intent: Intent) {
++        if (intent.action != ACTION_SYNC) {
++            return
++        }
++
++        val entryPoint = EntryPointAccessors.fromApplication(
++            context.applicationContext,
++            WebDavSyncEntryPoint::class.java,
++        )
++        val pendingResult = goAsync()
++        val wakeLock = context.getSystemService(PowerManager::class.java)
++            ?.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG)
++            ?.apply { acquire(WAKE_LOCK_TIMEOUT_MILLIS) }
++
++        entryPoint.applicationScope().launch {
++            try {
++                entryPoint.webDavSyncRepository().sync()
++            } finally {
++                runCatching {
++                    entryPoint.webDavSyncScheduler().rescheduleIfEnabled()
++                }
++                wakeLock?.let { lock ->
++                    if (lock.isHeld) {
++                        lock.release()
++                    }
++                }
++                pendingResult.finish()
++            }
++        }
++    }
++
++    companion object {
++        const val ACTION_SYNC = "com.android.messaging.action.WEBDAV_SYNC"
++        private const val WAKE_LOCK_TAG = "messaging:webdav-sync"
++        private const val WAKE_LOCK_TIMEOUT_MILLIS = 10L * 60L * 1000L
++    }
++}
+diff --git a/src/com/android/messaging/data/webdavsync/WebDavSyncRepository.kt b/src/com/android/messaging/data/webdavsync/WebDavSyncRepository.kt
+new file mode 100644
+index 00000000..15eed702
+--- /dev/null
++++ b/src/com/android/messaging/data/webdavsync/WebDavSyncRepository.kt
+@@ -0,0 +1,758 @@
++package com.android.messaging.data.webdavsync
++
++import android.content.Context
++import android.net.Uri
++import android.webkit.MimeTypeMap
++import com.android.messaging.R
++import com.android.messaging.datamodel.BugleDatabaseOperations
++import com.android.messaging.datamodel.DataModel
++import com.android.messaging.datamodel.DatabaseHelper
++import com.android.messaging.datamodel.DatabaseHelper.ConversationParticipantsColumns
++import com.android.messaging.datamodel.DatabaseHelper.MessageColumns
++import com.android.messaging.datamodel.DatabaseHelper.PartColumns
++import com.android.messaging.datamodel.DatabaseHelper.ParticipantColumns
++import com.android.messaging.datamodel.DatabaseWrapper
++import com.android.messaging.datamodel.MediaScratchFileProvider
++import com.android.messaging.datamodel.MessagingContentProvider
++import com.android.messaging.datamodel.data.MessageData
++import com.android.messaging.datamodel.data.MessagePartData
++import com.android.messaging.datamodel.data.ParticipantData
++import com.android.messaging.di.core.IoDispatcher
++import com.android.messaging.di.core.MessagingDbDispatcher
++import com.android.messaging.sms.MmsUtils
++import dagger.hilt.android.qualifiers.ApplicationContext
++import java.net.URI
++import java.security.MessageDigest
++import java.util.Locale
++import javax.inject.Inject
++import kotlinx.coroutines.CoroutineDispatcher
++import kotlinx.coroutines.sync.Mutex
++import kotlinx.coroutines.sync.withLock
++import kotlinx.coroutines.withContext
++
++internal interface WebDavSyncRepository {
++    suspend fun loadSettings(): WebDavSyncSettings
++    suspend fun saveSettings(settings: WebDavSyncSettings)
++    suspend fun sync(): WebDavSyncResult
++    fun lastSyncTime(): Long
++    fun lastStatus(): String
++}
++
++internal class WebDavSyncRepositoryImpl @Inject constructor(
++    @param:ApplicationContext private val context: Context,
++    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
++    @param:MessagingDbDispatcher private val databaseDispatcher: CoroutineDispatcher,
++    private val preferences: WebDavSyncPreferences,
++) : WebDavSyncRepository {
++
++    private val syncMutex = Mutex()
++
++    override suspend fun loadSettings(): WebDavSyncSettings {
++        return withContext(ioDispatcher) { preferences.load() }
++    }
++
++    override suspend fun saveSettings(settings: WebDavSyncSettings) {
++        withContext(ioDispatcher) { preferences.save(settings) }
++    }
++
++    override fun lastSyncTime(): Long = preferences.lastSyncTime()
++
++    override fun lastStatus(): String = preferences.lastStatus()
++
++    override suspend fun sync(): WebDavSyncResult {
++        return withContext(ioDispatcher) {
++            syncMutex.withLock { syncLocked() }
++        }
++    }
++
++    private suspend fun syncLocked(): WebDavSyncResult {
++        val settings = preferences.load()
++        val rawUrl = settings.fileUrl.trim()
++        if (rawUrl.isEmpty()) {
++            return fail(context.getString(R.string.webdav_sync_url_required))
++        }
++        val fileUrl = normalizeFileUrl(rawUrl)
++            ?: return fail(context.getString(R.string.webdav_sync_invalid_url))
++        if (!fileUrl.startsWith("https://", ignoreCase = true)) {
++            return fail(context.getString(R.string.webdav_sync_https_required))
++        }
++
++        val client = WebDavClient(settings.username, settings.password)
++        return try {
++            client.ensureParentCollections(fileUrl)
++            client.ensureParentCollections(client.mediaUrl(fileUrl, "placeholder"))
++
++            val remoteMessages = client.downloadText(fileUrl)
++                ?.let(WebDavSyncPayloadCodec::decode)
++                .orEmpty()
++                .map(::normalizeRemoteMessage)
++            val mediaCache = HashMap<String, MediaHash?>()
++            val localBefore = readSnapshot(mediaCache)
++            val localKeys = localBefore.messages.mapTo(HashSet()) { it.key }
++
++            val messagesToImport = LinkedHashMap<String, SyncMessage>()
++            for (message in remoteMessages) {
++                if (message.key !in localKeys) {
++                    messagesToImport.putIfAbsent(message.key, message)
++                }
++            }
++
++            val download = downloadMedia(client, fileUrl, messagesToImport.values)
++            val imported = importMessages(download.importable)
++
++            val localAfter = readSnapshot(mediaCache)
++            val uploadedMedia = uploadMedia(client, fileUrl, localAfter)
++
++            val localKeysAfter = localAfter.messages.mapTo(HashSet()) { it.key }
++            val remainingRemote = download.skipped.filter { it.key !in localKeysAfter }
++            val merged = (localAfter.messages + remainingRemote)
++                .associateBy { it.key }
++                .values
++
++            client.uploadText(fileUrl, WebDavSyncPayloadCodec.encode(merged))
++
++            val result = WebDavSyncResult.Success(
++                importedMessages = imported,
++                uploadedMessages = merged.size,
++                downloadedMedia = download.downloadedMedia,
++                uploadedMedia = uploadedMedia,
++                skippedMessages = download.skipped.size,
++            )
++            record(result)
++            result
++        } catch (exception: Exception) {
++            fail(exception.message ?: exception.javaClass.simpleName)
++        }
++    }
++
++    private fun fail(reason: String): WebDavSyncResult.Failure {
++        val result = WebDavSyncResult.Failure(reason)
++        record(result)
++        return result
++    }
++
++    private fun record(result: WebDavSyncResult) {
++        val status = when (result) {
++            is WebDavSyncResult.Success -> context.getString(
++                R.string.webdav_sync_success,
++                result.importedMessages,
++                result.uploadedMessages,
++                result.downloadedMedia,
++                result.uploadedMedia,
++                result.skippedMessages,
++            )
++
++            is WebDavSyncResult.Failure -> context.getString(
++                R.string.webdav_sync_failure,
++                result.reason,
++            )
++        }
++        preferences.saveLastSync(System.currentTimeMillis(), status)
++    }
++
++    private fun normalizeFileUrl(rawUrl: String): String? {
++        val trimmed = rawUrl.trim()
++        if (trimmed.isEmpty()) {
++            return null
++        }
++        val withFileName = if (trimmed.endsWith('/')) {
++            trimmed + DEFAULT_FILE_NAME
++        } else {
++            trimmed
++        }
++        return try {
++            val uri = URI(withFileName)
++            if (uri.scheme.isNullOrBlank() || uri.host.isNullOrBlank()) {
++                null
++            } else if (uri.userInfo != null || uri.query != null || uri.fragment != null) {
++                null
++            } else {
++                withFileName
++            }
++        } catch (exception: Exception) {
++            null
++        }
++    }
++
++    private suspend fun readSnapshot(
++        mediaCache: MutableMap<String, MediaHash?>,
++    ): SyncSnapshot {
++        val rows = withContext(databaseDispatcher) { readSnapshotRows() }
++        return buildSnapshot(rows, mediaCache)
++    }
++
++    private fun readSnapshotRows(): SnapshotRows {
++        val db = DataModel.get().getDatabase()
++        val participants = readConversationParticipants(db)
++        val rows = ArrayList<SnapshotRow>()
++        db.rawQuery(SNAPSHOT_QUERY, null).use { cursor ->
++            while (cursor.moveToNext()) {
++                val messageId = cursor.getString(INDEX_MESSAGE_ID) ?: continue
++                rows.add(
++                    SnapshotRow(
++                        messageId = messageId,
++                        conversationId = cursor.getString(INDEX_CONVERSATION_ID),
++                        outgoing = cursor.getString(INDEX_SENDER_ID)
++                            ?.let { it == cursor.getString(INDEX_SELF_ID) }
++                            ?: false,
++                        sender = cursor.getString(INDEX_SENDER_DESTINATION),
++                        sentTimestamp = cursor.getLong(INDEX_SENT_TIMESTAMP),
++                        receivedTimestamp = cursor.getLong(INDEX_RECEIVED_TIMESTAMP),
++                        subject = cursor.getString(INDEX_SUBJECT),
++                        seen = cursor.getInt(INDEX_SEEN) != 0,
++                        read = cursor.getInt(INDEX_READ) != 0,
++                        partText = cursor.getString(INDEX_PART_TEXT),
++                        partUri = cursor.getString(INDEX_PART_URI),
++                        partContentType = cursor.getString(INDEX_PART_CONTENT_TYPE),
++                        partWidth = cursor.getInt(INDEX_PART_WIDTH),
++                        partHeight = cursor.getInt(INDEX_PART_HEIGHT),
++                    ),
++                )
++            }
++        }
++        return SnapshotRows(participants = participants, rows = rows)
++    }
++
++    private fun buildSnapshot(
++        snapshotRows: SnapshotRows,
++        mediaCache: MutableMap<String, MediaHash?>,
++    ): SyncSnapshot {
++        val builders = LinkedHashMap<String, MessageBuilder>()
++        for (row in snapshotRows.rows) {
++            val builder = builders.getOrPut(row.messageId) {
++                MessageBuilder(
++                    conversationId = row.conversationId,
++                    outgoing = row.outgoing,
++                    sender = row.sender,
++                    sentTimestamp = row.sentTimestamp,
++                    receivedTimestamp = row.receivedTimestamp,
++                    subject = row.subject,
++                    seen = row.seen,
++                    read = row.read,
++                )
++            }
++
++            if (!row.partText.isNullOrEmpty()) {
++                builder.textParts.add(row.partText)
++            }
++
++            val partUri = row.partUri
++            if (!partUri.isNullOrEmpty()) {
++                val contentType = row.partContentType
++                    ?.substringBefore(';')
++                    ?.trim()
++                    ?.takeIf(String::isNotEmpty)
++                    ?: DEFAULT_CONTENT_TYPE
++                val media = hashMedia(
++                    uriString = partUri,
++                    contentType = contentType,
++                    width = row.partWidth,
++                    height = row.partHeight,
++                    mediaCache = mediaCache,
++                )
++                if (media != null) {
++                    builder.media.add(media)
++                }
++            }
++        }
++
++        val mediaByRemoteName = LinkedHashMap<String, LocalMedia>()
++        val messages = LinkedHashMap<String, SyncMessage>()
++        for (builder in builders.values) {
++            val conversationId = builder.conversationId ?: continue
++            val participants = snapshotRows.participants[conversationId]
++                .orEmpty()
++                .sorted()
++            if (participants.isEmpty()) {
++                continue
++            }
++
++            val text = builder.textParts
++                .joinToString("\n")
++                .ifEmpty { builder.subject.orEmpty() }
++            val sender = if (builder.outgoing) null else builder.sender
++            val media = builder.media
++                .distinctBy { it.remoteName }
++                .map { hashed ->
++                    mediaByRemoteName.putIfAbsent(hashed.remoteName, hashed.media)
++                    SyncMedia(
++                        remoteName = hashed.remoteName,
++                        contentType = hashed.media.contentType,
++                        width = hashed.media.width,
++                        height = hashed.media.height,
++                        size = hashed.media.size,
++                    )
++                }
++            if (text.isEmpty() && media.isEmpty()) {
++                continue
++            }
++
++            val key = SyncMessageKeys.compute(
++                participants = participants,
++                outgoing = builder.outgoing,
++                sender = sender,
++                sentTimestamp = builder.sentTimestamp,
++                text = text,
++            )
++            messages.putIfAbsent(
++                key,
++                SyncMessage(
++                    key = key,
++                    participants = participants,
++                    outgoing = builder.outgoing,
++                    sender = sender,
++                    sentTimestamp = builder.sentTimestamp,
++                    receivedTimestamp = builder.receivedTimestamp,
++                    subject = builder.subject,
++                    text = text,
++                    seen = builder.seen,
++                    read = builder.read,
++                    media = media,
++                ),
++            )
++        }
++        return SyncSnapshot(
++            messages = messages.values.toList(),
++            mediaByRemoteName = mediaByRemoteName,
++        )
++    }
++
++    private fun readConversationParticipants(db: DatabaseWrapper): Map<String, List<String>> {
++        val participants = HashMap<String, MutableList<String>>()
++        db.rawQuery(PARTICIPANTS_QUERY, null).use { cursor ->
++            while (cursor.moveToNext()) {
++                val conversationId = cursor.getString(0) ?: continue
++                val destination = cursor.getString(1) ?: continue
++                participants.getOrPut(conversationId) { ArrayList() }.add(destination)
++            }
++        }
++        return participants
++    }
++
++    private fun hashMedia(
++        uriString: String,
++        contentType: String,
++        width: Int,
++        height: Int,
++        mediaCache: MutableMap<String, MediaHash?>,
++    ): MediaHash? {
++        if (mediaCache.containsKey(uriString)) {
++            return mediaCache[uriString]
++        }
++
++        val result = try {
++            val uri = Uri.parse(uriString)
++            val digest = MessageDigest.getInstance("SHA-256")
++            var size = 0L
++            val input = context.contentResolver.openInputStream(uri)
++            if (input == null) {
++                mediaCache[uriString] = null
++                return null
++            }
++            input.use { stream ->
++                val buffer = ByteArray(HASH_BUFFER_BYTES)
++                while (true) {
++                    val read = stream.read(buffer)
++                    if (read < 0) {
++                        break
++                    }
++                    size += read
++                    if (size > MAX_MEDIA_BYTES) {
++                        mediaCache[uriString] = null
++                        return null
++                    }
++                    digest.update(buffer, 0, read)
++                }
++            }
++            val remoteName = SyncMessageKeys.toHex(digest.digest()) + "." + extensionFor(contentType)
++            MediaHash(
++                remoteName = remoteName,
++                media = LocalMedia(
++                    contentUri = uri,
++                    contentType = contentType,
++                    width = width,
++                    height = height,
++                    size = size,
++                ),
++            )
++        } catch (exception: Exception) {
++            null
++        }
++        mediaCache[uriString] = result
++        return result
++    }
++
++    private fun downloadMedia(
++        client: WebDavClient,
++        fileUrl: String,
++        messages: Collection<SyncMessage>,
++    ): DownloadResult {
++        val importable = ArrayList<ImportPlan>()
++        val skipped = ArrayList<SyncMessage>()
++        val downloadedCache = HashMap<String, Uri?>()
++        var downloadedMedia = 0
++
++        for (message in messages) {
++            val mediaUris = ArrayList<Uri>(message.media.size)
++            var failed = false
++            for (media in message.media) {
++                val alreadyDownloaded = downloadedCache.containsKey(media.remoteName)
++                val uri = if (alreadyDownloaded) {
++                    downloadedCache[media.remoteName]
++                } else {
++                    val downloadedUri = downloadMediaFile(client, fileUrl, media)
++                    downloadedCache[media.remoteName] = downloadedUri
++                    downloadedUri
++                }
++                if (uri == null) {
++                    failed = true
++                    break
++                }
++                if (!alreadyDownloaded) {
++                    downloadedMedia++
++                }
++                mediaUris.add(uri)
++            }
++            if (failed) {
++                skipped.add(message)
++            } else {
++                importable.add(ImportPlan(message = message, mediaUris = mediaUris))
++            }
++        }
++        return DownloadResult(
++            importable = importable,
++            skipped = skipped,
++            downloadedMedia = downloadedMedia,
++        )
++    }
++
++    private fun downloadMediaFile(
++        client: WebDavClient,
++        fileUrl: String,
++        media: SyncMedia,
++    ): Uri? {
++        val url = client.mediaUrl(fileUrl, media.remoteName)
++        val scratchUri = MediaScratchFileProvider.buildMediaScratchSpaceUri(
++            extensionFor(media.contentType),
++        )
++        val destination = MediaScratchFileProvider.getFileFromUri(scratchUri) ?: return null
++        return try {
++            if (client.downloadToFile(url, destination)) {
++                scratchUri
++            } else {
++                destination.delete()
++                null
++            }
++        } catch (exception: Exception) {
++            destination.delete()
++            null
++        }
++    }
++
++    private suspend fun importMessages(plans: List<ImportPlan>): Int {
++        if (plans.isEmpty()) {
++            return 0
++        }
++        return withContext(databaseDispatcher) { importMessagesLocked(plans) }
++    }
++
++    private fun importMessagesLocked(plans: List<ImportPlan>): Int {
++        val db = DataModel.get().getDatabase()
++        val touchedConversations = LinkedHashSet<String>()
++        var imported = 0
++        db.beginTransaction()
++        try {
++            val self = ParticipantData.getSelfParticipant(ParticipantData.DEFAULT_SELF_SUB_ID)
++            val selfId = BugleDatabaseOperations.getOrCreateParticipantInTransaction(db, self)
++            for (plan in plans) {
++                val message = plan.message
++                val participants = message.participants
++                    .map(::canonicalize)
++                    .distinct()
++                    .sorted()
++                if (participants.isEmpty()) {
++                    continue
++                }
++                val conversationId = getOrCreateConversation(db, participants) ?: continue
++                val senderId = if (message.outgoing) {
++                    selfId
++                } else {
++                    val sender = canonicalize(message.sender ?: participants.first())
++                    BugleDatabaseOperations.getOrCreateParticipantInTransaction(
++                        db,
++                        ParticipantData.getFromRawPhoneBySimLocale(
++                            sender,
++                            ParticipantData.DEFAULT_SELF_SUB_ID,
++                        ),
++                    )
++                }
++
++                val data = MessageData.createSyncedMessage(
++                    senderId,
++                    selfId,
++                    conversationId,
++                    message.outgoing,
++                    message.seen,
++                    message.read,
++                    message.sentTimestamp,
++                    message.receivedTimestamp,
++                    message.text,
++                )
++                for ((index, media) in message.media.withIndex()) {
++                    val mediaUri = plan.mediaUris.getOrNull(index) ?: continue
++                    data.addPart(
++                        MessagePartData.createMediaMessagePart(
++                            media.contentType,
++                            mediaUri,
++                            media.width,
++                            media.height,
++                        ),
++                    )
++                }
++                BugleDatabaseOperations.insertNewMessageInTransaction(db, data)
++                touchedConversations.add(conversationId)
++                imported++
++            }
++
++            for (conversationId in touchedConversations) {
++                BugleDatabaseOperations.refreshConversationMetadataInTransaction(
++                    db,
++                    conversationId,
++                    false,
++                    false,
++                )
++            }
++            db.setTransactionSuccessful()
++        } finally {
++            db.endTransaction()
++        }
++
++        for (conversationId in touchedConversations) {
++            MessagingContentProvider.notifyMessagesChanged(conversationId)
++            MessagingContentProvider.notifyConversationMetadataChanged(conversationId)
++        }
++        MessagingContentProvider.notifyPartsChanged()
++        return imported
++    }
++
++    private fun getOrCreateConversation(
++        db: DatabaseWrapper,
++        participants: List<String>,
++    ): String? {
++        val participantsData = participants.map {
++            ParticipantData.getFromRawPhoneBySimLocale(
++                it,
++                ParticipantData.DEFAULT_SELF_SUB_ID,
++            )
++        }
++        val createdThreadId = try {
++            MmsUtils.getOrCreateThreadId(context, participants)
++        } catch (exception: Exception) {
++            -1L
++        }
++        val threadId = if (createdThreadId > 0) {
++            createdThreadId
++        } else {
++            fallbackThreadId(participants)
++        }
++
++        return BugleDatabaseOperations.getOrCreateConversation(
++            db,
++            threadId,
++            false,
++            ArrayList(participantsData),
++            false,
++            false,
++            null,
++        )
++    }
++
++    private fun fallbackThreadId(participants: List<String>): Long {
++        val digest = MessageDigest.getInstance("SHA-256")
++            .digest(participants.sorted().joinToString("\u0000").toByteArray(Charsets.UTF_8))
++        var value = 0L
++        for (index in 0 until 8) {
++            value = (value shl 8) or (digest[index].toLong() and 0xff)
++        }
++        return -(value and FALLBACK_THREAD_ID_MASK) - 2L
++    }
++
++    private fun canonicalize(destination: String): String {
++        return ParticipantData.getFromRawPhoneBySimLocale(
++            destination,
++            ParticipantData.DEFAULT_SELF_SUB_ID,
++        ).normalizedDestination ?: destination
++    }
++
++    /**
++     * Canonicalize remote destinations before computing their deduplication key. Otherwise a
++     * message whose destination is written differently on the other device would be imported
++     * again on every sync, because the key read from the database would not match the key in the
++     * remote payload.
++     */
++    private fun normalizeRemoteMessage(message: SyncMessage): SyncMessage {
++        val participants = message.participants
++            .map(::canonicalize)
++            .distinct()
++            .sorted()
++        val sender = message.sender?.let(::canonicalize)
++        return message.copy(
++            key = SyncMessageKeys.compute(
++                participants = participants,
++                outgoing = message.outgoing,
++                sender = sender,
++                sentTimestamp = message.sentTimestamp,
++                text = message.text,
++            ),
++            participants = participants,
++            sender = sender,
++        )
++    }
++
++    private fun uploadMedia(
++        client: WebDavClient,
++        fileUrl: String,
++        snapshot: SyncSnapshot,
++    ): Int {
++        var uploaded = 0
++        for ((remoteName, media) in snapshot.mediaByRemoteName) {
++            val url = client.mediaUrl(fileUrl, remoteName)
++            if (client.exists(url)) {
++                continue
++            }
++            client.uploadFile(url, media.contentType) {
++                context.contentResolver.openInputStream(media.contentUri)
++            }
++            uploaded++
++        }
++        return uploaded
++    }
++
++    private fun extensionFor(contentType: String): String {
++        val extension = MimeTypeMap.getSingleton()
++            .getExtensionFromMimeType(contentType.substringBefore(';').trim())
++            ?.lowercase(Locale.US)
++            ?.filter(Char::isLetterOrDigit)
++            ?.takeIf { it.isNotEmpty() && it.length <= 8 }
++        return extension ?: DEFAULT_EXTENSION
++    }
++
++    private data class SnapshotRows(
++        val participants: Map<String, List<String>>,
++        val rows: List<SnapshotRow>,
++    )
++
++    private data class SnapshotRow(
++        val messageId: String,
++        val conversationId: String?,
++        val outgoing: Boolean,
++        val sender: String?,
++        val sentTimestamp: Long,
++        val receivedTimestamp: Long,
++        val subject: String?,
++        val seen: Boolean,
++        val read: Boolean,
++        val partText: String?,
++        val partUri: String?,
++        val partContentType: String?,
++        val partWidth: Int,
++        val partHeight: Int,
++    )
++
++    private class MessageBuilder(
++        val conversationId: String?,
++        val outgoing: Boolean,
++        val sender: String?,
++        val sentTimestamp: Long,
++        val receivedTimestamp: Long,
++        val subject: String?,
++        val seen: Boolean,
++        val read: Boolean,
++    ) {
++        val textParts = ArrayList<String>()
++        val media = ArrayList<MediaHash>()
++    }
++
++    private data class ImportPlan(
++        val message: SyncMessage,
++        val mediaUris: List<Uri>,
++    )
++
++    private data class DownloadResult(
++        val importable: List<ImportPlan>,
++        val skipped: List<SyncMessage>,
++        val downloadedMedia: Int,
++    )
++
++    private companion object {
++        const val DEFAULT_FILE_NAME = "messaging-sync.json"
++        const val DEFAULT_CONTENT_TYPE = "application/octet-stream"
++        const val DEFAULT_EXTENSION = "bin"
++        const val HASH_BUFFER_BYTES = 64 * 1024
++        const val MAX_MEDIA_BYTES = 200L * 1024 * 1024
++        const val FALLBACK_THREAD_ID_MASK = 0x3fff_ffff_ffff_ffffL
++
++        const val INDEX_MESSAGE_ID = 0
++        const val INDEX_CONVERSATION_ID = 1
++        const val INDEX_SENDER_ID = 2
++        const val INDEX_SELF_ID = 3
++        const val INDEX_SENT_TIMESTAMP = 4
++        const val INDEX_RECEIVED_TIMESTAMP = 5
++        const val INDEX_SUBJECT = 6
++        const val INDEX_SEEN = 7
++        const val INDEX_READ = 8
++        const val INDEX_SENDER_DESTINATION = 9
++        const val INDEX_PART_TEXT = 10
++        const val INDEX_PART_URI = 11
++        const val INDEX_PART_CONTENT_TYPE = 12
++        const val INDEX_PART_WIDTH = 13
++        const val INDEX_PART_HEIGHT = 14
++
++        val EXCLUDED_STATUSES = listOf(
++            MessageData.BUGLE_STATUS_OUTGOING_DRAFT,
++            MessageData.BUGLE_STATUS_INCOMING_YET_TO_MANUAL_DOWNLOAD,
++            MessageData.BUGLE_STATUS_INCOMING_RETRYING_MANUAL_DOWNLOAD,
++            MessageData.BUGLE_STATUS_INCOMING_MANUAL_DOWNLOADING,
++            MessageData.BUGLE_STATUS_INCOMING_RETRYING_AUTO_DOWNLOAD,
++            MessageData.BUGLE_STATUS_INCOMING_AUTO_DOWNLOADING,
++        ).joinToString(",")
++
++        val SNAPSHOT_QUERY = """
++            SELECT
++                m.${MessageColumns._ID},
++                m.${MessageColumns.CONVERSATION_ID},
++                m.${MessageColumns.SENDER_PARTICIPANT_ID},
++                m.${MessageColumns.SELF_PARTICIPANT_ID},
++                m.${MessageColumns.SENT_TIMESTAMP},
++                m.${MessageColumns.RECEIVED_TIMESTAMP},
++                m.${MessageColumns.MMS_SUBJECT},
++                m.${MessageColumns.SEEN},
++                m.${MessageColumns.READ},
++                sender.${ParticipantColumns.NORMALIZED_DESTINATION},
++                p.${PartColumns.TEXT},
++                p.${PartColumns.CONTENT_URI},
++                p.${PartColumns.CONTENT_TYPE},
++                p.${PartColumns.WIDTH},
++                p.${PartColumns.HEIGHT}
++            FROM ${DatabaseHelper.MESSAGES_TABLE} m
++            LEFT JOIN ${DatabaseHelper.PARTS_TABLE} p
++                ON p.${PartColumns.MESSAGE_ID} = m.${MessageColumns._ID}
++            LEFT JOIN ${DatabaseHelper.PARTICIPANTS_TABLE} sender
++                ON sender.${ParticipantColumns._ID} = m.${MessageColumns.SENDER_PARTICIPANT_ID}
++            WHERE m.${MessageColumns.STATUS} NOT IN ($EXCLUDED_STATUSES)
++            ORDER BY m.${MessageColumns._ID}, p.${PartColumns._ID}
++        """.trimIndent()
++
++        val PARTICIPANTS_QUERY = """
++            SELECT
++                cp.${ConversationParticipantsColumns.CONVERSATION_ID},
++                p.${ParticipantColumns.NORMALIZED_DESTINATION}
++            FROM ${DatabaseHelper.CONVERSATION_PARTICIPANTS_TABLE} cp
++            JOIN ${DatabaseHelper.PARTICIPANTS_TABLE} p
++                ON p.${ParticipantColumns._ID} =
++                    cp.${ConversationParticipantsColumns.PARTICIPANT_ID}
++            WHERE p.${ParticipantColumns.NORMALIZED_DESTINATION} IS NOT NULL
++                AND p.${ParticipantColumns.NORMALIZED_DESTINATION} != ''
++        """.trimIndent()
++    }
++}
+diff --git a/src/com/android/messaging/data/webdavsync/WebDavSyncScheduler.kt b/src/com/android/messaging/data/webdavsync/WebDavSyncScheduler.kt
+new file mode 100644
+index 00000000..c2a4e003
+--- /dev/null
++++ b/src/com/android/messaging/data/webdavsync/WebDavSyncScheduler.kt
+@@ -0,0 +1,60 @@
++package com.android.messaging.data.webdavsync
++
++import android.app.AlarmManager
++import android.app.PendingIntent
++import android.content.Context
++import android.content.Intent
++import android.os.SystemClock
++import dagger.hilt.android.qualifiers.ApplicationContext
++import javax.inject.Inject
++
++internal interface WebDavSyncScheduler {
++    fun schedule()
++    fun cancel()
++    fun rescheduleIfEnabled()
++}
++
++internal class WebDavSyncSchedulerImpl @Inject constructor(
++    @param:ApplicationContext private val context: Context,
++    private val preferences: WebDavSyncPreferences,
++) : WebDavSyncScheduler {
++
++    override fun schedule() {
++        val alarmManager = context.getSystemService(AlarmManager::class.java) ?: return
++        val pendingIntent = pendingIntent()
++        alarmManager.cancel(pendingIntent)
++        alarmManager.setAndAllowWhileIdle(
++            AlarmManager.ELAPSED_REALTIME_WAKEUP,
++            SystemClock.elapsedRealtime() + INTERVAL_MILLIS,
++            pendingIntent,
++        )
++    }
++
++    override fun cancel() {
++        context.getSystemService(AlarmManager::class.java)?.cancel(pendingIntent())
++    }
++
++    override fun rescheduleIfEnabled() {
++        if (preferences.isPeriodicSyncEnabled()) {
++            schedule()
++        } else {
++            cancel()
++        }
++    }
++
++    private fun pendingIntent(): PendingIntent {
++        val intent = Intent(context, WebDavSyncReceiver::class.java)
++            .setAction(WebDavSyncReceiver.ACTION_SYNC)
++        return PendingIntent.getBroadcast(
++            context,
++            REQUEST_CODE,
++            intent,
++            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
++        )
++    }
++
++    private companion object {
++        const val REQUEST_CODE = 42
++        const val INTERVAL_MILLIS = 6L * 60L * 60L * 1000L
++    }
++}
+diff --git a/src/com/android/messaging/datamodel/data/MessageData.java b/src/com/android/messaging/datamodel/data/MessageData.java
+index 816cbaf5..eecf3f55 100644
+--- a/src/com/android/messaging/datamodel/data/MessageData.java
++++ b/src/com/android/messaging/datamodel/data/MessageData.java
+@@ -330,6 +330,34 @@ public class MessageData implements Parcelable {
+         return message;
+     }
+ 
++    /**
++     * Create a message imported by the WebDAV sync feature.
++     *
++     * The message is local-only: it deliberately has no SMS/MMS provider URI, so the periodic
++     * telephony sync does not try to match it against (or delete it from) the system databases.
++     */
++    public static MessageData createSyncedMessage(final String participantId, final String selfId,
++            final String conversationId, final boolean outgoing, final boolean seen,
++            final boolean read, final long sent, final long received, final String messageText) {
++        final MessageData message = new MessageData();
++        message.mParticipantId = participantId;
++        message.mSelfId = selfId;
++        message.mConversationId = conversationId;
++        message.mSentTimestamp = sent;
++        message.mReceivedTimestamp = received;
++        message.mSeen = seen;
++        message.mRead = read;
++        message.mProtocol = PROTOCOL_SMS;
++        message.mStatus = outgoing
++                ? BUGLE_STATUS_OUTGOING_COMPLETE
++                : BUGLE_STATUS_INCOMING_COMPLETE;
++        message.mSmsMessageUri = null;
++        message.mParts.add(TextUtils.isEmpty(messageText)
++                ? MessagePartData.createEmptyMessagePart()
++                : MessagePartData.createTextMessagePart(messageText));
++        return message;
++    }
++
+     /**
+      * Create a message from Mms table fields
+      */
+diff --git a/src/com/android/messaging/di/webdavsync/WebDavSyncBindsModule.kt b/src/com/android/messaging/di/webdavsync/WebDavSyncBindsModule.kt
+new file mode 100644
+index 00000000..8f6419bd
+--- /dev/null
++++ b/src/com/android/messaging/di/webdavsync/WebDavSyncBindsModule.kt
+@@ -0,0 +1,29 @@
++package com.android.messaging.di.webdavsync
++
++import com.android.messaging.data.webdavsync.WebDavSyncRepository
++import com.android.messaging.data.webdavsync.WebDavSyncRepositoryImpl
++import com.android.messaging.data.webdavsync.WebDavSyncScheduler
++import com.android.messaging.data.webdavsync.WebDavSyncSchedulerImpl
++import dagger.Binds
++import dagger.Module
++import dagger.Reusable
++import dagger.hilt.InstallIn
++import dagger.hilt.components.SingletonComponent
++import javax.inject.Singleton
++
++@Module
++@InstallIn(SingletonComponent::class)
++internal abstract class WebDavSyncBindsModule {
++
++    @Binds
++    @Singleton
++    abstract fun bindWebDavSyncRepository(
++        impl: WebDavSyncRepositoryImpl,
++    ): WebDavSyncRepository
++
++    @Binds
++    @Reusable
++    abstract fun bindWebDavSyncScheduler(
++        impl: WebDavSyncSchedulerImpl,
++    ): WebDavSyncScheduler
++}
+diff --git a/src/com/android/messaging/di/webdavsync/WebDavSyncEntryPoint.kt b/src/com/android/messaging/di/webdavsync/WebDavSyncEntryPoint.kt
+new file mode 100644
+index 00000000..f2011357
+--- /dev/null
++++ b/src/com/android/messaging/di/webdavsync/WebDavSyncEntryPoint.kt
+@@ -0,0 +1,19 @@
++package com.android.messaging.di.webdavsync
++
++import com.android.messaging.data.webdavsync.WebDavSyncRepository
++import com.android.messaging.data.webdavsync.WebDavSyncScheduler
++import com.android.messaging.di.core.ApplicationCoroutineScope
++import dagger.hilt.EntryPoint
++import dagger.hilt.InstallIn
++import dagger.hilt.components.SingletonComponent
++import kotlinx.coroutines.CoroutineScope
++
++@EntryPoint
++@InstallIn(SingletonComponent::class)
++internal interface WebDavSyncEntryPoint {
++    fun webDavSyncRepository(): WebDavSyncRepository
++    fun webDavSyncScheduler(): WebDavSyncScheduler
++
++    @ApplicationCoroutineScope
++    fun applicationScope(): CoroutineScope
++}
+diff --git a/src/com/android/messaging/ui/appsettings/general/ui/AppSettingsScreen.kt b/src/com/android/messaging/ui/appsettings/general/ui/AppSettingsScreen.kt
+index bb3c70e4..10e21387 100644
+--- a/src/com/android/messaging/ui/appsettings/general/ui/AppSettingsScreen.kt
++++ b/src/com/android/messaging/ui/appsettings/general/ui/AppSettingsScreen.kt
+@@ -29,6 +29,7 @@ internal fun AppSettingsScreen(
+     onAction: (Action) -> Unit,
+     onNavigateBack: () -> Unit,
+     onPrivacyClick: () -> Unit,
++    onWebDavSyncClick: () -> Unit,
+     modifier: Modifier = Modifier,
+     isTopLevel: Boolean = false,
+     hasAdvancedSettings: Boolean = false,
+@@ -59,6 +60,7 @@ internal fun AppSettingsScreen(
+                 appSettings = appSettings,
+                 onAction = onAction,
+                 onPrivacyClick = onPrivacyClick,
++                onWebDavSyncClick = onWebDavSyncClick,
+             )
+ 
+             if (isTopLevel && hasAdvancedSettings) {
+@@ -79,6 +81,7 @@ private fun LazyListScope.coreSettingsItems(
+     appSettings: AppSettingsUiState,
+     onAction: (Action) -> Unit,
+     onPrivacyClick: () -> Unit,
++    onWebDavSyncClick: () -> Unit,
+ ) {
+     item(key = "default_sms_app") {
+         SettingsClickableItem(
+@@ -126,6 +129,14 @@ private fun LazyListScope.coreSettingsItems(
+             onClick = onPrivacyClick,
+         )
+     }
++
++    item(key = "webdav_sync") {
++        SettingsClickableItem(
++            title = stringResource(R.string.webdav_sync_title),
++            summary = stringResource(R.string.webdav_sync_summary),
++            onClick = onWebDavSyncClick,
++        )
++    }
+ }
+ 
+ private fun LazyListScope.advancedSettingsItem(onAdvancedClick: () -> Unit) {
+@@ -202,6 +213,7 @@ private fun AppSettingsScreenTopLevelPreview() {
+             onAction = {},
+             onNavigateBack = {},
+             onPrivacyClick = {},
++            onWebDavSyncClick = {},
+             isTopLevel = true,
+             hasAdvancedSettings = true,
+             onAdvancedClick = {},
+@@ -225,6 +237,7 @@ private fun AppSettingsScreenDebugPreview() {
+             onAction = {},
+             onNavigateBack = {},
+             onPrivacyClick = {},
++            onWebDavSyncClick = {},
+         )
+     }
+ }
+diff --git a/src/com/android/messaging/ui/appsettings/navigation/SettingsNavEntries.kt b/src/com/android/messaging/ui/appsettings/navigation/SettingsNavEntries.kt
+index 71f6dcb8..f58778f0 100644
+--- a/src/com/android/messaging/ui/appsettings/navigation/SettingsNavEntries.kt
++++ b/src/com/android/messaging/ui/appsettings/navigation/SettingsNavEntries.kt
+@@ -23,6 +23,8 @@ import com.android.messaging.ui.appsettings.subscription.model.SubscriptionSetti
+ import com.android.messaging.ui.appsettings.subscription.model.SubscriptionUiState
+ import com.android.messaging.ui.appsettings.subscription.rememberSubscriptionSettingsEffectHandler
+ import com.android.messaging.ui.appsettings.subscription.ui.SubscriptionSettingsScreen
++import com.android.messaging.ui.appsettings.webdavsync.WebDavSyncViewModel
++import com.android.messaging.ui.appsettings.webdavsync.ui.WebDavSyncScreen
+ import com.android.messaging.ui.core.CollectEvents
+ import com.android.messaging.ui.license.navigation.LicenseNavKey
+ import com.android.messaging.ui.navigation.LocalNavigator
+@@ -48,6 +50,10 @@ internal fun EntryProviderScope<NavKey>.settingsEntries() {
+         metadata = paneTitleMetadata(R.string.advanced_settings_activity_title),
+         content = subscriptionSettingsRouteContent(),
+     )
++    entry<WebDavSyncNavKey>(
++        metadata = paneTitleMetadata(R.string.webdav_sync_title),
++        content = webDavSyncRouteContent(),
++    )
+ }
+ 
+ private fun settingsRouteContent(): @Composable (SettingsNavKey) -> Unit {
+@@ -136,6 +142,9 @@ private fun AppSettingsDestination(
+         onPrivacyClick = {
+             navigator.push(destination = PrivacySettingsNavKey)
+         },
++        onWebDavSyncClick = {
++            navigator.push(destination = WebDavSyncNavKey)
++        },
+         isTopLevel = isTopLevel,
+         hasAdvancedSettings = advancedSubscription != null,
+         onAdvancedClick = {
+@@ -211,6 +220,20 @@ private fun subscriptionSettingsRouteContent(): @Composable (SubscriptionSetting
+     }
+ }
+ 
++private fun webDavSyncRouteContent(): @Composable (WebDavSyncNavKey) -> Unit {
++    return {
++        val navigator = LocalNavigator.current
++        val viewModel = hiltViewModel<WebDavSyncViewModel>()
++        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
++
++        WebDavSyncScreen(
++            uiState = uiState,
++            onAction = viewModel::onAction,
++            onNavigateBack = navigator::back,
++        )
++    }
++}
++
+ private fun Navigator.navigateToSubscription(
+     subId: SubId,
+     title: String,
+diff --git a/src/com/android/messaging/ui/appsettings/navigation/WebDavSyncNavKey.kt b/src/com/android/messaging/ui/appsettings/navigation/WebDavSyncNavKey.kt
+new file mode 100644
+index 00000000..15ddbef7
+--- /dev/null
++++ b/src/com/android/messaging/ui/appsettings/navigation/WebDavSyncNavKey.kt
+@@ -0,0 +1,7 @@
++package com.android.messaging.ui.appsettings.navigation
++
++import androidx.navigation3.runtime.NavKey
++import kotlinx.serialization.Serializable
++
++@Serializable
++internal data object WebDavSyncNavKey : NavKey
+diff --git a/src/com/android/messaging/ui/appsettings/webdavsync/WebDavSyncViewModel.kt b/src/com/android/messaging/ui/appsettings/webdavsync/WebDavSyncViewModel.kt
+new file mode 100644
+index 00000000..10821991
+--- /dev/null
++++ b/src/com/android/messaging/ui/appsettings/webdavsync/WebDavSyncViewModel.kt
+@@ -0,0 +1,118 @@
++package com.android.messaging.ui.appsettings.webdavsync
++
++import android.content.Context
++import androidx.lifecycle.ViewModel
++import androidx.lifecycle.viewModelScope
++import com.android.messaging.R
++import com.android.messaging.data.webdavsync.WebDavSyncRepository
++import com.android.messaging.data.webdavsync.WebDavSyncScheduler
++import com.android.messaging.data.webdavsync.WebDavSyncSettings
++import com.android.messaging.ui.appsettings.webdavsync.model.WebDavSyncAction
++import com.android.messaging.ui.appsettings.webdavsync.model.WebDavSyncUiState
++import dagger.hilt.android.lifecycle.HiltViewModel
++import dagger.hilt.android.qualifiers.ApplicationContext
++import javax.inject.Inject
++import kotlinx.coroutines.flow.MutableStateFlow
++import kotlinx.coroutines.flow.StateFlow
++import kotlinx.coroutines.flow.asStateFlow
++import kotlinx.coroutines.flow.update
++import kotlinx.coroutines.launch
++
++@HiltViewModel
++internal class WebDavSyncViewModel @Inject constructor(
++    private val repository: WebDavSyncRepository,
++    private val scheduler: WebDavSyncScheduler,
++    @param:ApplicationContext private val context: Context,
++) : ViewModel() {
++
++    private val _uiState = MutableStateFlow(WebDavSyncUiState())
++    val uiState: StateFlow<WebDavSyncUiState> = _uiState.asStateFlow()
++
++    init {
++        viewModelScope.launch {
++            val settings = repository.loadSettings()
++            _uiState.value = WebDavSyncUiState(
++                fileUrl = settings.fileUrl,
++                username = settings.username,
++                password = settings.password,
++                periodicSyncEnabled = settings.periodicSyncEnabled,
++                status = repository.lastStatus(),
++                lastSyncTime = repository.lastSyncTime(),
++                isLoading = false,
++            )
++        }
++    }
++
++    fun onAction(action: WebDavSyncAction) {
++        when (action) {
++            is WebDavSyncAction.FileUrlChanged -> {
++                _uiState.update { it.copy(fileUrl = action.value) }
++            }
++
++            is WebDavSyncAction.UsernameChanged -> {
++                _uiState.update { it.copy(username = action.value) }
++            }
++
++            is WebDavSyncAction.PasswordChanged -> {
++                _uiState.update { it.copy(password = action.value) }
++            }
++
++            is WebDavSyncAction.PeriodicSyncChanged -> {
++                _uiState.update { it.copy(periodicSyncEnabled = action.enabled) }
++            }
++
++            is WebDavSyncAction.SaveClicked -> save(showConfirmation = true)
++            is WebDavSyncAction.SyncClicked -> sync()
++        }
++    }
++
++    private fun save(showConfirmation: Boolean) {
++        val settings = _uiState.value.toSettings()
++        viewModelScope.launch {
++            repository.saveSettings(settings)
++            applyScheduling(settings)
++            if (showConfirmation) {
++                _uiState.update {
++                    it.copy(status = context.getString(R.string.webdav_sync_saved))
++                }
++            }
++        }
++    }
++
++    private fun sync() {
++        if (_uiState.value.isSyncing) {
++            return
++        }
++        val settings = _uiState.value.toSettings()
++        viewModelScope.launch {
++            repository.saveSettings(settings)
++            applyScheduling(settings)
++            _uiState.update { it.copy(isSyncing = true) }
++            repository.sync()
++            _uiState.update {
++                it.copy(
++                    isSyncing = false,
++                    status = repository.lastStatus(),
++                    lastSyncTime = repository.lastSyncTime(),
++                )
++            }
++        }
++    }
++
++    private fun applyScheduling(settings: WebDavSyncSettings) {
++        if (settings.periodicSyncEnabled && settings.isConfigured) {
++            scheduler.schedule()
++        } else {
++            scheduler.cancel()
++        }
++    }
++
++    private fun WebDavSyncUiState.toSettings(): WebDavSyncSettings {
++        return WebDavSyncSettings(
++            fileUrl = fileUrl,
++            username = username,
++            password = password,
++            periodicSyncEnabled = periodicSyncEnabled,
++        )
++    }
++}
+diff --git a/src/com/android/messaging/ui/appsettings/webdavsync/model/WebDavSyncAction.kt b/src/com/android/messaging/ui/appsettings/webdavsync/model/WebDavSyncAction.kt
+new file mode 100644
+index 00000000..4cc8249d
+--- /dev/null
++++ b/src/com/android/messaging/ui/appsettings/webdavsync/model/WebDavSyncAction.kt
+@@ -0,0 +1,10 @@
++package com.android.messaging.ui.appsettings.webdavsync.model
++
++internal sealed interface WebDavSyncAction {
++    data class FileUrlChanged(val value: String) : WebDavSyncAction
++    data class UsernameChanged(val value: String) : WebDavSyncAction
++    data class PasswordChanged(val value: String) : WebDavSyncAction
++    data class PeriodicSyncChanged(val enabled: Boolean) : WebDavSyncAction
++    data object SaveClicked : WebDavSyncAction
++    data object SyncClicked : WebDavSyncAction
++}
+diff --git a/src/com/android/messaging/ui/appsettings/webdavsync/model/WebDavSyncUiState.kt b/src/com/android/messaging/ui/appsettings/webdavsync/model/WebDavSyncUiState.kt
+new file mode 100644
+index 00000000..464c3a38
+--- /dev/null
++++ b/src/com/android/messaging/ui/appsettings/webdavsync/model/WebDavSyncUiState.kt
+@@ -0,0 +1,15 @@
++package com.android.messaging.ui.appsettings.webdavsync.model
++
++import androidx.compose.runtime.Immutable
++
++@Immutable
++internal data class WebDavSyncUiState(
++    val fileUrl: String = "",
++    val username: String = "",
++    val password: String = "",
++    val periodicSyncEnabled: Boolean = false,
++    val isSyncing: Boolean = false,
++    val status: String = "",
++    val lastSyncTime: Long = 0L,
++    val isLoading: Boolean = true,
++)
+diff --git a/src/com/android/messaging/ui/appsettings/webdavsync/ui/WebDavSyncScreen.kt b/src/com/android/messaging/ui/appsettings/webdavsync/ui/WebDavSyncScreen.kt
+new file mode 100644
+index 00000000..0ce9ba0f
+--- /dev/null
++++ b/src/com/android/messaging/ui/appsettings/webdavsync/ui/WebDavSyncScreen.kt
+@@ -0,0 +1,231 @@
++package com.android.messaging.ui.appsettings.webdavsync.ui
++
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.Row
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.fillMaxWidth
++import androidx.compose.foundation.layout.padding
++import androidx.compose.foundation.lazy.LazyColumn
++import androidx.compose.foundation.text.KeyboardOptions
++import androidx.compose.material3.Button
++import androidx.compose.material3.ExperimentalMaterial3Api
++import androidx.compose.material3.LinearProgressIndicator
++import androidx.compose.material3.MaterialTheme
++import androidx.compose.material3.OutlinedTextField
++import androidx.compose.material3.Scaffold
++import androidx.compose.material3.Text
++import androidx.compose.material3.TopAppBarDefaults
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.input.nestedscroll.nestedScroll
++import androidx.compose.ui.res.stringResource
++import androidx.compose.ui.text.input.KeyboardType
++import androidx.compose.ui.text.input.PasswordVisualTransformation
++import androidx.compose.ui.tooling.preview.PreviewLightDark
++import androidx.compose.ui.unit.dp
++import com.android.messaging.R
++import com.android.messaging.ui.appsettings.common.SettingsSwitchItem
++import com.android.messaging.ui.appsettings.common.SettingsTopAppBar
++import com.android.messaging.ui.appsettings.webdavsync.model.WebDavSyncAction
++import com.android.messaging.ui.appsettings.webdavsync.model.WebDavSyncUiState
++import com.android.messaging.ui.core.MessagingPreviewTheme
++import java.text.DateFormat
++import java.util.Date
++
++@OptIn(ExperimentalMaterial3Api::class)
++@Composable
++internal fun WebDavSyncScreen(
++    uiState: WebDavSyncUiState,
++    onAction: (WebDavSyncAction) -> Unit,
++    onNavigateBack: () -> Unit,
++    modifier: Modifier = Modifier,
++) {
++    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
++
++    Scaffold(
++        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
++        topBar = {
++            SettingsTopAppBar(
++                title = stringResource(R.string.webdav_sync_title),
++                onNavigateBack = onNavigateBack,
++                scrollBehavior = scrollBehavior,
++            )
++        },
++    ) { contentPadding ->
++        LazyColumn(
++            modifier = Modifier.fillMaxSize(),
++            contentPadding = contentPadding,
++        ) {
++            item(key = "intro") {
++                Text(
++                    text = stringResource(R.string.webdav_sync_intro),
++                    style = MaterialTheme.typography.bodyMedium,
++                    color = MaterialTheme.colorScheme.onSurfaceVariant,
++                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
++                )
++            }
++
++            item(key = "file_url") {
++                OutlinedTextField(
++                    value = uiState.fileUrl,
++                    onValueChange = {
++                        onAction(WebDavSyncAction.FileUrlChanged(it))
++                    },
++                    label = {
++                        Text(stringResource(R.string.webdav_sync_url_label))
++                    },
++                    placeholder = {
++                        Text(stringResource(R.string.webdav_sync_url_hint))
++                    },
++                    singleLine = true,
++                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
++                    modifier = Modifier
++                        .fillMaxWidth()
++                        .padding(horizontal = 16.dp, vertical = 8.dp),
++                )
++            }
++
++            item(key = "username") {
++                OutlinedTextField(
++                    value = uiState.username,
++                    onValueChange = {
++                        onAction(WebDavSyncAction.UsernameChanged(it))
++                    },
++                    label = {
++                        Text(stringResource(R.string.webdav_sync_username_label))
++                    },
++                    singleLine = true,
++                    modifier = Modifier
++                        .fillMaxWidth()
++                        .padding(horizontal = 16.dp, vertical = 8.dp),
++                )
++            }
++
++            item(key = "password") {
++                OutlinedTextField(
++                    value = uiState.password,
++                    onValueChange = {
++                        onAction(WebDavSyncAction.PasswordChanged(it))
++                    },
++                    label = {
++                        Text(stringResource(R.string.webdav_sync_password_label))
++                    },
++                    singleLine = true,
++                    visualTransformation = PasswordVisualTransformation(),
++                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
++                    modifier = Modifier
++                        .fillMaxWidth()
++                        .padding(horizontal = 16.dp, vertical = 8.dp),
++                )
++            }
++
++            item(key = "periodic_sync") {
++                SettingsSwitchItem(
++                    title = stringResource(R.string.webdav_sync_periodic_title),
++                    summary = stringResource(R.string.webdav_sync_periodic_summary),
++                    checked = uiState.periodicSyncEnabled,
++                    onCheckedChange = {
++                        onAction(WebDavSyncAction.PeriodicSyncChanged(it))
++                    },
++                )
++            }
++
++            item(key = "actions") {
++                Row(
++                    modifier = Modifier
++                        .fillMaxWidth()
++                        .padding(horizontal = 16.dp, vertical = 12.dp),
++                    horizontalArrangement = Arrangement.spacedBy(12.dp),
++                ) {
++                    Button(
++                        onClick = {
++                            onAction(WebDavSyncAction.SaveClicked)
++                        },
++                        enabled = !uiState.isSyncing,
++                        modifier = Modifier.weight(1f),
++                    ) {
++                        Text(stringResource(R.string.webdav_sync_save))
++                    }
++                    Button(
++                        onClick = {
++                            onAction(WebDavSyncAction.SyncClicked)
++                        },
++                        enabled = !uiState.isSyncing && uiState.fileUrl.isNotBlank(),
++                        modifier = Modifier.weight(1f),
++                    ) {
++                        Text(stringResource(R.string.webdav_sync_now))
++                    }
++                }
++            }
++
++            if (uiState.isSyncing) {
++                item(key = "progress") {
++                    LinearProgressIndicator(
++                        modifier = Modifier
++                            .fillMaxWidth()
++                            .padding(horizontal = 16.dp),
++                    )
++                }
++            }
++
++            item(key = "status") {
++                Column(
++                    modifier = Modifier
++                        .fillMaxWidth()
++                        .padding(horizontal = 16.dp, vertical = 12.dp),
++                ) {
++                    Text(
++                        text = stringResource(R.string.webdav_sync_status_label),
++                        style = MaterialTheme.typography.titleSmall,
++                    )
++                    if (uiState.status.isNotBlank()) {
++                        Text(
++                            text = uiState.status,
++                            style = MaterialTheme.typography.bodyMedium,
++                            modifier = Modifier.padding(top = 4.dp),
++                        )
++                    }
++                    Text(
++                        text = if (uiState.lastSyncTime > 0L) {
++                            stringResource(
++                                R.string.webdav_sync_last_sync,
++                                formatSyncTime(uiState.lastSyncTime),
++                            )
++                        } else {
++                            stringResource(R.string.webdav_sync_never)
++                        },
++                        style = MaterialTheme.typography.bodySmall,
++                        color = MaterialTheme.colorScheme.onSurfaceVariant,
++                        modifier = Modifier.padding(top = 4.dp),
++                    )
++                }
++            }
++        }
++    }
++}
++
++private fun formatSyncTime(time: Long): String {
++    return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
++        .format(Date(time))
++}
++
++@PreviewLightDark
++@Composable
++private fun WebDavSyncScreenPreview() {
++    MessagingPreviewTheme {
++        WebDavSyncScreen(
++            uiState = WebDavSyncUiState(
++                fileUrl = "https://cloud.example.com/dav/messaging-sync.json",
++                username = "user",
++                password = "secret",
++                periodicSyncEnabled = true,
++                status = "Synced: 3 imported, 42 uploaded",
++                lastSyncTime = System.currentTimeMillis(),
++                isLoading = false,
++            ),
++            onAction = {},
++            onNavigateBack = {},
++        )
++    }
++}
