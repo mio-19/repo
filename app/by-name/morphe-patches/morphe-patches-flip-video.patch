@@ -26,63 +26,6 @@ index 0000000..053f0fd
 +        FlipVideoButton.onPlayerViewLayout(playerView);
 +    }
 +}
-diff --git a/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/FullscreenVideoScalePatch.java b/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/FullscreenVideoScalePatch.java
-index 8941312..6a33fcb 100644
---- a/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/FullscreenVideoScalePatch.java
-+++ b/extensions/youtube/src/main/java/app/morphe/extension/youtube/patches/FullscreenVideoScalePatch.java
-@@ -33,6 +33,7 @@ import app.morphe.extension.youtube.patches.VideoFormat.FormatInterface;
- import app.morphe.extension.youtube.settings.Settings;
- import app.morphe.extension.youtube.shared.PlayerType;
- import app.morphe.extension.youtube.shared.ShortsPlayerState;
-+import app.morphe.extension.youtube.videoplayer.FlipVideoButton;
- import kotlin.Unit;
- 
- /**
-@@ -231,11 +232,12 @@ public class FullscreenVideoScalePatch {
- 
-         VideoScaleMode mode = Settings.FULLSCREEN_VIDEO_SCALE.get();
-         final float pinch = Math.max(1f, DisableFullscreenGesturesPatch.getPinchScale());
-+        final float flipSign = FlipVideoButton.isFlipped() ? -1f : 1f;
-         if (mode == VideoScaleMode.ZOOM) {
-             final float scale = Math.max(displayW / contentW, displayH / contentH) * pinch;
-             view.setPivotX(contentLeft + contentW / 2f);
-             view.setPivotY(contentTop + contentH / 2f);
--            view.setScaleX(scale);
-+            view.setScaleX(flipSign * scale);
-             view.setScaleY(scale);
-             final float contentCenterX = loc[0] + contentLeft + contentW / 2f;
-             final float contentCenterY = loc[1] + contentTop + contentH / 2f;
-@@ -246,10 +248,10 @@ public class FullscreenVideoScalePatch {
- 
-         final float scaleX = (displayW / contentW) * pinch;
-         final float scaleY = (displayH / contentH) * pinch;
--        if (pinch > 1.01f) {
-+        if (pinch > 1.01f || FlipVideoButton.isFlipped()) {
-             view.setPivotX(contentLeft + contentW / 2f);
-             view.setPivotY(contentTop + contentH / 2f);
--            view.setScaleX(scaleX);
-+            view.setScaleX(flipSign * scaleX);
-             view.setScaleY(scaleY);
-             final float contentCenterX = loc[0] + contentLeft + contentW / 2f;
-             final float contentCenterY = loc[1] + contentTop + contentH / 2f;
-@@ -379,7 +381,7 @@ public class FullscreenVideoScalePatch {
-         }
-         view.setPivotX(view.getWidth() / 2f);
-         view.setPivotY(view.getHeight() / 2f);
--        view.setScaleX(1);
-+        view.setScaleX(FlipVideoButton.isFlipped() ? -1f : 1);
-         view.setScaleY(1);
-         view.setTranslationX(0);
-         view.setTranslationY(0);
-@@ -461,7 +463,7 @@ public class FullscreenVideoScalePatch {
-      * @see <a href="https://github.com/MorpheApp/morphe-patches/issues/2652">#2652</a>
-      */
-     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
--    private static boolean shouldScale() {
-+    public static boolean shouldScale() {
-         return PlayerType.getCurrent() == PlayerType.WATCH_WHILE_FULLSCREEN;
-     }
- 
 diff --git a/extensions/youtube/src/main/java/app/morphe/extension/youtube/settings/Settings.java b/extensions/youtube/src/main/java/app/morphe/extension/youtube/settings/Settings.java
 index 6f307b9..d39f16b 100644
 --- a/extensions/youtube/src/main/java/app/morphe/extension/youtube/settings/Settings.java
@@ -102,7 +45,7 @@ new file mode 100644
 index 0000000..0ed8859
 --- /dev/null
 +++ b/extensions/youtube/src/main/java/app/morphe/extension/youtube/videoplayer/FlipVideoButton.java
-@@ -0,0 +1,257 @@
+@@ -0,0 +1,529 @@
 +/*
 + * Copyright 2026 Morphe.
 + *
@@ -114,18 +57,26 @@ index 0000000..0ed8859
 +import static app.morphe.extension.shared.StringRef.str;
 +
 +import android.app.Activity;
++import android.graphics.Rect;
++import android.os.Build;
++import android.view.SurfaceControl;
++import android.view.SurfaceHolder;
++import android.view.SurfaceView;
 +import android.view.View;
 +import android.view.ViewGroup;
++import android.view.ViewParent;
++import android.view.ViewTreeObserver;
 +import android.view.Window;
 +import android.widget.ImageView;
 +
 +import androidx.annotation.Nullable;
++import androidx.annotation.RequiresApi;
 +
 +import java.lang.ref.WeakReference;
++import java.lang.reflect.Method;
 +
 +import app.morphe.extension.shared.Logger;
 +import app.morphe.extension.shared.Utils;
-+import app.morphe.extension.youtube.patches.FullscreenVideoScalePatch;
 +import app.morphe.extension.youtube.patches.LegacyPlayerControlsPatch;
 +import app.morphe.extension.youtube.settings.Settings;
 +import app.morphe.extension.youtube.shared.PlayerType;
@@ -139,8 +90,15 @@ index 0000000..0ed8859
 +
 +    private static WeakReference<ImageView> overlayButtonRef = new WeakReference<>(null);
 +    private static WeakReference<View> playerViewRef = new WeakReference<>(null);
++    private static WeakReference<SurfaceView> videoSurfaceRef = new WeakReference<>(null);
 +
 +    private static volatile boolean isFlipped = false;
++    private static boolean playerViewFlipped;
++
++    private static WeakReference<View> mirrorHostRef = new WeakReference<>(null);
++    private static boolean mirrorListenerAttached;
++    @Nullable
++    private static ViewTreeObserver.OnPreDrawListener mirrorListener;
 +
 +    static {
 +        PlayerType.getOnChange().addObserver((PlayerType type) -> {
@@ -234,6 +192,10 @@ index 0000000..0ed8859
 +        if (playerView == null) {
 +            return;
 +        }
++        if (playerViewRef.get() != playerView) {
++            // A different player was laid out, so the cached video surface is stale.
++            videoSurfaceRef = new WeakReference<>(null);
++        }
 +        playerViewRef = new WeakReference<>(playerView);
 +        if (isFlipped) {
 +            applyFlip();
@@ -268,28 +230,118 @@ index 0000000..0ed8859
 +    public static void applyFlip() {
 +        Utils.runOnMainThread(() -> {
 +            try {
-+                if (FullscreenVideoScalePatch.shouldScale()
-+                        && Settings.FULLSCREEN_VIDEO_SCALE.get() != FullscreenVideoScalePatch.VideoScaleMode.DEFAULT) {
-+                    FullscreenVideoScalePatch.applyScale();
-+                    return;
++                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
++                        && SurfaceMirror.isSupported()) {
++                    SurfaceView videoSurface = resolveVideoSurface();
++                    if (videoSurface != null) {
++                        clearPlayerViewFlip();
++                        SurfaceMirror.apply(videoSurface, isFlipped);
++                        if (isFlipped) {
++                            attachMirrorListener();
++                        } else {
++                            detachMirrorListener();
++                        }
++                        return;
++                    }
 +                }
 +
-+                View view = resolvePlayerView();
-+                if (view == null) {
-+                    return;
-+                }
-+
-+                final int w = view.getWidth();
-+                final int h = view.getHeight();
-+                if (w > 0 && h > 0) {
-+                    view.setPivotX(w / 2f);
-+                    view.setPivotY(h / 2f);
-+                }
-+                view.setScaleX(isFlipped ? -1.0f : 1.0f);
++                detachMirrorListener();
++                applyPlayerViewFlip();
 +            } catch (Exception ex) {
 +                Logger.printException(() -> "applyFlip failure", ex);
 +            }
 +        });
++    }
++
++    /**
++     * Fallback for devices where the video surface cannot be transformed.
++     */
++    private static void applyPlayerViewFlip() {
++        View view = resolvePlayerView();
++        if (view == null) {
++            return;
++        }
++
++        final int w = view.getWidth();
++        final int h = view.getHeight();
++        if (w > 0 && h > 0) {
++            view.setPivotX(w / 2f);
++            view.setPivotY(h / 2f);
++        }
++        view.setScaleX(isFlipped ? -1.0f : 1.0f);
++        playerViewFlipped = isFlipped;
++    }
++
++    /**
++     * Removes the fallback player view flip, which would otherwise combine with the
++     * surface mirror on devices that reach both code paths.
++     */
++    private static void clearPlayerViewFlip() {
++        if (!playerViewFlipped) {
++            return;
++        }
++        playerViewFlipped = false;
++
++        View view = resolvePlayerView();
++        if (view != null) {
++            view.setScaleX(1.0f);
++        }
++    }
++
++    /**
++     * Keep the surface mirrored while flipped. YouTube restores the surface layer transform
++     * whenever the player view moves or is resized, and that transform is applied after this
++     * listener, so the mirror has to be put back on every frame.
++     */
++    private static void attachMirrorListener() {
++        View host = resolvePlayerView();
++        if (host == null) {
++            return;
++        }
++
++        if (mirrorListenerAttached && mirrorHostRef.get() == host) {
++            return;
++        }
++        detachMirrorListener();
++
++        ViewTreeObserver observer = host.getViewTreeObserver();
++        if (observer == null || !observer.isAlive()) {
++            return;
++        }
++
++        mirrorListener = () -> {
++            try {
++                SurfaceView videoSurface = resolveVideoSurface();
++                if (videoSurface != null) {
++                    SurfaceMirror.apply(videoSurface, isFlipped);
++                }
++            } catch (Exception ex) {
++                Logger.printException(() -> "FlipVideoButton mirror preDraw failure", ex);
++            }
++            return true;
++        };
++        observer.addOnPreDrawListener(mirrorListener);
++        mirrorHostRef = new WeakReference<>(host);
++        mirrorListenerAttached = true;
++    }
++
++    private static void detachMirrorListener() {
++        if (!mirrorListenerAttached) {
++            return;
++        }
++
++        ViewTreeObserver.OnPreDrawListener listener = mirrorListener;
++        View host = mirrorHostRef.get();
++        mirrorListener = null;
++        mirrorHostRef = new WeakReference<>(null);
++        mirrorListenerAttached = false;
++
++        if (host != null && listener != null) {
++            ViewTreeObserver observer = host.getViewTreeObserver();
++            if (observer != null && observer.isAlive()) {
++                observer.removeOnPreDrawListener(listener);
++            }
++        }
 +    }
 +
 +    private static void updateButtonIcon() {
@@ -339,6 +391,30 @@ index 0000000..0ed8859
 +    }
 +
 +    @Nullable
++    private static SurfaceView resolveVideoSurface() {
++        SurfaceView cached = videoSurfaceRef.get();
++        if (cached != null && isUsableVideoSurface(cached)) {
++            return cached;
++        }
++
++        View playerView = resolvePlayerView();
++        if (playerView != null) {
++            SurfaceView found = findVideoSurface(playerView, 0);
++            if (found != null) {
++                videoSurfaceRef = new WeakReference<>(found);
++                return found;
++            }
++        }
++        return cached != null && cached.isAttachedToWindow() ? cached : null;
++    }
++
++    private static boolean isUsableVideoSurface(SurfaceView surfaceView) {
++        return surfaceView.isAttachedToWindow()
++                && surfaceView.getVisibility() == View.VISIBLE
++                && surfaceView.getWidth() > 0;
++    }
++
++    @Nullable
 +    private static View findPlayerView(View view, int depth) {
 +        if (depth > 18 || view == null) {
 +            return null;
@@ -358,6 +434,145 @@ index 0000000..0ed8859
 +            }
 +        }
 +        return null;
++    }
++
++    /**
++     * Finds the video surface of the player. A player can keep several renderers around,
++     * so the largest visible one is used.
++     */
++    @Nullable
++    private static SurfaceView findVideoSurface(View view, int depth) {
++        if (depth > 24 || view == null) {
++            return null;
++        }
++        if (view instanceof SurfaceView surfaceView) {
++            return isUsableVideoSurface(surfaceView) ? surfaceView : null;
++        }
++        if (!(view instanceof ViewGroup group)) {
++            return null;
++        }
++
++        // A player can keep several renderers around, so prefer the largest visible one.
++        SurfaceView best = null;
++        long bestArea = -1;
++        for (int i = 0, n = group.getChildCount(); i < n; i++) {
++            SurfaceView found = findVideoSurface(group.getChildAt(i), depth + 1);
++            if (found != null) {
++                long area = (long) found.getWidth() * found.getHeight();
++                if (area > bestArea) {
++                    best = found;
++                    bestArea = area;
++                }
++            }
++        }
++        return best;
++    }
++
++    /**
++     * YouTube renders video into a SurfaceView, which SurfaceFlinger composites as its own
++     * layer. View transforms only update that layer's position and size with an unsigned
++     * scale, so the picture itself is never mirrored by them. Mirror the layer instead.
++     */
++    @RequiresApi(Build.VERSION_CODES.Q)
++    private static final class SurfaceMirror {
++
++        private static final SurfaceControl.Transaction TRANSACTION =
++                new SurfaceControl.Transaction();
++        private static final int[] LOCATION = new int[2];
++
++        @Nullable
++        private static Method setMatrixMethod;
++        private static boolean setMatrixResolved;
++        private static boolean failureLogged;
++
++        static boolean isSupported() {
++            return getSetMatrixMethod() != null;
++        }
++
++        static void apply(SurfaceView surfaceView, boolean flipped) {
++            if (!surfaceView.isAttachedToWindow()) {
++                return;
++            }
++
++            final int width = surfaceView.getWidth();
++            final int height = surfaceView.getHeight();
++            if (width <= 0 || height <= 0) {
++                return;
++            }
++
++            SurfaceControl surfaceControl = surfaceView.getSurfaceControl();
++            if (surfaceControl == null || !surfaceControl.isValid()) {
++                return;
++            }
++
++            Method setMatrix = getSetMatrixMethod();
++            if (setMatrix == null) {
++                return;
++            }
++
++            SurfaceHolder holder = surfaceView.getHolder();
++            Rect frame = holder != null ? holder.getSurfaceFrame() : null;
++            final float bufferWidth = frame != null && frame.width() > 0 ? frame.width() : width;
++            final float bufferHeight = frame != null && frame.height() > 0 ? frame.height() : height;
++
++            // The surface layer does not inherit view transforms, so include the scale
++            // applied by parent views (for example the fullscreen video scale patch).
++            float viewScaleX = 1f;
++            float viewScaleY = 1f;
++            for (ViewParent parent = surfaceView.getParent(); parent instanceof View; ) {
++                View view = (View) parent;
++                viewScaleX *= view.getScaleX();
++                viewScaleY *= view.getScaleY();
++                parent = view.getParent();
++            }
++
++            final float scaledWidth = width * viewScaleX;
++            final float scaledHeight = height * viewScaleY;
++
++            surfaceView.getLocationInWindow(LOCATION);
++
++            synchronized (TRANSACTION) {
++                try {
++                    // A layer matrix is the only way to mirror the surface. The public
++                    // setScale() rejects negative values, so use the (greylisted but
++                    // still accessible) matrix setter.
++                    setMatrix.invoke(TRANSACTION, surfaceControl,
++                            (flipped ? -scaledWidth : scaledWidth) / bufferWidth, 0f,
++                            0f, scaledHeight / bufferHeight);
++                    // Mirroring happens around the layer origin, so the mirrored content is
++                    // moved back into place by offsetting the position by the scaled width.
++                    TRANSACTION.setPosition(surfaceControl,
++                            flipped ? LOCATION[0] + Math.round(scaledWidth) : LOCATION[0],
++                            LOCATION[1]);
++                    TRANSACTION.apply();
++                } catch (ReflectiveOperationException | RuntimeException ex) {
++                    if (ex instanceof IllegalAccessException) {
++                        // Blocked by the hidden API policy, stop trying.
++                        setMatrixMethod = null;
++                    }
++                    if (!failureLogged) {
++                        failureLogged = true;
++                        Logger.printException(() -> "FlipVideoButton.SurfaceMirror failure", ex);
++                    }
++                }
++            }
++        }
++
++        @Nullable
++        private static Method getSetMatrixMethod() {
++            if (!setMatrixResolved) {
++                setMatrixResolved = true;
++                try {
++                    setMatrixMethod = SurfaceControl.Transaction.class.getMethod("setMatrix",
++                            SurfaceControl.class,
++                            float.class, float.class, float.class, float.class);
++                } catch (NoSuchMethodException ex) {
++                    Logger.printDebug(
++                            () -> "SurfaceControl.Transaction.setMatrix is not accessible", ex);
++                }
++            }
++            return setMatrixMethod;
++        }
 +    }
 +}
 diff --git a/patches/src/main/kotlin/app/morphe/patches/youtube/layout/player/buttons/FlipVideoButtonPatch.kt b/patches/src/main/kotlin/app/morphe/patches/youtube/layout/player/buttons/FlipVideoButtonPatch.kt
@@ -476,11 +691,37 @@ index d64eb6c..fb31c6b 100644
      <string name="morphe_player_overlay_opacity_summary">Adjust the transparency level (0 is transparent, 100 is opaque)</string>
 diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off.xml
 new file mode 100644
-index 0000000..265fcda
+index 0000000..1111111
 --- /dev/null
 +++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off.xml
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,66 @@
 +<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/phosphor-icons/core/blob/main/assets/regular/flip-horizontal.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    MIT License
++
++    Copyright (c) 2023 Phosphor Icons
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++-->
 +<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
 +    xmlns:aapt="http://schemas.android.com/aapt">
 +
@@ -488,16 +729,15 @@ index 0000000..265fcda
 +        <vector
 +            android:width="24dp"
 +            android:height="24dp"
-+            android:viewportWidth="960"
-+            android:viewportHeight="960">
++            android:viewportWidth="256"
++            android:viewportHeight="256">
 +            <group
 +                android:name="icon_group"
-+                android:pivotX="480"
-+                android:pivotY="480">
++                android:pivotX="128"
++                android:pivotY="128">
 +                <path
 +                    android:fillColor="@android:color/white"
-+                    android:fillType="evenOdd"
-+                    android:pathData="M460,180h40v80h-40Z M460,300h40v80h-40Z M460,420h40v80h-40Z M460,540h40v80h-40Z M460,660h40v80h-40Z M420,240L420,720L160,720Z M540,240L800,720L540,720Z M580,680L720,680L580,360Z" />
++                    android:pathData="M107.18,24.33a15.86,15.86,0,0,0-17.92,9.45l-.06.14-64,159.93A16,16,0,0,0,40,216h64a16,16,0,0,0,16-16V40A15.85,15.85,0,0,0,107.18,24.33ZM104,200H40l.06-.15L104,40Zm126.77-6.15-64-159.93-.06-.14A16,16,0,0,0,136,40V200a16,16,0,0,0,16,16h64a16,16,0,0,0,14.78-22.15ZM152,200V40l63.93,159.84.06.15Z" />
 +            </group>
 +        </vector>
 +    </aapt:attr>
@@ -523,11 +763,558 @@ index 0000000..265fcda
 +</animated-vector>
 diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_bold.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_bold.xml
 new file mode 100644
-index 0000000..e5d40b5
+index 0000000..1111111
 --- /dev/null
 +++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_bold.xml
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,66 @@
 +<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/phosphor-icons/core/blob/main/assets/bold/flip-horizontal-bold.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    MIT License
++
++    Copyright (c) 2023 Phosphor Icons
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++-->
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="256"
++            android:viewportHeight="256">
++            <group
++                android:name="icon_group"
++                android:pivotX="128"
++                android:pivotY="128">
++                <path
++                    android:fillColor="@android:color/white"
++                    android:pathData="M104,20.41a19.83,19.83,0,0,0-22.4,11.81c-.07.15-.13.31-.19.46L21.47,192.49A20,20,0,0,0,40,220h60a20,20,0,0,0,20-20V40A19.83,19.83,0,0,0,104,20.41ZM96,196H45.79L96,62.09Zm138.53-3.51L174.61,32.68c-.06-.15-.12-.31-.19-.46A20,20,0,0,0,136,40V200a20,20,0,0,0,20,20h60a20,20,0,0,0,18.54-27.51ZM160,196V62.09L210.21,196Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_fluent.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_fluent.xml
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_fluent.xml
+@@ -0,0 +1,66 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/microsoft/fluentui-system-icons/blob/main/assets/Flip%20Horizontal/SVG/ic_fluent_flip_horizontal_24_regular.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    MIT License
++
++    Copyright (c) 2020 Microsoft Corporation
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++-->
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="24"
++            android:viewportHeight="24">
++            <group
++                android:name="icon_group"
++                android:pivotX="12"
++                android:pivotY="12">
++                <path
++                    android:fillColor="@android:color/white"
++                    android:pathData="M21.8806 19.6561C21.7425 19.8705 21.505 20.0001 21.25 20.0001H13.75C13.3358 20.0001 13 19.6643 13 19.2501L13 2.75007C13 2.39705 13.2462 2.09181 13.5912 2.01707C13.9363 1.94234 14.2867 2.11834 14.4328 2.43972L21.9328 18.9397C22.0383 19.1719 22.0186 19.4417 21.8806 19.6561ZM14.5 6.21253V18.5001H20.0852L14.5 6.21253ZM2.5 20C2.32883 20 2.16955 19.9125 2.07784 19.768C1.98612 19.6234 1.97471 19.442 2.04759 19.2872L10.0476 2.28715C10.1473 2.07532 10.3806 1.96102 10.6091 2.01209C10.8376 2.06317 11 2.26593 11 2.50005L11 19.5C11 19.7762 10.7761 20 10.5 20H2.5Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_ionicons.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_ionicons.xml
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_ionicons.xml
+@@ -0,0 +1,87 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/ionic-team/ionicons/blob/main/src/svg/swap-horizontal.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    The MIT License (MIT)
++
++    Copyright (c) 2015-present Ionic (http://ionic.io/)
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in
++    all copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++    THE SOFTWARE.
++-->
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="512"
++            android:viewportHeight="512">
++            <group
++                android:name="icon_group"
++                android:pivotX="256"
++                android:pivotY="256">
++                <path
++                    android:strokeColor="@android:color/white"
++                    android:strokeWidth="32"
++                    android:strokeLineCap="round"
++                    android:strokeLineJoin="round"
++                    android:pathData="M304,48 L416,160 L304,272" />
++                <path
++                    android:strokeColor="@android:color/white"
++                    android:strokeWidth="32"
++                    android:strokeLineCap="round"
++                    android:strokeLineJoin="round"
++                    android:pathData="M398.87,160 L96,160" />
++                <path
++                    android:strokeColor="@android:color/white"
++                    android:strokeWidth="32"
++                    android:strokeLineCap="round"
++                    android:strokeLineJoin="round"
++                    android:pathData="M208,464 L96,352 L208,240" />
++                <path
++                    android:strokeColor="@android:color/white"
++                    android:strokeWidth="32"
++                    android:strokeLineCap="round"
++                    android:strokeLineJoin="round"
++                    android:pathData="M114,352 L416,352" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_phosphor.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_phosphor.xml
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_phosphor.xml
+@@ -0,0 +1,66 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/phosphor-icons/core/blob/main/assets/bold/flip-horizontal-bold.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    MIT License
++
++    Copyright (c) 2023 Phosphor Icons
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++-->
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="256"
++            android:viewportHeight="256">
++            <group
++                android:name="icon_group"
++                android:pivotX="128"
++                android:pivotY="128">
++                <path
++                    android:fillColor="@android:color/white"
++                    android:pathData="M104,20.41a19.83,19.83,0,0,0-22.4,11.81c-.07.15-.13.31-.19.46L21.47,192.49A20,20,0,0,0,40,220h60a20,20,0,0,0,20-20V40A19.83,19.83,0,0,0,104,20.41ZM96,196H45.79L96,62.09Zm138.53-3.51L174.61,32.68c-.06-.15-.12-.31-.19-.46A20,20,0,0,0,136,40V200a20,20,0,0,0,20,20h60a20,20,0,0,0,18.54-27.51ZM160,196V62.09L210.21,196Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_phosphor_duotone.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_phosphor_duotone.xml
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_phosphor_duotone.xml
+@@ -0,0 +1,70 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/phosphor-icons/core/blob/main/assets/duotone/flip-horizontal-duotone.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    MIT License
++
++    Copyright (c) 2023 Phosphor Icons
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++-->
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="256"
++            android:viewportHeight="256">
++            <group
++                android:name="icon_group"
++                android:pivotX="128"
++                android:pivotY="128">
++                <path
++                    android:fillAlpha="0.2"
++                    android:fillColor="@android:color/white"
++                    android:pathData="M112,40V200a8,8,0,0,1-8,8H40a8,8,0,0,1-7.37-11.12l64-160C100,28.86,112,31.29,112,40Z" />
++                <path
++                    android:fillColor="@android:color/white"
++                    android:pathData="M107.18,24.33a15.86,15.86,0,0,0-17.92,9.45l-.06.14-64,159.93A16,16,0,0,0,40,216h64a16,16,0,0,0,16-16V40A15.85,15.85,0,0,0,107.18,24.33ZM104,200H40l.06-.15L104,40Zm126.77-6.15-64-159.93-.06-.14A16,16,0,0,0,136,40V200a16,16,0,0,0,16,16h64a16,16,0,0,0,14.78-22.15ZM152,200V40l63.93,159.84.06.15Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_phosphor_fill.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_phosphor_fill.xml
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_phosphor_fill.xml
+@@ -0,0 +1,66 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/phosphor-icons/core/blob/main/assets/fill/flip-horizontal-fill.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    MIT License
++
++    Copyright (c) 2023 Phosphor Icons
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++-->
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="256"
++            android:viewportHeight="256">
++            <group
++                android:name="icon_group"
++                android:pivotX="128"
++                android:pivotY="128">
++                <path
++                    android:fillColor="@android:color/white"
++                    android:pathData="M120,40V200a16,16,0,0,1-16,16H40a16,16,0,0,1-14.78-22.15l64-159.93.06-.14A16,16,0,0,1,120,40ZM229.33,208.84A16,16,0,0,1,216,216H152a16,16,0,0,1-16-16V40a16,16,0,0,1,30.74-6.23l.06.14,64,159.93A16,16,0,0,1,229.33,208.84ZM216,200l-.06-.15L152,40V200Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_phosphor_light.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_phosphor_light.xml
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_phosphor_light.xml
+@@ -0,0 +1,66 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/phosphor-icons/core/blob/main/assets/light/flip-horizontal-light.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    MIT License
++
++    Copyright (c) 2023 Phosphor Icons
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++-->
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="256"
++            android:viewportHeight="256">
++            <group
++                android:name="icon_group"
++                android:pivotX="128"
++                android:pivotY="128">
++                <path
++                    android:fillColor="@android:color/white"
++                    android:pathData="M106.78,26.29A13.88,13.88,0,0,0,91.1,34.55s0,.08,0,.12l-64,159.94A14,14,0,0,0,40,214h64a14,14,0,0,0,14-14V40A13.87,13.87,0,0,0,106.78,26.29ZM106,200a2,2,0,0,1-2,2H40a2,2,0,0,1-1.85-2.78l.05-.11,64-159.92A2,2,0,0,1,106,40Zm122.92-5.39-64-159.94s0-.08,0-.12A14,14,0,0,0,138,40V200a14,14,0,0,0,14,14h64a14,14,0,0,0,12.93-19.39Zm-11.26,6.49a1.93,1.93,0,0,1-1.67.9H152a2,2,0,0,1-2-2V40a1.82,1.82,0,0,1,1.6-2,2.62,2.62,0,0,1,.54-.06,1.76,1.76,0,0,1,1.69,1.2l64,159.92.05.11A2,2,0,0,1,217.66,201.1Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_sharp.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_sharp.xml
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_off_sharp.xml
+@@ -0,0 +1,58 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/google/material-design-icons/blob/master/symbols/android/flip/materialsymbolssharp/flip_24px.xml
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    Copyright 2022 Google
++
++    Licensed under the Apache License, Version 2.0 (the "License");
++    you may not use this file except in compliance with the License.
++    You may obtain a copy of the License at
++
++        http://www.apache.org/licenses/LICENSE-2.0
++
++    Unless required by applicable law or agreed to in writing, software
++    distributed under the License is distributed on an "AS IS" BASIS,
++    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++    See the License for the specific language governing permissions and
++    limitations under the License.
++-->
 +<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
 +    xmlns:aapt="http://schemas.android.com/aapt">
 +
@@ -543,8 +1330,7 @@ index 0000000..e5d40b5
 +                android:pivotY="480">
 +                <path
 +                    android:fillColor="@android:color/white"
-+                    android:fillType="evenOdd"
-+                    android:pathData="M455,180h50v80h-50Z M455,300h50v80h-50Z M455,420h50v80h-50Z M455,540h50v80h-50Z M455,660h50v80h-50Z M420,230L420,730L150,730Z M540,230L810,730L540,730Z M600,670L710,670L600,410Z" />
++                    android:pathData="M600,200L600,120L680,120L680,200L600,200ZM600,840L600,760L680,760L680,840L600,840ZM760,200L760,120L840,120L840,200L760,200ZM760,840L760,760L840,760L840,840L760,840ZM760,680L760,600L840,600L840,680L760,680ZM760,520L760,440L840,440L840,520L760,520ZM760,360L760,280L840,280L840,360L760,360ZM360,840L120,840L120,120L360,120L360,200L200,200L200,760L360,760L360,840ZM440,920L440,40L520,40L520,920L440,920Z" />
 +            </group>
 +        </vector>
 +    </aapt:attr>
@@ -570,11 +1356,37 @@ index 0000000..e5d40b5
 +</animated-vector>
 diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on.xml
 new file mode 100644
-index 0000000..eeffa32
+index 0000000..1111111
 --- /dev/null
 +++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on.xml
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,66 @@
 +<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/phosphor-icons/core/blob/main/assets/fill/flip-horizontal-fill.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    MIT License
++
++    Copyright (c) 2023 Phosphor Icons
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++-->
 +<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
 +    xmlns:aapt="http://schemas.android.com/aapt">
 +
@@ -582,16 +1394,15 @@ index 0000000..eeffa32
 +        <vector
 +            android:width="24dp"
 +            android:height="24dp"
-+            android:viewportWidth="960"
-+            android:viewportHeight="960">
++            android:viewportWidth="256"
++            android:viewportHeight="256">
 +            <group
 +                android:name="icon_group"
-+                android:pivotX="480"
-+                android:pivotY="480">
++                android:pivotX="128"
++                android:pivotY="128">
 +                <path
 +                    android:fillColor="@android:color/white"
-+                    android:fillType="evenOdd"
-+                    android:pathData="M460,180h40v80h-40Z M460,300h40v80h-40Z M460,420h40v80h-40Z M460,540h40v80h-40Z M460,660h40v80h-40Z M540,240L800,720L540,720Z M420,240L420,720L160,720Z M380,680L240,680L380,360Z" />
++                    android:pathData="M120,40V200a16,16,0,0,1-16,16H40a16,16,0,0,1-14.78-22.15l64-159.93.06-.14A16,16,0,0,1,120,40ZM229.33,208.84A16,16,0,0,1,216,216H152a16,16,0,0,1-16-16V40a16,16,0,0,1,30.74-6.23l.06.14,64,159.93A16,16,0,0,1,229.33,208.84ZM216,200l-.06-.15L152,40V200Z" />
 +            </group>
 +        </vector>
 +    </aapt:attr>
@@ -617,11 +1428,558 @@ index 0000000..eeffa32
 +</animated-vector>
 diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_bold.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_bold.xml
 new file mode 100644
-index 0000000..034ef5a
+index 0000000..1111111
 --- /dev/null
 +++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_bold.xml
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,66 @@
 +<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/phosphor-icons/core/blob/main/assets/fill/flip-horizontal-fill.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    MIT License
++
++    Copyright (c) 2023 Phosphor Icons
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++-->
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="256"
++            android:viewportHeight="256">
++            <group
++                android:name="icon_group"
++                android:pivotX="128"
++                android:pivotY="128">
++                <path
++                    android:fillColor="@android:color/white"
++                    android:pathData="M120,40V200a16,16,0,0,1-16,16H40a16,16,0,0,1-14.78-22.15l64-159.93.06-.14A16,16,0,0,1,120,40ZM229.33,208.84A16,16,0,0,1,216,216H152a16,16,0,0,1-16-16V40a16,16,0,0,1,30.74-6.23l.06.14,64,159.93A16,16,0,0,1,229.33,208.84ZM216,200l-.06-.15L152,40V200Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_fluent.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_fluent.xml
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_fluent.xml
+@@ -0,0 +1,66 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/microsoft/fluentui-system-icons/blob/main/assets/Flip%20Horizontal/SVG/ic_fluent_flip_horizontal_24_filled.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    MIT License
++
++    Copyright (c) 2020 Microsoft Corporation
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++-->
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="24"
++            android:viewportHeight="24">
++            <group
++                android:name="icon_group"
++                android:pivotX="12"
++                android:pivotY="12">
++                <path
++                    android:fillColor="@android:color/white"
++                    android:pathData="M21.8369 19.5474C21.6522 19.8299 21.3375 20.0001 21 20.0001H14C13.4477 20.0001 13 19.5524 13 19.0001L13 3.0001C13 2.52673 13.3319 2.11821 13.7952 2.02128C14.2586 1.92436 14.7264 2.1656 14.9162 2.59928L21.9162 18.5993C22.0514 18.9085 22.0216 19.265 21.8369 19.5474ZM15 7.78071V18.0001H19.471L15 7.78071ZM2.5 20C2.32883 20 2.16955 19.9125 2.07784 19.768C1.98612 19.6234 1.97471 19.442 2.04759 19.2872L10.0476 2.28715C10.1473 2.07532 10.3806 1.96102 10.6091 2.01209C10.8376 2.06317 11 2.26593 11 2.50005L11 19.5C11 19.7762 10.7761 20 10.5 20H2.5Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_ionicons.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_ionicons.xml
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_ionicons.xml
+@@ -0,0 +1,87 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/ionic-team/ionicons/blob/main/src/svg/swap-horizontal.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    The MIT License (MIT)
++
++    Copyright (c) 2015-present Ionic (http://ionic.io/)
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in
++    all copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++    THE SOFTWARE.
++-->
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="512"
++            android:viewportHeight="512">
++            <group
++                android:name="icon_group"
++                android:pivotX="256"
++                android:pivotY="256">
++                <path
++                    android:strokeColor="@android:color/white"
++                    android:strokeWidth="32"
++                    android:strokeLineCap="round"
++                    android:strokeLineJoin="round"
++                    android:pathData="M304,48 L416,160 L304,272" />
++                <path
++                    android:strokeColor="@android:color/white"
++                    android:strokeWidth="32"
++                    android:strokeLineCap="round"
++                    android:strokeLineJoin="round"
++                    android:pathData="M398.87,160 L96,160" />
++                <path
++                    android:strokeColor="@android:color/white"
++                    android:strokeWidth="32"
++                    android:strokeLineCap="round"
++                    android:strokeLineJoin="round"
++                    android:pathData="M208,464 L96,352 L208,240" />
++                <path
++                    android:strokeColor="@android:color/white"
++                    android:strokeWidth="32"
++                    android:strokeLineCap="round"
++                    android:strokeLineJoin="round"
++                    android:pathData="M114,352 L416,352" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_phosphor.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_phosphor.xml
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_phosphor.xml
+@@ -0,0 +1,66 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/phosphor-icons/core/blob/main/assets/fill/flip-horizontal-fill.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    MIT License
++
++    Copyright (c) 2023 Phosphor Icons
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++-->
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="256"
++            android:viewportHeight="256">
++            <group
++                android:name="icon_group"
++                android:pivotX="128"
++                android:pivotY="128">
++                <path
++                    android:fillColor="@android:color/white"
++                    android:pathData="M120,40V200a16,16,0,0,1-16,16H40a16,16,0,0,1-14.78-22.15l64-159.93.06-.14A16,16,0,0,1,120,40ZM229.33,208.84A16,16,0,0,1,216,216H152a16,16,0,0,1-16-16V40a16,16,0,0,1,30.74-6.23l.06.14,64,159.93A16,16,0,0,1,229.33,208.84ZM216,200l-.06-.15L152,40V200Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_phosphor_duotone.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_phosphor_duotone.xml
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_phosphor_duotone.xml
+@@ -0,0 +1,66 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/phosphor-icons/core/blob/main/assets/fill/flip-horizontal-fill.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    MIT License
++
++    Copyright (c) 2023 Phosphor Icons
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++-->
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="256"
++            android:viewportHeight="256">
++            <group
++                android:name="icon_group"
++                android:pivotX="128"
++                android:pivotY="128">
++                <path
++                    android:fillColor="@android:color/white"
++                    android:pathData="M120,40V200a16,16,0,0,1-16,16H40a16,16,0,0,1-14.78-22.15l64-159.93.06-.14A16,16,0,0,1,120,40ZM229.33,208.84A16,16,0,0,1,216,216H152a16,16,0,0,1-16-16V40a16,16,0,0,1,30.74-6.23l.06.14,64,159.93A16,16,0,0,1,229.33,208.84ZM216,200l-.06-.15L152,40V200Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_phosphor_fill.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_phosphor_fill.xml
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_phosphor_fill.xml
+@@ -0,0 +1,70 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/phosphor-icons/core/blob/main/assets/fill/flip-horizontal-fill.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    MIT License
++
++    Copyright (c) 2023 Phosphor Icons
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++-->
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="256"
++            android:viewportHeight="256">
++            <group
++                android:name="icon_group"
++                android:pivotX="128"
++                android:pivotY="128">
++                <group android:scaleX="-1"
++                    android:pivotX="128"
++                    android:pivotY="128">
++                    <path
++                        android:fillColor="@android:color/white"
++                        android:pathData="M120,40V200a16,16,0,0,1-16,16H40a16,16,0,0,1-14.78-22.15l64-159.93.06-.14A16,16,0,0,1,120,40ZM229.33,208.84A16,16,0,0,1,216,216H152a16,16,0,0,1-16-16V40a16,16,0,0,1,30.74-6.23l.06.14,64,159.93A16,16,0,0,1,229.33,208.84ZM216,200l-.06-.15L152,40V200Z" />
++                </group>
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_phosphor_light.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_phosphor_light.xml
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_phosphor_light.xml
+@@ -0,0 +1,66 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/phosphor-icons/core/blob/main/assets/fill/flip-horizontal-fill.svg
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    MIT License
++
++    Copyright (c) 2023 Phosphor Icons
++
++    Permission is hereby granted, free of charge, to any person obtaining a copy
++    of this software and associated documentation files (the "Software"), to deal
++    in the Software without restriction, including without limitation the rights
++    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++    copies of the Software, and to permit persons to whom the Software is
++    furnished to do so, subject to the following conditions:
++
++    The above copyright notice and this permission notice shall be included in all
++    copies or substantial portions of the Software.
++
++    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++    SOFTWARE.
++-->
++<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:aapt="http://schemas.android.com/aapt">
++
++    <aapt:attr name="android:drawable">
++        <vector
++            android:width="24dp"
++            android:height="24dp"
++            android:viewportWidth="256"
++            android:viewportHeight="256">
++            <group
++                android:name="icon_group"
++                android:pivotX="128"
++                android:pivotY="128">
++                <path
++                    android:fillColor="@android:color/white"
++                    android:pathData="M120,40V200a16,16,0,0,1-16,16H40a16,16,0,0,1-14.78-22.15l64-159.93.06-.14A16,16,0,0,1,120,40ZM229.33,208.84A16,16,0,0,1,216,216H152a16,16,0,0,1-16-16V40a16,16,0,0,1,30.74-6.23l.06.14,64,159.93A16,16,0,0,1,229.33,208.84ZM216,200l-.06-.15L152,40V200Z" />
++            </group>
++        </vector>
++    </aapt:attr>
++
++    <target android:name="icon_group">
++        <aapt:attr name="android:animation">
++            <set android:ordering="together">
++                <objectAnimator
++                    android:propertyName="scaleX"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++                <objectAnimator
++                    android:propertyName="scaleY"
++                    android:duration="250"
++                    android:valueFrom="0.8"
++                    android:valueTo="1"
++                    android:interpolator="@android:interpolator/overshoot" />
++            </set>
++        </aapt:attr>
++    </target>
++</animated-vector>
+diff --git a/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_sharp.xml b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_sharp.xml
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/patches/src/main/resources/flipvideobutton/drawable/morphe_flip_video_button_on_sharp.xml
+@@ -0,0 +1,58 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++    https://github.com/google/material-design-icons/blob/master/symbols/android/flip/materialsymbolssharp/flip_24px.xml
++    Changes made: Converted to a vector drawable, added the tap animation.
++
++    Copyright 2022 Google
++
++    Licensed under the Apache License, Version 2.0 (the "License");
++    you may not use this file except in compliance with the License.
++    You may obtain a copy of the License at
++
++        http://www.apache.org/licenses/LICENSE-2.0
++
++    Unless required by applicable law or agreed to in writing, software
++    distributed under the License is distributed on an "AS IS" BASIS,
++    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++    See the License for the specific language governing permissions and
++    limitations under the License.
++-->
 +<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
 +    xmlns:aapt="http://schemas.android.com/aapt">
 +
@@ -637,8 +1995,7 @@ index 0000000..034ef5a
 +                android:pivotY="480">
 +                <path
 +                    android:fillColor="@android:color/white"
-+                    android:fillType="evenOdd"
-+                    android:pathData="M455,180h50v80h-50Z M455,300h50v80h-50Z M455,420h50v80h-50Z M455,540h50v80h-50Z M455,660h50v80h-50Z M540,230L810,730L540,730Z M420,230L420,730L150,730Z M360,670L250,670L360,410Z" />
++                    android:pathData="M600,200L600,120L680,120L680,200L600,200ZM600,840L600,760L680,760L680,840L600,840ZM760,200L760,120L840,120L840,200L760,200ZM760,840L760,760L840,760L840,840L760,840ZM760,680L760,600L840,600L840,680L760,680ZM760,520L760,440L840,440L840,520L760,520ZM760,360L760,280L840,280L840,360L760,360ZM360,840L120,840L120,120L360,120L360,200L200,200L200,760L360,760L360,840ZM440,920L440,40L520,40L520,920L440,920Z" />
 +            </group>
 +        </vector>
 +    </aapt:attr>
