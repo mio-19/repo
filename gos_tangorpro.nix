@@ -10,6 +10,7 @@ args@{
   ];
   advancedPowerMenu = false;
   #allowAdbWirelessWithoutWifi = true;
+  launcherVariant = "los";
   enableLindroid = true;
   enableDroidspaces = false;
   device = "tangorpro";
