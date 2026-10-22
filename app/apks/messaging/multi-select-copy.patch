@@ -1,0 +1,218 @@
+diff --git a/app/src/test/kotlin/com/android/messaging/ui/conversation/messages/delegate/selection/ConversationMessageSelectionDelegateMessageActionsTest.kt b/app/src/test/kotlin/com/android/messaging/ui/conversation/messages/delegate/selection/ConversationMessageSelectionDelegateMessageActionsTest.kt
+index 9c974da..e3ceb01 100644
+--- a/app/src/test/kotlin/com/android/messaging/ui/conversation/messages/delegate/selection/ConversationMessageSelectionDelegateMessageActionsTest.kt
++++ b/app/src/test/kotlin/com/android/messaging/ui/conversation/messages/delegate/selection/ConversationMessageSelectionDelegateMessageActionsTest.kt
+@@ -12,6 +12,7 @@ import io.mockk.just
+ import io.mockk.runs
+ import io.mockk.slot
+ import io.mockk.verify
++import kotlinx.collections.immutable.persistentSetOf
+ import kotlinx.coroutines.ExperimentalCoroutinesApi
+ import kotlinx.coroutines.test.advanceUntilIdle
+ import kotlinx.coroutines.test.runTest
+@@ -65,6 +66,66 @@ internal class ConversationMessageSelectionDelegateMessageActionsTest :
+         }
+     }
+ 
++    @Test
++    fun copyAction_copiesAllSelectedMessageTextsInConversationOrderAndClearsSelection() {
++        runTest(context = mainDispatcherRule.testDispatcher) {
++            val harness = createHarness()
++            val copiedClipData = slot<ClipData>()
++            every {
++                harness.clipboardManager.setPrimaryClip(capture(copiedClipData))
++            } just runs
++
++            try {
++                harness.messagesStateFlow.value = createMessagesUiState(
++                    createMessageUiModel(
++                        messageId = "message-1",
++                        text = "First message",
++                        canCopyMessageToClipboard = true,
++                    ),
++                    createMessageUiModel(
++                        messageId = "message-2",
++                        text = "Unselected message",
++                        canCopyMessageToClipboard = true,
++                    ),
++                    createMessageUiModel(
++                        messageId = "message-3",
++                        text = "Third message",
++                        canCopyMessageToClipboard = true,
++                    ),
++                )
++                advanceUntilIdle()
++                harness.delegate.onMessageLongClick(messageId = MessageId("message-1"))
++                advanceUntilIdle()
++                harness.delegate.onMessageClick(messageId = MessageId("message-3"))
++                advanceUntilIdle()
++
++                assertEquals(
++                    persistentSetOf(
++                        ConversationMessageAction.Copy,
++                        ConversationMessageAction.Delete,
++                    ),
++                    harness.delegate.state.value.availableActions,
++                )
++
++                harness.delegate.onMessageSelectionActionClick(
++                    action = ConversationMessageAction.Copy,
++                )
++                advanceUntilIdle()
++
++                assertEquals(
++                    "First message\nThird message",
++                    copiedClipData.captured.getItemAt(0).text.toString(),
++                )
++                assertEquals(
++                    ConversationMessageSelectionUiState(),
++                    harness.delegate.state.value,
++                )
++            } finally {
++                harness.cancel()
++            }
++        }
++    }
++
+     @Test
+     fun downloadAction_downloadsSelectedMessageAndClearsSelection() {
+         runTest(context = mainDispatcherRule.testDispatcher) {
+diff --git a/app/src/test/kotlin/com/android/messaging/ui/conversation/messages/delegate/selection/ConversationMessageSelectionDelegateSelectionTest.kt b/app/src/test/kotlin/com/android/messaging/ui/conversation/messages/delegate/selection/ConversationMessageSelectionDelegateSelectionTest.kt
+index de87f88..fe854e6 100644
+--- a/app/src/test/kotlin/com/android/messaging/ui/conversation/messages/delegate/selection/ConversationMessageSelectionDelegateSelectionTest.kt
++++ b/app/src/test/kotlin/com/android/messaging/ui/conversation/messages/delegate/selection/ConversationMessageSelectionDelegateSelectionTest.kt
+@@ -120,6 +120,43 @@ internal class ConversationMessageSelectionDelegateSelectionTest :
+         }
+     }
+ 
++    @Test
++    fun multiSelection_exposesCopyWhenAnySelectedMessageCanBeCopied() {
++        runTest(context = mainDispatcherRule.testDispatcher) {
++            val harness = createHarness()
++
++            try {
++                harness.messagesStateFlow.value = createMessagesUiState(
++                    createMessageUiModel(
++                        messageId = "message-1",
++                        text = "Hello",
++                        canCopyMessageToClipboard = true,
++                    ),
++                    createMessageUiModel(
++                        messageId = "message-2",
++                        text = null,
++                    ),
++                )
++                advanceUntilIdle()
++
++                harness.delegate.onMessageLongClick(messageId = MessageId("message-1"))
++                advanceUntilIdle()
++                harness.delegate.onMessageClick(messageId = MessageId("message-2"))
++                advanceUntilIdle()
++
++                assertEquals(
++                    persistentSetOf(
++                        ConversationMessageAction.Copy,
++                        ConversationMessageAction.Delete,
++                    ),
++                    harness.delegate.state.value.availableActions,
++                )
++            } finally {
++                harness.cancel()
++            }
++        }
++    }
++
+     @Test
+     fun bind_clearsSelectionWhenConversationChanges() {
+         runTest(context = mainDispatcherRule.testDispatcher) {
+diff --git a/src/com/android/messaging/ui/conversation/messages/delegate/ConversationMessageSelectionDelegate.kt b/src/com/android/messaging/ui/conversation/messages/delegate/ConversationMessageSelectionDelegate.kt
+index 8b3fa1f..9d616c4 100644
+--- a/src/com/android/messaging/ui/conversation/messages/delegate/ConversationMessageSelectionDelegate.kt
++++ b/src/com/android/messaging/ui/conversation/messages/delegate/ConversationMessageSelectionDelegate.kt
+@@ -142,6 +142,10 @@ internal class ConversationMessageSelectionDelegateImpl @Inject constructor(
+ 
+     override fun onMessageSelectionActionClick(action: ConversationMessageAction) {
+         when (action) {
++            ConversationMessageAction.Copy -> {
++                copySelectedMessagesText()
++            }
++
+             ConversationMessageAction.Delete -> {
+                 requestDeleteSelectedMessages()
+             }
+@@ -251,6 +255,38 @@ internal class ConversationMessageSelectionDelegateImpl @Inject constructor(
+         clearMessageSelection()
+     }
+ 
++    private fun copySelectedMessagesText() {
++        val selectedMessageIds = state.value.selectedMessageIds
++        val messages = when (val messagesUiState = conversationMessagesDelegate.state.value) {
++            is ConversationMessagesUiState.Present -> messagesUiState.messages
++            ConversationMessagesUiState.Loading -> return
++        }
++
++        val text = messages
++            .asSequence()
++            .filter { message ->
++                message.messageId in selectedMessageIds &&
++                    message.canCopyMessageToClipboard
++            }
++            .mapNotNull { message ->
++                message.text?.takeIf(String::isNotBlank)
++            }
++            .joinToString(separator = "\n")
++
++        if (text.isBlank()) {
++            return
++        }
++
++        clipboardManager.setPrimaryClip(
++            ClipData.newPlainText(
++                null,
++                text,
++            ),
++        )
++
++        clearMessageSelection()
++    }
++
+     private fun downloadMessage(message: ConversationMessageUiModel) {
+         clearMessageSelection()
+         downloadMessageWhenActionRequirementsSatisfied(messageId = message.messageId)
+@@ -546,8 +582,10 @@ internal class ConversationMessageSelectionDelegateImpl @Inject constructor(
+         return ConversationMessageSelectionUiState(
+             selectedMessageIds = selectedMessageIds,
+             availableActions = availableSelectionActions(
++                selectedMessages = messages.filter { message ->
++                    message.messageId in selectedMessageIds
++                },
+                 selectedMessage = selectedMessage,
+-                selectedMessageCount = selectedMessageIds.size,
+             ),
+             deleteConfirmation = pendingDeleteMessageIds
+                 .takeIf { messageIds ->
+@@ -562,15 +600,18 @@ internal class ConversationMessageSelectionDelegateImpl @Inject constructor(
+     }
+ 
+     private fun availableSelectionActions(
++        selectedMessages: List<ConversationMessageUiModel>,
+         selectedMessage: ConversationMessageUiModel?,
+-        selectedMessageCount: Int,
+     ): ImmutableSet<ConversationMessageAction> {
+         return when {
+-            selectedMessageCount <= 0 -> persistentSetOf()
+-            selectedMessageCount > 1 || selectedMessage == null -> {
+-                persistentSetOf(
+-                    ConversationMessageAction.Delete,
+-                )
++            selectedMessages.isEmpty() -> persistentSetOf()
++            selectedMessages.size > 1 || selectedMessage == null -> {
++                buildSet {
++                    if (selectedMessages.any(ConversationMessageUiModel::canCopyMessageToClipboard)) {
++                        add(ConversationMessageAction.Copy)
++                    }
++                    add(ConversationMessageAction.Delete)
++                }.toImmutableSet()
+             }
+ 
+             else -> selectedMessage.availableMessageActions()

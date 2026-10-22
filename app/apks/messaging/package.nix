@@ -51,6 +51,8 @@ let
       #  - The whole history is serialized into a single JSON document in memory, so very large
       #    histories are slow and memory-heavy to sync.
       ./webdav-sync.patch
+      # Allow copying the text of multiple selected messages at once.
+      ./multi-select-copy.patch
       # TODO # ./copy-verification-code.patch
       /*
         (fetchpatch {
