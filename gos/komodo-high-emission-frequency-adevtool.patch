@@ -1,0 +1,51 @@
+diff --git a/config/mk/google_devices/device/komodo/conf/Android.bp b/config/mk/google_devices/device/komodo/conf/Android.bp
+new file mode 100644
+index 00000000..817834a6
+--- /dev/null
++++ b/config/mk/google_devices/device/komodo/conf/Android.bp
+@@ -0,0 +1,6 @@
++prebuilt_etc {
++    name: "init.komodo.pwm.rc",
++    src: "init.komodo.pwm.rc",
++    sub_dir: "init",
++    vendor: true,
++}
+diff --git a/config/mk/google_devices/device/komodo/conf/init.komodo.pwm.rc b/config/mk/google_devices/device/komodo/conf/init.komodo.pwm.rc
+new file mode 100644
+index 00000000..04c390e0
+--- /dev/null
++++ b/config/mk/google_devices/device/komodo/conf/init.komodo.pwm.rc
+@@ -0,0 +1,23 @@
++on boot && property:persist.sys.komodo_high_emission_frequency_mode=off
++    write /sys/module/exynos_drm/parameters/linear_matrix_application_threshold 1
++
++on boot && property:persist.sys.komodo_high_emission_frequency_mode=600
++    write /sys/module/exynos_drm/parameters/linear_matrix_application_threshold 600
++
++on boot && property:persist.sys.komodo_high_emission_frequency_mode=1000
++    write /sys/module/exynos_drm/parameters/linear_matrix_application_threshold 1000
++
++on boot && property:persist.sys.komodo_high_emission_frequency_mode=1400
++    write /sys/module/exynos_drm/parameters/linear_matrix_application_threshold 1400
++
++on boot && property:persist.sys.komodo_high_emission_frequency_mode=1800
++    write /sys/module/exynos_drm/parameters/linear_matrix_application_threshold 1800
++
++on boot && property:persist.sys.komodo_high_emission_frequency_mode=2200
++    write /sys/module/exynos_drm/parameters/linear_matrix_application_threshold 2200
++
++on boot && property:persist.sys.komodo_high_emission_frequency_mode=2600
++    write /sys/module/exynos_drm/parameters/linear_matrix_application_threshold 2600
++
++on boot && property:persist.sys.komodo_high_emission_frequency_mode=3000
++    write /sys/module/exynos_drm/parameters/linear_matrix_application_threshold 3000
+diff --git a/config/mk/google_devices/device/komodo/device.mk b/config/mk/google_devices/device/komodo/device.mk
+index f01bae80..96f4153b 100644
+--- a/config/mk/google_devices/device/komodo/device.mk
++++ b/config/mk/google_devices/device/komodo/device.mk
+@@ -4,3 +4,5 @@ TARGET_KERNEL_DIR ?= $(RELEASE_KERNEL_KOMODO_DIR)
+ TARGET_BOARD_KERNEL_HEADERS ?= $(RELEASE_KERNEL_KOMODO_DIR)/kernel-headers
+ 
+ include vendor/adevtool/config/mk/google_devices/platform/zumapro/device.mk
++
++PRODUCT_PACKAGES += init.komodo.pwm.rc

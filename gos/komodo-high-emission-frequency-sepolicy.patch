@@ -1,0 +1,12 @@
+diff --git a/private/property_contexts b/private/property_contexts
+index 3839fa0..6628e26 100644
+--- a/private/property_contexts
++++ b/private/property_contexts
+@@ -1801,6 +1801,7 @@ sys.port_security_mode u:object_r:port_security_mode_prop:s0 exact string
+ 
+ sys.state_of_default_display u:object_r:exported_system_prop:s0 exact string
+ persist.sys.alt_touch_mode u:object_r:exported_system_prop:s0 exact string
++persist.sys.komodo_high_emission_frequency_mode u:object_r:exported_system_prop:s0 exact string
+ 
+ # properties for the virtual Face HAL
+ persist.vendor.face.virtual.type u:object_r:virtual_face_prop:s0 exact string
