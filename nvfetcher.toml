@@ -268,6 +268,43 @@ src.git = "https://github.com/samsung-sm8550-tab/android_hardware_samsung.git"
 src.branch = "lineage-23.2"
 fetch.git = "https://github.com/samsung-sm8550-tab/android_hardware_samsung.git"
 
+# gts8wifi (Galaxy Tab S8 Wi-Fi, SM-X700) sources from gts8wifi-lineageos-dev,
+# https://xdaforums.com/t/rom-unofficial-lineageos-23-2.4794933/
+[sm8450_tab_device_gts8wifi]
+src.git = "https://github.com/gts8wifi-lineageos-dev/android_device_samsung_gts8wifi.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/gts8wifi-lineageos-dev/android_device_samsung_gts8wifi.git"
+
+[sm8450_tab_vendor_gts8wifi]
+src.git = "https://github.com/gts8wifi-lineageos-dev/proprietary_vendor_samsung_gts8wifi.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/gts8wifi-lineageos-dev/proprietary_vendor_samsung_gts8wifi.git"
+
+[sm8450_tab_kernel_sm8450]
+src.git = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450.git"
+
+[sm8450_tab_kernel_sm8450_devicetrees]
+src.git = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450-devicetrees.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450-devicetrees.git"
+
+[sm8450_tab_kernel_sm8450_modules]
+src.git = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450-modules.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450-modules.git"
+
+[sm8450_tab_hardware_samsung]
+src.git = "https://github.com/gts8wifi-lineageos-dev/android_hardware_samsung.git"
+src.branch = "lineage-23.2"
+fetch.git = "https://github.com/gts8wifi-lineageos-dev/android_hardware_samsung.git"
+
+# Fork of LineageOS/android_vendor_qcom_opensource_agm with libagmclient headers exported.
+[sm8450_tab_vendor_qcom_opensource_agm]
+src.git = "https://github.com/gts8wifi-lineageos-dev/android_vendor_qcom_opensource_agm.git"
+src.branch = "lineage-23.2-caf-sm8450"
+fetch.git = "https://github.com/gts8wifi-lineageos-dev/android_vendor_qcom_opensource_agm.git"
 
 [lineage_glimpse]
 src.git = "https://github.com/LineageOS/android_packages_apps_Glimpse.git"

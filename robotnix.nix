@@ -83,6 +83,7 @@ in
           dm3q-kenzie = common ./dm3q-kenzie.nix;
           dm3q_cola2261 = common ./dm3q-cola2261.nix;
           gts9wifi = common ./gts9wifi.nix;
+          gts8wifi = common ./gts8wifi.nix;
           gts7lwifi = common ./gts7lwifi.nix;
           gts7l = common ./gts7l.nix;
           hibreak_pro = common ./hibreak_pro.nix;
