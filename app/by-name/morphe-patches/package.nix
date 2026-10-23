@@ -3,15 +3,16 @@
   stdenv,
   fetchFromGitHub,
   gradle_9_7_1,
+  jdk17_headless,
   jdk21_headless,
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
-  morphe-patches-gradle-plugin_1_3_4,
+  morphe-patches-gradle-plugin_2_0_0,
   morphe-library-m2,
-  morphe-patches-library-m2_1_9_0_dev_4,
+  morphe-patches-library-m2_2_0_0,
   apktool-src,
   multidexlib2-src,
-  morphe-patcher-src_1_14_0,
+  morphe-patcher-src_2_0_0,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -33,20 +34,20 @@ let
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "ARSCLib";
-    rev = "d003b5ff1ca91fb8c5105619cf1108b450387061";
-    hash = "sha256-2UO6zDAFeURrt9U9f7gNDA8J5X3o8Ct96/rItUq644g=";
+    rev = "10d0708212";
+    hash = "sha256-XHT3SEVAJAn1EpeucZ3VUUtj0UD01ISRiXFhgY/D5ys=";
   };
 
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches";
-  version = "1.47.0";
+  version = "1.48.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-smQCT40AgXh59Ot4r9CHeVo6c85c9iCH6sJ95AFEn2I=";
+    hash = "sha256-WNbZK9aM81wyPErUbeFfcrznJ2Va055m2LYX4+vC33w=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -63,6 +64,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     gradle
+    jdk17_headless
     jdk21_headless
     writableTmpDirAsHomeHook
   ];
@@ -72,14 +74,14 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_HOME = "${androidSdk}/share/android-sdk";
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
-    MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_1_3_4}";
+    MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_2_0_0}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
-    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_1_9_0_dev_4}";
+    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_2_0_0}";
   };
 
   postUnpack = ''
     root="$PWD"
-    cp -a ${morphe-patcher-src_1_14_0} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_2_0_0} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
     cp -a ${arsclib-src} "$root/ARSCLib"
     chmod -R u+w "$root/ARSCLib"
@@ -92,6 +94,8 @@ stdenv.mkDerivation (finalAttrs: {
     patch -d "$root/multidexlib2" -p3 < ${../brosssh-patches/multidexlib2-gradle-9.patch}
 
     patch -d "$sourceRoot" -p0 < ${./morphe-patches-settings.patch}
+    substituteInPlace "$sourceRoot/settings.gradle.kts" \
+      --replace-fail '    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"' ""
     patch -d "$sourceRoot" -p1 < ${./morphe-patches-version-name-suffix-compatible.patch}
     patch -d "$sourceRoot" -p1 < ${./morphe-patches-flip-video.patch}
 
@@ -152,7 +156,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   gradleFlags = [
     "-Dorg.gradle.java.installations.auto-download=false"
-    "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
+    "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home},${finalAttrs.env.JAVA_HOME}"
     "-Dmaven.repo.local=build/m2"
     "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
     "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"

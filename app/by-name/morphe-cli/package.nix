@@ -1,7 +1,7 @@
 {
   lib,
   jdk21_headless,
-  gradle_9_5_1,
+  gradle_9_7_1,
   stdenv,
   fetchFromGitHub,
   makeWrapper,
@@ -12,7 +12,7 @@
   multidexlib2-src,
 
   morphe-library-m2_1_4_0,
-  morphe-patcher-src_1_14_0,
+  morphe-patcher-src_2_0_0,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -24,32 +24,25 @@ let
     s.build-tools-35-0-0
   ]);
 
-  gradle = gradle_9_5_1;
+  gradle = gradle_9_7_1;
 
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "ARSCLib";
-    rev = "a28c6fb2a7";
-    hash = "sha256-0SwowTDkgF9Rdenx/nlSPuGf3kvk7ucxtr7D6r9fU/c=";
-  };
-
-  revanced-cli-deps = lib.importJSON ../revanced-cli/revanced-cli_deps.json;
-  morphe-patches-deps = lib.importJSON ../morphe-patches/morphe-patches_deps.json;
-  morphe-cli-deps = lib.importJSON ./morphe-cli_deps.json;
-  morphe-cli-deps-filtered = morphe-cli-deps // {
-    "https:/" = builtins.removeAttrs morphe-cli-deps."https:/" [ "api.github" ];
+    rev = "10d0708212";
+    hash = "sha256-XHT3SEVAJAn1EpeucZ3VUUtj0UD01ISRiXFhgY/D5ys=";
   };
 
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-cli";
-  version = "1.18.1";
+  version = "1.19.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-cli";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-VOvpvXumQ6AodbyxYMlTl8noCehJSfzb5ODbm9+Vdvs=";
+    hash = "sha256-TUMOydz3XmhFYKXnjpLeozZ02UAVKge9YFAgTt7KhqM=";
   };
 
   gradleBuildTask = "shadowJar";
@@ -59,7 +52,7 @@ stdenv.mkDerivation (finalAttrs: {
     attrPath = "morphe-cli";
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
-    data = lib.recursiveUpdate (lib.recursiveUpdate revanced-cli-deps morphe-patches-deps) morphe-cli-deps-filtered;
+    data = ./morphe-cli_deps.json;
     silent = false;
     useBwrap = false;
   };
@@ -86,7 +79,7 @@ stdenv.mkDerivation (finalAttrs: {
     root="$PWD"
 
     # Copy dependency sources as writable sibling directories.
-    cp -a ${morphe-patcher-src_1_14_0} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_2_0_0} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
 
     cp -a ${arsclib-src} "$root/ARSCLib"

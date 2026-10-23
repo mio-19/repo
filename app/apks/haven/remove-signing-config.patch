@@ -1,10 +1,10 @@
---- a/app/build.gradle.kts
-+++ b/app/build.gradle.kts
-@@ -47,7 +47,6 @@
+--- a/app/build.gradle.kts	2026-10-23 11:15:48.045585698 +1100
++++ b/app/build.gradle.kts	2026-10-23 11:15:48.658582906 +1100
+@@ -76,7 +76,6 @@
  
      buildTypes {
          release {
 -            signingConfig = signingConfigs.getByName("release")
              isMinifyEnabled = true
              isShrinkResources = true
-             proguardFiles(
+             // The release workflow passes -PnoLintVital: lintVitalAnalyze ran

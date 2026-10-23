@@ -17,21 +17,21 @@
 let
   appPackage =
     let
-      version = "1.104.1-t7f4efe814-g6d75bd403";
+      version = "1.105.79-t47743a8b9-g37df07647";
       tailscaleVersion = lib.head (lib.splitString "-" version);
 
       src = fetchFromGitHub {
         owner = "tailscale";
         repo = "tailscale-android";
         tag = version;
-        hash = "sha256-anR9ERctxuOkyiRYFYBnJo2CuprNzSThFlz4BVOU3fI=";
+        hash = "sha256-ZehhtVqiNiFG9yTej8fuezTybwV3eyxSkiVWzcM8x1c=";
       };
 
       tailscaleSrc = fetchFromGitHub {
         owner = "tailscale";
         repo = "tailscale";
-        tag = "v${tailscaleVersion}";
-        hash = "sha256-f80GVxstQrr8ENP1bseoIpLflQ+QYEisDF8PHzTs7Lg=";
+        rev = "47743a8b9ad1";
+        hash = "sha256-ptuZzEmJHCG6P9VHBQqtPfkrUVUC1JoS1a0r3huQu24=";
       };
 
       xMobileSrc = fetchFromGitHub {
@@ -54,7 +54,7 @@ let
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
         # Update hash to trigger rebuild with internet access
-        outputHash = "sha256-Z6tZGF6j8AH1P7DaoiXZZTgkI5lmc9Fh/c/GSfFHWeg=";
+        outputHash = "sha256-KZE+dmdg/3TW51rm94qMLqStXMUW9RAVqjiv/AWsbow=";
 
         dontConfigure = true;
         dontFixup = true;

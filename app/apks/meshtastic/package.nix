@@ -19,6 +19,7 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-37-0
+        s.platforms-android-37-2
         s.build-tools-36-0-0
       ]);
 
@@ -26,13 +27,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "meshtastic";
-      version = "2.8.2";
+      version = "2.8.3";
 
       src = fetchFromGitHub {
         owner = "meshtastic";
         repo = "Meshtastic-Android";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-kkPm+lkGKxvJw5XrEY+HpTquyT0sK6hhdp0SnjEXcT8=";
+        hash = "sha256-zFALkEyISYb6u294lyop7pqYP3ZA7Lh0yz5qsWzz3rE=";
         fetchSubmodules = true;
       };
 
@@ -154,7 +155,7 @@ let
                 }
 
                 for artifact in protobufs protobufs-android protobufs-jvm protobufs-iosarm64 protobufs-iossimulatorarm64; do
-                  patch_snapshot "$artifact" "2.8.0.117-gad0bf31" "20260925.152242" "1"
+                  patch_snapshot "$artifact" "2.8.1.16-g9370b7a" "20261018.225658" "1"
                 done
                 
                 patch_snapshot "takpacket-sdk" "0.9.2" "20260918.000251" "6"

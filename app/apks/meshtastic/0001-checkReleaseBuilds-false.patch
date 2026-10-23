@@ -1,23 +1,9 @@
-From 0c336302005ae7055f3b1bd9f9d41d0f883e8b88 Mon Sep 17 00:00:00 2001
-From: Mio <mio@mio19.uk>
-Date: Tue, 31 Mar 2026 16:54:48 +1100
-Subject: [PATCH] checkReleaseBuilds = false
-
----
- .../convention/src/main/kotlin/AndroidLintConventionPlugin.kt    | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/build-logic/convention/src/main/kotlin/AndroidLintConventionPlugin.kt b/build-logic/convention/src/main/kotlin/AndroidLintConventionPlugin.kt
-index f57a287..d6af4d6 100644
---- a/build-logic/convention/src/main/kotlin/AndroidLintConventionPlugin.kt
-+++ b/build-logic/convention/src/main/kotlin/AndroidLintConventionPlugin.kt
-@@ -56,5 +56,6 @@ private fun Lint.configure(project: Project) {
-     sarifReport = true
+--- a/build-logic/convention/src/main/kotlin/AndroidLintConventionPlugin.kt	2026-10-23 11:15:04.827782481 +1100
++++ b/build-logic/convention/src/main/kotlin/AndroidLintConventionPlugin.kt	2026-10-23 11:15:05.728778378 +1100
+@@ -53,5 +53,6 @@
+ private fun Lint.configure(@Suppress("UnusedParameter") project: Project) {
      checkDependencies = true
      abortOnError = false
 +    checkReleaseBuilds = false
      disable += "GradleDependency"
  }
--- 
-2.53.0
-
