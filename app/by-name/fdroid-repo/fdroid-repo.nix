@@ -54,7 +54,12 @@ pkgs.stdenvNoCC.mkDerivation {
           local destDir="$2"
           local badging pkg ver apk_abs
           
-          badging="$(${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt dump badging "$apk")"
+          # aapt (v1) exits non-zero on resource tables it cannot resolve, such as
+          # youtube-morphe's android:icon. aapt2 reads those same APKs.
+          if ! badging="$(${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2 dump badging "$apk")"; then
+            echo "aapt2 dump badging failed: $apk" >&2
+            exit 1
+          fi
           pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
           ver="$(echo "$badging" | sed -n "s/^package: .* versionCode='\([^']*\)'.*/\1/p")"
           
