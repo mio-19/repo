@@ -1,0 +1,125 @@
+diff --git a/app/build.gradle b/app/build.gradle
+index 8158c96..d200904 100644
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -1,14 +1,17 @@
+-apply plugin: 'com.android.application'
++apply plugin: "com.android.application"
+ 
+ android {
+-    compileSdkVersion 26
++    namespace "org.pocketworkstation.pckeyboard"
++    compileSdk 36
++    buildToolsVersion "36.0.0"
++    ndkVersion "28.2.13676358"
++
+     defaultConfig {
+-        applicationId 'org.pocketworkstation.pckeyboard'
+-        minSdkVersion 14
++        applicationId "org.pocketworkstation.pckeyboard"
++        minSdkVersion 21
+         targetSdkVersion 26
+         versionCode 1041001
+         versionName "v1.41.1"
+-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+         externalNativeBuild {
+             cmake {
+                 cppFlags ""
+@@ -18,29 +21,23 @@ android {
+     buildTypes {
+         release {
+             minifyEnabled false
+-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
++            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+         }
+     }
+     externalNativeBuild {
+         cmake {
+             path "CMakeLists.txt"
++            version "3.22.1"
+         }
+     }
+-    productFlavors {
+-    }
+-    lintOptions {
++    lint {
+         checkReleaseBuilds false
+-        // Or, if you prefer, you can continue to check for errors in release builds,
+-        // but continue the build even when errors are found:
+-        //abortOnError false
+     }
+ }
+ 
+ dependencies {
+-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+-    implementation 'com.android.support:appcompat-v7:27.1.1'
+-    implementation "com.android.support:support-compat:26.0.0"
+-    testImplementation 'junit:junit:4.12'
+-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+-}
+\ No newline at end of file
++    implementation fileTree(include: ["*.jar"], dir: "libs")
++    implementation "com.android.support:appcompat-v7:27.1.1"
++    implementation "com.android.support:support-compat:27.1.1"
++    implementation "com.android.support:support-v4:27.1.1"
++}
+diff --git a/build.gradle b/build.gradle
+index 8d3ef8e..756e0d3 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -1,27 +1,18 @@
+ // Top-level build file where you can add configuration options common to all sub-projects/modules.
+ 
+ buildscript {
+-    
+     repositories {
+         google()
+-        jcenter()
++        mavenCentral()
+     }
+     dependencies {
+-        classpath 'com.android.tools.build:gradle:3.2.1'
+-        
+-
+-        // NOTE: Do not place your application dependencies here; they belong
+-        // in the individual module build.gradle files
++        classpath "com.android.tools.build:gradle:8.13.0"
+     }
+ }
+ 
+ allprojects {
+     repositories {
+         google()
+-        jcenter()
++        mavenCentral()
+     }
+ }
+-
+-task clean(type: Delete) {
+-    delete rootProject.buildDir
+-}
+diff --git a/gradle.properties b/gradle.properties
+index 82618ce..95c4f02 100644
+--- a/gradle.properties
++++ b/gradle.properties
+@@ -1,15 +1,5 @@
+-# Project-wide Gradle settings.
+-# IDE (e.g. Android Studio) users:
+-# Gradle settings configured through the IDE *will override*
+-# any settings specified in this file.
+-# For more details on how to configure your build environment visit
+-# http://www.gradle.org/docs/current/userguide/build_environment.html
+-# Specifies the JVM arguments used for the daemon process.
+-# The setting is particularly useful for tweaking memory settings.
+ org.gradle.jvmargs=-Xmx1536m
+-# When configured, Gradle will run in incubating parallel mode.
+-# This option should only be used with decoupled projects. More details, visit
+-# http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects
+-# org.gradle.parallel=true
+-
+-
++android.nonFinalResIds=false
++android.nonTransitiveRClass=false
++android.useAndroidX=false
++android.enableJetifier=false

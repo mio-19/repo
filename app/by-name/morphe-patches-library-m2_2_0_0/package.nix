@@ -6,7 +6,7 @@
   jdk21_headless,
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
-  morphe-patcher-src_1_14_0,
+  morphe-patcher-src_2_0_0,
   morphe-library-m2,
   apktool-src,
   multidexlib2-src,
@@ -23,27 +23,22 @@ let
   gradle = gradle_9_7_1;
 
   arsclib-src = fetchFromGitHub {
-    owner = "REAndroid";
+    owner = "MorpheApp";
     repo = "ARSCLib";
-    rev = "a28c6fb2a7";
-    hash = "sha256-0SwowTDkgF9Rdenx/nlSPuGf3kvk7ucxtr7D6r9fU/c=";
+    rev = "10d0708212";
+    hash = "sha256-XHT3SEVAJAn1EpeucZ3VUUtj0UD01ISRiXFhgY/D5ys=";
   };
 
-  morphe-cli-deps = lib.importJSON ../morphe-cli/morphe-cli_deps.json;
-  morphe-cli-deps-filtered = morphe-cli-deps // {
-    "https:/" = builtins.removeAttrs morphe-cli-deps."https:/" [ "api.github" ];
-  };
-  morphe-patches-library-deps = lib.importJSON ./morphe-patches-library_deps.json;
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches-library-m2";
-  version = "1.9.0-dev.4";
+  version = "2.0.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches-library";
-    rev = "v${finalAttrs.version}";
-    hash = "sha256-BRPHEHvafjoGQz4X0SiUnx0/deTE2y38rS0TxoEflX0=";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-nVSUaRUc2E5LYW4vnm8xXqyDm/UFIRM3uQg1wjnZVCo=";
   };
 
   gradleBuildTask = "publish";
@@ -51,7 +46,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   mitmCache = gradle.fetchDeps {
     pname = "morphe-patches-library";
-    attrPath = "morphe-patches-library-m2_1_9_0_dev_4";
+    attrPath = "morphe-patches-library-m2_2_0_0";
     pkg = finalAttrs.finalPackage;
     data = ./morphe-patches-library_deps.json;
     silent = false;
@@ -76,7 +71,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   postUnpack = ''
     root="$PWD"
-    cp -a ${morphe-patcher-src_1_14_0} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_2_0_0} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
     cp -a ${arsclib-src} "$root/ARSCLib"
     chmod -R u+w "$root/ARSCLib"
@@ -88,6 +83,7 @@ stdenv.mkDerivation (finalAttrs: {
     patch -d "$root/multidexlib2" -p3 < ${../brosssh-patches/multidexlib2-gradle-9.patch}
 
     substituteInPlace "$sourceRoot/settings.gradle.kts" \
+      --replace-fail '    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"' "" \
       --replace-fail \
       'gradlePluginPortal()' \
       'gradlePluginPortal()

@@ -1,7 +1,7 @@
 {
   mk-apk-package,
   lib,
-  gradle_9_5_1,
+  gradle_9_7_1,
   jdk17_headless,
   jdk21_headless,
   jdk25_headless,
@@ -18,20 +18,22 @@ let
         s.cmdline-tools-latest
         s.platform-tools
         s.platforms-android-36
+        s."platforms-android-37-0"
+        s."build-tools-37-0-0"
         s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_5_1;
+      gradle = gradle_9_7_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "komi-store";
-      version = "1.9.2";
+      version = "1.9.3";
 
       src = fetchFromGitHub {
         owner = "kurikomi-labs";
         repo = "komi-store";
-        rev = "v${finalAttrs.version}";
-        hash = "sha256-oRGkXLoH8+bzy3NE2rdtW3qgqT2c+z2y0qmwosatAeg=";
+        tag = "v${finalAttrs.version}";
+        hash = "sha256-rop3eKaD8sX7u28C8yJQL+L9gcl1OiXCRsPEAWYxbqM=";
       };
 
       patches = [
@@ -43,7 +45,7 @@ let
           --replace-fail 'id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"' ""
       '';
 
-      gradleBuildTask = ":composeApp:assembleRelease";
+      gradleBuildTask = ":androidApp:assembleRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
 
       mitmCache = gradle.fetchDeps {
@@ -65,7 +67,7 @@ let
         JAVA_HOME = jdk21_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2";
       };
 
       preConfigure = ''
@@ -76,17 +78,18 @@ let
 
       gradleFlags = [
         "--no-configuration-cache"
+        "-Dandroid.builder.sdkDownload=false"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home},${jdk21_headless.passthru.home},${jdk25_headless.passthru.home}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
       ];
 
       installPhase = ''
         runHook preInstall
-        apk_path="composeApp/build/outputs/apk/release/composeApp-release-unsigned.apk"
+        apk_path="androidApp/build/outputs/apk/release/androidApp-release-unsigned.apk"
         if [ ! -f "$apk_path" ]; then
-          apk_path=$(find composeApp/build/outputs/apk/release -name "*.apk" | head -n 1)
+          apk_path=$(find androidApp/build/outputs/apk/release -name "*.apk" | head -n 1)
         fi
         install -Dm644 "$apk_path" "$out/komi-store.apk"
         runHook postInstall

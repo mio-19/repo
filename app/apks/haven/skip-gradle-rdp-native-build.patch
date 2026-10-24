@@ -1,6 +1,6 @@
---- a/core/rdp/build.gradle.kts
-+++ b/core/rdp/build.gradle.kts
-@@ -30,13 +30,6 @@
+--- a/core/rdp/build.gradle.kts	2026-10-23 11:15:48.191585033 +1100
++++ b/core/rdp/build.gradle.kts	2026-10-23 11:15:48.662582888 +1100
+@@ -29,13 +29,6 @@
      }
  }
  
@@ -13,4 +13,4 @@
 -
  dependencies {
      api("sh.haven:rdp-transport:0.1.0")
-     implementation(libs.jna) { artifact { type = "aar" } }
+     implementation(project(":core:data"))

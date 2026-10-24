@@ -1,6 +1,8 @@
---- a/core/spice/build.gradle.kts
-+++ b/core/spice/build.gradle.kts
-@@ -31,12 +31,5 @@
+--- a/core/spice/build.gradle.kts	2026-10-23 11:15:48.470583762 +1100
++++ b/core/spice/build.gradle.kts	2026-10-23 11:15:48.665582874 +1100
+@@ -27,13 +27,6 @@
+     }
+ }
  
 -// Ensure Rust native library is built before this module compiles
 -tasks.configureEach {

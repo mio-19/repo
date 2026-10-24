@@ -1,5 +1,5 @@
---- orig/settings.gradle.kts	2026-08-22 15:12:26.104063597 +1000
-+++ patched/settings.gradle.kts	2026-08-22 15:12:32.183043406 +1000
+--- a/settings.gradle.kts	2026-10-23 11:15:04.987781753 +1100
++++ b/settings.gradle.kts	2026-10-23 11:15:05.739778328 +1100
 @@ -34,8 +34,6 @@
  
  plugins {
@@ -8,8 +8,8 @@
 -    id("org.gradle.toolchains.foojay-resolver") version "1.0.0"
      // 0.1.7 fixed the Isolated Projects incompatibility (shares state via a BuildService instead of
      // gradle.extensions) that previously required gating this behind an opt-in property.
-     id("org.meshtastic.flatpak.sources.settings") version "0.1.7"
-@@ -76,15 +74,6 @@
+     // 0.2.0 resolves platformDependencies transitively — see the collapsed list in build.gradle.kts.
+@@ -77,15 +75,6 @@
  
  
  @Suppress("UnstableApiUsage")

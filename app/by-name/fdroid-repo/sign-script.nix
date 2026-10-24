@@ -116,7 +116,12 @@ let
 
       keyaliases_yaml=""
       for apk in "''${apk_files[@]}"; do
-        badging="$(${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt dump badging "$apk")"
+        # aapt (v1) exits non-zero on resource tables it cannot resolve, such as
+        # youtube-morphe's android:icon. aapt2 reads those same APKs.
+        if ! badging="$(${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2 dump badging "$apk")"; then
+          echo "aapt2 dump badging failed: $apk" >&2
+          exit 1
+        fi
         pkg="$(echo "$badging" | sed -n "s/^package: name='\([^']*\)'.*/\1/p")"
         if [[ -z "$pkg" ]]; then
           echo "Failed to parse package name from $apk" >&2
@@ -158,7 +163,6 @@ let
       (cd "$WORKDIR" && ${lib.getExe fdroidserver} update --create-metadata --rename-apks --nosign)
       ${iconPython}/bin/python3 ${iconFallbackScript} \
         "$WORKDIR" \
-        "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt" \
         "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2" \
         "${iconFont}"
       (cd "$WORKDIR" && ${lib.getExe fdroidserver} signindex)

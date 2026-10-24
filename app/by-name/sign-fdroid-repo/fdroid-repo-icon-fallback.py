@@ -12,9 +12,8 @@ import cairosvg
 from PIL import Image, ImageDraw, ImageFont
 
 workdir = Path(sys.argv[1])
-aapt = sys.argv[2]
-aapt2 = sys.argv[3]
-font_path = sys.argv[4]
+aapt2 = sys.argv[2]
+font_path = sys.argv[3]
 repo_dir = workdir / "repo"
 index_v1_path = repo_dir / "index-v1.json"
 index_v2_path = repo_dir / "index-v2.json"
@@ -128,7 +127,8 @@ def choose_best_file(files):
 
 
 def parse_icon_path(apk_path):
-    badging = run(aapt, "dump", "badging", str(apk_path))
+    # aapt (v1) fails to resolve some launcher icon references that aapt2 accepts.
+    badging = run(aapt2, "dump", "badging", str(apk_path))
     candidates = []
     for line in badging.splitlines():
         match = re.match(r"application-icon-(\d+):'([^']+)'", line)

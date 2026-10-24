@@ -25,7 +25,7 @@ let
     in
     buildGradlePackage (finalAttrs: {
       pname = "pipepipe";
-      version = "5.4.0";
+      version = "5.5.0";
 
       src = stdenv.mkDerivation {
         name = "pipepipe-src";
@@ -33,19 +33,19 @@ let
           owner = "InfinityLoop1308";
           repo = "PipePipe";
           tag = "v${finalAttrs.version}";
-          hash = "sha256-MgX5D2d8M+xTFflOxSMpk13WXp1FOAFI7lsW8JbFwgI=";
+          hash = "sha256-pqjAFhd7L48unrWfTAOuqDGRDln1fDXZ5xhb7X5sG38=";
         };
         clientSrc = fetchFromGitHub {
           owner = "InfinityLoop1308";
           repo = "PipePipeClient";
-          rev = "c2a166f7df05e5ace4c80fb3e3fd27702cfc3e56";
-          hash = "sha256-d1mtBzJUGoiefg+yijEeOUnO7s+4aLUqWPG1k0P3ttQ=";
+          rev = "b91f008fb4d25b470c4383dcf42e31ee7696d272";
+          hash = "sha256-dIeoEdJ03W030fjLZtX+x26z7uQ69FDQ4t/Exs97izY=";
         };
         extractorSrc = fetchFromGitHub {
           owner = "InfinityLoop1308";
           repo = "PipePipeExtractor";
-          rev = "c68e10e2e97495877832d8df6cbac55478083019";
-          hash = "sha256-6mtjoyOBK5C7qIvIuR4DjJAT+VIqGNCequzJoR4JPxk=";
+          rev = "1a09d20e68dbd0892995bc58ffa539049a656690";
+          hash = "sha256-jiHFjU/uXQUdttTxQPQjYssZuJxJL6cz/qiKK5ZH5vc=";
         };
         installPhase = ''
           cp -r $clientSrc $out

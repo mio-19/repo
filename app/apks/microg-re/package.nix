@@ -26,13 +26,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "microg-re";
-      version = "7.2.1";
+      version = "7.2.2";
 
       src = fetchFromGitHub {
         owner = "MorpheApp";
         repo = "MicroG-RE";
         tag = finalAttrs.version;
-        hash = "sha256-Ma3YziSIrd2B1MAy0ix1Bz2UxGpg82cJE3y7NATWWME=";
+        hash = "sha256-xehCLYrOu1PJQVxnWzoSLiAWZlyr6FUOMBd8CJ/KmyU=";
       };
 
       patches = [

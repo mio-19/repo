@@ -2,7 +2,7 @@
   mk-apk-package,
   lib,
   jdk17_headless,
-  gradle_9_5_1,
+  gradle_9_6_1,
   stdenv,
   fetchFromGitHub,
   writeShellScriptBin,
@@ -26,11 +26,11 @@ let
         s.build-tools-36-0-0
       ]);
 
-      gradle = gradle_9_5_1;
+      gradle = gradle_9_6_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "zotero-android";
-      version = "1.0.0-289";
+      version = "1.0.0-290";
 
       src = fetchFromGitHub {
         owner = "zotero";
@@ -41,7 +41,7 @@ let
         # latest 1.0.0-* tag by time, not raw version ordering:
         # https://github.com/zotero/zotero-android/tags
         tag = finalAttrs.version;
-        hash = "sha256-s0aiCpkfF/bCwPxZoZGtKny+PeFNJq9EgG0F2QrVhUI=";
+        hash = "sha256-VHfyWU/zhOwqF5mRu/hkHf75RE98kHEKaChC1UhBNNQ=";
       };
 
       patches = [

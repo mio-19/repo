@@ -29,14 +29,14 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "tuxguitar-android";
-      version = "2.1.0";
+      version = "2.1.1";
 
       src = fetchFromGitHub {
         owner = "helge17";
         repo = "tuxguitar";
         # Prefer tag=; this project tags releases as bare version strings.
         tag = finalAttrs.version;
-        hash = "sha256-JaR9gagVXgcf1bQ0v/9KO3SzqAXSpjJpCuCRQXs9Wzg=";
+        hash = "sha256-Rwj81MNb4S7CqSfNE9BG2/MotDFQpoYl5WBuoYJCkbE=";
       };
 
       gradleBuildTask = "assembleRelease";
