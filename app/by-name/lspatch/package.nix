@@ -9,11 +9,11 @@
   jre_headless,
   writableTmpDirAsHomeHook,
   runCommand,
-  gradle_9,
+  gradle_9_6_1,
   git,
 }:
 let
-  version = "0.8-unstable-20260330";
+  version = "0.8-unstable-20261023";
 
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
@@ -29,7 +29,7 @@ let
     s.cmake-3-31-6
   ]);
 
-  gradle = gradle_9;
+  gradle = gradle_9_6_1;
 
   common = stdenv.mkDerivation (finalAttrs: {
     pname = "lspatch";
@@ -38,9 +38,9 @@ let
     src = fetchFromGitHub {
       owner = "JingMatrix";
       repo = "LSPatch";
-      rev = "0dc50f4";
+      rev = "4d573639e4192c33afb3f1b76b16fc248dbeb830";
       fetchSubmodules = true;
-      hash = "sha256-h4BfJai0HcZTFdn01M9l9lqWBFLIuyy8Rw2VgfL8R38=";
+      hash = "sha256-b80xdhTTIdzilSXh8VIH6aYBMI8DeE0AWcqtdUvWQIM=";
     };
 
     patches = [
