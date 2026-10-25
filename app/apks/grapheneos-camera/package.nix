@@ -57,15 +57,10 @@ let
       # Scan QR code from gallery image (rebased for current Camera tree)
       # https://github.com/GrapheneOS/Camera/pull/664
       ./scan-from-image.patch
-
-      # AsteroidOS / Gadgetbridge remote shutter and companion camera bridge
-      ./remote-shutter-bridge.patch
     ];
 
     postPatch = ''
       rm -f gradle/verification-metadata.xml
-      install -Dm644 ${./PreviewStreamServer.kt} app/src/main/java/app/grapheneos/camera/stream/PreviewStreamServer.kt
-      install -Dm644 ${./RemoteCameraReceiver.kt} app/src/main/java/app/grapheneos/camera/receiver/RemoteCameraReceiver.kt
     '';
 
     nativeBuildInputs = [
