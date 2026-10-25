@@ -1,314 +1,598 @@
 diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
-index 3e970ee..e69ba49 100644
+index 3e970ee7..5551330e 100644
 --- a/app/src/main/AndroidManifest.xml
 +++ b/app/src/main/AndroidManifest.xml
-@@ -13,12 +13,9 @@
+@@ -13,6 +13,14 @@
      <uses-permission android:name="android.permission.VIBRATE"/>
      <uses-permission android:name="android.permission.WAKE_LOCK"/>
  
--    <!--
--      androidx.media3:media3-common declares this for ExoPlayer's network playback. We only pull
--      media3 in transitively through camera-video, which uses media3-muxer to write MP4s locally,
--      so nothing we ship reads it and the app has no INTERNET permission to pair it with.
--    -->
--    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove"/>
-+    <uses-permission android:name="android.permission.INTERNET"/>
-+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
++    <!--
++      Permissions defined by companion apps that can relay a smartwatch remote shutter. They are
++      runtime permissions: the user grants them from the "Remote shutter" setting, and a companion
++      only reaches Camera once its permission is granted here.
++    -->
++    <uses-permission android:name="nodomain.freeyourgadget.gadgetbridge.permission.APP_BRIDGE"/>
++    <uses-permission android:name="org.asteroidos.sync.permission.APP_BRIDGE"/>
++
+     <!--
+       androidx.media3:media3-common declares this for ExoPlayer's network playback. We only pull
+       media3 in transitively through camera-video, which uses media3-muxer to write MP4s locally,
+@@ -21,6 +29,8 @@
+     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove"/>
  
      <queries>
++        <package android:name="nodomain.freeyourgadget.gadgetbridge"/>
++        <package android:name="org.asteroidos.sync"/>
          <intent>
-@@ -212,6 +209,14 @@
-             android:excludeFromRecents="true"
-             tools:ignore="DiscouragedApi" />
+             <action android:name="android.intent.action.VIEW" />
+             <data android:scheme="*" />
+diff --git a/app/src/main/java/app/grapheneos/camera/CamConfig.kt b/app/src/main/java/app/grapheneos/camera/CamConfig.kt
+index 41b57c22..233408ca 100644
+--- a/app/src/main/java/app/grapheneos/camera/CamConfig.kt
++++ b/app/src/main/java/app/grapheneos/camera/CamConfig.kt
+@@ -125,6 +125,8 @@ class CamConfig(private val mActivity: MainActivity) {
  
-+        <receiver
-+            android:name=".receiver.RemoteCameraReceiver"
-+            android:exported="true">
-+            <intent-filter>
-+                <action android:name="nodomain.freeyourgadget.gadgetbridge.ACTION_RECEIVE_FROM_WATCH"/>
-+            </intent-filter>
-+        </receiver>
+             const val CAMERA_SOUNDS = "camera_sounds"
+ 
++            const val WATCH_REMOTE = "watch_remote"
 +
-     </application>
+             const val ENABLE_ZSL = "enable_zsl"
  
- </manifest>
+             const val SELECT_HIGHEST_RESOLUTION = "select_highest_resolution"
+@@ -171,6 +173,8 @@ class CamConfig(private val mActivity: MainActivity) {
+ 
+             const val CAMERA_SOUNDS = true
+ 
++            const val WATCH_REMOTE = false
++
+             const val ENABLE_ZSL = false
+ 
+             const val SELECT_HIGHEST_RESOLUTION = false
+@@ -490,6 +494,19 @@ class CamConfig(private val mActivity: MainActivity) {
+             editor.apply()
+         }
+ 
++    var watchRemoteEnabled: Boolean
++        get() {
++            return commonPref.getBoolean(
++                SettingValues.Key.WATCH_REMOTE,
++                SettingValues.Default.WATCH_REMOTE
++            )
++        }
++        set(value) {
++            val editor = commonPref.edit()
++            editor.putBoolean(SettingValues.Key.WATCH_REMOTE, value)
++            editor.apply()
++        }
++
+     var scanAllCodes: Boolean
+         get() {
+             return commonPref.getBoolean(
 diff --git a/app/src/main/java/app/grapheneos/camera/capturer/ImageCapturer.kt b/app/src/main/java/app/grapheneos/camera/capturer/ImageCapturer.kt
-index d20fee5..438cef0 100644
+index d20fee51..153c69bf 100644
 --- a/app/src/main/java/app/grapheneos/camera/capturer/ImageCapturer.kt
 +++ b/app/src/main/java/app/grapheneos/camera/capturer/ImageCapturer.kt
-@@ -122,6 +122,7 @@ class ImageCapturer(val mActivity: MainActivity) {
+@@ -19,6 +19,7 @@ import androidx.camera.core.ImageCaptureException
+ import app.grapheneos.camera.App
+ import app.grapheneos.camera.CapturedItem
+ import app.grapheneos.camera.R
++import app.grapheneos.camera.remote.WatchRemote
+ import app.grapheneos.camera.ui.activities.MainActivity
+ import app.grapheneos.camera.ui.activities.SecureMainActivity
+ import app.grapheneos.camera.ui.showIgnoringShortEdgeMode
+@@ -122,6 +123,7 @@ class ImageCapturer(val mActivity: MainActivity) {
  
          camConfig.mPlayer.playShutterSound()
          camConfig.snapPreview()
-+        mActivity.sendWatchCameraStatus("photo_captured")
++        mActivity.sendWatchStatus(WatchRemote.Status.PHOTO_CAPTURED)
  
          mActivity.previewLoader.visibility = View.VISIBLE
          if (camConfig.selfIlluminate) {
 diff --git a/app/src/main/java/app/grapheneos/camera/capturer/VideoCapturer.kt b/app/src/main/java/app/grapheneos/camera/capturer/VideoCapturer.kt
-index c4f6347..01da325 100644
+index c4f6347c..895eab31 100644
 --- a/app/src/main/java/app/grapheneos/camera/capturer/VideoCapturer.kt
 +++ b/app/src/main/java/app/grapheneos/camera/capturer/VideoCapturer.kt
-@@ -278,6 +278,7 @@ class VideoCapturer(private val mActivity: MainActivity) {
+@@ -34,6 +34,7 @@ import app.grapheneos.camera.CapturedItem
+ import app.grapheneos.camera.ITEM_TYPE_VIDEO
+ import app.grapheneos.camera.R
+ import app.grapheneos.camera.VIDEO_NAME_PREFIX
++import app.grapheneos.camera.remote.WatchRemote
+ import app.grapheneos.camera.ui.activities.MainActivity
+ import app.grapheneos.camera.ui.activities.SecureMainActivity
+ import app.grapheneos.camera.ui.activities.VideoCaptureActivity
+@@ -278,6 +279,7 @@ class VideoCapturer(private val mActivity: MainActivity) {
  
          if (event is VideoRecordEvent.Start) {
              onRecordingStart()
-+            ctx.sendWatchCameraStatus("video_started")
++            mActivity.sendWatchStatus(WatchRemote.Status.VIDEO_STARTED)
          }
  
          if (event is VideoRecordEvent.Status) {
-@@ -286,6 +287,7 @@ class VideoCapturer(private val mActivity: MainActivity) {
+@@ -286,6 +288,7 @@ class VideoCapturer(private val mActivity: MainActivity) {
  
          if (event is VideoRecordEvent.Finalize) {
              afterRecordingStops()
-+            ctx.sendWatchCameraStatus("video_stopped")
++            mActivity.sendWatchStatus(WatchRemote.Status.VIDEO_STOPPED)
  
              camConfig.mPlayer.playVRStopSound()
  
+diff --git a/app/src/main/java/app/grapheneos/camera/remote/WatchRemote.kt b/app/src/main/java/app/grapheneos/camera/remote/WatchRemote.kt
+new file mode 100644
+index 00000000..05b47142
+--- /dev/null
++++ b/app/src/main/java/app/grapheneos/camera/remote/WatchRemote.kt
+@@ -0,0 +1,191 @@
++package app.grapheneos.camera.remote
++
++import android.app.KeyguardManager
++import android.content.BroadcastReceiver
++import android.content.Context
++import android.content.Intent
++import android.content.IntentFilter
++import android.content.pm.PackageManager
++import android.os.Build
++import android.os.Process
++import android.os.SystemClock
++import android.util.Log
++import androidx.core.content.ContextCompat
++
++/**
++ * Remote shutter for smartwatches, driven by a companion app that holds the BLE connection.
++ *
++ * There is deliberately no network access, no manifest-declared receiver and no exported
++ * activity entry point. Commands are only accepted while the main camera screen is resumed on
++ * an unlocked device, and only when the user explicitly enabled the feature. A bridge app is
++ * trusted only when all of the following hold:
++ *  - the permission it defines is really defined by its package (no permission squatting),
++ *  - the user granted that permission to Camera (runtime permission, doubles as consent),
++ *  - the receiver requires the sender to hold that permission, and
++ *  - the system reported the broadcast as sent from the bridge package's uid.
++ * Outgoing status broadcasts are explicit (setPackage) and carry no data except a fixed status
++ * word, so no other app can observe when the user is taking photos or recording.
++ */
++class WatchRemote(
++    private val context: Context,
++    private val onCommand: (Command) -> Unit,
++) {
++    enum class Command(val wire: String) {
++        CAPTURE("capture"),
++        FLIP("flip"),
++        ZOOM_IN("zoom_in"),
++        ZOOM_OUT("zoom_out"),
++        TORCH("torch"),
++        MODE_PHOTO("mode_photo"),
++        MODE_VIDEO("mode_video"),
++        STATUS_QUERY("status_query");
++
++        companion object {
++            fun fromWire(s: String?): Command? = entries.firstOrNull { it.wire == s }
++        }
++    }
++
++    enum class Status(val wire: String) {
++        READY("ready"),
++        PAUSED("paused"),
++        PHOTO_CAPTURED("photo_captured"),
++        VIDEO_STARTED("video_started"),
++        VIDEO_STOPPED("video_stopped"),
++    }
++
++    class Bridge(
++        val pkg: String,
++        val permission: String,
++        val receiveAction: String,
++        val sendAction: String,
++    )
++
++    private val receivers = ArrayList<BroadcastReceiver>()
++    private var lastCommandAt = 0L
++
++    val isActive: Boolean
++        get() = receivers.isNotEmpty()
++
++    /** Registers receivers for every usable bridge. Call from onResume(). */
++    fun start() {
++        stop()
++        if (isDeviceLocked()) return
++        for (bridge in usableBridges(context)) {
++            val receiver = object : BroadcastReceiver() {
++                override fun onReceive(c: Context, intent: Intent) {
++                    handle(bridge, intent, this)
++                }
++            }
++            val filter = IntentFilter(bridge.receiveAction)
++            // RECEIVER_EXPORTED is required to hear another app; the broadcastPermission
++            // argument is what restricts senders to holders of the bridge permission.
++            ContextCompat.registerReceiver(
++                context, receiver, filter, bridge.permission, null,
++                ContextCompat.RECEIVER_EXPORTED,
++            )
++            receivers.add(receiver)
++        }
++    }
++
++    /** Unregisters all receivers. Call from onPause(). */
++    fun stop() {
++        for (r in receivers) {
++            try {
++                context.unregisterReceiver(r)
++            } catch (e: IllegalArgumentException) {
++                Log.w(TAG, "receiver was not registered", e)
++            }
++        }
++        receivers.clear()
++    }
++
++    private fun handle(bridge: Bridge, intent: Intent, receiver: BroadcastReceiver) {
++        if (receiver !in receivers) return
++        if (intent.action != bridge.receiveAction) return
++        if (!isFromBridge(bridge, receiver)) {
++            Log.w(TAG, "dropping command not sent by ${bridge.pkg}")
++            return
++        }
++        if (intent.getStringExtra(EXTRA_APP_ID) != WATCH_APP_ID) return
++        val command = Command.fromWire(intent.getStringExtra(EXTRA_ACTION)) ?: return
++        if (isDeviceLocked()) return
++
++        // Debounce so a misbehaving bridge can't hammer the capture pipeline.
++        val now = SystemClock.elapsedRealtime()
++        if (command != Command.STATUS_QUERY && now - lastCommandAt < MIN_COMMAND_INTERVAL_MS) return
++        if (command != Command.STATUS_QUERY) lastCommandAt = now
++
++        onCommand(command)
++    }
++
++    private fun isFromBridge(bridge: Bridge, receiver: BroadcastReceiver): Boolean {
++        // Fail closed: the sender uid is only available on Android 14+.
++        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return false
++        val sentFromUid = receiver.sentFromUid
++        if (sentFromUid == Process.INVALID_UID) return false
++        return try {
++            context.packageManager.getPackageUid(bridge.pkg, 0) == sentFromUid
++        } catch (e: PackageManager.NameNotFoundException) {
++            false
++        }
++    }
++
++    fun sendStatus(status: Status) {
++        for (bridge in usableBridges(context)) {
++            val intent = Intent(bridge.sendAction)
++                .setPackage(bridge.pkg)
++                .putExtra(EXTRA_APP_ID, WATCH_APP_ID)
++                .putExtra(EXTRA_ACTION, status.wire)
++            // The receiver permission makes the system deliver only to the bridge app,
++            // and only if it holds the permission it defined itself.
++            context.sendBroadcast(intent, bridge.permission)
++        }
++    }
++
++    private fun isDeviceLocked(): Boolean {
++        val km = context.getSystemService(KeyguardManager::class.java)
++        return km == null || km.isKeyguardLocked
++    }
++
++    companion object {
++        private const val TAG = "WatchRemote"
++        private const val MIN_COMMAND_INTERVAL_MS = 400L
++
++        const val WATCH_APP_ID = "org.asteroidos.camera"
++        const val EXTRA_APP_ID = "extra_app_id"
++        const val EXTRA_ACTION = "extra_action"
++
++        val BRIDGES = listOf(
++            Bridge(
++                pkg = "nodomain.freeyourgadget.gadgetbridge",
++                permission = "nodomain.freeyourgadget.gadgetbridge.permission.APP_BRIDGE",
++                receiveAction = "nodomain.freeyourgadget.gadgetbridge.ACTION_RECEIVE_FROM_WATCH",
++                sendAction = "nodomain.freeyourgadget.gadgetbridge.ACTION_SEND_TO_WATCH",
++            ),
++            Bridge(
++                pkg = "org.asteroidos.sync",
++                permission = "org.asteroidos.sync.permission.APP_BRIDGE",
++                receiveAction = "org.asteroidos.sync.ACTION_RECEIVE_FROM_WATCH",
++                sendAction = "org.asteroidos.sync.ACTION_SEND_TO_WATCH",
++            ),
++        )
++
++        /** True if [bridge]'s package is installed and really defines its permission. */
++        fun isBridgeInstalled(context: Context, bridge: Bridge): Boolean {
++            return try {
++                context.packageManager.getPermissionInfo(bridge.permission, 0).packageName == bridge.pkg
++            } catch (e: PackageManager.NameNotFoundException) {
++                false
++            }
++        }
++
++        fun isBridgeGranted(context: Context, bridge: Bridge): Boolean {
++            return context.checkSelfPermission(bridge.permission) == PackageManager.PERMISSION_GRANTED
++        }
++
++        fun installedBridges(context: Context) = BRIDGES.filter { isBridgeInstalled(context, it) }
++
++        fun usableBridges(context: Context) =
++            BRIDGES.filter { isBridgeInstalled(context, it) && isBridgeGranted(context, it) }
++    }
++}
 diff --git a/app/src/main/java/app/grapheneos/camera/ui/activities/MainActivity.kt b/app/src/main/java/app/grapheneos/camera/ui/activities/MainActivity.kt
-index be22fb5..b45a641 100644
+index be22fb5f..cd8d09be 100644
 --- a/app/src/main/java/app/grapheneos/camera/ui/activities/MainActivity.kt
 +++ b/app/src/main/java/app/grapheneos/camera/ui/activities/MainActivity.kt
-@@ -3,11 +3,13 @@ package app.grapheneos.camera.ui.activities
- import android.Manifest
- import android.animation.Animator
- import android.annotation.SuppressLint
-+import android.content.BroadcastReceiver
- import android.content.ClipData
- import android.content.ClipboardManager
- import android.content.Context
- import android.content.DialogInterface
- import android.content.Intent
-+import android.content.IntentFilter
- import android.content.pm.PackageManager
- import android.content.res.Configuration
- import android.graphics.Bitmap
-@@ -81,6 +83,7 @@ import app.grapheneos.camera.capturer.ImageCapturer
+@@ -70,6 +70,7 @@ import androidx.core.view.WindowInsetsControllerCompat
+ import androidx.core.view.marginTop
+ import androidx.core.view.updateLayoutParams
+ import androidx.core.view.updateMargins
++import androidx.lifecycle.Lifecycle
+ import app.grapheneos.camera.App
+ import app.grapheneos.camera.CamConfig
+ import app.grapheneos.camera.CameraMode
+@@ -80,6 +81,7 @@ import app.grapheneos.camera.analyzer.QRAnalyzer
+ import app.grapheneos.camera.capturer.ImageCapturer
  import app.grapheneos.camera.capturer.VideoCapturer
  import app.grapheneos.camera.capturer.getVideoThumbnail
++import app.grapheneos.camera.remote.WatchRemote
  import app.grapheneos.camera.shareCapturedItem
-+import app.grapheneos.camera.stream.PreviewStreamServer
  import app.grapheneos.camera.databinding.ActivityMainBinding
  import app.grapheneos.camera.databinding.ScanResultDialogBinding
- import app.grapheneos.camera.ktx.SystemSettingsObserver
-@@ -774,6 +777,8 @@ open class MainActivity : AppCompatActivity(),
-                 }
-             }
+@@ -764,6 +766,8 @@ open class MainActivity : AppCompatActivity(),
+             requestLocation()
          }
-+        startPreviewStreaming()
-+        sendWatchCameraStatus("ready")
-     }
  
-     val requiresVideoModeOnly: Boolean
-@@ -783,6 +788,8 @@ open class MainActivity : AppCompatActivity(),
++        startWatchRemote()
++
+         // If the preview of video capture activity isn't showing
+         if (!(this is VideoCaptureActivity && thirdOption.isVisible)) {
+             if (!isQRDialogShowing) {
+@@ -783,6 +787,7 @@ open class MainActivity : AppCompatActivity(),
  
      override fun onPause() {
          super.onPause()
-+        stopPreviewStreaming()
-+        sendWatchCameraStatus("paused")
++        stopWatchRemote()
  
          // Leaving a mode switch waiting on an animation that will never finish would strand the
          // strip on a mode the camera never entered.
-@@ -819,6 +826,11 @@ open class MainActivity : AppCompatActivity(),
-         mainOverlay = binding.mainOverlay
-         imageCapturer = ImageCapturer(this)
-         videoCapturer = VideoCapturer(this)
-+        registerRemoteCameraReceiver()
-+        intent?.getStringExtra("extra_remote_action")?.let { action ->
-+            intent.removeExtra("extra_remote_action")
-+            handleRemoteCameraAction(action, null)
-+        }
-         thirdOption = binding.thirdOption
-         previewLoader = binding.previewLoading
-         imagePreview = binding.imagePreview
-@@ -1578,6 +1586,9 @@ open class MainActivity : AppCompatActivity(),
- 
-     companion object {
-         private const val TAG = "GOCam"
-+        const val ACTION_RECEIVE_FROM_WATCH = "nodomain.freeyourgadget.gadgetbridge.ACTION_RECEIVE_FROM_WATCH"
-+        const val ACTION_SEND_TO_WATCH = "nodomain.freeyourgadget.gadgetbridge.ACTION_SEND_TO_WATCH"
-+        const val WATCH_APP_CAMERA = "org.asteroidos.camera"
-         private const val autoCenterFocusDuration = 2000L
-         private val hexArray = "0123456789ABCDEF".toCharArray()
- 
-@@ -1593,6 +1604,171 @@ open class MainActivity : AppCompatActivity(),
-         private const val FRAME_COPY_RETRIES = 3
+@@ -804,6 +809,60 @@ open class MainActivity : AppCompatActivity(),
+         framePrefetchedAt = 0
      }
  
-+    override fun onNewIntent(intent: Intent?) {
-+        super.onNewIntent(intent)
-+        intent?.getStringExtra("extra_remote_action")?.let { action ->
-+            intent.removeExtra("extra_remote_action")
-+            handleRemoteCameraAction(action, null)
++    private var watchRemote: WatchRemote? = null
++
++    // Only the plain main screen takes remote commands: not the secure (lockscreen) variants and
++    // not the variants started by other apps for a single capture.
++    private val watchRemoteAllowed: Boolean
++        get() = javaClass == MainActivity::class.java
++
++    private fun startWatchRemote() {
++        if (!watchRemoteAllowed || !camConfig.watchRemoteEnabled) return
++        val remote = watchRemote ?: WatchRemote(this, ::handleWatchCommand).also { watchRemote = it }
++        remote.start()
++        if (remote.isActive) {
++            remote.sendStatus(WatchRemote.Status.READY)
 +        }
 +    }
 +
-+    private var remoteCameraReceiver: BroadcastReceiver? = null
-+
-+    private fun registerRemoteCameraReceiver() {
-+        if (remoteCameraReceiver != null) return
-+        val filter = IntentFilter(ACTION_RECEIVE_FROM_WATCH)
-+        remoteCameraReceiver = object : BroadcastReceiver() {
-+            override fun onReceive(context: Context?, intent: Intent?) {
-+                if (intent == null) return
-+                val appId = intent.getStringExtra("extra_app_id")
-+                if (appId != WATCH_APP_CAMERA) return
-+                val action = intent.getStringExtra("extra_action") ?: return
-+                Log.i(TAG, "Remote camera command received: $action")
-+                handleRemoteCameraAction(action, intent.getStringExtra("extra_payload_string"))
-+            }
++    private fun stopWatchRemote() {
++        val remote = watchRemote ?: return
++        if (remote.isActive) {
++            remote.sendStatus(WatchRemote.Status.PAUSED)
 +        }
-+        ContextCompat.registerReceiver(this, remoteCameraReceiver!!, filter, ContextCompat.RECEIVER_EXPORTED)
++        remote.stop()
 +    }
 +
-+    private fun unregisterRemoteCameraReceiver() {
-+        remoteCameraReceiver?.let {
-+            try {
-+                unregisterReceiver(it)
-+            } catch (e: Exception) {
-+                Log.w(TAG, "Failed to unregister remoteCameraReceiver", e)
-+            }
-+            remoteCameraReceiver = null
++    fun sendWatchStatus(status: WatchRemote.Status) {
++        val remote = watchRemote ?: return
++        if (remote.isActive) {
++            remote.sendStatus(status)
 +        }
 +    }
 +
-+    private var previewStreamServer: PreviewStreamServer? = null
-+    private var previewTicker: Runnable? = null
-+    private val previewHandler = Handler(Looper.getMainLooper())
-+
-+    private fun startPreviewStreaming() {
-+        if (previewStreamServer == null) {
-+            previewStreamServer = PreviewStreamServer(8089).apply {
-+                onControlAction = { action ->
-+                    runOnUiThread { handleRemoteCameraAction(action, null) }
-+                    true
-+                }
-+                start()
-+            }
++    private fun handleWatchCommand(command: WatchRemote.Command) {
++        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) return
++        if (command == WatchRemote.Command.STATUS_QUERY) {
++            sendWatchStatus(WatchRemote.Status.READY)
++            return
 +        }
-+        if (previewTicker == null) {
-+            previewTicker = object : Runnable {
-+                override fun run() {
-+                    if (!isDestroyed && !isFinishing) {
-+                        captureAndPushPreviewFrame()
-+                        previewHandler.postDelayed(this, 66L) // ~15 FPS
-+                    }
-+                }
-+            }
-+            previewHandler.post(previewTicker!!)
++        // there are no camera controls in qr mode
++        if (camConfig.isQRMode) return
++
++        when (command) {
++            WatchRemote.Command.CAPTURE -> captureButton.performClick()
++            WatchRemote.Command.FLIP -> camConfig.toggleCameraSelector()
++            WatchRemote.Command.ZOOM_IN -> cameraControl.zoomIn()
++            WatchRemote.Command.ZOOM_OUT -> cameraControl.zoomOut()
++            WatchRemote.Command.TORCH -> camConfig.toggleTorchState()
++            WatchRemote.Command.MODE_PHOTO ->
++                tabLayout.getTabForMode(CameraMode.CAMERA)?.let { tabLayout.goToTab(it) }
++            WatchRemote.Command.MODE_VIDEO ->
++                tabLayout.getTabForMode(CameraMode.VIDEO)?.let { tabLayout.goToTab(it) }
++            WatchRemote.Command.STATUS_QUERY -> {}
 +        }
 +    }
 +
-+    private fun stopPreviewStreaming() {
-+        previewTicker?.let { previewHandler.removeCallbacks(it) }
-+        previewTicker = null
-+        previewStreamServer?.stop()
-+        previewStreamServer = null
-+    }
-+
-+    private fun captureAndPushPreviewFrame() {
-+        try {
-+            val server = previewStreamServer ?: return
-+            if (!server.hasClients) return
-+            val bitmap = previewView.bitmap ?: return
-+            try {
-+                val targetSize = 320
-+                val scaled = if (bitmap.width > targetSize || bitmap.height > targetSize) {
-+                    val scale = targetSize.toFloat() / maxOf(bitmap.width, bitmap.height)
-+                    val sw = (bitmap.width * scale).toInt()
-+                    val sh = (bitmap.height * scale).toInt()
-+                    Bitmap.createScaledBitmap(bitmap, sw, sh, true)
-+                } else {
-+                    bitmap
-+                }
-+
-+                try {
-+                    server.updateFrame(scaled, 65)
-+                } finally {
-+                    if (scaled !== bitmap) {
-+                        scaled.recycle()
-+                    }
-+                }
-+            } finally {
-+                bitmap.recycle()
-+            }
-+        } catch (e: Exception) {
-+            Log.w(TAG, "Error pushing preview frame", e)
-+        }
-+    }
-+
-+    private fun handleRemoteCameraAction(action: String, payload: String?) {
-+        runOnUiThread {
-+            when (action) {
-+                "capture", "shutter" -> {
-+                    captureButton.performClick()
-+                }
-+                "flip", "switch_camera" -> {
-+                    camConfig.toggleCameraSelector()
-+                }
-+                "zoom_in" -> {
-+                    cameraControl.zoomIn()
-+                }
-+                "zoom_out" -> {
-+                    cameraControl.zoomOut()
-+                }
-+                "torch", "toggle_torch" -> {
-+                    camConfig.toggleTorchState()
-+                }
-+                "mode_photo" -> {
-+                    try {
-+                        tabLayout.getTabForMode(CameraMode.CAMERA)?.let { tabLayout.goToTab(it) }
-+                    } catch (e: Exception) {
-+                        Log.w(TAG, "Failed to switch to photo mode", e)
-+                    }
-+                }
-+                "mode_video" -> {
-+                    try {
-+                        tabLayout.getTabForMode(CameraMode.VIDEO)?.let { tabLayout.goToTab(it) }
-+                    } catch (e: Exception) {
-+                        Log.w(TAG, "Failed to switch to video mode", e)
-+                    }
-+                }
-+                "start_stream" -> {
-+                    startPreviewStreaming()
-+                    sendWatchCameraStatus("stream_ready")
-+                }
-+                "stop_stream" -> {
-+                    stopPreviewStreaming()
-+                    sendWatchCameraStatus("stream_stopped")
-+                }
-+                "status_query", "ping" -> {
-+                    sendWatchCameraStatus("ready")
-+                }
-+            }
-+        }
-+    }
-+
-+    fun sendWatchCameraStatus(status: String) {
-+        try {
-+            val ips = previewStreamServer?.getLocalIpAddresses() ?: emptyList()
-+            val ipsJson = ips.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }
-+            val payload = "{\"status\":\"$status\",\"port\":8089,\"ips\":$ipsJson}"
-+            val intent = Intent(ACTION_SEND_TO_WATCH).apply {
-+                putExtra("extra_app_id", WATCH_APP_CAMERA)
-+                putExtra("extra_action", status)
-+                putExtra("extra_payload_string", payload)
-+            }
-+            sendBroadcast(intent)
-+        } catch (e: Exception) {
-+            Log.w(TAG, "Failed to broadcast status to watch", e)
-+        }
-+    }
-+
-     override fun onDown(e: MotionEvent): Boolean {
-         return false
-     }
-@@ -1957,6 +2098,8 @@ open class MainActivity : AppCompatActivity(),
+     lateinit var gestureDetector: GestureDetector
  
-     override fun onDestroy() {
-         super.onDestroy()
-+        stopPreviewStreaming()
-+        unregisterRemoteCameraReceiver()
-         SensorOrientationChangeNotifier.clearInstance()
-         thumbnailLoaderExecutor.shutdownNow()
-         frameCopyThread?.quitSafely()
+     @SuppressLint("ClickableViewAccessibility")
+@@ -2055,6 +2114,7 @@ open class MainActivity : AppCompatActivity(),
+ 
+     override fun onStop() {
+         isStarted = false
++        stopWatchRemote()
+         // Stop explicitly rather than letting the unbind tear the recording down for us.
+         if (this::videoCapturer.isInitialized && videoCapturer.isRecording) {
+             updateLastFrame()
+diff --git a/app/src/main/java/app/grapheneos/camera/ui/activities/MoreSettings.kt b/app/src/main/java/app/grapheneos/camera/ui/activities/MoreSettings.kt
+index ef5c03b7..3f9c36fe 100644
+--- a/app/src/main/java/app/grapheneos/camera/ui/activities/MoreSettings.kt
++++ b/app/src/main/java/app/grapheneos/camera/ui/activities/MoreSettings.kt
+@@ -24,6 +24,7 @@ import app.grapheneos.camera.CapturedItems
+ import app.grapheneos.camera.NumInputFilter
+ import app.grapheneos.camera.R
+ import app.grapheneos.camera.databinding.MoreSettingsBinding
++import app.grapheneos.camera.remote.WatchRemote
+ import app.grapheneos.camera.util.storageLocationToUiString
+ import com.google.android.material.dialog.MaterialAlertDialogBuilder
+ import com.google.android.material.snackbar.Snackbar
+@@ -196,6 +197,8 @@ open class MoreSettings : AppCompatActivity(), TextView.OnEditorActionListener {
+             csSwitch.performClick()
+         }
+ 
++        setUpWatchRemote()
++
+         val sIAPSetting = binding.saveImageAsPreviewSetting
+         sIAPSetting.setOnClickListener {
+             sIAPToggle.performClick()
+@@ -337,6 +340,52 @@ open class MoreSettings : AppCompatActivity(), TextView.OnEditorActionListener {
+         } else false
+     }
+ 
++    private val watchRemotePermissionLauncher = registerForActivityResult(
++        ActivityResultContracts.RequestMultiplePermissions()
++    ) {
++        val granted = WatchRemote.usableBridges(this).isNotEmpty()
++        camConfig.watchRemoteEnabled = granted
++        binding.watchRemoteSwitch.isChecked = granted
++        if (!granted) {
++            showMessage(getString(R.string.watch_remote_permission_denied))
++        }
++    }
++
++    private fun setUpWatchRemote() {
++        val setting = binding.watchRemoteSetting
++        // Remote control is never offered for the secure (lockscreen) camera
++        if (this is MoreSettingsSecure) {
++            setting.visibility = View.GONE
++            return
++        }
++
++        val switch = binding.watchRemoteSwitch
++        switch.isChecked = camConfig.watchRemoteEnabled
++        switch.setOnClickListener {
++            if (!switch.isChecked) {
++                camConfig.watchRemoteEnabled = false
++                return@setOnClickListener
++            }
++            val installed = WatchRemote.installedBridges(this)
++            if (installed.isEmpty()) {
++                switch.isChecked = false
++                showMessage(getString(R.string.watch_remote_no_companion))
++                return@setOnClickListener
++            }
++            val missing = installed.filterNot { WatchRemote.isBridgeGranted(this, it) }
++            if (missing.isEmpty()) {
++                camConfig.watchRemoteEnabled = true
++            } else {
++                // stays unchecked until the user answers the permission prompt
++                switch.isChecked = false
++                watchRemotePermissionLauncher.launch(missing.map { it.permission }.toTypedArray())
++            }
++        }
++        setting.setOnClickListener {
++            switch.performClick()
++        }
++    }
++
+     fun showMessage(msg: String) {
+         snackBar.setText(msg)
+         snackBar.show()
+diff --git a/app/src/main/res/drawable/watch.xml b/app/src/main/res/drawable/watch.xml
+new file mode 100644
+index 00000000..bac71716
+--- /dev/null
++++ b/app/src/main/res/drawable/watch.xml
+@@ -0,0 +1,12 @@
++<vector
++    android:height="24dp"
++    android:viewportHeight="24"
++    android:viewportWidth="24"
++    android:width="24dp"
++    xmlns:android="http://schemas.android.com/apk/res/android">
++
++    <path
++        android:fillColor="?attr/colorControlNormal"
++        android:pathData="M8,2h8v4.2C17.8,7.2 19,9.5 19,12s-1.2,4.8 -3,5.8V22H8v-4.2C6.2,16.8 5,14.5 5,12s1.2,-4.8 3,-5.8V2zM12,7c-2.8,0 -5,2.2 -5,5s2.2,5 5,5 5,-2.2 5,-5 -2.2,-5 -5,-5zM12.5,9v2.8l2,1.2 -0.5,0.9 -2.5,-1.5V9h1z"/>
++
++</vector>
+diff --git a/app/src/main/res/layout/more_settings.xml b/app/src/main/res/layout/more_settings.xml
+index 4ec526cb..973ce817 100644
+--- a/app/src/main/res/layout/more_settings.xml
++++ b/app/src/main/res/layout/more_settings.xml
+@@ -167,6 +167,65 @@
+ 
+                 </LinearLayout>
+ 
++                <LinearLayout
++                    android:id="@+id/watch_remote_setting"
++                    android:layout_width="match_parent"
++                    android:layout_height="wrap_content"
++                    android:background="?android:attr/selectableItemBackground"
++                    android:clickable="true"
++                    android:focusable="true"
++                    android:orientation="horizontal"
++                    android:paddingTop="8dp"
++                    android:paddingHorizontal="16dp"
++                    android:paddingBottom="10dp">
++
++                    <ImageView
++                        android:id="@+id/watch_remote_icon"
++                        android:layout_width="48dp"
++                        android:layout_height="48dp"
++                        android:importantForAccessibility="no"
++                        android:paddingStart="4dp"
++                        android:paddingEnd="8dp"
++                        android:src="@drawable/watch" />
++
++                    <LinearLayout
++                        android:layout_width="0dp"
++                        android:layout_height="wrap_content"
++                        android:layout_marginHorizontal="4dp"
++                        android:layout_weight="1"
++                        android:orientation="vertical">
++
++                        <TextView
++                            android:id="@+id/watch_remote_title"
++                            android:layout_width="wrap_content"
++                            android:layout_height="wrap_content"
++                            android:layout_marginStart="10dp"
++                            android:paddingBottom="2dp"
++                            android:text="@string/watch_remote"
++                            android:textColor="?android:textColorPrimary"
++                            android:textSize="16sp" />
++
++                        <TextView
++                            android:id="@+id/watch_remote_description"
++                            android:layout_width="wrap_content"
++                            android:layout_height="wrap_content"
++                            android:paddingStart="10dp"
++                            android:text="@string/watch_remote_desc"
++                            android:textSize="14sp"
++                            tools:ignore="RtlSymmetry" />
++
++                    </LinearLayout>
++
++                    <com.google.android.material.materialswitch.MaterialSwitch
++                        android:id="@+id/watch_remote_switch"
++                        android:layout_width="wrap_content"
++                        android:layout_height="wrap_content"
++                        android:layout_gravity="end|center_vertical"
++                        android:layout_marginEnd="0dp"
++                        android:contentDescription="@string/watch_remote" />
++
++                </LinearLayout>
++
+             </LinearLayout>
+ 
+             <LinearLayout
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+index dc6f46b2..e856e051 100644
+--- a/app/src/main/res/values/strings.xml
++++ b/app/src/main/res/values/strings.xml
+@@ -103,6 +103,10 @@
+ 
+     <string name="camera_sounds">Camera Sounds</string>
+     <string name="camera_sounds_desc">Shutter sound and other audio cues</string>
++    <string name="watch_remote">Smartwatch remote shutter</string>
++    <string name="watch_remote_desc">Let a paired watch trigger the shutter through Gadgetbridge or AsteroidOS Sync while this screen is open and the device is unlocked</string>
++    <string name="watch_remote_no_companion">Install Gadgetbridge or AsteroidOS Sync first</string>
++    <string name="watch_remote_permission_denied">The companion app permission is required for the remote shutter</string>
+ 
+     <string name="storage">Storage</string>
+     <string name="storage_location">Storage Location</string>
