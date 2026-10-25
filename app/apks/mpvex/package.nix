@@ -11,7 +11,7 @@
   git,
 }:
 let
-  rev = "06cfc07";
+  rev = "f4ea63e";
 
   appPackage =
     let
@@ -26,13 +26,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "mpvex";
-      version = "unstable-2026-03-21";
+      version = "unstable-2026-10-24";
 
       src = fetchFromGitHub {
         owner = "marlboro-advance";
         repo = "mpvEx";
         inherit rev;
-        hash = "sha256-PHGMkoJ4jJT2BNCAe9t4760xI7RaZ8lEmD8Uc1441QE=";
+        hash = "sha256-ArbHmUlB+rxh5pou/OwJaklgDvDzMLwr0iUrYdLBykM=";
       };
 
       gradleBuildTask = ":app:assembleFdroidRelease";
@@ -63,7 +63,7 @@ let
 
       postPatch = ''
         substituteInPlace app/build.gradle.kts \
-          --replace-fail 'runCommand("git rev-list --count HEAD") ?: "0"' '"129"' \
+          --replace-fail 'runCommand("git rev-list --count HEAD") ?: "0"' '"260"' \
           --replace-fail 'runCommand("git rev-parse --short HEAD") ?: "unknown"' '"${lib.substring 0 7 rev}"'
       '';
 
