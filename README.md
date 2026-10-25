@@ -194,7 +194,7 @@ The signed factory zip includes `avb_pkmd.bin` from the key `generateKeysScript`
 
 ## LLM
 
-This repository is a proof of concept / toy project, as the code quality is currently affected by llm.
+This repository is a proof of concept / toy project, as the code quality is currently negatively affected by llm.
 
 This repository contains many llm generated glue code. They might be written on false assumptions but happen to work.
 
