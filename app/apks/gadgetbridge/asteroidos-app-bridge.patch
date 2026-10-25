@@ -24,7 +24,7 @@ diff --git a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devi
 index ed648c4..3b5ec6b 100644
 --- a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java
 +++ b/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java
-@@ -32,6 +32,13 @@ import java.util.GregorianCalendar;
+@@ -32,6 +32,15 @@ import java.util.GregorianCalendar;
  import java.util.Objects;
  import java.util.UUID;
  
@@ -32,6 +32,8 @@ index ed648c4..3b5ec6b 100644
 +import android.content.Context;
 +import android.content.Intent;
 +import android.content.IntentFilter;
++import android.content.pm.ResolveInfo;
++import java.util.List;
 +import androidx.core.content.ContextCompat;
 +import org.json.JSONObject;
 +
@@ -72,15 +74,16 @@ index ed648c4..3b5ec6b 100644
  
          LOG.info("Characteristic changed UUID: {}", characteristicUUID);
          LOG.info("Characteristic changed value: {}", Arrays.toString(value));
-@@ -126,6 +143,7 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -126,6 +143,8 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
          builder.notify(AsteroidOSConstants.SCREENSHOT_CONTENT_CHAR, true);
          builder.notify(AsteroidOSConstants.FINDPHONE_RING_CHAR, true);
          builder.read(AsteroidOSConstants.FINDPHONE_RING_CHAR);
++        builder.requestMtu(512);
 +        builder.notify(AsteroidOSConstants.APP_BRIDGE_TX_CHAR, true);
          builder.setDeviceState(GBDevice.State.INITIALIZED);
  
          batteryInfoProfile.requestBatteryInfo(builder);
-@@ -331,6 +349,138 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -331,6 +350,179 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
          evaluateGBDeviceEvent(findPhoneEvent);
      }
  
@@ -150,6 +153,11 @@ index ed648c4..3b5ec6b 100644
 +            int appIdLen = value[offset++] & 0xFF;
 +            if (value.length < offset + appIdLen + 1) return;
 +            String appId = new String(value, offset, appIdLen, StandardCharsets.UTF_8);
++            if ("cam".equals(appId) || "camera".equals(appId)) {
++                appId = "org.asteroidos.camera";
++            } else if ("spo2".equals(appId)) {
++                appId = "org.asteroidos.spo2";
++            }
 +            offset += appIdLen;
 +
 +            int actionLen = value[offset++] & 0xFF;
@@ -172,6 +180,35 @@ index ed648c4..3b5ec6b 100644
 +            broadcast.putExtra("extra_payload_string", payloadStr);
 +            getContext().sendBroadcast(broadcast);
 +
++            // Check if an external companion app (such as GrapheneOS Camera) handles this watch app
++            boolean hasExternalHandler = false;
++            try {
++                List<ResolveInfo> receivers = getContext().getPackageManager().queryBroadcastReceivers(broadcast, 0);
++                for (ResolveInfo ri : receivers) {
++                    if (ri.activityInfo != null && !getContext().getPackageName().equals(ri.activityInfo.packageName)) {
++                        hasExternalHandler = true;
++                        break;
++                    }
++                }
++            } catch (Exception ignored) {}
++
++            // Native Gadgetbridge Camera Remote event fallback when no external companion camera app is available
++            if ("org.asteroidos.camera".equals(appId) && !hasExternalHandler) {
++                if ("capture".equals(action) || "shutter".equals(action)) {
++                    evaluateGBDeviceEvent(new nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemote(
++                        nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemote.Event.TAKE_PICTURE
++                    ));
++                } else if ("open".equals(action) || "launch".equals(action)) {
++                    evaluateGBDeviceEvent(new nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemote(
++                        nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemote.Event.OPEN_CAMERA
++                    ));
++                } else if ("close".equals(action)) {
++                    evaluateGBDeviceEvent(new nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemote(
++                        nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemote.Event.CLOSE_CAMERA
++                    ));
++                }
++            }
++
 +            // Native telemetry integration: SpO2 & Heart Rate
 +            if ("org.asteroidos.spo2".equals(appId) && "measurement".equals(action)) {
 +                try {
@@ -190,7 +227,13 @@ index ed648c4..3b5ec6b 100644
 +
 +    private void sendAppBridgeMessage(String appId, String action, byte[] payload) {
 +        try {
-+            byte[] appIdBytes = appId.getBytes(StandardCharsets.UTF_8);
++            String wireAppId = appId;
++            if ("org.asteroidos.camera".equals(appId)) {
++                wireAppId = "cam";
++            } else if ("org.asteroidos.spo2".equals(appId)) {
++                wireAppId = "spo2";
++            }
++            byte[] appIdBytes = wireAppId.getBytes(StandardCharsets.UTF_8);
 +            byte[] actionBytes = action.getBytes(StandardCharsets.UTF_8);
 +            if (appIdBytes.length > 255 || actionBytes.length > 255) {
 +                LOG.warn("AppBridge: appId or action length exceeds 255 bytes");
@@ -215,6 +258,7 @@ index ed648c4..3b5ec6b 100644
 +            LOG.error("Error sending AppBridge message", e);
 +        }
 +    }
++
 +
      /**
       * Handles a media command sent from the AsteroidOS device
