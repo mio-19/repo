@@ -180,19 +180,13 @@ For the OSS repo, use `.#fdroid-keystore-update-oss` instead (see [fdroid-repo-o
 
 + publish pre-built rom for this operating system based on grapheneos that is not grapheneos.
 
-## Development
-
-[AGENTS](./AGENTS.md) - This document helps llm to do things better and might also be somewhat helpful for human. 
-
-## update
-
-use update-nix-fetchgit and nvfetcher
-
 ## lock
 
 The signed factory zip includes `avb_pkmd.bin` from the key `generateKeysScript` already writes (`$KEYSDIR/husky/avb_pkmd.bin` for husky). `flash-all.sh` and `flash-all.bat` flash it to `avb_custom_key`.
 
 ## LLM
+
+[AGENTS](./AGENTS.md) - This document helps llm to do things better and might also be somewhat helpful for human. 
 
 This repository is a proof of concept / toy project, as the code quality is currently negatively affected by llm.
 
