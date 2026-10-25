@@ -959,6 +959,106 @@
         },
         "version": "41cccc644cf1804362f7aa2fae96a6ffe67ffd22"
     },
+    "sm8450_tab_24_hardware_samsung": {
+        "cargoLock": null,
+        "date": "2026-08-30",
+        "extract": null,
+        "name": "sm8450_tab_24_hardware_samsung",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "b22d0f2cb4618305c5dbc2deba220b6a73955ab6",
+            "sha256": "sha256-kWBjv3uitLXCwwy2T+Mv4ryIVBLpHUeCB3F3vZxAanc=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/gts8wifi-lineageos-dev/android_hardware_samsung.git"
+        },
+        "version": "b22d0f2cb4618305c5dbc2deba220b6a73955ab6"
+    },
+    "sm8450_tab_24_kernel_sm8450": {
+        "cargoLock": null,
+        "date": "2026-07-31",
+        "extract": null,
+        "name": "sm8450_tab_24_kernel_sm8450",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "62920d15dfeaafda6a129d2dde48fa94e1a7e951",
+            "sha256": "sha256-f0OcCk6IZKRlswaEq3LZZNFTCxGfFgCsek9kIakjMC8=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450.git"
+        },
+        "version": "62920d15dfeaafda6a129d2dde48fa94e1a7e951"
+    },
+    "sm8450_tab_24_kernel_sm8450_devicetrees": {
+        "cargoLock": null,
+        "date": "2026-07-19",
+        "extract": null,
+        "name": "sm8450_tab_24_kernel_sm8450_devicetrees",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "b802558fc41ddbb41110c522678d4bec2ac3054f",
+            "sha256": "sha256-brXB5KBeyTOdLC9PM3OGEmNt7a//cNB+VhtXSLJHbyc=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450-devicetrees.git"
+        },
+        "version": "b802558fc41ddbb41110c522678d4bec2ac3054f"
+    },
+    "sm8450_tab_24_kernel_sm8450_modules": {
+        "cargoLock": null,
+        "date": "2026-07-19",
+        "extract": null,
+        "name": "sm8450_tab_24_kernel_sm8450_modules",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "97974666f19fe54cf8d3b725b17854cbd7ec5581",
+            "sha256": "sha256-X/wgisUYfhiA0KbRJ6CjtgHZuDBP7ha2wxfs0+bTZMg=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450-modules.git"
+        },
+        "version": "97974666f19fe54cf8d3b725b17854cbd7ec5581"
+    },
+    "sm8450_tab_24_vendor_qcom_opensource_agm": {
+        "cargoLock": null,
+        "date": "2026-07-13",
+        "extract": null,
+        "name": "sm8450_tab_24_vendor_qcom_opensource_agm",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "31f72af1a01f6c176997dd45e0cb8e17a8592ce2",
+            "sha256": "sha256-0Bto69DAJ1gnuPt2Gt8utA53uzwYa715/b+tI0rP80I=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/gts8wifi-lineageos-dev/android_vendor_qcom_opensource_agm.git"
+        },
+        "version": "31f72af1a01f6c176997dd45e0cb8e17a8592ce2"
+    },
     "sm8450_tab_device_gts8wifi": {
         "cargoLock": null,
         "date": "2026-08-09",
@@ -1348,6 +1448,21 @@
             "url": "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/f8cdcffc2fb9181b8cc5a9b02d4b5908b64e5cdd/vendor_gapps-f8cdcffc2fb9181b8cc5a9b02d4b5908b64e5cdd.tar.gz"
         },
         "version": "f8cdcffc2fb9181b8cc5a9b02d4b5908b64e5cdd"
+    },
+    "vendor_gapps17": {
+        "cargoLock": null,
+        "date": "2026-06-30",
+        "extract": null,
+        "name": "vendor_gapps17",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "name": null,
+            "sha256": "sha256-zKDs6r7jwQJNZmy77xbEompRgp9saf6k9pNjjJGF+Mk=",
+            "type": "url",
+            "url": "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/bfa45ac32a845d5fa429e652bcd7f97cb9154527/vendor_gapps-bfa45ac32a845d5fa429e652bcd7f97cb9154527.tar.gz"
+        },
+        "version": "bfa45ac32a845d5fa429e652bcd7f97cb9154527"
     },
     "vendor_lindroid": {
         "cargoLock": null,

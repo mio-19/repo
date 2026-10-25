@@ -15,8 +15,11 @@ let
   };
 in
 {
-  variant = "userdebug";
-  imports = [ ./los.nix ];
+  variant = "user";
+  imports = [
+    ./los.nix
+    ./los_hardened_23_2.nix
+  ];
   manufactor = "samsung";
   kernel-short = "sm8450";
   defconfig = "arch/arm64/configs/gts8wifi_defconfig";

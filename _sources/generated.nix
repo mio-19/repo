@@ -678,6 +678,76 @@
     };
     date = "2026-03-13";
   };
+  sm8450_tab_24_hardware_samsung = {
+    pname = "sm8450_tab_24_hardware_samsung";
+    version = "b22d0f2cb4618305c5dbc2deba220b6a73955ab6";
+    src = fetchgit {
+      url = "https://github.com/gts8wifi-lineageos-dev/android_hardware_samsung.git";
+      rev = "b22d0f2cb4618305c5dbc2deba220b6a73955ab6";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-kWBjv3uitLXCwwy2T+Mv4ryIVBLpHUeCB3F3vZxAanc=";
+    };
+    date = "2026-08-30";
+  };
+  sm8450_tab_24_kernel_sm8450 = {
+    pname = "sm8450_tab_24_kernel_sm8450";
+    version = "62920d15dfeaafda6a129d2dde48fa94e1a7e951";
+    src = fetchgit {
+      url = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450.git";
+      rev = "62920d15dfeaafda6a129d2dde48fa94e1a7e951";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-f0OcCk6IZKRlswaEq3LZZNFTCxGfFgCsek9kIakjMC8=";
+    };
+    date = "2026-07-31";
+  };
+  sm8450_tab_24_kernel_sm8450_devicetrees = {
+    pname = "sm8450_tab_24_kernel_sm8450_devicetrees";
+    version = "b802558fc41ddbb41110c522678d4bec2ac3054f";
+    src = fetchgit {
+      url = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450-devicetrees.git";
+      rev = "b802558fc41ddbb41110c522678d4bec2ac3054f";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-brXB5KBeyTOdLC9PM3OGEmNt7a//cNB+VhtXSLJHbyc=";
+    };
+    date = "2026-07-19";
+  };
+  sm8450_tab_24_kernel_sm8450_modules = {
+    pname = "sm8450_tab_24_kernel_sm8450_modules";
+    version = "97974666f19fe54cf8d3b725b17854cbd7ec5581";
+    src = fetchgit {
+      url = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450-modules.git";
+      rev = "97974666f19fe54cf8d3b725b17854cbd7ec5581";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-X/wgisUYfhiA0KbRJ6CjtgHZuDBP7ha2wxfs0+bTZMg=";
+    };
+    date = "2026-07-19";
+  };
+  sm8450_tab_24_vendor_qcom_opensource_agm = {
+    pname = "sm8450_tab_24_vendor_qcom_opensource_agm";
+    version = "31f72af1a01f6c176997dd45e0cb8e17a8592ce2";
+    src = fetchgit {
+      url = "https://github.com/gts8wifi-lineageos-dev/android_vendor_qcom_opensource_agm.git";
+      rev = "31f72af1a01f6c176997dd45e0cb8e17a8592ce2";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-0Bto69DAJ1gnuPt2Gt8utA53uzwYa715/b+tI0rP80I=";
+    };
+    date = "2026-07-13";
+  };
   sm8450_tab_device_gts8wifi = {
     pname = "sm8450_tab_device_gts8wifi";
     version = "c9c8708c449f95cc031c2607c524957a242ee0e0";
@@ -947,6 +1017,15 @@
       sha256 = "sha256-g/kJGdrl59hZ8ojSD7eH/9nYzhf5u3VXjqUtrnPA7MU=";
     };
     date = "2026-06-12";
+  };
+  vendor_gapps17 = {
+    pname = "vendor_gapps17";
+    version = "bfa45ac32a845d5fa429e652bcd7f97cb9154527";
+    src = fetchurl {
+      url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/bfa45ac32a845d5fa429e652bcd7f97cb9154527/vendor_gapps-bfa45ac32a845d5fa429e652bcd7f97cb9154527.tar.gz";
+      sha256 = "sha256-zKDs6r7jwQJNZmy77xbEompRgp9saf6k9pNjjJGF+Mk=";
+    };
+    date = "2026-06-30";
   };
   vendor_lindroid = {
     pname = "vendor_lindroid";

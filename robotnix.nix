@@ -84,6 +84,9 @@ in
           dm3q_cola2261 = common ./dm3q-cola2261.nix;
           gts9wifi = common ./gts9wifi.nix;
           gts8wifi = common ./gts8wifi.nix;
+          gts8wifi_24_0 = common ./gts8wifi_24_0.nix;
+          gts8 = common ./gts8.nix;
+          gts8_24_0 = common ./gts8_24_0.nix;
           gts7lwifi = common ./gts7lwifi.nix;
           gts7l = common ./gts7l.nix;
           hibreak_pro = common ./hibreak_pro.nix;

@@ -1,0 +1,9 @@
+diff -Naur a/arch/arm64/boot/dts/samsung/galaxytab/gts8/Makefile b/arch/arm64/boot/dts/samsung/galaxytab/gts8/Makefile
+--- a/arch/arm64/boot/dts/samsung/galaxytab/gts8/Makefile	2026-10-25 17:51:22.471120792 +1100
++++ b/arch/arm64/boot/dts/samsung/galaxytab/gts8/Makefile	2026-10-25 17:51:22.475120765 +1100
+@@ -41,3 +41,5 @@
+ 
+ clean-files := *.dtb *.reverse.dts *.dtbo
+ 
++
++always-$(CONFIG_BUILD_ARM64_DT_OVERLAY) += $(dtbo-y)
