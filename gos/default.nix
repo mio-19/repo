@@ -160,6 +160,8 @@ in
       url = "https://github.com/GrapheneOS/platform_frameworks_base/pull/323.diff";
       hash = "sha256-qNylnt+S2lIt30D9gwnbW7jcf+rb7zDV3c6tS877AuQ=";
     })
+
+    ./desktop-external-display-trackpad-keyboard.patch
   ];
   source.dirs."packages/apps/Settings".patches = [
     # https://github.com/GrapheneOS/os-issue-tracker/issues/664#issuecomment-3937125786
