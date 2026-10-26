@@ -1,6 +1,6 @@
 diff -Naur a/Android.mk b/Android.mk
 --- a/Android.mk	1970-01-01 10:00:01.000000000 +1000
-+++ b/Android.mk	2026-10-26 23:36:13.336675636 +1100
++++ b/Android.mk	2026-10-27 09:52:35.309896445 +1100
 @@ -6,6 +6,6 @@
  
  LOCAL_PATH := $(call my-dir)
@@ -11,7 +11,7 @@ diff -Naur a/Android.mk b/Android.mk
  endif
 diff -Naur a/AndroidProducts.mk b/AndroidProducts.mk
 --- a/AndroidProducts.mk	1970-01-01 10:00:01.000000000 +1000
-+++ b/AndroidProducts.mk	2026-10-26 23:36:13.337675627 +1100
++++ b/AndroidProducts.mk	2026-10-27 09:52:35.309896445 +1100
 @@ -5,9 +5,13 @@
  #
  
@@ -30,7 +30,7 @@ diff -Naur a/AndroidProducts.mk b/AndroidProducts.mk
 +    lineage_gts8-eng
 diff -Naur a/device.mk b/device.mk
 --- a/device.mk	1970-01-01 10:00:01.000000000 +1000
-+++ b/device.mk	2026-10-26 23:36:33.798506555 +1100
++++ b/device.mk	2026-10-27 09:52:35.309896445 +1100
 @@ -409,6 +409,7 @@
      $(LOCAL_PATH) \
      hardware/google/interfaces \
@@ -41,7 +41,7 @@ diff -Naur a/device.mk b/device.mk
      hardware/qcom-caf/wlan/qcwcn \
 diff -Naur a/dtbo.mk b/dtbo.mk
 --- a/dtbo.mk	1970-01-01 10:00:01.000000000 +1000
-+++ b/dtbo.mk	2026-10-26 23:36:13.337675627 +1100
++++ b/dtbo.mk	2026-10-27 09:52:35.309896445 +1100
 @@ -6,6 +6,19 @@
  
  MKDTBOIMG := $(HOST_OUT_EXECUTABLES)/mkdtboimg$(HOST_EXECUTABLE_SUFFIX)
@@ -86,7 +86,7 @@ diff -Naur a/dtbo.mk b/dtbo.mk
 +	$(MKDTBOIMG) create $@ --page_size=$(BOARD_KERNEL_PAGESIZE) $(ALL_DTBO_FILES)
 diff -Naur a/lineage_gts8.mk b/lineage_gts8.mk
 --- a/lineage_gts8.mk	1970-01-01 10:00:00.000000000 +1000
-+++ b/lineage_gts8.mk	2026-10-26 23:36:13.337675627 +1100
++++ b/lineage_gts8.mk	2026-10-27 09:52:35.309896445 +1100
 @@ -0,0 +1,29 @@
 +#
 +# Copyright (C) 2025 The LineageOS Project
@@ -117,3 +117,15 @@ diff -Naur a/lineage_gts8.mk b/lineage_gts8.mk
 +    BuildFingerprint=samsung/gts8xx/gts8:16/BP2A.250605.031.A3/X706BXXSBEZE1:user/release-keys \
 +    DeviceProduct=gts8 \
 +    SystemName=gts8
+diff -Naur a/sepolicy/vendor/hal_usb_default.te b/sepolicy/vendor/hal_usb_default.te
+--- a/sepolicy/vendor/hal_usb_default.te	1970-01-01 10:00:01.000000000 +1000
++++ b/sepolicy/vendor/hal_usb_default.te	2026-10-27 09:52:50.243778085 +1100
+@@ -1,5 +1,5 @@
+-allow hal_usb_default vendor_sysfs_usb_c:dir r_dir_perms;
+-allow hal_usb_default vendor_sysfs_usb_c:lnk_file r_file_perms;
+-allow hal_usb_default vendor_sysfs_usb_c:file rw_file_perms;
++allow hal_usb_default sysfs_typec:dir r_dir_perms;
++allow hal_usb_default sysfs_typec:lnk_file r_file_perms;
++allow hal_usb_default sysfs_typec:file rw_file_perms;
+ 
+ get_prop(hal_usb_default, vendor_usb_prop)
