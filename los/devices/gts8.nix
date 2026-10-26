@@ -37,13 +37,31 @@ in
   microg.enable = false;
 
   source.dirs = {
+    # Forwarding device directory for TARGET_DEVICE = gts8 so board_config.mk can find BoardConfig.mk
+    "device/samsung/gts8".src = pkgs.runCommand "gts8-device-dir" { } ''
+            mkdir -p $out
+            cat << 'EOF' > $out/BoardConfig.mk
+      # Galaxy Tab S8 5G (SM-X706) board config forwarding to gts8wifi
+      include device/samsung/gts8wifi/BoardConfig.mk
+      EOF
+            cat << 'EOF' > $out/Android.mk
+      # Stub Android.mk
+      LOCAL_PATH := $(call my-dir)
+      EOF
+    '';
+
     "device/samsung/gts8wifi" = {
       src = sources.sm8450_tab_device_gts8wifi.src;
       patches = [
         ../patches/device-samsung-gts8wifi-add-gts8-support.patch
       ];
     };
-    "vendor/samsung/gts8wifi".src = sources.sm8450_tab_vendor_gts8wifi.src;
+    "vendor/samsung/gts8wifi" = {
+      src = sources.sm8450_tab_vendor_gts8wifi.src;
+      patches = [
+        ../patches/vendor-samsung-gts8wifi-drop-hidl-dumpstate.patch
+      ];
+    };
     "kernel/samsung/sm8450" = {
       src = sources.sm8450_tab_kernel_sm8450.src;
       patches = [

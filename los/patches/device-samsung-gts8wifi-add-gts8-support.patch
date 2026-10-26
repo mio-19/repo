@@ -1,6 +1,6 @@
 diff -Naur a/Android.mk b/Android.mk
---- a/Android.mk	2026-10-25 17:52:14.590738664 +1100
-+++ b/Android.mk	2026-10-25 17:52:14.676737990 +1100
+--- a/Android.mk	1970-01-01 10:00:01.000000000 +1000
++++ b/Android.mk	2026-10-26 23:36:13.336675636 +1100
 @@ -6,6 +6,6 @@
  
  LOCAL_PATH := $(call my-dir)
@@ -10,8 +10,8 @@ diff -Naur a/Android.mk b/Android.mk
  include $(call all-subdir-makefiles,$(LOCAL_PATH))
  endif
 diff -Naur a/AndroidProducts.mk b/AndroidProducts.mk
---- a/AndroidProducts.mk	2026-10-25 17:52:14.590738664 +1100
-+++ b/AndroidProducts.mk	2026-10-25 17:52:14.679737967 +1100
+--- a/AndroidProducts.mk	1970-01-01 10:00:01.000000000 +1000
++++ b/AndroidProducts.mk	2026-10-26 23:36:13.337675627 +1100
 @@ -5,9 +5,13 @@
  #
  
@@ -28,9 +28,20 @@ diff -Naur a/AndroidProducts.mk b/AndroidProducts.mk
 +    lineage_gts8-user \
 +    lineage_gts8-userdebug \
 +    lineage_gts8-eng
+diff -Naur a/device.mk b/device.mk
+--- a/device.mk	1970-01-01 10:00:01.000000000 +1000
++++ b/device.mk	2026-10-26 23:36:33.798506555 +1100
+@@ -409,6 +409,7 @@
+     $(LOCAL_PATH) \
+     hardware/google/interfaces \
+     hardware/google/pixel \
++    hardware/google/pixel/power-libperfmgr \
+     hardware/lineage/interfaces/power-libperfmgr \
+     hardware/qcom-caf/wlan \
+     hardware/qcom-caf/wlan/qcwcn \
 diff -Naur a/dtbo.mk b/dtbo.mk
---- a/dtbo.mk	2026-10-25 17:52:14.601738578 +1100
-+++ b/dtbo.mk	2026-10-25 17:52:14.686737912 +1100
+--- a/dtbo.mk	1970-01-01 10:00:01.000000000 +1000
++++ b/dtbo.mk	2026-10-26 23:36:13.337675627 +1100
 @@ -6,6 +6,19 @@
  
  MKDTBOIMG := $(HOST_OUT_EXECUTABLES)/mkdtboimg$(HOST_EXECUTABLE_SUFFIX)
@@ -75,7 +86,7 @@ diff -Naur a/dtbo.mk b/dtbo.mk
 +	$(MKDTBOIMG) create $@ --page_size=$(BOARD_KERNEL_PAGESIZE) $(ALL_DTBO_FILES)
 diff -Naur a/lineage_gts8.mk b/lineage_gts8.mk
 --- a/lineage_gts8.mk	1970-01-01 10:00:00.000000000 +1000
-+++ b/lineage_gts8.mk	2026-10-25 17:52:14.683737936 +1100
++++ b/lineage_gts8.mk	2026-10-26 23:36:13.337675627 +1100
 @@ -0,0 +1,29 @@
 +#
 +# Copyright (C) 2025 The LineageOS Project

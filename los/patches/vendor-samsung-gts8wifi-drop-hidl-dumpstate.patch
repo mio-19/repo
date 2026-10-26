@@ -1,0 +1,86 @@
+diff -Naur a/Android.bp b/Android.bp
+--- a/Android.bp	2026-10-26 23:25:01.962184168 +1100
++++ b/Android.bp	2026-10-26 23:26:15.053594207 +1100
+@@ -31355,15 +31355,6 @@
+ }
+ 
+ prebuilt_etc_xml {
+-    name: "android.hardware.dumpstate@1.1-service-lazy.xml",
+-    owner: "samsung",
+-    src: "proprietary/vendor/etc/vintf/manifest/android.hardware.dumpstate@1.1-service-lazy.xml",
+-    filename_from_src: true,
+-    sub_dir: "vintf/manifest",
+-    soc_specific: true,
+-}
+-
+-prebuilt_etc_xml {
+     name: "android.hardware.gnss-aidl-service-qti.xml",
+     owner: "samsung",
+     src: "proprietary/vendor/etc/vintf/manifest/android.hardware.gnss-aidl-service-qti.xml",
+@@ -31858,39 +31849,6 @@
+                 "libc++",
+                 "libc",
+                 "libm",
+-                "libdl",
+-            ],
+-        },
+-    },
+-    compile_multilib: "64",
+-    strip: {
+-        none: true,
+-    },
+-    prefer: true,
+-    relative_install_path: "hw",
+-    soc_specific: true,
+-}
+-
+-cc_prebuilt_binary {
+-    name: "android.hardware.dumpstate@1.1-service-lazy",
+-    owner: "samsung",
+-    target: {
+-        android_arm64: {
+-            srcs: [
+-                "proprietary/vendor/bin/hw/android.hardware.dumpstate@1.1-service-lazy",
+-            ],
+-            shared_libs: [
+-                "android.hardware.dumpstate@1.0",
+-                "android.hardware.dumpstate@1.1",
+-                "libbase",
+-                "libcutils",
+-                "libdumpstateutil",
+-                "libhidlbase",
+-                "liblog",
+-                "libutils",
+-                "libc++",
+-                "libc",
+-                "libm",
+                 "libdl",
+             ],
+         },
+diff -Naur a/gts8wifi-vendor.mk b/gts8wifi-vendor.mk
+--- a/gts8wifi-vendor.mk	2026-10-26 23:25:01.963184160 +1100
++++ b/gts8wifi-vendor.mk	2026-10-26 23:26:38.084408313 +1100
+@@ -46,7 +46,6 @@
+     vendor/samsung/gts8wifi/proprietary/vendor/etc/hyper/config_vendor.json:$(TARGET_COPY_OUT_VENDOR)/etc/hyper/config_vendor.json \
+     vendor/samsung/gts8wifi/proprietary/vendor/etc/init/android.hardware.bluetooth@1.0-service-qti.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.bluetooth@1.0-service-qti.rc \
+     vendor/samsung/gts8wifi/proprietary/vendor/etc/init/android.hardware.drm@1.4-service.widevine.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.drm@1.4-service.widevine.rc \
+-    vendor/samsung/gts8wifi/proprietary/vendor/etc/init/android.hardware.dumpstate@1.1-service-lazy.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.dumpstate@1.1-service-lazy.rc \
+     vendor/samsung/gts8wifi/proprietary/vendor/etc/init/android.hardware.gatekeeper@1.0-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.gatekeeper@1.0-service.rc \
+     vendor/samsung/gts8wifi/proprietary/vendor/etc/init/android.hardware.gnss-aidl-service-qti.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.gnss-aidl-service-qti.rc \
+     vendor/samsung/gts8wifi/proprietary/vendor/etc/init/android.hardware.keymaster@4.0-strongbox-service-qti.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.keymaster@4.0-strongbox-service-qti.rc \
+@@ -1086,7 +1085,6 @@
+     vendor.qti.hardware.cvp@1.0 \
+     TimeService \
+     com.qualcomm.qti.gpudrivers.taro.api32 \
+-    android.hardware.dumpstate@1.1-service-lazy.xml \
+     android.hardware.gnss-aidl-service-qti.xml \
+     android.hardware.gnss@2.1-service-qti.xml \
+     c2_manifest_vendor_audio.xml \
+@@ -1111,7 +1109,6 @@
+     hermesd \
+     android.hardware.bluetooth@1.0-service-qti \
+     android.hardware.drm@1.4-service.widevine \
+-    android.hardware.dumpstate@1.1-service-lazy \
+     android.hardware.gatekeeper@1.0-service \
+     android.hardware.gnss-aidl-service-qti \
+     android.hardware.keymaster@4.0-strongbox-service-qti \

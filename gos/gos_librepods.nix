@@ -15,7 +15,7 @@ in
   options = {
     librepodsAirpodsSupport = lib.mkOption {
       type = lib.types.bool;
-      default = true;
+      default = false;
       description = "Whether to enable Apple VendorID spoofing and L2CAP ERTM compatibility in the Bluetooth stack for LibrePods and AirPods.";
     };
 
