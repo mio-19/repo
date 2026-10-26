@@ -234,3 +234,8 @@ todo
 ## Posts
 
 + <https://xdaforums.com/t/a-grapheneos-fork-with-pwm-mod-3840hz-or-4800hz-and-other-mod.4803782/>
+
+## Legacy Devices Kernels
+
++ Tab S7 4.19 EOL: January 2029
++ Tab S8 5.10 EOL: January 2031

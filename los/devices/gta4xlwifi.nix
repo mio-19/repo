@@ -1,0 +1,36 @@
+args@{
+  config,
+  pkgs,
+  lib,
+  self,
+  ...
+}:
+{
+  imports = [ ../default.nix ];
+  manufactor = "samsung";
+  kernel-short = "gta4xl";
+  lindroid = true;
+  defconfig = "arch/arm64/configs/exynos9611-gta4xlwifi_defconfig";
+  legacy414 = true;
+  microg.enable = true;
+  gapps = false;
+  ksu = true;
+  patch-overlayfs = true;
+  device = "gta4xlwifi";
+  flavorVersion = "23.2";
+  kernel-patches = [
+    # https://github.com/KernelSU-Next/KernelSU-Next/pull/743 -> -Note: legacy kernels: selfmusing/kernel_xiaomi_violet@9596554
+    ../../kernel/filter_count.patch
+    ../../kernel/0001-KSUManual4.14.patch
+    ../../kernel/daria-mali.patch
+    ../../kernel/0001-we-don-t-have-linux-msm_drm_notify.h.patch
+    ../../kernel/0001-drop-master-lindroid-patch.patch
+  ];
+  stateVersion = "3";
+  graphics_ver = "7";
+  ksu-backport1 = true;
+  enable-kernel = false;
+  source.dirs."kernel/samsung/gta4xl" = lib.mkForce {
+    src = self.packages.${pkgs.stdenv.hostPlatform.system}."kernelSrc-${config.device}";
+  };
+}

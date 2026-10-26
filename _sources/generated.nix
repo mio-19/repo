@@ -232,87 +232,87 @@
   };
   grapheneos_appstore = {
     pname = "grapheneos_appstore";
-    version = "4fb51303120bd497e77426b3cbc796e82e4cba48";
+    version = "10c26cae02da5266c9934e02594aa8530c0928e9";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/AppStore.git";
-      rev = "4fb51303120bd497e77426b3cbc796e82e4cba48";
+      rev = "10c26cae02da5266c9934e02594aa8530c0928e9";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-SOq381lC67vvtMR+JH5WP3pSwUda+8abNhOxdIG/s/g=";
+      sha256 = "sha256-JTGg8jyZrmN6KA4zhY/QR+qouNs7dtWGZNNCItZT5z8=";
     };
-    date = "2026-10-14";
+    date = "2026-10-23";
   };
   grapheneos_camera = {
     pname = "grapheneos_camera";
-    version = "fc75d0d5dd574240910ef99b0dfe98e0aadb500f";
+    version = "0aa4cb0dccf7f32919a35a431771cec67716dd7e";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/Camera.git";
-      rev = "fc75d0d5dd574240910ef99b0dfe98e0aadb500f";
+      rev = "0aa4cb0dccf7f32919a35a431771cec67716dd7e";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-/avrGrKm+ZGDWPR5wwtV0YXIT184hLb/ncLF2jL6WfA=";
+      sha256 = "sha256-60njAm8dQf/6YdOUdPbAgbndFOwShsBhBb3MBAvYOMM=";
     };
-    date = "2026-10-14";
+    date = "2026-10-23";
   };
   grapheneos_info = {
     pname = "grapheneos_info";
-    version = "c38bb003c915fa26a5f523c27acb429e96cfef64";
+    version = "ccbab3bcdebabc8a2b53221998258126e21f835b";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/Info.git";
-      rev = "c38bb003c915fa26a5f523c27acb429e96cfef64";
+      rev = "ccbab3bcdebabc8a2b53221998258126e21f835b";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-yYz1/sJ8/8VKGZUFaqAG7RNr74dhC8eO2cEYiHDmPNw=";
+      sha256 = "sha256-8JX2eXDjOtVDwQIJ0JELCSE7ra5EJol/y1G2xNI13RA=";
     };
-    date = "2026-09-14";
+    date = "2026-10-23";
   };
   grapheneos_messaging = {
     pname = "grapheneos_messaging";
-    version = "08a6af65ae9ac705422f276fa08010151b1bc9f0";
+    version = "d6907d96ee7bc58da8cad052d7269fd34ff2342e";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/Messaging.git";
-      rev = "08a6af65ae9ac705422f276fa08010151b1bc9f0";
+      rev = "d6907d96ee7bc58da8cad052d7269fd34ff2342e";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-7E3ijqza0LRm37QY/y2GciBoUxkJG+5IXdq5Kj4bPZE=";
+      sha256 = "sha256-16Df3exUKGSPJsg2VnxEfFuxifiGzkWRnIggxTNoRoI=";
     };
-    date = "2026-10-15";
+    date = "2026-10-24";
   };
   grapheneos_pdfviewer = {
     pname = "grapheneos_pdfviewer";
-    version = "3114215409d3fb78d773aba6c5f6d35a55515579";
+    version = "bc8cd0103a0c9fc76dbd99a570e1a3412e132ccf";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/PdfViewer.git";
-      rev = "3114215409d3fb78d773aba6c5f6d35a55515579";
+      rev = "bc8cd0103a0c9fc76dbd99a570e1a3412e132ccf";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-bwGHp8fWn7EmeFEXZIBfF5a9qCHcT+wUWQrjXgBBcKM=";
+      sha256 = "sha256-hLEQ86QT/SJqlJJwK+0N6TgqrmoyhL5JHaQrLIMkVes=";
     };
-    date = "2026-10-15";
+    date = "2026-10-23";
   };
   grapheneos_vanadium = {
     pname = "grapheneos_vanadium";
-    version = "8723012cbd0b88630480f2b0a9b3af7a2e6785f4";
+    version = "70d99c2c3c5ba2512b2ae81fb5bf0a64ac7757dc";
     src = fetchgit {
       url = "https://gitlab.com/grapheneos/platform_external_vanadium.git";
-      rev = "8723012cbd0b88630480f2b0a9b3af7a2e6785f4";
+      rev = "70d99c2c3c5ba2512b2ae81fb5bf0a64ac7757dc";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-V5vXGkg3Un4ojED29HoMXm5SnZO7XXq7T2KgHqoC0E4=";
+      sha256 = "sha256-rFjaAYOVjN+XfFV5XeNPM2XYk7z7h/yNX61EXZHEMaM=";
     };
-    date = "2026-10-16";
+    date = "2026-10-22";
   };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
@@ -596,31 +596,31 @@
   };
   lineage_latinime = {
     pname = "lineage_latinime";
-    version = "e417ba6faa5dbb66ba70a038a52ddc8f60bb5795";
+    version = "c9e8aa87038e1194d2717ac48f207df4068cebd9";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git";
-      rev = "e417ba6faa5dbb66ba70a038a52ddc8f60bb5795";
+      rev = "c9e8aa87038e1194d2717ac48f207df4068cebd9";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-gqcxuxmkTi1xffVWxwZ03dG7ENbNPPSbQ6cbuW+U2As=";
+      sha256 = "sha256-gIb/7o7I/5TH5Ptfd9sJx6nbfDamkiv9IWOFKoOyI+Q=";
     };
-    date = "2026-10-15";
+    date = "2026-10-20";
   };
   lineage_launcher3 = {
     pname = "lineage_launcher3";
-    version = "818f72b74e6f914cbca2b465776d6d20f960ee87";
+    version = "5f26fe66475643ec08fe71a4021946aa57307192";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_apps_Launcher3.git";
-      rev = "818f72b74e6f914cbca2b465776d6d20f960ee87";
+      rev = "5f26fe66475643ec08fe71a4021946aa57307192";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-tY8hBmWRzK63Pwq0fzrkeof2AbJdbtPKk/Uhz43PPPY=";
+      sha256 = "sha256-QhJGIBpwrJ1zI9IVVTB2afJ+14x0qV9VsJjTGGe4JzI=";
     };
-    date = "2026-10-15";
+    date = "2026-10-19";
   };
   lineage_prebuilts_bootmgr = {
     pname = "lineage_prebuilts_bootmgr";
@@ -677,6 +677,76 @@
       sha256 = "sha256-NBubLnNjkZbGFlSCkwbTdvjDeYdRn4xJBJUNCCs/ccU=";
     };
     date = "2026-03-13";
+  };
+  sm8450_tab_24_hardware_samsung = {
+    pname = "sm8450_tab_24_hardware_samsung";
+    version = "b22d0f2cb4618305c5dbc2deba220b6a73955ab6";
+    src = fetchgit {
+      url = "https://github.com/gts8wifi-lineageos-dev/android_hardware_samsung.git";
+      rev = "b22d0f2cb4618305c5dbc2deba220b6a73955ab6";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-kWBjv3uitLXCwwy2T+Mv4ryIVBLpHUeCB3F3vZxAanc=";
+    };
+    date = "2026-08-30";
+  };
+  sm8450_tab_24_kernel_sm8450 = {
+    pname = "sm8450_tab_24_kernel_sm8450";
+    version = "62920d15dfeaafda6a129d2dde48fa94e1a7e951";
+    src = fetchgit {
+      url = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450.git";
+      rev = "62920d15dfeaafda6a129d2dde48fa94e1a7e951";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-f0OcCk6IZKRlswaEq3LZZNFTCxGfFgCsek9kIakjMC8=";
+    };
+    date = "2026-07-31";
+  };
+  sm8450_tab_24_kernel_sm8450_devicetrees = {
+    pname = "sm8450_tab_24_kernel_sm8450_devicetrees";
+    version = "b802558fc41ddbb41110c522678d4bec2ac3054f";
+    src = fetchgit {
+      url = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450-devicetrees.git";
+      rev = "b802558fc41ddbb41110c522678d4bec2ac3054f";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-brXB5KBeyTOdLC9PM3OGEmNt7a//cNB+VhtXSLJHbyc=";
+    };
+    date = "2026-07-19";
+  };
+  sm8450_tab_24_kernel_sm8450_modules = {
+    pname = "sm8450_tab_24_kernel_sm8450_modules";
+    version = "97974666f19fe54cf8d3b725b17854cbd7ec5581";
+    src = fetchgit {
+      url = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450-modules.git";
+      rev = "97974666f19fe54cf8d3b725b17854cbd7ec5581";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-X/wgisUYfhiA0KbRJ6CjtgHZuDBP7ha2wxfs0+bTZMg=";
+    };
+    date = "2026-07-19";
+  };
+  sm8450_tab_24_vendor_qcom_opensource_agm = {
+    pname = "sm8450_tab_24_vendor_qcom_opensource_agm";
+    version = "31f72af1a01f6c176997dd45e0cb8e17a8592ce2";
+    src = fetchgit {
+      url = "https://github.com/gts8wifi-lineageos-dev/android_vendor_qcom_opensource_agm.git";
+      rev = "31f72af1a01f6c176997dd45e0cb8e17a8592ce2";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-0Bto69DAJ1gnuPt2Gt8utA53uzwYa715/b+tI0rP80I=";
+    };
+    date = "2026-07-13";
   };
   sm8450_tab_device_gts8wifi = {
     pname = "sm8450_tab_device_gts8wifi";
@@ -918,17 +988,17 @@
   };
   termux_x11 = {
     pname = "termux_x11";
-    version = "fa3a8b430e2896a19f44c99a9cb056254615ae06";
+    version = "7e5f5c5c9226e2cdab392b2efba91bc4bd86463e";
     src = fetchgit {
       url = "https://github.com/termux/termux-x11.git";
-      rev = "fa3a8b430e2896a19f44c99a9cb056254615ae06";
+      rev = "7e5f5c5c9226e2cdab392b2efba91bc4bd86463e";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-qkcAwmQVhc2SiK56nmIVjbaynlt3t6GY/nCEl073ddo=";
+      sha256 = "sha256-1dBYJwTDevPAGbq6T3GJIYzQcrvaIedcJMY+g7UZdWE=";
     };
-    date = "2026-10-06";
+    date = "2026-10-23";
   };
   vendor_gapps15 = {
     pname = "vendor_gapps15";
@@ -947,6 +1017,15 @@
       sha256 = "sha256-g/kJGdrl59hZ8ojSD7eH/9nYzhf5u3VXjqUtrnPA7MU=";
     };
     date = "2026-06-12";
+  };
+  vendor_gapps17 = {
+    pname = "vendor_gapps17";
+    version = "bfa45ac32a845d5fa429e652bcd7f97cb9154527";
+    src = fetchurl {
+      url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/bfa45ac32a845d5fa429e652bcd7f97cb9154527/vendor_gapps-bfa45ac32a845d5fa429e652bcd7f97cb9154527.tar.gz";
+      sha256 = "sha256-zKDs6r7jwQJNZmy77xbEompRgp9saf6k9pNjjJGF+Mk=";
+    };
+    date = "2026-06-30";
   };
   vendor_lindroid = {
     pname = "vendor_lindroid";

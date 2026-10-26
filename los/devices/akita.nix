@@ -1,0 +1,18 @@
+args@{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+{
+  imports = [ ../default.nix ];
+  manufactor = "google";
+  kernel-short = "akita";
+  enable-kernel = false;
+  lindroid = true;
+  microg.enable = false;
+  gapps = true;
+  device = "akita";
+  flavorVersion = "22.2";
+  stateVersion = "2";
+}

@@ -1,0 +1,862 @@
+diff --git a/packages/SystemUI/AndroidManifest.xml b/packages/SystemUI/AndroidManifest.xml
+index 9856376..1c10d7e 100644
+--- a/packages/SystemUI/AndroidManifest.xml
++++ b/packages/SystemUI/AndroidManifest.xml
+@@ -556,6 +556,18 @@
+             </intent-filter>
+         </activity>
+ 
++        <activity android:name=".display.TrackpadActivity"
++            android:label="@string/desktop_trackpad_title"
++            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen"
++            android:exported="false"
++            android:showForAllUsers="true"
++            android:excludeFromRecents="true"
++            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize">
++            <intent-filter>
++                <action android:name="android.intent.action.MAIN"/>
++            </intent-filter>
++        </activity>
++
+         <service android:name=".screenshot.appclips.AppClipsScreenshotHelperService"
+             android:exported="false"
+             android:singleUser="true"
+diff --git a/packages/SystemUI/res/drawable/ic_desktop_touchpad.xml b/packages/SystemUI/res/drawable/ic_desktop_touchpad.xml
+new file mode 100644
+index 0000000..c3fed1c
+--- /dev/null
++++ b/packages/SystemUI/res/drawable/ic_desktop_touchpad.xml
+@@ -0,0 +1,10 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="24dp"
++    android:height="24dp"
++    android:viewportWidth="24"
++    android:viewportHeight="24"
++    android:tint="?android:attr/colorControlNormal">
++    <path
++        android:fillColor="@android:color/white"
++        android:pathData="M20,4H4C2.9,4 2,4.9 2,6v12c0,1.1 0.9,2 2,2h16c1.1,0 2,-0.9 2,-2V6C22,4.9 21.1,4 20,4zM20,13H4V6h16V13zM11,18H4v-3h7V18zM20,18h-7v-3h7V18z"/>
++</vector>
+diff --git a/packages/SystemUI/res/values/strings.xml b/packages/SystemUI/res/values/strings.xml
+index d132e0e..03d44a2 100644
+--- a/packages/SystemUI/res/values/strings.xml
++++ b/packages/SystemUI/res/values/strings.xml
+@@ -5063,4 +5063,17 @@
+     <!-- Accessibility label for the thumbs down button on attribution dialog. [CHAR_LIMIT=NONE] -->
+     <string name="ace_attribution_thumbs_down_button_accessibility_description">Thumbs down feedback button</string>
+ 
++    <!-- Desktop companion notification channel name [CHAR LIMIT=50] -->
++    <string name="desktop_companion_channel_name">Desktop Companion Input</string>
++    <!-- Desktop companion notification channel description [CHAR LIMIT=150] -->
++    <string name="desktop_companion_channel_desc">Affordance to use phone as trackpad and keyboard on external displays</string>
++    <!-- Title for notification shown when desktop display is connected [CHAR LIMIT=50] -->
++    <string name="desktop_display_connected_title">Desktop Display Connected</string>
++    <!-- Text for notification shown when desktop display is connected [CHAR LIMIT=100] -->
++    <string name="desktop_display_connected_text">Tap to use your phone as a trackpad and keyboard</string>
++    <!-- Action button to open trackpad from notification [CHAR LIMIT=30] -->
++    <string name="desktop_trackpad_open_action">Open Trackpad</string>
++    <!-- Title for desktop trackpad activity [CHAR LIMIT=30] -->
++    <string name="desktop_trackpad_title">Desktop Trackpad</string>
++
+ </resources>
+diff --git a/packages/SystemUI/src/com/android/systemui/display/TrackpadActivity.kt b/packages/SystemUI/src/com/android/systemui/display/TrackpadActivity.kt
+new file mode 100644
+index 0000000..3af63ae
+--- /dev/null
++++ b/packages/SystemUI/src/com/android/systemui/display/TrackpadActivity.kt
+@@ -0,0 +1,631 @@
++/*
++ * Copyright (C) 2026 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ *
++ * Adapted from AR-Touchpad: https://github.com/pgratz1/AR-Touchpad
++ * Copyright 2026 Paul Gratz, Licensed under Apache 2.0.
++ * Reuses sub-pixel accumulation, velocity-based acceleration profile,
++ * multi-touch gesture thresholds, and virtual input device dispatching.
++ */
++
++package com.android.systemui.display
++
++import android.app.Activity
++import android.content.Context
++import android.graphics.Color
++import android.graphics.drawable.GradientDrawable
++import android.hardware.display.DisplayManager
++import android.hardware.input.InputManager
++import android.hardware.input.VirtualKeyboard
++import android.hardware.input.VirtualKeyboardConfig
++import android.hardware.input.VirtualKeyEvent
++import android.hardware.input.VirtualMouse
++import android.hardware.input.VirtualMouseButtonEvent
++import android.hardware.input.VirtualMouseConfig
++import android.hardware.input.VirtualMouseRelativeEvent
++import android.hardware.input.VirtualMouseScrollEvent
++import android.os.Bundle
++import android.os.Handler
++import android.os.Looper
++import android.os.SystemClock
++import android.text.Editable
++import android.text.InputType
++import android.text.TextWatcher
++import android.util.Log
++import android.util.TypedValue
++import android.view.Display
++import android.view.Gravity
++import android.view.HapticFeedbackConstants
++import android.view.InputDevice
++import android.view.KeyCharacterMap
++import android.view.KeyEvent
++import android.view.MotionEvent
++import android.view.View
++import android.view.ViewGroup
++import android.view.WindowManager
++import android.view.inputmethod.EditorInfo
++import android.view.inputmethod.InputMethodManager
++import android.widget.Button
++import android.widget.EditText
++import android.widget.FrameLayout
++import android.widget.LinearLayout
++import android.widget.TextView
++import android.widget.Toast
++import kotlin.math.abs
++import kotlin.math.hypot
++
++/**
++ * Activity presenting an interactive trackpad and keyboard companion UI on the phone display
++ * for controlling an external desktop display.
++ *
++ * Adapted from https://github.com/pgratz1/AR-Touchpad
++ */
++class TrackpadActivity : Activity() {
++
++    private var targetDisplayId: Int = Display.DEFAULT_DISPLAY
++    private var inputManager: InputManager? = null
++    private var displayManager: DisplayManager? = null
++
++    private var virtualMouse: VirtualMouse? = null
++    private var virtualKeyboard: VirtualKeyboard? = null
++
++    private val handler = Handler(Looper.getMainLooper())
++
++    // Sub-pixel accumulators adapted from AR-Touchpad (MouseService.kt):
++    // Carries fractional remainders between frames to prevent truncation stutter on slow movements.
++    private var accumX = 0f
++    private var accumY = 0f
++    private var accumScrollX = 0f
++    private var accumScrollY = 0f
++
++    private var lastX = 0f
++    private var lastY = 0f
++    private var downX = 0f
++    private var downY = 0f
++    private var downTime = 0L
++    private var isDragging = false
++    private var lastTapTime = 0L
++    private var isTwoFinger = false
++    private var lastTwoY = 0f
++    private var lastTwoX = 0f
++    private val sensitivity = 1.25f
++
++    private var imeEditText: EditText? = null
++    private var rootView: View? = null
++
++    private val displayListener = object : DisplayManager.DisplayListener {
++        override fun onDisplayAdded(displayId: Int) {}
++        override fun onDisplayRemoved(displayId: Int) {
++            if (displayId == targetDisplayId) {
++                Log.i(TAG, "Target display $displayId removed; closing trackpad activity")
++                finish()
++            }
++        }
++        override fun onDisplayChanged(displayId: Int) {}
++    }
++
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++
++        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
++
++        inputManager = getSystemService(InputManager::class.java)
++        displayManager = getSystemService(DisplayManager::class.java)
++
++        targetDisplayId = intent.getIntExtra(Intent_EXTRA_DISPLAY_ID, Display.DEFAULT_DISPLAY)
++        if (targetDisplayId == Display.DEFAULT_DISPLAY) {
++            val external = displayManager?.displays?.firstOrNull {
++                it.displayId != Display.DEFAULT_DISPLAY && it.type == Display.TYPE_EXTERNAL
++            }
++            targetDisplayId = external?.displayId ?: Display.DEFAULT_DISPLAY
++        }
++
++        if (targetDisplayId == Display.DEFAULT_DISPLAY) {
++            Toast.makeText(this, "No external desktop display connected", Toast.LENGTH_SHORT).show()
++            finish()
++            return
++        }
++
++        displayManager?.registerDisplayListener(displayListener, handler)
++
++        initVirtualDevices()
++        buildUi()
++    }
++
++    private fun initVirtualDevices() {
++        val im = inputManager ?: return
++        try {
++            val mouseConfig = VirtualMouseConfig.Builder()
++                .setInputDeviceName("GOS Desktop Touchpad")
++                .setVendorId(0x18d1)
++                .setProductId(0x0001)
++                .setAssociatedDisplayId(targetDisplayId)
++                .build()
++            virtualMouse = im.createVirtualMouse(mouseConfig)
++        } catch (e: Throwable) {
++            Log.w(TAG, "Could not create VirtualMouse; falling back to injectInputEvent", e)
++        }
++
++        try {
++            val kbdConfig = VirtualKeyboardConfig.Builder()
++                .setInputDeviceName("GOS Desktop Keyboard")
++                .setVendorId(0x18d1)
++                .setProductId(0x0002)
++                .setAssociatedDisplayId(targetDisplayId)
++                .build()
++            virtualKeyboard = im.createVirtualKeyboard(kbdConfig)
++        } catch (e: Throwable) {
++            Log.w(TAG, "Could not create VirtualKeyboard; falling back to injectInputEvent", e)
++        }
++    }
++
++    private fun buildUi() {
++        val root = LinearLayout(this).apply {
++            orientation = LinearLayout.VERTICAL
++            setBackgroundColor(Color.parseColor("#121212"))
++            layoutParams = ViewGroup.LayoutParams(
++                ViewGroup.LayoutParams.MATCH_PARENT,
++                ViewGroup.LayoutParams.MATCH_PARENT
++            )
++        }
++        rootView = root
++
++        // Top Toolbar
++        val topBar = LinearLayout(this).apply {
++            orientation = LinearLayout.HORIZONTAL
++            gravity = Gravity.CENTER_VERTICAL
++            setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12))
++            setBackgroundColor(Color.parseColor("#1E1E1E"))
++        }
++
++        val titleCol = LinearLayout(this).apply {
++            orientation = LinearLayout.VERTICAL
++            layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f)
++        }
++        val titleView = TextView(this).apply {
++            text = "Desktop Trackpad"
++            setTextColor(Color.WHITE)
++            setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)
++        }
++        val subtitleView = TextView(this).apply {
++            text = "Connected to Display $targetDisplayId"
++            setTextColor(Color.parseColor("#999999"))
++            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
++        }
++        titleCol.addView(titleView)
++        titleCol.addView(subtitleView)
++        topBar.addView(titleCol)
++
++        val btnKeyboard = Button(this).apply {
++            text = "Keyboard"
++            setTextColor(Color.parseColor("#4FC3F7"))
++            setBackgroundColor(Color.TRANSPARENT)
++            setOnClickListener { toggleKeyboard() }
++        }
++        val btnClose = Button(this).apply {
++            text = "Close"
++            setTextColor(Color.parseColor("#FF6E6E"))
++            setBackgroundColor(Color.TRANSPARENT)
++            setOnClickListener { finish() }
++        }
++        topBar.addView(btnKeyboard)
++        topBar.addView(btnClose)
++        root.addView(topBar)
++
++        // Hidden input for soft keyboard interception
++        val imeInput = EditText(this).apply {
++            layoutParams = ViewGroup.LayoutParams(1, 1)
++            alpha = 0f
++            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
++            imeOptions = EditorInfo.IME_ACTION_NONE
++            addTextChangedListener(object : TextWatcher {
++                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
++                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
++                    if (!s.isNullOrEmpty() && count > 0) {
++                        val newChars = s.subSequence(start, start + count).toString()
++                        sendCharacters(newChars)
++                        handler.post { text?.clear() }
++                    }
++                }
++                override fun afterTextChanged(s: Editable?) {}
++            })
++            setOnKeyListener { _, keyCode, event ->
++                if (event.action == KeyEvent.ACTION_DOWN) {
++                    sendKey(keyCode)
++                    true
++                } else {
++                    false
++                }
++            }
++        }
++        imeEditText = imeInput
++        root.addView(imeInput)
++
++        // Trackpad Touch Surface
++        val trackpadSurface = FrameLayout(this).apply {
++            layoutParams = LinearLayout.LayoutParams(
++                ViewGroup.LayoutParams.MATCH_PARENT,
++                0,
++                1.0f
++            ).apply {
++                setMargins(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16))
++            }
++            background = GradientDrawable().apply {
++                setColor(Color.parseColor("#1B232E"))
++                setStroke(dpToPx(1), Color.parseColor("#334B68"))
++                cornerRadius = dpToPx(16).toFloat()
++            }
++            setOnTouchListener { _, event -> handleTouch(event) }
++        }
++
++        val hintText = TextView(this).apply {
++            text = "Touch & drag to move cursor\nTap to click • Two fingers to scroll"
++            setTextColor(Color.parseColor("#5A738E"))
++            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
++            gravity = Gravity.CENTER
++            layoutParams = FrameLayout.LayoutParams(
++                ViewGroup.LayoutParams.WRAP_CONTENT,
++                ViewGroup.LayoutParams.WRAP_CONTENT,
++                Gravity.CENTER
++            )
++        }
++        trackpadSurface.addView(hintText)
++        root.addView(trackpadSurface)
++
++        // Bottom Controls: Navigation + Left/Right click buttons
++        val bottomBar = LinearLayout(this).apply {
++            orientation = LinearLayout.HORIZONTAL
++            setPadding(dpToPx(16), dpToPx(8), dpToPx(16), dpToPx(16))
++            gravity = Gravity.CENTER
++        }
++
++        val btnBack = createStyledButton("Back") { sendKey(KeyEvent.KEYCODE_BACK) }
++        val btnHome = createStyledButton("Home") { sendKey(KeyEvent.KEYCODE_HOME) }
++        val btnLeft = createStyledButton("Left Click") { clickPrimary() }
++        val btnRight = createStyledButton("Right Click") { clickSecondary() }
++
++        bottomBar.addView(btnBack)
++        bottomBar.addView(btnHome)
++        bottomBar.addView(btnLeft)
++        bottomBar.addView(btnRight)
++        root.addView(bottomBar)
++
++        setContentView(root)
++    }
++
++    private fun createStyledButton(label: String, onClick: () -> Unit): Button {
++        return Button(this).apply {
++            text = label
++            setTextColor(Color.WHITE)
++            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
++            background = GradientDrawable().apply {
++                setColor(Color.parseColor("#293545"))
++                cornerRadius = dpToPx(8).toFloat()
++            }
++            layoutParams = LinearLayout.LayoutParams(0, dpToPx(48), 1.0f).apply {
++                setMargins(dpToPx(4), 0, dpToPx(4), 0)
++            }
++            setOnClickListener {
++                performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
++                onClick()
++            }
++        }
++    }
++
++    private fun handleTouch(event: MotionEvent): Boolean {
++        val action = event.actionMasked
++
++        when (action) {
++            MotionEvent.ACTION_DOWN -> {
++                downX = event.x
++                downY = event.y
++                lastX = event.x
++                lastY = event.y
++                downTime = SystemClock.uptimeMillis()
++                isTwoFinger = false
++
++                // Double tap and drag (AR-Touchpad DOUBLE_TAP_WINDOW_MS = 300L)
++                if (downTime - lastTapTime < 300L) {
++                    isDragging = true
++                    setMouseButton(VirtualMouseButtonEvent.BUTTON_PRIMARY, true)
++                    rootView?.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
++                }
++            }
++
++            MotionEvent.ACTION_POINTER_DOWN -> {
++                if (event.pointerCount >= 2) {
++                    isTwoFinger = true
++                    lastTwoX = (event.getX(0) + event.getX(1)) / 2f
++                    lastTwoY = (event.getY(0) + event.getY(1)) / 2f
++                }
++            }
++
++            MotionEvent.ACTION_MOVE -> {
++                if (isTwoFinger && event.pointerCount >= 2) {
++                    val twoX = (event.getX(0) + event.getX(1)) / 2f
++                    val twoY = (event.getY(0) + event.getY(1)) / 2f
++                    val rawDeltaX = (twoX - lastTwoX) / 12f
++                    val rawDeltaY = (twoY - lastTwoY) / 12f
++
++                    // Sub-pixel scroll accumulator
++                    val totalScrollX = rawDeltaX + accumScrollX
++                    val totalScrollY = rawDeltaY + accumScrollY
++                    scroll(totalScrollX, totalScrollY)
++                    accumScrollX = totalScrollX - totalScrollX.coerceIn(-1.0f, 1.0f)
++                    accumScrollY = totalScrollY - totalScrollY.coerceIn(-1.0f, 1.0f)
++
++                    lastTwoX = twoX
++                    lastTwoY = twoY
++                } else if (!isTwoFinger) {
++                    val rawDx = event.x - lastX
++                    val rawDy = event.y - lastY
++
++                    // Non-linear acceleration curve from AR-Touchpad
++                    val speed = hypot(rawDx, rawDy)
++                    val accelFactor = 1.0f + (speed / 30f).coerceAtMost(2.5f)
++                    val totalDx = (rawDx * sensitivity * accelFactor) + accumX
++                    val totalDy = (rawDy * sensitivity * accelFactor) + accumY
++
++                    val stepDx = totalDx.toInt().toFloat()
++                    val stepDy = totalDy.toInt().toFloat()
++                    accumX = totalDx - stepDx
++                    accumY = totalDy - stepDy
++
++                    moveCursor(stepDx, stepDy)
++                    lastX = event.x
++                    lastY = event.y
++                }
++            }
++
++            MotionEvent.ACTION_UP -> {
++                if (isDragging) {
++                    isDragging = false
++                    setMouseButton(VirtualMouseButtonEvent.BUTTON_PRIMARY, false)
++                    rootView?.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
++                } else if (!isTwoFinger) {
++                    val duration = SystemClock.uptimeMillis() - downTime
++                    val dist = hypot(event.x - downX, event.y - downY)
++                    // Tap detection threshold (AR-Touchpad TAP_MAX_MS = 220L, MOVE_THRESHOLD = 5f)
++                    if (duration < 220L && dist < dpToPx(8)) {
++                        clickPrimary()
++                        rootView?.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
++                        lastTapTime = SystemClock.uptimeMillis()
++                    }
++                }
++                isTwoFinger = false
++            }
++
++            MotionEvent.ACTION_POINTER_UP -> {
++                if (isTwoFinger && event.pointerCount == 2) {
++                    val duration = SystemClock.uptimeMillis() - downTime
++                    if (duration < 250L) {
++                        clickSecondary()
++                        rootView?.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK)
++                    }
++                }
++                isTwoFinger = false
++            }
++        }
++        return true
++    }
++
++    private fun moveCursor(dx: Float, dy: Float) {
++        val vm = virtualMouse
++        if (vm != null) {
++            try {
++                vm.sendRelativeEvent(
++                    VirtualMouseRelativeEvent.Builder()
++                        .setRelativeX(dx)
++                        .setRelativeY(dy)
++                        .build()
++                )
++                return
++            } catch (e: Exception) {
++                Log.w(TAG, "VirtualMouse sendRelativeEvent failed", e)
++            }
++        }
++
++        // Fallback: inject MotionEvent directly
++        val im = inputManager ?: return
++        val now = SystemClock.uptimeMillis()
++        val props = arrayOf(MotionEvent.PointerProperties().apply {
++            id = 0
++            toolType = MotionEvent.TOOL_TYPE_MOUSE
++        })
++        val coords = arrayOf(MotionEvent.PointerCoords().apply {
++            setAxisValue(MotionEvent.AXIS_RELATIVE_X, dx)
++            setAxisValue(MotionEvent.AXIS_RELATIVE_Y, dy)
++        })
++        val ev = MotionEvent.obtain(
++            now, now, MotionEvent.ACTION_MOVE, 1, props, coords,
++            0, 0, 1.0f, 1.0f, 0, 0,
++            InputDevice.SOURCE_MOUSE, 0
++        )
++        ev.displayId = targetDisplayId
++        im.injectInputEvent(ev, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC)
++        ev.recycle()
++    }
++
++    private fun setMouseButton(button: Int, press: Boolean) {
++        val vm = virtualMouse
++        if (vm != null) {
++            try {
++                val action = if (press) {
++                    VirtualMouseButtonEvent.ACTION_BUTTON_PRESS
++                } else {
++                    VirtualMouseButtonEvent.ACTION_BUTTON_RELEASE
++                }
++                vm.sendButtonEvent(
++                    VirtualMouseButtonEvent.Builder()
++                        .setButtonCode(button)
++                        .setAction(action)
++                        .build()
++                )
++                return
++            } catch (e: Exception) {
++                Log.w(TAG, "VirtualMouse sendButtonEvent failed", e)
++            }
++        }
++
++        // Fallback: inject button press/release MotionEvent
++        val im = inputManager ?: return
++        val now = SystemClock.uptimeMillis()
++        val motionAction = if (press) MotionEvent.ACTION_BUTTON_PRESS else MotionEvent.ACTION_BUTTON_RELEASE
++        val buttonState = if (press) {
++            if (button == VirtualMouseButtonEvent.BUTTON_PRIMARY) MotionEvent.BUTTON_PRIMARY else MotionEvent.BUTTON_SECONDARY
++        } else 0
++        val props = arrayOf(MotionEvent.PointerProperties().apply {
++            id = 0
++            toolType = MotionEvent.TOOL_TYPE_MOUSE
++        })
++        val coords = arrayOf(MotionEvent.PointerCoords())
++        val ev = MotionEvent.obtain(
++            now, now, motionAction, 1, props, coords,
++            0, buttonState, 1.0f, 1.0f, 0, 0,
++            InputDevice.SOURCE_MOUSE, 0
++        )
++        ev.displayId = targetDisplayId
++        im.injectInputEvent(ev, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC)
++        ev.recycle()
++    }
++
++    private fun clickPrimary() {
++        setMouseButton(VirtualMouseButtonEvent.BUTTON_PRIMARY, true)
++        handler.postDelayed({
++            setMouseButton(VirtualMouseButtonEvent.BUTTON_PRIMARY, false)
++        }, 30)
++    }
++
++    private fun clickSecondary() {
++        setMouseButton(VirtualMouseButtonEvent.BUTTON_SECONDARY, true)
++        handler.postDelayed({
++            setMouseButton(VirtualMouseButtonEvent.BUTTON_SECONDARY, false)
++        }, 30)
++    }
++
++    private fun scroll(deltaX: Float, deltaY: Float) {
++        val vm = virtualMouse
++        if (vm != null) {
++            try {
++                vm.sendScrollEvent(
++                    VirtualMouseScrollEvent.Builder()
++                        .setXAxisMovement(deltaX.coerceIn(-1.0f, 1.0f))
++                        .setYAxisMovement(deltaY.coerceIn(-1.0f, 1.0f))
++                        .build()
++                )
++                return
++            } catch (e: Exception) {
++                Log.w(TAG, "VirtualMouse sendScrollEvent failed", e)
++            }
++        }
++
++        // Fallback: inject scroll MotionEvent
++        val im = inputManager ?: return
++        val now = SystemClock.uptimeMillis()
++        val props = arrayOf(MotionEvent.PointerProperties().apply {
++            id = 0
++            toolType = MotionEvent.TOOL_TYPE_MOUSE
++        })
++        val coords = arrayOf(MotionEvent.PointerCoords().apply {
++            setAxisValue(MotionEvent.AXIS_VSCROLL, deltaY)
++            setAxisValue(MotionEvent.AXIS_HSCROLL, deltaX)
++        })
++        val ev = MotionEvent.obtain(
++            now, now, MotionEvent.ACTION_SCROLL, 1, props, coords,
++            0, 0, 1.0f, 1.0f, 0, 0,
++            InputDevice.SOURCE_MOUSE, 0
++        )
++        ev.displayId = targetDisplayId
++        im.injectInputEvent(ev, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC)
++        ev.recycle()
++    }
++
++    private fun sendKey(keyCode: Int) {
++        val vk = virtualKeyboard
++        if (vk != null) {
++            try {
++                vk.sendKeyEvent(
++                    VirtualKeyEvent.Builder()
++                        .setKeyCode(keyCode)
++                        .setAction(VirtualKeyEvent.ACTION_DOWN)
++                        .build()
++                )
++                vk.sendKeyEvent(
++                    VirtualKeyEvent.Builder()
++                        .setKeyCode(keyCode)
++                        .setAction(VirtualKeyEvent.ACTION_UP)
++                        .build()
++                )
++                return
++            } catch (e: Exception) {
++                Log.w(TAG, "VirtualKeyboard sendKeyEvent failed", e)
++            }
++        }
++
++        // Fallback: inject KeyEvent
++        val im = inputManager ?: return
++        val now = SystemClock.uptimeMillis()
++        val down = KeyEvent(now, now, KeyEvent.ACTION_DOWN, keyCode, 0).apply {
++            displayId = targetDisplayId
++        }
++        im.injectInputEvent(down, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC)
++        val up = KeyEvent(now, now, KeyEvent.ACTION_UP, keyCode, 0).apply {
++            displayId = targetDisplayId
++        }
++        im.injectInputEvent(up, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC)
++    }
++
++    private fun sendCharacters(chars: String) {
++        val kcm = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD)
++        val events = kcm.getEvents(chars.toCharArray())
++        val im = inputManager
++        if (events != null && im != null) {
++            for (event in events) {
++                event.displayId = targetDisplayId
++                im.injectInputEvent(event, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC)
++            }
++        }
++    }
++
++    private fun toggleKeyboard() {
++        val edit = imeEditText ?: return
++        val imm = getSystemService(InputMethodManager::class.java) ?: return
++        edit.requestFocus()
++        imm.showSoftInput(edit, InputMethodManager.SHOW_IMPLICIT)
++    }
++
++    private fun dpToPx(dp: Int): Int {
++        return (dp * resources.displayMetrics.density).toInt()
++    }
++
++    override fun onDestroy() {
++        super.onDestroy()
++        displayManager?.unregisterDisplayListener(displayListener)
++        try {
++            virtualMouse?.close()
++        } catch (e: Exception) {
++            Log.w(TAG, "Error closing virtual mouse", e)
++        }
++        try {
++            virtualKeyboard?.close()
++        } catch (e: Exception) {
++            Log.w(TAG, "Error closing virtual keyboard", e)
++        }
++    }
++
++    companion object {
++        private const val TAG = "TrackpadActivity"
++        private const val Intent_EXTRA_DISPLAY_ID = "android.intent.extra.DISPLAY_ID"
++    }
++}
+diff --git a/packages/SystemUI/src/com/android/systemui/display/ui/viewmodel/ConnectingDisplayViewModel.kt b/packages/SystemUI/src/com/android/systemui/display/ui/viewmodel/ConnectingDisplayViewModel.kt
+index a1908f2..f1f670e 100644
+--- a/packages/SystemUI/src/com/android/systemui/display/ui/viewmodel/ConnectingDisplayViewModel.kt
++++ b/packages/SystemUI/src/com/android/systemui/display/ui/viewmodel/ConnectingDisplayViewModel.kt
+@@ -16,10 +16,17 @@
+ package com.android.systemui.display.ui.viewmodel
+ 
+ import android.app.Dialog
++import android.app.Notification
++import android.app.NotificationChannel
++import android.app.NotificationManager
++import android.app.PendingIntent
+ import android.content.Context
++import android.content.Intent
++import android.hardware.display.DisplayManager
+ import android.os.UserHandle
+ import android.provider.Settings.Secure.MIRROR_BUILT_IN_DISPLAY
+ import android.util.Log
++import android.view.Display
+ import android.view.Display.DEFAULT_DISPLAY
+ import android.view.WindowInsets.Type.displayCutout
+ import android.view.WindowInsets.Type.navigationBars
+@@ -39,6 +46,7 @@ import com.android.systemui.dagger.SysUISingleton
+ import com.android.systemui.dagger.qualifiers.Application
+ import com.android.systemui.dagger.qualifiers.Background
+ import com.android.systemui.dagger.qualifiers.Main
++import com.android.systemui.display.TrackpadActivity
+ import com.android.systemui.display.data.repository.KioskModeRepository
+ import com.android.systemui.display.domain.interactor.ConnectedDisplayInteractor
+ import com.android.systemui.display.domain.interactor.ConnectedDisplayInteractor.PendingDisplay
+@@ -52,6 +60,7 @@ import com.android.systemui.statusbar.phone.SystemUIDialogFactory
+ import com.android.systemui.statusbar.phone.createBottomSheet
+ import com.android.systemui.statusbar.policy.AccessibilityManagerWrapper
+ import com.android.systemui.util.settings.SecureSettings
++import com.android.systemui.util.settings.SettingsProxyExt.observerFlow
+ import com.android.wm.shell.shared.desktopmode.DesktopState
+ import dagger.Binds
+ import dagger.Module
+@@ -110,6 +119,8 @@ constructor(
+             .onEach { if (connectedDisplays.remove(it)) handleA11y(isConnected = false) }
+             .launchIn(scope)
+ 
++        setupDesktopCompanionNotification()
++
+         // Let's debounce for 2 reasons:
+         // - prevent fast dialog flashes where pending displays are available for just a few millis
+         // - prevent jumps related to inset changes: when in 3 buttons navigation, device unlock
+@@ -311,6 +322,86 @@ constructor(
+         accessibilityManagerWrapper.sendAccessibilityEvent(event)
+     }
+ 
++    /**
++     * Manages the persistent notification offering virtual trackpad & keyboard input
++     * when connected to an external display in desktop mode.
++     * Reference: https://github.com/pgratz1/AR-Touchpad
++     */
++    private fun setupDesktopCompanionNotification() {
++        val notificationManager = context.getSystemService(NotificationManager::class.java) ?: return
++        val displayManager = context.getSystemService(DisplayManager::class.java) ?: return
++
++        val channel = NotificationChannel(
++            COMPANION_NOTIFICATION_CHANNEL_ID,
++            context.getString(R.string.desktop_companion_channel_name),
++            NotificationManager.IMPORTANCE_LOW
++        ).apply {
++            description = context.getString(R.string.desktop_companion_channel_desc)
++        }
++        notificationManager.createNotificationChannel(channel)
++
++        fun updateNotification() {
++            val isMirroring = secureSettings.getIntForUser(
++                MIRROR_BUILT_IN_DISPLAY,
++                0,
++                UserHandle.USER_CURRENT
++            ) != 0
++
++            val externalDisplay = displayManager.displays.firstOrNull {
++                it.displayId != DEFAULT_DISPLAY && it.type == Display.TYPE_EXTERNAL
++            }
++
++            if (externalDisplay != null && !isMirroring) {
++                val targetDisplayId = externalDisplay.displayId
++                val intent = Intent(context, TrackpadActivity::class.java).apply {
++                    putExtra(Intent.EXTRA_DISPLAY_ID, targetDisplayId)
++                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
++                }
++                val pendingIntent = PendingIntent.getActivity(
++                    context,
++                    targetDisplayId,
++                    intent,
++                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
++                )
++
++                val openAction = Notification.Action.Builder(
++                    null,
++                    context.getString(R.string.desktop_trackpad_open_action),
++                    pendingIntent
++                ).build()
++
++                val notification = Notification.Builder(context, COMPANION_NOTIFICATION_CHANNEL_ID)
++                    .setSmallIcon(R.drawable.ic_desktop_touchpad)
++                    .setContentTitle(context.getString(R.string.desktop_display_connected_title))
++                    .setContentText(context.getString(R.string.desktop_display_connected_text))
++                    .setContentIntent(pendingIntent)
++                    .addAction(openAction)
++                    .setOngoing(true)
++                    .setAutoCancel(false)
++                    .build()
++
++                notificationManager.notify(COMPANION_NOTIFICATION_ID, notification)
++            } else {
++                notificationManager.cancel(COMPANION_NOTIFICATION_ID)
++            }
++        }
++
++        displayManager.registerDisplayListener(
++            object : DisplayManager.DisplayListener {
++                override fun onDisplayAdded(displayId: Int) = updateNotification()
++                override fun onDisplayRemoved(displayId: Int) = updateNotification()
++                override fun onDisplayChanged(displayId: Int) = updateNotification()
++            },
++            null
++        )
++
++        secureSettings.observerFlow(UserHandle.USER_CURRENT, MIRROR_BUILT_IN_DISPLAY)
++            .onEach { updateNotification() }
++            .launchIn(scope)
++
++        updateNotification()
++    }
++
+     @Module
+     interface StartableModule {
+         @Binds
+@@ -321,5 +412,7 @@ constructor(
+ 
+     private companion object {
+         const val TAG: String = "ConnectingDisplayViewModel"
++        const val COMPANION_NOTIFICATION_CHANNEL_ID: String = "desktop_input_companion"
++        const val COMPANION_NOTIFICATION_ID: Int = 90210
+     }
+ }
+diff --git a/services/core/java/com/android/server/wm/DisplayWindowSettings.java b/services/core/java/com/android/server/wm/DisplayWindowSettings.java
+index f0f4569..a93b153 100644
+--- a/services/core/java/com/android/server/wm/DisplayWindowSettings.java
++++ b/services/core/java/com/android/server/wm/DisplayWindowSettings.java
+@@ -376,14 +376,9 @@ class DisplayWindowSettings {
+         if (settings.mImePolicy != null) {
+             return settings.mImePolicy;
+         }
+-        // Show IME locally if display is eligible for desktop mode and the flag is enabled or the
+-        // display has not explicitly requested for the IME to be hidden then it shall show the IME
+-        // locally.
+-        if (dc.isPublicSecondaryDisplayWithDesktopModeForceEnabled()
+-                || (DesktopExperienceFlags.ENABLE_DISPLAY_CONTENT_MODE_MANAGEMENT.isTrue()
+-                && dc.isSystemDecorationsSupported() && dc.allowContentModeSwitch())) {
+-            return DISPLAY_IME_POLICY_LOCAL;
+-        }
++        // Force IME to fall back to the default display (phone) so the user can use the
++        // on-screen keyboard on their handheld device for desktop mode tasks.
++        // Reference: https://github.com/pgratz1/AR-Touchpad (DISPLAY_IME_POLICY_FALLBACK_DISPLAY)
+         return DISPLAY_IME_POLICY_FALLBACK_DISPLAY;
+     }
+ 

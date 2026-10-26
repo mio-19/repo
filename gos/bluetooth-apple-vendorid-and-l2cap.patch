@@ -1,0 +1,84 @@
+From: Antigravity <antigravity@google.com>
+Subject: [PATCH] Bluetooth: Add Apple VendorID spoofing and L2CAP compatibility for AirPods
+
+Add Apple VendorID (0x004C) spoofing support to the SDP Device Identification (DID)
+profile and permit L2CAP ERTM fallback without connection drops (resolving b/371713238).
+This allows Apple AirPods advanced features (ANC, transparency, adaptive audio,
+conversation awareness) to work seamlessly with companion apps such as LibrePods.
+
+Adapted from:
+- LibrePods: https://github.com/librepods-org/librepods
+  Author: Kavish Devar and LibrePods contributors
+  License: GNU General Public License v3.0 (GPL-3.0)
+- Google Issue Tracker b/371713238 (L2CAP ERTM mode fallback)
+
+---
+diff --git a/system/bta/dm/bta_dm_api.cc b/system/bta/dm/bta_dm_api.cc
+index 053395f..2fed937 100644
+--- a/system/bta/dm/bta_dm_api.cc
++++ b/system/bta/dm/bta_dm_api.cc
+@@ -39,6 +39,7 @@
+ #include "stack/include/btm_client_interface.h"
+ #include "stack/include/main_thread.h"
+ #include "stack/include/sdp_api.h"
++#include "osi/include/properties.h"
+ 
+ using namespace bluetooth::legacy::stack::sdp;
+ using namespace bluetooth;
+@@ -132,6 +133,11 @@ bool BTA_DmSetLocalDiRecord(tSDP_DI_RECORD* p_device_info) {
+   bool status = false;
+ 
+   if (bta_dm_di_cb.di_num < BTA_DI_NUM_MAX) {
++    if (p_device_info && osi_property_get_bool("persist.bluetooth.spoof_apple_did", true)) {
++      log::info("BTA_DmSetLocalDiRecord: spoofing Apple VendorID 0x004C for AirPods / LibrePods");
++      p_device_info->vendor = 0x004C;
++      p_device_info->vendor_id_source = 0x0001;
++    }
+     uint32_t handle = 0;
+     if (get_legacy_stack_sdp_api()->SDP_SetLocalDiRecord(p_device_info, &handle) ==
+         tSDP_STATUS::SDP_SUCCESS) {
+diff --git a/system/conf/bt_did.conf b/system/conf/bt_did.conf
+index 631cc6d..9b4c911 100644
+--- a/system/conf/bt_did.conf
++++ b/system/conf/bt_did.conf
+@@ -6,13 +6,13 @@
+ primaryRecord = true
+ 
+ # Vendor ID '0xFFFF' indicates no Device ID Service Record is present in the device
+-# 0x000F = Broadcom Corporation (default)
+-#vendorId = 0x000F
++# 0x004C = Apple Inc. (for AirPods & LibrePods compatibility)
++vendorId = 0x004C
+ 
+ # Vendor ID Source
+ # 0x0001 = Bluetooth SIG assigned Device ID Vendor ID value (default)
+ # 0x0002 = USB Implementer's Forum assigned Device ID Vendor ID value
+-#vendorIdSource = 0x0001
++vendorIdSource = 0x0001
+ 
+ # Product ID & Product Version
+ # Per spec DID v1.3 0xJJMN for version is interpreted as JJ.M.N
+diff --git a/system/stack/l2cap/l2c_fcr.cc b/system/stack/l2cap/l2c_fcr.cc
+index 60ddaff..d165de3 100644
+--- a/system/stack/l2cap/l2c_fcr.cc
++++ b/system/stack/l2cap/l2c_fcr.cc
+@@ -1602,16 +1602,10 @@ uint8_t l2c_fcr_chk_chan_modes(tL2C_CCB* p_ccb) {
+   /* Remove nonbasic options that the peer does not support */
+   if (!(p_ccb->p_lcb->peer_ext_fea & L2CAP_EXTFEA_ENH_RETRANS) &&
+       p_ccb->p_rcb->ertm_info.preferred_mode == L2CAP_FCR_ERTM_MODE) {
+-    log::warn("L2CAP - Peer does not support our desired channel types");
++    log::warn("L2CAP - Peer does not support our desired channel types, allowing connection fallback");
+     p_ccb->p_rcb->ertm_info.preferred_mode = 0;
+-    // TODO: This interop fix is temporary. Need to remove If there is a better
+-    // way to handle this
+-    if (l2c_should_skip_ertm(p_ccb->p_lcb->remote_bd_addr)) {
+-      log::info("candidate device for skip ertm");
+-      return true;
+-    } else {
+-      return false;
+-    }
++    // Allow connection to proceed in basic mode without disconnecting (fixes AirPods L2CAP compatibility b/371713238)
++    return true;
+   }
+   return true;
+ }

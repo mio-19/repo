@@ -20,6 +20,11 @@ src.git = "https://gitlab.com/MindTheGapps/vendor_gapps.git"
 src.branch = "baklava"
 # needed for blobs. fetchgit doesn't provide an option for git-lfs.
 fetch.url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/$ver/vendor_gapps-$ver.tar.gz"
+[vendor_gapps17]
+src.git = "https://gitlab.com/MindTheGapps/vendor_gapps.git"
+src.branch = "cinnamonbun"
+# needed for blobs. fetchgit doesn't provide an option for git-lfs.
+fetch.url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/$ver/vendor_gapps-$ver.tar.gz"
 
 [vendor_lindroid]
 src.git = "https://github.com/Linux-on-droid/vendor_lindroid.git"
@@ -304,6 +309,33 @@ fetch.git = "https://github.com/gts8wifi-lineageos-dev/android_hardware_samsung.
 [sm8450_tab_vendor_qcom_opensource_agm]
 src.git = "https://github.com/gts8wifi-lineageos-dev/android_vendor_qcom_opensource_agm.git"
 src.branch = "lineage-23.2-caf-sm8450"
+fetch.git = "https://github.com/gts8wifi-lineageos-dev/android_vendor_qcom_opensource_agm.git"
+
+# gts8wifi lineage-24.0 branches. The device and vendor repos have no 24.0 branch yet,
+# so gts8wifi_24_0 reuses the 23.2 sources for those.
+[sm8450_tab_24_kernel_sm8450]
+src.git = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450.git"
+src.branch = "lineage-24.0"
+fetch.git = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450.git"
+
+[sm8450_tab_24_kernel_sm8450_devicetrees]
+src.git = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450-devicetrees.git"
+src.branch = "lineage-24.0"
+fetch.git = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450-devicetrees.git"
+
+[sm8450_tab_24_kernel_sm8450_modules]
+src.git = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450-modules.git"
+src.branch = "lineage-24.0"
+fetch.git = "https://github.com/gts8wifi-lineageos-dev/android_kernel_samsung_sm8450-modules.git"
+
+[sm8450_tab_24_hardware_samsung]
+src.git = "https://github.com/gts8wifi-lineageos-dev/android_hardware_samsung.git"
+src.branch = "lineage-24.0"
+fetch.git = "https://github.com/gts8wifi-lineageos-dev/android_hardware_samsung.git"
+
+[sm8450_tab_24_vendor_qcom_opensource_agm]
+src.git = "https://github.com/gts8wifi-lineageos-dev/android_vendor_qcom_opensource_agm.git"
+src.branch = "lineage-24.0-caf-sm8450"
 fetch.git = "https://github.com/gts8wifi-lineageos-dev/android_vendor_qcom_opensource_agm.git"
 
 [lineage_glimpse]

@@ -1,0 +1,119 @@
+diff -Naur a/Android.mk b/Android.mk
+--- a/Android.mk	1970-01-01 10:00:01.000000000 +1000
++++ b/Android.mk	2026-10-26 23:36:13.336675636 +1100
+@@ -6,6 +6,6 @@
+ 
+ LOCAL_PATH := $(call my-dir)
+ 
+-ifeq ($(TARGET_DEVICE),gts8wifi)
++ifneq ($(filter $(TARGET_DEVICE),gts8 gts8wifi),)
+ include $(call all-subdir-makefiles,$(LOCAL_PATH))
+ endif
+diff -Naur a/AndroidProducts.mk b/AndroidProducts.mk
+--- a/AndroidProducts.mk	1970-01-01 10:00:01.000000000 +1000
++++ b/AndroidProducts.mk	2026-10-26 23:36:13.337675627 +1100
+@@ -5,9 +5,13 @@
+ #
+ 
+ PRODUCT_MAKEFILES := \
+-    $(LOCAL_DIR)/lineage_gts8wifi.mk
++    $(LOCAL_DIR)/lineage_gts8wifi.mk \
++    $(LOCAL_DIR)/lineage_gts8.mk
+ 
+ COMMON_LUNCH_CHOICES := \
+     lineage_gts8wifi-user \
+     lineage_gts8wifi-userdebug \
+-    lineage_gts8wifi-eng
++    lineage_gts8wifi-eng \
++    lineage_gts8-user \
++    lineage_gts8-userdebug \
++    lineage_gts8-eng
+diff -Naur a/device.mk b/device.mk
+--- a/device.mk	1970-01-01 10:00:01.000000000 +1000
++++ b/device.mk	2026-10-26 23:36:33.798506555 +1100
+@@ -409,6 +409,7 @@
+     $(LOCAL_PATH) \
+     hardware/google/interfaces \
+     hardware/google/pixel \
++    hardware/google/pixel/power-libperfmgr \
+     hardware/lineage/interfaces/power-libperfmgr \
+     hardware/qcom-caf/wlan \
+     hardware/qcom-caf/wlan/qcwcn \
+diff -Naur a/dtbo.mk b/dtbo.mk
+--- a/dtbo.mk	1970-01-01 10:00:01.000000000 +1000
++++ b/dtbo.mk	2026-10-26 23:36:13.337675627 +1100
+@@ -6,6 +6,19 @@
+ 
+ MKDTBOIMG := $(HOST_OUT_EXECUTABLES)/mkdtboimg$(HOST_EXECUTABLE_SUFFIX)
+ 
++GTS8_DTBO_DIR := $(DTBO_OUT)/arch/$(KERNEL_ARCH)/boot/dts/samsung/galaxytab/gts8
++GTS8_DTBO_NAMES := \
++    gts8_eur_openx_w00_r01.dtbo \
++    gts8_eur_openx_w00_r02.dtbo \
++    gts8_eur_openx_w00_r03.dtbo \
++    gts8_eur_openx_w00_r04.dtbo \
++    gts8_eur_openx_w00_r05.dtbo \
++    gts8_eur_openx_w00_r06.dtbo \
++    gts8_eur_openx_w00_r07.dtbo \
++    gts8_eur_openx_w00_r08.dtbo
++GTS8_DTBO_FILES := $(addprefix $(GTS8_DTBO_DIR)/,$(GTS8_DTBO_NAMES))
++GTS8_DTBO_SRCS := $(addprefix $(KERNEL_SRC)/arch/$(KERNEL_ARCH)/boot/dts/samsung/galaxytab/gts8/,$(GTS8_DTBO_NAMES:.dtbo=.dts))
++
+ GTS8WIFI_DTBO_DIR := $(DTBO_OUT)/arch/$(KERNEL_ARCH)/boot/dts/samsung/galaxytab/gts8wifi
+ GTS8WIFI_DTBO_NAMES := \
+     gts8wifi_chn_open_w00_r04.dtbo \
+@@ -16,14 +29,17 @@
+ GTS8WIFI_DTBO_FILES := $(addprefix $(GTS8WIFI_DTBO_DIR)/,$(GTS8WIFI_DTBO_NAMES))
+ GTS8WIFI_DTBO_SRCS := $(addprefix $(KERNEL_SRC)/arch/$(KERNEL_ARCH)/boot/dts/samsung/galaxytab/gts8wifi/,$(GTS8WIFI_DTBO_NAMES:.dtbo=.dts))
+ 
++ALL_DTBO_SRCS := $(GTS8_DTBO_SRCS) $(GTS8WIFI_DTBO_SRCS)
++ALL_DTBO_FILES := $(GTS8_DTBO_FILES) $(GTS8WIFI_DTBO_FILES)
++
+ $(DTBO_OUT):
+ 	mkdir -p $@
+ 
+-$(BOARD_PREBUILT_DTBOIMAGE): $(DTC) $(MKDTBOIMG) $(GTS8WIFI_DTBO_SRCS) | $(DTBO_OUT)
+-	@echo "Building gts8wifi dtbo.img from source"
++$(BOARD_PREBUILT_DTBOIMAGE): $(DTC) $(MKDTBOIMG) $(ALL_DTBO_SRCS) | $(DTBO_OUT)
++	@echo "Building unified gts8/gts8wifi dtbo.img from source"
+ 	$(call make-dtbo-target,$(KERNEL_DEFCONFIG))
+ 	$(call make-dtbo-target,$(TARGET_KERNEL_DTB))
+-	$(hide) for dtbo in $(GTS8WIFI_DTBO_FILES); do \
++	$(hide) for dtbo in $(ALL_DTBO_FILES); do \
+ 		test -f $$dtbo || { echo "Missing DTBO: $$dtbo"; exit 1; }; \
+ 	done
+-	$(MKDTBOIMG) create $@ --page_size=$(BOARD_KERNEL_PAGESIZE) $(GTS8WIFI_DTBO_FILES)
++	$(MKDTBOIMG) create $@ --page_size=$(BOARD_KERNEL_PAGESIZE) $(ALL_DTBO_FILES)
+diff -Naur a/lineage_gts8.mk b/lineage_gts8.mk
+--- a/lineage_gts8.mk	1970-01-01 10:00:00.000000000 +1000
++++ b/lineage_gts8.mk	2026-10-26 23:36:13.337675627 +1100
+@@ -0,0 +1,29 @@
++#
++# Copyright (C) 2025 The LineageOS Project
++#
++# SPDX-License-Identifier: Apache-2.0
++#
++
++# Inherit from those products. Most specific first.
++$(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
++$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
++
++# Inherit some common Lineage stuff.
++$(call inherit-product, vendor/lineage/config/common_full_tablet_wifionly.mk)
++
++# Inherit from gts8wifi device
++$(call inherit-product, device/samsung/gts8wifi/device.mk)
++
++PRODUCT_DEVICE := gts8
++PRODUCT_NAME := lineage_gts8
++PRODUCT_BRAND := samsung
++PRODUCT_MODEL := SM-X706B
++PRODUCT_MANUFACTURER := samsung
++
++PRODUCT_GMS_CLIENTID_BASE := android-samsung-ss
++
++PRODUCT_BUILD_PROP_OVERRIDES += \
++    BuildDesc="gts8xx-user 16 BP2A.250605.031.A3 X706BXXSBEZE1 release-keys" \
++    BuildFingerprint=samsung/gts8xx/gts8:16/BP2A.250605.031.A3/X706BXXSBEZE1:user/release-keys \
++    DeviceProduct=gts8 \
++    SystemName=gts8
