@@ -37,7 +37,7 @@ let
       keyalias_for_pkg() {
         local pkg="$1"
         case "$pkg" in
-          com.termux|com.termux.styling|com.termux.x11|org.gnu.emacs) echo "com.termux" ;;
+          com.termux|com.termux.api|com.termux.styling|com.termux.x11|org.gnu.emacs) echo "com.termux" ;;
           *) echo "$pkg" ;;
         esac
       }

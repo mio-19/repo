@@ -50,7 +50,7 @@ nix run .#fdroid-keystore-update-oss -- my-release-key.jks --ks-pass password
 
 Alias mapping (same as the full repo):
 
-- `com.termux`, `com.termux.styling`, `org.gnu.emacs` → `com.termux`
+- `com.termux`, `com.termux.api`, `com.termux.styling`, `org.gnu.emacs` → `com.termux`
 - all others → appId / package name
 
 You can also add aliases manually:

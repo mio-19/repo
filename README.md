@@ -148,7 +148,7 @@ nix build .#sign-fdroid-repo-oss -o sign-fdroid-repo-oss
 Alias behavior is automatic (no `--alias` flag):
 
 - Default: each APK is signed with key alias = its appId/package name.
-- Termux family apps that require the shared Termux signature (`com.termux`, `com.termux.styling`, `org.gnu.emacs`) use shared alias `com.termux`.
+- Termux family apps that require the shared Termux signature (`com.termux`, `com.termux.api`, `com.termux.styling`, `org.gnu.emacs`) use shared alias `com.termux`.
 - Termux:X11 (`com.termux.x11`) uses its own `com.termux.x11` alias.
 
 ### Add missing key aliases to an existing keystore
@@ -164,7 +164,7 @@ You can pass multiple `--alias` flags.
 
 If `--alias` is omitted, it auto-discovers APK package names from `.#fdroid-repo` and ensures all required aliases automatically using the same mapping as `sign-fdroid-repo`:
 
-- `com.termux`, `com.termux.styling`, `org.gnu.emacs` -> `com.termux`
+- `com.termux`, `com.termux.api`, `com.termux.styling`, `org.gnu.emacs` -> `com.termux`
 - `com.termux.x11` -> `com.termux.x11`
 - all others -> appId/package name
 
