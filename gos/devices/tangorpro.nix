@@ -9,10 +9,11 @@ args@{
     ../default.nix
   ];
   advancedPowerMenu = false;
-  #allowAdbWirelessWithoutWifi = true;
+  allowAdbWirelessWithoutWifi = true;
   launcherVariant = "los";
   enableLindroid = true;
-  enableDroidspaces = false;
+  enableDroidspaces = true;
+  bundleLibrePods = true;
   device = "tangorpro";
   source.dirs."device/google/tangorpro-kernels/6.1" = lib.mkForce {
     src =
