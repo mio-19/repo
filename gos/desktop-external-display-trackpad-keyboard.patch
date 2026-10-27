@@ -190,7 +190,7 @@ index 0000000..3af63ae
 +        inputManager = getSystemService(InputManager::class.java)
 +        displayManager = getSystemService(DisplayManager::class.java)
 +
-+        targetDisplayId = intent.getIntExtra(Intent_EXTRA_DISPLAY_ID, Display.DEFAULT_DISPLAY)
++        targetDisplayId = intent.getIntExtra(EXTRA_DISPLAY_ID, Display.DEFAULT_DISPLAY)
 +        if (targetDisplayId == Display.DEFAULT_DISPLAY) {
 +            val external = displayManager?.displays?.firstOrNull {
 +                it.displayId != Display.DEFAULT_DISPLAY && it.type == Display.TYPE_EXTERNAL
@@ -693,7 +693,7 @@ index 0000000..3af63ae
 +
 +    companion object {
 +        private const val TAG = "TrackpadActivity"
-+        private const val Intent_EXTRA_DISPLAY_ID = "android.intent.extra.DISPLAY_ID"
++        const val EXTRA_DISPLAY_ID = "android.intent.extra.DISPLAY_ID"
 +    }
 +}
 diff --git a/packages/SystemUI/src/com/android/systemui/display/ui/viewmodel/ConnectingDisplayViewModel.kt b/packages/SystemUI/src/com/android/systemui/display/ui/viewmodel/ConnectingDisplayViewModel.kt
@@ -779,7 +779,7 @@ index a1908f2..f1f670e 100644
 +            if (externalDisplay != null && !isMirroring) {
 +                val targetDisplayId = externalDisplay.displayId
 +                val intent = Intent(context, TrackpadActivity::class.java).apply {
-+                    putExtra(Intent.EXTRA_DISPLAY_ID, targetDisplayId)
++                    putExtra(TrackpadActivity.EXTRA_DISPLAY_ID, targetDisplayId)
 +                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
 +                }
 +                val pendingIntent = PendingIntent.getActivity(
