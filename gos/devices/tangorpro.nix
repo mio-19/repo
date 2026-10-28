@@ -9,6 +9,7 @@ args@{
     ../default.nix
   ];
   advancedPowerMenu = false;
+  playIntegritySpoofing = true;
   allowAdbWirelessWithoutWifi = true;
   launcherVariant = "los";
   enableLindroid = true;

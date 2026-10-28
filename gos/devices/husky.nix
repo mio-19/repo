@@ -9,6 +9,7 @@ args@{
     ../default.nix
   ];
   advancedPowerMenu = false;
+  playIntegritySpoofing = false;
   enableLindroid = false; # basic stuff works. systemd units launched. sddm black screen.
   enableDroidspaces = false;
   huskyHighEmissionFrequency = true;
