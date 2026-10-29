@@ -4386,13 +4386,50 @@ diff -uNr -p a/keystore/java/android/security/keystore2/AndroidKeyStoreSpi.java 
 diff -uNr -p a/services/core/java/com/android/server/am/ActivityManagerService.java b/services/core/java/com/android/server/am/ActivityManagerService.java
 --- a/services/core/java/com/android/server/am/ActivityManagerService.java	2026-10-28 22:50:20.849859562 +1100
 +++ b/services/core/java/com/android/server/am/ActivityManagerService.java	2026-10-28 22:51:55.253995653 +1100
-@@ -21365,4 +21365,52 @@ public class ActivityManagerService exte
+@@ -21365,4 +21365,100 @@ public class ActivityManagerService exte
          mAnrWarningController.notifyAnrWarning(
                  uid, anrId, errorId, anrType, consumedTimeMs, timeoutMs, description);
      }
 +
++    private boolean isCallerAllowedToAccessSpoof() {
++        final int callingUid = Binder.getCallingUid();
++        if (callingUid == Process.SYSTEM_UID
++                || callingUid == Process.PHONE_UID
++                || callingUid == Process.SHELL_UID
++                || callingUid == Process.ROOT_UID) {
++            return true;
++        }
++        if (mContext == null || mContext.getPackageManager() == null) {
++            return false;
++        }
++        final String[] packages = mContext.getPackageManager().getPackagesForUid(callingUid);
++        if (packages == null || packages.length == 0) {
++            return false;
++        }
++        final long ident = Binder.clearCallingIdentity();
++        try {
++            String targets = android.provider.Settings.Secure.getString(
++                    mContext.getContentResolver(),
++                    android.provider.Settings.Secure.SPOOF_TRICKYSTORE_TARGET);
++            if (targets == null || targets.isEmpty()) {
++                targets = "com.google.android.gms\ncom.android.vending";
++            }
++            for (String pkg : packages) {
++                if (targets.contains(pkg)) {
++                    return true;
++                }
++            }
++        } finally {
++            Binder.restoreCallingIdentity(ident);
++        }
++        return false;
++    }
++
 +    @Override
 +    public String getSpoofTrickyStoreTarget() {
++        if (!isCallerAllowedToAccessSpoof()) {
++            return null;
++        }
 +        final long ident = Binder.clearCallingIdentity();
 +        try {
 +            return android.provider.Settings.Secure.getString(
@@ -4405,6 +4442,10 @@ diff -uNr -p a/services/core/java/com/android/server/am/ActivityManagerService.j
 +
 +    @Override
 +    public String getSpoofTrickyStoreKeyBox() {
++        if (!isCallerAllowedToAccessSpoof()) {
++            Slog.w(TAG, "Unauthorized attempt to read keybox from uid " + Binder.getCallingUid());
++            return null;
++        }
 +        final long ident = Binder.clearCallingIdentity();
 +        try {
 +            return android.provider.Settings.Secure.getString(
@@ -4417,6 +4458,9 @@ diff -uNr -p a/services/core/java/com/android/server/am/ActivityManagerService.j
 +
 +    @Override
 +    public String getSpoofTrickyStorePatch() {
++        if (!isCallerAllowedToAccessSpoof()) {
++            return null;
++        }
 +        final long ident = Binder.clearCallingIdentity();
 +        try {
 +            return android.provider.Settings.Secure.getString(
@@ -4429,6 +4473,10 @@ diff -uNr -p a/services/core/java/com/android/server/am/ActivityManagerService.j
 +
 +    @Override
 +    public String getSpoofPifConfig() {
++        if (!isCallerAllowedToAccessSpoof()) {
++            Slog.w(TAG, "Unauthorized attempt to read PIF config from uid " + Binder.getCallingUid());
++            return null;
++        }
 +        final long ident = Binder.clearCallingIdentity();
 +        try {
 +            return android.provider.Settings.Secure.getString(

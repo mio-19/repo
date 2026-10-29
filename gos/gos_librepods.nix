@@ -15,7 +15,7 @@ in
   options = {
     librepodsAirpodsSupport = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = config.bundleLibrePods;
       description = "Whether to enable Apple VendorID spoofing and L2CAP ERTM compatibility in the Bluetooth stack for LibrePods and AirPods.";
     };
 
@@ -33,7 +33,7 @@ in
       ];
     })
 
-    (lib.mkIf (config.librepodsAirpodsSupport && config.bundleLibrePods) {
+    (lib.mkIf config.bundleLibrePods {
       apps.prebuilt.librepods = {
         enable = true;
         name = "LibrePods";

@@ -60,13 +60,14 @@ in
             else
               assert config.launcherVariant == "evox";
               sources.evox_launcher3.src;
-          patches = [
-            # from https://github.com/GrapheneOS/platform_packages_apps_Launcher3/pull/69.diff
-            ./los-allapps-make-search-bar-look-good-https-github.com-G.patch
-          ]
-          ++ lib.optionals (config.launcherVariant == "evox") [
-            ./evox-launcher3-add-current-aconfig-flags.patch
-          ];
+          patches =
+            (lib.optionals (config.launcherVariant == "los") [
+              # from https://github.com/GrapheneOS/platform_packages_apps_Launcher3/pull/69.diff
+              ./los-allapps-make-search-bar-look-good-https-github.com-G.patch
+            ])
+            ++ (lib.optionals (config.launcherVariant == "evox") [
+              ./evox-launcher3-add-current-aconfig-flags.patch
+            ]);
         }
       else
         assert config.launcherVariant == "stock";
