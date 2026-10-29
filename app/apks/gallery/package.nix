@@ -11,17 +11,18 @@
   fetchurl,
   fetchFromGitHub,
   jq,
+  python3,
   writableTmpDirAsHomeHook,
   mergeLock,
 }:
 let
-  version = "1.0.20";
+  version = "1.0.22";
 
   src = fetchFromGitHub {
     owner = "google-ai-edge";
     repo = "gallery";
     tag = version;
-    hash = "sha256-3Nq1/KhQcJzbG2UffHqlQU4+ijl3G2tH4+gAEgzKbTQ=";
+    hash = "sha256-7KCQN7xkEwB6vdA/Z2PaH8prgccYFaMsbzTI3w6S5AY=";
   };
 
   androidSdk = androidSdkBuilder (s: [
@@ -43,75 +44,83 @@ let
     # https://github.com/google-ai-edge/gallery/blob/ff16cf71ca75dcf83072bd69546051d10c85039f/Android/src/app/src/main/java/com/google/ai/edge/gallery/ui/modelmanager/ModelManagerViewModel.kt#L86
     # https://github.com/google-ai-edge/gallery/tree/main/model_allowlists
     url = "https://raw.githubusercontent.com/google-ai-edge/gallery/refs/heads/main/model_allowlists/${allowlistVersion}.json";
-    hash = "sha256-VFL0wd4ASF9tgi+pmWER7TPOuDPCVx2lK27R5cm+Qzk=";
+    hash = "sha256-bMGjCFq2QecCNm+H/V0ACMd41FIOyQAzxX2Q6P0HwBM=";
   };
 
-  patchedAllowlist = runCommand "gallery-model-allowlist.json" { nativeBuildInputs = [ jq ]; } ''
-    jq '
-      .models += [
-        {
-          "name": "Gemma-4-E2B-it-abliterated",
-          "modelId": "nqd145/Gemma-4-E2B-it-abliterated-litertlm",
-          "modelFile": "Gemma-4-E2B-it-abliterated.litertlm",
-          "description": "An abliterated variant of Gemma 4 E2B ready for deployment on Android using LiteRT-LM. It is based on the official Gemma 4 E2B model.",
-          "sizeInBytes": 5065244672,
-          "minDeviceMemoryInGb": 8,
-          "commitHash": "7c778c0c415a10ad518cf6f2ac21931610e0d223",
-          "capabilities": [
-            "llm_thinking"
-          ],
-          "capabilityToTaskTypes": {
-            "llm_thinking": [
-              "llm_chat"
-            ]
-          },
-          "defaultConfig": {
-            "topK": 64,
-            "topP": 0.95,
-            "temperature": 1.0,
-            "maxContextLength": 32000,
-            "maxTokens": 4000,
-            "accelerators": "gpu,cpu"
-          },
-          "taskTypes": [
-            "llm_chat",
-            "llm_prompt_lab",
-            "llm_agent_chat"
+  patchedAllowlist =
+    runCommand "gallery-model-allowlist.json"
+      {
+        nativeBuildInputs = [
+          jq
+          python3
+        ];
+      }
+      ''
+        python3 -c 'import re, sys; sys.stdout.write(re.sub(r",\s*([\]}])", r"\1", open(sys.argv[1]).read()))' ${upstreamAllowlist} | jq '
+          .models += [
+            {
+              "name": "Gemma-4-E2B-it-abliterated",
+              "modelId": "nqd145/Gemma-4-E2B-it-abliterated-litertlm",
+              "modelFile": "Gemma-4-E2B-it-abliterated.litertlm",
+              "description": "An abliterated variant of Gemma 4 E2B ready for deployment on Android using LiteRT-LM. It is based on the official Gemma 4 E2B model.",
+              "sizeInBytes": 5065244672,
+              "minDeviceMemoryInGb": 8,
+              "commitHash": "7c778c0c415a10ad518cf6f2ac21931610e0d223",
+              "capabilities": [
+                "llm_thinking"
+              ],
+              "capabilityToTaskTypes": {
+                "llm_thinking": [
+                  "llm_chat"
+                ]
+              },
+              "defaultConfig": {
+                "topK": 64,
+                "topP": 0.95,
+                "temperature": 1.0,
+                "maxContextLength": 32000,
+                "maxTokens": 4000,
+                "accelerators": "gpu,cpu"
+              },
+              "taskTypes": [
+                "llm_chat",
+                "llm_prompt_lab",
+                "llm_agent_chat"
+              ]
+            },
+            {
+              "name": "supergemma4-e4b-abliterated",
+              "modelId": "typomonster/supergemma4-e4b-abliterated-litert-lm",
+              "modelFile": "supergemma4-e4b-abliterated.litertlm",
+              "description": "An abliterated variant of Gemma 4 E4B (supergemma4) ready for deployment on Android using LiteRT-LM.",
+              "sizeInBytes": 3654467584,
+              "minDeviceMemoryInGb": 12,
+              "commitHash": "3cb37a0fe1688c84cdb9faaa273052d82b8ca68b",
+              "capabilities": [
+                "llm_thinking"
+              ],
+              "capabilityToTaskTypes": {
+                "llm_thinking": [
+                  "llm_chat"
+                ]
+              },
+              "defaultConfig": {
+                "topK": 64,
+                "topP": 0.95,
+                "temperature": 1.0,
+                "maxContextLength": 32000,
+                "maxTokens": 4000,
+                "accelerators": "gpu,cpu"
+              },
+              "taskTypes": [
+                "llm_chat",
+                "llm_prompt_lab",
+                "llm_agent_chat"
+              ]
+            }
           ]
-        },
-        {
-          "name": "supergemma4-e4b-abliterated",
-          "modelId": "typomonster/supergemma4-e4b-abliterated-litert-lm",
-          "modelFile": "supergemma4-e4b-abliterated.litertlm",
-          "description": "An abliterated variant of Gemma 4 E4B (supergemma4) ready for deployment on Android using LiteRT-LM.",
-          "sizeInBytes": 3654467584,
-          "minDeviceMemoryInGb": 12,
-          "commitHash": "3cb37a0fe1688c84cdb9faaa273052d82b8ca68b",
-          "capabilities": [
-            "llm_thinking"
-          ],
-          "capabilityToTaskTypes": {
-            "llm_thinking": [
-              "llm_chat"
-            ]
-          },
-          "defaultConfig": {
-            "topK": 64,
-            "topP": 0.95,
-            "temperature": 1.0,
-            "maxContextLength": 32000,
-            "maxTokens": 4000,
-            "accelerators": "gpu,cpu"
-          },
-          "taskTypes": [
-            "llm_chat",
-            "llm_prompt_lab",
-            "llm_agent_chat"
-          ]
-        }
-      ]
-    ' ${upstreamAllowlist} > "$out"
-  '';
+        ' > "$out"
+      '';
 
   appPackage = buildGradlePackage rec {
     pname = "gallery";

@@ -228,6 +228,7 @@ let
           export GOTOOLCHAIN=auto
           export GOPROXY=https://proxy.golang.org,direct
           export GOSUMDB=sum.golang.org
+          export GODEBUG=http2client=0
 
           cp -R "$src" source
           chmod -R u+w source
@@ -402,14 +403,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.89.60";
+      version = "5.89.61";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-2AVlIldZwyWxVT1SDjCmBJX2LN0qROHRx4irQU2Ld3I=";
+        hash = "sha256-fnajvRyD8a4Z/LhFfy+Zc6Hlv3TAkoJ5jE7psBY+OAI=";
       };
 
       patches = [
