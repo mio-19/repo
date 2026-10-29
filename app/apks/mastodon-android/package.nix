@@ -8,6 +8,7 @@
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  nix-update-script,
 }:
 let
   appPackage =
@@ -23,13 +24,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "mastodon-android";
-      version = "2.13.4";
+      version = "2.13.5";
 
       src = fetchFromGitHub {
         owner = "mastodon";
         repo = "mastodon-android";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-Ch17IyXlY7fhfQjYflkB8+VOOzlVPuOdpMUZr6DeUv8=";
+        hash = "sha256-I+UHfniTArztJrLHaWfUwjjuvDdMr6bn+jh8Nte6oRg=";
       };
 
       patches = [
@@ -44,6 +45,11 @@ let
 
       gradleBuildTask = ":mastodon:assembleGithubRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
+
+      passthru = {
+        mitmCache = finalAttrs.mitmCache;
+        updateScript = nix-update-script { };
+      };
 
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;

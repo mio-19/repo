@@ -1,0 +1,77 @@
+name: Auto-update APK packages
+
+on:
+  schedule:
+    # Run every day at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Allow manual triggering
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apk-package-updates
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Maximize build space
+        uses: mio-19/maximize-build-space@patch-1
+        with:
+          root-reserve-mb: 512
+          swap-size-mb: 12000
+          overprovision-lvm: "true"
+          remove-dotnet: "true"
+          remove-android: "true"
+          remove-haskell: "true"
+          remove-codeql: "true"
+          remove-docker-images: "true"
+          build-mount-path: /nix
+
+      - name: Enable unprivileged user namespaces
+        run: |
+          sudo sysctl kernel.apparmor_restrict_unprivileged_userns=0
+          sudo sysctl kernel.apparmor_restrict_unprivileged_unconfined=0
+          sudo sysctl kernel.unprivileged_userns_clone=1
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install nix
+        uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            system-features = gccarch-x86-64-v3 benchmark big-parallel kvm nixos-test uid-range
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= mio-repo.cachix.org-1:+l5kqQn5w9e3i3tDZY9o3pVQABC0Z/d0kAqhQpqKP8g=
+            substituters = https://cache.nixos.org/ https://mio-repo.cachix.org/
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Auto-update APK packages
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NIXPKGS_ALLOW_INSECURE: '1'
+          NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM: '1'
+        run: |
+          ./scripts/update-packages.sh
+
+      - name: Commit and push changes
+        run: |
+          git add app/apks app/by-name
+          if git diff --cached --quiet; then
+            echo "No updates found."
+            exit 0
+          fi
+          git commit -m "chore: update APK packages [automated]"
+          git push || echo "No changes to push"
