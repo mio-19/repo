@@ -97,6 +97,7 @@ let
       for bin in "$out"/bin/*; do
         if file "$bin" | grep -q 'ELF 64-bit LSB executable, x86-64'; then
           ${patchelf}/bin/patchelf \
+            --page-size 2097152 \
             --set-interpreter "${stdenv.cc.bintools.dynamicLinker}" \
             --set-rpath "$host_rpath" \
             "$bin"

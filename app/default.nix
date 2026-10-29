@@ -47,6 +47,20 @@
                 $out/toolchains/llvm/prebuilt/linux-x86_64/lib64/libpython2.7.so.1.0
             '';
         });
+      # The prebuilt ninja binary in Android SDK cmake packages was patchelf'd with
+      # default 4KB page size, causing a segmentation fault on Linux. Symlink the
+      # native ninja from nixpkgs.
+      fixCmakeNinja =
+        pkg:
+        pkg.overrideAttrs (old: {
+          postFixup =
+            (old.postFixup or "")
+            + lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''
+              if [ -e "$out/bin/ninja" ]; then
+                ln -sf ${pkgs.ninja}/bin/ninja "$out/bin/ninja"
+              fi
+            '';
+        });
       helpers = {
         buildMavenRepositoryFromLockFile-bare = mvn2nixMaven.buildMavenRepositoryFromLockFile;
         androidSdkBuilder =
@@ -68,6 +82,10 @@
                 && lib.elem (pkg.pname or "") sourceBuiltNdkPnames
               then
                 sourceBuiltNdkHelper.mkSourceBuiltNdk pkg
+              else if
+                pkgs.stdenv.hostPlatform.isLinux && lib.isDerivation pkg && lib.hasPrefix "cmake-" (pkg.pname or "")
+              then
+                fixCmakeNinja pkg
               else
                 pkg
             ) selected

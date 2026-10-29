@@ -140,7 +140,8 @@ let
           ''
             cp ${protocGenGrpcRaw} $out
             chmod u+w $out
-            patchelf --set-interpreter $(cat ${stdenv.cc}/nix-support/dynamic-linker) \
+            patchelf --page-size 2097152 \
+                     --set-interpreter $(cat ${stdenv.cc}/nix-support/dynamic-linker) \
                      --set-rpath ${lib.makeLibraryPath [ stdenv.cc.cc.lib ]} \
                      $out
             chmod +x $out
