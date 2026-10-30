@@ -1,8 +1,8 @@
 {
   mk-apk-package,
   lib,
-  jdk21_headless,
-  gradle_8_13,
+  jdk25_headless,
+  gradle_9_4_1,
   stdenv,
   fetchFromGitHub,
   writeShellScriptBin,
@@ -20,15 +20,15 @@ let
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
         s.platform-tools
-        s.platforms-android-34
-        s.platforms-android-35
-        s.build-tools-34-0-0
-        s.build-tools-35-0-0
-        s.ndk-29-0-14206865
+        s.platforms-android-36
+        s."platforms-android-37-0"
+        s."build-tools-36-0-0"
+        s."build-tools-37-0-0"
+        s.ndk-30-0-16248370
         s.cmake-3-22-1
       ]);
 
-      gradle = gradle_8_13;
+      gradle = gradle_9_4_1;
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "luanti";
@@ -65,19 +65,19 @@ let
 
       nativeBuildInputs = [
         gradle
-        jdk21_headless
+        jdk25_headless
 
         writableTmpDirAsHomeHook
         gettext
       ];
 
       env = {
-        JAVA_HOME = jdk21_headless.passthru.home;
+        JAVA_HOME = jdk25_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
-        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/29.0.14206865";
-        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
+        ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/30.0.16248370";
+        ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/30.0.16248370";
+        ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
       };
 
       postUnpack = ''
@@ -90,15 +90,31 @@ let
         chmod -R u+w "$PWD/.."
         cat > local.properties <<EOF
         sdk.dir=${androidSdk}/share/android-sdk
-        ndk.dir=${androidSdk}/share/android-sdk/ndk/29.0.14206865
+        ndk.dir=${androidSdk}/share/android-sdk/ndk/30.0.16248370
         EOF
+
+        if [[ -n "''${IN_GRADLE_UPDATE_DEPS:-}" ]]; then
+          gradleFlagsArray+=(
+            --no-daemon
+            "-Dhttp.proxyHost=$MITM_CACHE_HOST"
+            "-Dhttp.proxyPort=$MITM_CACHE_PORT"
+            "-Dhttps.proxyHost=$MITM_CACHE_HOST"
+            "-Dhttps.proxyPort=$MITM_CACHE_PORT"
+          )
+          {
+            echo "systemProp.http.proxyHost=$MITM_CACHE_HOST"
+            echo "systemProp.http.proxyPort=$MITM_CACHE_PORT"
+            echo "systemProp.https.proxyHost=$MITM_CACHE_HOST"
+            echo "systemProp.https.proxyPort=$MITM_CACHE_PORT"
+          } >> gradle.properties
+        fi
       '';
 
       gradleFlags = [
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
-        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
-        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+        "-Dorg.gradle.java.installations.paths=${jdk25_headless.passthru.home}"
+        "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Pandroid.injected.build.abi=arm64-v8a"
         "-Pandroid.injected.testOnly=false"
       ];
