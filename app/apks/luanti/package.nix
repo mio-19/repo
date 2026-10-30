@@ -15,7 +15,7 @@
 let
   appPackage =
     let
-      version = "5.17.0";
+      version = "5.18.0";
 
       androidSdk = androidSdkBuilder (s: [
         s.cmdline-tools-latest
@@ -38,7 +38,7 @@ let
         owner = "luanti-org";
         repo = "luanti";
         tag = version;
-        hash = "sha256-PieiiJTpgUK7q0WiUY2EAp72ywHkDR2Mba1DCDkvCaY=";
+        hash = "sha256-39N8CiAh8d6nmQdEaf+P8kDaasxUJFvpJfDKItQL9uw=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/android";
