@@ -87,7 +87,7 @@ let
         pname = "haven-rdp-transport-jni-libs";
         inherit (finalAttrs0) version src;
         cargoRoot = "rdp-kotlin/rust";
-        hash = "sha256-Ch9cioYBxifdBt2/BsxCUTbfkrJzpky95Q4wnmZMB+0=";
+        hash = "sha256-JSawCWPr0W8gYnik226z8NP3zgA7QlpGbw5bcVrKKS8=";
       };
 
       mkRdpTransportJniLib =
@@ -440,12 +440,36 @@ let
         useBwrap = false;
       };
 
-      passthru.updateScript = writeShellScriptBin "update-haven" ''
-        set -euo pipefail
-        ${lib.getExe nix-update} --flake --src-only --version-regex='^v?([0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?)$' apk_haven
-        system="$(nix eval --impure --raw --expr builtins.currentSystem)"
-        "$(nix build ".#legacyPackages.$system.apk_haven.mitmCache.updateScript" --no-link --print-out-paths)"
-      '';
+      passthru = {
+        # Exposed so the update script can (re)compute their hashes on their own.
+        inherit rdpCargoDeps spiceCargoDeps rcloneGoModCache;
+
+        # Fixed-output dependencies that change with the source and that
+        # `nix-update --src-only` cannot refresh by itself.
+        updateDeps = [
+          "rdpCargoDeps.vendorStaging"
+          "spiceCargoDeps.vendorStaging"
+          "rcloneGoModCache"
+        ];
+
+        updateScript = writeShellScriptBin "update-haven" ''
+          set -euo pipefail
+
+          package_file="app/apks/haven/package.nix"
+          package_attr=".#apk_haven"
+          fake_hash="${lib.fakeHash}"
+
+          . "${../_shared/update-script-helpers.sh}"
+
+          # The vendored Rust crates and the rclone Go module cache need a
+          # correct hash before the Gradle mitm cache can be regenerated.
+          ${lib.getExe nix-update} --flake --src-only --version-regex='^v?([0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?)$' apk_haven
+
+          refresh_update_deps ${lib.concatStringsSep " " finalAttrs0.passthru.updateDeps}
+
+          refresh_mitm_cache
+        '';
+      };
 
       nativeBuildInputs = [
         gradle

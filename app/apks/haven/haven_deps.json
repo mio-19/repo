@@ -90,10 +90,6 @@
    "module": "sha256-Wy1Dh/OE5ZE6SuyXmiDs4Tu1zpkryQqWLeof7qf6iek=",
    "pom": "sha256-iA979LNdBgdGy+8xnUoFK0vYJrtxtAUA5VMZch/6TnY="
   },
-  "androidx/annotation#annotation/1.3.0": {
-   "module": "sha256-lRbCrkQoTqC9PQ6t4O5jiHm3CMvjHjr5K6lsMAYE68M=",
-   "pom": "sha256-BJUXxSVqS7yFKfzckMTqrzWBgKwgXJFmB2ffJkZe+7A="
-  },
   "androidx/annotation#annotation/1.7.1": {
    "module": "sha256-rJTf70+CzNLKdXOlN3nb89+rZQ5lQFak1N+Qr0NXKZA=",
    "pom": "sha256-Fe8CdtKDpnq2exiTqJ5+FFE6MrP3B/rCk5x72SqNwXI="
@@ -2138,19 +2134,12 @@
    "aar": "sha256-Gej6tD32hw+OQyIFliQ4S+AnnaVtyRBSn/WR3GdACM0="
   }
  },
- "https://github.com": {
-  "tesseract-ocr/tessdata_fast/raw/4.1.0/eng": {
-   "traineddata": "sha256-fUMivSp3SXJIeWg/w5EstULxmQbIO8waUhMlVkJxcLI="
+ "https://files.pythonhosted.org": {
+  "packages/ba/12/1e5497183bdbe782dbb91bad1d0d2297dba4d2831b2652657f7517bfc6df/rapidocr_onnxruntime-1.4.4-py3-none-any": {
+   "whl": "sha256-lx19XyI6eoCGYiKd8e9piTgJ2EV9g05jc9OFS8F4LL8="
   }
  },
  "https://jitpack.io/com/github": {
-  "adaptech-cz/Tesseract4Android#tesseract4android-openmp/4.8.0": {
-   "module": "sha256-WwgEZiY2qIm6cjldbSB/xmvKxDCwoCWrfMWnmh7UZdo=",
-   "pom": "sha256-0GWFkbCu+PQlA1/7shRwq9672tpJYTg+OYpLtkv2q6Y="
-  },
-  "adaptech-cz/Tesseract4Android/tesseract4android-openmp/4.8.0/tesseract4android-openmp-4.8.0": {
-   "aar": "sha256-BWixXOXnpwXUR4H0pC4wS68N7CCpl8S2eFVYCJGzaow="
-  },
   "mik3y#usb-serial-for-android/3.11.0": {
    "module": "sha256-OIshKn51tG729AmltxXtdlIsmk4w0OIbObTaAK/bIoA=",
    "pom": "sha256-V6VXv4hUGwDDSHjFik45qp3m5P4LAWk9fY5/VwTiOQw="
@@ -2826,6 +2815,12 @@
   "com/intellij#annotations/12.0": {
    "jar": "sha256-+KsTsUvggP4vYX+Q5VWZdg5KG03u6lxZXfY9DWN17W0=",
    "pom": "sha256-+vgt4NwC4MCuMnzWU/NyVUlrLlP84oCzq0yzRVOokIY="
+  },
+  "com/microsoft/onnxruntime#onnxruntime-android/1.20.0": {
+   "pom": "sha256-i3Jn3eFdQbvNxZdMNQdP70nOXQWbOd1GwbIGo/kl/Dk="
+  },
+  "com/microsoft/onnxruntime/onnxruntime-android/1.20.0/onnxruntime-android-1.20.0": {
+   "aar": "sha256-B6j3HviQr+2MYIelYiDm1VikkoBCdu4t18t/YmIkICc="
   },
   "com/squareup#javapoet/1.13.0": {
    "jar": "sha256-THUX6EinGzbQadErs79Gpw/UzaMQXYIrDtLhnAC2kpE=",
