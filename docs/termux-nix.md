@@ -1,12 +1,13 @@
 # Termux Nix store
 
-The optional `enableTermuxNix` GOS feature bundles the repository's source-built
-Termux APK and bind-mounts `/data/user/0/com.termux/files/nix` at `/nix` after
-the primary user's credential-encrypted storage is available. The directory is
-owned by Termux's app UID, has mode `0700`, and is labeled with Termux's
-per-app SELinux category. The bind mount keeps that app-data label, and Termux
-uses its standard app SELinux domain so programs in the store can execute.
-This is suitable for a daemonless, single-user Nix installation from Termux.
+The optional `enableTermuxNix` GOS feature does not bundle Termux. It expects
+Termux to already be installed for the primary Android user, then bind-mounts
+`/data/user/0/com.termux/files/nix` at `/nix` after credential-encrypted
+storage is available. The directory is owned by Termux's app UID, has mode
+`0700`, and is labeled with Termux's per-app SELinux category. The bind mount
+keeps that app-data label, and Termux uses its standard app SELinux domain so
+programs in the store can execute. This is suitable for a daemonless,
+single-user Nix installation from Termux.
 
 The feature exposes a writable store path; it does not install Nix or enable a
 daemon. Install a Nix build supported by Termux, then use its single-user
