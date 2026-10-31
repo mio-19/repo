@@ -201,9 +201,16 @@ let
         . ${flutterApkHelpers}
         setup_writable_flutter_sdk ${flutter347}
 
-        # nixpkgs flutter347 is 3.47.0; upstream pins 3.47.1 exactly.
+        # Upstream pins one exact Flutter SDK version. Read it out of the tree
+        # instead of hardcoding it here, so the pin does not have to be chased
+        # on every update, and build with the SDK we actually ship.
+        upstream_flutter_pin="$(awk '$1 == "flutter:" && $2 ~ /^[0-9]+\.[0-9]+\.[0-9]+$/ { print $2; exit }' pubspec.yaml)"
+        if [[ -z "$upstream_flutter_pin" ]]; then
+          echo "immich: no pinned Flutter version found in pubspec.yaml" >&2
+          exit 1
+        fi
         substituteInPlace pubspec.yaml \
-          --replace-fail "flutter: 3.47.1" "flutter: 3.47.0"
+          --replace-fail "flutter: $upstream_flutter_pin" "flutter: ${flutter347.version}"
 
         substituteInPlace android/app/build.gradle \
           --replace-fail "//f configurations.all {" "configurations.all {" \
