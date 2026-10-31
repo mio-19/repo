@@ -1,3 +1,25 @@
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+index a39f06e..fc36fba 100644
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml
+@@ -19,6 +19,17 @@
+     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+     <!-- Needed to communicate with already-paired Bluetooth devices. -->
+     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
++
++    <!--
++      Held by companion apps (such as a camera app) that the user allows to exchange smartwatch
++      remote-control messages through Gadgetbridge. Gadgetbridge only sends to, and accepts
++      messages from, apps that were granted this permission.
++    -->
++    <permission
++        android:name="nodomain.freeyourgadget.gadgetbridge.permission.APP_BRIDGE"
++        android:description="@string/permission_app_bridge_description"
++        android:label="@string/permission_app_bridge_label"
++        android:protectionLevel="dangerous" />
+     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+ 
+     <!-- Since Android 10 -->
 diff --git a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/asteroidos/AsteroidOSConstants.java b/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/asteroidos/AsteroidOSConstants.java
 index 287221a..f2598cb 100644
 --- a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/asteroidos/AsteroidOSConstants.java
@@ -21,10 +43,10 @@ index 287221a..f2598cb 100644
 +    public static final UUID APP_BRIDGE_RX_CHAR          = UUID.fromString("0000A002-0000-0000-0000-00A57E401D05");
  }
 diff --git a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java b/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java
-index ed648c4..3b5ec6b 100644
+index ed648c4..b60b4e6 100644
 --- a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java
 +++ b/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java
-@@ -32,6 +32,15 @@ import java.util.GregorianCalendar;
+@@ -32,6 +32,18 @@ import java.util.GregorianCalendar;
  import java.util.Objects;
  import java.util.UUID;
  
@@ -32,15 +54,18 @@ index ed648c4..3b5ec6b 100644
 +import android.content.Context;
 +import android.content.Intent;
 +import android.content.IntentFilter;
-+import android.content.pm.ResolveInfo;
-+import java.util.List;
++import android.content.pm.PackageManager;
++import android.os.Build;
++import android.os.Process;
 +import androidx.core.content.ContextCompat;
-+import org.json.JSONObject;
++import java.util.HashSet;
++import java.util.Set;
 +
++import nodomain.freeyourgadget.gadgetbridge.GBApplication;
  import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
  import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
  import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
-@@ -71,9 +78,14 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -71,6 +83,7 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
          addSupportedService(AsteroidOSConstants.MEDIA_SERVICE_UUID);
          addSupportedService(AsteroidOSConstants.SCREENSHOT_SERVICE_UUID);
          addSupportedService(AsteroidOSConstants.FINDPHONE_SERVICE_UUID);
@@ -48,14 +73,7 @@ index ed648c4..3b5ec6b 100644
  
          IntentListener mListener = intent -> {
              String action = intent.getAction();
-+            if ("nodomain.freeyourgadget.gadgetbridge.ACTION_SEND_TO_WATCH".equals(action)) {
-+                handleSendToWatchIntent(intent);
-+                return;
-+            }
-             if (BatteryInfoProfile.ACTION_BATTERY_INFO.equals(action)) {
-                 handleBatteryInfo(Objects.requireNonNull(intent.getParcelableExtra(BatteryInfoProfile.EXTRA_BATTERY_INFO)));
-             }
-@@ -82,6 +94,7 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -82,6 +95,7 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
          batteryInfoProfile = new BatteryInfoProfile<>(this);
          batteryInfoProfile.addListener(mListener);
          addSupportedProfile(batteryInfoProfile);
@@ -63,7 +81,7 @@ index ed648c4..3b5ec6b 100644
      }
  
      private void handleBatteryInfo(@NonNull nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.battery.BatteryInfo info) {
-@@ -109,6 +122,10 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -109,6 +123,10 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
              handleFindPhone(value);
              return true;
          }
@@ -74,7 +92,7 @@ index ed648c4..3b5ec6b 100644
  
          LOG.info("Characteristic changed UUID: {}", characteristicUUID);
          LOG.info("Characteristic changed value: {}", Arrays.toString(value));
-@@ -126,6 +143,8 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -126,6 +144,8 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
          builder.notify(AsteroidOSConstants.SCREENSHOT_CONTENT_CHAR, true);
          builder.notify(AsteroidOSConstants.FINDPHONE_RING_CHAR, true);
          builder.read(AsteroidOSConstants.FINDPHONE_RING_CHAR);
@@ -83,27 +101,60 @@ index ed648c4..3b5ec6b 100644
          builder.setDeviceState(GBDevice.State.INITIALIZED);
  
          batteryInfoProfile.requestBatteryInfo(builder);
-@@ -331,6 +350,179 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -331,6 +351,151 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
          evaluateGBDeviceEvent(findPhoneEvent);
      }
  
++
++    /*
++     * App Bridge: relays a smartwatch camera remote to the GrapheneOS Camera app.
++     *
++     * Threat model: other apps on the phone must neither read what the watch sends nor be able to
++     * make the watch act. Therefore:
++     *  - broadcasts to the target app are explicit (setPackage) and carry the receiver permission
++     *    below, which the user must grant to the target app; the system then only delivers them to
++     *    holders of a permission that this app defines,
++     *  - broadcasts from the target app are only accepted if the sender holds the same permission
++     *    and the system reports the target package's uid as the sender,
++     *  - only fixed, allowlisted actions are relayed; payloads are never forwarded and health
++     *    telemetry is never broadcast or logged.
++     */
++    private static final String APP_BRIDGE_PERMISSION =
++            "nodomain.freeyourgadget.gadgetbridge.permission.APP_BRIDGE";
++    private static final String ACTION_SEND_TO_WATCH =
++            "nodomain.freeyourgadget.gadgetbridge.ACTION_SEND_TO_WATCH";
++    private static final String ACTION_RECEIVE_FROM_WATCH =
++            "nodomain.freeyourgadget.gadgetbridge.ACTION_RECEIVE_FROM_WATCH";
++    private static final String CAMERA_PACKAGE = "app.grapheneos.camera";
++    private static final String CAMERA_APP_ID = "org.asteroidos.camera";
++    private static final String CAMERA_WIRE_APP_ID = "cam";
++    private static final int APP_BRIDGE_MAX_PACKET = 512;
++    private static final Set<String> WATCH_TO_PHONE_ACTIONS = new HashSet<>(Arrays.asList(
++            "capture", "flip", "zoom_in", "zoom_out", "torch", "mode_photo", "mode_video",
++            "status_query"));
++    private static final Set<String> PHONE_TO_WATCH_ACTIONS = new HashSet<>(Arrays.asList(
++            "ready", "paused", "photo_captured", "video_started", "video_stopped"));
 +
 +    private BroadcastReceiver appBridgeReceiver = null;
 +
 +    private void registerAppBridgeReceiver() {
 +        if (appBridgeReceiver != null) return;
-+        IntentFilter filter = new IntentFilter("nodomain.freeyourgadget.gadgetbridge.ACTION_SEND_TO_WATCH");
++        final Context context = GBApplication.getContext();
 +        appBridgeReceiver = new BroadcastReceiver() {
 +            @Override
-+            public void onReceive(Context context, Intent intent) {
-+                handleSendToWatchIntent(intent);
++            public void onReceive(Context ctx, Intent intent) {
++                handleSendToWatchIntent(intent, this);
 +            }
 +        };
++        // RECEIVER_EXPORTED is needed to hear another app; the broadcast permission restricts
++        // senders to holders of APP_BRIDGE_PERMISSION.
 +        ContextCompat.registerReceiver(
-+            nodomain.freeyourgadget.gadgetbridge.GBApplication.getContext(),
-+            appBridgeReceiver,
-+            filter,
-+            ContextCompat.RECEIVER_EXPORTED
++                context,
++                appBridgeReceiver,
++                new IntentFilter(ACTION_SEND_TO_WATCH),
++                APP_BRIDGE_PERMISSION,
++                null,
++                ContextCompat.RECEIVER_EXPORTED
 +        );
 +    }
 +
@@ -112,154 +163,104 @@ index ed648c4..3b5ec6b 100644
 +        super.dispose();
 +        if (appBridgeReceiver != null) {
 +            try {
-+                nodomain.freeyourgadget.gadgetbridge.GBApplication.getContext().unregisterReceiver(appBridgeReceiver);
-+            } catch (Exception e) {
++                GBApplication.getContext().unregisterReceiver(appBridgeReceiver);
++            } catch (IllegalArgumentException e) {
 +                LOG.warn("Failed to unregister appBridgeReceiver", e);
 +            }
 +            appBridgeReceiver = null;
 +        }
 +    }
 +
-+    private void handleSendToWatchIntent(Intent intent) {
-+        if (intent == null) return;
-+        String targetApp = intent.getStringExtra("extra_app_id");
-+        String appAction = intent.getStringExtra("extra_action");
-+        byte[] payload = intent.getByteArrayExtra("extra_payload_bytes");
-+        if (payload == null && intent.hasExtra("extra_payload_string")) {
-+            String str = intent.getStringExtra("extra_payload_string");
-+            if (str != null) {
-+                payload = str.getBytes(StandardCharsets.UTF_8);
-+            }
-+        }
-+        if (targetApp != null && appAction != null && payload != null) {
-+            sendAppBridgeMessage(targetApp, appAction, payload);
++    private boolean isSentFromCameraApp(final BroadcastReceiver receiver) {
++        // Fail closed: the sender uid is only available on Android 14+.
++        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return false;
++        final int sentFromUid = receiver.getSentFromUid();
++        if (sentFromUid == Process.INVALID_UID) return false;
++        try {
++            return getContext().getPackageManager().getPackageUid(CAMERA_PACKAGE, 0) == sentFromUid;
++        } catch (PackageManager.NameNotFoundException e) {
++            return false;
 +        }
 +    }
 +
++    private void handleSendToWatchIntent(Intent intent, BroadcastReceiver receiver) {
++        if (intent == null || !ACTION_SEND_TO_WATCH.equals(intent.getAction())) return;
++        if (!isSentFromCameraApp(receiver)) {
++            LOG.warn("AppBridge: dropping message not sent by {}", CAMERA_PACKAGE);
++            return;
++        }
++        if (!CAMERA_APP_ID.equals(intent.getStringExtra("extra_app_id"))) return;
++        final String action = intent.getStringExtra("extra_action");
++        if (action == null || !PHONE_TO_WATCH_ACTIONS.contains(action)) return;
++        if (!getDevice().isInitialized()) return;
++        sendAppBridgeMessage(CAMERA_WIRE_APP_ID, action);
++    }
++
 +    /**
-+     * Process generic incoming App Bridge notification from AsteroidOS.
++     * Process incoming App Bridge frame from AsteroidOS.
 +     * Format: [0xA0][appIdLen:1B][appId][actionLen:1B][action][payload]
++     * Only camera remote actions are relayed, without payload.
 +     */
 +    private void handleAppBridgeData(byte[] value) {
-+        if (value == null || value.length < 3) {
++        if (value == null || value.length < 3 || value.length > APP_BRIDGE_MAX_PACKET) {
 +            return;
 +        }
 +        if ((value[0] & 0xFF) != 0xA0) {
 +            LOG.warn("AppBridge: invalid magic byte 0x{}", Integer.toHexString(value[0] & 0xFF));
 +            return;
 +        }
-+        try {
-+            int offset = 1;
-+            int appIdLen = value[offset++] & 0xFF;
-+            if (value.length < offset + appIdLen + 1) return;
-+            String appId = new String(value, offset, appIdLen, StandardCharsets.UTF_8);
-+            if ("cam".equals(appId) || "camera".equals(appId)) {
-+                appId = "org.asteroidos.camera";
-+            } else if ("spo2".equals(appId)) {
-+                appId = "org.asteroidos.spo2";
-+            }
-+            offset += appIdLen;
++        int offset = 1;
++        final int appIdLen = value[offset++] & 0xFF;
++        if (value.length < offset + appIdLen + 1) return;
++        final String appId = new String(value, offset, appIdLen, StandardCharsets.UTF_8);
++        offset += appIdLen;
 +
-+            int actionLen = value[offset++] & 0xFF;
-+            if (value.length < offset + actionLen) return;
-+            String action = new String(value, offset, actionLen, StandardCharsets.UTF_8);
-+            offset += actionLen;
++        final int actionLen = value[offset++] & 0xFF;
++        if (value.length < offset + actionLen) return;
++        final String action = new String(value, offset, actionLen, StandardCharsets.UTF_8);
 +
-+            int payloadLen = value.length - offset;
-+            byte[] payload = new byte[payloadLen];
-+            System.arraycopy(value, offset, payload, 0, payloadLen);
-+            String payloadStr = new String(payload, StandardCharsets.UTF_8);
-+
-+            LOG.info("AppBridge message received: app={}, action={}, bytes={}", appId, action, payloadLen);
-+
-+            // Broadcast to all Android applications
-+            Intent broadcast = new Intent("nodomain.freeyourgadget.gadgetbridge.ACTION_RECEIVE_FROM_WATCH");
-+            broadcast.putExtra("extra_app_id", appId);
-+            broadcast.putExtra("extra_action", action);
-+            broadcast.putExtra("extra_payload_bytes", payload);
-+            broadcast.putExtra("extra_payload_string", payloadStr);
-+            getContext().sendBroadcast(broadcast);
-+
-+            // Check if an external companion app (such as GrapheneOS Camera) handles this watch app
-+            boolean hasExternalHandler = false;
-+            try {
-+                List<ResolveInfo> receivers = getContext().getPackageManager().queryBroadcastReceivers(broadcast, 0);
-+                for (ResolveInfo ri : receivers) {
-+                    if (ri.activityInfo != null && !getContext().getPackageName().equals(ri.activityInfo.packageName)) {
-+                        hasExternalHandler = true;
-+                        break;
-+                    }
-+                }
-+            } catch (Exception ignored) {}
-+
-+            // Native Gadgetbridge Camera Remote event fallback when no external companion camera app is available
-+            if ("org.asteroidos.camera".equals(appId) && !hasExternalHandler) {
-+                if ("capture".equals(action) || "shutter".equals(action)) {
-+                    evaluateGBDeviceEvent(new nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemote(
-+                        nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemote.Event.TAKE_PICTURE
-+                    ));
-+                } else if ("open".equals(action) || "launch".equals(action)) {
-+                    evaluateGBDeviceEvent(new nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemote(
-+                        nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemote.Event.OPEN_CAMERA
-+                    ));
-+                } else if ("close".equals(action)) {
-+                    evaluateGBDeviceEvent(new nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemote(
-+                        nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCameraRemote.Event.CLOSE_CAMERA
-+                    ));
-+                }
-+            }
-+
-+            // Native telemetry integration: SpO2 & Heart Rate
-+            if ("org.asteroidos.spo2".equals(appId) && "measurement".equals(action)) {
-+                try {
-+                    JSONObject json = new JSONObject(payloadStr);
-+                    int spo2 = json.optInt("spo2", 0);
-+                    int bpm = json.optInt("bpm", 0);
-+                    LOG.info("Native AsteroidOS SpO2 recorded: SpO2={}% BPM={}", spo2, bpm);
-+                } catch (Exception ex) {
-+                    LOG.warn("Failed to parse SpO2 payload as JSON", ex);
-+                }
-+            }
-+        } catch (Exception e) {
-+            LOG.error("Failed to parse AppBridge data", e);
++        // Everything but the camera remote (including SpO2 telemetry) stays on the watch link.
++        if (!CAMERA_WIRE_APP_ID.equals(appId) || !WATCH_TO_PHONE_ACTIONS.contains(action)) {
++            LOG.debug("AppBridge: ignoring frame for unsupported app or action");
++            return;
 +        }
++
++        final Intent broadcast = new Intent(ACTION_RECEIVE_FROM_WATCH)
++                .setPackage(CAMERA_PACKAGE)
++                .putExtra("extra_app_id", CAMERA_APP_ID)
++                .putExtra("extra_action", action);
++        // Delivered only to the camera app and only if the user granted it the bridge permission.
++        getContext().sendBroadcast(broadcast, APP_BRIDGE_PERMISSION);
 +    }
 +
-+    private void sendAppBridgeMessage(String appId, String action, byte[] payload) {
-+        try {
-+            String wireAppId = appId;
-+            if ("org.asteroidos.camera".equals(appId)) {
-+                wireAppId = "cam";
-+            } else if ("org.asteroidos.spo2".equals(appId)) {
-+                wireAppId = "spo2";
-+            }
-+            byte[] appIdBytes = wireAppId.getBytes(StandardCharsets.UTF_8);
-+            byte[] actionBytes = action.getBytes(StandardCharsets.UTF_8);
-+            if (appIdBytes.length > 255 || actionBytes.length > 255) {
-+                LOG.warn("AppBridge: appId or action length exceeds 255 bytes");
-+                return;
-+            }
-+            byte[] packet = new byte[3 + appIdBytes.length + actionBytes.length + payload.length];
-+            int idx = 0;
-+            packet[idx++] = (byte) 0xA0;
-+            packet[idx++] = (byte) appIdBytes.length;
-+            System.arraycopy(appIdBytes, 0, packet, idx, appIdBytes.length);
-+            idx += appIdBytes.length;
-+            packet[idx++] = (byte) actionBytes.length;
-+            System.arraycopy(actionBytes, 0, packet, idx, actionBytes.length);
-+            idx += actionBytes.length;
-+            System.arraycopy(payload, 0, packet, idx, payload.length);
++    private void sendAppBridgeMessage(String wireAppId, String action) {
++        final byte[] appIdBytes = wireAppId.getBytes(StandardCharsets.UTF_8);
++        final byte[] actionBytes = action.getBytes(StandardCharsets.UTF_8);
++        final byte[] packet = new byte[3 + appIdBytes.length + actionBytes.length];
++        int idx = 0;
++        packet[idx++] = (byte) 0xA0;
++        packet[idx++] = (byte) appIdBytes.length;
++        System.arraycopy(appIdBytes, 0, packet, idx, appIdBytes.length);
++        idx += appIdBytes.length;
++        packet[idx++] = (byte) actionBytes.length;
++        System.arraycopy(actionBytes, 0, packet, idx, actionBytes.length);
 +
-+            TransactionBuilder builder = createTransactionBuilder("sendAppBridgeMessage");
-+            safeWriteToCharacteristic(builder, AsteroidOSConstants.APP_BRIDGE_RX_CHAR, packet);
-+            builder.queue();
-+            LOG.info("Queued AppBridge message to watch: app={}, action={}", appId, action);
-+        } catch (Exception e) {
-+            LOG.error("Error sending AppBridge message", e);
-+        }
++        final TransactionBuilder builder = createTransactionBuilder("sendAppBridgeMessage");
++        safeWriteToCharacteristic(builder, AsteroidOSConstants.APP_BRIDGE_RX_CHAR, packet);
++        builder.queue();
 +    }
-+
 +
      /**
       * Handles a media command sent from the AsteroidOS device
       * @param characteristic The Characteristic information
+diff --git a/app/src/main/res/values/strings_app_bridge.xml b/app/src/main/res/values/strings_app_bridge.xml
+new file mode 100644
+index 0000000..4317165
+--- /dev/null
++++ b/app/src/main/res/values/strings_app_bridge.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="permission_app_bridge_label" translatable="false">Control from a smartwatch through Gadgetbridge</string>
++    <string name="permission_app_bridge_description" translatable="false">Lets this app receive remote-control commands from your smartwatch and send status updates back to it through Gadgetbridge.</string>
++</resources>

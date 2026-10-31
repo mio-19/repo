@@ -69,14 +69,14 @@ let
     in
     buildDartApplication.override { dart = flutter347; } (finalAttrs: {
       pname = "immich";
-      version = "3.2.4";
+      version = "3.3.5";
 
       baseSrc = fetchFromGitHub {
         owner = "immich-app";
         repo = "immich";
         tag = "v${finalAttrs.version}";
         fetchSubmodules = true;
-        hash = "sha256-0tYJAWj2CrF7g0Hr7aG1nxgXp538VL6GPRBHFVPxqxY=";
+        hash = "sha256-exOYNm5TqYR4sM/AirwrphSs6v4xXmZlNtnk31v773w=";
       };
 
       src = applyPatches {
@@ -201,9 +201,16 @@ let
         . ${flutterApkHelpers}
         setup_writable_flutter_sdk ${flutter347}
 
-        # nixpkgs flutter347 is 3.47.0; upstream pins 3.47.1 exactly.
+        # Upstream pins one exact Flutter SDK version. Read it out of the tree
+        # instead of hardcoding it here, so the pin does not have to be chased
+        # on every update, and build with the SDK we actually ship.
+        upstream_flutter_pin="$(awk '$1 == "flutter:" && $2 ~ /^[0-9]+\.[0-9]+\.[0-9]+$/ { print $2; exit }' pubspec.yaml)"
+        if [[ -z "$upstream_flutter_pin" ]]; then
+          echo "immich: no pinned Flutter version found in pubspec.yaml" >&2
+          exit 1
+        fi
         substituteInPlace pubspec.yaml \
-          --replace-fail "flutter: 3.47.1" "flutter: 3.47.0"
+          --replace-fail "flutter: $upstream_flutter_pin" "flutter: ${flutter347.version}"
 
         substituteInPlace android/app/build.gradle \
           --replace-fail "//f configurations.all {" "configurations.all {" \

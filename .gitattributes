@@ -1,0 +1,4 @@
+# Unified diff files legitimately contain context lines that are a single
+# space (blank lines prefixed with the diff marker), which git's whitespace
+# checker would otherwise report as trailing whitespace.
+*.patch -whitespace

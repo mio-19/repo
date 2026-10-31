@@ -112,6 +112,8 @@ in
     ./gos_lindroid.nix
     ./launcher.nix
     ./gos_userdebug.nix
+    ./gos_desktop_companion.nix
+    ./gos_librepods.nix
     # possibly unsafe# ./bigger_zram.nix
   ];
   buildDateTime = releaseToTimestamp config.grapheneos.release;

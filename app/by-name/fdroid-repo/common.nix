@@ -22,6 +22,7 @@ let
   linuxOnlyApkNames = [
     "tailscale"
     "termux"
+    "termux-api"
     "termux-styling"
     "termux-x11"
     "emacs"

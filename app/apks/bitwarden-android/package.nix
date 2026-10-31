@@ -29,17 +29,17 @@ let
 
       gradle = gradle_9_7_1;
 
-      # https://github.com/bitwarden/android/blob/v2026.10.0-bwpm/gradle/libs.versions.toml#L32 bitwardenSdk = "4.0.0-9160-171b937c"
+      # https://github.com/bitwarden/android/blob/v2026.10.1-bwpm/gradle/libs.versions.toml#L32 bitwardenSdk = "4.0.0-9318-3b2c8fc3"
       sdkSrc = fetchFromGitHub {
         owner = "bitwarden";
         repo = "sdk-internal";
-        rev = "171b937c";
-        hash = "sha256-qCPVVMhTLa1d/X0BfG2TLTXRQ9QrPSZgujc5j0eWEgs=";
+        rev = "3b2c8fc3";
+        hash = "sha256-xQG3Dj4lD6P+DwwO4s6ddk+t2vX5+hrusJxLdxpquvg=";
       };
 
       sdkSrcLock = fetchurl {
         url = "${sdkSrc.meta.homepage}/raw/${sdkSrc.rev}/Cargo.lock";
-        hash = "sha256-fN2/HDVipjbef+kvdr4v1bLp0eJg3mp7X2DiXhIfaTM=";
+        hash = "sha256-WeODW/2cqOAFadrbuHxfIyfS5yaz1/ZjQcQpMUXMh6k=";
       };
 
       androidCrossConfig = {
@@ -150,7 +150,7 @@ let
           version = "3.0.0";
           src = sdkSrc;
           cargoRoot = ".";
-          hash = "sha256-/XqkYh/Dw/z7BXa4D/+lVdKtyroSeriIjDvGM6yahuE=";
+          hash = "sha256-i7mkRHGn7hB7Nk5ug8v1wk0d5aPyfl0ErbW/IPrPUi0=";
         };
         nativeBuildInputs = [
           rustPlatform.cargoSetupHook
@@ -183,13 +183,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-android";
-      version = "2026.10.0";
+      version = "2026.10.1";
 
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
         tag = "v${finalAttrs.version}-bwpm";
-        hash = "sha256-DymOx905mTqxlF1R7YuoBdFKiI006ovRIVF8nsaW9vs=";
+        hash = "sha256-d/tyRBzcPkYuZm6oO1/kEGKkgRk9DEOUI+76p4Wo0ww=";
       };
 
       gradleBuildTask = ":app:assembleFdroidRelease";

@@ -1,6 +1,30 @@
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+index 026a17b..2bdc213 100644
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml
+@@ -6,6 +6,17 @@
+     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
++
++    <!--
++      Held by companion apps (such as a camera app) that the user allows to exchange smartwatch
++      remote-control messages through AsteroidOS Sync. Sync only sends to, and accepts messages
++      from, apps that were granted this permission.
++    -->
++    <permission
++        android:name="org.asteroidos.sync.permission.APP_BRIDGE"
++        android:description="@string/permission_app_bridge_description"
++        android:label="@string/permission_app_bridge_label"
++        android:protectionLevel="dangerous" />
+     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+     <uses-permission android:name="android.permission.WAKE_LOCK" />
+     <uses-permission android:name="android.permission.INTERNET" />
+diff --git a/app/src/main/java/org/asteroidos/sync/asteroid/AsteroidBleManager.java b/app/src/main/java/org/asteroidos/sync/asteroid/AsteroidBleManager.java
+index e05a625..aa2be7e 100644
 --- a/app/src/main/java/org/asteroidos/sync/asteroid/AsteroidBleManager.java
 +++ b/app/src/main/java/org/asteroidos/sync/asteroid/AsteroidBleManager.java
-@@ -116,6 +116,9 @@
+@@ -116,6 +116,9 @@ public class AsteroidBleManager extends BleManager {
  
              for (IConnectivityService service : mSynchronizationService.getServices().values()) {
                  BluetoothGattService bluetoothGattService = gatt.getService(service.getServiceUUID());
@@ -10,7 +34,7 @@
                  List<UUID> sendUuids = new ArrayList<>();
                  service.getCharacteristicUUIDs().forEach((uuid, direction) -> {
                      if (direction == IConnectivityService.Direction.TO_WATCH)
-@@ -125,14 +128,17 @@
+@@ -125,14 +128,17 @@ public class AsteroidBleManager extends BleManager {
  
                  for (UUID uuid : sendUuids) {
                      BluetoothGattCharacteristic characteristic = bluetoothGattService.getCharacteristic(uuid);
@@ -33,7 +57,7 @@
                  });
              }
  
-@@ -142,7 +148,7 @@
+@@ -142,7 +148,7 @@ public class AsteroidBleManager extends BleManager {
          @Override
          protected final void initialize() {
              beginAtomicRequestQueue()
@@ -42,9 +66,11 @@
                              .with((device, mtu) -> log(Log.INFO, "MTU set to " + mtu))
                              .fail((device, status) -> log(Log.WARN, "Requested MTU not supported: " + status)))
                      .done(device -> log(Log.INFO, "Target initialized"))
+diff --git a/app/src/main/java/org/asteroidos/sync/services/SynchronizationService.java b/app/src/main/java/org/asteroidos/sync/services/SynchronizationService.java
+index ec81988..c75ea7a 100644
 --- a/app/src/main/java/org/asteroidos/sync/services/SynchronizationService.java
 +++ b/app/src/main/java/org/asteroidos/sync/services/SynchronizationService.java
-@@ -52,6 +52,7 @@
+@@ -52,6 +52,7 @@ import org.asteroidos.sync.connectivity.NotificationService;
  import org.asteroidos.sync.connectivity.ScreenshotService;
  import org.asteroidos.sync.connectivity.SilentModeService;
  import org.asteroidos.sync.connectivity.FindPhoneService;
@@ -52,7 +78,7 @@
  import org.asteroidos.sync.connectivity.TimeService;
  import org.asteroidos.sync.connectivity.WeatherService;
  
-@@ -287,6 +288,7 @@
+@@ -287,6 +288,7 @@ public class SynchronizationService extends Service implements IAsteroidDevice,
              registerBleService(new ScreenshotService(getApplicationContext(), this));
              registerBleService(new TimeService(getApplicationContext(), this));
              registerBleService(new FindPhoneService(getApplicationContext(), this));
@@ -60,9 +86,11 @@
          }
  
          handleConnect();
+diff --git a/app/src/main/java/org/asteroidos/sync/utils/AsteroidUUIDS.java b/app/src/main/java/org/asteroidos/sync/utils/AsteroidUUIDS.java
+index 6aa29e9..f5407dc 100644
 --- a/app/src/main/java/org/asteroidos/sync/utils/AsteroidUUIDS.java
 +++ b/app/src/main/java/org/asteroidos/sync/utils/AsteroidUUIDS.java
-@@ -62,4 +62,9 @@
+@@ -62,4 +62,9 @@ public class AsteroidUUIDS {
      // Find Phone Service (High Hex range to avoid future upstream collision)
      public static final UUID FINDPHONE_SERVICE_UUID     = UUID.fromString("0000F071-0000-0000-0000-00A57E401D05");
      public static final UUID FINDPHONE_RING_CHAR        = UUID.fromString("0000F001-0000-0000-0000-00A57E401D05");
@@ -72,3 +100,14 @@
 +    public static final UUID APP_BRIDGE_TX_CHAR          = UUID.fromString("0000A001-0000-0000-0000-00A57E401D05");
 +    public static final UUID APP_BRIDGE_RX_CHAR          = UUID.fromString("0000A002-0000-0000-0000-00A57E401D05");
  }
+diff --git a/app/src/main/res/values/strings_app_bridge.xml b/app/src/main/res/values/strings_app_bridge.xml
+new file mode 100644
+index 0000000..8c939b9
+--- /dev/null
++++ b/app/src/main/res/values/strings_app_bridge.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="permission_app_bridge_label" translatable="false">Control from a smartwatch through AsteroidOS Sync</string>
++    <string name="permission_app_bridge_description" translatable="false">Lets this app receive remote-control commands from your smartwatch and send status updates back to it through AsteroidOS Sync.</string>
++</resources>

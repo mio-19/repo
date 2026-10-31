@@ -1,26 +1,27 @@
---- app/src/main/java/com/google/ai/edge/gallery/ui/modelmanager/ModelManagerViewModel.kt	2026-08-02 08:36:27.747127354 +1000
-+++ app/src/main/java/com/google/ai/edge/gallery/ui/modelmanager/ModelManagerViewModel.kt	2026-08-02 08:37:12.715736320 +1000
-@@ -68,6 +68,7 @@
- import dagger.hilt.android.lifecycle.HiltViewModel
+--- app/src/main/java/com/google/ai/edge/gallery/ui/modelmanager/ModelManagerViewModel.kt
++++ app/src/main/java/com/google/ai/edge/gallery/ui/modelmanager/ModelManagerViewModel.kt
+@@ -97,6 +97,7 @@
  import dagger.hilt.android.qualifiers.ApplicationContext
  import java.io.File
+ import java.io.IOException
 +import java.io.InputStreamReader
- import java.net.HttpURLConnection
- import java.net.URL
- import javax.inject.Inject
-@@ -970,6 +971,19 @@
+ import java.util.Optional
+ import java.util.UUID
+ import java.util.concurrent.ConcurrentHashMap
+@@ -1779,6 +1780,20 @@
          }
  
          if (modelAllowlist == null) {
-+          try {
++          modelAllowlist = try {
 +            Log.d(TAG, "Loading bundled model allowlist from assets.")
 +            context.assets.open("model_allowlist.json").use { input ->
 +              InputStreamReader(input).use { reader ->
-+                modelAllowlist = Gson().fromJson(reader, ModelAllowlist::class.java)
++                Gson().fromJson(reader, ModelAllowlist::class.java)
 +              }
 +            }
 +          } catch (e: Exception) {
 +            Log.w(TAG, "Failed to load bundled model allowlist from assets", e)
++            null
 +          }
 +        }
 +
@@ -28,37 +29,3 @@
            // Load from github.
            var version = BuildConfig.VERSION_NAME.replace(".", "_")
            val url = getAllowlistUrl(version)
-@@ -991,7 +1005,9 @@
-           return@launch
-         }
- 
--        Log.d(TAG, "Allowlist: $modelAllowlist")
-+        val resolvedModelAllowlist = modelAllowlist!!
-+
-+        Log.d(TAG, "Allowlist: $resolvedModelAllowlist")
- 
-         val isAICoreAvailable by lazy {
-           Log.d(TAG, "loadModelAllowlist: Checking AICore availability")
-@@ -999,7 +1015,7 @@
-           // This extracts the models from all allowed groups, flattens them into a single stream,
-           // lowercases them for case-insensitive matching, and stores them in a Set.
-           val allowedDeviceModelsSet =
--            modelAllowlist.aicoreRequirements
-+            resolvedModelAllowlist.aicoreRequirements
-               ?.allowedDeviceGroups
-               ?.asSequence()
-               ?.flatMap { it.deviceModels }
-@@ -1011,11 +1027,11 @@
-         // Convert models in the allowlist.
-         Log.d(
-           TAG,
--          "loadModelAllowlist: Converting models. Total models: ${modelAllowlist.models.size}",
-+          "loadModelAllowlist: Converting models. Total models: ${resolvedModelAllowlist.models.size}",
-         )
-         val curTasks = getActiveCustomTasks().map { it.task }
-         val nameToModel = mutableMapOf<String, Model>()
--        for (allowedModel in modelAllowlist.models) {
-+        for (allowedModel in resolvedModelAllowlist.models) {
-           if (allowedModel.disabled == true) {
-             continue
-           }

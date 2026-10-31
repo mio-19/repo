@@ -13,6 +13,7 @@
 
   morphe-library-m2_1_4_0,
   morphe-patcher-src_2_0_0,
+  nix-update-script,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -29,20 +30,20 @@ let
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "ARSCLib";
-    rev = "10d0708212";
-    hash = "sha256-XHT3SEVAJAn1EpeucZ3VUUtj0UD01ISRiXFhgY/D5ys=";
+    tag = "4695b583ef";
+    hash = "sha256-IjeqA5A0uDHAVmYAvbwjdPLO7v+GyssHT3o6gv9qync=";
   };
 
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-cli";
-  version = "1.19.0";
+  version = "1.19.1";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-cli";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-TUMOydz3XmhFYKXnjpLeozZ02UAVKge9YFAgTt7KhqM=";
+    hash = "sha256-lUgecWsOnoUTCKHF2bgI5DQNgCRq1CLXRRhhhsq67aQ=";
   };
 
   gradleBuildTask = "shadowJar";
@@ -105,6 +106,8 @@ stdenv.mkDerivation (finalAttrs: {
       --replace-fail '        url = uri("https://maven.pkg.github.com/MorpheApp/registry")' \
                      '        url = uri("file://" + rootProject.projectDir.resolve("../.m2/repository").absolutePath)'
     substituteInPlace "$sourceRoot/build.gradle.kts" --replace-fail "$gh_credentials" ""
+    substituteInPlace "$sourceRoot/build.gradle.kts" --replace-fail '    mavenLocal()' ""
+    substituteInPlace "$root/morphe-patcher/build.gradle.kts" --replace-fail '    mavenLocal()' ""
 
     # ---- Remove morphe-library from composite builds (use pre-built m2 instead) ----
     # morphe-cli settings tries to include morphe-library as composite but KMP
@@ -153,6 +156,7 @@ stdenv.mkDerivation (finalAttrs: {
     "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
     "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
     "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
+    "-Dmaven.repo.local=/homeless-shelter/.m2"
   ];
 
   installPhase = ''
@@ -178,5 +182,6 @@ stdenv.mkDerivation (finalAttrs: {
   };
   passthru = {
     mitmCache = finalAttrs.mitmCache;
+    updateScript = nix-update-script { };
   };
 })

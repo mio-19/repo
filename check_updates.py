@@ -11,7 +11,7 @@ def is_stable_tag(tag, allow_prerelease=False):
     if allow_prerelease:
         return True
     tl = tag.lower()
-    if 'dev' in tl or 'beta' in tl or 'alpha' in tl or 'rc' in tl or 'internal' in tl or 'closed' in tl or 'open' in tl:
+    if 'dev' in tl or 'beta' in tl or 'alpha' in tl or 'rc' in tl or 'internal' in tl or 'closed' in tl or 'open' in tl or 'prerelease' in tl or 'preview' in tl:
         return False
     if re.search(r'b\d+$', tl):
         return False
@@ -33,7 +33,7 @@ def tag_matches_variant(tag, current_rev):
     match2 = re.match(r'^([a-zA-Z]+-)', current_rev)
     if match2:
         prefix = match2.group(1)
-        if prefix in ['android-']:
+        if prefix in ['android-', 'stable-']:
             if not tag.startswith(prefix):
                 return False
 

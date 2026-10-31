@@ -24,13 +24,13 @@ let
 
   appPackage = gradle_9_5_1.stdenv.mkDerivation (finalAttrs: {
     pname = "nextcloud-android";
-    version = "35.0.1";
+    version = "35.0.2";
 
     src = fetchFromGitHub {
       owner = "nextcloud";
       repo = "android";
       tag = "stable-${finalAttrs.version}";
-      hash = "sha256-EDS8JfksRFBSDmbni3lL8sKx0Yepe7OxFgtg8AqmHbU=";
+      hash = "sha256-3e3n8gp9mUwoRjNGjOoh8wciqwUJMOS6MO29NE68q4Y=";
     };
 
     patches = [
@@ -42,6 +42,7 @@ let
 
     passthru = {
       mitmCache = finalAttrs.mitmCache;
+      updateScript = nix-update-script { };
       prefab_jar = fetchurl {
         url = "https://maven.google.com/com/google/prefab/cli/2.1.0/cli-2.1.0-all.jar";
         hash = "sha256-4hnIzWv9n/cVA6V8avNLm6Bg8DUlzD5YMw3uUyRaXtY=";
@@ -118,6 +119,15 @@ let
           tasks.register("resolveAllDependencies") {
               doLast {
                   rootProject.allprojects.each { p ->
+                      p.buildscript.configurations.each { c ->
+                          if (c.isCanBeResolved()) {
+                              try {
+                                  c.resolve()
+                              } catch (Exception e) {
+                                  // Ignore
+                              }
+                          }
+                      }
                       p.configurations.each { c ->
                           if (c.isCanBeResolved()) {
                               try {
@@ -156,7 +166,6 @@ let
       runHook postInstall
     '';
 
-    passthru.updateScript = nix-update-script { };
     meta = with lib; {
       sourceProvenance = with sourceTypes; [ fromSource ];
       description = "Nextcloud Android app built from source";

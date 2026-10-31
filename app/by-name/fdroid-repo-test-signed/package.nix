@@ -33,7 +33,7 @@ let
     keyalias_for_pkg() {
       local pkg="$1"
       case "$pkg" in
-        com.termux|com.termux.styling|com.termux.x11|org.gnu.emacs)
+        com.termux|com.termux.api|com.termux.styling|com.termux.x11|org.gnu.emacs)
           echo "com.termux"
           ;;
         *)
@@ -47,6 +47,10 @@ let
   testApps = [
     {
       pkg = "com.termux";
+      versionCode = "1002";
+    }
+    {
+      pkg = "com.termux.api";
       versionCode = "1002";
     }
     {
@@ -197,14 +201,23 @@ pkgs.stdenvNoCC.mkDerivation {
 
     # Termux family: all four must share the same fingerprint
     fp_termux="$(get_sha256_fingerprint "signed_apks/com.termux_signed.apk")"
+    fp_api="$(get_sha256_fingerprint "signed_apks/com.termux.api_signed.apk")"
     fp_styling="$(get_sha256_fingerprint "signed_apks/com.termux.styling_signed.apk")"
     fp_x11="$(get_sha256_fingerprint "signed_apks/com.termux.x11_signed.apk")"
     fp_emacs="$(get_sha256_fingerprint "signed_apks/org.gnu.emacs_signed.apk")"
 
     echo "  com.termux         fingerprint: $fp_termux"
+    echo "  com.termux.api     fingerprint: $fp_api"
     echo "  com.termux.styling fingerprint: $fp_styling"
     echo "  com.termux.x11     fingerprint: $fp_x11"
     echo "  org.gnu.emacs      fingerprint: $fp_emacs"
+
+    if [[ "$fp_termux" != "$fp_api" ]]; then
+      echo "FAIL: com.termux and com.termux.api have DIFFERENT signing keys!" >&2
+      echo "  com.termux:     $fp_termux" >&2
+      echo "  com.termux.api: $fp_api" >&2
+      exit 1
+    fi
 
     if [[ "$fp_termux" != "$fp_styling" ]]; then
       echo "FAIL: com.termux and com.termux.styling have DIFFERENT signing keys!" >&2
