@@ -48,6 +48,7 @@
   enableKSU,
   enableLindroid,
   enableDroidspaces ? false,
+  enableUnprotectedKvm ? false,
   enableDaria ? enableLindroid,
   buildCommand ? null,
   extraBuildCommands ? "",
@@ -118,6 +119,9 @@ stdenvNoCC.mkDerivation {
       }
 
       ${extraBuildCommands}
+      ${lib.optionalString enableUnprotectedKvm ''
+        apply_patch ${./enable-unprotected-kvm.patch}
+      ''}
       ${lib.optionalString enableKSU # https://github.com/tiann/KernelSU/issues/2942#issuecomment-3969773467
         ''
           # KernelSU v1.0.5 style tree injection shared across GrapheneOS kernels.

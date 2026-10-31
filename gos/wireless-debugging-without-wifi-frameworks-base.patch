@@ -1,5 +1,5 @@
 diff --git a/services/core/java/com/android/server/adb/AdbBroadcastReceiver.java b/services/core/java/com/android/server/adb/AdbBroadcastReceiver.java
-index 7949080fd..12a6dda86 100644
+index 7949080fd..68b069608 100644
 --- a/services/core/java/com/android/server/adb/AdbBroadcastReceiver.java
 +++ b/services/core/java/com/android/server/adb/AdbBroadcastReceiver.java
 @@ -73,6 +73,10 @@ public class AdbBroadcastReceiver extends BroadcastReceiver implements AdbNetwor
@@ -13,30 +13,46 @@ index 7949080fd..12a6dda86 100644
      @Override
      public void onReceive(Context context, Intent intent) {
          String action = intent.getAction();
-@@ -84,9 +88,18 @@ public class AdbBroadcastReceiver extends BroadcastReceiver implements AdbNetwor
+@@ -84,7 +88,8 @@ public class AdbBroadcastReceiver extends BroadcastReceiver implements AdbNetwor
                              WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_DISABLED);
  
              if (state == WifiManager.WIFI_STATE_DISABLED) {
-+                if (shouldIgnoreMissingWifiContext()) {
-+                    Slog.i(TAG, "Wifi disabled with no remembered AP context. Keeping adbwifi.");
-+                    return;
-+                }
-                 disableWifi("Wifi disabled. Disabling adbwifi.");
+-                disableWifi("Wifi disabled. Disabling adbwifi.");
++                mAdbConnectionInfo.clear();
++                Slog.i(TAG, "Wi-Fi disabled. Keeping adb available for loopback clients.");
              }
          } else if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action)) {
-+            if (shouldIgnoreMissingWifiContext()) {
-+                Slog.i(TAG, "Network change with no remembered AP context. Keeping adbwifi.");
+             // We only care about wifi type connections
+@@ -100,7 +105,13 @@ public class AdbBroadcastReceiver extends BroadcastReceiver implements AdbNetwor
+ 
+             // Check for network disconnect
+             if (!networkInfo.isConnected()) {
+-                disableWifi("Network disconnected. Disabling adbwifi.");
++                mAdbConnectionInfo.clear();
++                Slog.i(TAG, "Wi-Fi disconnected. Keeping adb available for loopback clients.");
 +                return;
 +            }
 +
-             // We only care about wifi type connections
-             NetworkInfo networkInfo =
-                     (NetworkInfo)
++            if (shouldIgnoreMissingWifiContext()) {
++                disableWifi("A new Wi-Fi network connected. Re-enable adb after trusting it.");
+                 return;
+             }
+ 
 diff --git a/services/core/java/com/android/server/adb/AdbDebuggingManager.java b/services/core/java/com/android/server/adb/AdbDebuggingManager.java
-index af8523dd8..6879fce9a 100644
+index af8523dd8..76f966515 100644
 --- a/services/core/java/com/android/server/adb/AdbDebuggingManager.java
 +++ b/services/core/java/com/android/server/adb/AdbDebuggingManager.java
-@@ -945,26 +945,21 @@ public class AdbDebuggingManager {
+@@ -668,6 +668,9 @@ public class AdbDebuggingManager {
+         // Event sent when the mDNS hostname is known.
+         static final int MSG_ON_LOCALHOSTNAME_KNOWN = 34;
+ 
++        // The Wi-Fi network was lost, but the TLS listener stays available on loopback.
++        static final int MSG_WIFI_NETWORK_LOST = 35;
++
+         // === Messages we can send to adbd ===========
+         static final String MSG_DISCONNECT_DEVICE = "DD";
+         static final String MSG_START_ADB_WIFI = "W1";
+@@ -945,26 +948,21 @@ public class AdbDebuggingManager {
                      }
  
                      AdbConnectionInfo currentInfo = getCurrentWifiApInfo();
@@ -76,7 +92,32 @@ index af8523dd8..6879fce9a 100644
                      mAdbNetworkMonitor.register();
                      ensureAdbDebuggingThreadAlive();
                      startTLSPortPoller();
-@@ -1296,7 +1291,7 @@ public class AdbDebuggingManager {
+@@ -996,6 +994,10 @@ public class AdbDebuggingManager {
+                     }
+ 
+                     if (!verifyWifiNetwork(currentInfo.getBSSID(), currentInfo.getSSID())) {
++                        // Do not keep the listener reachable from a Wi-Fi network awaiting trust.
++                        stopAdbdWifi();
++                        mAdbWirelessInfo = new AdbWirelessInfo(0, Optional.empty());
++                        onAdbdWifiServerDisconnected(-1);
+                         break;
+                     }
+ 
+@@ -1016,6 +1018,13 @@ public class AdbDebuggingManager {
+                     onAdbdWifiServerDisconnected(-1);
+                     logAdbConnectionChanged(AdbProtoEnums.ADB_WIFI_AUTO_DISABLED);
+                 }
++                case MSG_WIFI_NETWORK_LOST -> {
++                    if (getCurrentWifiApInfo() == null) {
++                        mAdbConnectionInfo.clear();
++                        mAdbWirelessInfo = new AdbWirelessInfo(
++                                mAdbWirelessInfo.port(), Optional.empty());
++                    }
++                }
+                 case MSG_ADBWIFI_ALLOW -> {
+                     if (!com.android.server.adb.Flags.allowAdbWifiReconnect()) {
+                         if (mAdbWifiEnabled) {
+@@ -1296,7 +1305,7 @@ public class AdbDebuggingManager {
              WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
              WifiInfo wifiInfo = wifiManager.getConnectionInfo();
              if (wifiInfo == null || wifiInfo.getNetworkId() == -1) {
@@ -85,3 +126,19 @@ index af8523dd8..6879fce9a 100644
                  return null;
              }
  
+diff --git a/services/core/java/com/android/server/adb/AdbWifiNetworkMonitor.java b/services/core/java/com/android/server/adb/AdbWifiNetworkMonitor.java
+index 25d469478..965789ddb 100644
+--- a/services/core/java/com/android/server/adb/AdbWifiNetworkMonitor.java
++++ b/services/core/java/com/android/server/adb/AdbWifiNetworkMonitor.java
+@@ -111,8 +111,9 @@ public class AdbWifiNetworkMonitor extends ConnectivityManager.NetworkCallback
+     @Override
+     public final void onLost(@NonNull Network network) {
+         mLastSSID = null;
+-        mAdbDebuggingHandler.sendEmptyMessage(AdbDebuggingHandler.MSG_STOP_TLS_SERVICE);
+-        Slog.i(TAG, "Wi-Fi network lost. Stopping adb over Wi-Fi.");
++        // Keep the listener active so local clients can connect over 127.0.0.1 without Wi-Fi.
++        mAdbDebuggingHandler.sendEmptyMessage(AdbDebuggingHandler.MSG_WIFI_NETWORK_LOST);
++        Slog.i(TAG, "Wi-Fi network lost. Keeping adb available for loopback clients.");
+     }
+ 
+     private void processWifiConnection(WifiInfo wifiInfo) {

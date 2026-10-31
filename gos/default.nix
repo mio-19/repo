@@ -114,6 +114,10 @@ in
     ./gos_userdebug.nix
     ./gos_desktop_companion.nix
     ./gos_librepods.nix
+    ./gos_gallery.nix
+    ./gos_pkvm.nix
+    ./gos_virtual_machines.nix
+    ./gos_termux_nix.nix
     ./gos_play_integrity.nix
     # possibly unsafe# ./bigger_zram.nix
   ];
@@ -232,7 +236,7 @@ in
       postPatch = restoreGrapheneosIconResources "packages/apps/DeskClock";
     }
   );
-  source.dirs."packages/apps/Gallery2" = lib.mkIf (!useOriginalGrapheneosAppSources) (
+  source.dirs."packages/apps/Gallery2" = lib.mkIf config.useLineageGallery (
     lib.mkForce {
       src = sources.lineage_gallery2.src;
       patches = [
@@ -247,6 +251,7 @@ in
           url = "https://github.com/GrapheneOS/platform_packages_apps_Gallery2/pull/14.patch";
           hash = "sha256-aO41dAmULosxYoas0ZwLTBShpfMBIKhLBKKCHkcAxNg=";
         })
+        ./gallery2-delete-confirmation.patch
       ];
       postPatch = restoreGrapheneosIconResources "packages/apps/Gallery2";
     }

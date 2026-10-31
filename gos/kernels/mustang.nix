@@ -4,6 +4,7 @@
   enableKSU ? true,
   enableLindroid ? false,
   pwmmode ? "stock",
+  enableUnprotectedKvm ? false,
 }:
 
 let
@@ -31,7 +32,7 @@ callPackage ./common.nix { } {
   buildScript = "build_muzel.sh";
   distDir = "muzel";
   installSubdir = "grapheneos/muzel";
-  inherit enableKSU enableLindroid;
+  inherit enableKSU enableLindroid enableUnprotectedKvm;
   extraBuildCommands = if panelPatch != "" then "apply_patch ${panelPatch}" else "";
   buildCommand = ''
     ./build_muzel.sh --lto=full --repo_manifest="$(realpath .)":"$(realpath aosp_manifest.xml)"

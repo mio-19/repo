@@ -24,7 +24,7 @@
       src =
         let
           src = pkgs-unfree.callPackage ../kernels/caimito.nix {
-            inherit (config) enableLindroid enableDroidspaces;
+            inherit (config) enableLindroid enableDroidspaces enableUnprotectedKvm;
             pwmmode = if config.caimanHighEmissionFrequency then "0x01" else "stock";
           };
         in

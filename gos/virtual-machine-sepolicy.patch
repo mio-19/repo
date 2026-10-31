@@ -1,0 +1,62 @@
+diff --git a/private/app.te b/private/app.te
+index d5c53eb..3335535 100644
+--- a/private/app.te
++++ b/private/app.te
+@@ -901,3 +901,19 @@ neverallow { appdomain -traceur_app -platform_app_all -system_app -shell } trace
+ 
+ # Apps only need to use the dma-buf ioctls on wrapfds, and no other ioctls.
+ neverallowxperm appdomain system_server_wrapfd:anon_inode ioctl ~{ dma_buf_ioctls };
++
++# Downstream app domains for optional system-bundled KVM clients and Termux.
++type limbo_tensor_app, domain;
++app_domain(limbo_tensor_app)
++
++type droidvm_app, domain;
++app_domain(droidvm_app)
++
++# KVM access is limited to the explicit app domains listed in crosvm.te.
++allow limbo_tensor_app kvm_device:chr_file { getattr ioctl map open read write };
++allowxperm limbo_tensor_app kvm_device:chr_file ioctl { 0xae00-0xaeff };
++allow droidvm_app kvm_device:chr_file { getattr ioctl map open read write };
++allowxperm droidvm_app kvm_device:chr_file ioctl { 0xae00-0xaeff };
++
++# DroidVM extracts and launches its QEMU helpers from its private app data.
++allow droidvm_app app_data_file:file { execute execute_no_trans };
+diff --git a/private/crosvm.te b/private/crosvm.te
+index 7e80068..b6ec5b5 100644
+--- a/private/crosvm.te
++++ b/private/crosvm.te
+@@ -5,15 +5,15 @@ type crosvm_domain_tmpfs, file_type;
+ allow crosvm_domain vm_manager_device_type:chr_file rw_file_perms;
+ 
+ # Most other domains shouldn't access /dev/kvm.
+-neverallow { domain -crosvm_domain -ueventd -shell } kvm_device:chr_file getattr;
+-neverallow { domain -crosvm_domain -ueventd } kvm_device:chr_file ~getattr;
+-neverallowxperm { domain -crosvm_domain } kvm_device:chr_file ioctl ~{ KVM_CHECK_EXTENSION };
++neverallow { domain -crosvm_domain -limbo_tensor_app -droidvm_app -ueventd -shell } kvm_device:chr_file getattr;
++neverallow { domain -crosvm_domain -limbo_tensor_app -droidvm_app -ueventd } kvm_device:chr_file ~getattr;
++neverallowxperm { domain -crosvm_domain -limbo_tensor_app -droidvm_app } kvm_device:chr_file ioctl ~{ KVM_CHECK_EXTENSION };
+ 
+ # Most other domains shouldn't access other vm managers either.
+ # These restrictions need to be slightly looser than for kvm_device to allow
+ # for different implementations.
+-neverallow { coredomain appdomain -crosvm_domain -ueventd -shell } vm_manager_device_type:chr_file getattr;
+-neverallow { coredomain appdomain -crosvm_domain -ueventd } vm_manager_device_type:chr_file ~getattr;
++neverallow { coredomain appdomain -crosvm_domain -limbo_tensor_app -droidvm_app -ueventd -shell } vm_manager_device_type:chr_file getattr;
++neverallow { coredomain appdomain -crosvm_domain -limbo_tensor_app -droidvm_app -ueventd } vm_manager_device_type:chr_file ~getattr;
+ 
+ # Let crosvm create temporary files.
+ tmpfs_domain(crosvm_domain)
+diff --git a/private/seapp_contexts b/private/seapp_contexts
+index 8633389..584e2a5 100644
+--- a/private/seapp_contexts
++++ b/private/seapp_contexts
+@@ -197,6 +197,8 @@ user=_app seinfo=platform isPrivApp=true name=com.android.permissioncontroller d
+ user=_app isPrivApp=true name=com.android.rkpdapp domain=rkpdapp type=privapp_data_file levelFrom=all
+ user=_app isPrivApp=true name=app.grapheneos.logviewer domain=logviewer_app type=app_data_file levelFrom=all
+ user=_app isPrivApp=true name=app.seamlessupdate.client domain=updater_app type=app_data_file levelFrom=all
++user=_app isPrivApp=false name=com.limbo.emu.main.arm domain=limbo_tensor_app type=app_data_file levelFrom=all
++user=_app isPrivApp=false name=cn.classfun.droidvm domain=droidvm_app type=app_data_file levelFrom=all
+ user=_app minTargetSdkVersion=37 domain=untrusted_app type=app_data_file levelFrom=all
+ user=_app minTargetSdkVersion=34 domain=untrusted_app_34 type=app_data_file levelFrom=all
+ user=_app minTargetSdkVersion=32 domain=untrusted_app_32 type=app_data_file levelFrom=all

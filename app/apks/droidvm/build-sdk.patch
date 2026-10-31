@@ -1,0 +1,25 @@
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+index 27bfeba..5987eea 100644
+--- a/app/build.gradle.kts
++++ b/app/build.gradle.kts
+@@ -36,11 +36,7 @@ println("Version code: $generatedVersionCode")
+ 
+ android {
+     namespace = "cn.classfun.droidvm"
+-    compileSdk {
+-        version = release(36) {
+-            minorApiLevel = 1
+-        }
+-    }
++    compileSdk = 36
+ 
+     defaultConfig {
+         applicationId = "cn.classfun.droidvm"
+@@ -48,6 +44,7 @@ android {
+         targetSdk = 36
+         versionCode = generatedVersionCode
+         versionName = generatedVersionName
++        ndkVersion = "30.0.14904198"
+ 
+         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+         ndk {
