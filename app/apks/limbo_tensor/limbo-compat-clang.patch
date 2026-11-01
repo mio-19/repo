@@ -1,0 +1,22 @@
+diff --git a/limbo-android-lib/src/main/jni/compat/limbo_compat.c b/limbo-android-lib/src/main/jni/compat/limbo_compat.c
+index c1cc499..db7aa89 100644
+--- a/limbo-android-lib/src/main/jni/compat/limbo_compat.c
++++ b/limbo-android-lib/src/main/jni/compat/limbo_compat.c
+@@ -1,5 +1,6 @@
+ 
+ #include <jni.h>
++#include <malloc.h>
+ #include <unistd.h>
+ #include "limbo_logutils.h"
+ #include "limbo_compat.h"
+@@ -34,8 +35,8 @@ const char* strchrnul(const char* s, int c) {
+     char *str = strchr(s, c);
+     if(str == NULL) {
+         int length = strlen(s);
+-        int endofs = s + length;
+-        return endofs;
++        const char *end = s + length;
++        return end;
+     }
+     return str;
+ }
