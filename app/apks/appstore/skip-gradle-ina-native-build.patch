@@ -1,0 +1,13 @@
+--- a/ina/android/build.gradle.kts
++++ b/ina/android/build.gradle.kts
+@@ -116,10 +116,6 @@
+     commandLine("cargo", "clean")
+ }
+ 
+-tasks.preBuild {
+-    dependsOn(tasks.getByName("buildJniLibs"))
+-}
+-
+ tasks.clean {
+     dependsOn(tasks.getByName("cargoClean"))
+ 

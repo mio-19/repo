@@ -236,11 +236,11 @@
     src = fetchgit {
       url = "https://github.com/GrapheneOS/AppStore.git";
       rev = "4315c3252326d026eb82c679ede147e9c1808235";
-      fetchSubmodules = false;
+      fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-jTKUkXO5pMmumPPhoIWLGiTfXqQ0ul8D8h9X6L2sS7Q=";
+      sha256 = "sha256-ejbF2bhb5ZjF5wdNkkImKU6NMe4S1JdAf0UqoZEhcrs=";
     };
     date = "2026-10-30";
   };

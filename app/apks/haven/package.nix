@@ -21,6 +21,8 @@
   go_1_27,
   python313,
   unzip,
+  cmake,
+  ninja,
 }:
 let
   appPackage = stdenv.mkDerivation (
@@ -203,6 +205,90 @@ let
         (cd go && go mod edit -replace=golang.org/x/mobile=${replacement})
       '';
 
+      # Keep these commits aligned with upstream's openvpn3-core/deps.lock.
+      openvpn3Sources = {
+        openvpn3 = fetchFromGitHub {
+          owner = "OpenVPN";
+          repo = "openvpn3";
+          rev = "b432eb39c7a48c5138ecdd294a389c733bc329a4";
+          hash = "sha256-+kbxIYZHYu1O2AHDgR7cKO0i5chBddxTwjEd/XFh1fw=";
+        };
+        mbedtls = fetchFromGitHub {
+          owner = "Mbed-TLS";
+          repo = "mbedtls";
+          tag = "v3.6.7";
+          fetchSubmodules = true;
+          hash = "sha256-t1ZPeFA3ftKaEIaXQ7RXZEsiOAYK4KSSm55SFr9g17A=";
+        };
+        lz4 = fetchFromGitHub {
+          owner = "lz4";
+          repo = "lz4";
+          tag = "v1.10.0";
+          hash = "sha256-/dG1n59SKBaEBg72pAWltAtVmJ2cXxlFFhP+klrkTos=";
+        };
+        fmt = fetchFromGitHub {
+          owner = "fmtlib";
+          repo = "fmt";
+          tag = "11.2.0";
+          hash = "sha256-sAlU5L/olxQUYcv8euVYWTTB8TrVeQgXLHtXy8IMEnU=";
+        };
+        asio = fetchFromGitHub {
+          owner = "chriskohlhoff";
+          repo = "asio";
+          tag = "asio-1-38-2";
+          hash = "sha256-ZPPdADK+ivwAk0gqBzyFjpRsMoZyGCq/qiKN8rMrHUk=";
+        };
+      };
+
+      openvpn3Native = stdenv.mkDerivation {
+        pname = "haven-openvpn3-native";
+        inherit (finalAttrs0) version src;
+        nativeBuildInputs = [
+          cmake
+          ninja
+          git
+          python313
+        ];
+        dontConfigure = true;
+        env.ANDROID_NDK_HOME = androidNdkRoot;
+
+        postPatch = ''
+          substituteInPlace openvpn3-core/build-android.sh \
+            --replace-fail '"armeabi-v7a:armeabi-v7a"' "" \
+            --replace-fail '"x86:x86"' ""
+        '';
+
+        buildPhase = ''
+          runHook preBuild
+          # Fail on dependency pin changes instead of silently using old sources.
+          echo 'cd48d9f3913a3fdfae3702713586b62dbd7d504ffbe4204c6fa0bccafe2e0abc  openvpn3-core/deps.lock' \
+            | sha256sum -c -
+          sourcesDir="$PWD/openvpn3-core/.deps/sources"
+          mkdir -p "$sourcesDir"
+          ${lib.concatStringsSep "\n" (
+            lib.mapAttrsToList (name: source: ''
+              cp -R ${source} "$sourcesDir/${name}"
+            '') openvpn3Sources
+          )}
+          chmod -R u+w "$sourcesDir"
+          for asioPatch in "$sourcesDir"/openvpn3/deps/vcpkg-ports/asio/*.patch; do
+            git -C "$sourcesDir/asio" apply "$asioPatch"
+          done
+          # Match source preparation in Haven's fetch-deps.sh (GPL-3.0-only):
+          # https://github.com/GlassHaven/Haven/blob/v5.92.0/openvpn3-core/fetch-deps.sh
+          cat openvpn3-core/deps.lock openvpn3-core/fetch-deps.sh \
+            | sha256sum | cut -d ' ' -f1 > "$sourcesDir/.prepared"
+          bash openvpn3-core/build-android.sh
+          runHook postBuild
+        '';
+
+        installPhase = ''
+          runHook preInstall
+          mv core/tunnel/jniLibs-openvpn3 "$out"
+          runHook postInstall
+        '';
+      };
+
       rcloneGoModCache = stdenvNoCC.mkDerivation {
         pname = "haven-rclone-go-mod-cache";
         inherit (finalAttrs0) version src;
@@ -211,7 +297,7 @@ let
 
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "sha256-8aygMGWgksFlbKU6sv6vJeNrT1gkeukT+ztEYZQ+UfE=";
+        outputHash = "sha256-MWtJ9riO09mexUwxMbMnNxnkmiWQwW7SPW/Qhp33AQ0=";
         dontConfigure = true;
         dontFixup = true;
 
@@ -303,6 +389,8 @@ let
 
             cd rclone-android
             ${prepareXMobile "../x-mobile"}
+            mkdir -p ../core/tunnel
+            cp -R ${openvpn3Native} ../core/tunnel/jniLibs-openvpn3
             cd go
 
             (cd ../x-mobile/cmd/gobind && go build -o "$GOBIN/gobind")
@@ -325,7 +413,7 @@ let
               -ldflags "-s -w -checklinkname=0" \
               -v \
               -o ../build/rcbridge.aar \
-              . ./wgbridge ./tsbridge ./mailbridge ./nbbridge ./ocbridge
+              . ./wgbridge ./tsbridge ./mailbridge ./nbbridge ./ovpnbridge ./ocbridge
 
 
           cd ..
@@ -442,7 +530,13 @@ let
 
       passthru = {
         # Exposed so the update script can (re)compute their hashes on their own.
-        inherit rdpCargoDeps spiceCargoDeps rcloneGoModCache;
+        inherit
+          rdpCargoDeps
+          spiceCargoDeps
+          rcloneGoModCache
+          openvpn3Sources
+          openvpn3Native
+          ;
 
         # Fixed-output dependencies that change with the source and that
         # `nix-update --src-only` cannot refresh by itself.
@@ -509,6 +603,11 @@ let
         cp -r ${rcloneTransportJniLibs}/jniLibs/. rclone-android/jniLibs/
         mkdir -p rclone-android/build
         cp ${rcloneTransportJniLibs}/build/rcbridge-bindings.jar rclone-android/build/
+        mkdir -p core/tunnel
+        cp -R ${openvpn3Native} core/tunnel/jniLibs-openvpn3
+        # The update script removes this tree after recording dependencies.
+        chmod -R u+w rdp-kotlin/jniLibs spice-kotlin/jniLibs \
+          rclone-android/jniLibs core/tunnel/jniLibs-openvpn3
 
         # When running in mitmCache dependency-fetch mode, configure pip (used by
         # Chaquopy) to trust the mitm proxy certificate so PyPI downloads are captured.
@@ -547,6 +646,7 @@ let
         # host tooling wired up; skip for now so the APK still builds.
         "-PskipWaylandNatives=true"
         "-PskipFfmpegNatives=true"
+        "-PskipOpenvpn3Native=true"
         "-PskipUml"
         "-PtargetAbi=arm64"
       ];
