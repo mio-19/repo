@@ -5,7 +5,7 @@
  
      private static final String LOG_TAG = "TermuxInstaller";
 -    static String defaultBootstrapURL = "https://nix-on-droid.unboiled.info/bootstrap-release-24.05";
-+    static String defaultBootstrapURL = "https://github.com/mio-19/nix-on-droid-bootstrap/raw/refs/heads/main";
++    static String defaultBootstrapURL = "https://nix-on-droid.unboiled.info/bootstrap/";
  
      /** Performs bootstrap setup if necessary. */
      static void setupBootstrapIfNeeded(final Activity activity, final Runnable whenDone) {
