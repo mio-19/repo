@@ -8,11 +8,13 @@
   androidSdkBuilder,
   writableTmpDirAsHomeHook,
   morphe-patches-gradle-plugin_2_0_0,
-  morphe-library-m2,
-  morphe-patches-library-m2_2_0_0,
+  morphe-library-m2_1_4_0,
+  morphe-patches-library-m2_2_1_0,
   apktool-src,
   multidexlib2-src,
-  morphe-patcher-src_2_0_0,
+  morphe-patcher-src_2_1_0,
+  writeShellScriptBin,
+  nix-update,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -41,13 +43,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches";
-  version = "1.48.0";
+  version = "2.0.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-WNbZK9aM81wyPErUbeFfcrznJ2Va055m2LYX4+vC33w=";
+    hash = "sha256-zdnom5xzN7vHdFiLZtRccWvbMBf/ViRMQed8L2DyG70=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -75,13 +77,13 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_2_0_0}";
-    MORPHE_LIBRARY_M2 = "${morphe-library-m2}";
-    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_2_0_0}";
+    MORPHE_LIBRARY_M2 = "${morphe-library-m2_1_4_0}";
+    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_2_1_0}";
   };
 
   postUnpack = ''
     root="$PWD"
-    cp -a ${morphe-patcher-src_2_0_0} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_2_1_0} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
     cp -a ${arsclib-src} "$root/ARSCLib"
     chmod -R u+w "$root/ARSCLib"
@@ -95,7 +97,10 @@ stdenv.mkDerivation (finalAttrs: {
 
     patch -d "$sourceRoot" -p0 < ${./morphe-patches-settings.patch}
     substituteInPlace "$sourceRoot/settings.gradle.kts" \
-      --replace-fail '    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"' ""
+      --replace-fail '    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"' "" \
+      --replace-fail 'version "2.1.0-dev.1"' 'version "2.0.0"'
+    substituteInPlace "$sourceRoot/gradle/libs.versions.toml" \
+      --replace-fail 'morphe-patches-library = "2.1.0-dev.2"' 'morphe-patches-library = "2.1.0"'
     patch -d "$sourceRoot" -p1 < ${./morphe-patches-version-name-suffix-compatible.patch}
     patch -d "$sourceRoot" -p1 < ${./morphe-patches-flip-video.patch}
 
@@ -169,6 +174,16 @@ stdenv.mkDerivation (finalAttrs: {
       "$out/patches-${finalAttrs.version}.mpp"
     runHook postInstall
   '';
+
+  passthru = {
+    mitmCache = finalAttrs.mitmCache;
+    updateScript = writeShellScriptBin "update-morphe-patches" ''
+      set -euo pipefail
+      ${lib.getExe nix-update} --flake --src-only --version-regex='^v?([0-9]+\.[0-9]+\.[0-9]+)$' morphe-patches
+      system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+      "$(nix build ".#packages.$system.morphe-patches.mitmCache.updateScript" --no-link --print-out-paths)"
+    '';
+  };
 
   meta = with lib; {
     sourceProvenance = with sourceTypes; [ fromSource ];

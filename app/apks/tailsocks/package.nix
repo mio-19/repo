@@ -17,6 +17,9 @@
   cacert,
   patch,
   unzip,
+  writeShellScriptBin,
+  nix-update,
+  jq,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -34,21 +37,21 @@ let
 
   gradle = gradle_9_2_1;
 
-  version = "5.4.0";
+  version = "5.6.0";
   src = fetchFromGitHub {
     owner = "bropines";
     repo = "tailsocks";
     tag = "v${version}";
-    hash = "sha256-p3mkNnotUMjGyYHR/oy40Z7zoyAaYiZwawSprwY8zwI=";
+    hash = "sha256-hCI29EF5iD7k1IerWufnet07165OQHuslz3nd3OQt/g=";
   };
 
   tailscaleVersion = "1.104.1";
   # git rev-parse v1.104.1^{}
   tailscaleCommit = "9a522a9786c97eb7910c01ccb7bd66557b04c910";
   # git rev-parse v5.4.0^{}
-  appCommit = "84ad1e7395216c70b2f14b6389fa2b080bfb967f";
+  appCommit = "4d76b8ff1197e3146c3b268b2859452ad71cb3a3";
   # TZ=UTC git log -1 --format=%cd --date=format-local:%Y-%m-%d_%H%M%S v5.4.0^{}
-  appCommitTime = "2026-10-29_141837";
+  appCommitTime = "20261031_163738";
 
   tailscaleSrc = fetchFromGitHub {
     owner = "tailscale";
@@ -337,6 +340,41 @@ let
 
     passthru = {
       inherit goModCache appctrArtifacts;
+      updateDeps = [ "goModCache" ];
+      updateScript = writeShellScriptBin "update-tailsocks" ''
+        set -euo pipefail
+        package_file="app/apks/tailsocks/package.nix"
+        package_attr=".#apk_tailsocks"
+        fake_hash="${lib.fakeHash}"
+
+        . "${../_shared/update-script-helpers.sh}"
+
+        ${lib.getExe nix-update} --flake --src-only apk_tailsocks
+
+        new_version="$(sed -n 's/^[[:space:]]*version = "\([^"]*\)";/\1/p' "$package_file" | head -n 1)"
+        tag="v$new_version"
+
+        auth_header=()
+        if [[ -n "''${GITHUB_TOKEN:-}" ]]; then
+          auth_header=(-H "Authorization: token $GITHUB_TOKEN")
+        fi
+        commit_json="$(${lib.getExe curl} -s "''${auth_header[@]}" "https://api.github.com/repos/bropines/tailsocks/commits/$tag")"
+        app_commit="$(${lib.getExe jq} -r .sha <<< "$commit_json")"
+        commit_date="$(${lib.getExe jq} -r '.commit.committer.date' <<< "$commit_json")"
+        app_commit_time="$(echo "$commit_date" | tr -d ':-' | sed 's/T/_/' | sed 's/Z//')"
+
+        old_commit="$(sed -n 's/^[[:space:]]*appCommit = "\([^"]*\)";/\1/p' "$package_file" | head -n 1)"
+        old_commit_time="$(sed -n 's/^[[:space:]]*appCommitTime = "\([^"]*\)";/\1/p' "$package_file" | head -n 1)"
+
+        if [[ -n "$app_commit" && "$app_commit" != "null" ]]; then
+          replace_literal "appCommit = \"$old_commit\";" "appCommit = \"$app_commit\";"
+        fi
+        if [[ -n "$app_commit_time" && "$app_commit_time" != "null" ]]; then
+          replace_literal "appCommitTime = \"$old_commit_time\";" "appCommitTime = \"$app_commit_time\";"
+        fi
+
+        refresh_update_deps goModCache
+      '';
     };
 
     nativeBuildInputs = [

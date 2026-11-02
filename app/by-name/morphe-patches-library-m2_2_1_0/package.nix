@@ -1,0 +1,136 @@
+{
+  lib,
+  stdenv,
+  fetchFromGitHub,
+  gradle_9_7_1,
+  jdk21_headless,
+  androidSdkBuilder,
+  writableTmpDirAsHomeHook,
+  morphe-patcher-src_2_1_0,
+  morphe-library-m2_1_4_0,
+  apktool-src,
+  multidexlib2-src,
+}:
+let
+  androidSdk = androidSdkBuilder (s: [
+    s.cmdline-tools-latest
+    s.platform-tools
+    s.platforms-android-33
+    s.platforms-android-36
+    s.build-tools-36-0-0
+  ]);
+
+  gradle = gradle_9_7_1;
+
+  arsclib-src = fetchFromGitHub {
+    owner = "MorpheApp";
+    repo = "ARSCLib";
+    rev = "10d0708212";
+    hash = "sha256-XHT3SEVAJAn1EpeucZ3VUUtj0UD01ISRiXFhgY/D5ys=";
+  };
+
+in
+stdenv.mkDerivation (finalAttrs: {
+  pname = "morphe-patches-library-m2";
+  version = "2.1.0";
+
+  src = fetchFromGitHub {
+    owner = "MorpheApp";
+    repo = "morphe-patches-library";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-WLtUycLZQs1IKIp1Z/M2nc0zkFnlUhIyy0BZgGy+uvA=";
+  };
+
+  gradleBuildTask = "publish";
+  gradleUpdateTask = "dependencies buildEnvironment ${finalAttrs.gradleBuildTask}";
+
+  mitmCache = gradle.fetchDeps {
+    pname = "morphe-patches-library";
+    attrPath = "morphe-patches-library-m2_2_1_0";
+    pkg = finalAttrs.finalPackage;
+    data = ./morphe-patches-library_deps.json;
+    silent = false;
+    useBwrap = true;
+  };
+
+  nativeBuildInputs = [
+    gradle
+    jdk21_headless
+    writableTmpDirAsHomeHook
+  ];
+
+  env = {
+    JAVA_HOME = jdk21_headless.passthru.home;
+    ANDROID_HOME = "${androidSdk}/share/android-sdk";
+    ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
+    ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
+    MORPHE_LIBRARY_M2 = "${morphe-library-m2_1_4_0}";
+    GITHUB_ACTOR = "nix-build";
+    GITHUB_TOKEN = "ghp_dummy";
+  };
+
+  postUnpack = ''
+    root="$PWD"
+    cp -a ${morphe-patcher-src_2_1_0} "$root/morphe-patcher"
+    chmod -R u+w "$root/morphe-patcher"
+    cp -a ${arsclib-src} "$root/ARSCLib"
+    chmod -R u+w "$root/ARSCLib"
+    cp -a ${apktool-src} "$root/Apktool"
+    chmod -R u+w "$root/Apktool"
+    patch -d "$root/Apktool" -p3 < ${../brosssh-patches/apktool-gradle-9.patch}
+    cp -a ${multidexlib2-src} "$root/multidexlib2"
+    chmod -R u+w "$root/multidexlib2"
+    patch -d "$root/multidexlib2" -p3 < ${../brosssh-patches/multidexlib2-gradle-9.patch}
+
+    substituteInPlace "$sourceRoot/settings.gradle.kts" \
+      --replace-fail '    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"' "" \
+      --replace-fail \
+      'gradlePluginPortal()' \
+      'gradlePluginPortal()
+        mavenCentral()'
+
+    substituteInPlace "$sourceRoot/patch-library/build.gradle.kts" \
+      --replace-fail \
+      'url = uri("https://maven.pkg.github.com/MorpheApp/morphe-patches-library")' \
+      'url = uri("file://" + rootProject.projectDir.resolve("build/m2").absolutePath)'
+    substituteInPlace "$sourceRoot/extension-library/build.gradle.kts" \
+      --replace-fail \
+      'url = uri("https://maven.pkg.github.com/MorpheApp/morphe-patches-library")' \
+      'url = uri("file://" + rootProject.projectDir.resolve("build/m2").absolutePath)'
+    substituteInPlace "$sourceRoot/patch-library/build.gradle.kts" \
+      --replace-fail \
+      $'                credentials {\n                    username = providers.gradleProperty("gpr.user").getOrElse(System.getenv("GITHUB_ACTOR"))\n                    password = providers.gradleProperty("gpr.key").getOrElse(System.getenv("GITHUB_TOKEN"))\n                }' \
+      ""
+    substituteInPlace "$sourceRoot/extension-library/build.gradle.kts" \
+      --replace-fail \
+      $'                credentials {\n                    username = providers.gradleProperty("gpr.user").getOrElse(System.getenv("GITHUB_ACTOR"))\n                    password = providers.gradleProperty("gpr.key").getOrElse(System.getenv("GITHUB_TOKEN"))\n                }' \
+      ""
+  '';
+
+  preConfigure = ''
+    export ANDROID_USER_HOME="$HOME/.android"
+    mkdir -p "$ANDROID_USER_HOME"
+    echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+  '';
+
+  gradleFlags = [
+    "-Dorg.gradle.java.installations.auto-download=false"
+    "-Dorg.gradle.java.installations.paths=${finalAttrs.env.JAVA_HOME}"
+    "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+    "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+  ];
+
+  installPhase = ''
+    runHook preInstall
+    mkdir -p "$out"
+    mv build/m2/* "$out/"
+    runHook postInstall
+  '';
+
+  meta = with lib; {
+    description = "Morphe patches library pre-built to local maven repo";
+    homepage = "https://github.com/MorpheApp/morphe-patches-library";
+    license = licenses.gpl3Only;
+    platforms = platforms.unix;
+  };
+})

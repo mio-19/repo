@@ -12,6 +12,10 @@
 
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  writeShellScriptBin,
+  nix-update,
+  jq,
+  curl,
 }:
 let
   appPackage =
@@ -172,14 +176,14 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "v2rayng";
-      version = "2.3.13";
+      version = "2.3.15";
 
       src = fetchFromGitHub {
         owner = "2dust";
         repo = "v2rayNG";
         tag = finalAttrs.version;
         fetchSubmodules = true;
-        hash = "sha256-jPXFYqWXJiKdY4MIn8ReuPxRuaDoSlV77fR1IkGHd3U=";
+        hash = "sha256-awK0UQXg5Y58pk9iB8Cto0pHcKluqr9mzGFbzHr81nM=";
       };
 
       sourceRoot = "${finalAttrs.src.name}/V2rayNG";
@@ -189,10 +193,47 @@ let
 
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
+        attrPath = "apk_v2rayng";
         pkg = finalAttrs.finalPackage;
         data = ./v2rayng_deps.json;
         silent = false;
         useBwrap = false;
+      };
+
+      passthru = {
+        inherit androidLibXrayLiteSrc androidLibXrayLiteGoModCache;
+        mitmCache = finalAttrs.mitmCache;
+        updateDeps = [
+          "androidLibXrayLiteSrc"
+          "androidLibXrayLiteGoModCache"
+        ];
+        updateScript = writeShellScriptBin "update-v2rayng" ''
+          set -euo pipefail
+          package_file="app/apks/v2rayng/package.nix"
+          package_attr=".#apk_v2rayng"
+          fake_hash="${lib.fakeHash}"
+
+          . "${../_shared/update-script-helpers.sh}"
+
+          ${lib.getExe nix-update} --flake --src-only apk_v2rayng
+
+          new_version="$(sed -n 's/^[[:space:]]*version = "\([^"]*\)";/\1/p' "$package_file" | head -n 1)"
+
+          auth_header=()
+          if [[ -n "''${GITHUB_TOKEN:-}" ]]; then
+            auth_header=(-H "Authorization: token $GITHUB_TOKEN")
+          fi
+          submod_json="$(${lib.getExe curl} -s "''${auth_header[@]}" "https://api.github.com/repos/2dust/v2rayNG/contents/AndroidLibXrayLite?ref=$new_version")"
+          new_xray_commit="$(${lib.getExe jq} -r .sha <<< "$submod_json")"
+          old_xray_commit="$(sed -n 's/^[[:space:]]*xrayLiteVersion = "\([^"]*\)";/\1/p' "$package_file" | head -n 1)"
+          if [[ -n "$new_xray_commit" && "$new_xray_commit" != "null" ]]; then
+            replace_literal "xrayLiteVersion = \"$old_xray_commit\";" "xrayLiteVersion = \"$new_xray_commit\";"
+          fi
+
+          refresh_update_deps ${lib.concatStringsSep " " finalAttrs.passthru.updateDeps}
+
+          refresh_mitm_cache
+        '';
       };
 
       nativeBuildInputs = [

@@ -45,7 +45,7 @@ new file mode 100644
 index 0000000..0ed8859
 --- /dev/null
 +++ b/extensions/youtube/src/main/java/app/morphe/extension/youtube/videoplayer/FlipVideoButton.java
-@@ -0,0 +1,529 @@
+@@ -0,0 +1,527 @@
 +/*
 + * Copyright 2026 Morphe.
 + *
@@ -80,7 +80,6 @@ index 0000000..0ed8859
 +import app.morphe.extension.youtube.patches.LegacyPlayerControlsPatch;
 +import app.morphe.extension.youtube.settings.Settings;
 +import app.morphe.extension.youtube.shared.PlayerType;
-+import kotlin.Unit;
 +
 +@SuppressWarnings("unused")
 +public class FlipVideoButton {
@@ -105,7 +104,6 @@ index 0000000..0ed8859
 +            if (isFlipped) {
 +                applyFlip();
 +            }
-+            return Unit.INSTANCE;
 +        });
 +    }
 +

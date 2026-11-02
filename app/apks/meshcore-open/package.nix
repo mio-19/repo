@@ -12,6 +12,9 @@
   gradle_8_13,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  writeShellScriptBin,
+  jq,
+  curl,
 }:
 let
   flutterApkHelpers = ../_shared/flutter-apk-helpers.sh;
@@ -23,7 +26,7 @@ let
       # tarballs instead so the sandboxed build stays offline.
       llamadartNativeAndroidArm64 = fetchurl {
         url = "https://github.com/leehack/llamadart-native/releases/download/v0.4.1/llamadart-native-android-arm64-v0.4.1.tar.gz";
-        hash = "sha256:1r4y1bndbpbj2amn2zxxxlg69dxn8sbbxp5madflysqrbri2z9gw";
+        hash = "sha256-/KUvYl4Za09dU7XcvpZGtrdkHu29f2GrEnLd1ewKnuQ=";
       };
 
       llamadartNativeAndroidX64 = fetchurl {
@@ -65,7 +68,7 @@ let
     in
     buildDartApplication.override { dart = flutter344; } (finalAttrs: {
       pname = "meshcore-open";
-      version = "9.5.0+19";
+      version = "99.0.1+26";
 
       __darwinAllowLocalNetworking = true;
       __noChroot = stdenv.hostPlatform.isDarwin;
@@ -73,7 +76,7 @@ let
       src = fetchFromGitHub {
         owner = "zjs81";
         repo = "meshcore-open";
-        tag = "BETA-99.0.0";
+        tag = "BETA-99.0.1";
         hash = "sha256-fBzPJAHsQV7gnMAmIf8XMC52GefavCWignkBnu1rSDI=";
       };
 
@@ -105,6 +108,51 @@ let
         data = ./meshcore-open_deps.json;
         silent = false;
         useBwrap = false;
+      };
+
+      passthru = {
+        mitmCache = finalAttrs.mitmCache;
+        updateScript = writeShellScriptBin "update-meshcore-open" ''
+          set -euo pipefail
+          package_file="app/apks/meshcore-open/package.nix"
+          package_attr=".#apk_meshcore-open"
+          fake_hash="${lib.fakeHash}"
+
+          . "${../_shared/update-script-helpers.sh}"
+
+          auth_header=()
+          if [[ -n "''${GITHUB_TOKEN:-}" ]]; then
+            auth_header=(-H "Authorization: token $GITHUB_TOKEN")
+          fi
+          latest_tag="$(${lib.getExe curl} -s "''${auth_header[@]}" "https://api.github.com/repos/zjs81/meshcore-open/releases" | ${lib.getExe jq} -r 'map(select(.prerelease or (.draft | not))) | .[0].tag_name // empty')"
+          if [[ -z "$latest_tag" ]]; then
+            latest_tag="$(${lib.getExe curl} -s "''${auth_header[@]}" "https://api.github.com/repos/zjs81/meshcore-open/tags" | ${lib.getExe jq} -r '.[0].name')"
+          fi
+
+          current_tag="$(sed -n 's/^[[:space:]]*tag = "\([^"]*\)";/\1/p' "$package_file" | head -n 1)"
+          if [[ "$latest_tag" == "$current_tag" ]]; then
+            echo "meshcore-open is already up to date"
+            exit 0
+          fi
+
+          pubspec_yaml="$(${lib.getExe curl} -s "https://raw.githubusercontent.com/zjs81/meshcore-open/$latest_tag/pubspec.yaml")"
+          new_version="$(echo "$pubspec_yaml" | sed -n 's/^version:[[:space:]]*//p' | head -n 1)"
+          if [[ -z "$new_version" ]]; then
+            new_version="''${latest_tag#BETA-}"
+          fi
+
+          current_version="$(sed -n 's/^[[:space:]]*version = "\([^"]*\)";/\1/p' "$package_file" | head -n 1)"
+
+          prefetch="$(nix-prefetch-url --unpack "https://github.com/zjs81/meshcore-open/archive/refs/tags/$latest_tag.tar.gz")"
+          new_hash="$(nix hash convert --to sri --hash-algo sha256 "$prefetch")"
+          old_hash="$(sed -n 's/^[[:space:]]*hash = "\([^"]*\)";/\1/p' "$package_file" | head -n 1)"
+
+          replace_literal "version = \"$current_version\";" "version = \"$new_version\";"
+          replace_literal "tag = \"$current_tag\";" "tag = \"$latest_tag\";"
+          replace_literal "hash = \"$old_hash\";" "hash = \"$new_hash\";"
+
+          refresh_mitm_cache
+        '';
       };
 
       gradleUpdateTask = ":app:assembleRelease -x lint -x lintVitalRelease";

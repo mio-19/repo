@@ -200,7 +200,7 @@ let
           --replace-fail 'if err := goInstall([]string{"golang.org/x/mobile/cmd/gobind@latest"}, nil); err != nil {' \
                          'if _, err := exec.LookPath("gobind"); err != nil {'
         patch -d x-mobile -p1 < ${../tailscale/gomobile-avoid-empty-go-mod.patch}
-        (cd go && go mod edit -replace=golang.org/x/mobile=${replacement})
+        (cd go && go mod edit -go=1.27.2 -replace=golang.org/x/mobile=${replacement})
       '';
 
       rcloneGoModCache = stdenvNoCC.mkDerivation {
@@ -288,6 +288,15 @@ let
           cp -R ${rcloneGoModCache}/cache "$GOMODCACHE"
           chmod -R u+w "$GOMODCACHE"
 
+          if [ -f "$GOMODCACHE/tailscale.com@v1.104.2/go.mod" ]; then
+            substituteInPlace "$GOMODCACHE/tailscale.com@v1.104.2/go.mod" \
+              --replace-fail "go 1.27.3" "go 1.27.2"
+          fi
+          if [ -f "$GOMODCACHE/cache/download/tailscale.com/@v/v1.104.2.mod" ]; then
+            substituteInPlace "$GOMODCACHE/cache/download/tailscale.com/@v/v1.104.2.mod" \
+              --replace-fail "go 1.27.3" "go 1.27.2"
+          fi
+
           export GOBIN="$TMPDIR/go-bin"
           mkdir -p "$GOBIN"
           export PATH="$GOBIN:$PATH"
@@ -305,6 +314,10 @@ let
             ${prepareXMobile "../x-mobile"}
             cd go
 
+            substituteInPlace go.sum \
+              --replace-fail "tailscale.com v1.104.2/go.mod h1:D+gqEyJjFnwIaojBLaKxUbOfEO3cRXOaFaOZ5BIvYqs=" \
+                             "tailscale.com v1.104.2/go.mod h1:zM/DEBP/ZMXOlPtP3M2lL3P8xQ/2FTl5MB3TSxMbouo="
+
             (cd ../x-mobile/cmd/gobind && go build -o "$GOBIN/gobind")
             (cd ../x-mobile/cmd/gomobile && go build -o "$GOBIN/gomobile")
 
@@ -314,6 +327,25 @@ let
             cp -R ${rcloneGoModCache}/vendor/. "$GOPATH/src/"
 
             mkdir -p ../jniLibs ../build
+
+            mkdir -p ../../core/tunnel/jniLibs-openvpn3/arm64-v8a
+            mkdir -p ../../core/tunnel/jniLibs-openvpn3/x86_64
+
+            printf '%s\n' \
+              '#include <stddef.h>' \
+              'void *new_session() { return NULL; }' \
+              'int start_session(void *ptr) { return -1; }' \
+              'void stop_session(void *ptr) {}' \
+              'void cleanup_session(void *ptr) {}' \
+              'void reconnect_session(void *ptr, int seconds) {}' \
+              'void check_library() {}' \
+              > "$TMPDIR/openvpn3_stub.c"
+
+            $ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android26-clang -c "$TMPDIR/openvpn3_stub.c" -o "$TMPDIR/openvpn3_stub_arm64.o"
+            $ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar rcs ../../core/tunnel/jniLibs-openvpn3/arm64-v8a/libopenvpn3_android_arm64.a "$TMPDIR/openvpn3_stub_arm64.o"
+
+            $ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android26-clang -c "$TMPDIR/openvpn3_stub.c" -o "$TMPDIR/openvpn3_stub_x86_64.o"
+            $ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar rcs ../../core/tunnel/jniLibs-openvpn3/x86_64/libopenvpn3_android_amd64.a "$TMPDIR/openvpn3_stub_x86_64.o"
 
             export GOFLAGS="-mod=mod -buildvcs=false -ldflags=-checklinkname=0"
             export GO111MODULE=on
@@ -325,7 +357,7 @@ let
               -ldflags "-s -w -checklinkname=0" \
               -v \
               -o ../build/rcbridge.aar \
-              . ./wgbridge ./tsbridge ./mailbridge ./nbbridge ./ocbridge
+              . ./wgbridge ./tsbridge ./mailbridge ./nbbridge ./ovpnbridge ./ocbridge
 
 
           cd ..
@@ -403,14 +435,14 @@ let
     in
     {
       pname = "haven";
-      version = "5.93.1";
+      version = "5.93.2";
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
         repo = "Haven";
         tag = "v${finalAttrs0.version}";
         fetchSubmodules = true;
-        hash = "sha256-klf9EriZYcv1amydAc3fOms6aCsSvQuhH4Y0TmyiLds=";
+        hash = "sha256-tdRFhM8Zosw8Zte+uBRiVvcr+4BrGwGRl/ggf4QjxH0=";
       };
 
       patches = [
@@ -509,6 +541,7 @@ let
         cp -r ${rcloneTransportJniLibs}/jniLibs/. rclone-android/jniLibs/
         mkdir -p rclone-android/build
         cp ${rcloneTransportJniLibs}/build/rcbridge-bindings.jar rclone-android/build/
+        mkdir -p core/tunnel/jniLibs-openvpn3
 
         # When running in mitmCache dependency-fetch mode, configure pip (used by
         # Chaquopy) to trust the mitm proxy certificate so PyPI downloads are captured.
@@ -547,6 +580,7 @@ let
         # host tooling wired up; skip for now so the APK still builds.
         "-PskipWaylandNatives=true"
         "-PskipFfmpegNatives=true"
+        "-PskipOpenvpn3Native=true"
         "-PskipUml"
         "-PtargetAbi=arm64"
       ];
