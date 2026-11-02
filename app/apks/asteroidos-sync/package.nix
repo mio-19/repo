@@ -37,13 +37,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "asteroidos-sync";
-      version = "0.29";
+      version = "0.29-unstable-2026-10-17";
 
       src = fetchFromGitHub {
         owner = "AsteroidOS";
         repo = "AsteroidOSSync";
-        tag = "v${finalAttrs.version}";
-        hash = "sha256-ShYHGD52oEmWNlCgc1BUMyZPruVTMWoGkikG2bByZow=";
+        rev = "a6ef3b587a577bdaff006cbd6f0c5a7d88ee763d";
+        hash = "sha256-5cedy20/YBskU3umpO/AGr1E1qsIHACbJAgLnzep45Q=";
       };
 
       patches = [
@@ -81,21 +81,28 @@ let
         url = "https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.15.0/error_prone_annotations-2.15.0.jar";
         hash = "sha256-BnBHcUNJ53iaW9v62dHAr586HrKMVaDuP2jmgvkFxOs=";
       };
-      mitmCache = runCommand "${finalAttrs.pname}-deps" { } ''
-        mkdir -p "$out"
-        cp -a ${finalAttrs.mitmCacheOrig}/. "$out/"
-        chmod -R u+w "$out"
-        replace_jar() {
-          rm -f "$1"
-          cp "$2" "$1"
-        }
-        replace_jar \
-          "$out/https/repo.maven.apache.org/maven2/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar" \
-          ${finalAttrs.gsonBinaryJar}
-        replace_jar \
-          "$out/https/repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.15.0/error_prone_annotations-2.15.0.jar" \
-          ${finalAttrs.errorProneBinaryJar}
-      '';
+      mitmCache =
+        runCommand "${finalAttrs.pname}-deps"
+          {
+            passthru = {
+              inherit (finalAttrs.mitmCacheOrig) updateScript;
+            };
+          }
+          ''
+            mkdir -p "$out"
+            cp -a ${finalAttrs.mitmCacheOrig}/. "$out/"
+            chmod -R u+w "$out"
+            replace_jar() {
+              rm -f "$1"
+              cp "$2" "$1"
+            }
+            replace_jar \
+              "$out/https/repo.maven.apache.org/maven2/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar" \
+              ${finalAttrs.gsonBinaryJar}
+            replace_jar \
+              "$out/https/repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.15.0/error_prone_annotations-2.15.0.jar" \
+              ${finalAttrs.errorProneBinaryJar}
+          '';
 
       nativeBuildInputs = [
         gradle
