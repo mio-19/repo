@@ -10,7 +10,7 @@ let
   appPackage =
     let
       youtubeMusicApk = fetchurl {
-        name = "YouTube+Music_9.41.52_APKPure.apk";
+        name = "YouTube+Music_9.41.52_APKPure.xapk";
         url = "https://web.archive.org/web/20261102210232if_/https://data.winudf.com/XAPK/Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpY185NDE1MjI0MF84YjdmYWM0ZA?_p=Y29tLmdvb2dsZS5hbmRyb2lkLmFwcHMueW91dHViZS5tdXNpYw%3D%3D&download_id=1608905360398275&filename=YouTube+Music_9.41.52_APKPure.xapk&full_size=66145401&is_hot=true&k=15f7b90a5f8d8d9dcb9f1beaddf9b93c6aeb9d4e&package_name=com.google.android.apps.youtube.music&source=web&token=1793653326-b37d03c1a8-0-4038f42685e917710a2961a6ef079c2b";
         hash = "sha256-+YngU8/U15lF3T5f/jXJUE41Ce0djwaGTprj2Ue0TbU=";
       };
