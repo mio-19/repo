@@ -119,6 +119,7 @@ in
     ./gos_virtual_machines.nix
     ./gos_termux_nix.nix
     ./gos_play_integrity.nix
+    ./gos_max_sound_limit.nix
     # possibly unsafe# ./bigger_zram.nix
   ];
   buildDateTime = releaseToTimestamp config.grapheneos.release;
