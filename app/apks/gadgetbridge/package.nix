@@ -16,6 +16,9 @@
   buildGradlePackage,
   overrides-fromsrc,
   protobuf,
+  mergeLock,
+  nix-update,
+  writeShellScriptBin,
 }:
 let
   appPackage =
@@ -37,13 +40,13 @@ let
     in
     buildGradlePackage rec {
       pname = "gadgetbridge";
-      version = "0.95.1";
+      version = "2026.11.0";
 
       src = fetchgit {
         url = "https://codeberg.org/Freeyourgadget/Gadgetbridge.git";
         rev = version;
         fetchSubmodules = true;
-        hash = "sha256-Vg6EdLez+LikHtSQxokcmAHxsQiN+O/k0rzGXLOptnY=";
+        hash = "sha256-aXDG6dUOIrvsXFKPbm7pj5XZyVKVHhrWA+TTg9TEWQQ=";
       };
 
       patches = [
@@ -57,7 +60,10 @@ let
       gradleBuildFlags = [ ":app:assembleMainlineRelease" ];
       gradleUpdateTask = ":app:assembleMainlineRelease";
 
-      lockFile = ./gradle.lock;
+      lockFile = mergeLock [
+        ./gradle.lock
+        ./gradle.generated.lock
+      ];
       overrides = overrides-fromsrc;
       inherit gradle;
 
@@ -113,6 +119,25 @@ let
         apk_path="$(echo app/build/outputs/apk/mainline/release/*.apk | awk '{print $1}')"
         install -Dm644 "$apk_path" "$out/gadgetbridge.apk"
         runHook postInstall
+      '';
+
+      passthru.updateScript = writeShellScriptBin "update-gadgetbridge" ''
+        set -euo pipefail
+
+        ${lib.getExe nix-update} --flake --src-only apk_gadgetbridge
+
+        tmp="$(mktemp -d)"
+        trap 'rm -rf "$tmp"' EXIT
+        src="$(nix eval --impure --raw .#apk_gadgetbridge.src)"
+        cp -R "$src"/. "$tmp"/
+        chmod -R u+w "$tmp"
+
+        nix develop .#apk_gadgetbridge -c bash -c '
+          cd "$1"
+          nix run github:tadfisher/gradle2nix/v2 -- --gradle-wrapper=9.7.1
+        ' bash "$tmp"
+
+        cp "$tmp/gradle.lock" app/apks/gadgetbridge/gradle.generated.lock
       '';
 
       meta = with lib; {

@@ -15,7 +15,6 @@
   mkSignScript,
   meson,
   ninja,
-  nix-update-script,
   perl,
   pkg-config,
   python3,
@@ -26,16 +25,19 @@
   rustc,
   writableTmpDirAsHomeHook,
   gradle_8_14_4,
+  mergeLock,
+  nix-update,
+  writeShellScriptBin,
 }:
 
 let
-  version = "13.0.2.0";
+  version = "13.1.2.0";
 
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-Gyxz8jcc8lKtqxdC20wun6RNbtfRw5tgkjUXOLrZhvE=";
+    hash = "sha256-kWpLR6jnLRQD0PcsqCA7fpWZwTMatj/ZNpBLf6ngeeo=";
     fetchSubmodules = true;
   };
 
@@ -200,7 +202,10 @@ buildGradlePackage rec {
 
   gradle = gradle_8_14_4;
 
-  lockFile = ./gradle.lock;
+  lockFile = mergeLock [
+    ./gradle.lock
+    ./gradle.generated.lock
+  ];
 
   overrides = overrides-fromsrc;
 
@@ -382,7 +387,24 @@ buildGradlePackage rec {
       apkPath = "${placeholder "out"}/forkgram-classic.apk";
       defaultOut = "forkgram-classic-signed.apk";
     };
-    updateScript = nix-update-script { };
+    updateScript = writeShellScriptBin "update-forkgram-classic" ''
+      set -euo pipefail
+
+      ${lib.getExe nix-update} --flake --src-only apk_forkgram-classic
+
+      tmp="$(mktemp -d)"
+      trap 'rm -rf "$tmp"' EXIT
+      src="$(nix eval --impure --raw .#apk_forkgram-classic.src)"
+      cp -R "$src"/. "$tmp"/
+      chmod -R u+w "$tmp"
+
+      nix develop .#apk_forkgram-classic -c bash -c '
+        cd "$1"
+        nix run github:tadfisher/gradle2nix/v2 -- --gradle-wrapper=8.14.4
+      ' bash "$tmp"
+
+      cp "$tmp/gradle.lock" app/apks/forkgram-classic/gradle.generated.lock
+    '';
   };
 
   meta = with lib; {
