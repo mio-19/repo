@@ -65,6 +65,7 @@ let
 
     postPatch = ''
       rm -f gradle/verification-metadata.xml
+      rm -f res/values/strings.xml.orig app/src/main/res/values/strings.xml.orig
     '';
 
     gradleBuildTask = ":app:assembleRelease";
