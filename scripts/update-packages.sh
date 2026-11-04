@@ -9,7 +9,8 @@ package_json="$(
       packages:
       builtins.filter
         (name:
-          (builtins.match "^apk_.*" name != null)
+          ((builtins.match "^apk_.*" name != null)
+           || (builtins.elem name (builtins.attrNames (builtins.readDir ./app/by-name))))
           && (let
             package = packages.${name};
           in

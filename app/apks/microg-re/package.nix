@@ -9,6 +9,8 @@
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
   git,
+  writeShellScriptBin,
+  nix-update,
 }:
 let
   appPackage =
@@ -26,13 +28,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "microg-re";
-      version = "7.2.2";
+      version = "7.3.0";
 
       src = fetchFromGitHub {
         owner = "MorpheApp";
         repo = "MicroG-RE";
         tag = finalAttrs.version;
-        hash = "sha256-xehCLYrOu1PJQVxnWzoSLiAWZlyr6FUOMBd8CJ/KmyU=";
+        hash = "sha256-Pg42HoysGlE0jq83V+r3DExLAioXPNI5yXM5SoyrU9w=";
       };
 
       patches = [
@@ -48,10 +50,21 @@ let
 
       mitmCache = gradle.fetchDeps {
         inherit (finalAttrs) pname;
+        attrPath = "apk_microg-re";
         pkg = finalAttrs.finalPackage;
         data = ./microg-re_deps.json;
         silent = false;
         useBwrap = false;
+      };
+
+      passthru = {
+        mitmCache = finalAttrs.mitmCache;
+        updateScript = writeShellScriptBin "update-microg-re" ''
+          set -euo pipefail
+          ${lib.getExe nix-update} --flake --src-only --version-regex='^v?([0-9]+\.[0-9]+\.[0-9]+)$' apk_microg-re
+          system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+          "$(nix build ".#packages.$system.apk_microg-re.mitmCache.updateScript" --no-link --print-out-paths)"
+        '';
       };
 
       nativeBuildInputs = [

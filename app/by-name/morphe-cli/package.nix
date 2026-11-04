@@ -12,8 +12,10 @@
   multidexlib2-src,
 
   morphe-library-m2_1_4_0,
-  morphe-patcher-src_2_0_0,
-  nix-update-script,
+  morphe-patcher-src_2_1_0,
+  writeShellScriptBin,
+  nix-update,
+  jq,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -37,13 +39,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-cli";
-  version = "1.19.1";
+  version = "1.20.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-cli";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-lUgecWsOnoUTCKHF2bgI5DQNgCRq1CLXRRhhhsq67aQ=";
+    hash = "sha256-FriqzHMERLvaZtKuotmG3qBq/hs6F+CGVxDk2bkQ66I=";
   };
 
   gradleBuildTask = "shadowJar";
@@ -80,7 +82,7 @@ stdenv.mkDerivation (finalAttrs: {
     root="$PWD"
 
     # Copy dependency sources as writable sibling directories.
-    cp -a ${morphe-patcher-src_2_0_0} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_2_1_0} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
 
     cp -a ${arsclib-src} "$root/ARSCLib"
@@ -182,6 +184,13 @@ stdenv.mkDerivation (finalAttrs: {
   };
   passthru = {
     mitmCache = finalAttrs.mitmCache;
-    updateScript = nix-update-script { };
+    updateScript = writeShellScriptBin "update-morphe-cli" ''
+      set -euo pipefail
+      ${lib.getExe nix-update} --flake --src-only --version-regex='^v?([0-9]+\.[0-9]+\.[0-9]+)$' morphe-cli
+      system="$(nix eval --impure --raw --expr builtins.currentSystem)"
+      "$(nix build ".#packages.$system.morphe-cli.mitmCache.updateScript" --no-link --print-out-paths)"
+      ${lib.getExe jq} 'del(."https:/"?."api.github")' app/by-name/morphe-cli/morphe-cli_deps.json > app/by-name/morphe-cli/morphe-cli_deps.json.tmp
+      mv app/by-name/morphe-cli/morphe-cli_deps.json.tmp app/by-name/morphe-cli/morphe-cli_deps.json
+    '';
   };
 })

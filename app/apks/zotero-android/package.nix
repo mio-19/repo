@@ -30,7 +30,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "zotero-android";
-      version = "1.0.0-291";
+      version = "1.0.0-292";
 
       src = fetchFromGitHub {
         owner = "zotero";
@@ -41,7 +41,7 @@ let
         # latest 1.0.0-* tag by time, not raw version ordering:
         # https://github.com/zotero/zotero-android/tags
         tag = finalAttrs.version;
-        hash = "sha256-4Z2WJ4ML/q2jRMlBNvtA0DmEEpo22ZJtK4leAg/5AaY=";
+        hash = "sha256-8/wELN7ejEZhWjZdtUgEpr9zSvDb1h+uHEWQpjTLVXw=";
       };
 
       patches = [

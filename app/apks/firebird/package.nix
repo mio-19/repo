@@ -15,6 +15,11 @@
   writableTmpDirAsHomeHook,
   fetchpatch,
   gradle_7_2,
+  writeShellScriptBin,
+  git,
+  nix-prefetch-git,
+  jq,
+  curl,
 }:
 let
   androidSdk = androidSdkBuilder (s: [
@@ -30,14 +35,14 @@ let
 
   gradle = gradle_7_2;
 
-  version = "unstable-2026-06-28";
-  rev = "b10f3b5";
+  version = "unstable-2026-11-01";
+  rev = "f75e590";
 
   src = fetchgit {
     url = "https://github.com/nspire-emus/firebird.git";
     inherit rev;
     fetchSubmodules = true;
-    hash = "sha256-RwzQqadYcqwAoY1VvsCgJ88KovttmQmu9oO3do8OtYY=";
+    hash = "sha256-w0rpIaM3k7eRfGLgg89S7qMSmZP9rqZyhJXqri4Kv5U=";
   };
 
   qtArchiveBaseUrl = "https://download.qt.io/online/qtsdkrepository/linux_x64/android/qt5_5152/qt.qt5.5152.android";
@@ -149,10 +154,51 @@ let
 
     mitmCache = gradle.fetchDeps {
       inherit (finalAttrs) pname;
+      attrPath = "apk_firebird";
       pkg = finalAttrs.finalPackage;
       data = ./firebird_deps.json;
       silent = false;
       useBwrap = false;
+    };
+
+    passthru = {
+      mitmCache = finalAttrs.mitmCache;
+      updateScript = writeShellScriptBin "update-firebird" ''
+        set -euo pipefail
+        latest_rev="$(${lib.getExe git} ls-remote https://github.com/nspire-emus/firebird.git HEAD | cut -f1)"
+        if [[ -z "$latest_rev" ]]; then
+          echo "Failed to query latest commit of firebird" >&2
+          exit 1
+        fi
+        current_rev="${rev}"
+        if [[ "$latest_rev" == "$current_rev"* ]]; then
+          echo "firebird is already up to date"
+          exit 0
+        fi
+
+        short_rev="''${latest_rev:0:7}"
+        auth_header=()
+        if [[ -n "''${GITHUB_TOKEN:-}" ]]; then
+          auth_header=(-H "Authorization: token $GITHUB_TOKEN")
+        fi
+        commit_date="$(${lib.getExe curl} -s "''${auth_header[@]}" "https://api.github.com/repos/nspire-emus/firebird/commits/$latest_rev" | ${lib.getExe jq} -r '.commit.committer.date | split("T")[0]')"
+        new_version="unstable-$commit_date"
+
+        prefetch="$(${lib.getExe nix-prefetch-git} --fetch-submodules https://github.com/nspire-emus/firebird.git "$latest_rev")"
+        new_hash="$(${lib.getExe jq} -r .hash <<< "$prefetch")"
+
+        package_file="app/apks/firebird/package.nix"
+        package_attr=".#apk_firebird"
+        fake_hash="${lib.fakeHash}"
+
+        . "${../_shared/update-script-helpers.sh}"
+
+        replace_literal "version = \"${version}\";" "version = \"$new_version\";"
+        replace_literal "rev = \"${rev}\";" "rev = \"$short_rev\";"
+        replace_literal "hash = \"${finalAttrs.src.hash}\";" "hash = \"$new_hash\";"
+
+        refresh_mitm_cache
+      '';
     };
 
     patches = [
