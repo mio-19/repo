@@ -55,8 +55,8 @@ index 8633389..584e2a5 100644
  user=_app isPrivApp=true name=com.android.rkpdapp domain=rkpdapp type=privapp_data_file levelFrom=all
  user=_app isPrivApp=true name=app.grapheneos.logviewer domain=logviewer_app type=app_data_file levelFrom=all
  user=_app isPrivApp=true name=app.seamlessupdate.client domain=updater_app type=app_data_file levelFrom=all
-+user=_app isPrivApp=false name=com.limbo.emu.main.arm domain=limbo_tensor_app type=app_data_file levelFrom=all
-+user=_app isPrivApp=false name=cn.classfun.droidvm domain=droidvm_app type=app_data_file levelFrom=all
++user=_app isPrivApp=true name=com.limbo.emu.main.arm domain=limbo_tensor_app type=app_data_file levelFrom=all
++user=_app isPrivApp=true name=cn.classfun.droidvm domain=droidvm_app type=app_data_file levelFrom=all
  user=_app minTargetSdkVersion=37 domain=untrusted_app type=app_data_file levelFrom=all
  user=_app minTargetSdkVersion=34 domain=untrusted_app_34 type=app_data_file levelFrom=all
  user=_app minTargetSdkVersion=32 domain=untrusted_app_32 type=app_data_file levelFrom=all

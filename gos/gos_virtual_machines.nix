@@ -30,6 +30,7 @@
         enable = true;
         name = "LimboTensor";
         packageName = "com.limbo.emu.main.arm";
+        privileged = true;
         apk = "${self.packages.${pkgs.stdenv.hostPlatform.system}.apk_limbo_tensor}/limbo-tensor.apk";
       };
     })
@@ -38,6 +39,7 @@
         enable = true;
         name = "DroidVM";
         packageName = "cn.classfun.droidvm";
+        privileged = true;
         apk = "${self.packages.${pkgs.stdenv.hostPlatform.system}.apk_droidvm}/droidvm.apk";
       };
     })
