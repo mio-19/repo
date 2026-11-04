@@ -1,20 +1,20 @@
 diff -ruN a/TMessagesProj/build.gradle b/TMessagesProj/build.gradle
---- a/TMessagesProj/build.gradle	2026-10-15 22:30:41.341462685 +1100
-+++ b/TMessagesProj/build.gradle	2026-10-15 22:31:03.773514221 +1100
-@@ -73,12 +73,8 @@
+--- a/TMessagesProj/build.gradle	2026-11-04 17:46:39.394033579 +1100
++++ b/TMessagesProj/build.gradle	2026-11-04 17:46:42.481006182 +1100
+@@ -74,12 +74,9 @@
      implementation 'com.stripe:stripe-android:2.0.2'
      implementation 'com.google.code.gson:gson:2.11.0'
      implementation 'com.google.guava:guava:31.1-android'
 -    implementation 'com.google.android.play:integrity:1.3.0'
 -    implementation 'com.google.android.gms:play-services-safetynet:18.0.1'
--
+ 
      implementation 'co.nstant.in:cbor:0.8'
      implementation "androidx.credentials:credentials:1.6.0-alpha04"
 -    implementation "androidx.credentials:credentials-play-services-auth:1.6.0-alpha04"
  
      implementation "io.noties.markwon:core:4.6.2"
      implementation "io.noties.markwon:ext-strikethrough:4.6.2"
-@@ -136,14 +132,14 @@
+@@ -137,14 +134,14 @@
      }
  
      compileOptions {
@@ -33,8 +33,8 @@ diff -ruN a/TMessagesProj/build.gradle b/TMessagesProj/build.gradle
  
      defaultConfig.versionCode = Integer.parseInt(Utils['getVersionCode']())
 diff -ruN a/TMessagesProj_App/build.gradle b/TMessagesProj_App/build.gradle
---- a/TMessagesProj_App/build.gradle	2026-10-15 22:30:41.343462689 +1100
-+++ b/TMessagesProj_App/build.gradle	2026-10-15 22:31:12.888535163 +1100
+--- a/TMessagesProj_App/build.gradle	2026-11-04 17:46:38.387042516 +1100
++++ b/TMessagesProj_App/build.gradle	2026-11-04 17:46:41.434015474 +1100
 @@ -61,8 +61,8 @@
      }
  
@@ -79,12 +79,12 @@ diff -ruN a/TMessagesProj_App/build.gradle b/TMessagesProj_App/build.gradle
      }
  
  
-@@ -144,7 +155,7 @@
-         release {
+@@ -133,7 +144,7 @@
+         standalone {
              debuggable false
              jniDebuggable false
 -            if (!fdroid) signingConfig signingConfigs.release
 +            signingConfig signingConfigs.release
-             applicationIdSuffix appSuffix
+             applicationIdSuffix ".web"
              minifyEnabled true
              shrinkResources true
