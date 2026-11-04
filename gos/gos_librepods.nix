@@ -34,6 +34,10 @@ args@{
         apk = "${self.packages.${pkgs.stdenv.hostPlatform.system}.apk_librepods}/librepods.apk";
         packageName = "me.kavishdevar.librepods";
         privileged = true;
+        usesOptionalLibraries = [
+          "androidx.window.extensions"
+          "androidx.window.sidecar"
+        ];
         privappPermissions = [
           "BLUETOOTH_PRIVILEGED"
           "MODIFY_PHONE_STATE"
