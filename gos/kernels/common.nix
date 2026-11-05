@@ -35,8 +35,8 @@
   version ? src.tag,
   src ? fetchgit {
     url = "https://gitlab.com/grapheneos/kernel_pixel.git";
-    tag = "2026102100";
-    hash = "sha256-sqikjpZUgvOyiNnyrkQaq9haXzOmb7CD8DX0tY5yFsQ=";
+    tag = "2026110200";
+    hash = "sha256-SkKkDcFWsvTPNRUyOkvvJi+koFjIU2xJW9BEnPugCxk=";
     fetchSubmodules = true;
     deepClone = false;
     # NO # HASH UNSTABLE # leaveDotGit = true; # seems like something wants .git # needed with and after 20260307 # fatal: not a git repository (or any parent up to mount point /) in the log
@@ -48,6 +48,7 @@
   enableKSU,
   enableLindroid,
   enableDroidspaces ? false,
+  enableUnprotectedKvm ? false,
   enableDaria ? enableLindroid,
   buildCommand ? null,
   extraBuildCommands ? "",
@@ -118,6 +119,9 @@ stdenvNoCC.mkDerivation {
       }
 
       ${extraBuildCommands}
+      ${lib.optionalString enableUnprotectedKvm ''
+        apply_patch ${./enable-unprotected-kvm.patch}
+      ''}
       ${lib.optionalString enableKSU # https://github.com/tiann/KernelSU/issues/2942#issuecomment-3969773467
         ''
           # KernelSU v1.0.5 style tree injection shared across GrapheneOS kernels.

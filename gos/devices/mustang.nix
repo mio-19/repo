@@ -22,6 +22,7 @@ args@{
         let
           src = pkgs-unfree.callPackage ../kernels/mustang.nix {
             pwmmode = if config.mustangHighEmissionFrequency then "0x01" else "stock";
+            inherit (config) enableUnprotectedKvm;
           };
         in
         assert src.version == config.grapheneos.release;

@@ -9,6 +9,7 @@ args@{
     ../default.nix
   ];
   advancedPowerMenu = false;
+  playIntegritySpoofing = false;
   enableLindroid = false; # basic stuff works. systemd units launched. sddm black screen.
   enableDroidspaces = false;
   huskyHighEmissionFrequency = true;
@@ -19,7 +20,7 @@ args@{
     src =
       let
         src = pkgs-unfree.callPackage ../kernels/shusky.nix {
-          inherit (config) enableLindroid enableDroidspaces;
+          inherit (config) enableLindroid enableDroidspaces enableUnprotectedKvm;
         };
       in
       assert src.version == config.grapheneos.release;

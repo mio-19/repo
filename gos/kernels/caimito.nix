@@ -4,6 +4,7 @@
   pwmmode ? "stock",
   enableLindroid ? true,
   enableDroidspaces ? true,
+  enableUnprotectedKvm ? false,
 }:
 let
   panelPatch =
@@ -18,6 +19,11 @@ callPackage ./common.nix { } {
   pname = "grapheneos-caimito-kernel";
   buildScript = "build_caimito.sh";
   distDir = "caimito";
-  inherit enableKSU enableLindroid enableDroidspaces;
+  inherit
+    enableKSU
+    enableLindroid
+    enableDroidspaces
+    enableUnprotectedKvm
+    ;
   extraBuildCommands = if panelPatch != "" then "apply_patch ${panelPatch}" else "";
 }

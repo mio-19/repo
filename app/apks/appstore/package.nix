@@ -6,7 +6,12 @@
   lib,
   jdk25_headless,
   jdk17_headless,
-  gradle_9_4_1,
+  jdk21_headless,
+  gradle_9_7_1,
+  path,
+  stdenv,
+  rustPlatform,
+  symlinkJoin,
   fetchpatch,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
@@ -21,11 +26,78 @@ let
   androidSdk = androidSdkBuilder (s: [
     s.cmdline-tools-latest
     s.platform-tools
-    s.platforms-android-36
-    s.build-tools-36-1-0
+    s.platforms-android-37-0
+    s.build-tools-37-0-0
   ]);
 
-  gradle = gradle_9_4_1;
+  gradle = gradle_9_7_1;
+
+  inaCargoDeps = rustPlatform.fetchCargoVendor {
+    pname = "appstore-ina";
+    inherit version src;
+    cargoRoot = "ina";
+    hash = "sha256-wOrRh9gsYQUkeTPg9W1v/8Ok6krHP5c+wB0CEt5m56I=";
+  };
+
+  mkInaJniLib =
+    {
+      config,
+      rustTarget,
+      abi,
+    }:
+    let
+      crossPkgs = import path {
+        config.allowUnfree = true;
+        localSystem = stdenv.buildPlatform.system;
+        crossSystem = {
+          inherit config;
+          androidSdkVersion = "35";
+          androidNdkVersion = "29";
+          useAndroidPrebuilt = true;
+          rust.rustcTarget = rustTarget;
+        };
+      };
+    in
+    crossPkgs.rustPlatform.buildRustPackage {
+      pname = "appstore-ina-jni-${abi}";
+      inherit version src;
+      sourceRoot = "${src.name}/ina";
+      cargoDeps = inaCargoDeps;
+      # Match upstream's cdylib-release profile without a hyphenated profile name,
+      # which the cargo build hook cannot use in CARGO_PROFILE_* variables.
+      env.CARGO_PROFILE_RELEASE_PANIC = "abort";
+      buildNoDefaultFeatures = true;
+      buildFeatures = [
+        "java-ffi"
+        "patch"
+      ];
+      cargoBuildFlags = [
+        "-p"
+        "ina"
+      ];
+      doCheck = false;
+      installPhase = ''
+        runHook preInstall
+        install -Dm755 target/${rustTarget}/release/libina.so "$out/${abi}/libina.so"
+        runHook postInstall
+      '';
+    };
+
+  inaJniLibs = symlinkJoin {
+    name = "appstore-ina-jni-libs";
+    paths = [
+      (mkInaJniLib {
+        config = "aarch64-unknown-linux-android";
+        rustTarget = "aarch64-linux-android";
+        abi = "arm64-v8a";
+      })
+      (mkInaJniLib {
+        config = "x86_64-unknown-linux-android";
+        rustTarget = "x86_64-linux-android";
+        abi = "x86_64";
+      })
+    ];
+  };
 
   appPackage = buildGradlePackage {
     pname = "appstore";
@@ -39,16 +111,13 @@ let
     buildJdk = jdk17_headless;
 
     patches = [
+      # Build Ina's Rust JNI libraries with Nix's Android cross toolchains.
+      ./skip-gradle-ina-native-build.patch
       #./0001-always-show-vanadium.patch # TODO: test
       (fetchpatch {
         name = "Do not reserve space for an icon in settings list";
         url = "https://github.com/GrapheneOS/AppStore/pull/395.patch";
         hash = "sha256-s9tNIzOb10ENMe7urrbQcE2o/q/fGmBAzgdxkEZQjd0=";
-      })
-      (fetchpatch {
-        name = "Resolve #479 (open App Store from up-to-date notification)";
-        url = "https://github.com/GrapheneOS/AppStore/pull/481.diff";
-        hash = "sha256-9aZ8OQYQfzsaupP9yTt/fAOxV4YKmbN0rgzIFmEF3yg=";
       })
     ];
 
@@ -60,6 +129,7 @@ let
       androidSdk
       jdk25_headless
       jdk17_headless
+      jdk21_headless
       writableTmpDirAsHomeHook
     ];
 
@@ -67,13 +137,15 @@ let
       JAVA_HOME = jdk17_headless.passthru.home;
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
-      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
+      ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2";
     };
 
     preConfigure = ''
       export ANDROID_USER_HOME="$HOME/.android"
       mkdir -p "$ANDROID_USER_HOME"
       echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
+      mkdir -p ina/android/src/main/jniLibs
+      cp -r ${inaJniLibs}/. ina/android/src/main/jniLibs/
     '';
 
     gradleFlags = [
@@ -81,12 +153,14 @@ let
       "--dependency-verification=off"
       "-Dorg.gradle.java.home=${jdk17_headless.passthru.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
-      "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home},${jdk25_headless.passthru.home}"
-      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
-      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+      "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home},${jdk21_headless.passthru.home},${jdk25_headless.passthru.home}"
+      "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
+      "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/37.0.0/aapt2"
     ];
 
     gradleBuildFlags = ":app:assembleRelease";
+
+    passthru = { inherit inaCargoDeps inaJniLibs; };
 
     installPhase = ''
       runHook preInstall

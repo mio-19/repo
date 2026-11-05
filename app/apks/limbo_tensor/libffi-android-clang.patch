@@ -1,0 +1,13 @@
+diff --git a/limbo-android-lib/src/main/jni/Makefile b/limbo-android-lib/src/main/jni/Makefile
+index a236117..087d11b 100644
+--- a/limbo-android-lib/src/main/jni/Makefile
++++ b/limbo-android-lib/src/main/jni/Makefile
+@@ -151,7 +151,7 @@ clean-ffi:
+ 	-cd $(LIMBO_JNI_ROOT)/libffi && $(MAKE) clean
+ 
+ config-ffi:
+-	cd $(LIMBO_JNI_ROOT)/libffi && ./configure --host=$(GNU_HOST) $(LIBFFI_DEBUG) --enable-static --disable-shared \
++	cd $(LIMBO_JNI_ROOT)/libffi && CC="$(CC) --target=aarch64-linux-android21" ./configure --host=$(GNU_HOST) $(LIBFFI_DEBUG) --enable-static --disable-shared \
+ 	CFLAGS="$(ARCH_CFLAGS) -I$(NDK_INCLUDE) --sysroot=$(NDK_SYSROOT) $(NDK_SYSROOT_ARCH_INC) " \
+ 	LDFLAGS="$(ARCH_LD_FLAGS) $(SYS_ROOT) -nostdlib -fno-unwind-tables "
+ 

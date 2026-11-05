@@ -1,0 +1,178 @@
+diff --git a/core/java/android/provider/Settings.java b/core/java/android/provider/Settings.java
+index f41f214..38e5671 100644
+--- a/core/java/android/provider/Settings.java
++++ b/core/java/android/provider/Settings.java
+@@ -18703,6 +18703,27 @@ public final class Settings {
+         @Readable
+         public static final String AUDIO_SAFE_VOLUME_STATE = "audio_safe_volume_state";
+ 
++        /**
++         * Whether the ear protection / volume limiter is enabled.
++         * @hide
++         */
++        @Readable
++        public static final String VOLUME_LIMITER_ENABLED = "volume_limiter_enabled";
++
++        /**
++         * Max volume limit percentage (40 to 100) when volume limiter is enabled.
++         * @hide
++         */
++        @Readable
++        public static final String VOLUME_LIMITER_VALUE = "volume_limiter_value";
++
++        /**
++         * Whether volume limiter applies only to headphones/headsets and Bluetooth devices.
++         * @hide
++         */
++        @Readable
++        public static final String VOLUME_LIMITER_HEADPHONES_ONLY = "volume_limiter_headphones_only";
++
+         /**
+          * Persisted safe hearding current CSD value. Values are stored as float percentages where
+          * 1.f represents 100% sound dose has been reached.
+diff --git a/services/core/java/com/android/server/audio/AudioService.java b/services/core/java/com/android/server/audio/AudioService.java
+index 4b40042..0133b6d 100644
+--- a/services/core/java/com/android/server/audio/AudioService.java
++++ b/services/core/java/com/android/server/audio/AudioService.java
+@@ -1366,6 +1366,10 @@ public class AudioService extends IAudioService.Stub
+     private boolean mNavigationRepeatSoundEffectsEnabled;
+     private boolean mHomeSoundEffectEnabled;
+ 
++    private boolean mVolumeLimiterEnabled = false;
++    private int mVolumeLimiterValue = 70;
++    private boolean mVolumeLimiterHeadphonesOnly = true;
++
+     private final SoundDoseHelper mSoundDoseHelper;
+ 
+     private final LoudnessCodecHelper mLoudnessCodecHelper;
+@@ -8024,6 +8028,7 @@ public class AudioService extends IAudioService.Stub
+ 
+         mSoundDoseHelper.restoreMusicActiveMs();
+         mSoundDoseHelper.enforceSafeMediaVolumeIfActive(TAG);
++        updateVolumeLimiterSettings();
+ 
+         if (DEBUG_VOL) {
+             Log.d(TAG, "Restoring device volume behavior");
+@@ -11120,6 +11125,12 @@ public class AudioService extends IAudioService.Stub
+                 synchronized (mVolumeStateLock) {
+                     oldIndex = getIndex(device);
+                     index = getValidIndex(index, hasModifyAudioSettings);
++                    if (isVolumeLimiterActiveForDevice(mStreamType, device)) {
++                        final int limit = getVolumeLimitIndex(mStreamType);
++                        if (index > limit) {
++                            index = limit;
++                        }
++                    }
+                     // for STREAM_SYSTEM_ENFORCED, do not sync aliased streams on the enforced index
+                     int aliasIndex = index;
+                     if ((mStreamType == AudioSystem.STREAM_SYSTEM_ENFORCED)
+@@ -12136,6 +12147,86 @@ public class AudioService extends IAudioService.Stub
+         }
+     }
+ 
++    private static boolean isHeadphoneDevice(int device) {
++        final int headphoneMask = AudioSystem.DEVICE_OUT_WIRED_HEADSET
++                | AudioSystem.DEVICE_OUT_WIRED_HEADPHONE
++                | AudioSystem.DEVICE_OUT_USB_HEADSET
++                | AudioSystem.DEVICE_OUT_USB_DEVICE
++                | AudioSystem.DEVICE_OUT_BLE_HEADSET
++                | AudioSystem.DEVICE_OUT_BLE_BROADCAST
++                | AudioSystem.DEVICE_OUT_BLUETOOTH_A2DP
++                | AudioSystem.DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES
++                | AudioSystem.DEVICE_OUT_HEARING_AID;
++        return (device & headphoneMask) != 0;
++    }
++
++    private boolean isVolumeLimiterActiveForDevice(int streamType, int device) {
++        if (!mVolumeLimiterEnabled) {
++            return false;
++        }
++        if (sStreamVolumeAlias.get(streamType, -1) != AudioSystem.STREAM_MUSIC
++                && streamType != AudioSystem.STREAM_MUSIC) {
++            return false;
++        }
++        if (mVolumeLimiterHeadphonesOnly && !isHeadphoneDevice(device)) {
++            return false;
++        }
++        return true;
++    }
++
++    private int getVolumeLimitIndex(int streamType) {
++        final VolumeStreamState vss = getVssForStreamOrDefault(streamType);
++        final int min = vss.getMinIndex();
++        final int max = vss.getMaxIndex();
++        final int percent = Math.max(10, Math.min(100, mVolumeLimiterValue));
++        int limit = min + (int) Math.round(((double) (max - min) * percent) / 100.0);
++        limit = ((limit + 5) / 10) * 10;
++        return Math.max(min, Math.min(max, limit));
++    }
++
++    private void updateVolumeLimiterSettings() {
++        mVolumeLimiterEnabled = mSettings.getGlobalInt(mContentResolver,
++                Settings.Global.VOLUME_LIMITER_ENABLED, 0) != 0;
++        mVolumeLimiterValue = mSettings.getGlobalInt(mContentResolver,
++                Settings.Global.VOLUME_LIMITER_VALUE, 70);
++        mVolumeLimiterHeadphonesOnly = mSettings.getGlobalInt(mContentResolver,
++                Settings.Global.VOLUME_LIMITER_HEADPHONES_ONLY, 1) != 0;
++        enforceVolumeLimit();
++    }
++
++    private void enforceVolumeLimit() {
++        if (!mVolumeLimiterEnabled) {
++            return;
++        }
++        final VolumeStreamState streamState = getVssForStream(AudioSystem.STREAM_MUSIC);
++        if (streamState == null) {
++            return;
++        }
++        final int limit = getVolumeLimitIndex(AudioSystem.STREAM_MUSIC);
++        synchronized (mSettingsLock) {
++            synchronized (mVolumeStateLock) {
++                for (int i = 0; i < streamState.mIndexMap.size(); i++) {
++                    int device = streamState.mIndexMap.keyAt(i);
++                    int index = streamState.mIndexMap.valueAt(i);
++                    if (isVolumeLimiterActiveForDevice(AudioSystem.STREAM_MUSIC, device)
++                            && index > limit) {
++                        streamState.setIndex(limit, device, TAG + ".enforceVolumeLimit", true);
++                        setDeviceVolume(streamState, device);
++                        sendVolumeUpdate(AudioSystem.STREAM_MUSIC, index, limit, 0, device);
++                    }
++                }
++                int currentDevice = getDeviceForStream(AudioSystem.STREAM_MUSIC);
++                int currentIndex = streamState.getIndex(currentDevice);
++                if (isVolumeLimiterActiveForDevice(AudioSystem.STREAM_MUSIC, currentDevice)
++                        && currentIndex > limit) {
++                    streamState.setIndex(limit, currentDevice, TAG + ".enforceVolumeLimit", true);
++                    setDeviceVolume(streamState, currentDevice);
++                    sendVolumeUpdate(AudioSystem.STREAM_MUSIC, currentIndex, limit, 0, currentDevice);
++                }
++            }
++        }
++    }
++
+     private class SettingsObserver extends ContentObserver {
+ 
+         SettingsObserver() {
+@@ -12165,6 +12256,14 @@ public class AudioService extends IAudioService.Stub
+             mContentResolver.registerContentObserver(Settings.Global.getUriFor(
+                     Settings.Global.ENCODED_SURROUND_OUTPUT_ENABLED_FORMATS), false, this);
+ 
++            mContentResolver.registerContentObserver(Settings.Global.getUriFor(
++                    Settings.Global.VOLUME_LIMITER_ENABLED), false, this);
++            mContentResolver.registerContentObserver(Settings.Global.getUriFor(
++                    Settings.Global.VOLUME_LIMITER_VALUE), false, this);
++            mContentResolver.registerContentObserver(Settings.Global.getUriFor(
++                    Settings.Global.VOLUME_LIMITER_HEADPHONES_ONLY), false, this);
++            updateVolumeLimiterSettings();
++
+             mContentResolver.registerContentObserver(Settings.Secure.getUriFor(
+                     Settings.Secure.VOICE_INTERACTION_SERVICE), false, this);
+         }
+@@ -12197,6 +12296,7 @@ public class AudioService extends IAudioService.Stub
+             synchronized (mAssistantUidLock) {
+                 updateAssistantUIdLocked(/* forceUpdate= */ false);
+             }
++            updateVolumeLimiterSettings();
+         }
+ 
+         @GuardedBy("mSurroundLock")

@@ -6,6 +6,7 @@
   enableLindroid ? false,
   enableDaria ? enableLindroid,
   enableDroidspaces ? false,
+  enableUnprotectedKvm ? false,
 }:
 let
   panelPatch =
@@ -32,6 +33,7 @@ callPackage ./common.nix { } {
     enableLindroid
     enableDaria
     enableDroidspaces
+    enableUnprotectedKvm
     ;
   extraBuildCommands = ''
     apply_patch ${panelPatch}

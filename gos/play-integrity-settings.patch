@@ -1,0 +1,709 @@
+diff -uNr -p Settings-orig/res/values/strings.xml Settings-patched/res/values/strings.xml
+--- Settings-orig/res/values/strings.xml	2026-10-28 22:55:00.204303139 +1100
++++ Settings-patched/res/values/strings.xml	2026-10-28 22:56:24.180544774 +1100
+@@ -15651,4 +15651,42 @@
+     <!-- Search keywords for Human interface device access setting -->
+     <string name="keywords_access_hid">hid, human, access, device</string>
+     <!-- Access HID end -->
++
++    <!-- Play Integrity / Keybox Attestation Spoofing -->
++    <string name="play_integrity_title">Play Integrity / Keybox</string>
++    <string name="play_integrity_summary">Configure hardware attestation, keybox, and certified build spoofing</string>
++    <string name="pi_keybox_category">Keybox Management</string>
++    <string name="pi_keybox_status_title">Keybox Status</string>
++    <string name="pi_no_keybox">No keybox installed (Hardware attestation unspoofed)</string>
++    <string name="pi_keybox_installed">Keybox installed</string>
++    <string name="pi_import_keybox_title">Import Keybox</string>
++    <string name="pi_import_keybox_summary">Import a hardware keybox XML file</string>
++    <string name="pi_delete_keybox_title">Delete Keybox</string>
++    <string name="pi_delete_keybox_summary">Remove the installed keybox and revert to genuine attestation</string>
++    <string name="pi_delete_keybox_dialog_title">Delete Keybox?</string>
++    <string name="pi_delete_keybox_dialog_message">Hardware attestation spoofing will be disabled and apps will receive real device attestation.</string>
++    <string name="pi_targets_category">Target Applications</string>
++    <string name="pi_targets_title">Target Packages</string>
++    <string name="pi_targets_count">%d packages configured</string>
++    <string name="pi_reset_targets_title">Reset Target Packages</string>
++    <string name="pi_reset_targets_summary">Restore default targets (GMS, Play Store, Wallet)</string>
++    <string name="pi_patch_category">Attestation Security Patch</string>
++    <string name="pi_patch_title">Security Patch Override</string>
++    <string name="pi_patch_default">Default (System security patch)</string>
++    <string name="pi_pif_category">Certified Build Profile (PIF)</string>
++    <string name="pi_pif_status_title">Build Profile Status</string>
++    <string name="pi_no_pif">No certified profile active (Default GrapheneOS build props)</string>
++    <string name="pi_import_pif_title">Import PIF Profile</string>
++    <string name="pi_import_pif_summary">Import certified device build properties (JSON or prop)</string>
++    <string name="pi_preset_pif_title">Certified Presets</string>
++    <string name="pi_preset_pif_summary">Select a known certified Pixel profile</string>
++    <string name="pi_delete_pif_title">Reset Build Profile</string>
++    <string name="pi_delete_pif_summary">Revert to standard GrapheneOS build properties</string>
++    <string name="pi_wipe_category">Maintenance</string>
++    <string name="pi_wipe_playstore_title">Clear Play Store Data &amp; Restart GMS</string>
++    <string name="pi_wipe_playstore_summary">Clear cached Play Integrity verdicts so new keybox/profile applies immediately</string>
++    <string name="pi_wipe_playstore_confirm_title">Clear Play Store data?</string>
++    <string name="pi_wipe_playstore_confirm_message">This clears Google Play Store cache and forces Google Play Services to restart. It ensures the new attestation configuration is picked up immediately.</string>
++    <string name="pi_info_category">About</string>
++    <string name="pi_info_footer">Play Integrity spoofing intercepts Android Keystore hardware attestation for configured target applications using an imported keybox.xml, and optionally spoofs certified build properties for Google Play Services (DroidGuard) to satisfy Play Integrity MEETS_DEVICE_INTEGRITY and MEETS_STRONG_INTEGRITY verdicts.</string>
+ </resources>
+diff -uNr -p Settings-orig/res/xml/more_security_privacy_settings.xml Settings-patched/res/xml/more_security_privacy_settings.xml
+--- Settings-orig/res/xml/more_security_privacy_settings.xml	2026-10-28 22:55:00.213303056 +1100
++++ Settings-patched/res/xml/more_security_privacy_settings.xml	2026-10-28 22:55:38.238956441 +1100
+@@ -266,6 +266,13 @@
+         settings:controller="com.android.settings.security.MemtagPagePreferenceController" />
+ 
+     <Preference
++        android:order="305"
++        android:key="play_integrity_settings"
++        android:title="@string/play_integrity_title"
++        android:summary="@string/play_integrity_summary"
++        android:fragment="com.android.settings.security.PlayIntegritySettings" />
++
++    <Preference
+         android:order="310"
+         android:key="binary_transparency_settings"
+         android:title="@string/binary_transparency_title"
+diff -uNr -p Settings-orig/res/xml/play_integrity_settings.xml Settings-patched/res/xml/play_integrity_settings.xml
+--- Settings-orig/res/xml/play_integrity_settings.xml	1970-01-01 10:00:00.000000000 +1000
++++ Settings-patched/res/xml/play_integrity_settings.xml	2026-10-28 22:56:24.173544836 +1100
+@@ -0,0 +1,105 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!--
++     Copyright (C) 2026 GrapheneOS
++     SPDX-License-Identifier: Apache-2.0
++-->
++<PreferenceScreen
++    xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:settings="http://schemas.android.com/apk/res-auto"
++    android:title="@string/play_integrity_title">
++
++    <PreferenceCategory
++        android:key="pi_keybox_category"
++        android:title="@string/pi_keybox_category">
++
++        <Preference
++            android:key="pi_keybox_status"
++            android:title="@string/pi_keybox_status_title"
++            android:selectable="false" />
++
++        <Preference
++            android:key="pi_import_keybox"
++            android:title="@string/pi_import_keybox_title"
++            android:summary="@string/pi_import_keybox_summary" />
++
++        <Preference
++            android:key="pi_delete_keybox"
++            android:title="@string/pi_delete_keybox_title"
++            android:summary="@string/pi_delete_keybox_summary" />
++
++    </PreferenceCategory>
++
++    <PreferenceCategory
++        android:key="pi_targets_category"
++        android:title="@string/pi_targets_category">
++
++        <Preference
++            android:key="pi_targets"
++            android:title="@string/pi_targets_title" />
++
++        <Preference
++            android:key="pi_reset_targets"
++            android:title="@string/pi_reset_targets_title"
++            android:summary="@string/pi_reset_targets_summary" />
++
++    </PreferenceCategory>
++
++    <PreferenceCategory
++        android:key="pi_pif_category"
++        android:title="@string/pi_pif_category">
++
++        <Preference
++            android:key="pi_pif_status"
++            android:title="@string/pi_pif_status_title"
++            android:selectable="false" />
++
++        <Preference
++            android:key="pi_import_pif"
++            android:title="@string/pi_import_pif_title"
++            android:summary="@string/pi_import_pif_summary" />
++
++        <Preference
++            android:key="pi_preset_pif"
++            android:title="@string/pi_preset_pif_title"
++            android:summary="@string/pi_preset_pif_summary" />
++
++        <Preference
++            android:key="pi_delete_pif"
++            android:title="@string/pi_delete_pif_title"
++            android:summary="@string/pi_delete_pif_summary" />
++
++    </PreferenceCategory>
++
++    <PreferenceCategory
++        android:key="pi_patch_category"
++        android:title="@string/pi_patch_category">
++
++        <Preference
++            android:key="pi_patch"
++            android:title="@string/pi_patch_title" />
++
++    </PreferenceCategory>
++
++    <PreferenceCategory
++        android:key="pi_wipe_category"
++        android:title="@string/pi_wipe_category">
++
++        <Preference
++            android:key="pi_wipe_playstore"
++            android:title="@string/pi_wipe_playstore_title"
++            android:summary="@string/pi_wipe_playstore_summary" />
++
++    </PreferenceCategory>
++
++    <PreferenceCategory
++        android:key="pi_info_category"
++        android:title="@string/pi_info_category">
++
++        <Preference
++            android:key="pi_info"
++            android:summary="@string/pi_info_footer"
++            android:selectable="false" />
++
++    </PreferenceCategory>
++
++</PreferenceScreen>
+diff -uNr -p Settings-orig/res/xml/security_advanced_settings.xml Settings-patched/res/xml/security_advanced_settings.xml
+--- Settings-orig/res/xml/security_advanced_settings.xml	2026-10-28 22:55:00.221302983 +1100
++++ Settings-patched/res/xml/security_advanced_settings.xml	2026-10-28 22:55:50.887843098 +1100
+@@ -122,6 +122,13 @@
+         android:fragment="com.android.settings.security.MemtagPage"
+         settings:controller="com.android.settings.security.MemtagPagePreferenceController" />
+ 
++    <Preference
++        android:order="305"
++        android:key="play_integrity_settings"
++        android:title="@string/play_integrity_title"
++        android:summary="@string/play_integrity_summary"
++        android:fragment="com.android.settings.security.PlayIntegritySettings" />
++
+     <!-- work profile security section -->
+     <PreferenceCategory
+         android:order="310"
+diff -uNr -p Settings-orig/src/com/android/settings/security/PlayIntegritySettings.java Settings-patched/src/com/android/settings/security/PlayIntegritySettings.java
+--- Settings-orig/src/com/android/settings/security/PlayIntegritySettings.java	1970-01-01 10:00:00.000000000 +1000
++++ Settings-patched/src/com/android/settings/security/PlayIntegritySettings.java	2026-10-28 22:57:07.733154514 +1100
+@@ -0,0 +1,516 @@
++/*
++ * Copyright (C) 2026 GrapheneOS
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++package com.android.settings.security;
++
++import android.app.ActivityManager;
++import android.app.settings.SettingsEnums;
++import android.content.ContentResolver;
++import android.content.Context;
++import android.content.DialogInterface;
++import android.net.Uri;
++import android.os.Build;
++import android.os.Bundle;
++import android.provider.Settings;
++import android.text.TextUtils;
++import android.util.Log;
++import android.widget.EditText;
++import android.widget.Toast;
++
++import androidx.activity.result.ActivityResultLauncher;
++import androidx.activity.result.contract.ActivityResultContracts;
++import androidx.appcompat.app.AlertDialog;
++import androidx.preference.Preference;
++
++import com.android.settings.R;
++import com.android.settings.SettingsPreferenceFragment;
++
++import org.json.JSONObject;
++
++import java.io.BufferedReader;
++import java.io.InputStream;
++import java.io.InputStreamReader;
++import java.nio.charset.StandardCharsets;
++import java.util.regex.Matcher;
++import java.util.regex.Pattern;
++
++public class PlayIntegritySettings extends SettingsPreferenceFragment {
++    private static final String TAG = "PlayIntegritySettings";
++
++    private static final String KEYBOX_KEY = "spoof_trickystore_keybox";
++    private static final String TARGET_KEY = "spoof_trickystore_target";
++    private static final String PATCH_KEY = "spoof_trickystore_patch";
++    private static final String PIF_KEY = "spoof_pif_values";
++
++    private static final String PREF_KEYBOX_STATUS = "pi_keybox_status";
++    private static final String PREF_IMPORT_KEYBOX = "pi_import_keybox";
++    private static final String PREF_DELETE_KEYBOX = "pi_delete_keybox";
++    private static final String PREF_TARGETS = "pi_targets";
++    private static final String PREF_RESET_TARGETS = "pi_reset_targets";
++    private static final String PREF_PATCH = "pi_patch";
++    private static final String PREF_PIF_STATUS = "pi_pif_status";
++    private static final String PREF_IMPORT_PIF = "pi_import_pif";
++    private static final String PREF_PRESET_PIF = "pi_preset_pif";
++    private static final String PREF_DELETE_PIF = "pi_delete_pif";
++    private static final String PREF_WIPE_PLAYSTORE = "pi_wipe_playstore";
++
++    private static final String DEFAULT_TARGETS =
++            "com.google.android.gms\n"
++            + "com.android.vending\n"
++            + "com.google.android.gsf\n"
++            + "com.google.android.apps.walletnfcrel";
++
++    private static final String PIXEL_6A_PROFILE =
++            "{\n"
++            + "  \"MANUFACTURER\": \"Google\",\n"
++            + "  \"MODEL\": \"Pixel 6a\",\n"
++            + "  \"FINGERPRINT\": \"google/bluejay/bluejay:13/TQ3A.230901.001/10750199:user/release-keys\",\n"
++            + "  \"BRAND\": \"google\",\n"
++            + "  \"PRODUCT\": \"bluejay\",\n"
++            + "  \"DEVICE\": \"bluejay\",\n"
++            + "  \"RELEASE\": \"13\",\n"
++            + "  \"ID\": \"TQ3A.230901.001\",\n"
++            + "  \"INCREMENTAL\": \"10750199\",\n"
++            + "  \"TYPE\": \"user\",\n"
++            + "  \"TAGS\": \"release-keys\",\n"
++            + "  \"SECURITY_PATCH\": \"2023-09-05\",\n"
++            + "  \"DEVICE_INITIAL_SDK_INT\": \"32\"\n"
++            + "}";
++
++    private static final String PIXEL_8_PROFILE =
++            "{\n"
++            + "  \"MANUFACTURER\": \"Google\",\n"
++            + "  \"MODEL\": \"Pixel 8\",\n"
++            + "  \"FINGERPRINT\": \"google/shiba/shiba:14/AP2A.240805.005/12028452:user/release-keys\",\n"
++            + "  \"BRAND\": \"google\",\n"
++            + "  \"PRODUCT\": \"shiba\",\n"
++            + "  \"DEVICE\": \"shiba\",\n"
++            + "  \"RELEASE\": \"14\",\n"
++            + "  \"ID\": \"AP2A.240805.005\",\n"
++            + "  \"INCREMENTAL\": \"12028452\",\n"
++            + "  \"TYPE\": \"user\",\n"
++            + "  \"TAGS\": \"release-keys\",\n"
++            + "  \"SECURITY_PATCH\": \"2024-08-05\",\n"
++            + "  \"DEVICE_INITIAL_SDK_INT\": \"34\"\n"
++            + "}";
++
++    private Preference mKeyboxStatusPref;
++    private Preference mImportKeyboxPref;
++    private Preference mDeleteKeyboxPref;
++    private Preference mTargetsPref;
++    private Preference mResetTargetsPref;
++    private Preference mPatchPref;
++    private Preference mPifStatusPref;
++    private Preference mImportPifPref;
++    private Preference mPresetPifPref;
++    private Preference mDeletePifPref;
++    private Preference mWipePlayStorePref;
++
++    private final ActivityResultLauncher<String> mKeyboxPicker =
++            registerForActivityResult(new ActivityResultContracts.GetContent(), this::onKeyboxFileSelected);
++
++    private final ActivityResultLauncher<String> mPifPicker =
++            registerForActivityResult(new ActivityResultContracts.GetContent(), this::onPifFileSelected);
++
++    @Override
++    public int getMetricsCategory() {
++        return SettingsEnums.PAGE_UNKNOWN;
++    }
++
++    @Override
++    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
++        addPreferencesFromResource(R.xml.play_integrity_settings);
++
++        mKeyboxStatusPref = findPreference(PREF_KEYBOX_STATUS);
++        mImportKeyboxPref = findPreference(PREF_IMPORT_KEYBOX);
++        mDeleteKeyboxPref = findPreference(PREF_DELETE_KEYBOX);
++        mTargetsPref = findPreference(PREF_TARGETS);
++        mResetTargetsPref = findPreference(PREF_RESET_TARGETS);
++        mPatchPref = findPreference(PREF_PATCH);
++        mPifStatusPref = findPreference(PREF_PIF_STATUS);
++        mImportPifPref = findPreference(PREF_IMPORT_PIF);
++        mPresetPifPref = findPreference(PREF_PRESET_PIF);
++        mDeletePifPref = findPreference(PREF_DELETE_PIF);
++        mWipePlayStorePref = findPreference(PREF_WIPE_PLAYSTORE);
++
++        if (mImportKeyboxPref != null) {
++            mImportKeyboxPref.setOnPreferenceClickListener(p -> {
++                mKeyboxPicker.launch("*/*");
++                return true;
++            });
++        }
++
++        if (mDeleteKeyboxPref != null) {
++            mDeleteKeyboxPref.setOnPreferenceClickListener(p -> {
++                showDeleteKeyboxDialog();
++                return true;
++            });
++        }
++
++        if (mTargetsPref != null) {
++            mTargetsPref.setOnPreferenceClickListener(p -> {
++                showTargetsEditDialog();
++                return true;
++            });
++        }
++
++        if (mResetTargetsPref != null) {
++            mResetTargetsPref.setOnPreferenceClickListener(p -> {
++                resetTargets();
++                return true;
++            });
++        }
++
++        if (mPatchPref != null) {
++            mPatchPref.setOnPreferenceClickListener(p -> {
++                showPatchEditDialog();
++                return true;
++            });
++        }
++
++        if (mImportPifPref != null) {
++            mImportPifPref.setOnPreferenceClickListener(p -> {
++                mPifPicker.launch("*/*");
++                return true;
++            });
++        }
++
++        if (mPresetPifPref != null) {
++            mPresetPifPref.setOnPreferenceClickListener(p -> {
++                showPresetPifDialog();
++                return true;
++            });
++        }
++
++        if (mDeletePifPref != null) {
++            mDeletePifPref.setOnPreferenceClickListener(p -> {
++                deletePif();
++                return true;
++            });
++        }
++
++        if (mWipePlayStorePref != null) {
++            mWipePlayStorePref.setOnPreferenceClickListener(p -> {
++                showWipePlayStoreDialog();
++                return true;
++            });
++        }
++
++        updateState();
++    }
++
++    private void updateState() {
++        ContentResolver cr = getContentResolver();
++        if (cr == null) return;
++
++        // Keybox status
++        String keyboxXml = Settings.Secure.getString(cr, KEYBOX_KEY);
++        if (TextUtils.isEmpty(keyboxXml)) {
++            if (mKeyboxStatusPref != null) {
++                mKeyboxStatusPref.setSummary(R.string.pi_no_keybox);
++            }
++            if (mDeleteKeyboxPref != null) {
++                mDeleteKeyboxPref.setEnabled(false);
++            }
++        } else {
++            String details = parseKeyboxDetails(keyboxXml);
++            if (mKeyboxStatusPref != null) {
++                mKeyboxStatusPref.setSummary(getString(R.string.pi_keybox_installed) + " (" + details + ")");
++            }
++            if (mDeleteKeyboxPref != null) {
++                mDeleteKeyboxPref.setEnabled(true);
++            }
++        }
++
++        // Target applications
++        String targets = Settings.Secure.getString(cr, TARGET_KEY);
++        if (targets == null) {
++            targets = DEFAULT_TARGETS;
++            Settings.Secure.putString(cr, TARGET_KEY, DEFAULT_TARGETS);
++        }
++        int count = countNonEmptyLines(targets);
++        if (mTargetsPref != null) {
++            mTargetsPref.setSummary(getString(R.string.pi_targets_count, count));
++        }
++
++        // Security patch
++        String patch = Settings.Secure.getString(cr, PATCH_KEY);
++        if (mPatchPref != null) {
++            if (TextUtils.isEmpty(patch)) {
++                mPatchPref.setSummary(R.string.pi_patch_default);
++            } else {
++                mPatchPref.setSummary(patch);
++            }
++        }
++
++        // PIF status
++        String pif = Settings.Secure.getString(cr, PIF_KEY);
++        if (TextUtils.isEmpty(pif)) {
++            if (mPifStatusPref != null) {
++                mPifStatusPref.setSummary(R.string.pi_no_pif);
++            }
++            if (mDeletePifPref != null) {
++                mDeletePifPref.setEnabled(false);
++            }
++        } else {
++            String pifSummary = parsePifDetails(pif);
++            if (mPifStatusPref != null) {
++                mPifStatusPref.setSummary(pifSummary);
++            }
++            if (mDeletePifPref != null) {
++                mDeletePifPref.setEnabled(true);
++            }
++        }
++    }
++
++    private String parsePifDetails(String pif) {
++        try {
++            if (pif.trim().startsWith("{")) {
++                JSONObject obj = new JSONObject(pif);
++                String model = obj.optString("MODEL", "Unknown");
++                String fp = obj.optString("FINGERPRINT", "");
++                if (fp.length() > 30) {
++                    fp = fp.substring(0, 27) + "...";
++                }
++                return model + " [" + fp + "]";
++            }
++        } catch (Exception ignored) {
++        }
++        return "Custom PIF config active";
++    }
++
++    private String parseKeyboxDetails(String xml) {
++        boolean hasEc = xml.contains("algorithm=\"ecdsa\"") || xml.contains("algorithm=\"ec\"");
++        boolean hasRsa = xml.contains("algorithm=\"rsa\"");
++        int certCount = 0;
++        Matcher m = Pattern.compile("<Certificate>").matcher(xml);
++        while (m.find()) certCount++;
++
++        StringBuilder sb = new StringBuilder();
++        if (hasEc && hasRsa) {
++            sb.append("EC + RSA");
++        } else if (hasEc) {
++            sb.append("EC only");
++        } else if (hasRsa) {
++            sb.append("RSA only");
++        } else {
++            sb.append("Keys detected");
++        }
++        if (certCount > 0) {
++            sb.append(", ").append(certCount).append(" certs");
++        }
++        return sb.toString();
++    }
++
++    private int countNonEmptyLines(String text) {
++        if (text == null) return 0;
++        int count = 0;
++        for (String line : text.split("\n")) {
++            if (!line.trim().isEmpty() && !line.trim().startsWith("#")) {
++                count++;
++            }
++        }
++        return count;
++    }
++
++    private void onKeyboxFileSelected(Uri uri) {
++        if (uri == null) return;
++        Context context = getContext();
++        if (context == null) return;
++
++        try (InputStream is = context.getContentResolver().openInputStream(uri);
++             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
++            StringBuilder sb = new StringBuilder();
++            String line;
++            while ((line = reader.readLine()) != null) {
++                sb.append(line).append("\n");
++            }
++            String xmlContent = sb.toString().trim();
++            if (!xmlContent.contains("<Keybox") && !xmlContent.contains("<Key")) {
++                Toast.makeText(context, "Invalid keybox file format", Toast.LENGTH_LONG).show();
++                return;
++            }
++            Settings.Secure.putString(context.getContentResolver(), KEYBOX_KEY, xmlContent);
++            Toast.makeText(context, "Keybox imported successfully", Toast.LENGTH_SHORT).show();
++            updateState();
++            offerWipePlayStore();
++        } catch (Exception e) {
++            Log.e(TAG, "Failed to read keybox file", e);
++            Toast.makeText(context, "Failed to read file: " + e.getMessage(), Toast.LENGTH_LONG).show();
++        }
++    }
++
++    private void onPifFileSelected(Uri uri) {
++        if (uri == null) return;
++        Context context = getContext();
++        if (context == null) return;
++
++        try (InputStream is = context.getContentResolver().openInputStream(uri);
++             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
++            StringBuilder sb = new StringBuilder();
++            String line;
++            while ((line = reader.readLine()) != null) {
++                sb.append(line).append("\n");
++            }
++            String content = sb.toString().trim();
++            if (content.isEmpty()) {
++                Toast.makeText(context, "Empty PIF file", Toast.LENGTH_LONG).show();
++                return;
++            }
++            Settings.Secure.putString(context.getContentResolver(), PIF_KEY, content);
++            Toast.makeText(context, "PIF profile imported successfully", Toast.LENGTH_SHORT).show();
++            updateState();
++            offerWipePlayStore();
++        } catch (Exception e) {
++            Log.e(TAG, "Failed to read PIF file", e);
++            Toast.makeText(context, "Failed to read file: " + e.getMessage(), Toast.LENGTH_LONG).show();
++        }
++    }
++
++    private void showDeleteKeyboxDialog() {
++        Context context = getContext();
++        if (context == null) return;
++
++        new AlertDialog.Builder(context)
++                .setTitle(R.string.pi_delete_keybox_dialog_title)
++                .setMessage(R.string.pi_delete_keybox_dialog_message)
++                .setPositiveButton(R.string.okay, (dialog, which) -> {
++                    Settings.Secure.putString(context.getContentResolver(), KEYBOX_KEY, "");
++                    Toast.makeText(context, "Keybox removed", Toast.LENGTH_SHORT).show();
++                    updateState();
++                    offerWipePlayStore();
++                })
++                .setNegativeButton(android.R.string.cancel, null)
++                .show();
++    }
++
++    private void deletePif() {
++        Context context = getContext();
++        if (context == null) return;
++        Settings.Secure.putString(context.getContentResolver(), PIF_KEY, "");
++        Toast.makeText(context, "PIF profile reset", Toast.LENGTH_SHORT).show();
++        updateState();
++        offerWipePlayStore();
++    }
++
++    private void showPresetPifDialog() {
++        Context context = getContext();
++        if (context == null) return;
++
++        String[] presets = new String[] { "Pixel 6a (Canary / Android 13)", "Pixel 8 (Stable / Android 14)" };
++        new AlertDialog.Builder(context)
++                .setTitle(R.string.pi_preset_pif_title)
++                .setItems(presets, (dialog, which) -> {
++                    String selected = which == 0 ? PIXEL_6A_PROFILE : PIXEL_8_PROFILE;
++                    Settings.Secure.putString(context.getContentResolver(), PIF_KEY, selected);
++                    Toast.makeText(context, "Applied " + presets[which], Toast.LENGTH_SHORT).show();
++                    updateState();
++                    offerWipePlayStore();
++                })
++                .setNegativeButton(android.R.string.cancel, null)
++                .show();
++    }
++
++    private void showTargetsEditDialog() {
++        Context context = getContext();
++        if (context == null) return;
++
++        String current = Settings.Secure.getString(context.getContentResolver(), TARGET_KEY);
++        if (current == null) current = DEFAULT_TARGETS;
++
++        final EditText input = new EditText(context);
++        input.setText(current);
++        input.setSingleLine(false);
++        input.setLines(8);
++
++        new AlertDialog.Builder(context)
++                .setTitle(R.string.pi_targets_title)
++                .setView(input)
++                .setPositiveButton(R.string.okay, (dialog, which) -> {
++                    String newTargets = input.getText().toString().trim();
++                    Settings.Secure.putString(context.getContentResolver(), TARGET_KEY, newTargets);
++                    updateState();
++                })
++                .setNegativeButton(android.R.string.cancel, null)
++                .show();
++    }
++
++    private void resetTargets() {
++        Context context = getContext();
++        if (context == null) return;
++        Settings.Secure.putString(context.getContentResolver(), TARGET_KEY, DEFAULT_TARGETS);
++        Toast.makeText(context, "Target packages reset to defaults", Toast.LENGTH_SHORT).show();
++        updateState();
++    }
++
++    private void showPatchEditDialog() {
++        Context context = getContext();
++        if (context == null) return;
++
++        String current = Settings.Secure.getString(context.getContentResolver(), PATCH_KEY);
++        if (current == null) current = "";
++
++        final EditText input = new EditText(context);
++        input.setHint("YYYY-MM-DD (e.g. 2026-08-05)");
++        input.setText(current);
++
++        new AlertDialog.Builder(context)
++                .setTitle(R.string.pi_patch_title)
++                .setView(input)
++                .setPositiveButton(R.string.okay, (dialog, which) -> {
++                    String newPatch = input.getText().toString().trim();
++                    Settings.Secure.putString(context.getContentResolver(), PATCH_KEY, newPatch);
++                    updateState();
++                })
++                .setNeutralButton("Clear", (dialog, which) -> {
++                    Settings.Secure.putString(context.getContentResolver(), PATCH_KEY, "");
++                    updateState();
++                })
++                .setNegativeButton(android.R.string.cancel, null)
++                .show();
++    }
++
++    private void showWipePlayStoreDialog() {
++        Context context = getContext();
++        if (context == null) return;
++
++        new AlertDialog.Builder(context)
++                .setTitle(R.string.pi_wipe_playstore_confirm_title)
++                .setMessage(R.string.pi_wipe_playstore_confirm_message)
++                .setPositiveButton(R.string.okay, (dialog, which) -> doWipePlayStore())
++                .setNegativeButton(android.R.string.cancel, null)
++                .show();
++    }
++
++    private void offerWipePlayStore() {
++        Context context = getContext();
++        if (context == null) return;
++
++        new AlertDialog.Builder(context)
++                .setTitle("Apply Changes to Play Store?")
++                .setMessage("Play Store caches integrity verdicts. Would you like to clear Play Store cache and restart Google Play Services now so changes take effect immediately?")
++                .setPositiveButton("Clear & Restart", (dialog, which) -> doWipePlayStore())
++                .setNegativeButton("Later", null)
++                .show();
++    }
++
++    private void doWipePlayStore() {
++        Context context = getContext();
++        if (context == null) return;
++
++        try {
++            ActivityManager am = context.getSystemService(ActivityManager.class);
++            if (am != null) {
++                am.forceStopPackage("com.google.android.gms");
++                am.forceStopPackage("com.android.vending");
++            }
++            context.getPackageManager().clearApplicationUserData("com.android.vending", null);
++            Toast.makeText(context, "Play Store cache cleared and Google services restarted", Toast.LENGTH_LONG).show();
++        } catch (Exception e) {
++            Log.e(TAG, "Failed to clear Play Store data", e);
++            Toast.makeText(context, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
++        }
++    }
++}

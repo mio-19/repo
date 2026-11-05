@@ -1,0 +1,13 @@
+diff --git a/aosp/arch/arm64/configs/gki_defconfig b/aosp/arch/arm64/configs/gki_defconfig
+index 630dac0..bb1b8bb 100644
+--- a/aosp/arch/arm64/configs/gki_defconfig
++++ b/aosp/arch/arm64/configs/gki_defconfig
+@@ -62,7 +62,7 @@ CONFIG_CP15_BARRIER_EMULATION=y
+ CONFIG_SETEND_EMULATION=y
+ CONFIG_RANDOMIZE_BASE=y
+ # CONFIG_RANDOMIZE_MODULE_REGION_FULL is not set
+-CONFIG_CMDLINE="console=ttynull stack_depot_disable=on cgroup_disable=pressure kasan.page_alloc.sample=10 kasan.stacktrace=off kvm-arm.mode=protected bootconfig ioremap_guard"
++CONFIG_CMDLINE="console=ttynull stack_depot_disable=on cgroup_disable=pressure kasan.page_alloc.sample=10 kasan.stacktrace=off kvm-arm.mode=nvhe bootconfig ioremap_guard"
+ CONFIG_CMDLINE_EXTEND=y
+ # CONFIG_DMI is not set
+ CONFIG_PM_USERSPACE_AUTOSLEEP=y

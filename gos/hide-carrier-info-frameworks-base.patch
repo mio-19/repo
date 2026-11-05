@@ -595,10 +595,11 @@ index 2e128b7be..11834928a 100644
                  .readFlags(playIntegrityFlags)
                  .readWriteFlag(PLAY_INTEGRITY_API_USED_AT_LEAST_ONCE)
                  .create();
-@@ -145,6 +147,8 @@ class GosPackageStatePermissions {
-                 FORCE_MEMTAG,
-                 FORCE_MEMTAG_SUPPRESS_NOTIF,
+@@ -155,6 +157,8 @@ class GosPackageStatePermissions {
                  ENABLE_EXPLOIT_PROTECTION_COMPAT_MODE,
+                 ALLOW_CLIPBOARD_READ_NON_DEFAULT,
+                 ALLOW_CLIPBOARD_READ,
+                 SUPPRESS_CLIPBOARD_ACCESS_DENIAL_NOTIF,
 +                HIDE_CARRIER_INFO_NON_DEFAULT,
 +                HIDE_CARRIER_INFO,
          };
@@ -617,92 +618,7 @@ index 36afa481b..06af69f0e 100644
  java_test_host {
      name: "HardeningTest",
      srcs: [
-diff --git a/tests/HardeningTest/src/grapheneos/hardeningtest/SELinuxTest.java b/tests/HardeningTest/src/grapheneos/hardeningtest/SELinuxTest.java
-index b1e0e1455..0e1ef0ac3 100644
---- a/tests/HardeningTest/src/grapheneos/hardeningtest/SELinuxTest.java
-+++ b/tests/HardeningTest/src/grapheneos/hardeningtest/SELinuxTest.java
-@@ -12,8 +12,6 @@ import org.junit.runner.RunWith;
- 
- import java.util.function.Consumer;
- 
--import static org.junit.Assert.assertEquals;
--
- @RunWith(DeviceJUnit4ClassRunner.class)
- public class SELinuxTest extends BaseHostJUnit4Test {
- 
-@@ -36,29 +34,6 @@ public class SELinuxTest extends BaseHostJUnit4Test {
-         }
-     }
- 
--    private void editGosPackageState(String pkgName, int[] addFlags, int[] clearFlags) {
--        try {
--            var device = getDevice();
--            var cmd = new StringBuilder("pm edit-gos-package-state " + pkgName + " " + device.getCurrentUser());
--            for (int flag : addFlags) {
--                cmd.append(" add-flag ").append(flag);
--            }
--            for (int flag : clearFlags) {
--                cmd.append(" clear-flag ").append(flag);
--            }
--            var edRes = device.executeShellV2Command(cmd.toString());
--            assertEquals(edRes.toString(), 0L, (long) edRes.getExitCode());
--        } catch (DeviceNotAvailableException e) {
--            throw new IllegalStateException(e);
--        }
--    }
--
--    private void setComplexFlagState(String pkgName, int flag, int nonDefaultFlag, boolean isSet) {
--        int[] addFlags = isSet ? new int[] { nonDefaultFlag, flag } : new int[] { nonDefaultFlag };
--        int[] clearFlags = isSet ? new int[0] : new int[] { flag };
--        editGosPackageState(pkgName, addFlags, clearFlags);
--    }
--
-     private void forEachPackage(Consumer<String> action) {
-         for (String pkg : new String[] {TEST_PACKAGE_SDK_27, TEST_PACKAGE_SDK_LATEST, TEST_PACKAGE_SDK_LATEST_PREINSTALLED}) {
-             if (pkg == TEST_PACKAGE_SDK_LATEST_PREINSTALLED) {
-@@ -97,12 +72,12 @@ public class SELinuxTest extends BaseHostJUnit4Test {
-     public void testDynamicCodeLoadingRestricted() {
-         forEachPackage(pkg -> {
-             for (var t : DclTestType.values()) {
--                setComplexFlagState(pkg, t.gosPsFlag, t.gosPsNonDefaultFlag, true);
-+                TestUtils.setComplexFlagState(this, pkg, t.gosPsFlag, t.gosPsNonDefaultFlag, true);
-                 runDeviceTest(pkg, t.testName("DclRestricted"));
- 
-                 if (pkg == TEST_PACKAGE_SDK_LATEST_PREINSTALLED) {
-                     // check that DCL is blocked regardless of GosPackageState flags
--                    setComplexFlagState(pkg, t.gosPsFlag, t.gosPsNonDefaultFlag, false);
-+                    TestUtils.setComplexFlagState(this, pkg, t.gosPsFlag, t.gosPsNonDefaultFlag, false);
-                     runDeviceTest(pkg, t.testName("DclRestricted"));
-                 }
-             }
-@@ -118,7 +93,7 @@ public class SELinuxTest extends BaseHostJUnit4Test {
-             }
- 
-             for (var t : DclTestType.values()) {
--                setComplexFlagState(pkg, t.gosPsFlag, t.gosPsNonDefaultFlag, false);
-+                TestUtils.setComplexFlagState(this, pkg, t.gosPsFlag, t.gosPsNonDefaultFlag, false);
-                 runDeviceTest(pkg, t.testName("DclAllowed"));
-             }
-         });
-@@ -132,7 +107,7 @@ public class SELinuxTest extends BaseHostJUnit4Test {
-                 return;
-             }
- 
--            setComplexFlagState(pkg,
-+            TestUtils.setComplexFlagState(this, pkg,
-                 GosPackageStateFlag.BLOCK_NATIVE_DEBUGGING,
-                 GosPackageStateFlag.BLOCK_NATIVE_DEBUGGING_NON_DEFAULT,
-                 false);
-@@ -143,7 +118,7 @@ public class SELinuxTest extends BaseHostJUnit4Test {
-     @Test
-     public void testPtraceDenied() {
-         forEachPackage(pkg -> {
--            setComplexFlagState(pkg,
-+            TestUtils.setComplexFlagState(this, pkg,
-                 GosPackageStateFlag.BLOCK_NATIVE_DEBUGGING,
-                 GosPackageStateFlag.BLOCK_NATIVE_DEBUGGING_NON_DEFAULT,
-                 true);
-diff --git a/tests/HardeningTest/src/grapheneos/hardeningtest/TestUtils.java b/tests/HardeningTest/src/grapheneos/hardeningtest/TestUtils.java
+diff --git a/tests/HardeningTest/src/grapheneos/hardeningtest/TestUtils.java b/tests/HardeningTest/src/grapheneos/hardeningtest/TestUtils.java b/tests/HardeningTest/src/grapheneos/hardeningtest/TestUtils.java
 new file mode 100644
 index 000000000..ba8c131f3
 --- /dev/null

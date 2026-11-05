@@ -12,6 +12,8 @@ args@{
     };
   };
 
+  # Downstream device integration for GrapheneOS adevtool (Apache-2.0):
+  # https://github.com/GrapheneOS/adevtool
   config = lib.mkIf (config.komodoHighEmissionFrequency && config.caimanHighEmissionFrequency) {
     source.dirs."packages/apps/Settings".patches = [
       ./komodo-high-emission-frequency-settings.patch

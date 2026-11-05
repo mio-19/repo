@@ -1,0 +1,12 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -1208,7 +1208,8 @@
+ 
+ # Check if <sys/select.h> needs to be included for fd_set
+ AC_MSG_CHECKING([for fd_set])
+-AC_TRY_COMPILE([#include <sys/types.h>],
++AC_TRY_COMPILE([#include <sys/types.h>
++#include <sys/select.h>],
+         [fd_set readMask, writeMask;], gtk_ok=yes, gtk_ok=no)
+ AS_IF([test "$gtk_ok" = "yes"], [
+     AC_MSG_RESULT([yes, found in sys/types.h])

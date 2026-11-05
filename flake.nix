@@ -207,6 +207,7 @@
               inputs.android-nixpkgs.overlays.default
               (final: prev: rec {
                 inherit (selfPackages) ant;
+                inherit (pkgs) openapi-generator-cli;
                 python27 =
                   (import inputs.nixpkgs-python27 {
                     inherit system;

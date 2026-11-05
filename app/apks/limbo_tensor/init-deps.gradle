@@ -1,0 +1,33 @@
+/*
+ * Adapted from nixpkgs' Gradle dependency updater init script:
+ * https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/build-managers/gradle/init-deps.gradle
+ * NixOS/nixpkgs, MIT license: https://github.com/NixOS/nixpkgs/blob/master/COPYING
+ *
+ * Avoid duplicate task registration, omit debug/test variants that are not
+ * used by the release APK, and resolve external dependencies without asking
+ * AGP 4.1 to choose among ambiguous project artifact variants.
+ */
+gradle.projectsLoaded {
+  rootProject.allprojects {
+    if (tasks.findByName('nixDownloadDeps') == null) {
+      task nixDownloadDeps {
+        doLast {
+          configurations.findAll {
+            def name = it.name.toLowerCase()
+            it.canBeResolved && !name.contains('test') && !name.startsWith('debug')
+          }.each {
+            def externalDependencies = it.allDependencies.findAll {
+              !(it instanceof org.gradle.api.artifacts.ProjectDependency)
+            }
+            if (!externalDependencies.empty) {
+              def detachedConfiguration = configurations.detachedConfiguration()
+              externalDependencies.each { detachedConfiguration.dependencies.add(it) }
+              detachedConfiguration.resolve()
+            }
+          }
+          buildscript.configurations.findAll { it.canBeResolved }.each { it.resolve() }
+        }
+      }
+    }
+  }
+}

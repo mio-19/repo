@@ -73,6 +73,8 @@ in
         in
         # https://github.com/MatthewCroughan/nixcfg/blob/afab322e6da20cc038d8577dd4a365673702d183/flake.nix#L57
         nixpkgs.lib.mapAttrs (n: v: robotnix.lib.robotnixSystem v) {
+          FP4 = common ./los/devices/FP4.nix;
+          FP4_mainline = common ./los/devices/FP4-mainline.nix;
           gta4xlwifi = common ./los/devices/gta4xlwifi.nix;
           enchilada = common ./los/devices/enchilada.nix;
           enchilada_derpfest16 = common ./los/devices/enchilada-derpfest16.nix;
@@ -125,6 +127,11 @@ in
       packages.los-gts7l-ota = self.losNoCcache.gts7l.ota;
       packages.los-enchilada-img = self.losNoCcache.enchilada.img;
       packages.los-utm-img = self.losNoCcache.utm.img;
+      packages.lineageos-fp4-img = self.losNoCcache.FP4.img;
+      packages.lineageos-fp4-ota = self.losNoCcache.FP4.ota;
+      packages.lineageos-fp4-mainline-img = self.losNoCcache.FP4_mainline.img;
+      packages.lineageos-fp4-mainline-ota = self.losNoCcache.FP4_mainline.ota;
+      packages.fairphone-fp4-mainline-kernel = pkgs.callPackage ./kernel/fairphone_fp4_mainline.nix { };
       packages.grapheneos-husky-srcs = pkgs.srcOnly self.gos.husky.config.build.android;
       /*
         packages.grapheneos-husky-srcs = self.gos.husky.config.build.android.overrideAttrs (old: {

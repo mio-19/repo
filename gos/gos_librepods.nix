@@ -2,15 +2,9 @@ args@{
   config,
   pkgs,
   lib,
+  self,
   ...
 }:
-let
-  librepodsApk = pkgs.fetchurl {
-    name = "LibrePods-v1.0.4.apk";
-    url = "https://github.com/librepods-org/librepods/releases/download/v1.0.4/LibrePods-FOSS-v1.0.4-100040301-release.apk";
-    hash = "sha256-gT4uUytFy2GEqHkIuQNuCYRmH4NKOWz3YZ1EP5t021Q=";
-  };
-in
 {
   options = {
     librepodsAirpodsSupport = lib.mkOption {
@@ -33,13 +27,17 @@ in
       ];
     })
 
-    (lib.mkIf (config.librepodsAirpodsSupport && config.bundleLibrePods) {
+    (lib.mkIf config.bundleLibrePods {
       apps.prebuilt.librepods = {
         enable = true;
         name = "LibrePods";
-        apk = librepodsApk;
+        apk = "${self.packages.${pkgs.stdenv.hostPlatform.system}.apk_librepods}/librepods.apk";
         packageName = "me.kavishdevar.librepods";
         privileged = true;
+        usesOptionalLibraries = [
+          "androidx.window.extensions"
+          "androidx.window.sidecar"
+        ];
         privappPermissions = [
           "BLUETOOTH_PRIVILEGED"
           "MODIFY_PHONE_STATE"

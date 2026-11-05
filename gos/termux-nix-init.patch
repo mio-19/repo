@@ -1,0 +1,28 @@
+diff --git a/rootdir/init.rc b/rootdir/init.rc
+index b998698..c2f91cf 100644
+--- a/rootdir/init.rc
++++ b/rootdir/init.rc
+@@ -671,6 +671,10 @@ on property:ro.product.cpu.abilist64=* && property:bootreceiver.enable=1
+ 
+ on post-fs-data
+ 
++    # /nix is backed by Termux's private, app-owned data directory. This keeps
++    # Nix single-user store ownership scoped to the Termux UID.
++    mkdir /nix 0755 root root
++
+     # Start checkpoint before we touch data
+     exec - system system -- /system/bin/vdc checkpoint prepareCheckpoint
+ 
+@@ -1332,3 +1336,12 @@ on property:sys.snapshotctl.map=requested
+ on property:sys.snapshotctl.unmap=requested
+     exec - root root system -- /system/bin/snapshotctl unmap
+     setprop sys.snapshotctl.unmap "finished"
++
++service termux-nix-store /system/bin/sh -c "uid=$(/system/bin/cmd package list packages --user 0 -U com.termux | /system/bin/toybox awk -F'uid:' '{print $2}'); if [ -z \"$uid\" ]; then exit 1; fi; /system/bin/mkdir -p /data/user/0/com.termux/files/nix; /system/bin/chown \"$uid:$uid\" /data/user/0/com.termux/files/nix; /system/bin/chmod 0700 /data/user/0/com.termux/files/nix; /system/bin/mount -o bind /data/user/0/com.termux/files/nix /nix"
++    class late_start
++    user root
++    oneshot
++    disabled
++
++on property:sys.user.0.ce_available=true
++    start termux-nix-store

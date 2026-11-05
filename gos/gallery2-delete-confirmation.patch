@@ -1,0 +1,244 @@
+diff --git a/src/com/android/gallery3d/app/AbstractGalleryActivity.java b/src/com/android/gallery3d/app/AbstractGalleryActivity.java
+index a5493ff..80c99d2 100755
+--- a/src/com/android/gallery3d/app/AbstractGalleryActivity.java
++++ b/src/com/android/gallery3d/app/AbstractGalleryActivity.java
+@@ -19,6 +19,7 @@ package com.android.gallery3d.app;
+ import android.annotation.TargetApi;
+ import android.app.Activity;
+ import android.app.AlertDialog;
++import android.app.PendingIntent;
+ import android.content.BroadcastReceiver;
+ import android.content.ComponentName;
+ import android.content.Context;
+@@ -27,11 +28,13 @@ import android.content.DialogInterface.OnCancelListener;
+ import android.content.DialogInterface.OnClickListener;
+ import android.content.Intent;
+ import android.content.IntentFilter;
++import android.content.IntentSender;
+ import android.content.ServiceConnection;
+ import android.content.res.Configuration;
+ import android.net.Uri;
+ import android.os.Bundle;
+ import android.os.IBinder;
++import android.os.Looper;
+ import androidx.print.PrintHelper;
+ import android.view.Menu;
+ import android.view.MenuItem;
+@@ -50,6 +53,7 @@ import com.android.gallery3d.util.ThreadPool;
+ import com.android.photos.data.GalleryBitmapPool;
+ 
+ import java.io.FileNotFoundException;
++import java.util.concurrent.CountDownLatch;
+ 
+ public abstract class AbstractGalleryActivity extends AbstractPermissionActivity
+         implements GalleryContext {
+@@ -73,6 +77,46 @@ public abstract class AbstractGalleryActivity extends AbstractPermissionActivity
+     private IntentFilter mMountFilter = new IntentFilter(Intent.ACTION_MEDIA_MOUNTED);
+ 
+     private static final String DEFAULT_PRINT_JOB_NAME = "print job";
++    private static final int REQUEST_MEDIA_DELETE_CONFIRMATION = 0x4E49;
++    private volatile CountDownLatch mMediaDeleteConfirmationLatch;
++    private volatile boolean mMediaDeleteConfirmationApproved;
++
++    public boolean requestMediaDeleteConfirmation(PendingIntent request) {
++        if (Looper.myLooper() == Looper.getMainLooper()) {
++            throw new IllegalStateException("Media delete confirmation must not block the UI thread");
++        }
++        final CountDownLatch latch = new CountDownLatch(1);
++        synchronized (this) {
++            if (mMediaDeleteConfirmationLatch != null) {
++                throw new IllegalStateException("A media delete confirmation is already active");
++            }
++            mMediaDeleteConfirmationApproved = false;
++            mMediaDeleteConfirmationLatch = latch;
++        }
++        runOnUiThread(() -> {
++            try {
++                startIntentSenderForResult(request.getIntentSender(),
++                        REQUEST_MEDIA_DELETE_CONFIRMATION, null, 0, 0, 0);
++            } catch (IntentSender.SendIntentException e) {
++                latch.countDown();
++            } catch (RuntimeException e) {
++                latch.countDown();
++            }
++        });
++        try {
++            latch.await();
++            return mMediaDeleteConfirmationApproved;
++        } catch (InterruptedException e) {
++            Thread.currentThread().interrupt();
++            return false;
++        } finally {
++            synchronized (this) {
++                if (mMediaDeleteConfirmationLatch == latch) {
++                    mMediaDeleteConfirmationLatch = null;
++                }
++            }
++        }
++    }
+ 
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+@@ -244,6 +288,8 @@ public abstract class AbstractGalleryActivity extends AbstractPermissionActivity
+ 
+     @Override
+     protected void onDestroy() {
++        CountDownLatch latch = mMediaDeleteConfirmationLatch;
++        if (latch != null) latch.countDown();
+         super.onDestroy();
+         mGLRootView.lockRenderThread();
+         try {
+@@ -256,6 +302,12 @@ public abstract class AbstractGalleryActivity extends AbstractPermissionActivity
+ 
+     @Override
+     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
++        if (requestCode == REQUEST_MEDIA_DELETE_CONFIRMATION) {
++            mMediaDeleteConfirmationApproved = resultCode == Activity.RESULT_OK;
++            CountDownLatch latch = mMediaDeleteConfirmationLatch;
++            if (latch != null) latch.countDown();
++            return;
++        }
+         mGLRootView.lockRenderThread();
+         try {
+             getStateManager().notifyActivityResult(
+diff --git a/src/com/android/gallery3d/app/PhotoPage.java b/src/com/android/gallery3d/app/PhotoPage.java
+index a77c09d..51f6368 100755
+--- a/src/com/android/gallery3d/app/PhotoPage.java
++++ b/src/com/android/gallery3d/app/PhotoPage.java
+@@ -1336,8 +1336,30 @@ public abstract class PhotoPage extends ActivityState implements
+     @Override
+     public void onCommitDeleteImage() {
+         if (mDeletePath == null) return;
+-        mMenuExecutor.startSingleItemAction(R.id.action_delete, mDeletePath);
+-        mDeletePath = null;
++        final Path path = mDeletePath;
++        mMenuExecutor.startSingleItemAction(R.id.action_delete, path,
++                new MenuExecutor.ProgressListener() {
++            @Override
++            public void onConfirmDialogShown() {}
++
++            @Override
++            public void onConfirmDialogDismissed(boolean confirmed) {}
++
++            @Override
++            public void onProgressStart() {}
++
++            @Override
++            public void onProgressUpdate(int index) {}
++
++            @Override
++            public void onProgressComplete(int result) {
++                if (result == MenuExecutor.EXECUTION_RESULT_SUCCESS) {
++                    mDeletePath = null;
++                } else {
++                    onUndoDeleteImage();
++                }
++            }
++        });
+     }
+ 
+     public void playVideo(Activity activity, Uri uri, String title) {
+diff --git a/src/com/android/gallery3d/ui/MenuExecutor.java b/src/com/android/gallery3d/ui/MenuExecutor.java
+index bc06291..354feba 100644
+--- a/src/com/android/gallery3d/ui/MenuExecutor.java
++++ b/src/com/android/gallery3d/ui/MenuExecutor.java
+@@ -18,6 +18,7 @@ package com.android.gallery3d.ui;
+ 
+ import android.app.Activity;
+ import android.app.AlertDialog;
++import android.app.PendingIntent;
+ import android.app.ProgressDialog;
+ import android.content.Context;
+ import android.content.DialogInterface;
+@@ -28,8 +29,10 @@ import android.content.Intent;
+ import android.content.pm.PackageManager;
+ import android.content.pm.ResolveInfo;
+ import android.net.Uri;
++import android.os.Build;
+ import android.os.Handler;
+ import android.os.Message;
++import android.provider.MediaStore;
+ import androidx.print.PrintHelper;
+ import android.view.Menu;
+ import android.view.MenuItem;
+@@ -270,7 +273,8 @@ public class MenuExecutor {
+                     }
+                 }
+             }
+-        } else if (action == R.id.action_edit) {
++        } else if (action == R.id.action_delete
++                || action == R.id.photopage_bottom_control_delete) {
+             title = R.string.delete;
+         } else if (action == R.id.action_edit) {
+             title = R.string.delete;
+@@ -279,6 +283,10 @@ public class MenuExecutor {
+         } else {
+             return;
+         }
++        if (action == R.id.action_delete
++                || action == R.id.photopage_bottom_control_delete) {
++            waitOnStop = true;
++        }
+         startAction(action, title, listener, waitOnStop, showDialog);
+     }
+ 
+@@ -359,13 +367,15 @@ public class MenuExecutor {
+         mWaitOnStop = waitOnStop;
+     }
+ 
+-    public void startSingleItemAction(int action, Path targetPath) {
++    public void startSingleItemAction(
++            int action, Path targetPath, ProgressListener listener) {
+         ArrayList<Path> ids = new ArrayList<Path>(1);
+         ids.add(targetPath);
+         mDialog = null;
+-        MediaOperation operation = new MediaOperation(action, ids, null);
++        MediaOperation operation = new MediaOperation(action, ids, listener);
+         mTask = mActivity.getBatchServiceThreadPoolIfAvailable().submit(operation, null);
+-        mWaitOnStop = false;
++        mWaitOnStop = action == R.id.action_delete
++                || action == R.id.photopage_bottom_control_delete;
+     }
+ 
+     public static String getMimeType(int type) {
+@@ -431,6 +441,32 @@ public class MenuExecutor {
+             int result = EXECUTION_RESULT_SUCCESS;
+             try {
+                 onProgressStart(mListener);
++                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
++                        && (mOperation == R.id.action_delete
++                        || mOperation == R.id.photopage_bottom_control_delete)
++                        && !mItems.isEmpty()) {
++                    ArrayList<Uri> contentUris = new ArrayList<Uri>(mItems.size());
++                    for (Path path : mItems) {
++                        Uri uri = manager.getContentUri(path);
++                        if (uri == null || !MediaStore.AUTHORITY.equals(uri.getAuthority())) {
++                            contentUris.clear();
++                            break;
++                        }
++                        contentUris.add(uri);
++                    }
++                    if (contentUris.size() == mItems.size()) {
++                        // Android's MediaStore consent flow handles one or many items and
++                        // completes deletion before its activity result returns.
++                        // https://developer.android.com/reference/android/provider/MediaStore#createDeleteRequest(android.content.ContentResolver,java.util.Collection)
++                        PendingIntent request = MediaStore.createDeleteRequest(
++                                mActivity.getContentResolver(), contentUris);
++                        if (!mActivity.requestMediaDeleteConfirmation(request)) {
++                            result = EXECUTION_RESULT_CANCEL;
++                        }
++                        if (!mItems.isEmpty()) onProgressUpdate(mItems.size() - 1, mListener);
++                        return null;
++                    }
++                }
+                 for (Path id : mItems) {
+                     if (jc.isCancelled()) {
+                         result = EXECUTION_RESULT_CANCEL;
+@@ -444,6 +480,7 @@ public class MenuExecutor {
+             } catch (Throwable th) {
+                 Log.e(TAG, "failed to execute operation " + mOperation
+                         + " : " + th);
++                result = EXECUTION_RESULT_FAIL;
+             } finally {
+                onProgressComplete(result, mListener);
+             }
