@@ -104,10 +104,11 @@
           };
         });
       }
-      # Cross-compiling Linux aarch64 binaries needs a Linux host.
+      # The payload is aarch64-linux, which only a Linux host can build or
+      # substitute for the tablet (see the extra-platforms note above).
       // lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
         # nix build .#rmpp_tools -o rmpp-tools
-        # scp -r rmpp-tools/bin root@10.11.99.1:/home/root/rmpp-tools
+        # nix copy --to ssh://root@10.11.99.1 ./rmpp-tools
         rmpp_tools = pkgs.symlinkJoin {
           name = "rmpp-tools";
           paths = cliTools;
