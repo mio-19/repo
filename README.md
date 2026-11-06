@@ -174,6 +174,18 @@ nix run .#fdroid-keystore-update -- my-release-key.jks --ks-pass password
 
 For the OSS repo, use `.#fdroid-keystore-update-oss` instead (see [fdroid-repo-oss guide](./app/by-name/fdroid-repo-oss/README.md)).
 
+## reMarkable Paper Pro
+
+Static aarch64 tools (syncthing, tmux, htop, rsync, strace) for the reMarkable
+Paper Pro (XOVI/AppLoad era, not Toltec), plus a device-side script that
+remounts the read-only rootfs and bind mounts `/home/root/nix` on `/nix` so Nix
+works on the tablet. See
+[docs/remarkable-paper-pro.md](./docs/remarkable-paper-pro.md).
+
+```zsh
+nix build .#rmpp_tools .#rmpp_nix_setup
+```
+
 ## Help Wanted
 
 + publish a pre-built repository for apk of distributable android applications in this repository
