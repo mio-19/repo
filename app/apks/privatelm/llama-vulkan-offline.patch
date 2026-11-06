@@ -1,0 +1,20 @@
+--- a/android/CMakeLists.txt
++++ b/android/CMakeLists.txt
+@@ -48,6 +48,17 @@
+     # The NDK ships vulkan.h but not vulkan.hpp/SPIR-V headers, and the
+     # C++ headers must match vulkan.h exactly, so fetch one pinned set.
+     include(FetchContent)
++
++    # Offline builds: the pinned Vulkan-Headers / SPIRV-Headers sources are
++    # supplied through the environment by the Nix derivation, so
++    # FetchContent must not try to download them.
++    set(FETCHCONTENT_SOURCE_DIR_VULKAN_HEADERS "$ENV{NIX_VULKAN_HEADERS}" CACHE PATH "" FORCE)
++    set(FETCHCONTENT_SOURCE_DIR_SPIRV_HEADERS "$ENV{NIX_SPIRV_HEADERS}" CACHE PATH "" FORCE)
++
++    # Use the glslc from $VULKAN_SDK (a modern shaderc). The NDK's own
++    # glslc (shaderc 2022.x) cannot compile the cooperative-matrix
++    # shaders that current ggml-vulkan emits.
++    set(Vulkan_GLSLC_EXECUTABLE "$ENV{VULKAN_SDK}/bin/glslc" CACHE FILEPATH "" FORCE)
+     # Plain HTTPS archives (not git): avoids git URL rewrites to SSH, which
+     # hang a non-interactive Gradle build waiting for a key passphrase.
+     FetchContent_Declare(vulkan_headers
