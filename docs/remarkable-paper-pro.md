@@ -35,19 +35,58 @@ and you accept that you can brick the device by breaking `xochitl`.
 
 ## Packages here
 
-All binaries are cross-built from source (`pkgsCross.aarch64-multiplatform-musl.pkgsStatic`)
-as fully static aarch64 binaries, so they need nothing from the tablet's
-read-only rootfs and no dynamic loader from the store.
+These are ordinary native `aarch64-linux` packages — no cross toolchain — so
+they match the derivations `cache.nixos.org` already serves and `nix build`
+downloads them instead of compiling. They are dynamically linked against
+`/nix/store`, which is fine because the tablet gets a real store (see
+[Nix on the tablet](#nix-on-the-tablet)): copy the **closure**, not a bare
+binary. rmweb is the single exception — upstream's self-contained bundle is
+used because building it needs their Yocto SDK; see below.
+
+The same packages work on the Paper Pro Move: it is the same aarch64 userland,
+and rmweb derives the panel geometry at runtime.
 
 ```sh
 # CLI tools: syncthing, tmux, htop, rsync, strace
 nix build .#rmpp_tools -o rmpp-tools
-scp -r rmpp-tools/bin root@10.11.99.1:/home/root/rmpp-tools
+# dynamically linked against /nix/store: copy the closure to the tablet's store
+nix copy --to ssh://root@10.11.99.1 ./rmpp-tools
 
-# Nix store plumbing for the tablet
+# Nix store plumbing for the tablet (a plain shell script, no closure needed)
 nix build .#rmpp_nix_setup -o rmpp-nix-setup
 scp rmpp-nix-setup/bin/rmpp-nix-setup root@10.11.99.1:/tmp/
 ```
+
+If `nix copy` cannot find `nix-store` on the tablet's non-interactive `PATH`,
+export the closure by hand instead:
+
+```sh
+nix-store --export $(nix-store -qR ./rmpp-tools/bin/syncthing) \
+  | ssh root@10.11.99.1 /nix/var/nix/profiles/default/bin/nix-store --import
+```
+
+### rmweb (WPE WebKit browser)
+
+[rmweb](https://github.com/exp78/rmweb) is a native e-ink browser for the
+Paper Pro: reader mode, downloads that land in the reMarkable library, a
+home-screen icon under XOVI/AppLoad. It is the one package here that is **not**
+built from source — upstream cross-compiles WPE WebKit and Mesa llvmpipe
+against the reMarkable *ferrari* Yocto SDK inside a `linux/arm64` Docker image
+(hours and tens of GB of disk), so the only artifact that can be produced is
+their self-contained release bundle. The bundle carries everything the stock
+OS lacks and uses the device's own Qt 6, and Nix only unpacks it (no shebang,
+strip or RPATH rewriting) so it lands byte-identical:
+
+```sh
+nix build .#rmpp_rmweb -o rmweb-bundle
+scp -r rmweb-bundle/. root@10.11.99.1:/home/root/rmweb/
+ssh root@10.11.99.1 /home/root/rmweb/install.sh
+```
+
+Then run `/home/root/rmweb/rmweb [URL]`, or start XOVI and tap the **rmweb**
+icon that `install.sh` registered. The tree lives on `/home`, so it survives an
+OS update — re-run `install.sh` afterwards to re-assert the AppLoad icon. Quit
+with the ⏻ button so `xochitl` comes back.
 
 KOReader is not packaged here: upstream ships only prebuilt aarch64 archives
 for this device and this repository prefers building from source, so install it
@@ -61,7 +100,7 @@ the device over USB or Wi-Fi.
 ```sh
 ssh root@10.11.99.1
 mkdir -p /home/root/syncthing
-/home/root/rmpp-tools/bin/syncthing serve \
+/nix/store/*-rmpp-tools/bin/syncthing serve \
   --home=/home/root/syncthing --gui-address=0.0.0.0:8384
 ```
 
@@ -105,9 +144,23 @@ mount | grep overlay           # remaining overlay mounts under /etc
   the script.
 - Do not point the store at a directory outside `/home` unless you accept
   losing it on every update.
-- Builds on the device itself are slow and only a cross-built store is really
-  useful; build software on the host with `pkgsCross.aarch64-multiplatform-musl`
-  and copy the closure, or use the packages above.
+- Builds on the device itself are slow: build on the host for
+  `aarch64-linux` and copy the closure, or use the packages above.
+
+## Building on an x86_64 host
+
+Because the packages are native `aarch64-linux` derivations (that is what makes
+them cache hits), a foreign host has to be allowed to build them:
+
+```sh
+nix build --option extra-platforms aarch64-linux .#rmpp_tools
+```
+
+With only that flag, cache misses fail — the normal case is a cache hit, so
+this is usually enough. For real emulation register qemu-user with binfmt_misc
+(NixOS: `boot.binfmt.emulatedSystems = [ "aarch64-linux" ];`, other distros:
+`systemd-binfmt`), then `extra-platforms = aarch64-linux` in `nix.conf` can
+stay and anything not cached is built under emulation.
 
 ## References
 
@@ -121,6 +174,8 @@ mount | grep overlay           # remaining overlay mounts under /etc
 - <https://github.com/vellum-dev/vellum> — package manager for reMarkable OS 3.x
 - <https://github.com/koreader/koreader/wiki/Installation-on-ReMarkable> —
   KOReader install steps for aarch64 devices (via vellum/AppLoad)
+- <https://github.com/exp78/rmweb> — WPE WebKit browser for the Paper Pro
+  (MIT), whose release bundle `rmpp_rmweb` packages
 - <https://github.com/kja140/rmpro-hacks> — field notes for Syncthing,
   Tailscale and friends on the Paper Pro
 - <https://nixos.org/manual/nix/stable/installation/installing-binary> —
