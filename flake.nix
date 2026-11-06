@@ -100,7 +100,6 @@
         ./robotnix.nix
         ./app
         ./mc
-        ./remarkable
       ];
       perSystem =
         { pkgs, system, ... }:
