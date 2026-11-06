@@ -64,6 +64,9 @@
         # bundle carries every library the stock OS lacks, links against the
         # device's own Qt 6, and is deployed verbatim to /home/root/rmweb.
         # nix build .#rmpp_rmweb -o rmweb-bundle
+        # Bump: set `version` to the new tag, then take the asset URL below and
+        #   nix store prefetch-file --hash-type sha256 <url>
+        # and paste the returned SRI hash.
         rmpp_rmweb = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
           pname = "rmweb";
           version = "0.9.7";

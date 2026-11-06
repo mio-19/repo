@@ -48,22 +48,18 @@ and rmweb derives the panel geometry at runtime.
 
 ```sh
 # CLI tools: syncthing, tmux, htop, rsync, strace
-nix build .#rmpp_tools -o rmpp-tools
 # dynamically linked against /nix/store: copy the closure to the tablet's store
-nix copy --to ssh://root@10.11.99.1 ./rmpp-tools
+# (remote-program: nix-store is not on the tablet's non-interactive PATH; the
+# single quotes keep the shell from globbing the `?')
+nix copy --to 'ssh://root@10.11.99.1?remote-program=/nix/var/nix/profiles/default/bin/nix-store' ./rmpp-tools
 
 # Nix store plumbing for the tablet (a plain shell script, no closure needed)
 nix build .#rmpp_nix_setup -o rmpp-nix-setup
 scp rmpp-nix-setup/bin/rmpp-nix-setup root@10.11.99.1:/tmp/
 ```
 
-If `nix copy` cannot find `nix-store` on the tablet's non-interactive `PATH`,
-export the closure by hand instead:
-
-```sh
-nix-store --export $(nix-store -qR ./rmpp-tools/bin/syncthing) \
-  | ssh root@10.11.99.1 /nix/var/nix/profiles/default/bin/nix-store --import
-```
+The store has to be mounted first (`rmpp_nix_setup`), otherwise the import hits
+the read-only rootfs.
 
 ### rmweb (WPE WebKit browser)
 
@@ -74,8 +70,9 @@ built from source — upstream cross-compiles WPE WebKit and Mesa llvmpipe
 against the reMarkable *ferrari* Yocto SDK inside a `linux/arm64` Docker image
 (hours and tens of GB of disk), so the only artifact that can be produced is
 their self-contained release bundle. The bundle carries everything the stock
-OS lacks and uses the device's own Qt 6, and Nix only unpacks it (no shebang,
-strip or RPATH rewriting) so it lands byte-identical:
+OS lacks and uses the device's own Qt 6, and Nix only unpacks it — no shebang,
+strip or RPATH rewriting, the only edit is dropping the macOS `._*` metadata
+files — so what ships is upstream's tree:
 
 ```sh
 nix build .#rmpp_rmweb -o rmweb-bundle
