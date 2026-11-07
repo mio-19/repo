@@ -247,10 +247,10 @@ def main():
             with open(pkg_nix, 'r') as f:
                 content = f.read()
                 
-            if re.search(r'src\s*=\s*sources\.', content) and 'fetchFromGitHub' not in content and 'fetchFromGitLab' not in content and 'fetchgit' not in content:
+            if re.search(r'src\s*=\s*sources\.', content) and 'fetchFromGitHub' not in content and 'fetchFromGitLab' not in content and 'fetchFromGitea' not in content and 'fetchgit' not in content:
                 continue
                 
-            git_match = re.search(r'^[ \t]*src\s*=\s*(?:pkgs\.)?fetchFrom(GitHub|GitLab)\s*\{(.+?)\n\s*\}', content, re.MULTILINE | re.DOTALL)
+            git_match = re.search(r'^[ \t]*src\s*=\s*(?:pkgs\.)?fetchFrom(GitHub|GitLab|Gitea)\s*\{(.+?)\n\s*\}', content, re.MULTILINE | re.DOTALL)
             fetchgit_match = re.search(r'^[ \t]*src\s*=\s*(?:pkgs\.)?fetchgit\s*\{(.+?)\n\s*\}', content, re.MULTILINE | re.DOTALL)
             
             url = None
@@ -278,6 +278,8 @@ def main():
                     domain = "github.com"
                     if forge == "GitLab":
                         domain = domain_m.group(1) if domain_m else "gitlab.com"
+                    elif forge == "Gitea":
+                        domain = domain_m.group(1) if domain_m else "gitea.com"
                     else:
                         domain = domain_m.group(1) if domain_m else "github.com"
                         
