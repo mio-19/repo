@@ -27,7 +27,7 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "kdeconnect-android";
-      version = "1.37.0";
+      version = "1.37.2";
 
       __darwinAllowLocalNetworking = true;
       __noChroot = stdenv.hostPlatform.isDarwin;
@@ -36,7 +36,7 @@ let
         owner = "KDE";
         repo = "kdeconnect-android";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-Zwwt3+2UDFG4lVJKPOSVtaXGn2S4zVlx3S/s9YUa648=";
+        hash = "sha256-qbVu8OprZTfd/eGrn4zJCVz/yr3kNrBZF/Zoylw/Pgw=";
       };
 
       gradleBuildTask = "assembleRelease";

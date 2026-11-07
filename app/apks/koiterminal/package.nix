@@ -15,6 +15,7 @@
   rustPlatform,
   writableTmpDirAsHomeHook,
   androidSdkBuilder,
+  nix-update,
 }:
 let
   appPackage = stdenv.mkDerivation (
@@ -149,13 +150,13 @@ let
     in
     {
       pname = "koiterminal";
-      version = "2026091900-unstable-2026-10-14";
+      version = "2026110200-unstable-2026-11-05";
 
       src = fetchFromGitHub {
         owner = "outlawsanzhang";
         repo = "koiTerminal";
-        rev = "12de8af46b5f1291017e0380c8123edf632e4ba8";
-        hash = "sha256-VHpmBog2kVicniovUpTWdoNrxQ6obG/8C+pfCP2U4us=";
+        rev = "2da79b162bb115fe6bf71956710426ae6260f108";
+        hash = "sha256-3pIzpaeFCzSCIdbvi82J6pXpTL7Ufd/G+udZm6mY8e4=";
       };
 
       sourceRoot = "${finalAttrs0.src.name}/AndroidStudioProject";
@@ -187,11 +188,25 @@ let
         useBwrap = false;
       };
 
-      passthru.updateScript = writeShellScriptBin "update-koiterminal" ''
-        set -euo pipefail
-        system="$(nix eval --impure --raw --expr builtins.currentSystem)"
-        "$(nix build ".#legacyPackages.$system.apk_koiterminal.mitmCache.updateScript" --no-link --print-out-paths)"
-      '';
+      passthru = {
+        inherit rustDeps;
+        updateDeps = [ "rustDeps.vendorStaging" ];
+        updateScript = writeShellScriptBin "update-koiterminal" ''
+          set -euo pipefail
+
+          package_file="app/apks/koiterminal/package.nix"
+          package_attr=".#apk_koiterminal"
+          fake_hash="${lib.fakeHash}"
+
+          . "${../_shared/update-script-helpers.sh}"
+
+          ${lib.getExe nix-update} --flake --version=branch --src-only apk_koiterminal
+
+          refresh_update_deps ${lib.concatStringsSep " " finalAttrs0.passthru.updateDeps}
+
+          refresh_mitm_cache
+        '';
+      };
 
       nativeBuildInputs = [
         gradle

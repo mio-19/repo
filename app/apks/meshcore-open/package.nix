@@ -80,7 +80,9 @@ let
         hash = "sha256-fBzPJAHsQV7gnMAmIf8XMC52GefavCWignkBnu1rSDI=";
       };
 
-      patches = [ ];
+      patches = [
+        ./remove-node-advertisement.patch
+      ];
 
       pubspecLock = lib.importJSON ./pubspec.lock.json;
 

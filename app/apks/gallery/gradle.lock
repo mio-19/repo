@@ -279,14 +279,18 @@
       "hash": "sha256-D5U3BlmBQNnYc1zdWusfo1kz9OLzHAvz64GgU6TIwaU="
     }
   },
-  "androidx.autofill:autofill:1.0.0": {
-    "autofill-1.0.0.aar": {
-      "url": "https://dl.google.com/dl/android/maven2/androidx/autofill/autofill/1.0.0/autofill-1.0.0.aar",
-      "hash": "sha256-yUaPVuBQBuoVGkJsVJV80Hmbi4OledKEbdIgYfM+Xs0="
+  "androidx.autofill:autofill:1.3.0": {
+    "autofill-1.3.0.aar": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/autofill/autofill/1.3.0/autofill-1.3.0.aar",
+      "hash": "sha256-taIXzudyTqQqOCllqbIqMwuYjWLLl6vhsa9Q5UNwwyI="
     },
-    "autofill-1.0.0.pom": {
-      "url": "https://dl.google.com/dl/android/maven2/androidx/autofill/autofill/1.0.0/autofill-1.0.0.pom",
-      "hash": "sha256-Nner6tXU4Gz3bLrLlUFR4FF3nCJ0SURR+0JON1qp5FA="
+    "autofill-1.3.0.module": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/autofill/autofill/1.3.0/autofill-1.3.0.module",
+      "hash": "sha256-C64mXK/gLpU/E+hzo0ORHSJjIAyoljkSDf3XVihgYPk="
+    },
+    "autofill-1.3.0.pom": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/autofill/autofill/1.3.0/autofill-1.3.0.pom",
+      "hash": "sha256-YpKjl17iu+BLlYGXrO5qHaD/bQzdutarv59K26+46sk="
     }
   },
   "androidx.browser:browser:1.3.0": {
@@ -1673,24 +1677,14 @@
       "hash": "sha256-4WiuVgZLjlpAvOQV75X/1agTq7VFbSd18P70Ju1J41o="
     }
   },
-  "androidx.core:core:1.13.0": {
-    "core-1.13.0.module": {
-      "url": "https://dl.google.com/dl/android/maven2/androidx/core/core/1.13.0/core-1.13.0.module",
-      "hash": "sha256-Lg5uXBIFt0YqDFw+MrWMLlJUNYEu2JlGx75nN0k7UeM="
+  "androidx.core:core:1.13.1": {
+    "core-1.13.1.module": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/core/core/1.13.1/core-1.13.1.module",
+      "hash": "sha256-KhCXm7s7zXslt/Zkq06bAW+r8hdKJnaLZ34S5L6kx8Q="
     },
-    "core-1.13.0.pom": {
-      "url": "https://dl.google.com/dl/android/maven2/androidx/core/core/1.13.0/core-1.13.0.pom",
-      "hash": "sha256-RQLk7YtZEiAhrJocExLiMm5LD0P37Lu8m1Dud0KVdNQ="
-    }
-  },
-  "androidx.core:core:1.12.0": {
-    "core-1.12.0.module": {
-      "url": "https://dl.google.com/dl/android/maven2/androidx/core/core/1.12.0/core-1.12.0.module",
-      "hash": "sha256-L2P77aI8oJGXONCeQG3mYfIbrFg9bgSheX3Ld+O2rpU="
-    },
-    "core-1.12.0.pom": {
-      "url": "https://dl.google.com/dl/android/maven2/androidx/core/core/1.12.0/core-1.12.0.pom",
-      "hash": "sha256-R19uIhDrB5RxYHaT5l9lszPAgAMNWqIqGXLFEwFaolU="
+    "core-1.13.1.pom": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/core/core/1.13.1/core-1.13.1.pom",
+      "hash": "sha256-Unq/pajWr3SLN+HAFi0WM6LV6kOHsCBai0NrYhS6HPY="
     }
   },
   "androidx.core:core-ktx:1.16.0": {
@@ -1753,6 +1747,20 @@
     "cursoradapter-1.0.0.pom": {
       "url": "https://dl.google.com/dl/android/maven2/androidx/cursoradapter/cursoradapter/1.0.0/cursoradapter-1.0.0.pom",
       "hash": "sha256-YtlciYUK8hAwsZ8U1ffs1ti8yaMBTFkALsmWJMqsgQA="
+    }
+  },
+  "androidx.customview:customview:1.2.0": {
+    "customview-1.2.0.aar": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/customview/customview/1.2.0/customview-1.2.0.aar",
+      "hash": "sha256-QOmLs4jN9cU6UmmbH3ilq9zyLeHnwb5DssEv1urcb50="
+    },
+    "customview-1.2.0.module": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/customview/customview/1.2.0/customview-1.2.0.module",
+      "hash": "sha256-2HXfh8oADm+kOlE4iZzPfv7v+0px2OxihJ9ASdDbNNM="
+    },
+    "customview-1.2.0.pom": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/customview/customview/1.2.0/customview-1.2.0.pom",
+      "hash": "sha256-sS+fMVv+nZdB7vVY7DjvxHLY2IRp0JiXoCxr6xAMUfI="
     }
   },
   "androidx.customview:customview:1.1.0": {
@@ -3173,6 +3181,48 @@
       "hash": "sha256-OQziKphXlHvIvoJ6tmaTAa5jDGe+utDdu/9uoC2sU+g="
     }
   },
+  "androidx.pdf:pdf-core:1.0.0-beta01": {
+    "pdf-core-1.0.0-beta01.aar": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/pdf/pdf-core/1.0.0-beta01/pdf-core-1.0.0-beta01.aar",
+      "hash": "sha256-8Y7O4QUj39kQBonDRZ5cuKFhqUFv07TM/2rqQ/Nb7ac="
+    },
+    "pdf-core-1.0.0-beta01.module": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/pdf/pdf-core/1.0.0-beta01/pdf-core-1.0.0-beta01.module",
+      "hash": "sha256-97Sl9KbgN3S97sBal/8dbJErEQVspNt3nJvLiWqMwjY="
+    },
+    "pdf-core-1.0.0-beta01.pom": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/pdf/pdf-core/1.0.0-beta01/pdf-core-1.0.0-beta01.pom",
+      "hash": "sha256-dJnGxnxjzrip1MbHdhLkvX3xcWiswG9KWQNq/tkqedU="
+    }
+  },
+  "androidx.pdf:pdf-document-service:1.0.0-beta01": {
+    "pdf-document-service-1.0.0-beta01.aar": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/pdf/pdf-document-service/1.0.0-beta01/pdf-document-service-1.0.0-beta01.aar",
+      "hash": "sha256-momp+19JzqlPfD2uygpKWAHceT85IhOsFmOILIQhDY0="
+    },
+    "pdf-document-service-1.0.0-beta01.module": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/pdf/pdf-document-service/1.0.0-beta01/pdf-document-service-1.0.0-beta01.module",
+      "hash": "sha256-9XXrkbVywP4MfGPQaBbk8AkiUhNWbRKBZoSgLmHLv4A="
+    },
+    "pdf-document-service-1.0.0-beta01.pom": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/pdf/pdf-document-service/1.0.0-beta01/pdf-document-service-1.0.0-beta01.pom",
+      "hash": "sha256-75UKhc4Rnc4HeCJAtbcrD/IYkS2/sl3CAwGLRRltVPs="
+    }
+  },
+  "androidx.pdf:pdf-viewer:1.0.0-beta01": {
+    "pdf-viewer-1.0.0-beta01.aar": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/pdf/pdf-viewer/1.0.0-beta01/pdf-viewer-1.0.0-beta01.aar",
+      "hash": "sha256-LJTwR/nC6b1FMYBAShAkR1csdXsJMJ1p1ASC2yyqnAM="
+    },
+    "pdf-viewer-1.0.0-beta01.module": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/pdf/pdf-viewer/1.0.0-beta01/pdf-viewer-1.0.0-beta01.module",
+      "hash": "sha256-s+NOxz12jsTExCgmk5QD69q5dxgHnTBK4w2cChhJ8To="
+    },
+    "pdf-viewer-1.0.0-beta01.pom": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/pdf/pdf-viewer/1.0.0-beta01/pdf-viewer-1.0.0-beta01.pom",
+      "hash": "sha256-2c2TU1cNYEilHs1Zbef5VgbfApuPw2XwW6A5ZFDNZJI="
+    }
+  },
   "androidx.print:print:1.0.0": {
     "print-1.0.0.aar": {
       "url": "https://dl.google.com/dl/android/maven2/androidx/print/print/1.0.0/print-1.0.0.aar",
@@ -3235,11 +3285,21 @@
       "hash": "sha256-CCY+twqBSnyybRHTqDgl+Ewp8+S1n5E0ck4OAuK712g="
     }
   },
-  "androidx.recyclerview:recyclerview:1.3.0": {
-    "recyclerview-1.3.0.aar": {
-      "url": "https://dl.google.com/dl/android/maven2/androidx/recyclerview/recyclerview/1.3.0/recyclerview-1.3.0.aar",
-      "hash": "sha256-1lkooA9jWJpJ4hklQS4PSIUviSVLB7A8Aw1WD5Hv/Ig="
+  "androidx.recyclerview:recyclerview:1.4.0": {
+    "recyclerview-1.4.0.aar": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/recyclerview/recyclerview/1.4.0/recyclerview-1.4.0.aar",
+      "hash": "sha256-DzLMr/zadMP4fwtM/mrnjoqk6zrX3aTy7fBu7clHpc8="
     },
+    "recyclerview-1.4.0.module": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/recyclerview/recyclerview/1.4.0/recyclerview-1.4.0.module",
+      "hash": "sha256-Yx2ZYyIZhZUSnB0CgFNGNh2BHAbyVUX6i7ylZzVfb5g="
+    },
+    "recyclerview-1.4.0.pom": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/recyclerview/recyclerview/1.4.0/recyclerview-1.4.0.pom",
+      "hash": "sha256-1VHUNDhhgU4FOA9n+MLmMUC4TfN0Nf/S61NSipYEXWM="
+    }
+  },
+  "androidx.recyclerview:recyclerview:1.3.0": {
     "recyclerview-1.3.0.module": {
       "url": "https://dl.google.com/dl/android/maven2/androidx/recyclerview/recyclerview/1.3.0/recyclerview-1.3.0.module",
       "hash": "sha256-f6Ir8asajRVEYiB24q2EVOK+8UArMpi1tAeatzLjiEU="
@@ -3711,6 +3771,20 @@
     "viewpager-1.0.0.pom": {
       "url": "https://dl.google.com/dl/android/maven2/androidx/viewpager/viewpager/1.0.0/viewpager-1.0.0.pom",
       "hash": "sha256-H3L4NjOdA8brAT9lB152yocHWld1eOtPlfdKOl0lMSg="
+    }
+  },
+  "androidx.viewpager2:viewpager2:1.1.0-beta02": {
+    "viewpager2-1.1.0-beta02.aar": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/viewpager2/viewpager2/1.1.0-beta02/viewpager2-1.1.0-beta02.aar",
+      "hash": "sha256-uvrDypke1oosfKb/NSlm0gCxLmajQtEPSXy4Fo9ZBUo="
+    },
+    "viewpager2-1.1.0-beta02.module": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/viewpager2/viewpager2/1.1.0-beta02/viewpager2-1.1.0-beta02.module",
+      "hash": "sha256-HdLr2cGNcpmsnI0zGuOfKjj6DJ7TLWYG4EGsNNDDij0="
+    },
+    "viewpager2-1.1.0-beta02.pom": {
+      "url": "https://dl.google.com/dl/android/maven2/androidx/viewpager2/viewpager2/1.1.0-beta02/viewpager2-1.1.0-beta02.pom",
+      "hash": "sha256-HCSFqrU35enMb76yifBCLAuom0SnjV688s3CfFHw9QM="
     }
   },
   "androidx.viewpager2:viewpager2:1.0.0": {
@@ -4667,12 +4741,6 @@
       "hash": "sha256-+K6Gpqgh8bqQ/kg9Q9VPHwNF78n1EkD0ZdZQ99cAvyk="
     }
   },
-  "com.google.android.gms:play-services-base:18.5.0": {
-    "play-services-base-18.5.0.pom": {
-      "url": "https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-base/18.5.0/play-services-base-18.5.0.pom",
-      "hash": "sha256-JXC1FcJxevOGyJDpf2RHguP4bae2d6T/EDYUfn6mIqQ="
-    }
-  },
   "com.google.android.gms:play-services-basement:18.9.0": {
     "play-services-basement-18.9.0.aar": {
       "url": "https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-basement/18.9.0/play-services-basement-18.9.0.aar",
@@ -4681,12 +4749,6 @@
     "play-services-basement-18.9.0.pom": {
       "url": "https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-basement/18.9.0/play-services-basement-18.9.0.pom",
       "hash": "sha256-YB7wRxZ8bCgLixkJQtnpSgRj6JGs2cbM9TLrKYpe/ls="
-    }
-  },
-  "com.google.android.gms:play-services-basement:18.4.0": {
-    "play-services-basement-18.4.0.pom": {
-      "url": "https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-basement/18.4.0/play-services-basement-18.4.0.pom",
-      "hash": "sha256-Bcp8Cs4NYmCTH5ftMsYM5ZgHH/Vg0/pE9J5vBpXStoc="
     }
   },
   "com.google.android.gms:play-services-cloud-messaging:17.2.0": {
@@ -4789,52 +4851,6 @@
       "hash": "sha256-XiYxNAyiqLhf5Kko/X8nKqE1J8dWVLISMsFHY8FPDrM="
     }
   },
-  "com.google.android.gms:play-services-tasks:18.2.0": {
-    "play-services-tasks-18.2.0.pom": {
-      "url": "https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-tasks/18.2.0/play-services-tasks-18.2.0.pom",
-      "hash": "sha256-a5nEioldFV5Yq87mbMIhRtuDq9XYTK9sj3oq6psbzSE="
-    }
-  },
-  "com.google.android.gms:play-services-tflite-gpu:16.4.0": {
-    "play-services-tflite-gpu-16.4.0.aar": {
-      "url": "https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-tflite-gpu/16.4.0/play-services-tflite-gpu-16.4.0.aar",
-      "hash": "sha256-yeWyVO0ip5tTuCoYxkZR7K8DqUwIO9KsMmNpMtJBWwk="
-    },
-    "play-services-tflite-gpu-16.4.0.pom": {
-      "url": "https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-tflite-gpu/16.4.0/play-services-tflite-gpu-16.4.0.pom",
-      "hash": "sha256-5fe2WG1gj0E4Ngxrktg1qqiw7SBpi/SqOVfuXz/M9KE="
-    }
-  },
-  "com.google.android.gms:play-services-tflite-impl:16.4.0": {
-    "play-services-tflite-impl-16.4.0.aar": {
-      "url": "https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-tflite-impl/16.4.0/play-services-tflite-impl-16.4.0.aar",
-      "hash": "sha256-tNmUF9FIrLZ2MDmGvFFlCayapN5uV11w9Xb1WshzoNQ="
-    },
-    "play-services-tflite-impl-16.4.0.pom": {
-      "url": "https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-tflite-impl/16.4.0/play-services-tflite-impl-16.4.0.pom",
-      "hash": "sha256-iNvRjsV0ybEIi6WAEiFpaPW87U4FHdxw3+iep77D+AM="
-    }
-  },
-  "com.google.android.gms:play-services-tflite-java:16.4.0": {
-    "play-services-tflite-java-16.4.0.aar": {
-      "url": "https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-tflite-java/16.4.0/play-services-tflite-java-16.4.0.aar",
-      "hash": "sha256-2XdRRLE5TqnXVpiqD7xFIwQxTP0VqeYltNM2ZEssIJs="
-    },
-    "play-services-tflite-java-16.4.0.pom": {
-      "url": "https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-tflite-java/16.4.0/play-services-tflite-java-16.4.0.pom",
-      "hash": "sha256-A5rSvG3NgPj4UqbSIyrQ+ivuizRY8Z+1l5qhYZlPk6k="
-    }
-  },
-  "com.google.android.gms:play-services-tflite-support:16.4.0": {
-    "play-services-tflite-support-16.4.0.aar": {
-      "url": "https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-tflite-support/16.4.0/play-services-tflite-support-16.4.0.aar",
-      "hash": "sha256-ZyQrj+dF1qdyPeEXOCn6gBhYVna143QLjTmeNhPeYq8="
-    },
-    "play-services-tflite-support-16.4.0.pom": {
-      "url": "https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-tflite-support/16.4.0/play-services-tflite-support-16.4.0.pom",
-      "hash": "sha256-Aa0QPsug8Ik28WH+uXEnUWJvzlVc3GT/pMcdFxnYfto="
-    }
-  },
   "com.google.android.gms:strict-version-matcher-plugin:1.2.4": {
     "strict-version-matcher-plugin-1.2.4.jar": {
       "url": "https://dl.google.com/dl/android/maven2/com/google/android/gms/strict-version-matcher-plugin/1.2.4/strict-version-matcher-plugin-1.2.4.jar",
@@ -4861,16 +4877,6 @@
     "material-1.13.0.pom": {
       "url": "https://dl.google.com/dl/android/maven2/com/google/android/material/material/1.13.0/material-1.13.0.pom",
       "hash": "sha256-nB88RgApXMXX9taIauoW1JfxP5r0Z1RCrScefC/r93I="
-    }
-  },
-  "com.google.android.odml:image:1.0.0-beta1": {
-    "image-1.0.0-beta1.aar": {
-      "url": "https://dl.google.com/dl/android/maven2/com/google/android/odml/image/1.0.0-beta1/image-1.0.0-beta1.aar",
-      "hash": "sha256-LnGqMfg6lBUnfxGd5nGVcm8H0XYOlULBEXeMMg46ofI="
-    },
-    "image-1.0.0-beta1.pom": {
-      "url": "https://dl.google.com/dl/android/maven2/com/google/android/odml/image/1.0.0-beta1/image-1.0.0-beta1.pom",
-      "hash": "sha256-eV9Hk8N17t9DMqA4EIKYGlznC3oKd2IhyiStnUDL6hw="
     }
   },
   "com.google.api.grpc:proto-google-common-protos:2.48.0": {
@@ -5931,6 +5937,16 @@
     "genai-schema-1.0.0-alpha2.pom": {
       "url": "https://dl.google.com/dl/android/maven2/com/google/mlkit/genai-schema/1.0.0-alpha2/genai-schema-1.0.0-alpha2.pom",
       "hash": "sha256-ECzjHS/hanAhMlGfCWMBoN5E3hacuXEKwGDDnVBK3KI="
+    }
+  },
+  "com.google.mlkit:genai-schema-compiler:1.0.0-alpha2": {
+    "genai-schema-compiler-1.0.0-alpha2.jar": {
+      "url": "https://dl.google.com/dl/android/maven2/com/google/mlkit/genai-schema-compiler/1.0.0-alpha2/genai-schema-compiler-1.0.0-alpha2.jar",
+      "hash": "sha256-FMvYTQU7dbhY1Qf1CYThhYuIw1WOWb4YVOVorKtLHg8="
+    },
+    "genai-schema-compiler-1.0.0-alpha2.pom": {
+      "url": "https://dl.google.com/dl/android/maven2/com/google/mlkit/genai-schema-compiler/1.0.0-alpha2/genai-schema-compiler-1.0.0-alpha2.pom",
+      "hash": "sha256-L7JFO+k7Sl25Ua84iBOinjzY0aGlAc4jcJ0fFA8qmmY="
     }
   },
   "com.google.mlkit:genai-speech-recognition:1.0.0-alpha2": {
@@ -10259,26 +10275,6 @@
       "hash": "sha256-tR+IZ8kranIkmVV/w6H96ne9+e9XRyL+kM5DailVlFQ="
     }
   },
-  "org.tensorflow:tensorflow-lite-api:2.16.1": {
-    "tensorflow-lite-api-2.16.1.aar": {
-      "url": "https://repo.maven.apache.org/maven2/org/tensorflow/tensorflow-lite-api/2.16.1/tensorflow-lite-api-2.16.1.aar",
-      "hash": "sha256-iFuVvJ5HpKpc+OcVI67ZsF45fP7x6gl3PxP+qLZJ/O4="
-    },
-    "tensorflow-lite-api-2.16.1.pom": {
-      "url": "https://repo.maven.apache.org/maven2/org/tensorflow/tensorflow-lite-api/2.16.1/tensorflow-lite-api-2.16.1.pom",
-      "hash": "sha256-DZp5YJ14TSr1ZYpUQavPvnTQoGNmlHlO/U1s2bc7JKQ="
-    }
-  },
-  "org.tensorflow:tensorflow-lite-gpu-api:2.16.1": {
-    "tensorflow-lite-gpu-api-2.16.1.aar": {
-      "url": "https://repo.maven.apache.org/maven2/org/tensorflow/tensorflow-lite-gpu-api/2.16.1/tensorflow-lite-gpu-api-2.16.1.aar",
-      "hash": "sha256-rMOgB3Pzc1qnWmQmu7vk/Ec6z/UEuYIBadnLME2Ursw="
-    },
-    "tensorflow-lite-gpu-api-2.16.1.pom": {
-      "url": "https://repo.maven.apache.org/maven2/org/tensorflow/tensorflow-lite-gpu-api/2.16.1/tensorflow-lite-gpu-api-2.16.1.pom",
-      "hash": "sha256-D6iSXAb5QjlZsqS3NxpHsAmnVwBIVXDJCzSA/mpCMQQ="
-    }
-  },
   "org.tensorflow:tensorflow-lite-metadata:0.2.0": {
     "tensorflow-lite-metadata-0.2.0.jar": {
       "url": "https://repo.maven.apache.org/maven2/org/tensorflow/tensorflow-lite-metadata/0.2.0/tensorflow-lite-metadata-0.2.0.jar",
@@ -10287,16 +10283,6 @@
     "tensorflow-lite-metadata-0.2.0.pom": {
       "url": "https://repo.maven.apache.org/maven2/org/tensorflow/tensorflow-lite-metadata/0.2.0/tensorflow-lite-metadata-0.2.0.pom",
       "hash": "sha256-D+MTJug7diLLzZx11GeykfAf/jzG4+dmUawFocHHo2A="
-    }
-  },
-  "org.tensorflow:tensorflow-lite-support-api:0.4.2": {
-    "tensorflow-lite-support-api-0.4.2.aar": {
-      "url": "https://repo.maven.apache.org/maven2/org/tensorflow/tensorflow-lite-support-api/0.4.2/tensorflow-lite-support-api-0.4.2.aar",
-      "hash": "sha256-HTv/suSeIe+packDYzkmFXSTnhyyQdfdJjWHTE/SA5s="
-    },
-    "tensorflow-lite-support-api-0.4.2.pom": {
-      "url": "https://repo.maven.apache.org/maven2/org/tensorflow/tensorflow-lite-support-api/0.4.2/tensorflow-lite-support-api-0.4.2.pom",
-      "hash": "sha256-+0922V2MC8lUKPLQipOZrT1kijPy+nprOlAt+0R38ZQ="
     }
   }
 }

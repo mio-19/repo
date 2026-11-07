@@ -31,13 +31,13 @@
 }:
 
 let
-  version = "13.1.2.0";
+  version = "13.1.6.0";
 
   src = fetchFromGitHub {
     owner = "forkgram";
     repo = "forkgram-classic";
     tag = version;
-    hash = "sha256-kWpLR6jnLRQD0PcsqCA7fpWZwTMatj/ZNpBLf6ngeeo=";
+    hash = "sha256-ipGwQ+6D6Q7BLyyyaekWGeNGRJGYmpMOmtsDd1YWut0=";
     fetchSubmodules = true;
   };
 

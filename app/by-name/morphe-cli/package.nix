@@ -12,7 +12,7 @@
   multidexlib2-src,
 
   morphe-library-m2_1_4_0,
-  morphe-patcher-src_2_1_0,
+  morphe-patcher-src_2_3_0,
   writeShellScriptBin,
   nix-update,
   jq,
@@ -32,20 +32,20 @@ let
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "ARSCLib";
-    tag = "4695b583ef";
-    hash = "sha256-IjeqA5A0uDHAVmYAvbwjdPLO7v+GyssHT3o6gv9qync=";
+    rev = "675bed2de3";
+    hash = "sha256-1NpvFALs+KlLbuCfKQ4RW1txuGFCXarFw3sVGLR7lro=";
   };
 
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-cli";
-  version = "1.20.0";
+  version = "2.1.1";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-cli";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-FriqzHMERLvaZtKuotmG3qBq/hs6F+CGVxDk2bkQ66I=";
+    hash = "sha256-iNi2dmZW+JDEJWvU1jh0eYDJAeqQULURpnI00eKpqbg=";
   };
 
   gradleBuildTask = "shadowJar";
@@ -82,7 +82,7 @@ stdenv.mkDerivation (finalAttrs: {
     root="$PWD"
 
     # Copy dependency sources as writable sibling directories.
-    cp -a ${morphe-patcher-src_2_1_0} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_2_3_0} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
 
     cp -a ${arsclib-src} "$root/ARSCLib"

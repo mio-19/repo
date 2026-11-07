@@ -1,0 +1,20 @@
+--- src/main/kotlin/app/morphe/patcher/resource/coder/ArsclibResourceCoder.kt
++++ src/main/kotlin/app/morphe/patcher/resource/coder/ArsclibResourceCoder.kt
+@@ -920,7 +920,16 @@
+         compiling.finished(CompilingStage.PREPARING)
+ 
+         val newPackageName = timings.measure("packageName") {
+-            xmlStore.readManifest { manifest -> manifest.root.attribute("package").orEmpty() }
++            xmlStore.readManifest { manifest ->
++                val versionNameSuffix = System.getenv("MORPHE_VERSION_NAME_SUFFIX")
++                if (!versionNameSuffix.isNullOrBlank()) {
++                    val currentVersionName = manifest.root.attribute("android:versionName")
++                    if (!currentVersionName.isNullOrEmpty() && !currentVersionName.endsWith(versionNameSuffix)) {
++                        manifest.root.setAttribute("android:versionName", currentVersionName + versionNameSuffix)
++                    }
++                }
++                manifest.root.attribute("package").orEmpty()
++            }
+         }
+         val originalPackageName = packageInfo.packageName
+         val packageRenamed = originalPackageName != newPackageName

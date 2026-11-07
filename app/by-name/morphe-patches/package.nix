@@ -9,10 +9,10 @@
   writableTmpDirAsHomeHook,
   morphe-patches-gradle-plugin_2_0_0,
   morphe-library-m2_1_4_0,
-  morphe-patches-library-m2_2_1_0,
+  morphe-patches-library-m2_2_1_1,
   apktool-src,
   multidexlib2-src,
-  morphe-patcher-src_2_1_0,
+  morphe-patcher-src_2_3_0,
   writeShellScriptBin,
   nix-update,
 }:
@@ -36,20 +36,20 @@ let
   arsclib-src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "ARSCLib";
-    rev = "10d0708212";
-    hash = "sha256-XHT3SEVAJAn1EpeucZ3VUUtj0UD01ISRiXFhgY/D5ys=";
+    rev = "675bed2de3";
+    hash = "sha256-1NpvFALs+KlLbuCfKQ4RW1txuGFCXarFw3sVGLR7lro=";
   };
 
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "morphe-patches";
-  version = "2.0.0";
+  version = "2.1.0";
 
   src = fetchFromGitHub {
     owner = "MorpheApp";
     repo = "morphe-patches";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-zdnom5xzN7vHdFiLZtRccWvbMBf/ViRMQed8L2DyG70=";
+    hash = "sha256-unlOfs91EgmECchrc1I5wEjAUrdbFZfjtvLWhf3sli8=";
   };
 
   gradleBuildTask = "generatePatchesList";
@@ -78,12 +78,12 @@ stdenv.mkDerivation (finalAttrs: {
     ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
     MORPHE_PLUGIN_M2 = "${morphe-patches-gradle-plugin_2_0_0}";
     MORPHE_LIBRARY_M2 = "${morphe-library-m2_1_4_0}";
-    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_2_1_0}";
+    MORPHE_PATCHES_LIBRARY_M2 = "${morphe-patches-library-m2_2_1_1}";
   };
 
   postUnpack = ''
     root="$PWD"
-    cp -a ${morphe-patcher-src_2_1_0} "$root/morphe-patcher"
+    cp -a ${morphe-patcher-src_2_3_0} "$root/morphe-patcher"
     chmod -R u+w "$root/morphe-patcher"
     cp -a ${arsclib-src} "$root/ARSCLib"
     chmod -R u+w "$root/ARSCLib"
@@ -98,9 +98,7 @@ stdenv.mkDerivation (finalAttrs: {
     patch -d "$sourceRoot" -p0 < ${./morphe-patches-settings.patch}
     substituteInPlace "$sourceRoot/settings.gradle.kts" \
       --replace-fail '    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"' "" \
-      --replace-fail 'version "2.1.0-dev.1"' 'version "2.0.0"'
-    substituteInPlace "$sourceRoot/gradle/libs.versions.toml" \
-      --replace-fail 'morphe-patches-library = "2.1.0-dev.2"' 'morphe-patches-library = "2.1.0"'
+      --replace-fail 'version "2.1.0"' 'version "2.0.0"'
     patch -d "$sourceRoot" -p1 < ${./morphe-patches-version-name-suffix-compatible.patch}
     patch -d "$sourceRoot" -p1 < ${./morphe-patches-flip-video.patch}
 

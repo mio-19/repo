@@ -14,15 +14,17 @@
   python3,
   writableTmpDirAsHomeHook,
   mergeLock,
+  nix-update,
+  writeShellScriptBin,
 }:
 let
-  version = "1.0.22";
+  version = "1.0.23";
 
   src = fetchFromGitHub {
     owner = "google-ai-edge";
     repo = "gallery";
     tag = version;
-    hash = "sha256-7KCQN7xkEwB6vdA/Z2PaH8prgccYFaMsbzTI3w6S5AY=";
+    hash = "sha256-My30b1FIArWHOX3zU3DeU365xlcGq8Pb7bV9J3M3vuY=";
   };
 
   androidSdk = androidSdkBuilder (s: [
@@ -215,6 +217,27 @@ let
       test -f "$apk_path"
       install -Dm644 "$apk_path" "$out/gallery.apk"
       runHook postInstall
+    '';
+
+    passthru.updateScript = writeShellScriptBin "update-gallery" ''
+      set -euo pipefail
+
+      ${lib.getExe nix-update} --flake --src-only apk_gallery
+
+      tmp="$(mktemp -d)"
+      trap 'rm -rf "$tmp"' EXIT
+      src="$(nix eval --impure --raw .#apk_gallery.src)"
+      cp -R "$src/Android/src"/ "$tmp"/
+      chmod -R u+w "$tmp"
+      echo "org.gradle.jvmargs=-Xmx4g" >> "$tmp/gradle.properties"
+      echo "kotlin.daemon.jvmargs=-Xmx4g" >> "$tmp/gradle.properties"
+
+      nix develop .#apk_gallery -c bash -c '
+        cd "$1"
+        nix run github:tadfisher/gradle2nix/v2 -- --gradle-wrapper=9.2.1
+      ' bash "$tmp"
+
+      cp "$tmp/gradle.lock" app/apks/gallery/gradle.lock
     '';
 
     meta = with lib; {

@@ -13,6 +13,8 @@
   cargo,
   rustc,
   fetchurl,
+  writeShellScriptBin,
+  nix-update,
 }:
 let
   appPackage =
@@ -183,13 +185,13 @@ let
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "bitwarden-android";
-      version = "2026.10.1";
+      version = "2026.11.0";
 
       src = fetchFromGitHub {
         owner = "bitwarden";
         repo = "android";
         tag = "v${finalAttrs.version}-bwpm";
-        hash = "sha256-d/tyRBzcPkYuZm6oO1/kEGKkgRk9DEOUI+76p4Wo0ww=";
+        hash = "sha256-+oxPwjA01+EkUNIRlMf3qi9LqrHSeOzKg/rJ2oYkL+c=";
       };
 
       gradleBuildTask = ":app:assembleFdroidRelease";
@@ -446,6 +448,20 @@ let
           app/build/outputs/apk/fdroid/release/com.x8bit.bitwarden-fdroid.apk \
           "$out/bitwarden-android.apk"
         runHook postInstall
+      '';
+
+      passthru.updateScript = writeShellScriptBin "update-bitwarden-android" ''
+        set -euo pipefail
+
+        package_file="app/apks/bitwarden-android/package.nix"
+        package_attr=".#apk_bitwarden-android"
+        fake_hash="${lib.fakeHash}"
+
+        . "${../_shared/update-script-helpers.sh}"
+
+        ${lib.getExe nix-update} --flake --version-regex='^v?([0-9]+\.[0-9]+\.[0-9]+)-bwpm$' --src-only apk_bitwarden-android
+
+        refresh_mitm_cache
       '';
 
       meta = with lib; {
