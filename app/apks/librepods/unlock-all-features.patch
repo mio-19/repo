@@ -1,0 +1,281 @@
+diff --git a/app/src/main/java/me/kavishdevar/librepods/billing/BillingProviderFactory.kt b/app/src/main/java/me/kavishdevar/librepods/billing/BillingProviderFactory.kt
+index 33f9b41..2b04861 100644
+--- a/app/src/main/java/me/kavishdevar/librepods/billing/BillingProviderFactory.kt
++++ b/app/src/main/java/me/kavishdevar/librepods/billing/BillingProviderFactory.kt
+@@ -19,15 +19,10 @@
+ package me.kavishdevar.librepods.billing
+ 
+ import android.content.Context
+-import me.kavishdevar.librepods.BuildConfig
+ 
+ object BillingProviderFactory {
+ 
+     fun create(context: Context): BillingProvider {
+-        return if (BuildConfig.PLAY_BUILD) {
+-            PlayBillingProvider(context)
+-        } else {
+-            FOSSBillingProvider(context)
+-        }
++        return FOSSBillingProvider(context)
+     }
+ }
+diff --git a/app/src/main/java/me/kavishdevar/librepods/billing/FOSSBillingProvider.kt b/app/src/main/java/me/kavishdevar/librepods/billing/FOSSBillingProvider.kt
+index 4f07db6..047ccca 100644
+--- a/app/src/main/java/me/kavishdevar/librepods/billing/FOSSBillingProvider.kt
++++ b/app/src/main/java/me/kavishdevar/librepods/billing/FOSSBillingProvider.kt
+@@ -20,21 +20,13 @@ package me.kavishdevar.librepods.billing
+ 
+ import android.app.Activity
+ import android.content.Context
+-import android.content.Intent
+ import androidx.core.content.edit
+-import androidx.core.net.toUri
+-import kotlinx.coroutines.CoroutineScope
+-import kotlinx.coroutines.Dispatchers
+-import kotlinx.coroutines.Job
+-import kotlinx.coroutines.SupervisorJob
+-import kotlinx.coroutines.delay
+ import kotlinx.coroutines.flow.MutableStateFlow
+ import kotlinx.coroutines.flow.StateFlow
+-import kotlinx.coroutines.launch
+ import me.kavishdevar.librepods.R
+ 
+ class FOSSBillingProvider(context: Context): BillingProvider {
+-    private val _isPremium = MutableStateFlow(false)
++    private val _isPremium = MutableStateFlow(true)
+     override val isPremium: StateFlow<Boolean> = _isPremium
+ 
+     private val _price = MutableStateFlow(context.getString(R.string.name_your_own_price))
+@@ -42,32 +34,18 @@ class FOSSBillingProvider(context: Context): BillingProvider {
+ 
+     private val sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
+ 
+-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+-    private var purchaseJob: Job? = null
+-
+     init {
+         queryPurchases()
+     }
+ 
+     override fun purchase(activity: Activity) {
+-        activity.startActivity(
+-            Intent(Intent.ACTION_VIEW, "https://github.com/sponsors/kavishdevar".toUri())
+-        )
+-
+-        purchaseJob?.cancel()
+-
+-        purchaseJob = scope.launch {
+-            delay(5_000)
+-            _isPremium.value = true
+-            sharedPreferences.edit { putBoolean("foss_upgraded", true) }
+-        }
++        _isPremium.value = true
++        sharedPreferences.edit { putBoolean("foss_upgraded", true) }
+     }
+ 
+     override fun queryPurchases() {
+-        val stored = sharedPreferences.getBoolean("foss_upgraded", false)
+-        if (stored != _isPremium.value) {
+-            _isPremium.value = stored
+-        }
++        _isPremium.value = true
++        sharedPreferences.edit { putBoolean("foss_upgraded", true) }
+     }
+ 
+     override fun restorePurchases() {
+diff --git a/app/src/main/java/me/kavishdevar/librepods/billing/PlayBillingProvider.kt b/app/src/main/java/me/kavishdevar/librepods/billing/PlayBillingProvider.kt
+index 02f17b9..3b33395 100644
+--- a/app/src/main/java/me/kavishdevar/librepods/billing/PlayBillingProvider.kt
++++ b/app/src/main/java/me/kavishdevar/librepods/billing/PlayBillingProvider.kt
+@@ -52,7 +52,7 @@ class PlayBillingProvider(
+ 
+     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+ 
+-    private val _isPremium = MutableStateFlow(false)
++    private val _isPremium = MutableStateFlow(true)
+     override val isPremium: StateFlow<Boolean> = _isPremium
+ 
+     private val _price = MutableStateFlow("unknown")
+diff --git a/app/src/main/java/me/kavishdevar/librepods/presentation/viewmodel/AirPodsViewModel.kt b/app/src/main/java/me/kavishdevar/librepods/presentation/viewmodel/AirPodsViewModel.kt
+index 0b43370..f37c571 100644
+--- a/app/src/main/java/me/kavishdevar/librepods/presentation/viewmodel/AirPodsViewModel.kt
++++ b/app/src/main/java/me/kavishdevar/librepods/presentation/viewmodel/AirPodsViewModel.kt
+@@ -93,7 +93,7 @@ data class AirPodsUiState(
+     val transparencyData: ByteArray = byteArrayOf(),
+     val hearingAidData: ByteArray = byteArrayOf(),
+ 
+-    val isPremium: Boolean = false,
++    val isPremium: Boolean = true,
+     val vendorIdHook: Boolean = false,
+ 
+     val dynamicEndOfCharge: Boolean = false,
+@@ -290,15 +290,6 @@ class AirPodsViewModel(
+                         if (BuildConfig.PLAY_BUILD) remove("foss_upgraded")
+                     }
+                     _uiState.update { it.copy(isPremium = true, timeUntilFOSSPremiumExpiry = 0L) }
+-                } else {
+-                    if (_uiState.value.timeUntilFOSSPremiumExpiry <= 0L) {
+-                        setControlCommandBoolean(
+-                            ControlCommandIdentifiers.CONVERSATION_DETECT_CONFIG,
+-                            false
+-                        )
+-                        setHeadGesturesEnabled(false)
+-                        _uiState.update { it.copy(isPremium = false) }
+-                    }
+                 }
+             }
+         }
+@@ -510,53 +501,11 @@ class AirPodsViewModel(
+             )
+         }
+ 
+-        // faulty update on Play caused PLAY_BUILD to be false and resulted in use of FOSS billing in Play. since FOSS is not verified, we need to give 2 weeks to verify the purchase
+-        if (BuildConfig.PLAY_BUILD) {
+-            val fossUpgraded = sharedPreferences.getBoolean("foss_upgraded", false)
+-            val expiryTime = sharedPreferences.getLong("premium_expiry_time", 0L)
+-            val now = System.currentTimeMillis()
+-
+-            when {
+-                // existing temporary premium
+-                expiryTime > 0L -> {
+-                    if (expiryTime <= now) {
+-                        sharedPreferences.edit {
+-                            remove("premium_expiry_time")
+-                            remove("foss_upgraded")
+-                        }
+-
+-                        _uiState.update {
+-                            it.copy(
+-                                timeUntilFOSSPremiumExpiry = 0L,
+-                                isPremium = false
+-                            )
+-                        }
+-                    } else {
+-                        _uiState.update {
+-                            it.copy(
+-                                timeUntilFOSSPremiumExpiry = expiryTime - now,
+-                                isPremium = true
+-                            )
+-                        }
+-                    }
+-                }
+-
+-                // First migration from accidental FOSS Play build
+-                fossUpgraded && !_uiState.value.isPremium -> {
+-                    val newExpiry = now + 28L * 24 * 60 * 60 * 1000
+-
+-                    sharedPreferences.edit {
+-                        putLong("premium_expiry_time", newExpiry)
+-                    }
+-
+-                    _uiState.update {
+-                        it.copy(
+-                            timeUntilFOSSPremiumExpiry = newExpiry - now,
+-                            isPremium = true
+-                        )
+-                    }
+-                }
+-            }
++        _uiState.update {
++            it.copy(
++                timeUntilFOSSPremiumExpiry = 0L,
++                isPremium = true
++            )
+         }
+     }
+ 
+diff --git a/app/src/main/java/me/kavishdevar/librepods/presentation/viewmodel/AppSettingsViewModel.kt b/app/src/main/java/me/kavishdevar/librepods/presentation/viewmodel/AppSettingsViewModel.kt
+index 1d412aa..a2e5927 100644
+--- a/app/src/main/java/me/kavishdevar/librepods/presentation/viewmodel/AppSettingsViewModel.kt
++++ b/app/src/main/java/me/kavishdevar/librepods/presentation/viewmodel/AppSettingsViewModel.kt
+@@ -32,7 +32,7 @@ data class AppSettingsUiState(
+     val cameraPackageValue: String = "",
+     val cameraPackageError: String? = null,
+     val vendorIdHook: Boolean = false,
+-    val isPremium: Boolean = false,
++    val isPremium: Boolean = true,
+     val connectionSuccessful: Boolean = false,
+     val showBottomSheetPopup: Boolean = true,
+     val showIslandPopup: Boolean = true,
+@@ -74,63 +74,17 @@ class AppSettingsViewModel(application: Application) : AndroidViewModel(applicat
+                         if (BuildConfig.PLAY_BUILD) remove("foss_upgraded")
+                     }
+                     _uiState.update { it.copy(isPremium = true, timeUntilFOSSPremiumExpiry = 0L) }
+-                } else {
+-                    // No billing premium, only update if no temporary premium is active
+-                    if (_uiState.value.timeUntilFOSSPremiumExpiry <= 0L) {
+-                        _uiState.update { it.copy(isPremium = false) }
+-                    }
+                 }
+             }
+         }
+     }
+ 
+     private fun loadSettings() {
+-        // faulty update on Play caused PLAY_BUILD to be false and resulted in use of FOSS billing in Play. since FOSS is not verified, we need to give 2 weeks to verify the purchase
+-
+-        val fossUpgraded = sharedPreferences.getBoolean("foss_upgraded", false)
+-        val expiryTime = sharedPreferences.getLong("premium_expiry_time", 0L)
+-        val now = System.currentTimeMillis()
+-
+-        when {
+-            // existing temporary premium
+-            expiryTime > 0L -> {
+-                if (expiryTime <= now) {
+-                    sharedPreferences.edit {
+-                        remove("premium_expiry_time")
+-                        remove("foss_upgraded")
+-                    }
+-
+-                    _uiState.update {
+-                        it.copy(
+-                            timeUntilFOSSPremiumExpiry = 0L,
+-                            isPremium = false
+-                        )
+-                    }
+-                } else {
+-                    _uiState.update {
+-                        it.copy(
+-                            timeUntilFOSSPremiumExpiry = expiryTime - now,
+-                            isPremium = true
+-                        )
+-                    }
+-                }
+-            }
+-
+-            // First migration from accidental FOSS Play build
+-            fossUpgraded && !_uiState.value.isPremium && BuildConfig.PLAY_BUILD -> {
+-                val newExpiry = now + 28L * 24 * 60 * 60 * 1000
+-
+-                sharedPreferences.edit {
+-                    putLong("premium_expiry_time", newExpiry)
+-                }
+-
+-                _uiState.update {
+-                    it.copy(
+-                        timeUntilFOSSPremiumExpiry = newExpiry - now,
+-                        isPremium = true
+-                    )
+-                }
+-            }
++        _uiState.update {
++            it.copy(
++                timeUntilFOSSPremiumExpiry = 0L,
++                isPremium = true
++            )
+         }
+ 
+         _uiState.update { currentState ->
+diff --git a/app/src/main/java/me/kavishdevar/librepods/presentation/viewmodel/PurchaseViewModel.kt b/app/src/main/java/me/kavishdevar/librepods/presentation/viewmodel/PurchaseViewModel.kt
+index b9e5235..61c8a0a 100644
+--- a/app/src/main/java/me/kavishdevar/librepods/presentation/viewmodel/PurchaseViewModel.kt
++++ b/app/src/main/java/me/kavishdevar/librepods/presentation/viewmodel/PurchaseViewModel.kt
+@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
+ import me.kavishdevar.librepods.billing.BillingManager
+ 
+ data class PurchaseUiState(
+-    val isPremium: Boolean = false,
++    val isPremium: Boolean = true,
+     val price: String = ""
+ )
+ 
