@@ -207,10 +207,17 @@ let
             substituteInPlace lib/widgets/path_editor_sheet.dart \
               --replace-fail 'onReorderItem:' 'onReorder:'
 
-            # Enable "Resend channel messages until they travel far enough" by default
+            # Enable "Resend channel messages until they travel far enough" by default with 5 retries
             substituteInPlace lib/models/app_settings.dart \
               --replace-fail 'this.channelMinHopsEnabled = false,' 'this.channelMinHopsEnabled = true,' \
-              --replace-fail "channelMinHopsEnabled: json['channel_min_hops_enabled'] as bool? ?? false," "channelMinHopsEnabled: json['channel_min_hops_enabled'] as bool? ?? true,"
+              --replace-fail "channelMinHopsEnabled: json['channel_min_hops_enabled'] as bool? ?? false," "channelMinHopsEnabled: json['channel_min_hops_enabled'] as bool? ?? true," \
+              --replace-fail 'this.channelMinHopsRetries = 1,' 'this.channelMinHopsRetries = 5,' \
+              --replace-fail "channelMinHopsRetries: json['channel_min_hops_retries'] as int? ?? 1," "channelMinHopsRetries: json['channel_min_hops_retries'] as int? ?? 5,"
+
+            # Increase maximum allowed channel resend retries from 5 to 10
+            substituteInPlace lib/screens/app_settings_screen.dart \
+              --replace-fail 'max: 5,' 'max: 10,' \
+              --replace-fail 'divisions: 4,' 'divisions: 9,'
 
             setup_writable_flutter_sdk ${flutter344}
             setup_pinned_gradlew ${gradle}/bin/gradle
