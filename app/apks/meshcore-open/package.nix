@@ -77,7 +77,7 @@ let
         owner = "zjs81";
         repo = "meshcore-open";
         tag = "BETA-99.0.1";
-        hash = "sha256-fBzPJAHsQV7gnMAmIf8XMC52GefavCWignkBnu1rSDI=";
+        hash = "sha256-jQ6/5gDuMwJSQcHU2nv1GOw66IVw7t/uMp/lAJvUJLU=";
       };
 
       patches = [
