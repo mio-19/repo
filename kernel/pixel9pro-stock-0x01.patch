@@ -1,8 +1,6 @@
-diff --git a/private/google-modules/display/common/include/ea_panel.h b/private/google-modules/display/common/include/ea_panel.h
-new file mode 100644
-index 00000000..25cc4305
---- /dev/null
-+++ b/private/google-modules/display/common/include/ea_panel.h
+diff -ruN a/private/google-modules/display/common/include/ea_panel.h b/private/google-modules/display/common/include/ea_panel.h
+--- a/private/google-modules/display/common/include/ea_panel.h	1970-01-01 10:00:00.000000000 +1000
++++ b/private/google-modules/display/common/include/ea_panel.h	2026-11-08 16:20:12.035554821 +1100
 @@ -0,0 +1,26 @@
 +/* SPDX-License-Identifier: GPL-2.0-or-later */
 +/*
@@ -30,11 +28,10 @@ index 00000000..25cc4305
 +unsigned int ea_panel_calc_backlight(unsigned int bl_lvl);
 +
 +#endif /* EA_PANEL_H */
-diff --git a/private/google-modules/display/panels/caimito/BUILD.bazel b/private/google-modules/display/panels/caimito/BUILD.bazel
-index 0ce82349..88953b85 100644
---- a/private/google-modules/display/panels/caimito/BUILD.bazel
-+++ b/private/google-modules/display/panels/caimito/BUILD.bazel
-@@ -38,6 +38,7 @@ ddk_module(
+diff -ruN a/private/google-modules/display/panels/caimito/BUILD.bazel b/private/google-modules/display/panels/caimito/BUILD.bazel
+--- a/private/google-modules/display/panels/caimito/BUILD.bazel	2026-11-08 16:20:11.950555696 +1100
++++ b/private/google-modules/display/panels/caimito/BUILD.bazel	2026-11-08 16:20:12.035554821 +1100
+@@ -38,6 +38,7 @@
          ":common_headers",
          "//private/google-modules/display/common/gs_drm",
          "//private/google-modules/display/common/gs_panel",
@@ -42,7 +39,7 @@ index 0ce82349..88953b85 100644
      ],
  )
  
-@@ -53,6 +54,7 @@ ddk_module(
+@@ -53,6 +54,7 @@
          ":common_headers",
          "//private/google-modules/display/common/gs_drm",
          "//private/google-modules/display/common/gs_panel",
@@ -50,7 +47,7 @@ index 0ce82349..88953b85 100644
      ],
  )
  
-@@ -67,6 +69,7 @@ ddk_module(
+@@ -67,6 +69,7 @@
      deps = [
          ":common_headers",
          "//private/google-modules/display/common/gs_panel",
@@ -58,7 +55,7 @@ index 0ce82349..88953b85 100644
      ],
  )
  
-@@ -81,6 +84,7 @@ ddk_module(
+@@ -81,6 +84,7 @@
      deps = [
          ":common_headers",
          "//private/google-modules/display/common/gs_panel",
@@ -66,7 +63,7 @@ index 0ce82349..88953b85 100644
      ],
  )
  
-@@ -95,6 +99,7 @@ ddk_module(
+@@ -95,6 +99,7 @@
      deps = [
          ":common_headers",
          "//private/google-modules/display/common/gs_panel",
@@ -74,17 +71,16 @@ index 0ce82349..88953b85 100644
      ],
  )
  
-@@ -109,5 +114,6 @@ ddk_module(
+@@ -109,5 +114,6 @@
      deps = [
          ":common_headers",
          "//private/google-modules/display/common/gs_panel",
 +        "//private/google-modules/display/samsung:display.samsung",
      ],
  )
-diff --git a/private/google-modules/display/panels/caimito/panel-gs-cm4.c b/private/google-modules/display/panels/caimito/panel-gs-cm4.c
-index a149d31e..3718b028 100644
---- a/private/google-modules/display/panels/caimito/panel-gs-cm4.c
-+++ b/private/google-modules/display/panels/caimito/panel-gs-cm4.c
+diff -ruN a/private/google-modules/display/panels/caimito/panel-gs-cm4.c b/private/google-modules/display/panels/caimito/panel-gs-cm4.c
+--- a/private/google-modules/display/panels/caimito/panel-gs-cm4.c	2026-11-08 16:20:11.959555604 +1100
++++ b/private/google-modules/display/panels/caimito/panel-gs-cm4.c	2026-11-08 16:25:18.721397357 +1100
 @@ -22,6 +22,7 @@
  
  #include "gs_panel/drm_panel_funcs_defaults.h"
@@ -93,7 +89,46 @@ index a149d31e..3718b028 100644
  #include "gs_panel/gs_panel_funcs_defaults.h"
  
  /**
-@@ -1706,6 +1707,7 @@ static int cm4_set_brightness(struct gs_panel *ctx, u16 br)
+@@ -727,6 +728,17 @@
+ 	dev_info(dev, "%s: irc_mode=%d\n", __func__, ctx->hw_status.irc_mode);
+ }
+ 
++static u8 freq_cmd[4] = {0x00, 0x00, 0x00, 0x00};
++module_param_array(freq_cmd, byte, NULL, 0644);
++
++static void cm4_send_dimming_freq_cmd(struct gs_panel *ctx, const u8 *cmd)
++{
++	struct device *dev = ctx->dev;
++
++	GS_DCS_BUF_ADD_CMD(dev, 0xB0, 0x00, 0x01, 0xBD);
++	GS_DCS_BUF_ADD_CMD(dev, 0xBD, cmd[0], cmd[1], cmd[2], cmd[3]);
++	GS_DCS_BUF_ADD_CMD(dev, 0xBD, 0x21, cmd[0], cmd[1], cmd[2], cmd[3]);
++}
+ 
+ static void cm4_set_panel_feat_early_exit(struct gs_panel *ctx, unsigned long *feat, u32 vrefresh)
+ {
+@@ -734,8 +746,18 @@
+ 	struct cm4_panel *spanel = to_spanel(ctx);
+ 	u8 val = (test_bit(FEAT_EARLY_EXIT, feat) && vrefresh != 80) ? 0x01 : 0x81;
+ 
+-	GS_DCS_BUF_ADD_CMD(dev, 0xB0, 0x00, 0x01, 0xBD);
+-	GS_DCS_BUF_ADD_CMD(dev, 0xBD, val);
++	if (freq_cmd[1] != 0 || freq_cmd[2] != 0) {
++		u8 target_cmd[4];
++
++		memcpy(target_cmd, freq_cmd, 4);
++		if (!test_bit(FEAT_EARLY_EXIT, feat) || vrefresh == 80)
++			target_cmd[0] |= 0x80;
++		cm4_send_dimming_freq_cmd(ctx, target_cmd);
++	} else {
++		GS_DCS_BUF_ADD_CMD(dev, 0xB0, 0x00, 0x01, 0xBD);
++		GS_DCS_BUF_ADD_CMD(dev, 0xBD, val);
++	}
++
+ 	if (spanel->is_mrr_v1) {
+ 		GS_DCS_BUF_ADD_CMD(dev, 0xB0, 0x00, 0x10, 0xBD);
+ 		val = test_bit(FEAT_EARLY_EXIT, feat) ? 0x22 : 0x00;
+@@ -1706,6 +1728,7 @@
  		spanel->is_pixel_off = false;
  	}
  
@@ -101,10 +136,9 @@ index a149d31e..3718b028 100644
  	brightness = (br & 0xff) << 8 | br >> 8;
  	cm4_check_command_timing_for_te2(ctx);
  	ret = gs_dcs_set_brightness(ctx, brightness);
-diff --git a/private/google-modules/display/panels/caimito/panel-gs-km4.c b/private/google-modules/display/panels/caimito/panel-gs-km4.c
-index 98a21560..d2f45a91 100644
---- a/private/google-modules/display/panels/caimito/panel-gs-km4.c
-+++ b/private/google-modules/display/panels/caimito/panel-gs-km4.c
+diff -ruN a/private/google-modules/display/panels/caimito/panel-gs-km4.c b/private/google-modules/display/panels/caimito/panel-gs-km4.c
+--- a/private/google-modules/display/panels/caimito/panel-gs-km4.c	2026-11-08 16:20:11.968555511 +1100
++++ b/private/google-modules/display/panels/caimito/panel-gs-km4.c	2026-11-08 16:25:00.205588012 +1100
 @@ -13,6 +13,7 @@
  
  #include "gs_panel/drm_panel_funcs_defaults.h"
@@ -113,7 +147,46 @@ index 98a21560..d2f45a91 100644
  #include "gs_panel/gs_panel_funcs_defaults.h"
  
  /**
-@@ -1699,6 +1700,7 @@ static int km4_set_brightness(struct gs_panel *ctx, u16 br)
+@@ -720,6 +721,17 @@
+ 	dev_info(dev, "%s: irc_mode=%d\n", __func__, ctx->hw_status.irc_mode);
+ }
+ 
++static u8 freq_cmd[4] = {0x00, 0x00, 0x00, 0x00};
++module_param_array(freq_cmd, byte, NULL, 0644);
++
++static void km4_send_dimming_freq_cmd(struct gs_panel *ctx, const u8 *cmd)
++{
++	struct device *dev = ctx->dev;
++
++	GS_DCS_BUF_ADD_CMD(dev, 0xB0, 0x00, 0x01, 0xBD);
++	GS_DCS_BUF_ADD_CMD(dev, 0xBD, cmd[0], cmd[1], cmd[2], cmd[3]);
++	GS_DCS_BUF_ADD_CMD(dev, 0xBD, 0x21, cmd[0], cmd[1], cmd[2], cmd[3]);
++}
+ 
+ static void km4_set_panel_feat_early_exit(struct gs_panel *ctx, unsigned long *feat, u32 vrefresh)
+ {
+@@ -727,8 +739,18 @@
+ 	struct km4_panel *spanel = to_spanel(ctx);
+ 	u8 val = (test_bit(FEAT_EARLY_EXIT, feat) && vrefresh != 80) ? 0x01 : 0x81;
+ 
+-	GS_DCS_BUF_ADD_CMD(dev, 0xB0, 0x00, 0x01, 0xBD);
+-	GS_DCS_BUF_ADD_CMD(dev, 0xBD, val);
++	if (freq_cmd[1] != 0 || freq_cmd[2] != 0) {
++		u8 target_cmd[4];
++
++		memcpy(target_cmd, freq_cmd, 4);
++		if (!test_bit(FEAT_EARLY_EXIT, feat) || vrefresh == 80)
++			target_cmd[0] |= 0x80;
++		km4_send_dimming_freq_cmd(ctx, target_cmd);
++	} else {
++		GS_DCS_BUF_ADD_CMD(dev, 0xB0, 0x00, 0x01, 0xBD);
++		GS_DCS_BUF_ADD_CMD(dev, 0xBD, val);
++	}
++
+ 	if (spanel->is_mrr_v1) {
+ 		GS_DCS_BUF_ADD_CMD(dev, 0xB0, 0x00, 0x10, 0xBD);
+ 		val = test_bit(FEAT_EARLY_EXIT, feat) ? 0x22 : 0x00;
+@@ -1699,6 +1721,7 @@
  		spanel->is_pixel_off = false;
  	}
  
@@ -121,10 +194,9 @@ index 98a21560..d2f45a91 100644
  	brightness = (br & 0xff) << 8 | br >> 8;
  	km4_check_command_timing_for_te2(ctx);
  	ret = gs_dcs_set_brightness(ctx, brightness);
-diff --git a/private/google-modules/display/panels/caimito/panel-gs-tk4a.c b/private/google-modules/display/panels/caimito/panel-gs-tk4a.c
-index bc2dce2c..da640f43 100644
---- a/private/google-modules/display/panels/caimito/panel-gs-tk4a.c
-+++ b/private/google-modules/display/panels/caimito/panel-gs-tk4a.c
+diff -ruN a/private/google-modules/display/panels/caimito/panel-gs-tk4a.c b/private/google-modules/display/panels/caimito/panel-gs-tk4a.c
+--- a/private/google-modules/display/panels/caimito/panel-gs-tk4a.c	2026-11-08 16:20:11.978555408 +1100
++++ b/private/google-modules/display/panels/caimito/panel-gs-tk4a.c	2026-11-08 16:20:12.036554811 +1100
 @@ -19,6 +19,7 @@
  
  #include "gs_panel/drm_panel_funcs_defaults.h"
@@ -133,7 +205,7 @@ index bc2dce2c..da640f43 100644
  #include "gs_panel/gs_panel_funcs_defaults.h"
  
  static const struct drm_dsc_config pps_config = {
-@@ -269,6 +270,7 @@ static int tk4a_set_brightness(struct gs_panel *ctx, u16 br)
+@@ -269,6 +270,7 @@
  	}
  
  	/* swap endianness because panel expects MSB first */
@@ -141,10 +213,9 @@ index bc2dce2c..da640f43 100644
  	brightness = swab16(br);
  
  	return gs_dcs_set_brightness(ctx, brightness);
-diff --git a/private/google-modules/display/panels/caimito/panel-gs-tk4b.c b/private/google-modules/display/panels/caimito/panel-gs-tk4b.c
-index 62f320da..91727720 100644
---- a/private/google-modules/display/panels/caimito/panel-gs-tk4b.c
-+++ b/private/google-modules/display/panels/caimito/panel-gs-tk4b.c
+diff -ruN a/private/google-modules/display/panels/caimito/panel-gs-tk4b.c b/private/google-modules/display/panels/caimito/panel-gs-tk4b.c
+--- a/private/google-modules/display/panels/caimito/panel-gs-tk4b.c	2026-11-08 16:20:11.987555316 +1100
++++ b/private/google-modules/display/panels/caimito/panel-gs-tk4b.c	2026-11-08 16:20:12.036554811 +1100
 @@ -12,6 +12,7 @@
  
  #include "gs_panel/drm_panel_funcs_defaults.h"
@@ -153,7 +224,7 @@ index 62f320da..91727720 100644
  #include "gs_panel/gs_panel_funcs_defaults.h"
  
  #define TK4B_DDIC_ID_LEN 8
-@@ -739,6 +740,7 @@ static int tk4b_set_brightness(struct gs_panel *ctx, u16 br)
+@@ -739,6 +740,7 @@
  			dev_info(ctx->dev, "%s: is HBM2 enabled : off\n", __func__);
  		}
  		spanel->is_hbm2_enabled = false;
@@ -161,10 +232,9 @@ index 62f320da..91727720 100644
  		GS_DCS_BUF_ADD_CMD_AND_FLUSH(dev, MIPI_DCS_SET_DISPLAY_BRIGHTNESS,
  						br >> 8, br & 0xff);
  	}
-diff --git a/private/google-modules/display/panels/caimito/panel-gs-tk4c.c b/private/google-modules/display/panels/caimito/panel-gs-tk4c.c
-index bc39050f..2a3a0657 100644
---- a/private/google-modules/display/panels/caimito/panel-gs-tk4c.c
-+++ b/private/google-modules/display/panels/caimito/panel-gs-tk4c.c
+diff -ruN a/private/google-modules/display/panels/caimito/panel-gs-tk4c.c b/private/google-modules/display/panels/caimito/panel-gs-tk4c.c
+--- a/private/google-modules/display/panels/caimito/panel-gs-tk4c.c	2026-11-08 16:20:11.996555223 +1100
++++ b/private/google-modules/display/panels/caimito/panel-gs-tk4c.c	2026-11-08 16:20:12.036554811 +1100
 @@ -10,6 +10,7 @@
  
  #include "gs_panel/drm_panel_funcs_defaults.h"
@@ -173,7 +243,7 @@ index bc39050f..2a3a0657 100644
  #include "gs_panel/gs_panel_funcs_defaults.h"
  
  /* PPS Setting DSC 1.2a */
-@@ -275,6 +276,7 @@ static int tk4c_set_brightness(struct gs_panel *ctx, u16 br)
+@@ -275,6 +276,7 @@
  	}
  
  	/* swap endianness because panel expects MSB first */
@@ -181,11 +251,10 @@ index bc39050f..2a3a0657 100644
  	brightness = swab16(br);
  
  	return gs_dcs_set_brightness(ctx, brightness);
-diff --git a/private/google-modules/display/samsung/BUILD.bazel b/private/google-modules/display/samsung/BUILD.bazel
-index ebe87cbe..4df553db 100644
---- a/private/google-modules/display/samsung/BUILD.bazel
-+++ b/private/google-modules/display/samsung/BUILD.bazel
-@@ -78,6 +78,7 @@ kernel_module(
+diff -ruN a/private/google-modules/display/samsung/BUILD.bazel b/private/google-modules/display/samsung/BUILD.bazel
+--- a/private/google-modules/display/samsung/BUILD.bazel	2026-11-08 16:20:12.005555130 +1100
++++ b/private/google-modules/display/samsung/BUILD.bazel	2026-11-08 16:20:12.036554811 +1100
+@@ -78,6 +78,7 @@
      visibility = [
          "//private/devices/google:__subpackages__",
          "//private/google-modules/aoc/alsa:__pkg__",
@@ -193,10 +262,9 @@ index ebe87cbe..4df553db 100644
          "//private/google-modules/soc/gs:__pkg__",
          "//private/google-modules/touch:__subpackages__",
      ],
-diff --git a/private/google-modules/display/samsung/exynos_drm_crtc.c b/private/google-modules/display/samsung/exynos_drm_crtc.c
-index aa756740..af1e8d83 100644
---- a/private/google-modules/display/samsung/exynos_drm_crtc.c
-+++ b/private/google-modules/display/samsung/exynos_drm_crtc.c
+diff -ruN a/private/google-modules/display/samsung/exynos_drm_crtc.c b/private/google-modules/display/samsung/exynos_drm_crtc.c
+--- a/private/google-modules/display/samsung/exynos_drm_crtc.c	2026-11-08 16:20:12.013555048 +1100
++++ b/private/google-modules/display/samsung/exynos_drm_crtc.c	2026-11-08 16:25:27.388308114 +1100
 @@ -32,6 +32,7 @@
  #include "exynos_drm_decon.h"
  #include "exynos_drm_drv.h"
@@ -205,7 +273,7 @@ index aa756740..af1e8d83 100644
  
  enum crtc_active_state {
  	CRTC_STATE_INACTIVE,
-@@ -39,6 +40,114 @@ enum crtc_active_state {
+@@ -39,6 +40,114 @@
  	CRTC_STATE_SELF_REFRESH,
  };
  
@@ -218,7 +286,7 @@ index aa756740..af1e8d83 100644
 +/* Brightness level below which we engage the DPP matrix override instead of
 + * sending a low brightness value to the panel (to avoid low-freq PWM).
 + */
-+static int linear_matrix_application_threshold = 1400;
++static int linear_matrix_application_threshold = 1;
 +module_param(linear_matrix_application_threshold, int, 0644);
 +
 +/**
@@ -320,7 +388,7 @@ index aa756740..af1e8d83 100644
  static void exynos_drm_crtc_atomic_enable(struct drm_crtc *crtc,
  					  struct drm_atomic_state *state)
  {
-@@ -126,10 +235,7 @@ static void exynos_crtc_update_lut(struct drm_crtc *crtc,
+@@ -126,10 +235,7 @@
  			dqe_state->hist_chan[i].config = NULL;
  	}
  
@@ -332,7 +400,7 @@ index aa756740..af1e8d83 100644
  
  	if (exynos_state->gamma_matrix)
  		dqe_state->gamma_matrix = exynos_state->gamma_matrix->data;
-@@ -390,6 +496,7 @@ static void exynos_drm_crtc_destroy_state(struct drm_crtc *crtc,
+@@ -390,6 +496,7 @@
  	drm_property_blob_put(exynos_crtc_state->disp_dither);
  	drm_property_blob_put(exynos_crtc_state->cgc_dither);
  	drm_property_blob_put(exynos_crtc_state->linear_matrix);
@@ -340,7 +408,7 @@ index aa756740..af1e8d83 100644
  	drm_property_blob_put(exynos_crtc_state->gamma_matrix);
  	drm_property_blob_put(exynos_crtc_state->histogram_roi);
  	drm_property_blob_put(exynos_crtc_state->histogram_weights);
-@@ -447,9 +554,17 @@ exynos_drm_crtc_duplicate_state(struct drm_crtc *crtc)
+@@ -447,9 +554,17 @@
  	if (copy->linear_matrix)
  		drm_property_blob_get(copy->linear_matrix);
  
@@ -358,7 +426,7 @@ index aa756740..af1e8d83 100644
  	if (copy->histogram_roi)
  		drm_property_blob_get(copy->histogram_roi);
  
-@@ -690,6 +800,25 @@ static int exynos_drm_crtc_set_property(struct drm_crtc *crtc,
+@@ -690,6 +805,25 @@
  		ret = exynos_drm_replace_property_blob_from_id(state->crtc->dev,
  				&exynos_crtc_state->linear_matrix, val,
  				sizeof(struct exynos_matrix), -1, &replaced);
@@ -384,7 +452,7 @@ index aa756740..af1e8d83 100644
  	} else if (property == exynos_crtc->props.gamma_matrix) {
  		ret = exynos_drm_replace_property_blob_from_id(state->crtc->dev,
  				&exynos_crtc_state->gamma_matrix, val,
-@@ -783,6 +912,9 @@ static int exynos_drm_crtc_get_property(struct drm_crtc *crtc,
+@@ -783,6 +917,9 @@
  	} else if (property == exynos_crtc->props.linear_matrix) {
  		*val = (exynos_crtc_state->linear_matrix) ?
  			exynos_crtc_state->linear_matrix->base.id : 0;
@@ -394,7 +462,7 @@ index aa756740..af1e8d83 100644
  	} else if (property == exynos_crtc->props.gamma_matrix) {
  		*val = (exynos_crtc_state->gamma_matrix) ?
  			exynos_crtc_state->gamma_matrix->base.id : 0;
-@@ -1204,6 +1336,11 @@ struct exynos_drm_crtc *exynos_drm_crtc_create(struct drm_device *drm_dev,
+@@ -1204,6 +1341,11 @@
  		if (ret)
  			goto err_crtc;
  
@@ -406,10 +474,9 @@ index aa756740..af1e8d83 100644
  		ret = exynos_drm_crtc_create_blob(crtc, "gamma_matrix",
  				&exynos_crtc->props.gamma_matrix);
  		if (ret)
-diff --git a/private/google-modules/display/samsung/exynos_drm_decon.c b/private/google-modules/display/samsung/exynos_drm_decon.c
-index 9819ffd1..2bd8b5f9 100644
---- a/private/google-modules/display/samsung/exynos_drm_decon.c
-+++ b/private/google-modules/display/samsung/exynos_drm_decon.c
+diff -ruN a/private/google-modules/display/samsung/exynos_drm_decon.c b/private/google-modules/display/samsung/exynos_drm_decon.c
+--- a/private/google-modules/display/samsung/exynos_drm_decon.c	2026-11-08 16:20:12.023554945 +1100
++++ b/private/google-modules/display/samsung/exynos_drm_decon.c	2026-11-08 16:20:12.037554801 +1100
 @@ -58,6 +58,7 @@
  #endif
  
@@ -418,10 +485,9 @@ index 9819ffd1..2bd8b5f9 100644
  
  #define decon_info(decon, fmt, ...)	\
  pr_info("%s[%u]: "fmt, decon->dev->driver->name, decon->id, ##__VA_ARGS__)
-diff --git a/private/google-modules/display/samsung/exynos_drm_drv.h b/private/google-modules/display/samsung/exynos_drm_drv.h
-index cffa900a..003f3601 100644
---- a/private/google-modules/display/samsung/exynos_drm_drv.h
-+++ b/private/google-modules/display/samsung/exynos_drm_drv.h
+diff -ruN a/private/google-modules/display/samsung/exynos_drm_drv.h b/private/google-modules/display/samsung/exynos_drm_drv.h
+--- a/private/google-modules/display/samsung/exynos_drm_drv.h	2026-11-08 16:20:12.032554852 +1100
++++ b/private/google-modules/display/samsung/exynos_drm_drv.h	2026-11-08 16:20:12.037554801 +1100
 @@ -38,6 +38,8 @@
  
  #define DEFAULT_WIN	0
@@ -431,7 +497,7 @@ index cffa900a..003f3601 100644
  
  #define to_exynos_crtc(x)	container_of(x, struct exynos_drm_crtc, base)
  #define to_exynos_plane(x)	container_of(x, struct exynos_drm_plane, base)
-@@ -256,6 +258,7 @@ struct exynos_drm_crtc_state {
+@@ -256,6 +258,7 @@
  	struct drm_property_blob *disp_dither;
  	struct drm_property_blob *cgc_dither;
  	struct drm_property_blob *linear_matrix;
@@ -439,7 +505,7 @@ index cffa900a..003f3601 100644
  	struct drm_property_blob *gamma_matrix;
  	/* legacy histogram properties */
  	struct drm_property_blob *histogram_roi;
-@@ -297,6 +300,8 @@ struct exynos_drm_crtc_state {
+@@ -297,6 +300,8 @@
  	struct drm_property_blob *partial;
  	bool needs_reconfigure;
  
@@ -448,7 +514,7 @@ index cffa900a..003f3601 100644
  	struct kthread_work commit_work;
  };
  
-@@ -329,6 +334,7 @@ struct exynos_drm_crtc {
+@@ -329,6 +334,7 @@
  		struct drm_property *ppc;
  		struct drm_property *max_disp_freq;
  		struct drm_property *linear_matrix;
