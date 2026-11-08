@@ -103,8 +103,9 @@ let
         attrPath = "apk_meshcore-open";
         pkg = finalAttrs.finalPackage.overrideAttrs {
           gradleUpdateScript = ''
+            runHook preConfigure
             runHook preBuild
-            gradle --no-daemon --console=plain :cryptography_flutter:extractReleaseAnnotations :cryptography_flutter:generateReleaseLintModel :app:assembleRelease || true
+            flutter build apk --release --no-pub --target-platform android-arm64 || true
           '';
         };
         data = ./meshcore-open_deps.json;
