@@ -1,19 +1,19 @@
 diff -ruN a/res/values/arrays_gos_komodo_high_emission_frequency.xml b/res/values/arrays_gos_komodo_high_emission_frequency.xml
 --- a/res/values/arrays_gos_komodo_high_emission_frequency.xml	1970-01-01 10:00:00.000000000 +1000
-+++ b/res/values/arrays_gos_komodo_high_emission_frequency.xml	2026-11-08 16:29:30.003809925 +1100
++++ b/res/values/arrays_gos_komodo_high_emission_frequency.xml	2026-11-08 22:44:49.432608253 +1100
 @@ -0,0 +1,26 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<resources>
 +    <string-array name="komodo_high_emission_frequency_entries">
-+        <item>Off (default)</item>
-+        <item>Zero</item>
-+        <item>One</item>
-+        <item>Two</item>
-+        <item>Three</item>
-+        <item>Four</item>
-+        <item>Five (3840Hz)</item>
-+        <item>Six</item>
-+        <item>Seven (4800Hz)</item>
++        <item>Off (stock; default each boot)</item>
++        <item>Mode 0 (first experiment)</item>
++        <item>Mode 1 (stock byte)</item>
++        <item>Mode 2 (experimental)</item>
++        <item>Mode 3 (experimental)</item>
++        <item>Mode 4 (experimental)</item>
++        <item>Mode 5 (experimental)</item>
++        <item>Mode 6 (experimental)</item>
++        <item>Mode 7 (experimental)</item>
 +    </string-array>
 +
 +    <string-array name="komodo_high_emission_frequency_values">
@@ -30,15 +30,15 @@ diff -ruN a/res/values/arrays_gos_komodo_high_emission_frequency.xml b/res/value
 +</resources>
 diff -ruN a/res/values/strings_gos_komodo_high_emission_frequency.xml b/res/values/strings_gos_komodo_high_emission_frequency.xml
 --- a/res/values/strings_gos_komodo_high_emission_frequency.xml	1970-01-01 10:00:00.000000000 +1000
-+++ b/res/values/strings_gos_komodo_high_emission_frequency.xml	2026-11-08 16:29:35.062757833 +1100
++++ b/res/values/strings_gos_komodo_high_emission_frequency.xml	2026-11-08 22:33:21.452392913 +1100
 @@ -0,0 +1,4 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<resources>
-+    <string name="komodo_pwm_multiplier_title">Adjust PWM multiplier for sensitive eyes</string>
++    <string name="komodo_pwm_multiplier_title">Experimental PWM mode (resets after restart)</string>
 +</resources>
 diff -ruN a/res/xml/accessibility_settings.xml b/res/xml/accessibility_settings.xml
---- a/res/xml/accessibility_settings.xml	2026-11-08 16:29:16.534948612 +1100
-+++ b/res/xml/accessibility_settings.xml	2026-11-08 16:29:42.149684860 +1100
+--- a/res/xml/accessibility_settings.xml	2026-11-08 22:31:30.682485313 +1100
++++ b/res/xml/accessibility_settings.xml	2026-11-08 22:33:21.452392913 +1100
 @@ -80,6 +80,17 @@
              android:summary="@string/emission_frequency_summary"
              settings:controller="com.google.android.settings.display.HighEmissionFrequencyController"/>
@@ -58,8 +58,8 @@ diff -ruN a/res/xml/accessibility_settings.xml b/res/xml/accessibility_settings.
  
      <PreferenceCategory
 diff -ruN a/src/com/google/android/settings/display/HighEmissionFrequencyController.kt b/src/com/google/android/settings/display/HighEmissionFrequencyController.kt
---- a/src/com/google/android/settings/display/HighEmissionFrequencyController.kt	2026-11-08 16:29:16.536948592 +1100
-+++ b/src/com/google/android/settings/display/HighEmissionFrequencyController.kt	2026-11-08 16:29:49.320611021 +1100
+--- a/src/com/google/android/settings/display/HighEmissionFrequencyController.kt	2026-11-08 22:31:30.683485303 +1100
++++ b/src/com/google/android/settings/display/HighEmissionFrequencyController.kt	2026-11-08 22:33:21.458392854 +1100
 @@ -10,6 +10,10 @@
  class HighEmissionFrequencyController(context: Context, prefKey: String) :
      TogglePreferenceController(context, prefKey) {
@@ -73,8 +73,8 @@ diff -ruN a/src/com/google/android/settings/display/HighEmissionFrequencyControl
          // reason we can't just use the static identifier.
 diff -ruN a/src/com/google/android/settings/display/KomodoHighEmissionFrequencyPreferenceController.kt b/src/com/google/android/settings/display/KomodoHighEmissionFrequencyPreferenceController.kt
 --- a/src/com/google/android/settings/display/KomodoHighEmissionFrequencyPreferenceController.kt	1970-01-01 10:00:00.000000000 +1000
-+++ b/src/com/google/android/settings/display/KomodoHighEmissionFrequencyPreferenceController.kt	2026-11-08 16:29:57.375528081 +1100
-@@ -0,0 +1,77 @@
++++ b/src/com/google/android/settings/display/KomodoHighEmissionFrequencyPreferenceController.kt	2026-11-08 22:33:21.457392864 +1100
+@@ -0,0 +1,78 @@
 +package com.google.android.settings.display
 +
 +import android.content.Context
@@ -92,7 +92,7 @@ diff -ruN a/src/com/google/android/settings/display/KomodoHighEmissionFrequencyP
 +    BasePreferenceController(context, prefKey), Preference.OnPreferenceChangeListener {
 +    private companion object {
 +        const val TAG = "KomodoHighEmissionFrequencyPreferenceController"
-+        const val PROPERTY = "persist.sys.komodo_high_emission_frequency_mode"
++        const val PROPERTY = "sys.komodo_high_emission_frequency_mode"
 +        const val DEFAULT_VALUE = "off"
 +    }
 +
@@ -130,7 +130,8 @@ diff -ruN a/src/com/google/android/settings/display/KomodoHighEmissionFrequencyP
 +            Log.i(TAG, "Setting $PROPERTY to $value")
 +            SystemProperties.set(PROPERTY, value)
 +            val appliedValue = SystemProperties.get(PROPERTY, DEFAULT_VALUE)
-+            Log.i(TAG, "Read back $PROPERTY as $appliedValue")
++            Log.i(TAG, "Requested $PROPERTY is $appliedValue; panel application is deferred")
++            if (appliedValue != value) return false
 +            listPreference.value = value
 +            listPreference.summary = listPreference.entry
 +            true

@@ -8,7 +8,7 @@ args@{
     komodoHighEmissionFrequency = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Whether to add a Pixel 9 Pro XL (komodo) Settings control for the high emission frequency PWM threshold.";
+      description = "Whether to add a Pixel 9 Pro XL (komodo) experimental PWM mode control which resets to stock on every boot.";
     };
   };
 
