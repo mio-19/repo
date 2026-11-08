@@ -1,47 +1,44 @@
-diff --git a/res/values/arrays_gos_komodo_high_emission_frequency.xml b/res/values/arrays_gos_komodo_high_emission_frequency.xml
-new file mode 100644
-index 0000000..50845a4
---- /dev/null
-+++ b/res/values/arrays_gos_komodo_high_emission_frequency.xml
-@@ -0,0 +1,24 @@
+diff -ruN a/res/values/arrays_gos_komodo_high_emission_frequency.xml b/res/values/arrays_gos_komodo_high_emission_frequency.xml
+--- a/res/values/arrays_gos_komodo_high_emission_frequency.xml	1970-01-01 10:00:00.000000000 +1000
++++ b/res/values/arrays_gos_komodo_high_emission_frequency.xml	2026-11-08 22:44:49.432608253 +1100
+@@ -0,0 +1,26 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<resources>
 +    <string-array name="komodo_high_emission_frequency_entries">
-+        <item>Off</item>
-+        <item>600</item>
-+        <item>1000</item>
-+        <item>1400 (default)</item>
-+        <item>1800</item>
-+        <item>2200</item>
-+        <item>2600</item>
-+        <item>3000</item>
++        <item>Off (stock; default each boot)</item>
++        <item>Mode 0 (first experiment)</item>
++        <item>Mode 1 (stock byte)</item>
++        <item>Mode 2 (experimental)</item>
++        <item>Mode 3 (experimental)</item>
++        <item>Mode 4 (experimental)</item>
++        <item>Mode 5 (experimental)</item>
++        <item>Mode 6 (experimental)</item>
++        <item>Mode 7 (experimental)</item>
 +    </string-array>
 +
 +    <string-array name="komodo_high_emission_frequency_values">
 +        <item>off</item>
-+        <item>600</item>
-+        <item>1000</item>
-+        <item>1400</item>
-+        <item>1800</item>
-+        <item>2200</item>
-+        <item>2600</item>
-+        <item>3000</item>
++        <item>zero</item>
++        <item>one</item>
++        <item>two</item>
++        <item>three</item>
++        <item>four</item>
++        <item>five</item>
++        <item>six</item>
++        <item>seven</item>
 +    </string-array>
 +</resources>
-diff --git a/res/values/strings_gos_komodo_high_emission_frequency.xml b/res/values/strings_gos_komodo_high_emission_frequency.xml
-new file mode 100644
-index 0000000..92304e9
---- /dev/null
-+++ b/res/values/strings_gos_komodo_high_emission_frequency.xml
+diff -ruN a/res/values/strings_gos_komodo_high_emission_frequency.xml b/res/values/strings_gos_komodo_high_emission_frequency.xml
+--- a/res/values/strings_gos_komodo_high_emission_frequency.xml	1970-01-01 10:00:00.000000000 +1000
++++ b/res/values/strings_gos_komodo_high_emission_frequency.xml	2026-11-08 22:33:21.452392913 +1100
 @@ -0,0 +1,4 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<resources>
-+    <string name="komodo_pwm_threshold_title">Adjust PWM threshold for sensitive eyes</string>
++    <string name="komodo_pwm_multiplier_title">Experimental PWM mode (resets after restart)</string>
 +</resources>
-diff --git a/res/xml/accessibility_settings.xml b/res/xml/accessibility_settings.xml
-index 57ba166..8dbdfa8 100644
---- a/res/xml/accessibility_settings.xml
-+++ b/res/xml/accessibility_settings.xml
+diff -ruN a/res/xml/accessibility_settings.xml b/res/xml/accessibility_settings.xml
+--- a/res/xml/accessibility_settings.xml	2026-11-08 22:31:30.682485313 +1100
++++ b/res/xml/accessibility_settings.xml	2026-11-08 22:33:21.452392913 +1100
 @@ -80,6 +80,17 @@
              android:summary="@string/emission_frequency_summary"
              settings:controller="com.google.android.settings.display.HighEmissionFrequencyController"/>
@@ -50,9 +47,9 @@ index 57ba166..8dbdfa8 100644
 +            android:key="komodo_high_emission_frequency_mode"
 +            android:icon="@drawable/ic_high_emission_frequency"
 +            android:persistent="false"
-+            android:title="@string/komodo_pwm_threshold_title"
++            android:title="@string/komodo_pwm_multiplier_title"
 +            android:summary="@string/summary_placeholder"
-+            android:dialogTitle="@string/komodo_pwm_threshold_title"
++            android:dialogTitle="@string/komodo_pwm_multiplier_title"
 +            android:entries="@array/komodo_high_emission_frequency_entries"
 +            android:entryValues="@array/komodo_high_emission_frequency_values"
 +            settings:controller="com.google.android.settings.display.KomodoHighEmissionFrequencyPreferenceController"/>
@@ -60,27 +57,24 @@ index 57ba166..8dbdfa8 100644
      </PreferenceCategory>
  
      <PreferenceCategory
-diff --git a/src/com/google/android/settings/display/HighEmissionFrequencyController.kt b/src/com/google/android/settings/display/HighEmissionFrequencyController.kt
-index 6b327bd..8977565 100644
---- a/src/com/google/android/settings/display/HighEmissionFrequencyController.kt
-+++ b/src/com/google/android/settings/display/HighEmissionFrequencyController.kt
-@@ -10,6 +10,10 @@ import com.android.settings.core.TogglePreferenceController
+diff -ruN a/src/com/google/android/settings/display/HighEmissionFrequencyController.kt b/src/com/google/android/settings/display/HighEmissionFrequencyController.kt
+--- a/src/com/google/android/settings/display/HighEmissionFrequencyController.kt	2026-11-08 22:31:30.683485303 +1100
++++ b/src/com/google/android/settings/display/HighEmissionFrequencyController.kt	2026-11-08 22:33:21.458392854 +1100
+@@ -10,6 +10,10 @@
  class HighEmissionFrequencyController(context: Context, prefKey: String) :
      TogglePreferenceController(context, prefKey) {
      override fun getAvailabilityStatus(): Int {
-+        if (Build.DEVICE == "komodo") {
++        if (Build.DEVICE == "komodo" || Build.DEVICE == "caiman") {
 +            return UNSUPPORTED_ON_DEVICE
 +        }
 +
          // SettingsGoogle and PixelDisplayService both seem to assume that the array might not exist
          // and perform a dynamic lookup. However, this array actually exists in AOSP and there's no
          // reason we can't just use the static identifier.
-diff --git a/src/com/google/android/settings/display/KomodoHighEmissionFrequencyPreferenceController.kt b/src/com/google/android/settings/display/KomodoHighEmissionFrequencyPreferenceController.kt
-new file mode 100644
-index 0000000..e971033
---- /dev/null
-+++ b/src/com/google/android/settings/display/KomodoHighEmissionFrequencyPreferenceController.kt
-@@ -0,0 +1,77 @@
+diff -ruN a/src/com/google/android/settings/display/KomodoHighEmissionFrequencyPreferenceController.kt b/src/com/google/android/settings/display/KomodoHighEmissionFrequencyPreferenceController.kt
+--- a/src/com/google/android/settings/display/KomodoHighEmissionFrequencyPreferenceController.kt	1970-01-01 10:00:00.000000000 +1000
++++ b/src/com/google/android/settings/display/KomodoHighEmissionFrequencyPreferenceController.kt	2026-11-08 22:33:21.457392864 +1100
+@@ -0,0 +1,78 @@
 +package com.google.android.settings.display
 +
 +import android.content.Context
@@ -98,15 +92,15 @@ index 0000000..e971033
 +    BasePreferenceController(context, prefKey), Preference.OnPreferenceChangeListener {
 +    private companion object {
 +        const val TAG = "KomodoHighEmissionFrequencyPreferenceController"
-+        const val PROPERTY = "persist.sys.komodo_high_emission_frequency_mode"
-+        const val DEFAULT_VALUE = "1400"
++        const val PROPERTY = "sys.komodo_high_emission_frequency_mode"
++        const val DEFAULT_VALUE = "off"
 +    }
 +
 +    private val entryValues =
 +        mContext.resources.getStringArray(R.array.komodo_high_emission_frequency_values)
 +
 +    override fun getAvailabilityStatus(): Int =
-+        if (Build.DEVICE == "komodo" && "Google".equals(Build.MANUFACTURER)) {
++        if ((Build.DEVICE == "komodo" || Build.DEVICE == "caiman") && "Google".equals(Build.MANUFACTURER)) {
 +            AVAILABLE
 +        } else {
 +            UNSUPPORTED_ON_DEVICE
@@ -136,7 +130,8 @@ index 0000000..e971033
 +            Log.i(TAG, "Setting $PROPERTY to $value")
 +            SystemProperties.set(PROPERTY, value)
 +            val appliedValue = SystemProperties.get(PROPERTY, DEFAULT_VALUE)
-+            Log.i(TAG, "Read back $PROPERTY as $appliedValue")
++            Log.i(TAG, "Requested $PROPERTY is $appliedValue; panel application is deferred")
++            if (appliedValue != value) return false
 +            listPreference.value = value
 +            listPreference.summary = listPreference.entry
 +            true

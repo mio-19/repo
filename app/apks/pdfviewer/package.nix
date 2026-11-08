@@ -49,7 +49,7 @@ let
       npmDeps = fetchNpmDeps {
         pname = "npm-deps-${pname}";
         inherit version src;
-        hash = "sha256-EIH0XfPrlfOpSgEo7e80txD45B+nvGP0rCk7gj/WcFQ=";
+        hash = "sha256-rBKJBfSdtaHpP7QMWsgphfo65/ph2VNYvP74/ilNY+8=";
       };
 
       patches = [

@@ -274,45 +274,45 @@
   };
   grapheneos_messaging = {
     pname = "grapheneos_messaging";
-    version = "a4ccc33a8aa76941d913beefd9c46bb18119b72d";
+    version = "51c07da3e7b906b830a99d36722de20e7b658629";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/Messaging.git";
-      rev = "a4ccc33a8aa76941d913beefd9c46bb18119b72d";
+      rev = "51c07da3e7b906b830a99d36722de20e7b658629";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-uFHhDEe5czdNNaBI3xATIYB4eVnlUXuXbR392PgD9Os=";
+      sha256 = "sha256-mToOWj2x1zOOu7aSOJvl1mDoZ6/w+ZrlC/SrKjTygKw=";
     };
-    date = "2026-11-03";
+    date = "2026-11-05";
   };
   grapheneos_pdfviewer = {
     pname = "grapheneos_pdfviewer";
-    version = "abd52eb648e08f08a49442523b954743d18ea15b";
+    version = "abdc83c5b803e6c509d6faec70c997c533f7d455";
     src = fetchgit {
       url = "https://github.com/GrapheneOS/PdfViewer.git";
-      rev = "abd52eb648e08f08a49442523b954743d18ea15b";
+      rev = "abdc83c5b803e6c509d6faec70c997c533f7d455";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-wIN5YglphKI6OiJCq5tzETCGlssklkjFXHqtweFVXEg=";
+      sha256 = "sha256-cbMTH8QAObLJrrtQ+u9JobyIoZxWvolwQZ0kXl7vLL0=";
     };
-    date = "2026-11-02";
+    date = "2026-11-05";
   };
   grapheneos_vanadium = {
     pname = "grapheneos_vanadium";
-    version = "95e7e86cdbddeaec470be32590cb910eb04ba7d3";
+    version = "1e9bda1bb3d56f03ad0429ccaf601be266b43431";
     src = fetchgit {
       url = "https://gitlab.com/grapheneos/platform_external_vanadium.git";
-      rev = "95e7e86cdbddeaec470be32590cb910eb04ba7d3";
+      rev = "1e9bda1bb3d56f03ad0429ccaf601be266b43431";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-ReP8dVOuiSYTkOEZioyDnIXsOWsSu1qaixc2aMbBa9k=";
+      sha256 = "sha256-SN2sbTISP2crL/ScE+hS4Up32Fpqyqm3TuRCfWcJCmk=";
     };
-    date = "2026-10-30";
+    date = "2026-11-04";
   };
   gta4xlwifi-evobka-kernel = {
     pname = "gta4xlwifi-evobka-kernel";
@@ -344,17 +344,17 @@
   };
   lindroid_drm_loopback = {
     pname = "lindroid_drm_loopback";
-    version = "d3b85f3251beae4bc8481538f37d13b7f30abde0";
+    version = "f091d8ad85373d588ea03b70b602f8337b386455";
     src = fetchgit {
       url = "https://github.com/Linux-on-droid/lindroid-drm-loopback.git";
-      rev = "d3b85f3251beae4bc8481538f37d13b7f30abde0";
+      rev = "f091d8ad85373d588ea03b70b602f8337b386455";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-mEJ3LY4lNoWLaFz9ANfRAzZpOaTJnkbZwBR0Oe1pyyg=";
+      sha256 = "sha256-0ybNxwO1Cy6XbJba3ZgLfkfoBbnjLGqX1DQLVIiQ78U=";
     };
-    date = "2026-06-24";
+    date = "2026-11-04";
   };
   lineage_deskclock = {
     pname = "lineage_deskclock";
@@ -596,17 +596,17 @@
   };
   lineage_latinime = {
     pname = "lineage_latinime";
-    version = "072efed63fcb6bc28650abb629b592820b2d918d";
+    version = "36fe2acf232d0c7993cd5730ed5501650f9d38b0";
     src = fetchgit {
       url = "https://github.com/LineageOS/android_packages_inputmethods_LatinIME.git";
-      rev = "072efed63fcb6bc28650abb629b592820b2d918d";
+      rev = "36fe2acf232d0c7993cd5730ed5501650f9d38b0";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-4BJt7AQDlnMZLU0nr4TjxtQPfuD8uSsOvxmTjz1cX2k=";
+      sha256 = "sha256-sQQvoHmz90nl3NAcA0zvxw2PuUtkqzIMPzPs3WcLKgU=";
     };
-    date = "2026-11-02";
+    date = "2026-11-05";
   };
   lineage_launcher3 = {
     pname = "lineage_launcher3";
@@ -1005,7 +1005,7 @@
     version = "e14b22768c60978d0e1267dab5bcf62dfcc73d16";
     src = fetchurl {
       url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/e14b22768c60978d0e1267dab5bcf62dfcc73d16/vendor_gapps-e14b22768c60978d0e1267dab5bcf62dfcc73d16.tar.gz";
-      sha256 = "sha256-ARpBJHLpd4yvfkq0bz77JDjJo7TbIOPU6GqGc3C6isg=";
+      sha256 = "sha256-bo6Bzc6AZO7l+OzPnBVGrHS9rPg3UEbP6hYO7+rAuSw=";
     };
     date = "2026-09-13";
   };

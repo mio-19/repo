@@ -32,6 +32,7 @@ let
     pname = "librepods";
     inherit version src gradle;
     sourceRoot = "${src.name}/android";
+    patches = [ ./unlock-all-features.patch ];
     lockFile = mergeLock [ ./gradle.lock ];
     overrides = overrides-fromsrc;
     buildJdk = jdk25_headless;
