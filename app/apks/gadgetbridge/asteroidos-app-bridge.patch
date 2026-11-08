@@ -46,17 +46,24 @@ diff --git a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devi
 index ed648c4..b60b4e6 100644
 --- a/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java
 +++ b/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/asteroidos/AsteroidOSDeviceSupport.java
-@@ -32,6 +32,18 @@ import java.util.GregorianCalendar;
+@@ -32,6 +32,25 @@ import java.util.GregorianCalendar;
  import java.util.Objects;
  import java.util.UUID;
  
++import android.app.Notification;
++import android.app.NotificationChannel;
++import android.app.NotificationManager;
++import android.app.PendingIntent;
 +import android.content.BroadcastReceiver;
 +import android.content.Context;
 +import android.content.Intent;
 +import android.content.IntentFilter;
 +import android.content.pm.PackageManager;
 +import android.os.Build;
++import android.os.Bundle;
 +import android.os.Process;
++import androidx.core.app.NotificationCompat;
++import androidx.core.app.RemoteInput;
 +import androidx.core.content.ContextCompat;
 +import java.util.HashSet;
 +import java.util.Set;
@@ -65,7 +72,7 @@ index ed648c4..b60b4e6 100644
  import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
  import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
  import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
-@@ -71,6 +83,7 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -71,15 +90,18 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
          addSupportedService(AsteroidOSConstants.MEDIA_SERVICE_UUID);
          addSupportedService(AsteroidOSConstants.SCREENSHOT_SERVICE_UUID);
          addSupportedService(AsteroidOSConstants.FINDPHONE_SERVICE_UUID);
@@ -73,15 +80,18 @@ index ed648c4..b60b4e6 100644
  
          IntentListener mListener = intent -> {
              String action = intent.getAction();
-@@ -82,6 +95,7 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+             if (BatteryInfoProfile.ACTION_BATTERY_INFO.equals(action)) {
+                 handleBatteryInfo(Objects.requireNonNull(intent.getParcelableExtra(BatteryInfoProfile.EXTRA_BATTERY_INFO)));
+             }
+         };
+ 
          batteryInfoProfile = new BatteryInfoProfile<>(this);
          batteryInfoProfile.addListener(mListener);
          addSupportedProfile(batteryInfoProfile);
 +        registerAppBridgeReceiver();
++        registerKeyboardReplyReceiver();
      }
- 
-     private void handleBatteryInfo(@NonNull nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.battery.BatteryInfo info) {
-@@ -109,6 +123,10 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -109,6 +132,10 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
              handleFindPhone(value);
              return true;
          }
@@ -92,7 +102,7 @@ index ed648c4..b60b4e6 100644
  
          LOG.info("Characteristic changed UUID: {}", characteristicUUID);
          LOG.info("Characteristic changed value: {}", Arrays.toString(value));
-@@ -126,6 +144,8 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -126,6 +153,8 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
          builder.notify(AsteroidOSConstants.SCREENSHOT_CONTENT_CHAR, true);
          builder.notify(AsteroidOSConstants.FINDPHONE_RING_CHAR, true);
          builder.read(AsteroidOSConstants.FINDPHONE_RING_CHAR);
@@ -101,23 +111,13 @@ index ed648c4..b60b4e6 100644
          builder.setDeviceState(GBDevice.State.INITIALIZED);
  
          batteryInfoProfile.requestBatteryInfo(builder);
-@@ -331,6 +351,151 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
+@@ -331,6 +360,272 @@ public class AsteroidOSDeviceSupport extends AbstractBTLESingleDeviceSupport {
          evaluateGBDeviceEvent(findPhoneEvent);
      }
  
 +
 +    /*
-+     * App Bridge: relays a smartwatch camera remote to the GrapheneOS Camera app.
-+     *
-+     * Threat model: other apps on the phone must neither read what the watch sends nor be able to
-+     * make the watch act. Therefore:
-+     *  - broadcasts to the target app are explicit (setPackage) and carry the receiver permission
-+     *    below, which the user must grant to the target app; the system then only delivers them to
-+     *    holders of a permission that this app defines,
-+     *  - broadcasts from the target app are only accepted if the sender holds the same permission
-+     *    and the system reports the target package's uid as the sender,
-+     *  - only fixed, allowlisted actions are relayed; payloads are never forwarded and health
-+     *    telemetry is never broadcast or logged.
++     * App Bridge: relays smartwatch remote actions (camera remote, phone text input).
 +     */
 +    private static final String APP_BRIDGE_PERMISSION =
 +            "nodomain.freeyourgadget.gadgetbridge.permission.APP_BRIDGE";
@@ -128,6 +128,13 @@ index ed648c4..b60b4e6 100644
 +    private static final String CAMERA_PACKAGE = "app.grapheneos.camera";
 +    private static final String CAMERA_APP_ID = "org.asteroidos.camera";
 +    private static final String CAMERA_WIRE_APP_ID = "cam";
++    private static final String KEYBOARD_APP_ID = "org.asteroidos.keyboard";
++    private static final String KEYBOARD_WIRE_APP_ID = "kbd";
++    private static final int KEYBOARD_NOTIFICATION_ID = 0xA072;
++    private static final String KEYBOARD_CHANNEL_ID = "asteroidos_keyboard_channel";
++    private static final String ACTION_KEYBOARD_REPLY =
++            "nodomain.freeyourgadget.gadgetbridge.KEYBOARD_INPUT_REPLY";
++    private static final String EXTRA_KEYBOARD_TEXT = "extra_keyboard_text";
 +    private static final int APP_BRIDGE_MAX_PACKET = 512;
 +    private static final Set<String> WATCH_TO_PHONE_ACTIONS = new HashSet<>(Arrays.asList(
 +            "capture", "flip", "zoom_in", "zoom_out", "torch", "mode_photo", "mode_video",
@@ -136,6 +143,7 @@ index ed648c4..b60b4e6 100644
 +            "ready", "paused", "photo_captured", "video_started", "video_stopped"));
 +
 +    private BroadcastReceiver appBridgeReceiver = null;
++    private BroadcastReceiver keyboardReplyReceiver = null;
 +
 +    private void registerAppBridgeReceiver() {
 +        if (appBridgeReceiver != null) return;
@@ -146,8 +154,6 @@ index ed648c4..b60b4e6 100644
 +                handleSendToWatchIntent(intent, this);
 +            }
 +        };
-+        // RECEIVER_EXPORTED is needed to hear another app; the broadcast permission restricts
-+        // senders to holders of APP_BRIDGE_PERMISSION.
 +        ContextCompat.registerReceiver(
 +                context,
 +                appBridgeReceiver,
@@ -158,21 +164,55 @@ index ed648c4..b60b4e6 100644
 +        );
 +    }
 +
++    private void registerKeyboardReplyReceiver() {
++        if (keyboardReplyReceiver != null) return;
++        final Context context = GBApplication.getContext();
++        keyboardReplyReceiver = new BroadcastReceiver() {
++            @Override
++            public void onReceive(Context ctx, Intent intent) {
++                if (intent == null || !ACTION_KEYBOARD_REPLY.equals(intent.getAction())) return;
++                Bundle results = RemoteInput.getResultsFromIntent(intent);
++                if (results != null) {
++                    CharSequence text = results.getCharSequence(EXTRA_KEYBOARD_TEXT);
++                    if (text != null && text.length() > 0) {
++                        sendAppBridgeMessage(KEYBOARD_WIRE_APP_ID, "commit", text.toString());
++                    }
++                }
++                cancelKeyboardInputNotification();
++            }
++        };
++        IntentFilter filter = new IntentFilter(ACTION_KEYBOARD_REPLY);
++        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
++            context.registerReceiver(keyboardReplyReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
++        } else {
++            context.registerReceiver(keyboardReplyReceiver, filter);
++        }
++    }
++
 +    @Override
 +    public void dispose() {
 +        super.dispose();
++        final Context context = GBApplication.getContext();
 +        if (appBridgeReceiver != null) {
 +            try {
-+                GBApplication.getContext().unregisterReceiver(appBridgeReceiver);
++                context.unregisterReceiver(appBridgeReceiver);
 +            } catch (IllegalArgumentException e) {
 +                LOG.warn("Failed to unregister appBridgeReceiver", e);
 +            }
 +            appBridgeReceiver = null;
 +        }
++        if (keyboardReplyReceiver != null) {
++            try {
++                context.unregisterReceiver(keyboardReplyReceiver);
++            } catch (IllegalArgumentException e) {
++                LOG.warn("Failed to unregister keyboardReplyReceiver", e);
++            }
++            keyboardReplyReceiver = null;
++        }
++        cancelKeyboardInputNotification();
 +    }
 +
 +    private boolean isSentFromCameraApp(final BroadcastReceiver receiver) {
-+        // Fail closed: the sender uid is only available on Android 14+.
 +        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return false;
 +        final int sentFromUid = receiver.getSentFromUid();
 +        if (sentFromUid == Process.INVALID_UID) return false;
@@ -183,23 +223,91 @@ index ed648c4..b60b4e6 100644
 +        }
 +    }
 +
++    private void showKeyboardInputNotification(String prompt) {
++        final Context context = GBApplication.getContext();
++        final NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
++        if (nm == null) return;
++
++        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
++            NotificationChannel channel = new NotificationChannel(
++                    KEYBOARD_CHANNEL_ID,
++                    "Smartwatch Keyboard",
++                    NotificationManager.IMPORTANCE_HIGH
++            );
++            channel.setDescription("Direct text input for smartwatch keyboard");
++            nm.createNotificationChannel(channel);
++        }
++
++        RemoteInput remoteInput = new RemoteInput.Builder(EXTRA_KEYBOARD_TEXT)
++                .setLabel("Type on phone...")
++                .build();
++
++        Intent replyIntent = new Intent(ACTION_KEYBOARD_REPLY).setPackage(context.getPackageName());
++        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
++        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
++            flags |= PendingIntent.FLAG_MUTABLE;
++        }
++        PendingIntent replyPendingIntent = PendingIntent.getBroadcast(context, 0, replyIntent, flags);
++
++        NotificationCompat.Action replyAction =
++                new NotificationCompat.Action.Builder(
++                        android.R.drawable.ic_menu_send,
++                        "Send to Watch",
++                        replyPendingIntent
++                )
++                .addRemoteInput(remoteInput)
++                .build();
++
++        int icon = context.getApplicationInfo().icon != 0 ? context.getApplicationInfo().icon : android.R.drawable.ic_input_add;
++        String content = (prompt != null && !prompt.isEmpty()) ? prompt : "Enter text on phone to send to watch";
++
++        Notification notification = new NotificationCompat.Builder(context, KEYBOARD_CHANNEL_ID)
++                .setSmallIcon(icon)
++                .setContentTitle("Smartwatch Text Input")
++                .setContentText(content)
++                .setPriority(NotificationCompat.PRIORITY_HIGH)
++                .setDefaults(Notification.DEFAULT_ALL)
++                .setAutoCancel(true)
++                .addAction(replyAction)
++                .build();
++
++        nm.notify(KEYBOARD_NOTIFICATION_ID, notification);
++    }
++
++    private void cancelKeyboardInputNotification() {
++        final Context context = GBApplication.getContext();
++        final NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
++        if (nm != null) {
++            nm.cancel(KEYBOARD_NOTIFICATION_ID);
++        }
++    }
++
 +    private void handleSendToWatchIntent(Intent intent, BroadcastReceiver receiver) {
 +        if (intent == null || !ACTION_SEND_TO_WATCH.equals(intent.getAction())) return;
++        final String appId = intent.getStringExtra("extra_app_id");
++        final String action = intent.getStringExtra("extra_action");
++        final String payload = intent.getStringExtra("extra_payload");
++
++        if (KEYBOARD_APP_ID.equals(appId)) {
++            if (action != null && getDevice().isInitialized()) {
++                sendAppBridgeMessage(KEYBOARD_WIRE_APP_ID, action, payload);
++            }
++            return;
++        }
++
++        if (!CAMERA_APP_ID.equals(appId)) return;
 +        if (!isSentFromCameraApp(receiver)) {
 +            LOG.warn("AppBridge: dropping message not sent by {}", CAMERA_PACKAGE);
 +            return;
 +        }
-+        if (!CAMERA_APP_ID.equals(intent.getStringExtra("extra_app_id"))) return;
-+        final String action = intent.getStringExtra("extra_action");
 +        if (action == null || !PHONE_TO_WATCH_ACTIONS.contains(action)) return;
 +        if (!getDevice().isInitialized()) return;
-+        sendAppBridgeMessage(CAMERA_WIRE_APP_ID, action);
++        sendAppBridgeMessage(CAMERA_WIRE_APP_ID, action, payload);
 +    }
 +
 +    /**
 +     * Process incoming App Bridge frame from AsteroidOS.
 +     * Format: [0xA0][appIdLen:1B][appId][actionLen:1B][action][payload]
-+     * Only camera remote actions are relayed, without payload.
 +     */
 +    private void handleAppBridgeData(byte[] value) {
 +        if (value == null || value.length < 3 || value.length > APP_BRIDGE_MAX_PACKET) {
@@ -218,8 +326,22 @@ index ed648c4..b60b4e6 100644
 +        final int actionLen = value[offset++] & 0xFF;
 +        if (value.length < offset + actionLen) return;
 +        final String action = new String(value, offset, actionLen, StandardCharsets.UTF_8);
++        offset += actionLen;
 +
-+        // Everything but the camera remote (including SpO2 telemetry) stays on the watch link.
++        String payload = "";
++        if (value.length > offset) {
++            payload = new String(value, offset, value.length - offset, StandardCharsets.UTF_8);
++        }
++
++        if (KEYBOARD_WIRE_APP_ID.equals(appId)) {
++            if ("request_input".equals(action) || "open".equals(action)) {
++                showKeyboardInputNotification(payload);
++            } else if ("close".equals(action)) {
++                cancelKeyboardInputNotification();
++            }
++            return;
++        }
++
 +        if (!CAMERA_WIRE_APP_ID.equals(appId) || !WATCH_TO_PHONE_ACTIONS.contains(action)) {
 +            LOG.debug("AppBridge: ignoring frame for unsupported app or action");
 +            return;
@@ -228,15 +350,20 @@ index ed648c4..b60b4e6 100644
 +        final Intent broadcast = new Intent(ACTION_RECEIVE_FROM_WATCH)
 +                .setPackage(CAMERA_PACKAGE)
 +                .putExtra("extra_app_id", CAMERA_APP_ID)
-+                .putExtra("extra_action", action);
-+        // Delivered only to the camera app and only if the user granted it the bridge permission.
++                .putExtra("extra_action", action)
++                .putExtra("extra_payload", payload);
 +        getContext().sendBroadcast(broadcast, APP_BRIDGE_PERMISSION);
 +    }
 +
 +    private void sendAppBridgeMessage(String wireAppId, String action) {
++        sendAppBridgeMessage(wireAppId, action, null);
++    }
++
++    private void sendAppBridgeMessage(String wireAppId, String action, String payload) {
 +        final byte[] appIdBytes = wireAppId.getBytes(StandardCharsets.UTF_8);
 +        final byte[] actionBytes = action.getBytes(StandardCharsets.UTF_8);
-+        final byte[] packet = new byte[3 + appIdBytes.length + actionBytes.length];
++        final byte[] payloadBytes = payload != null ? payload.getBytes(StandardCharsets.UTF_8) : new byte[0];
++        final byte[] packet = new byte[3 + appIdBytes.length + actionBytes.length + payloadBytes.length];
 +        int idx = 0;
 +        packet[idx++] = (byte) 0xA0;
 +        packet[idx++] = (byte) appIdBytes.length;
@@ -244,6 +371,10 @@ index ed648c4..b60b4e6 100644
 +        idx += appIdBytes.length;
 +        packet[idx++] = (byte) actionBytes.length;
 +        System.arraycopy(actionBytes, 0, packet, idx, actionBytes.length);
++        idx += actionBytes.length;
++        if (payloadBytes.length > 0) {
++            System.arraycopy(payloadBytes, 0, packet, idx, payloadBytes.length);
++        }
 +
 +        final TransactionBuilder builder = createTransactionBuilder("sendAppBridgeMessage");
 +        safeWriteToCharacteristic(builder, AsteroidOSConstants.APP_BRIDGE_RX_CHAR, packet);
