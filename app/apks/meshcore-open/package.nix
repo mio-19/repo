@@ -77,11 +77,12 @@ let
         owner = "zjs81";
         repo = "meshcore-open";
         tag = "BETA-99.0.1";
-        hash = "sha256-fBzPJAHsQV7gnMAmIf8XMC52GefavCWignkBnu1rSDI=";
+        hash = "sha256-jQ6/5gDuMwJSQcHU2nv1GOw66IVw7t/uMp/lAJvUJLU=";
       };
 
       patches = [
         ./remove-node-advertisement.patch
+        ./resend-channel-messages.patch
       ];
 
       pubspecLock = lib.importJSON ./pubspec.lock.json;
@@ -103,8 +104,9 @@ let
         attrPath = "apk_meshcore-open";
         pkg = finalAttrs.finalPackage.overrideAttrs {
           gradleUpdateScript = ''
+            runHook preConfigure
             runHook preBuild
-            gradle --no-daemon --console=plain :cryptography_flutter:extractReleaseAnnotations :cryptography_flutter:generateReleaseLintModel :app:assembleRelease || true
+            flutter build apk --release --no-pub --target-platform android-arm64 || true
           '';
         };
         data = ./meshcore-open_deps.json;
@@ -205,6 +207,7 @@ let
               --replace-fail 'onReorderItem:' 'onReorder:'
             substituteInPlace lib/widgets/path_editor_sheet.dart \
               --replace-fail 'onReorderItem:' 'onReorder:'
+
 
             setup_writable_flutter_sdk ${flutter344}
             setup_pinned_gradlew ${gradle}/bin/gradle

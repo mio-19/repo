@@ -1,0 +1,41 @@
+diff -ruN a/lib/models/app_settings.dart b/lib/models/app_settings.dart
+--- a/lib/models/app_settings.dart
++++ b/lib/models/app_settings.dart
+@@ -281,9 +281,9 @@
+     this.routeWeightSuccessIncrement = 0.5,
+     this.routeWeightFailureDecrement = 0.2,
+     this.maxMessageRetries = 5,
+-    this.channelMinHopsEnabled = false,
++    this.channelMinHopsEnabled = true,
+     this.channelMinHops = 2,
+-    this.channelMinHopsRetries = 1,
++    this.channelMinHopsRetries = 5,
+     this.channelMinHopsCountRepeaters = false,
+     this.themeMode = 'system',
+     this.customThemes = const [],
+@@ -519,9 +519,9 @@
+       routeWeightFailureDecrement:
+           (json['route_weight_failure_decrement'] as num?)?.toDouble() ?? 0.2,
+       maxMessageRetries: json['max_message_retries'] as int? ?? 5,
+-      channelMinHopsEnabled: json['channel_min_hops_enabled'] as bool? ?? false,
++      channelMinHopsEnabled: json['channel_min_hops_enabled'] as bool? ?? true,
+       channelMinHops: json['channel_min_hops'] as int? ?? 2,
+-      channelMinHopsRetries: json['channel_min_hops_retries'] as int? ?? 1,
++      channelMinHopsRetries: json['channel_min_hops_retries'] as int? ?? 5,
+       channelMinHopsCountRepeaters:
+           json['channel_min_hops_count_repeaters'] as bool? ?? false,
+       themeMode: json['theme_mode'] as String? ?? 'system',
+diff -ruN a/lib/screens/app_settings_screen.dart b/lib/screens/app_settings_screen.dart
+--- a/lib/screens/app_settings_screen.dart
++++ b/lib/screens/app_settings_screen.dart
+@@ -704,8 +704,8 @@
+             subtitle: Slider(
+               value: settingsService.settings.channelMinHopsRetries.toDouble(),
+               min: 1,
+-              max: 5,
+-              divisions: 4,
++              max: 10,
++              divisions: 9,
+               label: settingsService.settings.channelMinHopsRetries.toString(),
+               onChanged: (value) =>
+                   settingsService.setChannelMinHopsRetries(value.toInt()),
