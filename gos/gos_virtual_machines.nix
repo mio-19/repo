@@ -44,7 +44,7 @@
       };
     })
     (lib.mkIf config.bundleKernelSUManager {
-      # wrong. currently kernel ksu module take official key not this key
+      # wrong. currently kernel ksu module take official key not this key (key for signing the apk)
       apps.prebuilt.kernelSU = {
         enable = true;
         name = "KernelSU";
