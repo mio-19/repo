@@ -8,7 +8,7 @@
     #launcherVariant = "los";
     bundleLimboTensor = true;
     bundleDroidVM = true;
-    bundleKernelSUManager = true;
+    bundleKernelSUManager = false;
     enableUnprotectedKvm = true;
   };
 }
