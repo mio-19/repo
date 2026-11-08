@@ -190,17 +190,17 @@
   };
   derpfest_launcher3 = {
     pname = "derpfest_launcher3";
-    version = "4ac0a7a518831fe131456cca7d243e7f86eaa7cf";
+    version = "7fe56f7a2a43b82b175bb8eefcb9c5e5ea26b21c";
     src = fetchgit {
       url = "https://github.com/DerpFest-AOSP/android_packages_apps_DerpLauncher.git";
-      rev = "4ac0a7a518831fe131456cca7d243e7f86eaa7cf";
+      rev = "7fe56f7a2a43b82b175bb8eefcb9c5e5ea26b21c";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-cL84fYW64suqm9bBDA/ekR+Xd4acpuUMNoE9DNFdn24=";
+      sha256 = "sha256-E42y5rgW5VtSXwYXC+M7O9Qpbki5gy6yZta12JN5ti4=";
     };
-    date = "2026-06-28";
+    date = "2026-11-08";
   };
   evox_launcher3 = {
     pname = "evox_launcher3";
@@ -988,24 +988,24 @@
   };
   termux_x11 = {
     pname = "termux_x11";
-    version = "f1d9834236341a5b3723cd7e4fe65601673a2d5a";
+    version = "1d3650690d4924e2de9af9b29964cc60f581c42f";
     src = fetchgit {
       url = "https://github.com/termux/termux-x11.git";
-      rev = "f1d9834236341a5b3723cd7e4fe65601673a2d5a";
+      rev = "1d3650690d4924e2de9af9b29964cc60f581c42f";
       fetchSubmodules = true;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-nMVbYrBaR6Szkb6k7b3SWx+KDe1V2LG3in0eMf9/rMM=";
+      sha256 = "sha256-Y8L7sMJ9nTiKGKzLq9cznTOqA2MbnQYZ6girho8lyXg=";
     };
-    date = "2026-11-02";
+    date = "2026-11-08";
   };
   vendor_gapps15 = {
     pname = "vendor_gapps15";
     version = "e14b22768c60978d0e1267dab5bcf62dfcc73d16";
     src = fetchurl {
       url = "https://gitlab.com/MindTheGapps/vendor_gapps/-/archive/e14b22768c60978d0e1267dab5bcf62dfcc73d16/vendor_gapps-e14b22768c60978d0e1267dab5bcf62dfcc73d16.tar.gz";
-      sha256 = "sha256-bo6Bzc6AZO7l+OzPnBVGrHS9rPg3UEbP6hYO7+rAuSw=";
+      sha256 = "sha256-ARpBJHLpd4yvfkq0bz77JDjJo7TbIOPU6GqGc3C6isg=";
     };
     date = "2026-09-13";
   };
