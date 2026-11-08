@@ -44,6 +44,7 @@
       };
     })
     (lib.mkIf config.bundleKernelSUManager {
+      # wrong. currently kernel ksu module take official key not this key
       apps.prebuilt.kernelSU = {
         enable = true;
         name = "KernelSU";
