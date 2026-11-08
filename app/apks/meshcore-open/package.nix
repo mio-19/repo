@@ -206,6 +206,11 @@ let
             substituteInPlace lib/widgets/path_editor_sheet.dart \
               --replace-fail 'onReorderItem:' 'onReorder:'
 
+            # Enable "Resend channel messages until they travel far enough" by default
+            substituteInPlace lib/models/app_settings.dart \
+              --replace-fail 'this.channelMinHopsEnabled = false,' 'this.channelMinHopsEnabled = true,' \
+              --replace-fail "channelMinHopsEnabled: json['channel_min_hops_enabled'] as bool? ?? false," "channelMinHopsEnabled: json['channel_min_hops_enabled'] as bool? ?? true,"
+
             setup_writable_flutter_sdk ${flutter344}
             setup_pinned_gradlew ${gradle}/bin/gradle
       '';
