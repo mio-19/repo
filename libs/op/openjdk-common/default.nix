@@ -50,7 +50,10 @@
 let
   normalizeOpenJdkOverride =
     args:
-    builtins.removeAttrs args [ "gtkSupport" ]
+    builtins.removeAttrs args [
+      "gtkSupport"
+      "regenerateCacerts"
+    ]
     // lib.optionalAttrs (args ? gtkSupport && !(args ? enableGtk)) {
       enableGtk = args.gtkSupport;
     };
@@ -60,12 +63,15 @@ let
     builtins.removeAttrs args [
       "gtkSupport"
       "enableGtk"
+      "regenerateCacerts"
     ];
 
   # Nixpkgs OpenJDK generic builder has a bug where it calls
   # jdk-bootstrap.override { gtkSupport = ... } but OpenJDK itself
-  # expects enableGtk. Older bootstrap JDKs such as IcedTea do not expose
-  # either flag, so they need a stricter wrapper that drops both.
+  # expects enableGtk. It also passes regenerateCacerts, which neither
+  # OpenJDK nor older bootstrap JDKs such as IcedTea accept. The
+  # normalizers above drop regenerateCacerts (and, for bootstrap JDKs,
+  # both gtkSupport/enableGtk) before forwarding to the wrapped JDK.
   wrapOpenJdk =
     jdk:
     let

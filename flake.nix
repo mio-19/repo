@@ -201,6 +201,11 @@
           pkgsPatched = import nixpkgs {
             config = pkgs.config // {
               allowUnfree = true;
+              # gtk2 is marked broken upstream (meta.problems.broken,
+              # https://github.com/NixOS/nixpkgs/issues/410814) but icedtea7,
+              # the root of the OpenJDK bootstrap chain in
+              # libs/op/openjdk-common, still hard depends on it.
+              problems.handlers."gtk+".broken = "warn";
             };
             inherit system;
             overlays = [
