@@ -13,6 +13,9 @@
   zip,
   unzip,
   fetchpatch,
+  cacert,
+  patch,
+  git,
 }:
 let
   appPackage =
@@ -49,6 +52,9 @@ let
         nativeBuildInputs = [
           go_1_27
           writableTmpDirAsHomeHook
+          cacert
+          patch
+          git
         ];
 
         outputHashMode = "recursive";
@@ -62,12 +68,14 @@ let
         buildPhase = ''
           runHook preBuild
 
+          export SSL_CERT_FILE="${cacert}/etc/ssl/certs/ca-bundle.crt"
           export GOTOOLCHAIN=local
           export GOPATH="$TMPDIR/go"
           export GOCACHE="$TMPDIR/go-build-cache"
           export GOMODCACHE="$TMPDIR/go-mod-cache"
           export GOPROXY=https://proxy.golang.org,direct
           export GOSUMDB=sum.golang.org
+          export GOFLAGS=-buildvcs=false
 
           cp -R "$src" source
           chmod -R u+w source
@@ -122,6 +130,9 @@ let
       gradleBuildTask = "assembleRelease";
       gradleUpdateTask = finalAttrs.gradleBuildTask;
 
+      __darwinAllowLocalNetworking = true;
+      __noChroot = stdenv.hostPlatform.isDarwin;
+
       mitmCache = gradle.fetchDeps {
         pname = "tailscale";
         pkg = finalAttrs.finalPackage;
@@ -150,7 +161,11 @@ let
       };
 
       preBuild = ''
-        mkdir -p "$HOME/.android" "$HOME/.cache"
+        export HOME="$TMPDIR/home"
+        mkdir -p "$HOME/.android" "$HOME/.gradle" "$HOME/.cache"
+        export ANDROID_USER_HOME="$HOME/.android"
+        export GRADLE_USER_HOME="$HOME/.gradle"
+        export GRADLE_OPTS="''${GRADLE_OPTS:+$GRADLE_OPTS }-Duser.home=$HOME -Dandroid.user.home=$ANDROID_USER_HOME"
 
         patchShebangs tool build-tags.sh version-ldflags.sh
 
@@ -222,8 +237,10 @@ let
         substituteInPlace Makefile \
           --replace-fail 'ndk;23.1.7779620' 'ndk;27.3.13750724'
 
-        echo "org.gradle.jvmargs=-Xmx4096m" >> android/gradle.properties
         cat >> android/gradle.properties <<EOF
+        org.gradle.jvmargs=-Xmx4096m -Duser.home=$HOME -Dandroid.user.home=$HOME/.android
+        systemProp.user.home=$HOME
+        systemProp.android.user.home=$HOME/.android
         android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2
         org.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2
         EOF
@@ -233,6 +250,9 @@ let
       '';
 
       gradleFlags = [
+        "--no-daemon"
+        "--no-watch-fs"
+        "-Dorg.gradle.vfs.watch=false"
         "-xlintVitalRelease"
         "-p"
         "android"

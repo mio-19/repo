@@ -430,11 +430,12 @@ let
               'void check_library() {}' \
               > "$TMPDIR/openvpn3_stub.c"
 
-            $ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android26-clang -c "$TMPDIR/openvpn3_stub.c" -o "$TMPDIR/openvpn3_stub_arm64.o"
-            $ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar rcs ../../core/tunnel/jniLibs-openvpn3/arm64-v8a/libopenvpn3_android_arm64.a "$TMPDIR/openvpn3_stub_arm64.o"
+            NDK_HOST_TAG="$(ls -1 "$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt" | head -n1)"
+            "$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/$NDK_HOST_TAG/bin/aarch64-linux-android26-clang" -c "$TMPDIR/openvpn3_stub.c" -o "$TMPDIR/openvpn3_stub_arm64.o"
+            "$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/$NDK_HOST_TAG/bin/llvm-ar" rcs ../../core/tunnel/jniLibs-openvpn3/arm64-v8a/libopenvpn3_android_arm64.a "$TMPDIR/openvpn3_stub_arm64.o"
 
-            $ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android26-clang -c "$TMPDIR/openvpn3_stub.c" -o "$TMPDIR/openvpn3_stub_x86_64.o"
-            $ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar rcs ../../core/tunnel/jniLibs-openvpn3/x86_64/libopenvpn3_android_amd64.a "$TMPDIR/openvpn3_stub_x86_64.o"
+            "$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/$NDK_HOST_TAG/bin/x86_64-linux-android26-clang" -c "$TMPDIR/openvpn3_stub.c" -o "$TMPDIR/openvpn3_stub_x86_64.o"
+            "$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/$NDK_HOST_TAG/bin/llvm-ar" rcs ../../core/tunnel/jniLibs-openvpn3/x86_64/libopenvpn3_android_amd64.a "$TMPDIR/openvpn3_stub_x86_64.o"
 
             export GOFLAGS="-mod=mod -buildvcs=false -ldflags=-checklinkname=0"
             export GO111MODULE=on
@@ -525,6 +526,9 @@ let
     {
       pname = "haven";
       version = "5.94.12";
+
+      __darwinAllowLocalNetworking = true;
+      __noChroot = stdenv.hostPlatform.isDarwin;
 
       src = fetchFromGitHub {
         owner = "GlassHaven";
@@ -681,6 +685,9 @@ let
         "-PskipOpenvpn3Native=true"
         "-PskipUml"
         "-PtargetAbi=arm64"
+        "--no-daemon"
+        "--no-watch-fs"
+        "-Dorg.gradle.vfs.watch=false"
       ];
 
       installPhase = ''

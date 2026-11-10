@@ -79,11 +79,14 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk21_headless;
+        JAVA_HOME = jdk21_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
       };
+
+      __darwinAllowLocalNetworking = true;
+      __noChroot = stdenv.hostPlatform.isDarwin;
 
       postPatch = ''
         substituteInPlace app/build.gradle \
@@ -104,9 +107,12 @@ let
       gradleFlags = [
         "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "--no-daemon"
+        "--no-watch-fs"
+        "-Dorg.gradle.vfs.watch=false"
       ];
 
       installPhase = ''

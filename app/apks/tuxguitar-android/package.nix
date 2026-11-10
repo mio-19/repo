@@ -64,6 +64,9 @@ let
         writableTmpDirAsHomeHook
       ];
 
+      __darwinAllowLocalNetworking = true;
+      __noChroot = stdenv.hostPlatform.isDarwin;
+
       env = {
         JAVA_HOME = jdkHome;
         ANDROID_HOME = androidSdkRoot;
@@ -83,6 +86,9 @@ let
       '';
 
       gradleFlags = [
+        "--no-daemon"
+        "--no-watch-fs"
+        "-Dorg.gradle.vfs.watch=false"
         "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
         "-Dorg.gradle.java.installations.paths=${jdkHome}"

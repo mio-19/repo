@@ -20,19 +20,13 @@ let
     };
 
   linuxOnlyApkNames = [
-    "tailscale"
-    "termux"
-    "termux-api"
-    "termux-styling"
     "termux-x11"
     "emacs"
-    "comaps"
+
+    "limbo_tensor"
 
     # need different gradle lockfile on darwin
     "haven"
-
-    # on darwin:  error: bitwise operation between different enumeration types ('ecma_property_flags_t' and 'ecma_property_types_t') [-Werror,-Wenum-enum-conversion]
-    "gadgetbridge"
 
     # [CXX1429] error when building with ndkBuild using /nix/var/nix/builds/nix-38269-3239929316/source/termux-shared/src/main/cpp/Android.mk: ERROR: Unknown host CPU architecture: arm64
     "nix-on-droid"
@@ -77,21 +71,10 @@ let
 
     "joplin"
 
-    "sunup" # Internal compiler error. See log for more details
-
-    "ytdlnis" # fails on darwin with 404 for newpipeextractor
-    "gamenative" # fails on darwin with 404
-
-    "ollama-app" # gtk4 failed on darwin
-
-    "vpnhotspot" # too complicated to build on darwin due to mitm-cache/gradle proxy, ksp, daemon socket and memory issues
-    "eden" # buildPhase fails mysteriously/killed on darwin
-    "tuxguitar-android" # buildPhase fails mysteriously/killed on darwin
+    #"ytdlnis"
     "droidspaces" # build fails mysteriously on darwin
-    "meditrak" # fails with FSEvents stream error on darwin
     "forkgram" # buildPhase fails mysteriously/killed on darwin
     "forkgram-classic" # buildPhase fails mysteriously/killed on darwin
-    "lumo" # Gradle plugin and FSEvents stream error on darwin
     "uplink" # pkgsCross Android NDK rust + Flutter APK
   ];
 

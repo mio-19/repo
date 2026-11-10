@@ -91,11 +91,14 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk25_headless;
+        JAVA_HOME = jdk25_headless.passthru.home;
         JITPACK_NDK_VERSION = "29.0.14206865";
         TERMUX_SPLIT_APKS_FOR_RELEASE_BUILDS = "0";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
       };
+
+      __darwinAllowLocalNetworking = true;
+      __noChroot = stdenv.hostPlatform.isDarwin;
 
       preConfigure = ''
         export ANDROID_USER_HOME="$HOME/.android"
@@ -124,9 +127,12 @@ let
       gradleFlags = [
         "-xlintVitalRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk25_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk25_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "--no-daemon"
+        "--no-watch-fs"
+        "-Dorg.gradle.vfs.watch=false"
       ];
 
       installPhase = ''

@@ -61,6 +61,24 @@
               fi
             '';
         });
+      fixPlatformTools =
+        pkg:
+        pkg.overrideAttrs (old: rec {
+          version = "37.0.1";
+          name = "platform-tools-${version}";
+          src = pkgs.fetchurl {
+            url =
+              if pkgs.stdenv.hostPlatform.isDarwin then
+                "https://dl.google.com/android/repository/platform-tools_r37.0.1-darwin.zip"
+              else
+                "https://dl.google.com/android/repository/platform-tools_r37.0.1-linux.zip";
+            hash =
+              if pkgs.stdenv.hostPlatform.isDarwin then
+                "sha256-7jmtWWfpXCoH8E28velrGgyRa6N2CW210vSYt3J6XR0="
+              else
+                "sha256-0jDxOEL2D3gqhkX5yBP4+EW/NgiepyifKMSPF5eTE/E=";
+          };
+        });
       helpers = {
         buildMavenRepositoryFromLockFile-bare = mvn2nixMaven.buildMavenRepositoryFromLockFile;
         androidSdkBuilder =
@@ -86,6 +104,8 @@
                 pkgs.stdenv.hostPlatform.isLinux && lib.isDerivation pkg && lib.hasPrefix "cmake-" (pkg.pname or "")
               then
                 fixCmakeNinja pkg
+              else if lib.isDerivation pkg && (pkg.pname or "") == "platform-tools" then
+                fixPlatformTools pkg
               else
                 pkg
             ) selected

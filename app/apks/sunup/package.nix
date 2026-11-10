@@ -13,6 +13,7 @@
   androidSdkBuilder,
   git,
   overrides-fromsrc-updated,
+  stdenv,
 }:
 let
   version = "1.3.2";
@@ -55,8 +56,11 @@ let
 
     dontUseGradleConfigure = true;
 
+    __darwinAllowLocalNetworking = true;
+    __noChroot = stdenv.hostPlatform.isDarwin;
+
     env = {
-      JAVA_HOME = jdk17_headless;
+      JAVA_HOME = jdk17_headless.passthru.home;
       ANDROID_HOME = "${androidSdk}/share/android-sdk";
       ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
       ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2";
@@ -64,19 +68,23 @@ let
 
     preConfigure = ''
       export ANDROID_USER_HOME="$HOME/.android"
+      export ANDROID_SDK_HOME="$HOME"
+      export ANDROID_PREFS_ROOT="$HOME"
       export GRADLE_USER_HOME="$HOME/.gradle"
       export TERM=dumb
       mkdir -p "$ANDROID_USER_HOME"
       echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
-      gradleFlagsArray+=(--no-daemon --init-script "$gradleInitScript" --offline)
+      printf "\norg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m\n" >> gradle.properties
+      gradleFlagsArray+=(--no-daemon --no-watch-fs -Dorg.gradle.vfs.watch=false --init-script "$gradleInitScript" --offline)
     '';
 
     gradleFlags = [
       "-x"
       "lintVitalRelease"
-      "-Dorg.gradle.java.home=${jdk17_headless.home}"
+      "-Dorg.gradle.vfs.watch=false"
+      "-Dorg.gradle.java.home=${jdk17_headless.passthru.home}"
       "-Dorg.gradle.java.installations.auto-download=false"
-      "-Dorg.gradle.java.installations.paths=${jdk17_headless},${jdk21_headless}"
+      "-Dorg.gradle.java.installations.paths=${jdk17_headless.passthru.home},${jdk21_headless.passthru.home}"
       "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
       "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
     ];

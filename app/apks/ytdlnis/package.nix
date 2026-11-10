@@ -55,8 +55,11 @@ let
         writableTmpDirAsHomeHook
       ];
 
+      __darwinAllowLocalNetworking = true;
+      __noChroot = stdenv.hostPlatform.isDarwin;
+
       env = {
-        JAVA_HOME = jdk21_headless;
+        JAVA_HOME = jdk21_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2";
@@ -69,19 +72,31 @@ let
       '';
 
       preConfigure = ''
+        export HOME="$TMPDIR/home"
         export ANDROID_USER_HOME="$HOME/.android"
         mkdir -p "$ANDROID_USER_HOME"
+        mkdir -p "$HOME/.gradle"
         echo "sdk.dir=${androidSdk}/share/android-sdk" > local.properties
         touch keystore.properties
+
+        cat >> gradle.properties <<EOF
+systemProp.user.home=$HOME
+systemProp.android.user.home=$ANDROID_USER_HOME
+org.gradle.jvmargs=-Xmx4096m -Duser.home=$HOME -Dandroid.user.home=$ANDROID_USER_HOME
+EOF
       '';
 
       gradleFlags = [
         "--stacktrace"
         "-Dorg.gradle.jvmargs=-Xmx4096m"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.1.0/aapt2"
+      ] ++ lib.optionals stdenv.hostPlatform.isDarwin [
+        "--no-daemon"
+        "--no-watch-fs"
+        "-Dorg.gradle.vfs.watch=false"
       ];
 
       installPhase = ''

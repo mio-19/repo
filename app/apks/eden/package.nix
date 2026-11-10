@@ -64,8 +64,11 @@ let
         writableTmpDirAsHomeHook
       ];
 
+      __darwinAllowLocalNetworking = true;
+      __noChroot = stdenv.hostPlatform.isDarwin;
+
       env = {
-        JAVA_HOME = jdk21_headless;
+        JAVA_HOME = jdk21_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
@@ -95,9 +98,12 @@ let
       '';
 
       gradleFlags = [
+        "--no-daemon"
+        "--no-watch-fs"
+        "-Dorg.gradle.vfs.watch=false"
         "-xlintVitalMainlineRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/35.0.0/aapt2"
       ];

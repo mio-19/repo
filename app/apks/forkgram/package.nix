@@ -198,6 +198,9 @@ buildGradlePackage rec {
   pname = "forkgram";
   inherit version src;
 
+  __darwinAllowLocalNetworking = true;
+  __noChroot = stdenv.hostPlatform.isDarwin;
+
   gradle = gradle_8_14_4;
 
   lockFile = ./gradle.lock;
@@ -368,8 +371,18 @@ buildGradlePackage rec {
     ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
     ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/27.2.12479018";
     ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/27.2.12479018";
+    JAVA_HOME = jdk21_headless.passthru.home;
     GOFLAGS = "-mod=vendor";
   };
+
+  gradleFlags = [
+    "--no-daemon"
+    "--no-watch-fs"
+    "-Dorg.gradle.vfs.watch=false"
+    "-Dorg.gradle.java.home=${jdk21_headless.passthru.home}"
+    "-Dorg.gradle.java.installations.auto-download=false"
+    "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
+  ];
 
   preBuild = lib.optionalString stdenv.hostPlatform.isDarwin ''
     export HOME="$TMPDIR/home"

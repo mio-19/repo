@@ -79,13 +79,16 @@ let
       ];
 
       env = {
-        JAVA_HOME = jdk21_headless;
+        JAVA_HOME = jdk21_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
         GADGETBRIDGE_VERSION_CODE = "252";
         GADGETBRIDGE_GIT_HASH_SHORT = "release";
       };
+
+      __darwinAllowLocalNetworking = true;
+      __noChroot = stdenv.hostPlatform.isDarwin;
 
       postPatch = ''
         substituteInPlace GBProtobufGenerator/build.gradle.kts \
@@ -109,9 +112,12 @@ let
         "-xlintVitalBanglejsRelease"
         "-xlintVitalMainlineRelease"
         "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
+        "--no-daemon"
+        "--no-watch-fs"
+        "-Dorg.gradle.vfs.watch=false"
       ];
 
       installPhase = ''

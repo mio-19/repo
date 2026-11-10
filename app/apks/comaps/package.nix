@@ -42,6 +42,8 @@ let
       ]);
 
       gradle = gradle_8_14_3;
+
+      pythonWithProtobuf = python3.withPackages (ps: [ ps.protobuf4 ]);
     in
     stdenv.mkDerivation (finalAttrs: {
       pname = "comaps";
@@ -73,6 +75,7 @@ let
       nativeBuildInputs = [
         gradle
         jdk21_headless
+        pythonWithProtobuf
 
         writableTmpDirAsHomeHook
         git
@@ -89,24 +92,30 @@ let
       ];
       dontWrapQtApps = true;
 
+      __darwinAllowLocalNetworking = true;
+      __noChroot = stdenv.hostPlatform.isDarwin;
+
       env = {
-        JAVA_HOME = jdk21_headless;
+        JAVA_HOME = jdk21_headless.passthru.home;
         ANDROID_HOME = "${androidSdk}/share/android-sdk";
         ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
         ANDROID_NDK_HOME = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
         ANDROID_NDK_ROOT = "${androidSdk}/share/android-sdk/ndk/28.2.13676358";
         ANDROID_AAPT2_FROM_MAVEN_OVERRIDE = "${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2";
-        PYTHON = python3;
+        PYTHON = "${pythonWithProtobuf}/bin/python3";
       };
 
       # CoMaps CMake requires python protobuf >=3.20 and <4.0.
       # Nixpkgs default protobuf is 7.x, so provide a compatible interpreter.
       prePatch = ''
-        export PATH="${(python3.withPackages (ps: [ ps.protobuf4 ]))}/bin:$PATH"
+        export PATH="${pythonWithProtobuf}/bin:$PATH"
         substituteInPlace ../tools/unix/version.sh \
           --replace-fail '    local COUNT_AND_DATE=( 0 $(date +%Y.%m.%d) )' \
             '    local COUNT_AND_DATE=( ${versionCount} ${versionDate} )'
         substituteInPlace ../CMakeLists.txt \
+          --replace-fail 'find_package(Python3 REQUIRED COMPONENTS Interpreter)' \
+            'set(Python3_EXECUTABLE "${pythonWithProtobuf}/bin/python3" CACHE FILEPATH "" FORCE)
+find_package(Python3 REQUIRED COMPONENTS Interpreter)' \
           --replace-fail 'if(PROTOBUF_VERSION VERSION_LESS "3.20.0" OR PROTOBUF_VERSION VERSION_GREATER_EQUAL "4.0.0")' \
             'if(PROTOBUF_VERSION VERSION_LESS "3.20.0" OR PROTOBUF_VERSION VERSION_GREATER_EQUAL "5.0.0")' \
           --replace-fail 'version (>=3.20, <4.0) is required' \
@@ -136,13 +145,13 @@ let
 
       preBuild = ''
         pushd ..
-        export PATH="${(python3.withPackages (ps: [ ps.protobuf4 ]))}/bin:$PATH"
+        export PATH="${pythonWithProtobuf}/bin:$PATH"
         export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
         export SKIP_PYTHON_VENV=1
         rm -rf 3party/boost/boost
         ln -s ${boost.dev}/include/boost 3party/boost/boost
-        ${python3}/bin/python3 ./tools/python/categories/json_to_txt.py data/translations/categories-strings data/categories.txt
-        ${python3}/bin/python3 ./tools/python/generate_desktop_ui_strings.py
+        ${pythonWithProtobuf}/bin/python3 ./tools/python/categories/json_to_txt.py data/translations/categories-strings data/categories.txt
+        ${pythonWithProtobuf}/bin/python3 ./tools/python/generate_desktop_ui_strings.py
         bash ./tools/unix/generate_drules.sh
         for required in \
           data/classificator.txt \
@@ -165,9 +174,11 @@ let
       '';
 
       gradleFlags = [
-        "-Dorg.gradle.java.installations.auto-download=false"
-        "-Dorg.gradle.java.installations.paths=${jdk21_headless}"
         "--no-daemon"
+        "--no-watch-fs"
+        "-Dorg.gradle.vfs.watch=false"
+        "-Dorg.gradle.java.installations.auto-download=false"
+        "-Dorg.gradle.java.installations.paths=${jdk21_headless.passthru.home}"
         "-Dandroid.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Dorg.gradle.project.android.aapt2FromMavenOverride=${androidSdk}/share/android-sdk/build-tools/36.0.0/aapt2"
         "-Parm64"

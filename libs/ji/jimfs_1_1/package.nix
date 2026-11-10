@@ -18,7 +18,11 @@ maven_3_9_14.buildMavenPackage {
   inherit version src;
   mvnJdk = jdk11_headless;
 
-  mvnHash = "sha256-F8/oVUwJNjGLgcaV7FeDBafKPgPLi15ZyiEMhz9fk24=";
+  mvnHash =
+    if stdenv.hostPlatform.isDarwin then
+      "sha256-1JEj83IOeKZrSnUKQFlMsnd9kuRGpRAu8qN4r3xcezQ="
+    else
+      "sha256-F8/oVUwJNjGLgcaV7FeDBafKPgPLi15ZyiEMhz9fk24=";
   mvnParameters = "-DskipTests -Dmaven.javadoc.skip=true";
 
   installPhase = ''
