@@ -26,7 +26,7 @@ let
       # tarballs instead so the sandboxed build stays offline.
       llamadartNativeAndroidArm64 = fetchurl {
         url = "https://github.com/leehack/llamadart-native/releases/download/v0.4.1/llamadart-native-android-arm64-v0.4.1.tar.gz";
-        hash = "sha256-/KUvYl4Za09dU7XcvpZGtrdkHu29f2GrEnLd1ewKnuQ=";
+        hash = "sha256-NIwNhGLAqLJTtUBra047em1JY7b+eRv/lgyTwh0Gsbg=";
       };
 
       llamadartNativeAndroidX64 = fetchurl {
@@ -68,7 +68,7 @@ let
     in
     buildDartApplication.override { dart = flutter344; } (finalAttrs: {
       pname = "meshcore-open";
-      version = "99.0.1+26";
+      version = "99.0.2+28";
 
       __darwinAllowLocalNetworking = true;
       __noChroot = stdenv.hostPlatform.isDarwin;
@@ -76,7 +76,7 @@ let
       src = fetchFromGitHub {
         owner = "zjs81";
         repo = "meshcore-open";
-        tag = "BETA-99.0.1";
+        tag = "BETA-99.0.3";
         hash = "sha256-jQ6/5gDuMwJSQcHU2nv1GOw66IVw7t/uMp/lAJvUJLU=";
       };
 
