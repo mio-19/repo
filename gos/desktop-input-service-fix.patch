@@ -1,0 +1,58 @@
+diff --git a/packages/SystemUI/src/com/android/systemui/display/ui/viewmodel/ConnectingDisplayViewModel.kt b/packages/SystemUI/src/com/android/systemui/display/ui/viewmodel/ConnectingDisplayViewModel.kt
+index 167b70f..7b60358 100644
+--- a/packages/SystemUI/src/com/android/systemui/display/ui/viewmodel/ConnectingDisplayViewModel.kt
++++ b/packages/SystemUI/src/com/android/systemui/display/ui/viewmodel/ConnectingDisplayViewModel.kt
+@@ -340,6 +340,8 @@ constructor(
+         }
+         notificationManager.createNotificationChannel(channel)
+ 
++        var notifiedDisplayId: Int? = null
++
+         fun updateNotification() {
+             val isMirroring = secureSettings.getIntForUser(
+                 MIRROR_BUILT_IN_DISPLAY,
+@@ -351,6 +353,15 @@ constructor(
+                 it.displayId != DEFAULT_DISPLAY && it.type == Display.TYPE_EXTERNAL
+             }
+ 
++            val desiredDisplayId = if (!isMirroring) {
++                externalDisplay?.displayId ?: Display.INVALID_DISPLAY
++            } else {
++                Display.INVALID_DISPLAY
++            }
++            // Display changes include refresh-rate and focus-related updates. Only repost
++            // when the companion target changes, avoiding notification churn.
++            if (desiredDisplayId == notifiedDisplayId) return
++
+             if (externalDisplay != null && !isMirroring) {
+                 val targetDisplayId = externalDisplay.displayId
+                 val intent = Intent(context, TrackpadActivity::class.java).apply {
+@@ -384,6 +395,7 @@ constructor(
+             } else {
+                 notificationManager.cancel(COMPANION_NOTIFICATION_ID)
+             }
++            notifiedDisplayId = desiredDisplayId
+         }
+ 
+         displayManager.registerDisplayListener(
+diff --git a/services/core/java/com/android/server/input/InputManagerService.java b/services/core/java/com/android/server/input/InputManagerService.java
+index fae546b..b182c95 100644
+--- a/services/core/java/com/android/server/input/InputManagerService.java
++++ b/services/core/java/com/android/server/input/InputManagerService.java
+@@ -3614,10 +3614,13 @@ public class InputManagerService extends IInputManager.Stub
+         if (displayId != Display.INVALID_DISPLAY && displayId != Display.DEFAULT_DISPLAY) {
+             DisplayInfo displayInfo =
+                     mDisplayManagerInternal.getDisplayInfo(displayId);
+-            // Explicit display association requires either the caller to own the display or if
+-            // it's from the system.
++            // Explicit display association requires display ownership or a trusted system caller.
++            // SystemUI hosts the desktop input companion under its own UID; device creation
++            // still requires INJECT_EVENTS (or INJECT_KEY_EVENTS for keyboards).
+             if (callingUid != displayInfo.ownerUid && callingUid != Process.SYSTEM_UID
+-                    && callingUid != 0) {
++                    && callingUid != 0
++                    && mContext.checkPermission(Manifest.permission.STATUS_BAR_SERVICE,
++                            -1, callingUid) != PackageManager.PERMISSION_GRANTED) {
+                 throw new SecurityException(
+                         "Explicit display association requires caller to own the display");
+             }

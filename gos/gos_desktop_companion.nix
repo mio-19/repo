@@ -15,6 +15,7 @@ args@{
   config = lib.mkIf config.desktopExternalDisplayInput {
     source.dirs."frameworks/base".patches = [
       ./desktop-external-display-trackpad-keyboard.patch
+      ./desktop-input-service-fix.patch
     ];
   };
 }
