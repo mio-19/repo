@@ -40,13 +40,13 @@ let
     in
     buildGradlePackage rec {
       pname = "gadgetbridge";
-      version = "2026.11.0";
+      version = "2026.11.1";
 
       src = fetchgit {
         url = "https://codeberg.org/Freeyourgadget/Gadgetbridge.git";
         rev = version;
         fetchSubmodules = true;
-        hash = "sha256-aXDG6dUOIrvsXFKPbm7pj5XZyVKVHhrWA+TTg9TEWQQ=";
+        hash = "sha256-az1Q/XXX4BOpKsCm+X0kW3zMLO3bguJthOaxke3whKA=";
       };
 
       patches = [
